@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/15 21:20:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:23 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,8 +18,6 @@
 #include <iostream>
 #include <map>
 #include <queue>
-
-using namespace std;
 
 #include "cparms.h"
 #include "dlldefs.h"
@@ -48,6 +46,7 @@ typedef CtiDeviceSingle *CtiDeviceSingleSPtr;
 typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
 #endif
 
+using namespace std;
 
 // Some Global Manager types to allow us some RTDB stuff.
 
@@ -133,6 +132,7 @@ device_record *getDeviceRecordByAddress( unsigned short address );
 device_record *getDeviceRecordByID     ( long device_id );
 
 
+
 void ExecuteThread( void *Dummy )
 {
     unsigned long tickle_time = 0UL;
@@ -148,7 +148,7 @@ void ExecuteThread( void *Dummy )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return;
@@ -167,7 +167,8 @@ void ExecuteThread( void *Dummy )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return;
@@ -175,7 +176,7 @@ void ExecuteThread( void *Dummy )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread started as TID  " << CurrentTID() << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread started as TID  " << CurrentTID() << endl;
     }
 
     //  grab all of the stored UDP info from the DB - this is done before the other thread is started, so we don't need to mux
@@ -209,17 +210,17 @@ void ExecuteThread( void *Dummy )
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION in Cti::Porter::DNPUDP::ExecuteThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION in Cti::Porter::DNPUDP::ExecuteThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        if( PorterQuit || tickle_time < RWTime::now().seconds() )
+        if( PorterQuit || tickle_time < CtiTime::now().seconds() )
         {
-            tickle_time = RWTime::now().seconds() + tickle_interval;
+            tickle_time = CtiTime::now().seconds() + tickle_interval;
 
             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  tickle the inbound thread
@@ -228,7 +229,8 @@ void ExecuteThread( void *Dummy )
                 if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -242,7 +244,7 @@ void ExecuteThread( void *Dummy )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
     }
 }
 
@@ -269,7 +271,7 @@ bool getOutMessages( unsigned wait )
         if( entries && gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         while( entries-- && (om = OutMessageQueue.getQueue(25)) )
@@ -291,7 +293,7 @@ bool getOutMessages( unsigned wait )
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cti::Porter::DNPUDP::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     dr->work.outbound.push(om);
@@ -301,7 +303,7 @@ bool getOutMessages( unsigned wait )
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cti::Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     //  return a "No Config Data" error - this deletes the OM
@@ -357,7 +359,7 @@ bool getPackets( int wait )
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - grabbing packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - grabbing packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     local_queue.push(packets.front());
@@ -367,7 +369,7 @@ bool getPackets( int wait )
             else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - packet_mux not aquired " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - packet_mux not aquired " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -418,7 +420,7 @@ bool getPackets( int wait )
                             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - inserting device \"" << dev_base->getName() << "\" in list " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - inserting device \"" << dev_base->getName() << "\" in list " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             //  we found it, insert the new record and packet
@@ -426,7 +428,7 @@ bool getPackets( int wait )
 
                             dr->device = dev_single;
 
-                            dr->work.timeout = RWTime(YUKONEOT).seconds();
+                            dr->work.timeout = CtiTime(YUKONEOT).seconds();
 
                             devices.insert  (make_pair(dev_single->getID(),      dr));
                             addresses.insert(make_pair(dev_single->getAddress(), dr));
@@ -434,7 +436,7 @@ bool getPackets( int wait )
                         else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - can't find DNP slave (" << dnp_slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - can't find DNP slave (" << dnp_slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -447,7 +449,7 @@ bool getPackets( int wait )
                             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             dr->ip   = p->ip;
@@ -465,13 +467,13 @@ bool getPackets( int wait )
                 else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
             else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cti::Porter::DNPUDP::getPackets - read " << p->len << " bytes, not enough for a full DNP header - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Cti::Porter::DNPUDP::getPackets - read " << p->len << " bytes, not enough for a full DNP header - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -529,7 +531,6 @@ void generateOutbound( dr_id_map::value_type element )
                 //  there is no outmessage, so we don't call recvCommRequest -
                 //    we have to call the Cti::Device::DNP-specific initUnsolicited
                 shared_ptr<Cti::Device::DNP> dev = boost::static_pointer_cast<Cti::Device::DNP>(dr->device);
-
                 dev->initUnsolicited();
 
                 dr->work.pending_decode = false;
@@ -548,7 +549,7 @@ void generateOutbound( dr_id_map::value_type element )
                 if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::generateOutbound - sending packet to "
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::generateOutbound - sending packet to "
                                      << ((dr->ip >> 24) & 0xff) << "."
                                      << ((dr->ip >> 16) & 0xff) << "."
                                      << ((dr->ip >>  8) & 0xff) << "."
@@ -557,7 +558,7 @@ void generateOutbound( dr_id_map::value_type element )
 
                     for(int xx = 0; xx < dr->work.xfer.getOutCount(); xx++)
                     {
-                        dout << " " << RWCString(CtiNumStr(dr->work.xfer.getOutBuffer()[xx]).hex().zpad(2));
+                        dout << " " << string(CtiNumStr(dr->work.xfer.getOutBuffer()[xx]).hex().zpad(2));
                     }
 
                     dout << endl;
@@ -572,7 +573,7 @@ void generateOutbound( dr_id_map::value_type element )
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cti::Porter::DNPUDP::generateOutbound - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::generateOutbound - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 else
@@ -608,12 +609,12 @@ void processInbound( dr_id_map::value_type element )
         {
             if( !dr->work.inbound.empty() || (dr->work.xfer.getInCountExpected() == 0) || dr->work.timeout < RWTime::now().seconds() )
             {
-                if( dr->work.timeout < RWTime::now().seconds() )
+                if( dr->work.timeout < CtiTime::now().seconds() )
                 {
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << RWTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << RWTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     status = READTIMEOUT;
@@ -628,8 +629,9 @@ void processInbound( dr_id_map::value_type element )
                         {
                             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
+
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             status = READTIMEOUT;
@@ -638,7 +640,9 @@ void processInbound( dr_id_map::value_type element )
                         }
                         else
                         {
+
                             dr->work.xfer.setInCountActual(dr->work.xfer.getInCountExpected());
+
                         }
 
                         memcpy(dr->work.xfer.getInBuffer(), p->data + p->used, dr->work.xfer.getInCountActual());
@@ -672,7 +676,7 @@ void processInbound( dr_id_map::value_type element )
     else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::processInbound - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -710,7 +714,7 @@ void sendResults( dr_id_map::value_type element )
     else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -719,7 +723,7 @@ void InboundThread( void *Dummy )
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread started as TID  " << CurrentTID() << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread started as TID  " << CurrentTID() << endl;
     }
 
     sockaddr_in local,
@@ -750,7 +754,8 @@ void InboundThread( void *Dummy )
                 if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 Sleep(500);
@@ -765,7 +770,7 @@ void InboundThread( void *Dummy )
                 if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread - received tickle packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - received tickle packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 continue;
@@ -789,7 +794,7 @@ void InboundThread( void *Dummy )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-                dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread - packet received from "
+                dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - packet received from "
                                  << ((p->ip >> 24) & 0xff) << "."
                                  << ((p->ip >> 16) & 0xff) << "."
                                  << ((p->ip >>  8) & 0xff) << "."
@@ -798,7 +803,7 @@ void InboundThread( void *Dummy )
 
                 for(int xx = 0; xx < recv_len; xx++)
                 {
-                    dout << " " << RWCString(CtiNumStr(recv_buf[xx]).hex().zpad(2));
+                    dout << " " << string(CtiNumStr(recv_buf[xx]).hex().zpad(2));
                 }
 
                 dout << endl;
@@ -806,7 +811,6 @@ void InboundThread( void *Dummy )
 
             {
                 CtiLockGuard< CtiMutex > guard(packet_mux, 15000);
-
                 if( guard.isAcquired() )
                 {
                     packets.push(p);
@@ -814,7 +818,8 @@ void InboundThread( void *Dummy )
                 else if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - access_mux not aquired **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - access_mux not aquired **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -823,7 +828,7 @@ void InboundThread( void *Dummy )
             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - unable to allocate packet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread - **** Checkpoint - unable to allocate packet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -832,7 +837,7 @@ void InboundThread( void *Dummy )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::InboundThread shutdown." << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread shutdown." << endl;
     }
 }
 
@@ -886,7 +891,7 @@ static void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cti::Porter::DNPUDP::applyGetUDPInfo - loading device \""
+                dout << CtiTime() << " Cti::Porter::DNPUDP::applyGetUDPInfo - loading device \""
                      << dr->device->getName() << "\" (" << ((dr->ip >> 24) & 0xff) << "."
                                                         << ((dr->ip >> 16) & 0xff) << "."
                                                         << ((dr->ip >>  8) & 0xff) << "."

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/04/15 22:10:07 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ public:
 
    CtiDeviceGroupEmetcon&     setEmetconGroup(const CtiTableEmetconLoadGroup& aRef);
    virtual LONG getRouteID();
-   virtual RWCString getDescription(const CtiCommandParser & parse) const;
+   virtual string getDescription(const CtiCommandParser & parse) const;
 
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -66,7 +66,7 @@ public:
                               RWTPtrSlist< CtiMessage >      &retList,
                               RWTPtrSlist< OUTMESS >         &outList);
 
-   static RWCString CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
+   static string CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
 
 };
 #endif // #ifndef __DEV_GRP_EMETCON_H__

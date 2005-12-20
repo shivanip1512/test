@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/01/02 16:57:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,10 @@
 #include <map>
 #include <set>
 #include <utility>
-using namespace std;
+using std::set;
+using std::map;
+using std::vector;
+
 
 #include "dlldefs.h"
 #include "msg_tag.h"
@@ -40,10 +43,10 @@ class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
 {
 public:
 
-    typedef map< int, CtiTagMsg* >    TagMgrMap_t;
-    typedef map< int, CtiTableTag >   TagTblMap_t;
+    typedef std::map< int, CtiTagMsg* >    TagMgrMap_t;
+    typedef std::map< int, CtiTableTag >   TagTblMap_t;
 
-    typedef map< int, CtiTableDynamicTag >   TagTblDynamicMap_t;
+    typedef std::map< int, CtiTableDynamicTag >   TagTblDynamicMap_t;
 
     enum {
         ActionNone,
@@ -53,7 +56,7 @@ public:
 
 protected:
 
-    CtiQueue< CtiTableTagLog, less<CtiTableTagLog> >            _tagLogQueue;
+    CtiQueue< CtiTableTagLog, std::less<CtiTableTagLog> >            _tagLogQueue;
     // This is a vector of the rows in the dynamic table which need to be Deleted.
     vector< int > _dynamicLogRemovals;
 

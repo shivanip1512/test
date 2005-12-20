@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/09/27 20:39:35 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -22,8 +22,6 @@
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include <rw/cstring.h>
-
 #include "guard.h"
 #include "logger.h"
 #include "prot_ymodem.h"
@@ -120,7 +118,7 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
          if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
       }
       
@@ -153,7 +151,7 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memcpy( data, _storage + 3, _bytesReceived - 5 );
       *bytes = _bytesReceived - 5;
 
-      memset( _storage, 0, Storage_size );
+      memset( _storage, '\0', Storage_size );
 
       _bytesReceived = 0;
       _finished = false;
@@ -215,7 +213,7 @@ bool CtiProtocolYmodem::isCrcValid( void )
 
    if( _bytesReceived > 1020 )
    {
-      memset( temp, 0, sizeof( temp ) );
+      memset( temp, '\0', sizeof( temp ) );
       memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
 
       crc.ch[0] = _storage[_bytesReceived - 1];

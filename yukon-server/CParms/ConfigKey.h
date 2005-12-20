@@ -2,29 +2,34 @@
 #define  __CONFIGKEY_H__
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
 
+#include <string>
+
+using std::string;
+
 class CtiConfigKey : public RWCollectable
 {
 private:
-   RWCString   Key;
+   string   Key;
 
 public:
    RWDECLARE_COLLECTABLE(CtiConfigKey);
 
    CtiConfigKey();
-   CtiConfigKey(RWCString key);
+   CtiConfigKey(const string& key);
    ~CtiConfigKey() {}
 
    // Inherited virtuals from RWCollectable
+   /*
    RWspace     binaryStoreSize() const;
+   */
    int         compareTo(const RWCollectable*) const;
    RWBoolean   isEqual(const RWCollectable*) const;
    unsigned    hash() const;
-
+   
    CtiConfigKey& operator=(const CtiConfigKey& key);
 
    void restoreGuts(RWFile&);
@@ -32,8 +37,8 @@ public:
    void saveGuts(RWFile&) const;
    void saveGuts(RWvostream&) const;
 
-   RWCString   getKey() const     { return Key; }
-   RWCString&  getKey()     { return Key; }
+   string   getKey() const { return Key; }
+   string&   getKey()        { return Key; }
 };
 
 #endif //#ifndef  __CONFIGKEY_H__

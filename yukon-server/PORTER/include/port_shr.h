@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:19:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,7 +69,7 @@ private:
    CtiPortShare(const CtiPortShare& aRef)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
 public:
@@ -89,7 +89,7 @@ public:
 
    static USHORT ProcessEventCode(USHORT EventCode);
 
-   void createNexus(RWCString nexusName);
+   void createNexus(string nexusName);
    void connectNexus();
 
    CTINEXUS* getReturnNexus() { return &_returnNexus; }

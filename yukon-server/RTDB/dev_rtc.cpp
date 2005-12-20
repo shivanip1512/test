@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/09/15 16:39:37 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.37  2005/12/20 17:20:24  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.36  2005/09/15 16:39:37  cplender
 * Simulate log was repeatedly logging the first controlled group for each group in a block to the simulate log.
 *
@@ -196,7 +199,7 @@ INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan general");
@@ -221,7 +224,7 @@ INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan integrity");
@@ -260,7 +263,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Status scan request" << endl;
+                dout << CtiTime() << " " << getName() << " Status scan request" << endl;
             }
 
             outList.insert(OutMessage);
@@ -284,8 +287,8 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         {
             nRet = NoExecuteRequestMethod;
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("RTC Devices do not support this command (yet?)"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("RTC Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -310,11 +313,11 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    RWCString resultString;
+    string resultString;
     CtiReturnMsg *retMsg;
 
     if( !ErrReturn )
@@ -333,21 +336,21 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
             // This is quite likely a MESSAGE ACKNOWLEGEMENT.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** MESSAGE ACKNOWLEGDED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** MESSAGE ACKNOWLEGDED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Unknown response type. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Unknown response type. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
 
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       RWCString(InMessage->Return.CommandStr),
+                                                       string(InMessage->Return.CommandStr),
                                                        getName() + " / operation complete",
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
@@ -364,10 +367,10 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
         GetErrorString(ErrReturn, error_str);
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       RWCString(InMessage->Return.CommandStr),
+                                                       string(InMessage->Return.CommandStr),
                                                        resultString,
                                                        ErrReturn,
                                                        InMessage->Return.RouteID,
@@ -383,14 +386,14 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 }
 
 
-INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                     RWCString(InMessage->Return.CommandStr),
-                                                     RWCString(),
+                                                     string(InMessage->Return.CommandStr),
+                                                     string(),
                                                      InMessage->EventCode & 0x7fff,
                                                      InMessage->Return.RouteID,
                                                      InMessage->Return.MacroOffset,
@@ -402,7 +405,7 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     if( pPIL != NULL )
@@ -433,7 +436,7 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -445,7 +448,7 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceRTC::getDescription(const CtiCommandParser &parse) const
+string CtiDeviceRTC::getDescription(const CtiCommandParser &parse) const
 {
     return getName();
 }
@@ -465,7 +468,7 @@ void CtiDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -493,12 +496,12 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         if(OutMessage->Buffer.SASt._groupType == SA305)
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
-            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit. ACH... " << endl;
+            slog << CtiTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit. ACH... " << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
-            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
+            slog << CtiTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
         }
 
         OutMessage= 0;
@@ -546,7 +549,7 @@ INT CtiDeviceRTC::queuedWorkCount() const
 bool CtiDeviceRTC::hasQueuedWork() const
 {
     bool hasq = false;
-    RWTime now;
+    CtiTime now;
 
     if(!_repeatList.empty())
     {
@@ -571,7 +574,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool stat = false;
 
-    RWTime now;
+    CtiTime now;
     CtiRepeatCol::value_type repeat;
 
     OutMessage = 0;
@@ -593,7 +596,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  Targeted PAOId = " << OutMessage->TargetID << " Cmd: " << OutMessage->Request.CommandStr << endl;
+                    dout << CtiTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << CtiTime(OutMessage->ExpirationTime) << "  ET = " << OutMessage->ExpirationTime << endl;
                 }
                 delete OutMessage;
                 OutMessage = 0;
@@ -614,7 +617,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
 
     if(OutMessage)
     {
-        incQueueProcessed(1, RWTime());
+        incQueueProcessed(1, CtiTime());
     }
 
     return stat;
@@ -646,7 +649,7 @@ LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
     return maxtime;
 }
 
-CtiDeviceRTC& CtiDeviceRTC::setRepeatTime(const RWTime& aRef)
+CtiDeviceRTC& CtiDeviceRTC::setRepeatTime(const CtiTime& aRef)
 {
     _repeatTime = aRef;
     return *this;
@@ -654,7 +657,7 @@ CtiDeviceRTC& CtiDeviceRTC::setRepeatTime(const RWTime& aRef)
 
 INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 {
-    RWTime now;
+    CtiTime now;
     INT status = NORMAL;
 
     CtiOutMessage *rtcOutMessage = 0;       // This pointer is used to process the queued outmessages on this device.
@@ -680,7 +683,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     cmdStr = prot.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " " <<  getName() << ": " << cmdStr << endl;
+                        slog << CtiTime() << " " <<  getName() << ": " << cmdStr << endl;
                     }
                     break;
                 }
@@ -688,7 +691,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
+                        slog << CtiTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
                     }
                     break;
                 }
@@ -719,13 +722,13 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             }
             else if( OutMessage->Buffer.SASt._code205 )
             {
-                strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
+                strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205).toString().c_str(), 12);
                 codestr[12] = 0;
                 cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << ": " << cmdStr << endl;
+                    dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                 }
                 work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, codestr, seconds(60));
             }
@@ -737,7 +740,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << ": " << cmdStr << endl;
+                    dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                 }
                 work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
             }
@@ -761,13 +764,13 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     }
                     else if( rtcOutMessage->Buffer.SASt._code205 )
                     {
-                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 12);
+                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205).toString().c_str(), 12);
                         codestr[12] = 0;
                         cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << cmdStr << endl;
+                            dout << CtiTime() << " " << cmdStr << endl;
                         }
                         work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
@@ -779,7 +782,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << cmdStr << endl;
+                            dout << CtiTime() << " " << cmdStr << endl;
                         }
                         work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
@@ -801,12 +804,12 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                             prot.setTransmitterType(getType());
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                                slog << CtiTime() << " " <<  getName() << ": " << prot.asString() << endl;
                             }
                             if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                                dout << CtiTime() << " " <<  getName() << ": " << prot.asString() << endl;
                             }
                             break;
                         }
@@ -814,7 +817,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt) << endl;
+                                slog << CtiTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt) << endl;
                             }
                             break;
                         }
@@ -835,7 +838,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     rtcOutMessage->Priority = rtcOutMessage->Priority + 1 > MAXPRIORITY ? MAXPRIORITY : rtcOutMessage->Priority + 1;          // Try to keep the order;
@@ -850,7 +853,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** MEMORY LEAK Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** MEMORY LEAK Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -864,7 +867,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
             {
                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << RWTime() << " " << getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
+                slog << CtiTime() << " " << getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
             }
         }
         else if(OutMessage->Buffer.SASt._commandType == ScanRequest || OutMessage->Buffer.SASt._commandType == LoopbackRequest)
@@ -879,7 +882,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;

@@ -39,22 +39,22 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     
     BOOL getRequireAck() const;
     LONG getCurtailReferenceId() const;
-    const RWCString& getAcknowledgeStatus() const;
-    const RWDBDateTime& getAckDateTime() const;
-    const RWCString& getIPAddressOfAckUser() const;
-    const RWCString& getUserIdName() const;
-    const RWCString& getNameOfAckPerson() const;
-    const RWCString& getCurtailmentNotes() const;
+    const string& getAcknowledgeStatus() const;
+    const CtiTime& getAckDateTime() const;
+    const string& getIPAddressOfAckUser() const;
+    const string& getUserIdName() const;
+    const string& getNameOfAckPerson() const;
+    const string& getCurtailmentNotes() const;
     BOOL getAckLateFlag() const;
 
     CtiLMCurtailCustomer& setRequireAck(BOOL reqack);
     CtiLMCurtailCustomer& setCurtailReferenceId(LONG refid);
-    CtiLMCurtailCustomer& setAcknowledgeStatus(const RWCString& ackstatus);
-    CtiLMCurtailCustomer& setAckDateTime(const RWDBDateTime& acktime);
-    CtiLMCurtailCustomer& setIPAddressOfAckUser(const RWCString& ipaddress);
-    CtiLMCurtailCustomer& setUserIdName(const RWCString& username);
-    CtiLMCurtailCustomer& setNameOfAckPerson(const RWCString& nameackperson);
-    CtiLMCurtailCustomer& setCurtailmentNotes(const RWCString& curtailnotes);
+    CtiLMCurtailCustomer& setAcknowledgeStatus(const string& ackstatus);
+    CtiLMCurtailCustomer& setAckDateTime(const CtiTime& acktime);
+    CtiLMCurtailCustomer& setIPAddressOfAckUser(const string& ipaddress);
+    CtiLMCurtailCustomer& setUserIdName(const string& username);
+    CtiLMCurtailCustomer& setNameOfAckPerson(const string& nameackperson);
+    CtiLMCurtailCustomer& setCurtailmentNotes(const string& curtailnotes);
     CtiLMCurtailCustomer& setAckLateFlag(BOOL acklate);
 
     CtiLMCurtailCustomer* replicate() const;
@@ -62,7 +62,7 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     void addLMCurtailCustomerActivityTable();
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -73,10 +73,10 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     // Static Members
 
     // Possible acknowledge statuses
-    static const RWCString UnAcknowledgedAckStatus;
-    static const RWCString AcknowledgedAckStatus;
-    static const RWCString NotRequiredAckStatus;
-    static const RWCString VerbalAckStatus;
+    static const string UnAcknowledgedAckStatus;
+    static const string AcknowledgedAckStatus;
+    static const string NotRequiredAckStatus;
+    static const string VerbalAckStatus;
 
 protected:
 
@@ -86,15 +86,15 @@ private:
 
     BOOL _requireack;
     LONG _curtailreferenceid;
-    RWCString _acknowledgestatus;
-    RWDBDateTime _ackdatetime;
-    RWCString _ipaddressofackuser;
-    RWCString _useridname;
-    RWCString _nameofackperson;
-    RWCString _curtailmentnotes;
+    string _acknowledgestatus;
+    CtiTime _ackdatetime;
+    string _ipaddressofackuser;
+    string _useridname;
+    string _nameofackperson;
+    string _curtailmentnotes;
     BOOL _acklateflag;
 
-    void updateLMCurtailCustomerActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void updateLMCurtailCustomerActivityTable(RWDBConnection& conn, CtiTime& currentDateTime);
 };
 #endif
 

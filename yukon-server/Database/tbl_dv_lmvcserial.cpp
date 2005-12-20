@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmvcserial.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dv_lmvcserial.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableLMGroupVersacomSerial::CtiTableLMGroupVersacomSerial() :
 _deviceID(-1),
@@ -147,7 +149,7 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setRouteID( const 
 
 void CtiTableLMGroupVersacomSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["serialnumber"] <<
@@ -160,7 +162,7 @@ void CtiTableLMGroupVersacomSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTabl
     selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
 }
 
-RWCString CtiTableLMGroupVersacomSerial::getTableName()
+string CtiTableLMGroupVersacomSerial::getTableName()
 {
     return "LMGroupVersacomSerial";
 }
@@ -180,7 +182,7 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setDeviceID( const
 
 void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -209,7 +211,7 @@ RWDBStatus CtiTableLMGroupVersacomSerial::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -241,7 +243,7 @@ RWDBStatus CtiTableLMGroupVersacomSerial::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -267,7 +269,7 @@ RWDBStatus CtiTableLMGroupVersacomSerial::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -292,7 +294,7 @@ RWDBStatus CtiTableLMGroupVersacomSerial::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

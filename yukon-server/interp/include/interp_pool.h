@@ -23,6 +23,9 @@
 
 #include "interp.h"
 
+using std::string;
+using std::set;
+
 class IM_EX_INTERP CtiInterpreterPool
 {
 public:
@@ -41,7 +44,7 @@ public:
     void dumpPool();
 
 private:
-    typedef set< CtiInterpreter* >::iterator interp_set_iter;
+    typedef std::set< CtiInterpreter* >::iterator interp_set_iter;
 
     // Used to protect the interpreter sets
     CtiMutex _mux;

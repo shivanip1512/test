@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:51:17 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,9 +15,10 @@
 #define __DEV_PAGERRECEIVE_H__
 #pragma warning( disable : 4786)
 
-
 #include <map>
 #include <string>
+#include <vector>
+
 #include "dev_single.h"
 #include "dlldefs.h"
 #include "xfer.h"
@@ -32,8 +33,8 @@ private:
 
     CtiTableDevicePagingReceiver                        _tbl;
     queue< CtiVerificationBase * >                      _verification_objects;
-    static const vector<const char*>                    _commandVector;
-    vector<const char*>::const_iterator                 _cmdVectorIterator;
+    static const std::vector<const char*>                    _commandVector;
+    std::vector<const char*>::const_iterator                 _cmdVectorIterator;
 
     bool                _hadHeader;//set to true if last loop we had a header and no footer.
     int                 _retryCount;
@@ -58,7 +59,7 @@ public:
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     virtual int sendCommResult(INMESS *InMessage);
     bool isTransactionComplete();
 

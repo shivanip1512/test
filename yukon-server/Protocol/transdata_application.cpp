@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/09/27 20:40:11 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
 //receives the password to the meter, shoves is down to the next level
 //=====================================================================================================================
 
-void CtiTransdataApplication::injectData( RWCString str )
+void CtiTransdataApplication::injectData( string str )
 {
    _tracker.injectData( str );
 }

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/05 12:47:20 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 *   This object represents a single operation to a thermostat
 *
@@ -23,19 +23,20 @@
 
 #include <windows.h>
 #include <vector>
-using namespace std;
 
-#include <rw/rwtime.h>
 
 #include "ctitypes.h"
 #include "dsm2.h"
 #include "dlldefs.h"
 
+using std::vector;
+using std::string;
+
 class IM_EX_CTIBASE CtiPendingStatOperation
 {
 public:
 
-    typedef vector< RWCString > PGRReplyVector_t;
+    typedef vector< string > PGRReplyVector_t;
 
     typedef enum
     {
@@ -52,11 +53,11 @@ protected:
     ULONG _serial;                      // What serial number is this?
     UINT _operation;
 
-    RWTime _submitted;                  // Time when request was sent out.
-    RWTime _expires;                    // Time at which results should have been confirmed from the stat.
+    CtiTime _submitted;                  // Time when request was sent out.
+    CtiTime _expires;                    // Time at which results should have been confirmed from the stat.
 
-    RWTime _responded;                  // This operation has been responded to if _responded >= _submitted.
-    RWTime _confirmed;                  // This operation has been confirmed to if _confirmed >= _submitted.
+    CtiTime _responded;                  // This operation has been responded to if _responded >= _submitted.
+    CtiTime _confirmed;                  // This operation has been confirmed to if _confirmed >= _submitted.
     bool _match;                        // This operation matched this device's established operational parameters (it was a no-op).  No confirm is expected.
 
     int _reportType;                    // This is a report type for the porter thread.
@@ -83,17 +84,17 @@ public:
     UINT getOperation() const;
     CtiPendingStatOperation& setOperation(UINT ui);
 
-    RWTime getTimeSubmitted() const;
-    CtiPendingStatOperation& setTimeSubmitted(const RWTime &rwt);
+    const CtiTime& getTimeSubmitted() const;
+    CtiPendingStatOperation& setTimeSubmitted(const CtiTime &rwt);
 
-    RWTime getTimeExpires() const;
-    CtiPendingStatOperation& setTimeExpires(const RWTime &rwt);
+    const CtiTime& getTimeExpires() const;
+    CtiPendingStatOperation& setTimeExpires(const CtiTime &rwt);
 
-    RWTime getTimeResponded() const;
-    CtiPendingStatOperation& setTimeResponded(const RWTime &rwt);
+    const CtiTime& getTimeResponded() const;
+    CtiPendingStatOperation& setTimeResponded(const CtiTime &rwt);
 
-    RWTime getTimeConfirmed() const;
-    CtiPendingStatOperation& setTimeConfirmed(const RWTime &rwt);
+    const CtiTime& getTimeConfirmed() const;
+    CtiPendingStatOperation& setTimeConfirmed(const CtiTime &rwt);
 
     bool getMatched() const;
     CtiPendingStatOperation& setMatched(bool match);
@@ -106,7 +107,7 @@ public:
 
     PGRReplyVector_t& getReplyVector();
     PGRReplyVector_t getConstReplyVector() const;
-    void addReplyVector(RWCString &str);
+    void addReplyVector(const string &str);
 
     bool isResponded() const
     {

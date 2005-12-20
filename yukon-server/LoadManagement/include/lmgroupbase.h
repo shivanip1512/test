@@ -16,6 +16,7 @@
 #define CTILMGROUPBASEIMPL_H
 
 #include <vector>
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 
@@ -25,13 +26,17 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "rwutil.h"
+
 #include "dbmemobject.h"
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 
 using std::vector;
+using std::string;
 using boost::shared_ptr;
+
 
 class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
 {
@@ -44,11 +49,11 @@ public:
     virtual ~CtiLMGroupBase();
     
     virtual LONG getPAOId() const;
-    virtual const RWCString& getPAOCategory() const;
-    virtual const RWCString& getPAOClass() const;
-    virtual const RWCString& getPAOName() const;
+    virtual const string& getPAOCategory() const;
+    virtual const string& getPAOClass() const;
+    virtual const string& getPAOName() const;
     virtual LONG getPAOType() const;
-    virtual const RWCString& getPAODescription() const;
+    virtual const string& getPAODescription() const;
     virtual BOOL getDisableFlag() const;
     virtual LONG getGroupOrder() const;
     virtual DOUBLE getKWCapacity() const;
@@ -60,11 +65,11 @@ public:
     virtual LONG getCurrentHoursMonthly() const;
     virtual LONG getCurrentHoursSeasonal() const;
     virtual LONG getCurrentHoursAnnually() const;
-    virtual const RWDBDateTime& getLastControlSent() const;
-    virtual const RWDBDateTime& getControlStartTime() const;
-    virtual const RWDBDateTime& getControlCompleteTime() const;
-    virtual const RWDBDateTime& getNextControlTime() const; //FIXME
-    virtual const RWDBDateTime& getDynamicTimestamp() const;
+    virtual const CtiTime& getLastControlSent() const;
+    virtual const CtiTime& getControlStartTime() const;
+    virtual const CtiTime& getControlCompleteTime() const;
+    virtual const CtiTime& getNextControlTime() const; //FIXME
+    virtual const CtiTime& getDynamicTimestamp() const;
     virtual LONG getDailyOps();
     
     virtual bool getIsRampingIn() const;
@@ -77,14 +82,14 @@ public:
     virtual LONG getHoursSeasonalPointId() const;
     virtual LONG getHoursAnnuallyPointId() const;
     virtual LONG getControlStatusPointId() const;
-    virtual const RWCString& getLastControlString() const;
+    virtual const string& getLastControlString() const;
 
     virtual CtiLMGroupBase& setPAOId(LONG id);
-    virtual CtiLMGroupBase& setPAOCategory(const RWCString& category);
-    virtual CtiLMGroupBase& setPAOClass(const RWCString& pclass);
-    virtual CtiLMGroupBase& setPAOName(const RWCString& name);
+    virtual CtiLMGroupBase& setPAOCategory(const string& category);
+    virtual CtiLMGroupBase& setPAOClass(const string& pclass);
+    virtual CtiLMGroupBase& setPAOName(const string& name);
     virtual CtiLMGroupBase& setPAOType(LONG type);
-    virtual CtiLMGroupBase& setPAODescription(const RWCString& description);
+    virtual CtiLMGroupBase& setPAODescription(const string& description);
     virtual CtiLMGroupBase& setDisableFlag(BOOL disable);
     virtual CtiLMGroupBase& setGroupOrder(LONG order);
     virtual CtiLMGroupBase& setKWCapacity(DOUBLE kwcap);
@@ -96,11 +101,11 @@ public:
     virtual CtiLMGroupBase& setCurrentHoursMonthly(LONG monthly);
     virtual CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
     virtual CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
-    virtual CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
-    virtual CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
-    virtual CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
-    virtual CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
-    virtual CtiLMGroupBase& setDynamicTimestamp(const RWDBDateTime& timestamp);
+    virtual CtiLMGroupBase& setLastControlSent(const CtiTime& controlsent);
+    virtual CtiLMGroupBase& setControlStartTime(const CtiTime& start);
+    virtual CtiLMGroupBase& setControlCompleteTime(const CtiTime& complete);
+    virtual CtiLMGroupBase& setNextControlTime(const CtiTime& controltime);
+    virtual CtiLMGroupBase& setDynamicTimestamp(const CtiTime& timestamp);
     virtual CtiLMGroupBase& incrementDailyOps();
     virtual CtiLMGroupBase& resetDailyOps(int ops = 0);
     virtual void setInternalState(unsigned state);
@@ -115,15 +120,15 @@ public:
     virtual CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
     virtual CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
     virtual CtiLMGroupBase& setControlStatusPointId(LONG cntid);
-    virtual CtiLMGroupBase& setLastControlString(const RWCString& controlstr);
+    virtual CtiLMGroupBase& setLastControlString(const string& controlstr);
 
     virtual void dumpDynamicData();
-    virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //virtuals but not pure because only one type of group can handle each of the messages
     virtual CtiCommandMsg* createLatchingRequestMsg(LONG rawState, int priority) const;// in CtiLMGroupPoint
     virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+    virtual CtiRequestMsg* createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                     LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                     LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
@@ -144,8 +149,8 @@ public:
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
     bool operator<(const CtiLMGroupBase& right) const;
     
-    RWCString buildShedString(LONG shedTime) const;
-    RWCString buildPeriodString(LONG periodTime) const;
+    string buildShedString(LONG shedTime) const;
+    string buildPeriodString(LONG periodTime) const;
     
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
@@ -168,11 +173,11 @@ private:
     void updateDailyOps();
     
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
     LONG _paotype;
-    RWCString _paodescription;
+    string _paodescription;
     BOOL _disableflag;
     LONG _grouporder;
     DOUBLE _kwcapacity;
@@ -185,14 +190,14 @@ private:
     LONG _currenthoursmonthly;
     LONG _currenthoursseasonal;
     LONG _currenthoursannually;
-    RWDBDateTime _lastcontrolsent;
-    RWDBDateTime _controlstarttime;
-    RWDBDateTime _controlcompletetime;
-
-    RWDBDateTime _next_control_time;
+    CtiTime _lastcontrolsent;
+    CtiTime _controlstarttime;
+    CtiTime _controlcompletetime;
+   
+    CtiTime _next_control_time;
     LONG _daily_ops;
     
-    RWDBDateTime _dynamic_timestamp;
+    CtiTime _dynamic_timestamp;
     
     unsigned  _internalState;
 
@@ -203,7 +208,7 @@ private:
 
     //don't stream
     LONG _controlstatuspointid;
-    RWCString _lastcontrolstring;
+    string _lastcontrolstring;
 
 };
 

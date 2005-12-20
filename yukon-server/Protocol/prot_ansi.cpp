@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/12 20:34:28 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.17  2005/12/20 17:19:55  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.16  2005/12/12 20:34:28  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -26,6 +29,16 @@
 
       Revision 1.14  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
+ 
+      Revision 1.12.2.3  2005/08/12 19:54:03  jliu
+      Date Time Replaced
+
+      Revision 1.12.2.2  2005/07/27 19:28:00  alauinger
+      merged from the head 20050720
+
+
+      Revision 1.12.2.1  2005/07/14 22:27:01  jliu
+      RWCStringRemoved
 
       Revision 1.13  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
@@ -58,7 +71,6 @@
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/cstring.h>
 
 #include "guard.h"
 #include "configparms.h"
@@ -66,6 +78,9 @@
 #include "pointdefs.h"
 #include "prot_ansi.h"
 #include "utility.h"
+#include "ctitime.h"
+#include "ctidate.h"
+
 
 
 const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLERANCE";
@@ -149,7 +164,7 @@ void CtiProtocolANSI::destroyMe( void )
 
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Ansi destroy started----" << endl;
+      dout << CtiTime() << " Ansi destroy started----" << endl;
    }
 
    //let's check to see if we have valid pointers to delete (for scanners sake)
@@ -330,7 +345,7 @@ void CtiProtocolANSI::destroyMe( void )
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Ansi destroy finished" << endl;
+      dout << CtiTime() << " ----Ansi destroy finished" << endl;
    }
 
 }
@@ -352,7 +367,7 @@ void CtiProtocolANSI::reinitialize( void )
 {
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Ansi reinit started----" << endl;
+      dout << CtiTime() << " Ansi reinit started----" << endl;
    }
    try
    {
@@ -377,12 +392,12 @@ void CtiProtocolANSI::reinitialize( void )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Ansi reinit finished" << endl;
+      dout << CtiTime() << " ----Ansi reinit finished" << endl;
    }
 
 }
@@ -415,7 +430,7 @@ int CtiProtocolANSI::recvOutbound( OUTMESS *OutMessage )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
    return( _header->numTablesRequested );   //just a val
@@ -466,7 +481,7 @@ void CtiProtocolANSI::buildWantedTableList( BYTE *aPtr )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -601,26 +616,38 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                    //Fall Back DST adjustment
                    if (_tableFiveTwo != NULL)
                    {   
+                       CtiTime llp(_header->lastLoadProfileTime);
+                       CtiDate dte = llp.date();
+                       CtiTime endLLP = CtiTime().endDST( dte.year() );
 
+                       CtiTime now = CtiTime();
+                       CtiDate dtf = now.date();
+                       CtiTime end = CtiTime().endDST(dtf.year());
+                                             
+                       CtiTime begin = CtiTime().beginDST(dtf.year());
+
+                       CtiTime beginLLP = CtiTime().beginDST( dte.year() );
+                                            
+                       
                        if (!_tableFiveTwo->adjustTimeForDST() && 
-                          ( RWTime(_header->lastLoadProfileTime) < RWTime().endDST(RWDate(RWTime(_header->lastLoadProfileTime)).year()) && 
-                            RWTime() > RWTime().endDST(RWDate().year()) ) )
+                          ( (llp < endLLP  ) && 
+                            (now > end) ) )
                        {
                            _header->lastLoadProfileTime -= 3600;
                            {
                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<RWTime(_header->lastLoadProfileTime) << endl;
+                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<CtiTime(_header->lastLoadProfileTime) << endl;
                            }
                        }
                        //Spring Ahead DST adjustment
                        if (_tableFiveTwo->adjustTimeForDST() && 
-                          ( RWTime(_header->lastLoadProfileTime) < RWTime().beginDST(RWDate(RWTime(_header->lastLoadProfileTime)).year()) && 
-                            RWTime() > RWTime().beginDST(RWDate().year()) ) )
+                          ( llp < beginLLP && 
+                            now > begin ) )
                        {
-                           _header->lastLoadProfileTime += 3600;
+                           _header->lastLoadProfileTime += 3600;                                         
                            {
                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<RWTime(_header->lastLoadProfileTime) << endl;
+                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<CtiTime(_header->lastLoadProfileTime) << endl;
                            }
                        }
                    }
@@ -744,7 +771,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return false;
 
@@ -1147,14 +1174,14 @@ void CtiProtocolANSI::convertToTable(  )
                         _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() % _lpBlockSize) - 1;
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " ####### LP Byte Count = " <<getApplicationLayer().getLPByteCount() << endl;
-                            dout << RWTime() << " ####### LP Block Size = " <<_lpBlockSize << endl;
+                            dout << CtiTime() << " ####### LP Byte Count = " <<getApplicationLayer().getLPByteCount() << endl;
+                            dout << CtiTime() << " ####### LP Block Size = " <<_lpBlockSize << endl;
                         }
 
                         _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() / _lpBlockSize) - 1;
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " ####### LP Nbr Full Blocks = " <<_lpNbrFullBlocks << endl;
+                            dout << CtiTime() << " ####### LP Nbr Full Blocks = " <<_lpNbrFullBlocks << endl;
                         }
                         _lpNbrIntvlsLastBlock = 0;//_tableSixOne->getNbrBlkIntsSet(1);
                         validIntvls = _lpNbrIntvlsLastBlock;
@@ -1193,7 +1220,7 @@ void CtiProtocolANSI::convertToTable(  )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return;
 }
@@ -1574,7 +1601,7 @@ void CtiProtocolANSI::updateBytesExpected( )
                 _currentTableNotAvailableFlag = true;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout <<RWTime() <<  "  **Table " << _tables[_index].tableID << " NOT present in meter -- 0 bytes expected" << endl;    
+                    dout <<CtiTime() <<  "  **Table " << _tables[_index].tableID << " NOT present in meter -- 0 bytes expected" << endl;    
                 }
 
             }
@@ -1583,13 +1610,13 @@ void CtiProtocolANSI::updateBytesExpected( )
         if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
         {
            CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << RWTime() << "  **Table " << _tables[_index].tableID << " expected bytes " << (int)_tables[_index].bytesExpected << endl;
+           dout << CtiTime() << "  **Table " << _tables[_index].tableID << " expected bytes " << (int)_tables[_index].bytesExpected << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
 }
@@ -1764,17 +1791,17 @@ void CtiProtocolANSI::receiveCommResult( INMESS *InMessage )
     // if its manufactured, send it to the child class
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << RWTime::now() << " ==============================================" << endl;
-        dout << RWTime::now() << " ==========The KV2 responded with data=========" << endl;
-        dout << RWTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==========The KV2 responded with data=========" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
     }
        
           
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << RWTime::now() << " ==============================================" << endl;
-        dout << RWTime::now() << " ================= Complete ===================" << endl;
-        dout << RWTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ================= Complete ===================" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
     }
 
 }
@@ -1916,7 +1943,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *time )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return false;
 }
@@ -2022,7 +2049,7 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     } 
     return false;
 }
@@ -2175,7 +2202,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return success;
 }
@@ -2284,7 +2311,7 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     summationSelect = NULL;
@@ -2318,7 +2345,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     else
@@ -2383,7 +2410,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     presentValueSelect = NULL;
@@ -2430,7 +2457,7 @@ bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
 
@@ -2441,12 +2468,12 @@ bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
     bool success = false;
     ULONG value;
 
-    RWCString   str;
+    string   str;
     int tempDiff;
 
     //tempStr = getValueAsString(METER_TIME_TOLERANCE);
-    if( !(str = gConfigParms.getValueAsString(METER_TIME_TOLERANCE)).isNull() )
-        tempDiff = atoi(str.data());
+    if( !(str = gConfigParms.getValueAsString(METER_TIME_TOLERANCE)).empty() )
+        tempDiff = atoi(str.c_str());
     else
         tempDiff = 600;
 
@@ -2470,7 +2497,7 @@ bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
 
@@ -2547,7 +2574,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << RWTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
                                                             }
                                                         }
                                                         else
@@ -2566,7 +2593,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << RWTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
                                                             }
                                                         }
 
@@ -2613,7 +2640,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     lpDemandSelect = NULL;
     return success;
@@ -2928,7 +2955,7 @@ int CtiProtocolANSI::getSizeOfLastLPDataBlock(int dataSetNbr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return 0;
 }
@@ -2962,7 +2989,7 @@ int CtiProtocolANSI::getSizeOfLPDataBlock(int dataSetNbr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return 0;
 }
@@ -2986,7 +3013,7 @@ int CtiProtocolANSI::getSizeOfLPReadingsRcd()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return 0;
 }
@@ -3010,7 +3037,7 @@ int CtiProtocolANSI::getSizeOfLPIntSetRcd(int dataSetNbr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return 0;
 }
@@ -3056,7 +3083,7 @@ int CtiProtocolANSI::getSizeOfLPIntFmtRcd(int dataSetNbr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return 0;
 }
@@ -3115,7 +3142,7 @@ int CtiProtocolANSI::proc09RemoteReset(UINT8 actionFlag)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return 1;
@@ -3253,7 +3280,7 @@ void CtiProtocolANSI::setTablesAvailable(unsigned char * stdTblsUsed, int dimStd
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return;
@@ -3271,7 +3298,7 @@ list < short > CtiProtocolANSI::getMfgTblsAvailable(void)
 
 bool CtiProtocolANSI::isStdTableAvailableInMeter(short tableNbr)
 {       
-    list<short>::iterator ii = _stdTblsAvailable.begin();
+    std::list<short>::iterator ii = _stdTblsAvailable.begin();
 
     do
     {
@@ -3289,7 +3316,7 @@ bool CtiProtocolANSI::isStdTableAvailableInMeter(short tableNbr)
 
 bool CtiProtocolANSI::isMfgTableAvailableInMeter(short tableNbr)
 {       
-    list<short>::iterator ii = _mfgTblsAvailable.begin();
+    std::list<short>::iterator ii = _mfgTblsAvailable.begin();
 
     do
     {
@@ -3317,11 +3344,11 @@ UINT CtiProtocolANSI::getParseFlags(void)
     return _parseFlags;
 }
 
-const RWCString& CtiProtocolANSI::getAnsiDeviceName() const
+const string& CtiProtocolANSI::getAnsiDeviceName() const
 {
     return _ansiDevName;
 }
-void CtiProtocolANSI::setAnsiDeviceName(const RWCString& devName)
+void CtiProtocolANSI::setAnsiDeviceName(const string& devName)
 {
     getApplicationLayer().setAnsiDeviceName(devName);
     _ansiDevName = devName;
@@ -3342,7 +3369,9 @@ bool CtiProtocolANSI::forceProcessDispatchMsg()
 
 bool CtiProtocolANSI::isTimeUninitialized(double time)
 {
-    if (RWTime(time).seconds() == RWTime(RWDate(1,1,2000)).seconds())
+    CtiTime t1 = CtiTime(time);
+    CtiTime t2 = CtiTime(CtiDate(1,1,2000));
+    if ( t1.seconds() == t2.seconds() )
         return true;
     else
         return false;

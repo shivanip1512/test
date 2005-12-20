@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/07/13 16:09:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@ void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -243,11 +243,11 @@ INT               CtiPointBase::getPointOffset() const           { return getPoi
 LONG              CtiPointBase::getPointID() const               { return getPointBase().getPointID();}
 LONG              CtiPointBase::getID() const                    { return getPointBase().getPointID();}
 
-RWCString         CtiPointBase::getName() const                  { return getPointBase().getName();}
+string         CtiPointBase::getName() const                  { return getPointBase().getName();}
 LONG              CtiPointBase::getDeviceID() const              { return getPointBase().getPAObjectID();}
 
 
-RWCString         CtiPointBase::getLogicalGroup() const          { return getPointBase().getLogicalGroup();}
+string         CtiPointBase::getLogicalGroup() const          { return getPointBase().getLogicalGroup();}
 LONG              CtiPointBase::getStateGroupID() const          { return getPointBase().getStateGroupID();}
 
 BOOL              CtiPointBase::getDisableTag() const            { return getPointBase().getDisableTag();}

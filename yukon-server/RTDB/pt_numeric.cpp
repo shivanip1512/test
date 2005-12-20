@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,7 +136,7 @@ DOUBLE CtiPointNumeric::getHighLimit(int i)  const
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
    }
    return Ret;
@@ -156,15 +156,15 @@ DOUBLE CtiPointNumeric::getLowLimit(int i)  const
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
    }
    return Ret;
 }
 
-/*nukepao RWCString CtiPointNumeric::getLimitName(int i)  const
+/*nukepao string CtiPointNumeric::getLimitName(int i)  const
 {
-   RWCString Temp;
+   string Temp;
 
    if(is_limitValid(i))
    {
@@ -322,7 +322,7 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Don't know about CalcType " << calcType << ".  Defaulting to CalcTypeNormal" << endl;
             }
             //  fall through

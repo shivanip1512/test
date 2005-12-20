@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_signal.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/31 14:09:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,8 +17,7 @@
 #define __TBL_SIGNAL_H__
 
 #include <windows.h>
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw/db/datetime.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
@@ -38,14 +37,14 @@ protected:
 
     LONG        _logID;
     LONG        _pointID;
-    RWTime      _time;
+    CtiTime      _time;
     INT         _millis;
     INT         _soe;
     INT         _logType;
     INT         _logPriority;
-    RWCString   _text;
-    RWCString   _additional;
-    RWCString   _user;
+    string   _text;
+    string   _additional;
+    string   _user;
 
 
 private:
@@ -55,14 +54,14 @@ private:
     CtiTableSignal();
 
     CtiTableSignal(LONG              id,
-                   const RWTime      &tme   = RWTime(),
+                   const CtiTime      &tme   = CtiTime(),
                    INT               millis = 0,
-                   const RWCString   &text  = RWCString(),
-                   const RWCString   &addl  = RWCString(),
+                   const string   &text  = string(),
+                   const string   &addl  = string(),
                    INT               lp     = SignalEvent,
                    INT               lt     = GeneralLogType,
                    INT               soe    = 0,
-                   const RWCString   &user  = RWCString(""),
+                   const string   &user  = string(""),
                    const INT         lid    = SystemLogIdGen());
 
     CtiTableSignal(const CtiTableSignal& aRef);
@@ -81,32 +80,32 @@ private:
     virtual void Restore();
     virtual void Update();
     virtual void Delete();
-    virtual RWCString getTableName() const;
+    virtual string getTableName() const;
 
     CtiTableSignal*   replicate() const;
 
     LONG              getLogID() const;
     LONG              getPointID() const;
-    RWTime            getTime() const;
+    CtiTime            getTime() const;
     INT               getMillis() const;
 
     INT               getPriority() const;
-    RWCString         getText() const;
-    RWCString         getUser() const;
+    string         getText() const;
+    string         getUser() const;
     INT               getSOE() const;
     INT               getLogType() const;
-    RWCString         getAdditionalInfo() const;
+    string         getAdditionalInfo() const;
 
     CtiTableSignal&   setLogID(LONG id);
     CtiTableSignal&   setPointID(LONG id);
-    CtiTableSignal&   setTime(const RWTime rwt);
+    CtiTableSignal&   setTime(const CtiTime rwt);
     CtiTableSignal&   setMillis(INT millis);
     CtiTableSignal&   setPriority(INT cls);
-    CtiTableSignal&   setText(const RWCString &str);
-    CtiTableSignal&   setUser(const RWCString &str);
+    CtiTableSignal&   setText(const string &str);
+    CtiTableSignal&   setUser(const string &str);
     CtiTableSignal&   setSOE(const INT &i);
     CtiTableSignal&   setLogType(const INT &i);
-    CtiTableSignal&   setAdditionalInfo(const RWCString &str);
+    CtiTableSignal&   setAdditionalInfo(const string &str);
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     static void getSQLMaxID(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, LONG id);

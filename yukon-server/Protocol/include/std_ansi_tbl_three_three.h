@@ -15,8 +15,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_three_three.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/12 20:34:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:20:01 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ public:
    CtiAnsiTableThreeThree( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems );
    virtual ~CtiAnsiTableThreeThree();
    CtiAnsiTableThreeThree& operator=(const CtiAnsiTableThreeThree& aRef);
-   void printResult( RWCString deviceName );
+   void printResult( const string& deviceName );
 
   // UINT8 getDisplaySources(int sourceIndex, int widthIndex);
 

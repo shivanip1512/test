@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/01/18 19:12:26 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,13 +23,12 @@
 #include "tbl_carrier.h"
 #include "dlldefs.h"
 #include "rte_base.h"
-// #include "mgr_route.h"
 #include "logger.h"
 #include "prot_emetcon.h"
 
 #include <set>
 #include <utility>
-using namespace std;
+using std::set;
 
 class CtiDLCCommandStore
 {
@@ -123,7 +122,7 @@ public:
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    INT retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore = false );
+    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore = false );
     INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;

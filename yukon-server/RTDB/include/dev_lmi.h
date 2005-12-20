@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/04 20:13:35 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ private:
     typedef CtiDeviceRemote Inherited;
 
     CtiDeviceExclusion _lmi_exclusion;
-    RWTime _lastPreload;
+    CtiTime _lastPreload;
 
 protected:
 
@@ -59,10 +59,10 @@ public:
     INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 3);
     INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ErrorDecode (INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
-    INT ResultDecode(INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
 
-    void processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, RWCString &info );
+    void processInboundData(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, string &info );
 
     CtiMutex& getExclusionMux();
     bool hasExclusions() const;
@@ -71,18 +71,18 @@ public:
     CtiDeviceExclusion& getExclusion();
     CtiDeviceExclusion exclusion() const; // New copy.
     exclusions getExclusions() const;
-    RWTime selectCompletionTime() const;
+    CtiTime selectCompletionTime() const;
     bool isDeviceExcluded(long id) const;
     bool isExecuting() const;
     void setExecuting(bool set = true);
-    bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
-    size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
+    bool isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
+    size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     bool removeInfiniteProhibit(unsigned long id);
 
     INT queuedWorkCount() const;
     bool hasQueuedWork() const;
     bool hasPreloadWork() const;
-    RWTime getPreloadEndTime() const;
+    CtiTime getPreloadEndTime() const;
     LONG getPreloadBytes() const;
     LONG getCycleTime() const;
     LONG getCycleOffset() const;

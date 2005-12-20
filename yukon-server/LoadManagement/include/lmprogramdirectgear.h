@@ -37,22 +37,22 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     virtual ~CtiLMProgramDirectGear();
     
     LONG getPAOId() const;
-    const RWCString& getGearName() const;
+    const string& getGearName() const;
     LONG getGearNumber() const;
-    const RWCString& getControlMethod() const;
+    const string& getControlMethod() const;
     LONG getMethodRate() const;
     LONG getMethodPeriod() const;
     LONG getMethodRateCount() const;
     LONG getCycleRefreshRate() const;
-    const RWCString& getMethodStopType() const;
-    const RWCString& getChangeCondition() const;
+    const string& getMethodStopType() const;
+    const string& getChangeCondition() const;
     LONG getChangeDuration() const;
     LONG getChangePriority() const;
     LONG getChangeTriggerNumber() const;
     DOUBLE getChangeTriggerOffset() const;
     LONG getPercentReduction() const;
-    const RWCString& getGroupSelectionMethod() const;
-    const RWCString& getMethodOptionType() const;
+    const string& getGroupSelectionMethod() const;
+    const string& getMethodOptionType() const;
     LONG getMethodOptionMax() const;
     LONG getRampInInterval() const;
     LONG getRampInPercent() const;
@@ -60,22 +60,22 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     LONG getRampOutPercent() const;
 
     CtiLMProgramDirectGear& setPAOId(LONG paoid);
-    CtiLMProgramDirectGear& setGearName(const RWCString& name);
+    CtiLMProgramDirectGear& setGearName(const string& name);
     CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
-    CtiLMProgramDirectGear& setControlMethod(const RWCString& contmeth);
+    CtiLMProgramDirectGear& setControlMethod(const string& contmeth);
     CtiLMProgramDirectGear& setMethodRate(LONG methrate);
     CtiLMProgramDirectGear& setMethodPeriod(LONG methper);
     CtiLMProgramDirectGear& setMethodRateCount(LONG methratecount);
     CtiLMProgramDirectGear& setCycleRefreshRate(LONG cyclerefresh);
-    CtiLMProgramDirectGear& setMethodStopType(const RWCString& methstoptype);
-    CtiLMProgramDirectGear& setChangeCondition(const RWCString& changecond);
+    CtiLMProgramDirectGear& setMethodStopType(const string& methstoptype);
+    CtiLMProgramDirectGear& setChangeCondition(const string& changecond);
     CtiLMProgramDirectGear& setChangeDuration(LONG changedur);
     CtiLMProgramDirectGear& setChangePriority(LONG changeprior);
     CtiLMProgramDirectGear& setChangeTriggerNumber(LONG triggernumber);
     CtiLMProgramDirectGear& setChangeTriggerOffset(DOUBLE triggeroffset);
     CtiLMProgramDirectGear& setPercentReduction(LONG percentreduce);
-    CtiLMProgramDirectGear& setGroupSelectionMethod(const RWCString& group);
-    CtiLMProgramDirectGear& setMethodOptionType(const RWCString& optype);
+    CtiLMProgramDirectGear& setGroupSelectionMethod(const string& group);
+    CtiLMProgramDirectGear& setMethodOptionType(const string& optype);
     CtiLMProgramDirectGear& setMethodOptionMax(LONG opmax);
     CtiLMProgramDirectGear& setRampInInterval(LONG ininterval);
     CtiLMProgramDirectGear& setRampInPercent(LONG inpercent);
@@ -96,63 +96,63 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     /* Static Members */
 
     //Possible control methods
-    static const RWCString TimeRefreshMethod;
-    static const RWCString SmartCycleMethod;
-    static const RWCString MasterCycleMethod;
-    static const RWCString RotationMethod;
-    static const RWCString LatchingMethod;
-    static const RWCString TrueCycleMethod;
-    static const RWCString ThermostatRampingMethod;
-    static const RWCString NoControlMethod;
+    static const string TimeRefreshMethod;
+    static const string SmartCycleMethod;
+    static const string MasterCycleMethod;
+    static const string RotationMethod;
+    static const string LatchingMethod;
+    static const string TrueCycleMethod;
+    static const string ThermostatRampingMethod;
+    static const string NoControlMethod;
 
     //Possible method stop types
-    static const RWCString RestoreStopType;
-    static const RWCString TimeInStopType;
-    static const RWCString StopCycleStopType;
-    static const RWCString RampOutRandomStopType;
-    static const RWCString RampOutFIFOStopType;
-    static const RWCString RampOutRandomRestoreStopType;
-    static const RWCString RampOutFIFORestoreStopType;
+    static const string RestoreStopType;
+    static const string TimeInStopType;
+    static const string StopCycleStopType;
+    static const string RampOutRandomStopType;
+    static const string RampOutFIFOStopType;
+    static const string RampOutRandomRestoreStopType;
+    static const string RampOutFIFORestoreStopType;
     
     //Possible gear change condition types
-    static const RWCString NoneChangeCondition;
-    static const RWCString DurationChangeCondition;
-    static const RWCString PriorityChangeCondition;
-    static const RWCString TriggerOffsetChangeCondition;
+    static const string NoneChangeCondition;
+    static const string DurationChangeCondition;
+    static const string PriorityChangeCondition;
+    static const string TriggerOffsetChangeCondition;
 
     // Possible group selection methods
-    static const RWCString LastControlledSelectionMethod;
-    static const RWCString AlwaysFirstGroupSelectionMethod;
-    static const RWCString LeastControlTimeSelectionMethod;
+    static const string LastControlledSelectionMethod;
+    static const string AlwaysFirstGroupSelectionMethod;
+    static const string LeastControlTimeSelectionMethod;
 
     // Possible method option types
-    static const RWCString FixedCountMethodOptionType;
-    static const RWCString CountDownMethodOptionType;
-    static const RWCString LimitedCountDownMethodOptionType;
-    static const RWCString DynamicShedTimeMethodOptionType;
-    
+    static const string FixedCountMethodOptionType;
+    static const string CountDownMethodOptionType;
+    static const string LimitedCountDownMethodOptionType;
+    static const string DynamicShedTimeMethodOptionType;
+
 protected:
     void restore(RWDBReader& rdr);
 
 private:
 
     LONG _paoid;
-    RWCString _gearname;
+    string _gearname;
     LONG _gearnumber;
-    RWCString _controlmethod;
+    string _controlmethod;
     LONG _methodrate;
     LONG _methodperiod;
     LONG _methodratecount;
     LONG _cyclerefreshrate;
-    RWCString _methodstoptype;
-    RWCString _changecondition;
+    string _methodstoptype;
+    string _changecondition;
     LONG _changeduration;
     LONG _changepriority;
     LONG _changetriggernumber;
     DOUBLE _changetriggeroffset;
     LONG _percentreduction;
-    RWCString _groupselectionmethod;
-    RWCString _methodoptiontype;
+    string _groupselectionmethod;
+    string _methodoptiontype;
     LONG _methodoptionmax;
     LONG _rampininterval;
     LONG _rampinpercent;

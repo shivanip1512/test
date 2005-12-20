@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/22 21:43:31 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #define __MGR_PTCLIENTS_H__
 
 #include <list>
-using namespace std;
+using std::list;
 
 #include <rw/db/connect.h>
 
@@ -62,8 +62,8 @@ public:
    int InsertConnectionManager(CtiConnectionManager* CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
    int RemoveConnectionManager(CtiConnectionManager* CM);
 
-   RWTime findNextNearestArchivalTime();
-   void scanForArchival(const RWTime &Now, CtiQueue<CtiTableRawPointHistory, less<CtiTableRawPointHistory> > &Que);
+   CtiTime findNextNearestArchivalTime();
+   void scanForArchival(const CtiTime &Now, CtiQueue<CtiTableRawPointHistory, less<CtiTableRawPointHistory> > &Que);
 
    void validateConnections();
    void storeDirtyRecords();

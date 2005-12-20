@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2005/12/20 17:17:13 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.7  2005/12/20 17:17:13  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.6.2.3  2005/08/12 19:53:43  jliu
+      Date Time Replaced
+
+      Revision 1.6.2.2  2005/07/14 22:26:55  jliu
+      RWCStringRemoved
+
+      Revision 1.6.2.1  2005/07/12 21:08:36  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.6  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -61,10 +73,9 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -96,7 +107,7 @@ const CHAR * CtiFDR_Dsm2Import::KEY_DELETE_FILE = "FDR_DSM2IMPORT_DELETE_FILE";
 
 // Constructors, Destructor, and Operators
 CtiFDR_Dsm2Import::CtiFDR_Dsm2Import()
-: CtiFDRAsciiImportBase(RWCString("DSM2IMPORT"))
+: CtiFDRAsciiImportBase(string("DSM2IMPORT"))
 {   
     init();
 }
@@ -168,11 +179,11 @@ INT CtiFDR_Dsm2Import::processMessageFromForeignSystem (CHAR *data)
     return NORMAL;
 }
 
-RWTime CtiFDR_Dsm2Import::Dsm2ToYukonTime (RWCString aTime)
+CtiTime CtiFDR_Dsm2Import::Dsm2ToYukonTime (string aTime)
 {
     struct tm ts;
 
-    if (sscanf (aTime.data(),
+    if (sscanf (aTime.c_str(),
                 "%4ld%2ld%2ld%2ld%2ld%2ld",
                 &ts.tm_year,
                 &ts.tm_mon,
@@ -181,14 +192,14 @@ RWTime CtiFDR_Dsm2Import::Dsm2ToYukonTime (RWCString aTime)
                 &ts.tm_min,
                 &ts.tm_sec) != 6)
     {
-        return(RWTime(rwEpoch));
+        return(CtiTime(PASTDATE));
     }
 
     ts.tm_year -= 1900;
     ts.tm_mon--;
 
-    if (aTime.data()[14] == 'D' ||
-        aTime.data()[14] == 'd')
+    if (aTime[14] == 'D' ||
+        aTime[14] == 'd')
     {
         ts.tm_isdst = TRUE;
     }
@@ -197,12 +208,12 @@ RWTime CtiFDR_Dsm2Import::Dsm2ToYukonTime (RWCString aTime)
         ts.tm_isdst = FALSE;
     }
 
-    RWTime returnTime(&ts);
+    CtiTime returnTime(&ts);
 
-    // if RWTime can't make a time ???
+    // if CtiTime can't make a time ???
     if (!returnTime.isValid())
     {
-        return(RWTime(rwEpoch));
+        return(CtiTime(PASTDATE));
     }
 
     return returnTime;
@@ -231,52 +242,55 @@ USHORT CtiFDR_Dsm2Import::Dsm2ToYukonQuality (CHAR aQuality)
 	return(Quality);
 }
 
-bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **retMsg)
+bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMsg)
 {
 	bool retCode = false;
     bool flag;
-    aLine.toLower();
-    RWCString tempString1;                // Will receive each token
-    RWCTokenizer cmdLine(aLine);           // Tokenize the string a
+    std::transform(aLine.begin(), aLine.end(), aLine.begin(), tolower);
+    string tempString1;                // Will receive each token
+    boost::char_separator<char> sep(",\r\n");
+    Boost_char_tokenizer cmdLine(aLine, sep);
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+
     CtiFDRPoint         point;
     CHAR action[200];
-    RWCString desc;
+    string desc;
 
     // do we have an of these
-    if (!(tempString1 = cmdLine(",\r\n")).isNull())
+    if (!(tempString1 = *tok_iter++).empty())
     {
         {
             CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
             flag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
         }
 
-        RWCString translationName=tempString1;
+        string translationName=tempString1;
 
         if (flag == true)
         {
             // now
-            tempString1 = cmdLine(",\r\n");
+            tempString1 = *tok_iter++;
             // device name
-            tempString1 = cmdLine(",\r\n");
+            tempString1 = *tok_iter++;
             // point name
-            tempString1 = cmdLine(",\r\n");
+            tempString1 = *tok_iter++;
 
             // value
-            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+            if (!(tempString1 = *tok_iter++).empty())
             {
-                float value = atof (tempString1.data());
+                float value = atof (tempString1.c_str());
 
                 // quality
-                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                if (!(tempString1 = *tok_iter++).empty())
                 {
-                    int quality = Dsm2ToYukonQuality (tempString1.data()[0]);
+                    int quality = Dsm2ToYukonQuality (tempString1[0]);
 
                     // timestamp
-                    if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                    if (!(tempString1 = *tok_iter++).empty())
                     {
-                        RWTime timestamp = Dsm2ToYukonTime (tempString1);
+                        CtiTime timestamp = Dsm2ToYukonTime (tempString1);
 
-                        if (timestamp != rwEpoch)
+                        if (timestamp != PASTDATE)
                         {
                             // figure out what it should be now
                             switch (point.getPointType())
@@ -295,7 +309,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Analog point " << translationName;
+                                        dout << CtiTime() << " Analog point " << translationName;
                                         dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
                                     }
                                     retCode = true;
@@ -322,16 +336,16 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                         {
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << RWTime() << " Invalid control state " << value;
+                                                dout << CtiTime() << " Invalid control state " << value;
                                                 dout << " for " << translationName << " received from " << getInterfaceName() << endl;
                                             }
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
-                                            desc = getInterfaceName() + RWCString (" control point received with an invalid state ") + RWCString (state);
+                                            desc = getInterfaceName() + string (" control point received with an invalid state ") + string (state);
                                             _snprintf(action,60,"%s for pointID %d", 
                                                       translationName,
                                                       point.getPointID());
-                                            logEvent (desc,RWCString (action));
+                                            logEvent (desc,string (action));
                                         }
 
                                         if (controlState != -1)
@@ -339,7 +353,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << RWTime() << " Control point " << translationName;
+                                                dout << CtiTime() << " Control point " << translationName;
                                                 if (controlState == OPENED)
                                                 {
                                                     dout << " control: Open " ;
@@ -365,33 +379,33 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                     else
                                     {
                                         int yukonValue;
-                                        RWCString traceState;
+                                        string traceState;
                                         // assign last stuff	
                                         switch ((int)value)
                                         {
                                             case Dsm2_Open:
                                                 yukonValue = OPENED;
-                                                traceState = RWCString("Opened");
+                                                traceState = string("Opened");
                                                 break;
                                             case Dsm2_Closed:
                                                 yukonValue = CLOSED;
-                                                traceState = RWCString("Closed");
+                                                traceState = string("Closed");
                                                 break;
                                             case Dsm2_Indeterminate:
                                                 yukonValue = INDETERMINATE;
-                                                traceState = RWCString("Indeterminate");
+                                                traceState = string("Indeterminate");
                                                 break;
                                             case Dsm2_State_Four:
                                                 yukonValue = STATEFOUR;
-                                                traceState = RWCString("State Four");
+                                                traceState = string("State Four");
                                                 break;
                                             case Dsm2_State_Five:
                                                 yukonValue = STATEFIVE;
-                                                traceState = RWCString("State Five");
+                                                traceState = string("State Five");
                                                 break;
                                             case Dsm2_State_Six:
                                                 yukonValue = STATESIX;
-                                                traceState = RWCString("State Six");
+                                                traceState = string("State Six");
                                                 break;
                                             case Dsm2_Invalid:
                                             default:
@@ -403,17 +417,17 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                         if (yukonValue == INVALID)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Status point " << translationName;
+                                            dout << CtiTime() << " Status point " << translationName;
                                             dout << " received an invalid state " << (int)value;
                                             dout <<" from " << getInterfaceName() << " for point " << point.getPointID() << endl;;
 
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
-                                            desc = getInterfaceName() + RWCString (" status point received with an invalid state ") + RWCString (state);
+                                            desc = getInterfaceName() + string (" status point received with an invalid state ") + string (state);
                                             _snprintf(action,60,"%s for pointID %d", 
                                                       translationName,
                                                       point.getPointID());
-                                            logEvent (desc,RWCString (action));
+                                            logEvent (desc,string (action));
 
                                         }
                                         else
@@ -426,7 +440,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
                                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << RWTime() << " Status point " << translationName;
+                                                dout << CtiTime() << " Status point " << translationName;
                                                 dout << " new state: " << traceState;
                                                 dout <<" from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
                                             }
@@ -451,18 +465,18 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (RWCString &aLine, CtiMessage **re
 int CtiFDR_Dsm2Import::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        if (atoi (tempStr) <=1)
+        if (atoi (tempStr.c_str()) <=1)
         {
             setImportInterval(1);
         }
         else
         {
-            setImportInterval(atoi(tempStr));
+            setImportInterval(atoi(tempStr.c_str()));
         }
     }
     else
@@ -477,7 +491,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
     }
     else
     {
-        setFileName(RWCString ("dsmdata.txt"));
+        setFileName(string ("dsmdata.txt"));
     }
 
     tempStr = getCparmValueAsString(KEY_DRIVE_AND_PATH);
@@ -487,13 +501,13 @@ int CtiFDR_Dsm2Import::readConfig( void )
     }
     else
     {
-        setDriveAndPath(RWCString ("\\yukon\\server\\import"));
+        setDriveAndPath(string ("\\yukon\\server\\import"));
     }
 
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -503,7 +517,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -515,7 +529,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("false",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr,"false"))
         {
             setDeleteFileAfterImport (false);
         }
@@ -524,16 +538,16 @@ int CtiFDR_Dsm2Import::readConfig( void )
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Dsm2 import file name " << getFileName() << endl;
-        dout << RWTime() << " Dsm2 import directory " << getDriveAndPath() << endl;
-        dout << RWTime() << " Dsm2 import interval " << getImportInterval() << endl;
-        dout << RWTime() << " Dsm2 import dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << RWTime() << " Dsm2 import db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " Dsm2 import file name " << getFileName() << endl;
+        dout << CtiTime() << " Dsm2 import directory " << getDriveAndPath() << endl;
+        dout << CtiTime() << " Dsm2 import interval " << getImportInterval() << endl;
+        dout << CtiTime() << " Dsm2 import dispatch queue flush rate " << getQueueFlushRate() << endl;
+        dout << CtiTime() << " Dsm2 import db reload rate " << getReloadRate() << endl;
 
         if (shouldDeleteFileAfterImport())
-            dout << RWTime() << " Import file will be deleted after import" << endl;
+            dout << CtiTime() << " Import file will be deleted after import" << endl;
         else
-            dout << RWTime() << " Import file will NOT be deleted after import" << endl;
+            dout << CtiTime() << " Import file will NOT be deleted after import" << endl;
 
     }
 

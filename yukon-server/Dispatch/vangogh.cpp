@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/06/13 19:08:48 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw\cstring.h>
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
@@ -56,7 +55,7 @@ int DispatchMainFunction(int argc, char **argv)
         CtiVanGogh VanGogh;
 
         SET_CRT_OUTPUT_MODES;
-        if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
+        if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
             ENABLE_CRT_SHUTDOWN_CHECK;
 
         pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ RWOrdered& CtiNotifEmailMsg::getAttachments( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setAttachment( RWCString file )
+void CtiNotifEmailMsg::setAttachment( string file )
 {
    _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
    _notifAttachment->dump();
@@ -131,7 +131,7 @@ void CtiNotifEmailMsg::setNotifGroupId( int id )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiNotifEmailMsg::getTo( void )
+string CtiNotifEmailMsg::getTo( void )
 {
    return( _to );
 }
@@ -139,7 +139,7 @@ RWCString CtiNotifEmailMsg::getTo( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setTo( RWCString to )
+void CtiNotifEmailMsg::setTo( string to )
 {
    _to = to;
 }
@@ -147,7 +147,7 @@ void CtiNotifEmailMsg::setTo( RWCString to )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiNotifEmailMsg::getSubject( void )
+string CtiNotifEmailMsg::getSubject( void )
 {
    return( _subject );
 }
@@ -155,7 +155,7 @@ RWCString CtiNotifEmailMsg::getSubject( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setSubject( RWCString sub )
+void CtiNotifEmailMsg::setSubject( string sub )
 {
    _subject = sub;
 }
@@ -163,7 +163,7 @@ void CtiNotifEmailMsg::setSubject( RWCString sub )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiNotifEmailMsg::getBody( void )
+string CtiNotifEmailMsg::getBody( void )
 {
    return( _body );
 }
@@ -171,7 +171,7 @@ RWCString CtiNotifEmailMsg::getBody( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setBody( RWCString body )
+void CtiNotifEmailMsg::setBody( string body )
 {
    _body = body;
 }
@@ -179,7 +179,7 @@ void CtiNotifEmailMsg::setBody( RWCString body )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiNotifEmailMsg::getToCC( void )
+string CtiNotifEmailMsg::getToCC( void )
 {
    return( _toCC );
 }
@@ -187,7 +187,7 @@ RWCString CtiNotifEmailMsg::getToCC( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setToCC( RWCString toCC )
+void CtiNotifEmailMsg::setToCC( string toCC )
 {
    _toCC = toCC;
 }
@@ -195,7 +195,7 @@ void CtiNotifEmailMsg::setToCC( RWCString toCC )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiNotifEmailMsg::getToBCC( void )
+string CtiNotifEmailMsg::getToBCC( void )
 {
    return( _toBCC );
 }
@@ -203,7 +203,7 @@ RWCString CtiNotifEmailMsg::getToBCC( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::setToBCC( RWCString toBCC )
+void CtiNotifEmailMsg::setToBCC( string toBCC )
 {
    _toBCC = toBCC;
 }
@@ -301,7 +301,7 @@ RWOrdered& CtiCustomerNotifEmailMsg::getAttachments( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setAttachment( RWCString file )
+void CtiCustomerNotifEmailMsg::setAttachment( string file )
 {
    _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
    _notifAttachment->dump();
@@ -327,7 +327,7 @@ void CtiCustomerNotifEmailMsg::setCustomerId( int id )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiCustomerNotifEmailMsg::getTo( void )
+string CtiCustomerNotifEmailMsg::getTo( void )
 {
    return( _to );
 }
@@ -335,7 +335,7 @@ RWCString CtiCustomerNotifEmailMsg::getTo( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setTo( RWCString to )
+void CtiCustomerNotifEmailMsg::setTo( string to )
 {
    _to = to;
 }
@@ -343,7 +343,7 @@ void CtiCustomerNotifEmailMsg::setTo( RWCString to )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiCustomerNotifEmailMsg::getSubject( void )
+string CtiCustomerNotifEmailMsg::getSubject( void )
 {
    return( _subject );
 }
@@ -351,7 +351,7 @@ RWCString CtiCustomerNotifEmailMsg::getSubject( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setSubject( RWCString sub )
+void CtiCustomerNotifEmailMsg::setSubject( string sub )
 {
    _subject = sub;
 }
@@ -359,7 +359,7 @@ void CtiCustomerNotifEmailMsg::setSubject( RWCString sub )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiCustomerNotifEmailMsg::getBody( void )
+string CtiCustomerNotifEmailMsg::getBody( void )
 {
    return( _body );
 }
@@ -367,7 +367,7 @@ RWCString CtiCustomerNotifEmailMsg::getBody( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setBody( RWCString body )
+void CtiCustomerNotifEmailMsg::setBody( string body )
 {
    _body = body;
 }
@@ -375,7 +375,7 @@ void CtiCustomerNotifEmailMsg::setBody( RWCString body )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiCustomerNotifEmailMsg::getToCC( void )
+string CtiCustomerNotifEmailMsg::getToCC( void )
 {
    return( _toCC );
 }
@@ -383,7 +383,7 @@ RWCString CtiCustomerNotifEmailMsg::getToCC( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setToCC( RWCString toCC )
+void CtiCustomerNotifEmailMsg::setToCC( string toCC )
 {
    _toCC = toCC;
 }
@@ -391,7 +391,7 @@ void CtiCustomerNotifEmailMsg::setToCC( RWCString toCC )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiCustomerNotifEmailMsg::getToBCC( void )
+string CtiCustomerNotifEmailMsg::getToBCC( void )
 {
    return( _toBCC );
 }
@@ -399,7 +399,7 @@ RWCString CtiCustomerNotifEmailMsg::getToBCC( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::setToBCC( RWCString toBCC )
+void CtiCustomerNotifEmailMsg::setToBCC( string toBCC )
 {
    _toBCC = toBCC;
 }

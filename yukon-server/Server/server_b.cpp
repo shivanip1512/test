@@ -6,20 +6,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/05/05 17:08:28 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/20 17:20:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include "executor.h"
 #include "server_b.h"
+#include "executor.h"
 #include "msg_cmd.h"
 #include "numstr.h"
 #include "logger.h"
-#include "utility.h"
+#include "utility.h" 
+
+using namespace std;
 
 
 DLLEXPORT bool isQuestionable(const CtiConnectionManager *ptr, void *narg)
@@ -62,7 +63,7 @@ void CtiServer::clientShutdown(CtiConnectionManager *&CM)
         // This call will block until the threads have exited
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Client Shutdown " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
+            dout << CtiTime() << " Client Shutdown " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
         }
 
         mConnectionTable.remove(CM);        // Get it out of the list, if it is in there.
@@ -77,7 +78,7 @@ void CtiServer::clientShutdown(CtiConnectionManager *&CM)
 int  CtiServer::clientRegistration(CtiConnectionManager *CM)
 {
     int         nRet = NoError;
-    RWTime      NowTime;
+    CtiTime      NowTime;
     RWBoolean   validEntry(TRUE);
     RWBoolean   removeMgr(FALSE);
     RWBoolean   questionedEntry(FALSE);
@@ -218,7 +219,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " MainThread: SHUTDOWN received from queue.  Ignored." << endl;
+                    dout << CtiTime() << " MainThread: SHUTDOWN received from queue.  Ignored." << endl;
                 }
 
                 /*
@@ -254,7 +255,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                     if( DebugLevel & 0x00001000)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
+                        dout << CtiTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
                     }
                     // OK, the client responded... drop our bad connection flag...
                     pConn->setClientQuestionable(FALSE);
@@ -264,7 +265,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else  // Client wants to hear from us?
                 {
-                    if( getMyServerName().compareTo(Cmd->getSource(), RWCString::ignoreCase) )
+                    if( stringCompareIgnoreCase(getMyServerName(),Cmd->getSource()) )
                         pConn->WriteConnQue(Cmd->replicateMessage());
                 }
 
@@ -274,13 +275,13 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 try
                 {
-                    RWCString name;
+                    string name;
 
                     name = pConn->getClientName();
                     if( DebugLevel & 0x00001000)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " MainThread: Client " << name << " has requested shutdown via InThread" << endl;
+                        dout << CtiTime() << " MainThread: Client " << name << " has requested shutdown via InThread" << endl;
                     }
                     // This will block on return until the Out and In threads have stopped executing
                     clientShutdown(pConn);
@@ -288,7 +289,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                     if( DebugLevel & 0x00001000)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " MainThread: Connection " << name << "'s threads have terminated" << endl;
+                        dout << CtiTime() << " MainThread: Connection " << name << "'s threads have terminated" << endl;
                     }
                 }
                 catch(...)
@@ -303,8 +304,8 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 if( DebugLevel & 0x00000001)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " MainThread: " << rwThreadId() << " New connection" << endl;
-                    dout << RWTime() << " *** WARNING *** Use of this message is deprecated " << endl;
+                    dout << CtiTime() << " MainThread: " << rwThreadId() << " New connection" << endl;
+                    dout << CtiTime() << " *** WARNING *** Use of this message is deprecated " << endl;
                 }
                 clientConnect(pConn);
 
@@ -346,7 +347,7 @@ int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
             // The connection Mgr has been refuted by the prior manager. Shut Mgr down...
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Connection " << Mgr->getClientName() << " to " << Mgr->getPeer() << " has been denied, entry will be deleted." << endl;
+                dout << CtiTime() << " Connection " << Mgr->getClientName() << " to " << Mgr->getPeer() << " has been denied, entry will be deleted." << endl;
             }
 
             Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
@@ -372,7 +373,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
     int status = NORMAL;
     CtiConnectionManager *Mgr;
 
-    RWTime      Now;
+    CtiTime      Now;
 
     CtiServerExclusion server_guard(_server_exclusion);      // Get a lock on it.
 
@@ -465,8 +466,8 @@ RWWaitStatus CtiServer::join(unsigned long milliseconds)
     return MainThread_.join(milliseconds);     // He will have waited for this to terminate.
 }
 
-RWCString CtiServer::getMyServerName() const
+string CtiServer::getMyServerName() const
 {
-    return RWCString("Server Base");
+    return string("Server Base");
 }
 

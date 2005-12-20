@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ public:
    CtiPortDirect& setLocalSerial(const CtiTablePortLocalSerial& aRef);
 
    virtual bool      isViable() const;
-   virtual RWCString getPhysicalPort() const;
+   virtual string getPhysicalPort() const;
 
    virtual HANDLE  getHandle() const;
    virtual HANDLE& getHandle();

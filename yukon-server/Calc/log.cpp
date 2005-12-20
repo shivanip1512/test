@@ -5,7 +5,6 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/cstring.h>
 #include <rw/db/connect.h>
 
 #include "connection.h"
@@ -60,7 +59,7 @@ void main(int argc, char **argv)
         exit(-1);
     }
 
-    RWTime startTime;
+    CtiTime startTime;
     long msgNum = 0;
 
     try
@@ -76,7 +75,7 @@ void main(int argc, char **argv)
         //  write the registration message (this is only done once, because if the database changes,
         //    the program name and such doesn't change - only our requested points.)
 
-        RWCString regStr = "CalcLogTest";
+        string regStr = "CalcLogTest";
         
         Connect.WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
         Connect.WriteConnQue( new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );

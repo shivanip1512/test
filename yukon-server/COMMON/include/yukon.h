@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/10/26 22:57:53 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,9 @@
 #include <rw\thr\mutex.h>
 
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
-#define YUKONEOT (ULONG_MAX - 86400 * 2)
+//Changed YUKONEOT to LONG_MAX from ULONG to account for CtiYime not being unsigned   -TS
+#define YUKONEOT (LONG_MAX - 86400 * 2)
+#define PASTDATE 402296400
 
 #define PIL_REGISTRATION_NAME        "PIL"
 #define SCANNER_REGISTRATION_NAME    "SCANNER"

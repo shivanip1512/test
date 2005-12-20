@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_metergrp.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,18 +18,15 @@
 #ifndef __TBL_METERGRP_H__
 #define __TBL_METERGRP_H__
 
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
+
 #include <rw/db/select.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -49,10 +46,10 @@ class IM_EX_CTIYUKONDB CtiTableDeviceMeterGroup : public CtiMemDBObject
 protected:
 
    LONG        _deviceID;
-   RWCString   _collectionGroup;
-   RWCString   _testCollectionGroup;
-   RWCString   _meterNumber;     //did Ryan add this to his schtuff?
-   RWCString   _billingGroup;
+   string   _collectionGroup;
+   string   _testCollectionGroup;
+   string   _meterNumber;     //did Ryan add this to his schtuff?
+   string   _billingGroup;
 
 public:
 
@@ -64,17 +61,17 @@ public:
 
    CtiTableDeviceMeterGroup& operator=(const CtiTableDeviceMeterGroup& aRef);
 
-   RWCString getCollectionGroup() const;
-   CtiTableDeviceMeterGroup& setCollectionGroup( const RWCString &aCycleGroup );
+   string getCollectionGroup() const;
+   CtiTableDeviceMeterGroup& setCollectionGroup( const string &aCycleGroup );
 
-   RWCString getTestCollectionGroup() const;
-   CtiTableDeviceMeterGroup& setTestCollectionGroup( const RWCString &aAreaCodeGroup );
+   string getTestCollectionGroup() const;
+   CtiTableDeviceMeterGroup& setTestCollectionGroup( const string &aAreaCodeGroup );
 
-   RWCString getBillingGroup() const;
-   CtiTableDeviceMeterGroup& setBillingGroup( const RWCString &cGroup );
+   string getBillingGroup() const;
+   CtiTableDeviceMeterGroup& setBillingGroup( const string &cGroup );
 
-   RWCString getMeterNumber() const;
-   CtiTableDeviceMeterGroup& setMeterNumber( const RWCString &mNum );
+   string getMeterNumber() const;
+   CtiTableDeviceMeterGroup& setMeterNumber( const string &mNum );
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
@@ -82,7 +79,7 @@ public:
 
    LONG getDeviceID() const;
    CtiTableDeviceMeterGroup& setDeviceID( const LONG did );
-   static RWCString getTableName();
+   static string getTableName();
 
    virtual RWDBStatus Restore();
    virtual RWDBStatus Update();

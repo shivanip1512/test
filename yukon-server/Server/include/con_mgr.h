@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/10/02 19:27:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ protected:
       unsigned       ClientQuestionable : 1;
    };
 
-   RWCString         ClientName;
+   string         ClientName;
    int               ClientAppId;
 
 
@@ -55,7 +55,7 @@ public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( const INT &Port, const RWCString &HostMachine, InQ_t *inQ = NULL );
+   CtiConnectionManager( const INT &Port, const string &HostMachine, InQ_t *inQ = NULL );
 
    CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ = NULL);
 
@@ -63,8 +63,8 @@ public:
    int         getClientAppId() const;//              { return ClientAppId; }
    int         setClientAppId(int id);//       { return ClientAppId = id; }
 
-   RWCString   getClientName() const;//               { return ClientName; }
-   void        setClientName(RWCString str);
+   string   getClientName() const;//               { return ClientName; }
+   void        setClientName(string str);
    RWBoolean   getClientUnique() const;//             { return RWBoolean(ClientUnique);  }
    void        setClientUnique(RWBoolean b = TRUE);// { ClientUnique = RWBoolean(b);     }
 

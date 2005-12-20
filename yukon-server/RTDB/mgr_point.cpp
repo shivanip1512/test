@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/12/20 17:20:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 #include "tbl_pt_alarm.h"
 #include "utility.h"
 
+#include "rwutil.h"
 
 bool findHasAlarming(CtiPoint *pTP, void* d)
 {
@@ -120,7 +121,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
     CtiPoint *pTempCtiPoint = NULL;
     bool     rowFound = false;
 
-    RWTime start, stop;
+    CtiTime start, stop;
 
     try
     {
@@ -141,7 +142,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for ApplyPointResetUpdated" << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for ApplyPointResetUpdated" << endl;
             }
 
             RWDBDatabase   db       = conn.database();
@@ -174,7 +175,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
             }
             start = start.now();
             selector = conn.database().selector();    // Clear the selector.
@@ -202,7 +203,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
             }
             start = start.now();
             selector = conn.database().selector();    // Clear the selector.
@@ -230,7 +231,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
             }
             start = start.now();
             selector = conn.database().selector();    // Clear the selector.
@@ -257,7 +258,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
             }
             start = start.now();
             selector = conn.database().selector();    // Clear the selector.
@@ -287,7 +288,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
+                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
             }
 
             // Now I need to check for any Point removals based upon the
@@ -304,7 +305,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
                         }
                         delete pTempCtiPoint;
@@ -370,8 +371,8 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
 {
     INT       PtType;
     INT       PseudoPt = FALSE;
-    RWCString rwsType;
-    RWCString rwsPseudo;
+    string rwsType;
+    string rwsPseudo;
 
     CtiPointBase *Point = NULL;
 
@@ -388,7 +389,8 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "  Is point a pseudo point? " << rwsPseudo << endl;
     }
-    rwsPseudo.toLower();
+    std::transform(rwsPseudo.begin(), rwsPseudo.end(), rwsPseudo.begin(), tolower);
+    
     PseudoPt = (rwsPseudo == "y" ? TRUE : FALSE );
 
     switch(PtType)
@@ -509,7 +511,7 @@ CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                             }
                         }
                         break;
@@ -525,7 +527,7 @@ CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                             }
                         }
                         break;
@@ -542,7 +544,7 @@ CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                             }
                         }
                         break;
@@ -558,7 +560,7 @@ CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                             }
                         }
                         break;
@@ -594,7 +596,7 @@ bool CtiPointManager::isIdValid(LONG Pt)
     return Map.contains(&key);
 }
 
-CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
+CtiPoint* CtiPointManager::getEqualByName(LONG pao, string pname)
 {
     CtiPoint *p    = NULL;
     CtiPoint *pRet = NULL;
@@ -610,10 +612,10 @@ CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
 
             if(pao == p->getDeviceID())
             {
-                RWCString ptname = p->getName();
-                ptname.toLower();
-                pname.toLower();
-
+                string ptname = p->getName();
+                std::transform(ptname.begin(), ptname.end(), ptname.begin(), tolower);
+                std::transform(pname.begin(), pname.end(), pname.begin(), tolower);
+                
                 if(ptname == pname)
                 {
                     if(p->getUpdatedFlag())
@@ -623,7 +625,7 @@ CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                        dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                     }
                 }
             }
@@ -686,7 +688,7 @@ CtiPoint* CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << p->getName() << " point is non-updated" << endl;
+                        dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
                     }
                 }
             }
@@ -728,7 +730,7 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     if(setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << selector.asString() << endl;
     }
 
@@ -779,7 +781,7 @@ void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
     RWDBSelector   selector = conn.database().selector();
     RWDBTable      keyTable;
     RWDBReader     rdr;
-    RWTime         start, stop;
+    CtiTime         start, stop;
 
     start = start.now();
     selector = conn.database().selector();    // Clear the selector.
@@ -817,7 +819,7 @@ void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
     }
 }
 

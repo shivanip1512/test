@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/03/17 05:17:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,8 @@
 
 #include <vector>
 #include <string>
-using namespace std;
+using std::string;
+using std::vector;
 
 #include "dlldefs.h"
 #include "msg_pdata.h"

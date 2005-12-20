@@ -42,8 +42,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     virtual ~CtiCCStrategy();
 
     LONG getStrategyId() const;
-    const RWCString& getStrategyName() const;
-    const RWCString& getControlMethod() const;
+    const string& getStrategyName() const;
+    const string& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
     DOUBLE getPeakLag() const;
@@ -56,14 +56,14 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
-    const RWCString& getDaysOfWeek() const;
-    const RWCString& getControlUnits() const;
+    const string& getDaysOfWeek() const;
+    const string& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
 
     CtiCCStrategy& setStrategyId(LONG id);
-    CtiCCStrategy& setStrategyName(const RWCString& strategyname);
-    CtiCCStrategy& setControlMethod(const RWCString& method);
+    CtiCCStrategy& setStrategyName(const string& strategyname);
+    CtiCCStrategy& setControlMethod(const string& method);
     CtiCCStrategy& setMaxDailyOperation(LONG max);
     CtiCCStrategy& setMaxOperationDisableFlag(BOOL maxopdisable);
     CtiCCStrategy& setPeakLag(DOUBLE peak);
@@ -76,8 +76,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setMaxConfirmTime(LONG confirm);
     CtiCCStrategy& setMinConfirmPercent(LONG confirm);
     CtiCCStrategy& setFailurePercent(LONG failure);
-    CtiCCStrategy& setDaysOfWeek(const RWCString& days);
-    CtiCCStrategy& setControlUnits(const RWCString& contunit);
+    CtiCCStrategy& setDaysOfWeek(const string& days);
+    CtiCCStrategy& setControlUnits(const string& contunit);
     CtiCCStrategy& setControlDelayTime(LONG delay);
     CtiCCStrategy& setControlSendRetries(LONG retries);
 
@@ -98,14 +98,14 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy* replicate() const;
 
     //Possible control methods
-    /*static const RWCString SubstationBusControlMethod;
-    static const RWCString IndividualFeederControlMethod;
-    static const RWCString BusOptimizedFeederControlMethod;
-    static const RWCString ManualOnlyControlMethod;
+    /*static const string SubstationBusControlMethod;
+    static const string IndividualFeederControlMethod;
+    static const string BusOptimizedFeederControlMethod;
+    static const string ManualOnlyControlMethod;
 
-    static const RWCString KVARControlUnits;
-    static const RWCString PF_BY_KVARControlUnits;
-    static const RWCString PF_BY_KQControlUnits;
+    static const string KVARControlUnits;
+    static const string PF_BY_KVARControlUnits;
+    static const string PF_BY_KQControlUnits;
     */
     //static int PeakState;
     //static int OffPeakState;
@@ -114,8 +114,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     private:
 
     LONG _strategyid;
-    RWCString _strategyname;
-    RWCString _controlmethod;
+    string _strategyname;
+    string _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
     LONG _peakstarttime;
@@ -124,8 +124,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     LONG _maxconfirmtime;
     LONG _minconfirmpercent;
     LONG _failurepercent;
-    RWCString _daysofweek;
-    RWCString _controlunits;
+    string _daysofweek;
+    string _controlunits;
     LONG _controldelaytime;
     LONG _controlsendretries;
     DOUBLE _peaklag;
@@ -137,8 +137,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    list <LONG> _subBusList;
-    list <LONG> _feederList;
+    std::list <LONG> _subBusList;
+    std::list <LONG> _feederList;
 
     void restore(RWDBReader& rdr);
 };

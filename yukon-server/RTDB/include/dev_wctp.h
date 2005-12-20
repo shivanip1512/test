@@ -14,7 +14,6 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
 #include <xercesc/sax2/DefaultHandler.hpp>
@@ -41,7 +40,7 @@ protected:
    CHAR*                        _pageBuffer;
    OUTMESS                      *_outMessage;
 
-   RWCString                    _inStr;
+   string                    _inStr;
 
    CHAR*                        _outBuffer;     // Use our own buffer because WCTP message could be as long as 1024 bytes
    CHAR*                        _inBuffer;
@@ -60,7 +59,7 @@ private:
 
     bool _sendFiller;
 
-    RWTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.  Used with CPARM: PAGING_BATCH_WINDOW
+    CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.  Used with CPARM: PAGING_BATCH_WINDOW
     int      _pagesPerMinute;        // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
     bool     _pacingReport;
 
@@ -116,7 +115,7 @@ public:
                               RWTPtrSlist< CtiMessage >      &retList,
                               RWTPtrSlist< OUTMESS >         &outList);
 
-   RWCString getDescription(const CtiCommandParser & parse) const;
+   string getDescription(const CtiCommandParser & parse) const;
 
    virtual INT generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
    virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);

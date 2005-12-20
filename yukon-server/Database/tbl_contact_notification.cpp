@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_contact_notification.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,13 +22,12 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "tbl_contact_notification.h"
 #include "logger.h"
+#include "rwutil.h"
 
 CtiTableContactNotification::CtiTableContactNotification(LONG id) :
   _contactNotifID(id),
@@ -105,11 +104,11 @@ CtiTableContactNotification& CtiTableContactNotification::setDisabled(BOOL disab
   return *this;
 }
 
-const RWCString& CtiTableContactNotification::getNotification() const {
+const string& CtiTableContactNotification::getNotification() const {
   return _notification;
 }
 
-CtiTableContactNotification& CtiTableContactNotification::setNotification(const RWCString& notif) {
+CtiTableContactNotification& CtiTableContactNotification::setNotification(const string& notif) {
   _notification = notif;
   return *this;
 }
@@ -141,7 +140,7 @@ RWDBStatus CtiTableContactNotification::Restore() {
   RWDBStatus dbstat;
 
   {
-    RWDBTable table = getDatabase().table(getTableName());
+    RWDBTable table = getDatabase().table(getTableName().c_str());
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -166,7 +165,7 @@ RWDBStatus CtiTableContactNotification::Restore() {
 }
 
 void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
-  RWCString rwstemp;
+  string rwstemp;
 
   rdr["contactnotifid"] >> _contactNotifID;
   rdr["contactid"] >> _contactID;
@@ -174,18 +173,18 @@ void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
   rdr["disableflag"] >> rwstemp;
   rdr["notification"] >> _notification;
 
-  rwstemp.toLower();
+  std::transform(rwstemp.begin(), rwstemp.end(), rwstemp.begin(), tolower);
   _disabled = (rwstemp[(size_t)0] == 'y');
 
   setDirty(false);  // Not dirty anymore
 }
 
-RWCString CtiTableContactNotification::getTableName() {
-  return RWCString("ContactNotification");
+string CtiTableContactNotification::getTableName() {
+  return string("ContactNotification");
 }
 
 void CtiTableContactNotification::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) {
-  keyTable = db.table(getTableName());
+  keyTable = db.table(getTableName().c_str());
 
   selector <<
     keyTable["contactnotificationid"] <<

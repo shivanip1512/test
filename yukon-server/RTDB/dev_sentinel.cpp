@@ -19,7 +19,8 @@
 #include "pt_status.h"
 #include "cmdparse.h"
 #include "numstr.h"
-
+#include "ctidate.h"
+#include "ctitime.h"
 
 bool isUnintializedTimeAndValue(double value, double time);
 //=========================================================================================================================================
@@ -80,7 +81,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           //RWCString(),
-                                          RWCString(getName() + " / scan general in progress"),
+                                          string(getName() + " / scan general in progress"),
                                           NORMAL,//EventCode & 0x7fff
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
@@ -141,14 +142,14 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
         {  8,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  -1,     0,      0,     ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}};
 
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
 
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     for (aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -196,7 +197,7 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "outList.entries() = " <<outList.entries()<< endl;
+        dout << CtiTime() << "outList.entries() = " <<outList.entries()<< endl;
    }
    return NoError;
 }
@@ -274,7 +275,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
             nRet = NoMethod;
@@ -285,17 +286,17 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 
     if( nRet != NORMAL )
     {
-        RWCString resultString;
+        string resultString;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << RWTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                                RWCString(OutMessage->Request.CommandStr),
+                                                string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
                                                 OutMessage->Request.RouteID,
@@ -315,7 +316,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         } */
 
         //executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
-    }
+    } 
 
     return nRet;
 }
@@ -324,24 +325,24 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
+INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
-    RWCString inMsgResultString = "";
+    string inMsgResultString = "";
 
     //inMsgResultString = RWCString("successfully");
-    inMsgResultString = RWCString((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
+    inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
     if (getSentinelProtocol().getScanOperation() == 2) //demand Reset
     {
         //if (InMessage->EventCode == NORMAL)
-        if (inMsgResultString.contains("successful", RWCString::ignoreCase))
+        if (findStringIgnoreCase(inMsgResultString, "successful"))
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            //RWCString(),
-                                            RWCString(getName() + " / demand reset successful"),
+                                            InMessage->Return.CommandStr,
+                                            //string(),
+                                            getName() + " / demand reset successful",
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -352,9 +353,9 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
         else
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            //RWCString(),
-                                            RWCString(getName() + " / demand reset failed"),
+                                            InMessage->Return.CommandStr,
+                                            //string(),
+                                            getName() + " / demand reset failed",
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -365,13 +366,14 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
     }
     else
     {
-        if (inMsgResultString.contains("general",RWCString::ignoreCase) )
+        if (findStringIgnoreCase(inMsgResultString, "general") )
         {
-            if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
+            if (findStringIgnoreCase(inMsgResultString, "successful") )
             {
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(InMessage->Return.CommandStr),
-                                                RWCString(getName() + " / general scan successful : \n" + _result_string.data()),
+                                                InMessage->Return.CommandStr,
+                                                //string(),
+                                                getName() + " / general scan successful : \n" + _result_string.c_str(),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -382,8 +384,9 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
             else
             {
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(InMessage->Return.CommandStr),
-                                                RWCString(getName() + " / general scan failed"),
+                                                InMessage->Return.CommandStr,
+                                                //string(),
+                                                getName() + " / general scan failed",
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -404,12 +407,12 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
                 lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
                 if (lastLpTime != NULL && *lastLpTime != 0)
-                {
-                    setLastLPTime(RWTime(*lastLpTime));
+                {  
+                    setLastLPTime(CtiTime(*lastLpTime));
                     if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                          CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                         dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
                      }
                 }
                 else
@@ -417,7 +420,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
                     if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                        dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
                     }
                 }
             }
@@ -433,9 +436,9 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << RWTime::now() << " ==============================================" << endl;
-        dout << RWTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
-        dout << RWTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
     }
 
 
@@ -446,19 +449,19 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
     if (getSentinelProtocol().getScanOperation() == 2) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
-        {
-            RWCString returnString("demand reset successful");
+        {                                
+            string returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
 
             InMessage->EventCode = NORMAL;
         }
         else
         {
-            RWCString returnString("demand reset failed");
+            string returnString("demand reset failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
         }
     }
@@ -478,14 +481,15 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
                 if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " sendCommResult for " << getName() <<" lastLPTime: "<<RWTime(getSentinelProtocol().getlastLoadProfileTime())<< endl;
+                    dout << CtiTime() << " sendCommResult for " << getName() <<" lastLPTime: "<<CtiTime(_lastLPTime)<< endl;
                 }
             }
             else
             {
-                RWCString returnString("general scan successful");
+
+                string returnString("general scan successful");
                 int sizeOfReturnString = returnString.length();
-                memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+                memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
                 InMessage->InLength = sizeOfReturnString;
 
                 InMessage->EventCode = NORMAL;
@@ -493,9 +497,9 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
         }
         else
         {
-            RWCString returnString("general scan failed");
+            string returnString("general scan failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
         }
 
@@ -508,7 +512,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
+INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
                                RWTPtrSlist< OUTMESS > &outList)
 {
 
@@ -559,14 +563,14 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 
     };
 
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
 
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     for (aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -586,7 +590,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
+            dout << CtiTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
         }
     }
 
@@ -662,14 +666,14 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 
     };
 
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
 
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
 
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     for (aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
@@ -679,7 +683,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
    /* if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
+        dout << CtiTime() << "lastLPTime "<<getLastLPTime()<< endl;
     } */
 
     // lazyness so I don't have to continually remember to update this
@@ -749,14 +753,14 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
     bool gotValue = false;
     bool gotLPValues = false;
     int x, y, z;
-    RWTime lastLoadProfileTime;
-    RWCString resultString = "";
+    CtiTime lastLoadProfileTime;
+    string resultString = "";
 
     _result_string = "";
 
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
+      dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
     }
 
 
@@ -773,7 +777,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
             //if (useScanFlags())
             {
                 //_lastLPTime = getSentinelProtocol().getlastLoadProfileTime();
-                lastLoadProfileTime = RWTime(getSentinelProtocol().getlastLoadProfileTime());
+                lastLoadProfileTime = CtiTime(getSentinelProtocol().getlastLoadProfileTime());
             }
 
             x =  OFFSET_TOTAL_KWH;
@@ -785,7 +789,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Point Offset ==> " <<x<< endl;
+                        dout << CtiTime() << " Point Offset ==> " <<x<< endl;
                     }
                     foundSomething = true;
                     switch (x)
@@ -894,7 +898,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                             if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " battery life value =  "<< value<< endl;
+                                dout << CtiTime() << " battery life value =  "<< value<< endl;
                             }
                             break;
                         }
@@ -934,11 +938,11 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         }
                         if (time != 0)
                         {
-                            pData->setTime(RWTime(time));
+                            pData->setTime(CtiTime(time));
                         }
                         else
                         {
-                            pData->setTime( RWTime() );
+                            pData->setTime( CtiTime() );
                         }
                         pData->setType( pPoint->getType() );
 
@@ -949,7 +953,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " gotValue! "<< endl;
+                            dout << CtiTime() << " gotValue! "<< endl;
                         }
 
                         pData = NULL;
@@ -960,7 +964,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " gotLPValues! "<< endl;
+                            dout << CtiTime() << " gotLPValues! "<< endl;
                         }
 
                         int ptMultiplier = pPoint->getMultiplier();
@@ -988,7 +992,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 }
                                 pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
                                 pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                                pData->setTime( RWTime(getSentinelProtocol().getLPTime(y)) );
+                                pData->setTime( CtiTime(getSentinelProtocol().getLPTime(y)) );
 
                                 msgPtr->insert(pData);
 
@@ -1017,13 +1021,13 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
 
 
                         }
-                        //setLastLPTime(RWTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1)));
+                        //setLastLPTime(CtiTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1)));
                         _lastLPTime = getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1);
                         getSentinelProtocol().setLastLoadProfileTime(_lastLPTime);
                         if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "lastLPTime "<<RWTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1))<< endl;
+                            dout << CtiTime() << "lastLPTime "<<CtiTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1))<< endl;
                         }
                         if (pData != NULL)
                         {
@@ -1040,7 +1044,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Point Offset ==> " <<x<< endl;
+                            dout << CtiTime() << " Point Offset ==> " <<x<< endl;
                         }
                         foundSomething = true;
                         if (x == OFFSET_METER_TIME_STATUS)
@@ -1058,7 +1062,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 {
                                     pData->setTags(TAG_POINT_MUST_ARCHIVE);
                                 }
-                                pData->setTime( RWTime() );
+                                pData->setTime( CtiTime() );
                                 pData->setType( pStatusPoint->getType() );
 
                                 msgPtr = new CtiReturnMsg;
@@ -1069,7 +1073,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " gotValue! "<< endl;
+                                    dout << CtiTime() << " gotValue! "<< endl;
                                 }
                                 resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(((CtiPointStatus *)pStatusPoint)->getStateGroupID(), value);
                                 pData = NULL;
@@ -1097,13 +1101,16 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
 bool isUnintializedTimeAndValue(double value, double time)
-{
-    if (RWTime(time).seconds() == RWTime(RWDate(1,1,2000)).seconds() &&
+{   
+    CtiTime t1 =  CtiTime(time);
+    CtiTime t2 =  CtiTime(CtiDate(1,1,2000));
+
+    if ( t1.seconds() == t2.seconds() &&
         value == 0)
         return true;
     else

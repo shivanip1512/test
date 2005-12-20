@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_dbthr.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ void CtiMCDBThread::run()
 {
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << " Database update thread starting up" << endl;
+        dout << CtiTime() << " Database update thread starting up" << endl;
     }
 
     try
@@ -43,7 +43,7 @@ void CtiMCDBThread::run()
             if( gMacsDebugLevel & MC_DEBUG_DB )
             {
                 CtiLockGuard< CtiLogger > g(dout);
-                dout << RWTime() << " Updating database..." << endl;
+                dout << CtiTime() << " Updating database..." << endl;
             }
 
             _schedule_manager.updateAllSchedules();
@@ -51,13 +51,13 @@ void CtiMCDBThread::run()
 
         {
             CtiLockGuard< CtiLogger > g(dout);
-            dout << RWTime() << " Saving schedules to the database and exiting update thread." << endl;
+            dout << CtiTime() << " Saving schedules to the database and exiting update thread." << endl;
             _schedule_manager.updateAllSchedules();
         }
     }
     catch(...)
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << " Unknown exception occurred in CtiMCDBThread::run()" << endl;
+        dout << CtiTime() << " Unknown exception occurred in CtiMCDBThread::run()" << endl;
     }
 }

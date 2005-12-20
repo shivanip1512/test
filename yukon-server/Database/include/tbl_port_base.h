@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/01/07 17:48:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ protected:
 
     // Original CommPort Table
     //LONG          PortID;
-    //RWCString     Description;                   // This is no longer used as the name in porter anywhere!!!
+    //string     Description;                   // This is no longer used as the name in porter anywhere!!!
     //INT           Type;
 
     UINT _protocol;              // 32 protocols.
@@ -40,7 +40,7 @@ protected:
 
     INT _performanceThreshold;
 
-    RWCString _sharedPortType;
+    string _sharedPortType;
     INT _sharedSocketNumber;
 
 private:
@@ -66,8 +66,8 @@ private:
     bool isPerformanceAlarm() const;
     void setPerformanceAlarm(bool b = true);
 
-    void setSharedPortType(RWCString str);
-    RWCString getSharedPortType() const;
+    void setSharedPortType(string str);
+    string getSharedPortType() const;
     INT getSharedSocketNumber() const;
     void setSharedSocketNumber(INT sockNum);
 
@@ -78,7 +78,7 @@ private:
     CtiTablePortBase& setPerformanceThreshold( const INT aPerformanceThreshold );
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    static RWCString getTableName();
+    static string getTableName();
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual void DumpData();
 };

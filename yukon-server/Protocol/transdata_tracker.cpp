@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/09/27 20:43:24 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,7 +237,7 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
             if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
          }
       }
@@ -262,7 +262,7 @@ bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
 
    if( _datalink.isTransactionComplete() )
    {
-      memset( _storage, 0, Storage_size );
+      memset( _storage, '\0', Storage_size );
 
       _datalink.retreiveData( _storage, &_bytesReceived );
       processComms( _storage, _bytesReceived );
@@ -297,7 +297,7 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
       case doIntervalSize:
          {
             allGood = grabFormat( data, bytes );
-            RWTime temp = timeAdjust( _lp->meterTime );  //we do this here because we have to have the format first!
+            CtiTime temp = timeAdjust( _lp->meterTime );  //we do this here because we have to have the format first!
             _lp->meterTime = temp.seconds();
          }
          break;
@@ -351,7 +351,7 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
                if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Our world is ending!" << endl;
+                   dout << CtiTime() << " Our world is ending!" << endl;
                }
             }
             
@@ -363,14 +363,14 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
                if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                   dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                }
             }
                 
             _dataBytes += bytes;
           
             //copy over any previous data
-            memset( _meterData, 0, Meter_size );      //02.10.04
+            memset( _meterData, '\0', Meter_size );      //02.10.04
             memcpy( _meterData, _lp, sizeof( *_lp ) );   
 
             _meterBytes = sizeof( *_lp );
@@ -412,7 +412,7 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 
    if( _waiting )
    {
-      setXfer( xfer, _datalink.buildMsg( RWCString( "" ), RWCString( "" ) ), 1, true, 1 );
+      setXfer( xfer, _datalink.buildMsg( string( "" ), string( "" ) ), 1, true, 1 );
    }
    else
    {
@@ -515,7 +515,7 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
          if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ recs " << formatRecNums( _lp->numLpRecs ) << endl;
+            dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ recs " << formatRecNums( _lp->numLpRecs ) << endl;
          }
       }
       break;
@@ -548,9 +548,9 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiTransdataTracker::formatRecNums( int recs )
+string CtiTransdataTracker::formatRecNums( int recs )
 {
-   RWCString temp( CtiNumStr( recs ).zpad( 4 ) );
+   string temp( CtiNumStr( recs ).zpad( 4 ) );
 
    temp.append( "\r" );
 
@@ -588,7 +588,7 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
       {
          char *temp = strstr( ( const char*)ptr, "DC" );
 
-         if( temp )
+         if( temp != NULL )
          {
             ptr = temp + 2;
             foundCorrectCommand = true;
@@ -612,7 +612,7 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
          {
             ptr = strstr( ( const char*)ptr, " " );
 
-            if( ptr )
+            if( ptr != NULL )
             {
                ptr++;
 					_lp->enabledChannels[atoi( ptr )] = true;
@@ -645,7 +645,7 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
       {
          char *temp = strstr( ( const char*)ptr, "IS" );
 
-         if( temp )
+         if( temp != NULL )
          {
             ptr = temp + 2;
             foundCorrectCommand = true;
@@ -662,7 +662,7 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
          {
             ptr = strstr( ( const char*)ptr, "\n" );
 
-            if( ptr )
+            if( ptr != NULL )
             {
                ptr++;
                _lp->lpFormat[index] = atoi( ptr );
@@ -706,7 +706,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       {
          char *temp = strstr( ( const char*)ptr, "GT" );
 
-         if( temp )
+         if( temp != NULL )
          {
             ptr = temp + 2;
             foundCorrectCommand = true;
@@ -723,7 +723,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
          {
             ptr = strstr( ( const char*)ptr, "\n" );
 
-            if( ptr )
+            if( ptr != NULL )
             {
                ptr++;
                timeBits[index] = atoi( ptr );
@@ -731,12 +731,12 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
             }
          }
 
-         RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
+         CtiTime t( CtiDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
 
          if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meter time " << t << endl;
+            dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meter time " << t << endl;
          }
 
          _lp->meterTime = t.seconds();
@@ -751,12 +751,12 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
 // correct it...
 //=====================================================================================================================
 
-RWTime CtiTransdataTracker::timeAdjust( RWTime meterTime )
+CtiTime CtiTransdataTracker::timeAdjust( CtiTime meterTime )
 {
    int interval = _lp->lpFormat[0] * 60;
    int pullOff = _lp->meterTime % interval;
 
-   RWTime corrected( _lp->meterTime - pullOff );
+   CtiTime corrected( _lp->meterTime - pullOff );
 
    return( corrected );
 }
@@ -771,7 +771,7 @@ void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ tracker thinks lastlptime is " << RWTime( lpTime ) << endl;
+      dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ tracker thinks lastlptime is " << CtiTime( lpTime ) << endl;
    }
 }
 
@@ -842,7 +842,7 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 {
    int temp = _meterBytes;
 
-   if( data )
+   if( data != NULL )
    {
       memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes );
    }
@@ -865,8 +865,8 @@ void CtiTransdataTracker::reset( void )
    _ymodemsTurn = false;
    _bytesReceived = 0;
 
-   if( _storage )
-      memset( _storage, 0, Storage_size );
+   if( _storage != NULL )
+      memset( _storage, '\0', Storage_size );
 }
 
 //=====================================================================================================================
@@ -880,7 +880,7 @@ int CtiTransdataTracker::getError( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataTracker::injectData( RWCString str )
+void CtiTransdataTracker::injectData( string str )
 {
    _password = str;
    _password.append( "\r" );
@@ -913,18 +913,18 @@ bool CtiTransdataTracker::haveData( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time )
+void CtiTransdataTracker::setXfer( CtiXfer &xfer, string dataOut, int bytesIn, bool block, ULONG time )
 {
    reset();
    
-   memcpy( xfer.getOutBuffer(), dataOut, strlen( dataOut ) );
+   memcpy( xfer.getOutBuffer(), dataOut.c_str(), strlen( dataOut.c_str() ) );
 
    _bytesReceived = 0;
 
-   memset( _storage, 0, Storage_size );
+   memset( _storage, '\0', Storage_size );
 
    xfer.setMessageStart( true );
-   xfer.setOutCount( strlen( dataOut ) );    
+   xfer.setOutCount( strlen( dataOut.c_str() ) );    
    xfer.setInCountExpected( bytesIn );
    xfer.setInTimeout( time );
    xfer.setNonBlockingReads( block );
@@ -944,12 +944,12 @@ bool CtiTransdataTracker::gotValidResponse( const BYTE *data, int length )
 
    while( offset < length )
    {
-      if(( strstr( ptr + offset, _good_return ) ) ||
-         ( strstr( ptr + offset, _prot_message ) ) ||
-         ( strstr( ptr + offset, _enter ) ) ||
-         ( strstr( ptr + offset, _dump ) ) ||
-         ( strstr( ptr + offset, _hang_up ) ) || //02.12.04
-         ( strstr( ptr + offset, _ems ) ))
+      if(( strstr( ptr + offset, _good_return ) != NULL ) ||
+         ( strstr( ptr + offset, _prot_message ) != NULL ) ||
+         ( strstr( ptr + offset, _enter ) != NULL ) ||
+         ( strstr( ptr + offset, _dump ) != NULL ) ||
+         ( strstr( ptr + offset, _hang_up ) != NULL ) || //02.12.04
+         ( strstr( ptr + offset, _ems ) != NULL ))
       {
          success = true;
          break;

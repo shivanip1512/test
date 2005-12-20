@@ -42,7 +42,7 @@ CtiFDRScadaHelper<T>::~CtiFDRScadaHelper()
 
 template<typename T>
 bool CtiFDRScadaHelper<T>::handleValueUpdate(const T& id, double rawValue, 
-                                             int quality, RWTime timestamp) const
+                                             int quality, CtiTime timestamp) const
 {
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -58,7 +58,7 @@ bool CtiFDRScadaHelper<T>::handleValueUpdate(const T& id, double rawValue,
 
 template<typename T>
 bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value, 
-                                              int quality, RWTime timestamp) const
+                                              int quality, CtiTime timestamp) const
 {
     if (value == INVALID)
     {
@@ -83,7 +83,7 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
 
 template<typename T>
 bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int quality, 
-                                        RWTime timestamp, CheckStatusFunc checkFunc) const
+                                        CtiTime timestamp, CheckStatusFunc checkFunc) const
 {
     bool sentAPoint = false;
     ReceiveMap::const_iterator destIter, destEnd;
@@ -112,7 +112,7 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
             value += point.getOffset();
         }
     
-        if (timestamp == rwEpoch)
+        if (timestamp == PASTDATE)
         {
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
@@ -172,8 +172,8 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
 
         std::ostringstream msg;
         msg << _parent->getInterfaceName() << ": Invalid control state received from " << id;
-        RWCString desc(msg.str().c_str());
-        RWCString action("");
+        string desc(msg.str().c_str());
+        string action("");
         _parent->logEvent (desc,action,true);
         return false;
     }
@@ -198,8 +198,8 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             std::ostringstream msg;
             msg << _parent->getInterfaceName() << ": Foreign control point " << id
                 << " was mapped to non-control point " <<  dest << endl;
-            RWCString desc(msg.str().c_str());
-            RWCString action("");
+            string desc(msg.str().c_str());
+            string action("");
             _parent->logEvent (desc, action);
             continue;
         }
@@ -218,8 +218,8 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             msg << _parent->getInterfaceName() << ": Control point " << id
                 << " was mapped to " << dest
                 << ", which is not configured for control" << endl;
-            RWCString desc(msg.str().c_str());
-            RWCString action("");
+            string desc(msg.str().c_str());
+            string action("");
             _parent->logEvent (desc, action);
             continue;
         }

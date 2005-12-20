@@ -78,7 +78,7 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint -- couldn't allocate _data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint -- couldn't allocate _data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -261,7 +261,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             xfer.setOutBuffer(NULL);
@@ -412,7 +412,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -488,7 +488,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                         if( _inFrame.header.len > 0xf7 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - _inFrame.header.len(" << _inFrame.header.len << ") > 0xf7 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - _inFrame.header.len(" << _inFrame.header.len << ") > 0xf7 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         _ioState = InputPacket;
@@ -680,7 +680,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - loop averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - loop averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 _packetErrorCount++;
@@ -707,7 +707,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - bad state assignment averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - bad state assignment averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 //  try reading again
@@ -733,7 +733,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ioState = Failed;

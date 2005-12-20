@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/15 22:02:17 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ Application &Application::operator=(const Application &aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;
@@ -136,7 +136,7 @@ void Application::processInput( void )
 
         for( int i = 0; i < _response_buf_len; i++ )
         {
-            dout << RWCString(CtiNumStr(_response.buf[i]).hex().zpad(2)) << " ";
+            dout << string(CtiNumStr(_response.buf[i]).hex().zpad(2)) << " ";
 
             if( !(i % 20) && i )
                 dout << endl;
@@ -311,7 +311,7 @@ int Application::generate( CtiXfer &xfer )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             case Failed:
             {
@@ -353,7 +353,7 @@ int Application::decode( CtiXfer &xfer, int status )
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else if( _transport.isTransactionComplete() )
@@ -432,7 +432,7 @@ int Application::decode( CtiXfer &xfer, int status )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unknown state(" << _ioState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unknown state(" << _ioState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                 _ioState    = Failed;
                 _retryState = _ioState;

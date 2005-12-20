@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrstec.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrstec.cpp,v $
+      Revision 1.6  2005/12/20 17:17:14  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.5.2.3  2005/08/12 19:53:46  jliu
+      Date Time Replaced
+
+      Revision 1.5.2.2  2005/07/14 22:26:56  jliu
+      RWCStringRemoved
+
+      Revision 1.5.2.1  2005/07/12 21:08:37  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.5  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -81,10 +93,9 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -123,7 +134,7 @@ const CHAR * CtiFDR_STEC::KEY_STEC_TOTAL_LABEL = "STEC LOAD" ;
 
 // Constructors, Destructor, and Operators
 CtiFDR_STEC::CtiFDR_STEC()
-: CtiFDRFtpInterface(RWCString("STEC"))
+: CtiFDRFtpInterface(string("STEC"))
 {   
     init();
 }
@@ -208,20 +219,20 @@ int CtiFDR_STEC::decodeFile ()
     CHAR buffer[300];
     int lineNumber=0, cnt;
     CHAR *ptr, *token=NULL;
-    RWDate date;
-    RWTime finalTime;
-    RWCString           desc;
-    RWCString           action;
+    CtiDate date;
+    CtiTime finalTime;
+    string           desc;
+    string           action;
 
-    if ((fileHandle = _open(getLocalFileName().data(), _O_TEXT|_O_RDONLY)) != -1)
+    if ((fileHandle = _open(getLocalFileName().c_str(), _O_TEXT|_O_RDONLY)) != -1)
     {
         if (filelength(fileHandle) > 290 || filelength(fileHandle) < 70)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " STEC file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
+                dout << CtiTime() << " STEC file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
             }
-            desc = getInterfaceName() + RWCString ("'s data file ") + getLocalFileName() + RWCString(" failed size reasonability check");
+            desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
             retVal = !NORMAL;
@@ -230,10 +241,10 @@ int CtiFDR_STEC::decodeFile ()
         {
 
             // first of all, read file input 
-            if ((controlFile = fopen(getLocalFileName().data(), "r")) == NULL)
+            if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " STEC file failed to open after download " << endl;
+                dout << CtiTime() << " STEC file failed to open after download " << endl;
                 retVal = !NORMAL;
             }
             else
@@ -248,7 +259,7 @@ int CtiFDR_STEC::decodeFile ()
                                // date
                                if (strlen (buffer) > 13)
                                {
-                                   date = RWDate (atoi(buffer+9), atoi (buffer+6), (atoi(buffer+12)+2000));
+                                   date = CtiDate (atoi(buffer+9), atoi (buffer+6), (atoi(buffer+12)+2000));
                                }
                                break;
                            }
@@ -257,7 +268,7 @@ int CtiFDR_STEC::decodeFile ()
                                // time
                                if (strlen (buffer) > 13)
                                {
-                                   finalTime = RWTime (date,
+                                   finalTime = CtiTime (date,
                                                      atoi(buffer+6), 
                                                      atoi (buffer+9), 
                                                      atoi(buffer+12));
@@ -329,7 +340,7 @@ int CtiFDR_STEC::decodeFile ()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " STEC file failed to open after download " << endl;
+        dout << CtiTime() << " STEC file failed to open after download " << endl;
         retVal = !NORMAL;
     }
 
@@ -342,17 +353,17 @@ int CtiFDR_STEC::fail ()
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
-    RWCString           translationName;
+    string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;
-    RWCString desc,action;
+    string desc,action;
 
     sendLinkState (FDR_NOT_CONNECTED);
     desc = getInterfaceName() + " failed to retrieve a new data file";
     logEvent (desc, action, true);
 
     // see if the point exists
-    flag = findTranslationNameInList (RWCString (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
 
     if (flag == true)
     {
@@ -370,7 +381,7 @@ int CtiFDR_STEC::fail ()
         }
     }
 
-    flag = findTranslationNameInList (RWCString (KEY_STEC_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_STEC_TOTAL_LABEL), getReceiveFromList(), point);
 
     if (flag == true)
     {
@@ -390,15 +401,15 @@ int CtiFDR_STEC::fail ()
     return retVal;
 }
 
-int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad)
+int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad)
 {
     int retVal = NORMAL;
-    RWCString           translationName;
+    string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;
 
     // see if the point exists
-    flag = findTranslationNameInList (RWCString (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
 
 
     // overkill but thorough
@@ -410,7 +421,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
 
     {
         // assign last stuff	
-        if (aTime != rwEpoch)
+        if (aTime != PASTDATE)
         {
             // system load should not be zero !!!
             if (aSystemLoad != 0)
@@ -430,7 +441,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " --- Stec Interface: System Load " << aSystemLoad << endl;
+                    dout << CtiTime() << " --- Stec Interface: System Load " << aSystemLoad << endl;
                 }
 
             }
@@ -447,7 +458,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " --- Stec Interface: System load is zero, marking as invalid" << endl;
+                    dout << CtiTime() << " --- Stec Interface: System load is zero, marking as invalid" << endl;
                 }
             }
         }
@@ -459,19 +470,19 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for analog point " << RWCString (KEY_SYSTEM_TOTAL_LABEL);
+                dout << CtiTime() << " Translation for analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
                 dout << " from " << getInterfaceName() << " was not found" << endl;
             }
         }
         else
         {         
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Analog point " << RWCString (KEY_SYSTEM_TOTAL_LABEL);
+            dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
         }
     }
 
-    flag = findTranslationNameInList (RWCString (KEY_STEC_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_STEC_TOTAL_LABEL), getReceiveFromList(), point);
 
     // overkill but thorough
     if ((flag == true) &&
@@ -481,7 +492,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
          (point.getPointType() == CalculatedPointType)))
     {
         // assign last stuff	
-        if (aTime != rwEpoch)
+        if (aTime != PASTDATE)
         {
             if (aStecLoad != 0)
             {
@@ -501,7 +512,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " --- Stec Interface: Stec Load " << aStecLoad << endl;
+                    dout << CtiTime() << " --- Stec Interface: Stec Load " << aStecLoad << endl;
                 }
 
             }
@@ -518,7 +529,7 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " --- Stec Interface: Stec load is zero, marking as invalid" << endl;
+                    dout << CtiTime() << " --- Stec Interface: Stec load is zero, marking as invalid" << endl;
                 }
             }
         }
@@ -530,14 +541,14 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for analog point " << RWCString (KEY_STEC_TOTAL_LABEL);
+                dout << CtiTime() << " Translation for analog point " << string (KEY_STEC_TOTAL_LABEL);
                 dout << " from " << getInterfaceName() << " was not found" << endl;
             }
         }
         else
         {         
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Analog point " << RWCString (KEY_STEC_TOTAL_LABEL);
+            dout << CtiTime() << " Analog point " << string (KEY_STEC_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
         }
     }
@@ -548,12 +559,12 @@ int CtiFDR_STEC::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aStecLoad
 int CtiFDR_STEC::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPort(atoi(tempStr));
+        setPort(atoi(tempStr.c_str()));
     }
     else
     {
@@ -563,7 +574,7 @@ int CtiFDR_STEC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        setDownloadInterval(atoi(tempStr));
+        setDownloadInterval(atoi(tempStr.c_str()));
     }
     else
     {
@@ -577,7 +588,7 @@ int CtiFDR_STEC::readConfig( void )
     }
     else
     {
-        setServerFileName(RWCString ("Load.txt"));
+        setServerFileName(string ("Load.txt"));
     }
 
     tempStr = getCparmValueAsString(KEY_FTP_DIRECTORY);
@@ -587,7 +598,7 @@ int CtiFDR_STEC::readConfig( void )
     }
     else
     {
-        setFTPDirectory(RWCString ("\\yukon\\server\\import"));
+        setFTPDirectory(string ("\\yukon\\server\\import"));
     }
 
     tempStr = getCparmValueAsString(KEY_LOGIN);
@@ -597,7 +608,7 @@ int CtiFDR_STEC::readConfig( void )
     }
     else
     {
-        setLogin(RWCString ("anonymous"));
+        setLogin(string ("anonymous"));
     }
 
     tempStr = getCparmValueAsString(KEY_PASSWORD);
@@ -607,7 +618,7 @@ int CtiFDR_STEC::readConfig( void )
     }
     else
     {
-        setPassword(RWCString ("YukonServerPlatform@wharton.com"));
+        setPassword(string ("YukonServerPlatform@wharton.com"));
     }
 
     tempStr = getCparmValueAsString(KEY_IP_ADDRESS);
@@ -617,7 +628,7 @@ int CtiFDR_STEC::readConfig( void )
     }
     else
     {
-        setIPAddress(RWCString());
+        setIPAddress(string());
 		  successful = false;
     }
 
@@ -625,7 +636,7 @@ int CtiFDR_STEC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_TRIES);
     if (tempStr.length() > 0)
     {
-        setTries(atoi(tempStr));
+        setTries(atoi(tempStr.c_str()));
     }
     else
     {
@@ -635,7 +646,7 @@ int CtiFDR_STEC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -645,7 +656,7 @@ int CtiFDR_STEC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -654,19 +665,19 @@ int CtiFDR_STEC::readConfig( void )
     }
 
     // default filename
-    setLocalFileName(RWCString ("stec1.txt"));
+    setLocalFileName(string ("stec1.txt"));
 
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " STEC server file name " << getServerFileName() << endl;
-        dout << RWTime() << " STEC FTP directory " << getFTPDirectory() << endl;
-        dout << RWTime() << " STEC download interval " << getDownloadInterval() << endl;
-        dout << RWTime() << " STEC number of tries " << getTries() << endl;
-        dout << RWTime() << " STEC login " << getLogin() << endl;
-        dout << RWTime() << " STEC IP " << getIPAddress() << endl;
-        dout << RWTime() << " STEC db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " STEC server file name " << getServerFileName() << endl;
+        dout << CtiTime() << " STEC FTP directory " << getFTPDirectory() << endl;
+        dout << CtiTime() << " STEC download interval " << getDownloadInterval() << endl;
+        dout << CtiTime() << " STEC number of tries " << getTries() << endl;
+        dout << CtiTime() << " STEC login " << getLogin() << endl;
+        dout << CtiTime() << " STEC IP " << getIPAddress() << endl;
+        dout << CtiTime() << " STEC db reload rate " << getReloadRate() << endl;
     }
 
 

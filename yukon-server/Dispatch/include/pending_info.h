@@ -14,14 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/01/27 17:49:38 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include <windows.h>
 #include <limits.h>
-#include <rw\rwtime.h>
+#include "ctitime.h"
 
 #include "msg_pdata.h"
 #include "msg_signal.h"
@@ -82,7 +82,7 @@ protected:
 
     INT         _pendingType;       // What type of pending operation is this?
 
-    RWTime      _time;               // time on this pending operation.
+    CtiTime      _time;               // time on this pending operation.
 
     INT         _limitBeingTimed;
     UINT        _limitDuration;      // Number of seconds from _limitTime that we need to be handled.
@@ -91,7 +91,7 @@ protected:
     UINT        _controlTimeout;    // Number of seconds from _controlTime that we need to be handled.
     DOUBLE      _controlCompleteValue; // What output value indicates that this control completed successfully?
 
-    RWTime      _lastHistoryPost;       // Time this was last posted.
+    CtiTime      _lastHistoryPost;       // Time this was last posted.
 
     CtiTableLMControlHistory _control;
 
@@ -100,7 +100,7 @@ protected:
     CtiPointDataMsg *_pdata;          // PointData to send to the peoples.
 
     CtiOffsetPIDMap_t _opidMap;     // Once found this is where we keep point offsets.
-    RWTime _opidNextTime;           // This is the last time the opid search failed.  Use this to keep us from constantly doing deep scans.
+    CtiTime _opidNextTime;           // This is the last time the opid search failed.  Use this to keep us from constantly doing deep scans.
 
 private:
 
@@ -119,8 +119,8 @@ private:
     LONG getPointID() const;
     INT getType() const;
     INT getLimitBeingTimed() const;
-    RWTime& getTime();
-    RWTime getTime() const;
+    CtiTime& getTime();
+    CtiTime getTime() const;
     UINT getLimitDuration() const;
 
 
@@ -139,7 +139,7 @@ private:
     CtiPendingPointOperations& setLimitBeingTimed( INT lim );
     CtiPendingPointOperations& setLimitDuration( UINT ld );
     CtiPendingPointOperations& setControlState(INT st);
-    CtiPendingPointOperations& setTime(const RWTime& rt );
+    CtiPendingPointOperations& setTime(const CtiTime& rt );
     CtiPendingPointOperations& setControlTimeout( UINT ld );
     CtiPendingPointOperations& setSignal( CtiSignalMsg *pSig );
     CtiPendingPointOperations& setControlCompleteValue( const DOUBLE &aDbl );
@@ -154,7 +154,7 @@ private:
     LONG getOffsetsPointID(int offset);
     void addOffset(int offset, long pid);
 
-    RWTime getLastHistoryPost() const;       // Time this was last posted.
-    void setLastHistoryPost(RWTime rwt);
+    CtiTime getLastHistoryPost() const;       // Time this was last posted.
+    void setLastHistoryPost(CtiTime rwt);
 };
 #endif // #ifndef __PENDING_INFO_H__

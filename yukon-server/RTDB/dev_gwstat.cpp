@@ -10,15 +10,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/20 17:20:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
 
 #include "dsm2.h"
 #include "dev_gwstat.h"
@@ -29,6 +26,12 @@
 #include "pt_numeric.h"
 #include "tbl_gateway_end_device.h"
 #include "utility.h"
+#include "rwutil.h"
+#include "ctidate.h"
+#include "ctitime.h"
+
+
+using std::make_pair;
 
 #define GATEWAY_TEMPERATURE_PRECISION 0
 
@@ -97,7 +100,7 @@ CtiDeviceGatewayStat& CtiDeviceGatewayStat::operator=(const CtiDeviceGatewayStat
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -166,7 +169,7 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
 {
     bool status = false;
 
-    RWTime now;
+    CtiTime now;
 
     USHORT Type = ntohs(GatewayRX.Type);
 
@@ -381,13 +384,13 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Invalid Schedule day/period received." << endl;
+                    dout << CtiTime() << " Invalid Schedule day/period received." << endl;
                 }
             }
             catch(...)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -507,11 +510,11 @@ bool CtiDeviceGatewayStat::clearPrintList()
     return hasentries;
 }
 
-RWCString CtiDeviceGatewayStat::printListAsString(UINT Type) const
+string CtiDeviceGatewayStat::printListAsString(UINT Type) const
 {
     CtiLockGuard< CtiMutex > gd(_collMux);
 
-    RWCString retStr;
+    string retStr;
     {
         StatPrintList_t::const_iterator itr = _printlist.find(Type);
 
@@ -541,7 +544,7 @@ bool CtiDeviceGatewayStat::printPacketData( )
     return !_printlist.empty();
 }
 
-bool CtiDeviceGatewayStat::updatePrintList(USHORT Type, RWCString &str )
+bool CtiDeviceGatewayStat::updatePrintList(USHORT Type, string &str )
 {
     CtiLockGuard< CtiMutex > gd(_collMux);
 
@@ -589,43 +592,45 @@ bool CtiDeviceGatewayStat::generatePrintList( )
 
 bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period )
 {
-    RWCString astr;
+    string astr;
     bool status = false;
-    RWTime now;
+    CtiTime now;
 
 
     switch(Type)
     {
     case TYPE_ALLOWEDSYSTEMSWITCH:
         {
-            now = RWTime(_allowedSystemSwitch._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Received Allowed System Switch: "));
+            now = CtiTime(_allowedSystemSwitch._utime);
+            astr = now.asString() + string(" Stat ");
+            astr += CtiNumStr(getDeviceSerialNumber()).spad(3);
+            astr += string(" Received Allowed System Switch: ");
             if(_allowedSystemSwitch._allowedSystemSwitch == 0)
             {
-                astr += (RWCString("Allowed System Switch Unknown"));
+                astr += (string("Allowed System Switch Unknown"));
             }
             else
             {
-                astr += RWCString("  Allowed:  ");
+                astr += string("  Allowed:  ");
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x01)
                 {
-                    astr += RWCString("ER Heat ");
+                    astr += string("ER Heat ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x02)
                 {
-                    astr += RWCString("Heat ");
+                    astr += string("Heat ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x04)
                 {
-                    astr += RWCString("Off ");
+                    astr += string("Off ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x08)
                 {
-                    astr += RWCString("Cool ");
+                    astr += string("Cool ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x10)
                 {
-                    astr += RWCString("Auto ");
+                    astr += string("Auto ");
                 }
 
                 updatePrintList(Type, astr);
@@ -635,26 +640,27 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_BATTERY:
         {
-            now = RWTime(_battery._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Received Battery Status: "));
+            now = CtiTime(_battery._utime);
+            astr = now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3);
+            astr += string(" Received Battery Status: ");
 
             astr += (" Battery Status:  ");
             switch(_battery._battery)
             {
             case 0:
-                astr += RWCString("Bad");
+                astr += string("Bad");
                 break;
 
             case 1:
-                astr += RWCString("Good");
+                astr += string("Good");
                 break;
 
             case 2:
-                astr += RWCString("Unknown");
+                astr += string("Unknown");
                 break;
 
             default:
-                astr += RWCString("Invalid");
+                astr += string("Invalid");
                 break;
             }
 
@@ -664,10 +670,11 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_RSSI:
         {
-            now = RWTime(_rssi._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" RSSI: "));
-            astr += (RWCString("Local:  " + CtiNumStr(_rssi._local)));
-            astr += (RWCString(" Remote:  " + CtiNumStr(_rssi._remote)));
+            now = CtiTime(_rssi._utime);
+            astr = now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3);
+            astr += string(" RSSI: ");
+            astr += (string("Local:  " + CtiNumStr(_rssi._local)));
+            astr += (string(" Remote:  " + CtiNumStr(_rssi._remote)));
 
             updatePrintList(Type, astr);
 
@@ -675,17 +682,18 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_RUNTIME:
         {
-            now = RWTime(_runtime._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Runtimes: "));
-            astr += (RWCString("Cool Runtime:  " + CtiNumStr(_runtime._coolRuntime)+ " Minutes / "));
-            astr += (RWCString("Heat Runtime:  " + CtiNumStr(_runtime._heatRuntime)+ " Minutes"));
+            now = CtiTime(_runtime._utime);
+            astr = now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3);
+            astr += string(" Runtimes: ");
+            astr += (string("Cool Runtime:  " + CtiNumStr(_runtime._coolRuntime)+ string(" Minutes / ")));
+            astr += (string("Heat Runtime:  " + CtiNumStr(_runtime._heatRuntime)+ string(" Minutes")));
 
             updatePrintList(Type, astr);
 
             postAnalogOutputPoint(Type, PO_CoolRuntime, _runtime._coolRuntime );
             postAnalogOutputPoint(Type, PO_HeatRuntime, _runtime._heatRuntime );
 
-            if( _lastRuntimeRead != RWTime(YUKONEOT) )
+            if( _lastRuntimeRead != CtiTime(YUKONEOT) )
             {
                 ULONG elapsedTime = (_runtime._utime - _lastRuntimeRead + 60) / 60;  // Elapsed time in minutes (round up always)!
 
@@ -705,98 +713,98 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_SETPOINTS_CH)
             {
-                now = RWTime(_setpoints._ch_utime);
-                astr = RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Confirmed: \n"));
+                now = CtiTime(_setpoints._ch_utime);
+                astr = string(now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Setpoint Confirmed: \n"));
             }
             else
             {
-                now = RWTime(_setpoints._utime);
-                astr = RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Received: \n"));
+                now = CtiTime(_setpoints._utime);
+                astr = string(now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Setpoint Received: \n"));
             }
 
-            astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Cool Setpoint:  ");
+            astr += (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Cool Setpoint:  ");
             if(_setpoints._coolSetpoint >= 0x7f00)
             {
-                astr += RWCString("Unknown\n");
+                astr += string("Unknown\n");
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + getUnitName() + "\n");
+                astr += string(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + getUnitName() + "\n");
             }
 
-            astr += RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Heat Setpoint:  ");
+            astr += string(now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Heat Setpoint:  ");
             if(_setpoints._heatSetpoint >= 0x7f00)
             {
-                astr += RWCString("Unknown\n");
+                astr += string("Unknown\n");
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + getUnitName() + "\n");
+                astr += string(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + getUnitName() + "\n");
             }
 
-            astr += RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Setpoint Status:  ");
+            astr += string(now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Setpoint Status:  ");
             switch(_setpoints._setpointStatus)
             {
             case 0:
-                astr += RWCString(" Schedule Setpoint ");
+                astr += string(" Schedule Setpoint ");
                 break;
 
             case 1:
-                astr += RWCString(" Temporary Setpoint ");
+                astr += string(" Temporary Setpoint ");
                 break;
 
             case 2:
-                astr += RWCString(" Permanent Hold Setpoint ");
+                astr += string(" Permanent Hold Setpoint ");
                 break;
 
             case 254:
-                astr += RWCString(" Vacation Hold Setpoint ");
+                astr += string(" Vacation Hold Setpoint ");
 
                 if(_setpoints._vacationHoldDays == 0xffff)
                 {
-                    astr += RWCString("Vacation Hold Days Invalid");
+                    astr += string("Vacation Hold Days Invalid");
                 }
                 else
                 {
-                    astr += RWCString(" Days:  " + CtiNumStr(_setpoints._vacationHoldDays).zpad(3) );
+                    astr += string(" Days:  " + CtiNumStr(_setpoints._vacationHoldDays).zpad(3) );
                 }
 
-                astr += RWCString(" Period:  ");
+                astr += string(" Period:  ");
 
                 switch(_setpoints._vacationHoldPeriod)
                 {
                 case 0:
-                    astr += RWCString("Wake");
+                    astr += string("Wake");
                     break;
 
                 case 1:
-                    astr += RWCString("Leave");
+                    astr += string("Leave");
                     break;
 
                 case 2:
-                    astr += RWCString("Return");
+                    astr += string("Return");
                     break;
 
                 case 3:
-                    astr += RWCString("Sleep");
+                    astr += string("Sleep");
                     break;
 
                 case 255:
-                    astr += RWCString("Unknown");
+                    astr += string("Unknown");
                     break;
 
                 default:
-                    astr += RWCString("Invalid");
+                    astr += string("Invalid");
                     break;
                 }
                 break;
 
             case 255:
-                astr += RWCString("Unknown");
+                astr += string("Unknown");
                 break;
 
             default:
-                astr += RWCString("Invalid");
+                astr += string("Invalid");
             }
 
             updatePrintList(Type, astr);
@@ -808,16 +816,16 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_DEADBAND:
         {
-            now = RWTime(_deadband._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Deadband Received: "));
+            now = CtiTime(_deadband._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Deadband Received: "));
 
             if(_deadband._deadband == 255)
             {
-                astr += RWCString("Unknown");
+                astr += string("Unknown");
             }
             else
             {
-                astr += RWCString(CtiNumStr(_deadband._deadband) + getUnitName());
+                astr += string(CtiNumStr(_deadband._deadband) + getUnitName());
             }
 
             updatePrintList(Type, astr);
@@ -826,16 +834,16 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_DEVICEABSENT:
         {
-            now = RWTime(_deviceAbsent._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Absent Received: " ));
+            now = CtiTime(_deviceAbsent._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Absent Received: " ));
 
             if(_deviceAbsent._deviceAbsent)
             {
-                astr += RWCString("TRUE");
+                astr += string("TRUE");
             }
             else
             {
-                astr += RWCString("FALSE");
+                astr += string("FALSE");
             }
 
             updatePrintList(Type, astr);
@@ -844,29 +852,29 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_DEVICETYPE:
         {
-            now = RWTime(_deviceType._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Type Received: "));
+            now = CtiTime(_deviceType._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Type Received: "));
 
             switch(_deviceType._deviceType)
             {
             case 0:
-                astr += RWCString("Unknown");
+                astr += string("Unknown");
                 break;
 
             case 1:
-                astr += RWCString("T8665C");
+                astr += string("T8665C");
                 break;
 
             case 2:
-                astr += RWCString("T8665D");
+                astr += string("T8665D");
                 break;
 
             case 3:
-                astr += RWCString("T8665E");
+                astr += string("T8665E");
                 break;
 
             default:
-                astr += RWCString("Invalid = " + CtiNumStr((int)_deviceType._deviceType));
+                astr += string("Invalid = " + CtiNumStr((int)_deviceType._deviceType));
                 break;
             }
 
@@ -876,8 +884,8 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_DISPLAYEDTEMPERATURE:
         {
-            now = RWTime(_displayedTemp._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Displayed Temperature Received: " ));
+            now = CtiTime(_displayedTemp._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Displayed Temperature Received: " ));
 
             float dt = (float)_displayedTemp._displayedTemperature;
             if(_displayedTemp._displayedTempUnits == 1)     // Celsius is given in 1/2 degrees.
@@ -885,7 +893,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
                 dt = dt / 2 ;
             }
 
-            astr += RWCString(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + getUnitName());
+            astr += string(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + getUnitName());
             updatePrintList(Type, astr);
 
             postAnalogOutputPoint(Type, PO_DisplayedTemperature, dt );
@@ -897,18 +905,18 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_DLC_CH)
             {
-                now = RWTime(_DLC._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" DLC Confirmed: "));
+                now = CtiTime(_DLC._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" DLC Confirmed: "));
             }
             else
             {
-                now = RWTime(_DLC._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" DLC Received: " ));
+                now = CtiTime(_DLC._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" DLC Received: " ));
             }
 
             if(_DLC._cycleDuration == 0xffff)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else if(_DLC._cycleDuration <= 255)
             {
@@ -916,14 +924,14 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
             }
 
             astr += " of ";
 
             if(_DLC._cyclePeriod == 0xffff)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else if(_DLC._cyclePeriod <= 255)
             {
@@ -931,14 +939,14 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
             }
 
             astr +=  " off for ";
 
             if(_DLC._duration == 0xffff)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
@@ -950,19 +958,19 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             switch(_DLC._override)
             {
             case 0:
-                astr += (RWCString("No Override"));
+                astr += (string("No Override"));
                 break;
 
             case 1:
-                astr += (RWCString("Override Active"));
+                astr += (string("Override Active"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown Override"));
+                astr += (string("Unknown Override"));
                 break;
 
             default:
-                astr += (RWCString("Invalid Override"));
+                astr += (string("Invalid Override"));
                 break;
             }
 
@@ -970,19 +978,19 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             switch(_DLC._overrideDisable)
             {
             case 0:
-                astr += (RWCString("  / Available."));
+                astr += (string("  / Available."));
                 break;
 
             case 1:
-                astr += (RWCString("  / Prohibited."));
+                astr += (string("  / Prohibited."));
                 break;
 
             case 255:
-                astr += (RWCString("  / Unknown."));
+                astr += (string("  / Unknown."));
                 break;
 
             default:
-                astr += (RWCString("  / Invalid."));
+                astr += (string("  / Invalid."));
                 break;
             }
             updatePrintList(Type, astr);
@@ -994,30 +1002,30 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_FANSWITCH_CH)
             {
-                now = RWTime(_fanSwitch._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" FanSwitch Confirmed: "));
+                now = CtiTime(_fanSwitch._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" FanSwitch Confirmed: "));
             }
             else
             {
-                now = RWTime(_fanSwitch._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" FanSwitch Received: "));
+                now = CtiTime(_fanSwitch._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" FanSwitch Received: "));
             }
 
             if(_fanSwitch._fanSwitch == 0)
             {
-                astr += (RWCString("Auto"));
+                astr += (string("Auto"));
             }
             else if(_fanSwitch._fanSwitch == 255)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else if(_fanSwitch._fanSwitch >= 1 && _fanSwitch._fanSwitch <= 200)
             {
-                astr += (RWCString("On"));
+                astr += (string("On"));
             }
             else
             {
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
             }
 
             updatePrintList(Type, astr);
@@ -1030,39 +1038,39 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_FILTER_CH)
             {
-                now = RWTime(_filter._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Filter Confirmed: "));
+                now = CtiTime(_filter._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Filter Confirmed: "));
             }
             else
             {
-                now = RWTime(_filter._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Filter Received: " ));
+                now = CtiTime(_filter._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Filter Received: " ));
             }
 
             astr += ("Filter Restart:  ");
             if(_filter._filterRestart == 0)
             {
-                astr += (RWCString("Filter Timer Disabled"));
+                astr += (string("Filter Timer Disabled"));
             }
             else if(_filter._filterRestart == 255)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(_filter._filterRestart) + " Days"));
-                astr += (RWCString(".  Filter Remaining:  "));
+                astr += (string(CtiNumStr(_filter._filterRestart) + " Days"));
+                astr += (string(".  Filter Remaining:  "));
                 if(_filter._filterRemaining == 0)
                 {
-                    astr += (RWCString("Dirty"));
+                    astr += (string("Dirty"));
                 }
                 else if(_filter._filterRemaining == 255)
                 {
-                    astr += (RWCString("Unknown"));
+                    astr += (string("Unknown"));
                 }
                 else
                 {
-                    astr += (RWCString(CtiNumStr(_filter._filterRemaining) + " Days"));
+                    astr += (string(CtiNumStr(_filter._filterRemaining) + " Days"));
                 }
 
                 updatePrintList(Type, astr);
@@ -1073,25 +1081,25 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_HEATPUMPFAULT:
         {
-            now = RWTime(_heatPumpFault._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Heatpump Fault Received: " ));
+            now = CtiTime(_heatPumpFault._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Heatpump Fault Received: " ));
 
             switch(_heatPumpFault._heatPumpFault)
             {
             case 0:
-                astr += (RWCString("No Fault"));
+                astr += (string("No Fault"));
                 break;
 
             case 1:
-                astr += (RWCString("Fault"));
+                astr += (string("Fault"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
 
@@ -1104,33 +1112,33 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_SETPOINTLIMITS_CH)
             {
-                now = RWTime(_setpointLimits._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" SetPoint Limits Confirmed: "));
+                now = CtiTime(_setpointLimits._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" SetPoint Limits Confirmed: "));
             }
             else
             {
-                now = RWTime(_setpointLimits._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Limits Received: " ));
+                now = CtiTime(_setpointLimits._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Setpoint Limits Received: " ));
             }
 
             astr += ((" Cool Limit: "));
             if(_setpointLimits._lowerCoolSetpointLimit >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + getUnitName()));
             }
 
-            astr += RWCString(" Heat Limit: ");
+            astr += string(" Heat Limit: ");
             if(_setpointLimits._upperHeatSetpointLimit >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)) + getUnitName()));
             }
             updatePrintList(Type, astr);
 
@@ -1138,40 +1146,40 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_OUTDOORTEMP:
         {
-            now = RWTime(_outdoorTemp._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Outdoor Temperature Received: " ));
+            now = CtiTime(_outdoorTemp._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Outdoor Temperature Received: " ));
 
             if(_outdoorTemp._outdoorTemperature >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8000)
             {
-                astr += (RWCString("Shorted Sensor"));
+                astr += (string("Shorted Sensor"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8100)
             {
-                astr += (RWCString("Open Sensor"));
+                astr += (string("Open Sensor"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8200)
             {
-                astr += (RWCString("Not Available"));
+                astr += (string("Not Available"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8300)
             {
-                astr += (RWCString("Out of Range High"));
+                astr += (string("Out of Range High"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8400)
             {
-                astr += (RWCString("Out of Range Low"));
+                astr += (string("Out of Range Low"));
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8500)
             {
-                astr += (RWCString("Unreliable"));
+                astr += (string("Unreliable"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature)) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature)) + getUnitName()));
             }
             updatePrintList(Type, astr);
             postAnalogOutputPoint(Type, PO_OutdoorTemp, convertFromStatTemp(_outdoorTemp._outdoorTemperature));
@@ -1192,43 +1200,43 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_SYSTEMSWITCH_CH)
             {
-                now = RWTime(_systemSwitch._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Confirmed: "));
+                now = CtiTime(_systemSwitch._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" System Switch Confirmed: "));
             }
             else
             {
-                now = RWTime(_systemSwitch._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Received: "));
+                now = CtiTime(_systemSwitch._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" System Switch Received: "));
             }
 
             switch(_systemSwitch._systemSwitch)
             {
             case 0:
-                astr += (RWCString("Emergency Heat"));
+                astr += (string("Emergency Heat"));
                 break;
 
             case 1:
-                astr += (RWCString("Heat"));
+                astr += (string("Heat"));
                 break;
 
             case 2:
-                astr += (RWCString("Off"));
+                astr += (string("Off"));
                 break;
 
             case 3:
-                astr += (RWCString("Cool"));
+                astr += (string("Cool"));
                 break;
 
             case 4:
-                astr += (RWCString("Auto"));
+                astr += (string("Auto"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
             updatePrintList(Type, astr);
@@ -1242,63 +1250,63 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_UTILSETPOINT_CH)
             {
-                now = RWTime(_utilSetpoint._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Utility Setpoints Confirmed"));
+                now = CtiTime(_utilSetpoint._ch_utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Utility Setpoints Confirmed"));
             }
             else
             {
-                now = RWTime(_utilSetpoint._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
+                now = CtiTime(_utilSetpoint._utime);
+                astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Util Setpoint Received: "));
             }
 
             astr += (" Cool Setpoint: ");
             if(_utilSetpoint._utilCoolSetpoint >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + getUnitName()));
             }
 
-            astr += (RWCString(" Heat Setpoint: "));
+            astr += (string(" Heat Setpoint: "));
             if(_utilSetpoint._utilHeatSetpoint >= 0x7f00)
             {
-                astr += (RWCString("Unknown\n"));
+                astr += (string("Unknown\n"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + getUnitName() + "\n"));
+                astr += (string(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + getUnitName() + "\n"));
             }
 
             // updatePrintList(Type, astr);
 
-            astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
-            astr += (RWCString(" Util Mode: "));
+            astr += (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Util Setpoint Received: "));
+            astr += (string(" Util Mode: "));
             switch(_utilSetpoint._utilMode)
             {
             case 0:
-                astr += (RWCString(" Inactive"));
+                astr += (string(" Inactive"));
                 break;
 
             case 1:
-                astr += (RWCString(" Price tier "));
+                astr += (string(" Price tier "));
                 break;
 
             case 2:
-                astr += (RWCString(" Temperature offset "));
+                astr += (string(" Temperature offset "));
                 break;
 
             case 3:
-                astr += (RWCString(" Precondition "));
+                astr += (string(" Precondition "));
                 break;
 
             case 255:
-                astr += (RWCString(" Unknown "));
+                astr += (string(" Unknown "));
                 break;
 
             default:
-                astr += (RWCString(" Invalid "));
+                astr += (string(" Invalid "));
                 break;
             }
 
@@ -1306,7 +1314,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
 
             if(_utilSetpoint._utilDuration == 0)
             {
-                astr += (RWCString("Inactive"));
+                astr += (string("Inactive"));
             }
             else if(_utilSetpoint._utilDuration <= 1440)
             {
@@ -1314,104 +1322,104 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
             }
 
             astr += " Minutes.\n";
 
             // updatePrintList(Type, astr);
-            astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
+            astr += (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Util Setpoint Received: "));
             if(_utilSetpoint._utilMode == 1)
             {
-                astr += RWCString("Tier: ");
+                astr += string("Tier: ");
                 switch(_utilSetpoint._utilPriceTier)
                 {
                 case 0:
-                    astr += (RWCString("None"));
+                    astr += (string("None"));
                     break;
 
                 case 1:
-                    astr += (RWCString("Low"));
+                    astr += (string("Low"));
                     break;
 
                 case 2:
-                    astr += (RWCString("Medium"));
+                    astr += (string("Medium"));
                     break;
 
                 case 3:
-                    astr += (RWCString("High"));
+                    astr += (string("High"));
                     break;
 
                 case 4:
-                    astr += (RWCString("Critical"));
+                    astr += (string("Critical"));
                     break;
 
                 case 255:
-                    astr += (RWCString("Unknown"));
+                    astr += (string("Unknown"));
                     break;
 
                 default:
-                    astr += (RWCString("Invalid"));
+                    astr += (string("Invalid"));
                     break;
                 }
             }
 
-            astr += RWCString(" AIR: ");
+            astr += string(" AIR: ");
             switch(_utilSetpoint._utilAIRDisable)
             {
             case 0:
-                astr += (RWCString("Enabled"));
+                astr += (string("Enabled"));
                 break;
 
             case 1:
-                astr += (RWCString("Disabled"));
+                astr += (string("Disabled"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
 
-            astr += RWCString(".  ");
+            astr += string(".  ");
             switch(_utilSetpoint._utilUserOverride)
             {
             case 0:
-                astr += (RWCString("No Override"));
+                astr += (string("No Override"));
                 break;
 
             case 1:
-                astr += (RWCString("Override Active"));
+                astr += (string("Override Active"));
                 break;
 
             case 255:
-                astr += (RWCString("Override Unknown"));
+                astr += (string("Override Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Override Invalid"));
+                astr += (string("Override Invalid"));
                 break;
             }
 
             switch(_utilSetpoint._utilUserOverrideDisable)
             {
             case 0:
-                astr += (RWCString(" / Prohibited."));
+                astr += (string(" / Prohibited."));
                 break;
 
             case 1:
-                astr += (RWCString(" / Available."));
+                astr += (string(" / Available."));
                 break;
 
             case 255:
-                astr += (RWCString(" / Unknown."));
+                astr += (string(" / Unknown."));
                 break;
 
             default:
-                astr += (RWCString(" / Invalid."));
+                astr += (string(" / Invalid."));
                 break;
             }
 
@@ -1423,8 +1431,8 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_CLOCK:
         {
-            now = RWTime(_clock._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Clock Received: "));
+            now = CtiTime(_clock._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Clock Received: "));
 
             // Return value:
             //  0 = Monday
@@ -1440,98 +1448,98 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             switch(_clock._day)
             {
             case 6:
-                astr += (RWCString("Sunday"));
+                astr += (string("Sunday"));
                 break;
 
             case 0:
-                astr += (RWCString("Monday"));
+                astr += (string("Monday"));
                 break;
 
             case 1:
-                astr += (RWCString("Tuesday"));
+                astr += (string("Tuesday"));
                 break;
 
             case 2:
-                astr += (RWCString("Wednesday"));
+                astr += (string("Wednesday"));
                 break;
 
             case 3:
-                astr += (RWCString("Thursday"));
+                astr += (string("Thursday"));
                 break;
 
             case 4:
-                astr += (RWCString("Friday"));
+                astr += (string("Friday"));
                 break;
 
             case 5:
-                astr += (RWCString("Saturday"));
+                astr += (string("Saturday"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
 
-            astr += (RWCString(", "));
+            astr += (string(", "));
             if(_clock._hour == 255)
             {
-                astr += (RWCString("UU:"));
+                astr += (string("UU:"));
             }
             else if(_clock._hour < 24)
             {
-                astr += (RWCString(CtiNumStr(_clock._hour).zpad(2) + ":"));
+                astr += (string(CtiNumStr(_clock._hour).zpad(2) + ":"));
             }
             else
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
 
             if(_clock._minute == 255)
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
             else if(_clock._minute < 60)
             {
-                astr += (RWCString(CtiNumStr(_clock._minute).zpad(2) + ":"));
+                astr += (string(CtiNumStr(_clock._minute).zpad(2) + ":"));
             }
             else
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
 
             if(_clock._second == 255)
             {
-                astr += (RWCString("UU"));
+                astr += (string("UU"));
             }
             else if(_clock._second < 60)
             {
-                astr += (RWCString(CtiNumStr(_clock._second).zpad(2)));
+                astr += (string(CtiNumStr(_clock._second).zpad(2)));
             }
             else
             {
-                astr += (RWCString("II"));
+                astr += (string("II"));
             }
 
             switch(_clockDST._dst)
             {
             case 0:
-                astr += (RWCString(" Standard Time"));
+                astr += (string(" Standard Time"));
                 break;
 
             case 1:
-                astr += (RWCString(" DST"));
+                astr += (string(" DST"));
                 break;
 
             case 255:
-                //astr += (RWCString(" Unknown"));
+                //astr += (string(" Unknown"));
                 break;
 
             default:
-                //astr += (RWCString("Invalid"));
+                //astr += (string("Invalid"));
                 break;
             }
 
@@ -1541,8 +1549,8 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_CLOCKDST:
         {
             #if 0
-            now = RWTime(_clockDST._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Clock DST Setting Received: "));
+            now = CtiTime(_clockDST._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Clock DST Setting Received: "));
 
             // Return value:
             //  0 = Not DST
@@ -1552,19 +1560,19 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             switch(_clockDST._dst)
             {
             case 0:
-                astr += (RWCString("Standard Time"));
+                astr += (string("Standard Time"));
                 break;
 
             case 1:
-                astr += (RWCString("DST"));
+                astr += (string("DST"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
 
@@ -1576,24 +1584,24 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         }
     case TYPE_DEVICEBOUND:
         {
-            now = RWTime(_deviceBound._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Bound Received: "));
+            now = CtiTime(_deviceBound._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Bound Received: "));
             updatePrintList(Type, astr);
 
             break;
         }
     case TYPE_DEVICEUNBOUND:
         {
-            now = RWTime(_deviceUnbound._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Unbound Received: "));
+            now = CtiTime(_deviceUnbound._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Unbound Received: "));
             updatePrintList(Type, astr);
             break;
         }
     case TYPE_RETURNCODE:
         {
-            now = RWTime(_returnCode._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" ReturnCode Received: "));
-            astr += "Responded with condition: " + CtiNumStr(_returnCode._returnCode) + " from a command of type: " + CtiNumStr(_returnCode._setType);
+            now = CtiTime(_returnCode._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" ReturnCode Received: "));
+            astr += "Responded with condition: " + CtiNumStr(_returnCode._returnCode) + string(" from a command of type: ") + CtiNumStr(_returnCode._setType);
             updatePrintList(Type, astr);
             break;
         }
@@ -1608,8 +1616,8 @@ bool CtiDeviceGatewayStat::generatePacketDataSchedule()
 {
     bool status = false;
 
-    RWTime now;
-    RWCString astr;
+    CtiTime now;
+    string astr;
 
     {
         int day;
@@ -1634,116 +1642,116 @@ bool CtiDeviceGatewayStat::generatePacketDataSchedule()
     return status;
 }
 
-RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
+string CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
 {
     bool status = false;
 
-    RWCString updated_str("Update Time Unknown");
-    RWCString confirmed_str;
-    RWCString astr;
+    string updated_str("Update Time Unknown");
+    string confirmed_str;
+    string astr;
 
     {
         if( (day >= 0 && day < 7) && (period >= 0 && period < EP_PERIODS_PER_DAY) )   // valid day & period.
         {
             if(_schedule[day][period]._utime != YUKONEOT)
             {
-                updated_str = RWTime(_schedule[day][period]._utime).asString();
+                updated_str = CtiTime(_schedule[day][period]._utime).asString();
             }
 
             if(_schedule[day][period]._ch_utime == 86400)
             {
-                confirmed_str = RWCString("Confirm Pending");
+                confirmed_str = string("Confirm Pending");
             }
             else if(_schedule[day][period]._ch_utime != YUKONEOT)
             {
-                confirmed_str = RWCString("CNFM: ") + RWTime(_schedule[day][period]._ch_utime).asString();
+                confirmed_str = string("CNFM: ") + CtiTime(_schedule[day][period]._ch_utime).asString();
             }
 
 
-            astr = (updated_str + RWCString(" Stat ")  + CtiNumStr(getDeviceSerialNumber()).spad(3) + " " + confirmed_str + RWCString(" Schedule:"));
+            astr = (updated_str + string(" Stat ")  + CtiNumStr(getDeviceSerialNumber()).spad(3) + " " + confirmed_str + string(" Schedule:"));
 
             switch(day)
             {
             case 0:
-                astr += (RWCString(" Sun"));
+                astr += (string(" Sun"));
                 break;
 
             case 1:
-                astr += (RWCString(" Mon"));
+                astr += (string(" Mon"));
                 break;
 
             case 2:
-                astr += (RWCString(" Tue"));
+                astr += (string(" Tue"));
                 break;
 
             case 3:
-                astr += (RWCString(" Wed"));
+                astr += (string(" Wed"));
                 break;
 
             case 4:
-                astr += (RWCString(" Thu"));
+                astr += (string(" Thu"));
                 break;
 
             case 5:
-                astr += (RWCString(" Fri"));
+                astr += (string(" Fri"));
                 break;
 
             case 6:
-                astr += (RWCString(" Sat"));
+                astr += (string(" Sat"));
                 break;
 
             case 255:
-                astr += (RWCString(" Unk"));
+                astr += (string(" Unk"));
                 break;
 
             default:
-                astr += (RWCString(" Inv"));
+                astr += (string(" Inv"));
                 break;
             }
 
             switch(period)
             {
             case 0:
-                astr += (RWCString(" Wake   "));
+                astr += (string(" Wake   "));
                 break;
 
             case 1:
-                astr += (RWCString(" Leave  "));
+                astr += (string(" Leave  "));
                 break;
 
             case 2:
-                astr += (RWCString(" Return "));
+                astr += (string(" Return "));
                 break;
 
             case 3:
-                astr += (RWCString(" Sleep  "));
+                astr += (string(" Sleep  "));
                 break;
 
             case 255:
-                astr += (RWCString(" Unknown"));
+                astr += (string(" Unknown"));
                 break;
 
             default:
-                astr += (RWCString(" Invalid"));
+                astr += (string(" Invalid"));
                 break;
             }
 
             if(_schedule[day][period]._hour == 254)
             {
-                astr += (RWCString(" Unscheduled"));             // Unscheduled.
+                astr += (string(" Unscheduled"));             // Unscheduled.
                 return astr;
             }
             else if(_schedule[day][period]._hour == 255)
             {
-                astr += (RWCString(" UU:"));
+                astr += (string(" UU:"));
             }
             else if(_schedule[day][period]._hour < 24)
             {
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ":"));
+                astr += (string(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ":"));
             }
             else
             {
-                astr += (RWCString(" II:"));
+                astr += (string(" II:"));
             }
 
             switch(_schedule[day][period]._minute)
@@ -1752,60 +1760,60 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             case 15:
             case 30:
             case 45:
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._minute).zpad(2)));
+                astr += (string(CtiNumStr(_schedule[day][period]._minute).zpad(2)));
                 break;
 
             default:
-                astr += (RWCString("II"));
+                astr += (string("II"));
                 break;
             }
 
-            astr += (RWCString(" Fan: "));
+            astr += (string(" Fan: "));
             switch(_schedule[day][period]._fan)
             {
             case 0:
-                astr += (RWCString("NSch"));
+                astr += (string("NSch"));
                 break;
 
             case 1:
-                astr += (RWCString("Auto"));
+                astr += (string("Auto"));
                 break;
 
             case 2:
-                astr += (RWCString("Circ"));
+                astr += (string("Circ"));
                 break;
 
             case 3:
-                astr += (RWCString("On  "));
+                astr += (string("On  "));
                 break;
 
             case 255:
-                astr += (RWCString("Unk "));
+                astr += (string("Unk "));
                 break;
 
             default:
-                astr += (RWCString("Inv "));
+                astr += (string("Inv "));
                 break;
             }
 
-            astr += (RWCString(" Cool: "));
+            astr += (string(" Cool: "));
             if(_schedule[day][period]._coolSetpoint >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._coolSetpoint)).spad(3) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_schedule[day][period]._coolSetpoint)).spad(3) + getUnitName()));
             }
 
-            astr += (RWCString(" \\ Heat: "));
+            astr += (string(" \\ Heat: "));
             if(_schedule[day][period]._heatSetpoint >= 0x7f00)
             {
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._heatSetpoint)).spad(3) + getUnitName()));
+                astr += (string(CtiNumStr(convertFromStatTemp(_schedule[day][period]._heatSetpoint)).spad(3) + getUnitName()));
             }
         }
     }
@@ -2005,7 +2013,7 @@ void CtiDeviceGatewayStat::sendQueryRuntime(SOCKET msgsock, UCHAR Reset)
 int CtiDeviceGatewayStat::checkPendingOperations(  )
 {
     int processed = 0;
-    RWTime theend(YUKONEOT);
+    CtiTime theend(YUKONEOT);
 
     try
     {
@@ -2024,13 +2032,13 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                 {
                 case TYPE_SETDLC:
                     {
-                        RWCString astr;
-                        RWTime arrival(_DLC._utime);
-                        RWTime confirm(_DLC._ch_utime);
+                        string astr;
+                        CtiTime arrival(_DLC._utime);
+                        CtiTime confirm(_DLC._ch_utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
-                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC SUBMITTED **** ";
+                            astr = CtiTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC SUBMITTED **** ";
                             valtype.addReplyVector( astr );
                             generateReplyVector(valtype);
                             valtype.setTimeResponded( arrival );
@@ -2038,7 +2046,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
 
                         if( !valtype.isConfirmed() && theend != confirm && confirm >= valtype.getTimeSubmitted() )
                         {
-                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC CONFIRMED **** ";
+                            astr = CtiTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC CONFIRMED **** ";
                             valtype.addReplyVector( astr );
                             generateReplyVector(valtype);
                             valtype.setTimeConfirmed( confirm );
@@ -2049,10 +2057,10 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                         {
                             removeReturnCode(message_type);
 
-                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC Repeat Match. **** ";
+                            astr = CtiTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC Repeat Match. **** ";
                             valtype.addReplyVector( astr );
-                            valtype.setTimeResponded( RWTime() );
-                            valtype.setTimeConfirmed( RWTime() );
+                            valtype.setTimeResponded( CtiTime() );
+                            valtype.setTimeConfirmed( CtiTime() );
                         }
 
 
@@ -2060,7 +2068,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETALL:
                     {
-                        RWTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
+                        CtiTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2089,7 +2097,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_SETSCHEDULE:
                     {
-                        RWTime arrival;
+                        CtiTime arrival;
 
                         int waiting_on = 0;         // Number of data elements we are waiting on.
                         int dow;
@@ -2143,12 +2151,12 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                         }
                         else
                         {
-                            valtype.setTimeExpires( RWTime() + 300 );   // Five minute expiration time, from now.
+                            valtype.setTimeExpires( CtiTime() + 300 );   // Five minute expiration time, from now.
 
                             if(0)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
+                                dout << CtiTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
                             }
                         }
 
@@ -2156,8 +2164,8 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_SETSETPOINTS:
                     {
-                        RWTime arrival(_setpoints._utime);
-                        RWTime confirm(_setpoints._ch_utime);
+                        CtiTime arrival(_setpoints._utime);
+                        CtiTime confirm(_setpoints._ch_utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2182,8 +2190,8 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                 case TYPE_SETUTILOVERRIDE:
                     {
                         {
-                            RWCString astr("Operation Complete");
-                            RWTime arrival(_allowedSystemSwitch._utime);
+                            string astr("Operation Complete");
+                            CtiTime arrival(_allowedSystemSwitch._utime);
 
                             if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                             {
@@ -2199,7 +2207,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETALLOWEDSYSTEMSWITCH:
                     {
-                        RWTime arrival(_allowedSystemSwitch._utime);
+                        CtiTime arrival(_allowedSystemSwitch._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2212,7 +2220,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETBATTERY:
                     {
-                        RWTime arrival(_battery._utime);
+                        CtiTime arrival(_battery._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2225,7 +2233,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETRUNTIME:
                     {
-                        RWTime arrival(_runtime._utime);
+                        CtiTime arrival(_runtime._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2238,7 +2246,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETSETPOINTS:
                     {
-                        RWTime arrival(_setpoints._utime);
+                        CtiTime arrival(_setpoints._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2251,7 +2259,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDEADBAND:
                     {
-                        RWTime arrival(_deadband._utime);
+                        CtiTime arrival(_deadband._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2264,7 +2272,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDEVICEABSENT:
                     {
-                        RWTime arrival(_deviceAbsent._utime);
+                        CtiTime arrival(_deviceAbsent._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2277,7 +2285,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDEVICETYPE:
                     {
-                        RWTime arrival(_deviceType._utime);
+                        CtiTime arrival(_deviceType._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2290,7 +2298,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDISPLAYEDTEMPERATURE:
                     {
-                        RWTime arrival(_displayedTemp._utime);
+                        CtiTime arrival(_displayedTemp._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2303,7 +2311,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDLC:
                     {
-                        RWTime arrival(_DLC._utime);
+                        CtiTime arrival(_DLC._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2316,7 +2324,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETFANSWITCH:
                     {
-                        RWTime arrival(_fanSwitch._utime);
+                        CtiTime arrival(_fanSwitch._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2329,7 +2337,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETFILTER:
                     {
-                        RWTime arrival(_filter._utime);
+                        CtiTime arrival(_filter._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2342,7 +2350,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETHEATPUMPFAULT:
                     {
-                        RWTime arrival(_heatPumpFault._utime);
+                        CtiTime arrival(_heatPumpFault._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2355,7 +2363,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETSETPOINTLIMITS:
                     {
-                        RWTime arrival(_setpointLimits._utime);
+                        CtiTime arrival(_setpointLimits._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2368,7 +2376,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETOUTDOORTEMP:
                     {
-                        RWTime arrival(_outdoorTemp._utime);
+                        CtiTime arrival(_outdoorTemp._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2381,7 +2389,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETSYSTEMSWITCH:
                     {
-                        RWTime arrival(_systemSwitch._utime);
+                        CtiTime arrival(_systemSwitch._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2394,7 +2402,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETUTILSETPOINT:
                     {
-                        RWTime arrival(_utilSetpoint._utime);
+                        CtiTime arrival(_utilSetpoint._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2407,7 +2415,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETCLOCK:
                     {
-                        RWTime arrival(_clock._utime);
+                        CtiTime arrival(_clock._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2421,7 +2429,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                 case TYPE_ADDRESSING:
                 case TYPE_GETADDRESSING:
                     {
-                        RWTime arrival;
+                        CtiTime arrival;
 
                         valtype.setTimeResponded( arrival );
                         valtype.setTimeConfirmed( arrival );
@@ -2431,10 +2439,10 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_GETDEVICEBOUND:
                     {
-                        RWCString astr;
-                        RWTime arrival;
+                        string astr;
+                        CtiTime arrival;
 
-                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + " unknown message type in a pending operation: " + CtiNumStr(message_type);
+                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + string(" unknown message type in a pending operation: ") + CtiNumStr(message_type);
 
                         valtype.setTimeResponded( arrival );
                         valtype.setTimeConfirmed( arrival );
@@ -2442,7 +2450,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << astr << endl;
                         }
 
@@ -2450,8 +2458,8 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_RESTARTFILTER:
                     {
-                        RWTime arrival(_filter._utime);
-                        RWTime confirm(_filter._ch_utime);
+                        CtiTime arrival(_filter._utime);
+                        CtiTime confirm(_filter._ch_utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2469,8 +2477,8 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                     }
                 case TYPE_QUERYRUNTIME:
                     {
-                        RWTime arrival(_runtime._utime);
-                        RWTime confirm(_runtime._utime);
+                        CtiTime arrival(_runtime._utime);
+                        CtiTime confirm(_runtime._utime);
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
@@ -2493,10 +2501,10 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                 case TYPE_GETSCHEDULE:
                 default:
                     {
-                        RWCString astr;
-                        RWTime arrival;
+                        string astr;
+                        CtiTime arrival;
 
-                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + " unknown message type in a pending operation: " + CtiNumStr(message_type);
+                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + string(" unknown message type in a pending operation: ") + CtiNumStr(message_type);
 
                         valtype.setTimeResponded( arrival );
                         valtype.setTimeConfirmed( arrival );
@@ -2504,7 +2512,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << astr << endl;
                         }
 
@@ -2518,7 +2526,7 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -2542,7 +2550,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Parse Processed by EnergyPro Stat ID: " << getDeviceSerialNumber() << ": " << parse.getCommandStr() << endl;
+            dout << CtiTime() << " Parse Processed by EnergyPro Stat ID: " << getDeviceSerialNumber() << ": " << parse.getCommandStr() << endl;
         }
 
         int shedminutes = parse.getiValue("shed", 0) / 60;
@@ -2607,8 +2615,8 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             }
             else if( parse.getFlags() & CMD_FLAG_CTL_RESTORE )
             {
-                RWTime now;
-                RWTime pageconfirmed( _DLC._ch_utime );
+                CtiTime now;
+                CtiTime pageconfirmed( _DLC._ch_utime );
 
                 setLastControlSent(OutMessage);
                 processed++;
@@ -2618,7 +2626,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Stat: " << getDeviceSerialNumber() << " randomizing out of control." << endl;
+                        dout << CtiTime() << " Stat: " << getDeviceSerialNumber() << " randomizing out of control." << endl;
                     }
                     // We are still under control as far as we know.  Try to randomize someday!
                     controlmatch = sendSetDLC( msgsock, (BYTE)0, (BYTE)0, (BYTE)0, FALSE );
@@ -2631,14 +2639,14 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             }
             else if( parse.getFlags() & CMD_FLAG_CTL_TERMINATE )
             {
-                RWTime now;
-                RWTime pageconfirmed( _DLC._ch_utime );
+                CtiTime now;
+                CtiTime pageconfirmed( _DLC._ch_utime );
 
                 if(pageconfirmed < now && now < (pageconfirmed + (_DLC._duration * 60)) )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Stat: " << getDeviceSerialNumber() << " randomizing out of control." << endl;
+                        dout << CtiTime() << " Stat: " << getDeviceSerialNumber() << " randomizing out of control." << endl;
                     }
                     // We are still under control as far as we know.  Try to randomize someday!
                     controlmatch = sendSetDLC( msgsock, (BYTE)0, (BYTE)0, (BYTE)0, FALSE );
@@ -2793,7 +2801,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Putconfig unknown: " << parse.getCommandStr() << endl;
+                    dout << CtiTime() << " Putconfig unknown: " << parse.getCommandStr() << endl;
                 }
             }
         }
@@ -2840,7 +2848,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -2848,7 +2856,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** processParse Failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** processParse Failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return processed;
@@ -2881,9 +2889,9 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
     int dow = 0;
     int pod = 0;
 
-    RWCString allwake  = RWCString("xctodshh_") + CtiNumStr(( (9) << 4 | (pod & 0x0f) ));
-    RWCString endwake  = RWCString("xctodshh_") + CtiNumStr(( (8) << 4 | (pod & 0x0f) ));
-    RWCString dayswake = RWCString("xctodshh_") + CtiNumStr(( (7) << 4 | (pod & 0x0f) ));
+    string allwake  = string("xctodshh_") + CtiNumStr(( (9) << 4 | (pod & 0x0f) ));
+    string endwake  = string("xctodshh_") + CtiNumStr(( (8) << 4 | (pod & 0x0f) ));
+    string dayswake = string("xctodshh_") + CtiNumStr(( (7) << 4 | (pod & 0x0f) ));
 
     if(parse.isKeyValid(allwake))      // All Days!
     {
@@ -2959,7 +2967,7 @@ int CtiDeviceGatewayStat::convertCDayToStatDay(int dow)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             convert = 0;
             break;
@@ -2968,7 +2976,7 @@ int CtiDeviceGatewayStat::convertCDayToStatDay(int dow)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             convert = 0;
             break;
@@ -3041,7 +3049,7 @@ int CtiDeviceGatewayStat::returnCodeCount(USHORT message_type)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -3077,7 +3085,7 @@ int CtiDeviceGatewayStat::removeReturnCode(USHORT message_type)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -3089,95 +3097,96 @@ int CtiDeviceGatewayStat::parseGetValueRequest(CtiCommandParser &parse)
 {
     int status = NORMAL;
 
-    RWCString CmdStr = parse.getCommandStr();
-    CmdStr.toLower();
+    string CmdStr = parse.getCommandStr();
+    std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
+    //CmdStr.toLower();
 
-    if(CmdStr.contains(" allowed system switch"))
+    if(CmdStr.find(" allowed system switch")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETALLOWEDSYSTEMSWITCH);
     }
-    else if(CmdStr.contains(" battery"))
+    else if(CmdStr.find(" battery")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETBATTERY);
     }
-    else if( CmdStr.contains(" runtime") )
+    else if( CmdStr.find(" runtime")!=string::npos)
     {
-        if( CmdStr.contains(" reset") )
+        if( CmdStr.find(" reset")!=string::npos )
         {
             parse.setValue("epruntimereset", TRUE);
         }
 
         parse.setValue("epget", TYPE_GETRUNTIME);
     }
-    else if(CmdStr.contains(" setpoints"))
+    else if(CmdStr.find(" setpoints")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETSETPOINTS);
     }
-    else if(CmdStr.contains(" deadband"))
+    else if(CmdStr.find(" deadband")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDEADBAND);
     }
-    else if(CmdStr.contains(" device absent"))
+    else if(CmdStr.find(" device absent")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDEVICEABSENT);
     }
-    else if(CmdStr.contains(" device type"))
+    else if(CmdStr.find(" device type")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDEVICETYPE);
     }
-    else if(CmdStr.contains(" displayed temp"))
+    else if(CmdStr.find(" displayed temp")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDISPLAYEDTEMPERATURE);
     }
-    else if(CmdStr.contains(" dlc"))
+    else if(CmdStr.find(" dlc")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDLC);
     }
-    else if(CmdStr.contains(" fanswitch") || CmdStr.contains(" fan switch"))
+    else if(CmdStr.find(" fanswitch")!=string::npos || CmdStr.find(" fan switch")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETFANSWITCH);
     }
-    else if(CmdStr.contains(" filter"))
+    else if(CmdStr.find(" filter")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETFILTER);
     }
-    else if(CmdStr.contains(" heatpump fault"))
+    else if(CmdStr.find(" heatpump fault")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETHEATPUMPFAULT);
     }
-    else if(CmdStr.contains(" setpoint limits"))
+    else if(CmdStr.find(" setpoint limits")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETSETPOINTLIMITS);
     }
-    else if(CmdStr.contains(" outdoor temp"))
+    else if(CmdStr.find(" outdoor temp")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETOUTDOORTEMP);
     }
-    else if(CmdStr.contains(" schedule"))
+    else if(CmdStr.find(" schedule")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETSCHEDULE);
     }
-    else if(CmdStr.contains(" system switch"))
+    else if(CmdStr.find(" system switch")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETSYSTEMSWITCH);
     }
-    else if(CmdStr.contains(" utility setpoint"))
+    else if(CmdStr.find(" utility setpoint")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETUTILSETPOINT);
     }
-    else if(CmdStr.contains(" clock"))
+    else if(CmdStr.find(" clock")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETCLOCK);
     }
-    else if(CmdStr.contains(" device bound"))
+    else if(CmdStr.find(" device bound")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETDEVICEBOUND);
     }
-    else if(CmdStr.contains(" all"))
+    else if(CmdStr.find(" all")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETALL);
     }
-    else if(CmdStr.contains(" addressing"))
+    else if(CmdStr.find(" addressing")!=string::npos)
     {
         parse.setValue("epget", TYPE_GETADDRESSING);
     }
@@ -3190,8 +3199,8 @@ int CtiDeviceGatewayStat::parsePutConfigRequest(CtiCommandParser &parse)
 {
     int status = NORMAL;
 
-    RWCString CmdStr = parse.getCommandStr();
-    CmdStr.toLower();
+    string CmdStr = parse.getCommandStr();
+    std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
 
     return status;
 }
@@ -3216,7 +3225,7 @@ void CtiDeviceGatewayStat::generateReplyVector(CtiDeviceGatewayStat::OpCol_t::va
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Operation " << valtype.getOperation() << " too low" << endl;
                     }
                     break;
@@ -3246,9 +3255,9 @@ void CtiDeviceGatewayStat::generateReplyVector(CtiDeviceGatewayStat::OpCol_t::va
 
 bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int period )
 {
-    RWCString astr;
+    string astr;
     bool error = true;
-    RWTime now;
+    CtiTime now;
 
     CtiTableGatewayEndDevice tstamp;
     CtiTableGatewayEndDevice ged;
@@ -3260,34 +3269,34 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     {
     case TYPE_ALLOWEDSYSTEMSWITCH:
         {
-            now = RWTime(_allowedSystemSwitch._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Received Allowed System Switch: "));
+            now = CtiTime(_allowedSystemSwitch._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Received Allowed System Switch: "));
             if(_allowedSystemSwitch._allowedSystemSwitch == 0)
             {
-                astr += (RWCString("Allowed System Switch Unknown"));
+                astr += (string("Allowed System Switch Unknown"));
             }
             else
             {
-                astr += RWCString("  Allowed:  ");
+                astr += string("  Allowed:  ");
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x01)
                 {
-                    astr += RWCString("ER Heat ");
+                    astr += string("ER Heat ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x02)
                 {
-                    astr += RWCString("Heat ");
+                    astr += string("Heat ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x04)
                 {
-                    astr += RWCString("Off ");
+                    astr += string("Off ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x08)
                 {
-                    astr += RWCString("Cool ");
+                    astr += string("Cool ");
                 }
                 if(_allowedSystemSwitch._allowedSystemSwitch & 0x10)
                 {
-                    astr += RWCString("Auto ");
+                    astr += string("Auto ");
                 }
             }
 
@@ -3298,23 +3307,23 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_battery._battery)
             {
             case 0:
-                astr = RWCString("BAD");
+                astr = string("BAD");
                 break;
 
             case 1:
-                astr = RWCString("GOOD");
+                astr = string("GOOD");
                 break;
 
             case 2:
-                astr = RWCString("(UNKNOWN)");
+                astr = string("(UNKNOWN)");
                 break;
 
             default:
-                astr += RWCString("(UNKNOWN)");
+                astr += string("(UNKNOWN)");
                 break;
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_BATTERY);
                 ged.setDataValue(astr);
@@ -3329,10 +3338,10 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_RUNTIME:
         {
-            astr = RWCString(CtiNumStr(_runtime._coolRuntime)+ ",");
+            astr = string(CtiNumStr(_runtime._coolRuntime)+ ",");
             astr += CtiNumStr(_runtime._heatRuntime);
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_RUNTIMES);
                 ged.setDataValue(astr);
@@ -3346,80 +3355,80 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_setpoints._coolSetpoint >= 0x7f00 || _setpoints._heatSetpoint >= 0x7f00)
             {
-                astr = RWCString("0,");
-                astr += RWCString("0,");
+                astr = string("0,");
+                astr += string("0,");
             }
             else
             {
-                astr = RWCString(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + ",");
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + ",");
+                astr = string(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + ",");
+                astr += string(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + ",");
             }
 
             switch(_setpoints._setpointStatus)
             {
             case 0:
-                astr += RWCString("SCHEDULE");
+                astr += string("SCHEDULE");
                 break;
 
             case 1:
-                astr += RWCString("TEMP");
+                astr += string("TEMP");
                 break;
 
             case 2:
-                astr += RWCString("HOLD");
+                astr += string("HOLD");
                 break;
 
             case 254:
-                astr += RWCString("VACATION");
+                astr += string("VACATION");
 
                 if(_setpoints._vacationHoldDays == 0xffff)
                 {
-                    astr += RWCString(",0");
+                    astr += string(",0");
                 }
                 else
                 {
-                    astr += RWCString("," + CtiNumStr(_setpoints._vacationHoldDays) );
+                    astr += string("," + CtiNumStr(_setpoints._vacationHoldDays) );
                 }
 
-                astr += RWCString(",");
+                astr += string(",");
 
                 switch(_setpoints._vacationHoldPeriod)
                 {
                 case 0:
-                    astr += RWCString("WAKE");
+                    astr += string("WAKE");
                     break;
 
                 case 1:
-                    astr += RWCString("LEAVE");
+                    astr += string("LEAVE");
                     break;
 
                 case 2:
-                    astr += RWCString("RETURN");
+                    astr += string("RETURN");
                     break;
 
                 case 3:
-                    astr += RWCString("SLEEP");
+                    astr += string("SLEEP");
                     break;
 
                 case 255:
-                    astr += RWCString("UNKNOWN");
+                    astr += string("UNKNOWN");
                     break;
 
                 default:
-                    astr += RWCString("INVALID");
+                    astr += string("INVALID");
                     break;
                 }
                 break;
 
             case 255:
-                astr += RWCString("UNKNOWN");
+                astr += string("UNKNOWN");
                 break;
 
             default:
-                astr += RWCString("INVALID");
+                astr += string("INVALID");
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_SETPOINTS);
                 ged.setDataValue(astr);
@@ -3430,16 +3439,16 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_DEADBAND:
         {
-            now = RWTime(_deadband._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Deadband Received: "));
+            now = CtiTime(_deadband._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Deadband Received: "));
 
             if(_deadband._deadband == 255)
             {
-                astr += RWCString("Unknown");
+                astr += string("Unknown");
             }
             else
             {
-                astr += RWCString(CtiNumStr(_deadband._deadband) + getUnitName(true, true));
+                astr += string(CtiNumStr(_deadband._deadband) + getUnitName(true, true));
             }
 
 
@@ -3448,45 +3457,45 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_DEVICEABSENT:
         {
-            now = RWTime(_deviceAbsent._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Absent Received: " ));
+            now = CtiTime(_deviceAbsent._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Absent Received: " ));
 
             if(_deviceAbsent._deviceAbsent)
             {
-                astr += RWCString("TRUE");
+                astr += string("TRUE");
             }
             else
             {
-                astr += RWCString("FALSE");
+                astr += string("FALSE");
             }
 
             break;
         }
     case TYPE_DEVICETYPE:
         {
-            now = RWTime(_deviceType._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Type Received: "));
+            now = CtiTime(_deviceType._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Type Received: "));
 
             switch(_deviceType._deviceType)
             {
             case 0:
-                astr += RWCString("UNKNOWN");
+                astr += string("UNKNOWN");
                 break;
 
             case 1:
-                astr += RWCString("T8665C");
+                astr += string("T8665C");
                 break;
 
             case 2:
-                astr += RWCString("T8665D");
+                astr += string("T8665D");
                 break;
 
             case 3:
-                astr += RWCString("T8665E");
+                astr += string("T8665E");
                 break;
 
             default:
-                astr += RWCString("Invalid = " + CtiNumStr((int)_deviceType._deviceType));
+                astr += string("Invalid = " + CtiNumStr((int)_deviceType._deviceType));
                 break;
             }
 
@@ -3500,9 +3509,9 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 dt = dt / 2 ;
             }
 
-            astr = RWCString(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + "," + getUnitName(true, true));
+            astr = string(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + "," + getUnitName(true, true));
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_DISPLAYED_TEMP);
                 ged.setDataValue(astr);
@@ -3516,7 +3525,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_DLC._cycleDuration == 0xffff)
             {
-                astr += RWCString("0,"); // (RWCString("Unknown"));
+                astr += string("0,"); // (string("Unknown"));
             }
             else if(_DLC._cycleDuration <= 255)
             {
@@ -3524,12 +3533,12 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += RWCString("0,"); // (RWCString("Invalid"));
+                astr += string("0,"); // (string("Invalid"));
             }
 
             if(_DLC._cyclePeriod == 0xffff)
             {
-                astr += RWCString("0,");    // (RWCString("Unknown"));
+                astr += string("0,");    // (string("Unknown"));
             }
             else if(_DLC._cyclePeriod <= 255)
             {
@@ -3537,12 +3546,12 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += RWCString("0,");    // (RWCString("Invalid"));
+                astr += string("0,");    // (string("Invalid"));
             }
 
             if(_DLC._duration == 0xffff)
             {
-                astr += (RWCString("0,"));
+                astr += (string("0,"));
             }
             else
             {
@@ -3552,19 +3561,19 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_DLC._override)
             {
             case 0:
-                astr += (RWCString("NO OVERRIDE"));
+                astr += (string("NO OVERRIDE"));
                 break;
 
             case 1:
-                astr += (RWCString("ACTIVE OVERRIDE"));
+                astr += (string("ACTIVE OVERRIDE"));
                 break;
 
             case 255:
-                astr += (RWCString("UNKNOWN OVERRIDE"));
+                astr += (string("UNKNOWN OVERRIDE"));
                 break;
 
             default:
-                astr += (RWCString("INVALID OVERRIDE"));
+                astr += (string("INVALID OVERRIDE"));
                 break;
             }
 
@@ -3572,24 +3581,24 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_DLC._overrideDisable)
             {
             case 0:
-                astr += (RWCString(",AVAILABLE"));
+                astr += (string(",AVAILABLE"));
                 break;
 
             case 1:
-                astr += (RWCString(",PROHIBITED"));
+                astr += (string(",PROHIBITED"));
                 break;
 
             case 255:
-                astr += (RWCString(",UNKNOWN"));
+                astr += (string(",UNKNOWN"));
                 break;
 
             default:
-                astr += (RWCString(",INVALID"));
+                astr += (string(",INVALID"));
                 break;
             }
 
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_DLC);
                 ged.setDataValue(astr);
@@ -3603,22 +3612,22 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_fanSwitch._fanSwitch == 0)
             {
-                astr = (RWCString("AUTO"));
+                astr = (string("AUTO"));
             }
             else if(_fanSwitch._fanSwitch == 255)
             {
-                astr = (RWCString("AUTO"));
+                astr = (string("AUTO"));
             }
             else if(_fanSwitch._fanSwitch >= 1 && _fanSwitch._fanSwitch <= 200)
             {
-                astr += (RWCString("ON"));
+                astr += (string("ON"));
             }
             else
             {
-                astr += (RWCString("AUTO"));
+                astr += (string("AUTO"));
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_FAN_SWITCH);
                 ged.setDataValue(astr);
@@ -3632,30 +3641,30 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_filter._filterRestart == 0)
             {
-                astr += (RWCString("-1,-1"));
+                astr += (string("-1,-1"));
             }
             else if(_filter._filterRestart == 255)
             {
-                astr += (RWCString("-1,-1"));
+                astr += (string("-1,-1"));
             }
             else
             {
                 if(_filter._filterRemaining == 0)
                 {
-                    astr += (RWCString("0,"));
+                    astr += (string("0,"));
                 }
                 else if(_filter._filterRemaining == 255)
                 {
-                    astr += (RWCString("-1,"));
+                    astr += (string("-1,"));
                 }
                 else
                 {
-                    astr += (RWCString(CtiNumStr(_filter._filterRemaining) + ","));
+                    astr += (string(CtiNumStr(_filter._filterRemaining) + ","));
                 }
                 astr += CtiNumStr(_filter._filterRestart);
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_FILTER);
                 ged.setDataValue(astr);
@@ -3666,25 +3675,25 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_HEATPUMPFAULT:
         {
-            now = RWTime(_heatPumpFault._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Heatpump Fault Received: " ));
+            now = CtiTime(_heatPumpFault._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Heatpump Fault Received: " ));
 
             switch(_heatPumpFault._heatPumpFault)
             {
             case 0:
-                astr += (RWCString("NO FAULT"));
+                astr += (string("NO FAULT"));
                 break;
 
             case 1:
-                astr += (RWCString("FAULT"));
+                astr += (string("FAULT"));
                 break;
 
             case 255:
-                astr += (RWCString("(UNKNOWN)"));
+                astr += (string("(UNKNOWN)"));
                 break;
 
             default:
-                astr += (RWCString("INVALID"));
+                astr += (string("INVALID"));
                 break;
             }
 
@@ -3697,23 +3706,23 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_setpointLimits._lowerCoolSetpointLimit >= 0x7f00)
             {
-                astr += (RWCString("-1,"));
+                astr += (string("-1,"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + ","));
+                astr += (string(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + ","));
             }
 
             if(_setpointLimits._upperHeatSetpointLimit >= 0x7f00)
             {
-                astr += (RWCString("-1"));
+                astr += (string("-1"));
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)));
+                astr += string(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)));
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_SETPOINT_LIMITS);
                 ged.setDataValue(astr);
@@ -3726,37 +3735,37 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_outdoorTemp._outdoorTemperature >= 0x7f00)
             {
-                // astr += (RWCString("Unknown"));
+                // astr += (string("Unknown"));
                 astr = CtiNumStr(-100);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8000)
             {
-                // astr += (RWCString("Shorted Sensor"));
+                // astr += (string("Shorted Sensor"));
                 astr = CtiNumStr(-101);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8100)
             {
-                // astr += (RWCString("Open Sensor"));
+                // astr += (string("Open Sensor"));
                 astr = CtiNumStr(-102);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8200)
             {
-                // astr += (RWCString("Not Available"));
+                // astr += (string("Not Available"));
                 astr = CtiNumStr(-103);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8300)
             {
-                // astr += (RWCString("Out of Range High"));
+                // astr += (string("Out of Range High"));
                 astr = CtiNumStr(-104);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8400)
             {
-                // astr += (RWCString("Out of Range Low"));
+                // astr += (string("Out of Range Low"));
                 astr = CtiNumStr(-105);
             }
             else if((_outdoorTemp._outdoorTemperature & 0xff00) == 0x8500)
             {
-                // astr += (RWCString("Unreliable"));
+                // astr += (string("Unreliable"));
                 astr = CtiNumStr(-106);
             }
             else
@@ -3764,7 +3773,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 astr += CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature));
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_OUTDOOR_TEMP);
                 ged.setDataValue(astr);
@@ -3779,12 +3788,12 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             INT id = (ID_SCHEDULE_MON_WAKE + ( ((day + 6) % 7) * EP_PERIODS_PER_DAY ) + period);      // This is the first schedule ID!
             astr = generateTidbitScheduleToDatabase(day, period);
 
-            if(Type == TYPE_SCHEDULE_CH && !astr.isNull())
+            if(Type == TYPE_SCHEDULE_CH && !astr.empty())
             {
                 astr += ",CONFIRMED";
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(id);
                 ged.setDataValue(astr);
@@ -3799,19 +3808,19 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_systemSwitch._systemSwitch)
             {
             case 0:
-                astr = (RWCString("EMERGENCY HEAT"));
+                astr = (string("EMERGENCY HEAT"));
                 break;
 
             case 1:
-                astr = (RWCString("HEAT"));
+                astr = (string("HEAT"));
                 break;
 
             case 2:
-                astr = (RWCString("OFF"));
+                astr = (string("OFF"));
                 break;
 
             case 3:
-                astr = (RWCString("COOL"));
+                astr = (string("COOL"));
                 break;
 
             case 4:
@@ -3827,44 +3836,44 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
 
                     if(_displayedTemp._utime == YUKONEOT)   // Take a guess!
                     {
-                        switch(RWDate().month())
+                        switch(CtiDate().month())
                         {
                         case 6:
                         case 7:
                         case 8:
                         case 9:
-                            astr = (RWCString("COOL,(AUTO)"));
+                            astr = (string("COOL,(AUTO)"));
                             break;
                         default:
-                            astr = (RWCString("HEAT,(AUTO)"));
+                            astr = (string("HEAT,(AUTO)"));
                             break;
                         }
                     }
                     else if( _displayedTemp._displayedTemperature > coolsp )
                     {
-                        astr = (RWCString("COOL,(AUTO)"));
+                        astr = (string("COOL,(AUTO)"));
                     }
                     else if(_displayedTemp._displayedTemperature < heatsp)
                     {
-                        astr = (RWCString("HEAT,(AUTO)"));
+                        astr = (string("HEAT,(AUTO)"));
                     }
                     else
                     {
-                        astr = RWCString(); // Don't change the table!.
+                        astr = string(); // Don't change the table!.
                     }
 
                     break;
                 }
             case 255:
-                astr = (RWCString("(UNKNOWN)"));
+                astr = (string("(UNKNOWN)"));
                 break;
 
             default:
-                astr = (RWCString("(UNKNOWN)")); // INVALID"));
+                astr = (string("(UNKNOWN)")); // INVALID"));
                 break;
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_SYSTEM_SWITCH);
                 ged.setDataValue(astr);
@@ -3878,151 +3887,151 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             if(_utilSetpoint._utilCoolSetpoint >= 0x7f00)
             {
-                astr = RWCString("(UNKNOWN),");
+                astr = string("(UNKNOWN),");
             }
             else
             {
-                astr = RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + ",");
+                astr = string(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + ",");
             }
 
             if(_utilSetpoint._utilHeatSetpoint >= 0x7f00)
             {
-                astr += RWCString("(UNKNOWN),");
+                astr += string("(UNKNOWN),");
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + ",");
+                astr += string(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + ",");
             }
 
             if(_utilSetpoint._utilDuration == 0)
             {
-                astr += (RWCString("INACTIVE,"));
+                astr += (string("INACTIVE,"));
             }
             else if(_utilSetpoint._utilDuration <= 1440)
             {
-                astr += RWCString(CtiNumStr(_utilSetpoint._utilDuration) + ",");
+                astr += string(CtiNumStr(_utilSetpoint._utilDuration) + ",");
             }
             else
             {
-                astr += (RWCString("INVALID,"));
+                astr += (string("INVALID,"));
             }
 
             switch(_utilSetpoint._utilMode)
             {
             case 0:
-                astr += (RWCString("INACTIVE,"));
+                astr += (string("INACTIVE,"));
                 break;
 
             case 1:
-                astr += (RWCString("PRICE TIER,"));
+                astr += (string("PRICE TIER,"));
                 break;
 
             case 2:
-                astr += (RWCString("TEMPERATURE OFFSET,"));
+                astr += (string("TEMPERATURE OFFSET,"));
                 break;
 
             case 3:
-                astr += (RWCString("PRECONDITION,"));
+                astr += (string("PRECONDITION,"));
                 break;
 
             case 255:
-                astr += (RWCString("UNKNOWN,"));
+                astr += (string("UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("INVALID,"));
+                astr += (string("INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilPriceTier)
             {
             case 0:
-                astr += (RWCString("NONE,"));
+                astr += (string("NONE,"));
                 break;
 
             case 1:
-                astr += (RWCString("LOW,"));
+                astr += (string("LOW,"));
                 break;
 
             case 2:
-                astr += (RWCString("MEDIUM,"));
+                astr += (string("MEDIUM,"));
                 break;
 
             case 3:
-                astr += (RWCString("HIGH,"));
+                astr += (string("HIGH,"));
                 break;
 
             case 4:
-                astr += (RWCString("CRITICAL,"));
+                astr += (string("CRITICAL,"));
                 break;
 
             case 255:
-                astr += (RWCString("UNKNOWN,"));
+                astr += (string("UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("INVALID,"));
+                astr += (string("INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilUserOverride)
             {
             case 0:
-                astr += (RWCString("NO OVERRIDE,"));
+                astr += (string("NO OVERRIDE,"));
                 break;
 
             case 1:
-                astr += (RWCString("USER OVERRIDE ACTIVE,"));
+                astr += (string("USER OVERRIDE ACTIVE,"));
                 break;
 
             case 255:
-                astr += (RWCString("USER OVERRIDE UNKNOWN,"));
+                astr += (string("USER OVERRIDE UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("USER OVERRIDE INVALID,"));
+                astr += (string("USER OVERRIDE INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilUserOverrideDisable)
             {
             case 0:
-                astr += (RWCString("PROHIBITED,"));
+                astr += (string("PROHIBITED,"));
                 break;
 
             case 1:
-                astr += (RWCString("AVAILABLE,"));
+                astr += (string("AVAILABLE,"));
                 break;
 
             case 255:
-                astr += (RWCString("UNKNOWN,"));
+                astr += (string("UNKNOWN,"));
                 break;
 
             default:
-                astr += (RWCString("INVALID,"));
+                astr += (string("INVALID,"));
                 break;
             }
 
             switch(_utilSetpoint._utilAIRDisable)
             {
             case 0:
-                astr += (RWCString("ENABLED"));
+                astr += (string("ENABLED"));
                 break;
 
             case 1:
-                astr += (RWCString("DISABLED"));
+                astr += (string("DISABLED"));
                 break;
 
             case 255:
-                astr += (RWCString("UNKNOWN"));
+                astr += (string("UNKNOWN"));
                 break;
 
             default:
-                astr += (RWCString("INVALID"));
+                astr += (string("INVALID"));
                 break;
             }
 
-            if(!astr.isNull())
+            if(!astr.empty())
             {
                 ged.setDataType(ID_UTILITY_SETPOINTS);
                 ged.setDataValue(astr);
@@ -4033,8 +4042,8 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_CLOCK:
         {
-            now = RWTime(_clock._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Clock Received: "));
+            now = CtiTime(_clock._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Clock Received: "));
 
             // Return value:
             //  0 = Monday
@@ -4050,80 +4059,80 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_clock._day)
             {
             case 6:
-                astr += (RWCString("Sunday"));
+                astr += (string("Sunday"));
                 break;
 
             case 0:
-                astr += (RWCString("Monday"));
+                astr += (string("Monday"));
                 break;
 
             case 1:
-                astr += (RWCString("Tuesday"));
+                astr += (string("Tuesday"));
                 break;
 
             case 2:
-                astr += (RWCString("Wednesday"));
+                astr += (string("Wednesday"));
                 break;
 
             case 3:
-                astr += (RWCString("Thursday"));
+                astr += (string("Thursday"));
                 break;
 
             case 4:
-                astr += (RWCString("Friday"));
+                astr += (string("Friday"));
                 break;
 
             case 5:
-                astr += (RWCString("Saturday"));
+                astr += (string("Saturday"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (string("Unknown"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (string("Invalid"));
                 break;
             }
 
-            astr += (RWCString(", "));
+            astr += (string(", "));
             if(_clock._hour == 255)
             {
-                astr += (RWCString("UU:"));
+                astr += (string("UU:"));
             }
             else if(_clock._hour < 24)
             {
-                astr += (RWCString(CtiNumStr(_clock._hour).zpad(2) + ":"));
+                astr += (string(CtiNumStr(_clock._hour).zpad(2) + ":"));
             }
             else
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
 
             if(_clock._minute == 255)
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
             else if(_clock._minute < 60)
             {
-                astr += (RWCString(CtiNumStr(_clock._minute).zpad(2) + ":"));
+                astr += (string(CtiNumStr(_clock._minute).zpad(2) + ":"));
             }
             else
             {
-                astr += (RWCString("II:"));
+                astr += (string("II:"));
             }
 
             if(_clock._second == 255)
             {
-                astr += (RWCString("UU"));
+                astr += (string("UU"));
             }
             else if(_clock._second < 60)
             {
-                astr += (RWCString(CtiNumStr(_clock._second).zpad(2)));
+                astr += (string(CtiNumStr(_clock._second).zpad(2)));
             }
             else
             {
-                astr += (RWCString("II"));
+                astr += (string("II"));
             }
 
 
@@ -4131,24 +4140,24 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_DEVICEBOUND:
         {
-            now = RWTime(_deviceBound._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Bound Received: "));
+            now = CtiTime(_deviceBound._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Bound Received: "));
 
 
             break;
         }
     case TYPE_DEVICEUNBOUND:
         {
-            now = RWTime(_deviceUnbound._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Device Unbound Received: "));
+            now = CtiTime(_deviceUnbound._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" Device Unbound Received: "));
 
             break;
         }
     case TYPE_RETURNCODE:
         {
-            now = RWTime(_returnCode._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" ReturnCode Received: "));
-            astr += "Responded with condition: " + CtiNumStr(_returnCode._returnCode) + " from a command of type: " + CtiNumStr(_returnCode._setType);
+            now = CtiTime(_returnCode._utime);
+            astr = (now.asString() + string(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + string(" ReturnCode Received: "));
+            astr += "Responded with condition: " + CtiNumStr(_returnCode._returnCode) + string(" from a command of type: ") + CtiNumStr(_returnCode._setType);
 
             break;
         }
@@ -4163,12 +4172,13 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     {
         try
         {
-            RWDate gmtdate( now, RWZone::utc() );
+            CtiTime _now = now;
+            CtiDate gmtdate( _now.toUTCtime() );
             // Always record one of these
             tstamp.setSerialNumber(getDeviceSerialNumber());
             tstamp.setHardwareType(TYPE_ENERGYPRO);
             tstamp.setDataType(ID_TIMESTAMP);
-            RWCString gmt_str = gmtdate.asString("%Y/%m/%d ") + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+            string gmt_str = gmtdate.asString() + " " + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
             tstamp.setDataValue( gmt_str );
 
             ged.Update();
@@ -4178,7 +4188,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Exception recording data for thermostat!" << endl;
             }
         }
@@ -4187,11 +4197,11 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     return error;
 }
 
-RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int period)
+string CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int period)
 {
     bool status = false;
 
-    RWCString astr;
+    string astr;
 
     {
         if( (day >= 0 && day < 7) && (period >= 0 && period < EP_PERIODS_PER_DAY))   // valid day & period.
@@ -4199,38 +4209,38 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             switch(_schedule[day][period]._fan)
             {
             case 3:
-                astr += (RWCString("ON,  "));
+                astr += (string("ON,  "));
                 break;
             case 1:
-                astr += (RWCString("AUTO,"));
+                astr += (string("AUTO,"));
                 break;
-            case 0:                                 // astr += (RWCString("NSch"));
-            case 2:                                 // astr += (RWCString("Circ"));
-            case 255:                               // astr += (RWCString("Unk "));
-            default:                                // astr += (RWCString("Inv "));
-                astr += (RWCString("NONE,"));
+            case 0:                                 // astr += (string("NSch"));
+            case 2:                                 // astr += (string("Circ"));
+            case 255:                               // astr += (string("Unk "));
+            default:                                // astr += (string("Inv "));
+                astr += (string("NONE,"));
                 break;
             }
 
 
             if(_schedule[day][period]._hour == 254)
             {
-                // astr += (RWCString("CC:"));      // Restart/Unknown
-                astr += (RWCString("-1,"));
+                // astr += (string("CC:"));      // Restart/Unknown
+                astr += (string("-1,"));
             }
             else if(_schedule[day][period]._hour == 255)
             {
-                // astr += (RWCString("UU:"));      // Unknown
-                astr += (RWCString("-1,"));
+                // astr += (string("UU:"));      // Unknown
+                astr += (string("-1,"));
             }
             else if(_schedule[day][period]._hour < 24)
             {
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ","));
+                astr += (string(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ","));
             }
             else
             {
-                // astr += (RWCString("II:"));      // Invalid
-                astr += (RWCString("-1,"));
+                // astr += (string("II:"));      // Invalid
+                astr += (string("-1,"));
             }
 
             switch(_schedule[day][period]._minute)
@@ -4239,35 +4249,35 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             case 15:
             case 30:
             case 45:
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._minute).zpad(2) + ","));
+                astr += (string(CtiNumStr(_schedule[day][period]._minute).zpad(2) + ","));
                 break;
 
-            case 254:   // astr += (RWCString("CC"));
-            case 255:   // astr += (RWCString("UU"));
-            default:    // astr += (RWCString("II"));
-                astr += (RWCString("-1,"));
+            case 254:   // astr += (string("CC"));
+            case 255:   // astr += (string("UU"));
+            default:    // astr += (string("II"));
+                astr += (string("-1,"));
                 break;
             }
 
             short sp = convertFromStatTemp(_schedule[day][period]._coolSetpoint);
             if(_schedule[day][period]._coolSetpoint >= 0x7f00)
             {
-                astr += RWCString("0,");
+                astr += string("0,");
             }
             else
             {
-                astr += RWCString(CtiNumStr(sp) + ",");
+                astr += string(CtiNumStr(sp) + ",");
             }
 
             sp = convertFromStatTemp(_schedule[day][period]._heatSetpoint);
 
             if(_schedule[day][period]._heatSetpoint >= 0x7f00)
             {
-                astr += (RWCString("0"));
+                astr += (string("0"));
             }
             else
             {
-                astr += (RWCString(CtiNumStr(sp)));
+                astr += (string(CtiNumStr(sp)));
             }
         }
     }
@@ -4275,9 +4285,9 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
     return astr;
 }
 
-RWCString CtiDeviceGatewayStat::getUnitName(bool abbreviated, bool nospaces)
+string CtiDeviceGatewayStat::getUnitName(bool abbreviated, bool nospaces)
 {
-    RWCString str;
+    string str;
 
     if(_displayedTemp._displayedTempUnits == 1)     // This is Celsius
     {
@@ -4296,7 +4306,7 @@ RWCString CtiDeviceGatewayStat::getUnitName(bool abbreviated, bool nospaces)
 
     if(nospaces)
     {
-        str = str.strip(RWCString::both);
+        str = trim(str);
     }
 
     return str;
@@ -4356,7 +4366,7 @@ bool CtiDeviceGatewayStat::getCompletedOperation( CtiPendingStatOperation &op )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " dumped after line " << line << endl;
         }
     }
@@ -4368,10 +4378,10 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
 {
     int processed = 0;
 
-    RWCString hhstr("xctodshh_" + CtiNumStr(per));
-    RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-    RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-    RWCString coolstr("xctodscool_" + CtiNumStr(per));
+    string hhstr("xctodshh_" + CtiNumStr(per));
+    string mmstr("xctodsmm_" + CtiNumStr(per));
+    string heatstr("xctodsheat_" + CtiNumStr(per));
+    string coolstr("xctodscool_" + CtiNumStr(per));
 
     BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
     BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
@@ -4420,7 +4430,7 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Day    " << dow << endl;
                 dout << " Period " << pod+1 << endl;
             }
@@ -4440,8 +4450,8 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
 SHORT CtiDeviceGatewayStat::getCurrentHeatSchedule() const
 {
     SHORT val = 0;
-    RWDate today;
-    RWTime now;
+    CtiDate today;
+    CtiTime now;
 
     int day = today.weekDay();
     int period;
@@ -4470,8 +4480,8 @@ SHORT CtiDeviceGatewayStat::getCurrentHeatSchedule() const
 SHORT CtiDeviceGatewayStat::getCurrentCoolSchedule() const
 {
     SHORT val = 0;
-    RWDate today;
-    RWTime now;
+    CtiDate today;
+    CtiTime now;
 
     int day = today.weekDay();
     int period;
@@ -4501,7 +4511,7 @@ int CtiDeviceGatewayStat::estimateSetpointPriority()
 {
     int sppriority;
 
-    switch(RWDate().month())
+    switch(CtiDate().month())
     {
     case 6:
     case 7:
@@ -4536,7 +4546,7 @@ void CtiDeviceGatewayStat::postAnalogOutputPoint(UINT Type, UINT pointoffset, do
 
         if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(pointoffset, AnalogPointType)) != NULL)
         {
-            RWCString valReport = printListAsString(Type);
+            string valReport = printListAsString(Type);
 
             LockGuard guard(monitor());
 

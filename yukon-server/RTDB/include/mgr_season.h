@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_season.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/06/28 20:13:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,20 +18,23 @@
 
 #include <map>
 
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
 
 #include "dlldefs.h"
 #include "mutex.h"
 #include "guard.h"
 #include "logger.h"
 
-using namespace std;
+using std::map;
+using std::multimap;
+using std::string;
 
 class IM_EX_SEASONDB CtiSeasonManager
 {
 public:
-    bool isInSeason(const RWDate& date = RWDate(), long season_sched_id=0);
-    bool isInSeason(long season_sched_id, const RWDate& date = RWDate());
+    bool isInSeason(const CtiDate& date = CtiDate(), long season_sched_id=0);
+    bool isInSeason(long season_sched_id, const CtiDate& date = CtiDate());
     void refresh();
 
     static CtiSeasonManager& getInstance();
@@ -46,7 +49,7 @@ private:
 	unsigned end_day;
     };
 
-    multimap<long,date_of_season> _season_map;
+    std::multimap<long,date_of_season> _season_map;
 
     static CtiMutex _mux;
     static CtiSeasonManager* _instance;

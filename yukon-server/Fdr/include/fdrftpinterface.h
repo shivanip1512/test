@@ -29,7 +29,7 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRFtpInterface(RWCString &interfaceType); 
+        CtiFDRFtpInterface(string &interfaceType); 
     
         virtual ~CtiFDRFtpInterface();
     
@@ -54,29 +54,29 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         HINTERNET iSessionHandle;
         HINTERNET iInitialHandle;
 
-        RWCString & getIPAddress();
-        RWCString  getIPAddress() const;
-        CtiFDRFtpInterface &setIPAddress (RWCString aIP);
+        string & getIPAddress();
+        string  getIPAddress() const;
+        CtiFDRFtpInterface &setIPAddress (string aIP);
     
-        RWCString & getPassword();
-        RWCString  getPassword() const;
-        CtiFDRFtpInterface &setPassword (RWCString aPassword);
+        string & getPassword();
+        string  getPassword() const;
+        CtiFDRFtpInterface &setPassword (string aPassword);
     
-        RWCString & getLogin();
-        RWCString  getLogin() const;
-        CtiFDRFtpInterface &setLogin (RWCString aLogin);
+        string & getLogin();
+        string  getLogin() const;
+        CtiFDRFtpInterface &setLogin (string aLogin);
     
-        RWCString & getServerFileName();
-        RWCString  getServerFileName() const;
-        CtiFDRFtpInterface &setServerFileName (RWCString aFile);
+        string & getServerFileName();
+        string  getServerFileName() const;
+        CtiFDRFtpInterface &setServerFileName (string aFile);
     
-        RWCString & getFTPDirectory();
-        RWCString  getFTPDirectory() const;
-        CtiFDRFtpInterface &setFTPDirectory (RWCString aDir);
+        string & getFTPDirectory();
+        string  getFTPDirectory() const;
+        CtiFDRFtpInterface &setFTPDirectory (string aDir);
 
-        RWCString & getLocalFileName();
-        RWCString  getLocalFileName() const;
-        CtiFDRFtpInterface &setLocalFileName (RWCString aFile);
+        string & getLocalFileName();
+        string  getLocalFileName() const;
+        CtiFDRFtpInterface &setLocalFileName (string aFile);
     
         int getPort() const;
         CtiFDRFtpInterface &setPort (int aPort);
@@ -103,12 +103,12 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         int                iDownloadInterval;
         long               iLinkStatusID;
     
-        RWCString      iIPAddress;
-        RWCString      iPassword;
-        RWCString      iLogin;
-        RWCString      iServerFileName;
-        RWCString      iLocalFileName;
-        RWCString      iFTPDirectory;
+        string      iIPAddress;
+        string      iPassword;
+        string      iLogin;
+        string      iServerFileName;
+        string      iLocalFileName;
+        string      iFTPDirectory;
 };
 
 #endif  //  #ifndef __FDRFTPINTERFACE_H__

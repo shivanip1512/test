@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_dbchg.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
-#include <rw/rwtime.h>
 
 
 #include "collectable.h"
@@ -84,7 +83,7 @@ void CtiDBChangeMsg::dump() const
    dout << " Type of Change:     " << _typeofchange << endl;
 }
 
-CtiDBChangeMsg::CtiDBChangeMsg(LONG id,INT database, RWCString category, RWCString objecttype, INT typeofchange) :
+CtiDBChangeMsg::CtiDBChangeMsg(LONG id,INT database, string category, string objecttype, INT typeofchange) :
    _id(id),
    _database(database),
    _category(category),
@@ -122,8 +121,8 @@ CtiDBChangeMsg& CtiDBChangeMsg::operator=(const CtiDBChangeMsg& aRef)
 
 LONG         CtiDBChangeMsg::getId() const              { return _id; }
 INT          CtiDBChangeMsg::getDatabase() const        { return _database; }
-RWCString    CtiDBChangeMsg::getCategory() const        { return _category; }
-RWCString    CtiDBChangeMsg::getObjectType() const      { return _objecttype; }
+string    CtiDBChangeMsg::getCategory() const        { return _category; }
+string    CtiDBChangeMsg::getObjectType() const      { return _objecttype; }
 INT          CtiDBChangeMsg::getTypeOfChange() const    { return _typeofchange; }
 
 

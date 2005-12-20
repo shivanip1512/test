@@ -11,16 +11,32 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
       $Log: std_ansi_tbl_zero_one.cpp,v $
+      Revision 1.7  2005/12/20 17:19:57  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_zero_one.cpp
+      Revision 1.4.2.3  2005/07/27 19:28:01  alauinger
+      merged from the head 20050720
+
+
+      Revision 1.4.2.2  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
+      Revision 1.4.2.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.6  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5.2.1  2005/12/12 19:50:40  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.6
       Revision 1.5  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -36,6 +52,8 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_zero_one.h"
+
+using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -96,10 +114,10 @@ CtiAnsiTableZeroOne::~CtiAnsiTableZeroOne()
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroOne::printResult(RWCString deviceName )
+void CtiAnsiTableZeroOne::printResult(const string& deviceName )
 {
     int integer;
-    RWCString string1,string2;
+    string string1,string2;
     bool flag;
 
     /**************************************************************
@@ -151,47 +169,47 @@ CtiAnsiTableZeroOne& CtiAnsiTableZeroOne::operator=(const CtiAnsiTableZeroOne& a
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getRawManufacturer( void )
+string CtiAnsiTableZeroOne::getRawManufacturer( void )
 {
     CHAR temp[5];
     memset (temp,'\0',5);
     memcpy (temp, _manufacturer, 4);
-   return RWCString (temp);
+   return string (temp);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getResolvedManufacturer( void )
+string CtiAnsiTableZeroOne::getResolvedManufacturer( void )
 {
     CHAR temp[5];
     memset (temp,'\0',5);
     memcpy (temp, _manufacturer, 4);
-   return RWCString (temp);
+   return string (temp);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getRawModel( void )
+string CtiAnsiTableZeroOne::getRawModel( void )
 {
     CHAR temp[9];
     memset (temp,'\0',9);
     memcpy (temp, _ed_model, 8);
-    return RWCString (temp);
+    return string (temp);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getResolvedModel( void )
+string CtiAnsiTableZeroOne::getResolvedModel( void )
 {
     // need to take data format into account !!
     CHAR temp[9];
     memset (temp,'\0',9);
     memcpy (temp, _ed_model, 8);
-    return RWCString (temp);
+    return string (temp);
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getRawSerialNumber( void )
+string CtiAnsiTableZeroOne::getRawSerialNumber( void )
 {
-    RWCString ret;
+    string ret;
 
     if( _serialNumberFlag == false )
     {
@@ -200,29 +218,29 @@ RWCString CtiAnsiTableZeroOne::getRawSerialNumber( void )
            CHAR temp[9];
            memset (temp,'\0',9);
            memcpy (temp, _mfg_serial_number.bcd_sn, 8);
-           ret=RWCString (temp);
+           ret=string (temp);
        }
        else
        {
            CHAR temp[17];
            memset (temp,'\0',17);
            memcpy (temp, _mfg_serial_number.char_sn, 16);
-           ret=RWCString (temp);
+           ret=string (temp);
        }
     }
     else
     {
         CHAR temp[8];
-        ret=RWCString (_ui64toa(_mfg_serial_number.ll_sn,temp,10));
+        ret=string (_ui64toa(_mfg_serial_number.ll_sn,temp,10));
     }
 
-   return RWCString(ret);
+   return string(ret);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
+string CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
 {
-    RWCString ret;
+    string ret;
 
     if( _serialNumberFlag == false )
     {
@@ -234,7 +252,7 @@ RWCString CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
            {
                temp[x] = _mfg_serial_number.bcd_sn[x];
            }
-           ret=RWCString (temp);
+           ret=string (temp);
        }
        else
        {
@@ -244,7 +262,7 @@ RWCString CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
            {
                temp[x] = _mfg_serial_number.char_sn[x];
            }
-           ret=RWCString (temp);
+           ret=string (temp);
        }
     }
     else
@@ -258,10 +276,10 @@ RWCString CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
             sn.ch[x] = temp.ch[x];
         }
         CHAR strTmp[8];
-        ret=RWCString (_ui64toa(sn.u64,strTmp,10));
+        ret=string (_ui64toa(sn.u64,strTmp,10));
     }
 
-   return RWCString(ret);
+   return string(ret);
 }
 
 //=========================================================================================================================================

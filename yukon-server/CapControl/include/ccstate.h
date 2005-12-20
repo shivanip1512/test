@@ -36,11 +36,11 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 
     virtual ~CtiCCState();
 
-    const RWCString& getText() const;
+    const string& getText() const;
     LONG getForegroundColor() const;
     LONG getBackgroundColor() const;
 
-    CtiCCState& setText(const RWCString& text);
+    CtiCCState& setText(const string& text);
     CtiCCState& setForegroundColor(LONG foregroundcolor);
     CtiCCState& setBackgroundColor(LONG backgroundcolor);
 
@@ -54,7 +54,7 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 
 private:
 
-    RWCString _text;
+    string _text;
     LONG _foregroundcolor;
     LONG _backgroundcolor;
 

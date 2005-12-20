@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,17 +106,17 @@ VOID VConfigThread (VOID *Arg)
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " VConfig Thread Starting as TID:  " << CurrentTID() << endl;
+      dout << CtiTime() << " VConfig Thread Starting as TID:  " << CurrentTID() << endl;
    }
 
    /* Figure out what the name is */
-   if((gConfigParms.getValueAsString("PORTER_VCONFIGPATH")).isNull())
+   if((gConfigParms.getValueAsString("PORTER_VCONFIGPATH")).empty())
    {
       strcpy (Name, "CONFIG\\VCONFIG.DAT");
    }
    else
    {
-      strcpy (Name, gConfigParms.getValueAsString("PORTER_VCONFIGPATH").data() );
+      strcpy (Name, gConfigParms.getValueAsString("PORTER_VCONFIGPATH").c_str() );
       strcat (Name, "VCONFIG.DAT");
    }
 

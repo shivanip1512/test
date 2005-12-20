@@ -63,6 +63,8 @@
 #include "rwutil.h"
 #include "tbl_paoexclusion.h"
 
+using namespace std;
+
 extern ULONG _LM_DEBUG;
 
 struct id_hash{LONG operator()(LONG x) const { return x; } };
@@ -75,7 +77,7 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidRWDBDateTime), _wascontrolareadeletedflag(false)
+CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidCtiTime), _wascontrolareadeletedflag(false)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _controlAreas = new RWOrdered();
@@ -93,7 +95,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - CtiLMControlAreaStore destructor called..." << endl;
+        dout << CtiTime() << " - CtiLMControlAreaStore destructor called..." << endl;
     }*/
     if( _resetthr.isValid() )
     {
@@ -104,7 +106,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
     shutdown();
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - CtiLMControlAreaStore destructor done!!!" << endl;
+        dout << CtiTime() << " - CtiLMControlAreaStore destructor done!!!" << endl;
     }*/
 }
 
@@ -139,7 +141,7 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** program, CtiLMControlArea** controlArea)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    RWOrdered* controlAreas = getControlAreas(RWDBDateTime().seconds());
+    RWOrdered* controlAreas = getControlAreas(CtiTime().seconds());
     for(LONG i=0; i < controlAreas->entries(); i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
@@ -176,7 +178,7 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** progr
 ----------------------------------------------------------------------------*/
 CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
 {
-    map< long, CtiLMGroupPtr >::iterator iter = _point_group_map.find(point_id);
+    std::map< long, CtiLMGroupPtr >::iterator iter = _point_group_map.find(point_id);
     return (iter == _point_group_map.end() ? CtiLMGroupPtr() : iter->second);
 }
 
@@ -191,16 +193,16 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Begin writing dynamic data to the database..." << endl;
+        dout << CtiTime() << " - Begin writing dynamic data to the database..." << endl;
     }*/
     if( _controlAreas->entries() > 0 )
     {
-        RWDBDateTime currentDateTime = RWDBDateTime();
-        RWCString dynamicLoadManagement("dynamicLoadManagement");
+        CtiTime currentDateTime = CtiTime();
+        string dynamicLoadManagement("dynamicLoadManagement");
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        conn.beginTransaction(dynamicLoadManagement);
+        conn.beginTransaction(dynamicLoadManagement.c_str());
 
         for(LONG i=0;i<_controlAreas->entries();i++)
         {
@@ -262,17 +264,17 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                 }
             }
         }
-        conn.commitTransaction(dynamicLoadManagement);
+        conn.commitTransaction(string2RWCString(dynamicLoadManagement));
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - ***No control areas to write to dynamic tables***" << endl;
+        dout << CtiTime() << " - ***No control areas to write to dynamic tables***" << endl;
     }
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Done writing dynamic data to the database!!!" << endl;
+        dout << CtiTime() << " - Done writing dynamic data to the database!!!" << endl;
     }*/
 }
 
@@ -286,21 +288,21 @@ void CtiLMControlAreaStore::reset()
     try
     {
         RWOrdered temp_control_areas;
-        map<long, CtiLMGroupPtr > temp_all_group_map;
-        map<long, CtiLMGroupPtr > temp_point_group_map;
+        std::map<long, CtiLMGroupPtr > temp_all_group_map;
+        std::map<long, CtiLMGroupPtr > temp_point_group_map;
 
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+            dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
         }
 
         RWTimer overallTimer;
         overallTimer.start();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Starting Database Reload..." << endl;
+            dout << CtiTime() << " - Starting Database Reload..." << endl;
         }
 
         {
@@ -318,7 +320,7 @@ void CtiLMControlAreaStore::reset()
                         saveAnyControlStringData();
                     }
                 }
-                    RWDBDateTime currentDateTime;
+                    CtiTime currentDateTime;
                     RWDBDatabase db = getDatabase();
 
                     RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
@@ -336,7 +338,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -355,8 +357,8 @@ void CtiLMControlAreaStore::reset()
                     allGroupTimer.start();
 
                     /* First load all the groups, and put them into a map by group id */
-                    map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
-                    map< long, vector<CtiLMGroupPtr> > all_program_group_map;
+                    std::map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
+                    std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
                 {
                     RWDBTable paObjectTable = db.table("yukonpaobject");
@@ -387,7 +389,7 @@ void CtiLMControlAreaStore::reset()
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << selector.asString().data() << endl;
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
                     CtiLMGroupFactory lm_group_factory;
@@ -426,7 +428,7 @@ void CtiLMControlAreaStore::reset()
                     rdr >> point_id;
                     rdr >> start_control_raw_state;
 
-                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     if(iter != temp_all_group_map.end())
                     {
                         CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
@@ -437,7 +439,7 @@ void CtiLMControlAreaStore::reset()
                     else
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
                     }
                 }
             }// end loading group point specific info
@@ -460,7 +462,7 @@ void CtiLMControlAreaStore::reset()
                     rdr >> group_id;
                     rdr >> shed_time;
 
-                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     if(iter != temp_all_group_map.end())
                     {
                         CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
@@ -469,7 +471,7 @@ void CtiLMControlAreaStore::reset()
                     else
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
                     }
                 }
             } // end loading ripple group specific info */
@@ -500,7 +502,7 @@ void CtiLMControlAreaStore::reset()
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -522,10 +524,10 @@ void CtiLMControlAreaStore::reset()
                         continue;
                     }
 
-                    map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     CtiLMGroupPtr lm_group = iter->second;
 
-                    switch(resolvePointType(point_type.data()))
+                    switch(resolvePointType(point_type.c_str()))
                     {
                     case AnalogPointType:
                         switch(point_offset)
@@ -549,7 +551,7 @@ void CtiLMControlAreaStore::reset()
                         default:
                         /*{
                             CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
+                            dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
                                  << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
                         }*/
                         break;
@@ -569,7 +571,7 @@ void CtiLMControlAreaStore::reset()
                     default:
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << RWTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.data()) << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
                     }
                     }
                 }
@@ -604,16 +606,16 @@ void CtiLMControlAreaStore::reset()
                     long cur_hours_monthly;
                     long cur_hours_seasonal;
                     long cur_hours_annually;
-                    RWDBDateTime last_control_sent;
-                    RWDBDateTime timestamp;
-                    RWDBDateTime control_start_time;
-                    RWDBDateTime control_complete_time;
-                    RWDBDateTime next_control_time;
+                    CtiTime last_control_sent;
+                    CtiTime timestamp;
+                    CtiTime control_start_time;
+                    CtiTime control_complete_time;
+                    CtiTime next_control_time;
                     long internal_state;
                     long daily_ops;
                     bool constraint_override;
 
-                    RWCString tempBoolString;
+                    string tempBoolString;
                     rdr["groupid"] >> group_id;
                     rdr["groupcontrolstate"] >> group_control_state;
                     rdr["currenthoursdaily"] >> cur_hours_daily;
@@ -648,7 +650,7 @@ void CtiLMControlAreaStore::reset()
                 }
             }
                 /* Now lets load up info about macro groups */
-                map< long, vector<long> > group_macro_map;  //ownerid, <childid>
+                std::map< long, vector<long> > group_macro_map;  //ownerid, <childid>
             {
                 RWDBTable genericMacroTable = db.table("genericmacro");
                 RWDBTable lmGroupTable = db.table("lmgroup");
@@ -667,11 +669,11 @@ void CtiLMControlAreaStore::reset()
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
-                map<long, vector<long> >::iterator iter;
+                std::map<long, vector<long> >::iterator iter;
                 while(rdr())
                 {
                     long owner_id;
@@ -708,11 +710,11 @@ void CtiLMControlAreaStore::reset()
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
-                map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
+                std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
                 long cur_program = -1;
                 while(rdr())
                 {
@@ -724,14 +726,14 @@ void CtiLMControlAreaStore::reset()
                     cur_iter = all_program_group_map.find(program_id);
                     if(cur_iter == all_program_group_map.end())
                     {
-                        vector<CtiLMGroupPtr> group_vec;
+                        std::vector<CtiLMGroupPtr> group_vec;
                         CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
 
-                        map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                        std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
                         { //must be a macro group
-                            vector<long> macro_vec = macro_iter->second;
-                            for(vector<long>::iterator iter = macro_vec.begin();
+                            std::vector<long> macro_vec = macro_iter->second;
+                            for(std::vector<long>::iterator iter = macro_vec.begin();
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
@@ -754,11 +756,11 @@ void CtiLMControlAreaStore::reset()
                     {
                         CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
 
-                        map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                        std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
                         { //must be a macro group
-                            vector<long> macro_vec = macro_iter->second;
-                            for(vector<long>::iterator iter = macro_vec.begin();
+                            std::vector<long> macro_vec = macro_iter->second;
+                            for(std::vector<long>::iterator iter = macro_vec.begin();
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
@@ -866,7 +868,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         CtiLMProgramDirect* currentLMProgramDirect = NULL;
@@ -903,7 +905,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 LONG tempPointId = 0;
                                 LONG tempPointOffset = 0;
-                                RWCString tempPointType = "(none)";
+                                string tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -937,7 +939,7 @@ void CtiLMControlAreaStore::reset()
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << selector.asString().data() << endl;
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -960,7 +962,7 @@ void CtiLMControlAreaStore::reset()
                         else
                         {
                             CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
+                            dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
                                 master_program_id << " or subordinate program with id: " << subordinate_program_id <<
                                 " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
                                 __FILE__ << "(" << __LINE__ << ")" << endl;
@@ -1030,7 +1032,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1080,7 +1082,7 @@ void CtiLMControlAreaStore::reset()
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << selector.asString().data() << endl;
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
                     RWDBReader rdr = selector.reader(conn);
@@ -1099,7 +1101,7 @@ void CtiLMControlAreaStore::reset()
                         else
                         {
                             CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
                         }
                     }
                 } //loading notification groups end
@@ -1175,7 +1177,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         CtiLMProgramCurtailment* currentLMProgramCurtailment = NULL;
@@ -1203,7 +1205,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 LONG tempPointId = 0;
                                 LONG tempPointOffset = 0;
-                                RWCString tempPointType = "(none)";
+                                string tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -1249,7 +1251,7 @@ void CtiLMControlAreaStore::reset()
                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - " << selector.asString().data() << endl;
+                                dout << CtiTime() << " - " << selector.asString().data() << endl;
                             }
 
                             RWOrdered& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
@@ -1339,7 +1341,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         CtiLMProgramBase* currentLMProgramEnergyExchange = NULL;
@@ -1363,7 +1365,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 LONG tempPointId = 0;
                                 LONG tempPointOffset = 0;
-                                RWCString tempPointType = "(none)";
+                                string tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -1384,8 +1386,9 @@ void CtiLMControlAreaStore::reset()
 
                             if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() )
                             {
-                                RWDBDateTime currentDateTime;
-                                RWDBDateTime compareDateTime = RWDBDateTime(currentDateTime.year(),currentDateTime.month(),currentDateTime.dayOfMonth(),0,0,0,0);
+                                CtiTime currentDateTime;
+                                CtiDate currentDate(currentDateTime);
+                                CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
                                 RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
 
                                 RWDBSelector selector = db.selector();
@@ -1397,7 +1400,7 @@ void CtiLMControlAreaStore::reset()
                                 selector.from(lmEnergyExchangeProgramOfferTable);
 
                                 selector.where(lmEnergyExchangeProgramOfferTable["deviceid"]==currentLMProgramEnergyExchange->getPAOId() &&//will be paobjectid
-                                               lmEnergyExchangeProgramOfferTable["offerdate"]>=compareDateTime);
+                                               lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
 
                                 selector.orderBy(lmEnergyExchangeProgramOfferTable["offerdate"]);
                                 selector.orderBy(lmEnergyExchangeProgramOfferTable["offerid"]);
@@ -1405,7 +1408,7 @@ void CtiLMControlAreaStore::reset()
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                                 }
 
                                 RWDBReader rdr = selector.reader(conn);
@@ -1437,7 +1440,7 @@ void CtiLMControlAreaStore::reset()
                                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << RWTime() << " - " << selector.asString().data() << endl;
+                                        dout << CtiTime() << " - " << selector.asString().data() << endl;
                                     }
 
                                     RWDBReader rdr = selector.reader(conn);
@@ -1469,7 +1472,7 @@ void CtiLMControlAreaStore::reset()
                                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
@@ -1509,7 +1512,7 @@ void CtiLMControlAreaStore::reset()
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                                 }
 
                                 RWOrdered& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
@@ -1524,8 +1527,9 @@ void CtiLMControlAreaStore::reset()
                                     for(LONG a=0;a<lmEnergyExchangeCustomers.entries();a++)
                                     {
                                         CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
-                                        RWDBDateTime currentDateTime;
-                                        RWDBDateTime compareDateTime = RWDBDateTime(currentDateTime.year(),currentDateTime.month(),currentDateTime.dayOfMonth(),0,0,0,0);
+                                        CtiTime currentDateTime;
+                                        CtiDate currentDate(currentDateTime);
+                                        CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
                                         RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
                                         RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
 
@@ -1545,7 +1549,7 @@ void CtiLMControlAreaStore::reset()
 
                                         selector.where(lmEnergyExchangeCustomerReplyTable["customerid"]==currentLMEnergyExchangeCustomer->getCustomerId() &&
                                                        lmEnergyExchangeCustomerReplyTable["offerid"]==lmEnergyExchangeProgramOfferTable["offerid"] &&
-                                                       lmEnergyExchangeProgramOfferTable["offerdate"]>=compareDateTime);
+                                                       lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
 
                                         selector.orderBy(lmEnergyExchangeCustomerReplyTable["offerid"]);
                                         selector.orderBy(lmEnergyExchangeCustomerReplyTable["revisionnumber"]);
@@ -1553,7 +1557,7 @@ void CtiLMControlAreaStore::reset()
                                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
@@ -1566,8 +1570,9 @@ void CtiLMControlAreaStore::reset()
                                         for(LONG b=0;b<lmEnergyExchangeCustomerReplies.entries();b++)
                                         {
                                             CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
-                                            RWDBDateTime currentDateTime;
-                                            RWDBDateTime compareDateTime = RWDBDateTime(currentDateTime.year(),currentDateTime.month(),currentDateTime.dayOfMonth(),0,0,0,0);
+                                            CtiTime currentDateTime;
+                                            CtiDate currentDate(currentDateTime);
+                                            CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
                                             RWDBTable lmEnergyExchangeHourlyCustomerTable = db.table("lmenergyexchangehourlycustomer");
                                             RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
 
@@ -1584,7 +1589,7 @@ void CtiLMControlAreaStore::reset()
                                             selector.where(lmEnergyExchangeHourlyCustomerTable["customerid"]==currentCustomerReply->getCustomerId() &&
                                                            lmEnergyExchangeHourlyCustomerTable["offerid"]==currentCustomerReply->getOfferId() &&
                                                            lmEnergyExchangeHourlyCustomerTable["offerid"]==lmEnergyExchangeProgramOfferTable["offerid"] &&
-                                                           lmEnergyExchangeProgramOfferTable["offerdate"]>=compareDateTime);
+                                                           lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
 
                                             selector.orderBy(lmEnergyExchangeHourlyCustomerTable["customerid"]);
                                             selector.orderBy(lmEnergyExchangeHourlyCustomerTable["offerid"]);
@@ -1594,7 +1599,7 @@ void CtiLMControlAreaStore::reset()
                                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - " << selector.asString().data() << endl;
+                                                dout << CtiTime() << " - " << selector.asString().data() << endl;
                                             }
 
                                             RWDBReader rdr = selector.reader(conn);
@@ -1636,7 +1641,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1723,7 +1728,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1794,7 +1799,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 LONG tempPointId = 0;
                                 LONG tempPointOffset = 0;
-                                RWCString tempPointType = "(none)";
+                                string tempPointType = "(none)";
                                 rdr["pointid"] >> tempPointId;
                                 rdr["pointoffset"] >> tempPointOffset;
                                 rdr["pointtype"] >> tempPointType;
@@ -1861,7 +1866,7 @@ void CtiLMControlAreaStore::reset()
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1901,7 +1906,7 @@ void CtiLMControlAreaStore::reset()
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Unable to get valid database connection." << endl;
+                    dout << CtiTime() << " - Unable to get valid database connection." << endl;
                     _isvalid = FALSE;
                     return;
                 }
@@ -1926,7 +1931,7 @@ void CtiLMControlAreaStore::reset()
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Control areas reset" << endl;
+        dout << CtiTime() << " - Control areas reset" << endl;
     }
 
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
@@ -1941,13 +1946,13 @@ void CtiLMControlAreaStore::reset()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
     {
         _reregisterforpoints = true;
-        _lastdbreloadtime.now();
+        _lastdbreloadtime = CtiTime();
 
         ULONG msgBitMask = CtiLMControlAreaMsg::AllControlAreasSent;
         if( _wascontrolareadeletedflag )
@@ -1962,7 +1967,7 @@ void CtiLMControlAreaStore::reset()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1977,12 +1982,12 @@ void CtiLMControlAreaStore::shutdown()
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Calling dumpAllDynamicData()" << endl;
+        dout << CtiTime() << " - Calling dumpAllDynamicData()" << endl;
     }*/
     dumpAllDynamicData();
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Done with dumpAllDynamicData()" << endl;
+        dout << CtiTime() << " - Done with dumpAllDynamicData()" << endl;
     }*/
     _controlAreas->clearAndDestroy();
     delete _controlAreas;
@@ -2000,13 +2005,13 @@ void CtiLMControlAreaStore::doResetThr()
         //defaults
         int refreshrate = 3600;
 
-        RWCString str;
+        string str;
         char var[128];
 
         strcpy(var, "LOAD_MANAGEMENT_REFRESH");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            int tempRefreshRate = atoi(str);
+            int tempRefreshRate = atoi(str.c_str());
             if( tempRefreshRate > 0 )
             {
                 refreshrate = tempRefreshRate;
@@ -2014,36 +2019,36 @@ void CtiLMControlAreaStore::doResetThr()
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << " is ZERO!!!" << endl;
+                dout << CtiTime() << " - " << var << " is ZERO!!!" << endl;
             }
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << str << endl;
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        RWDBDateTime lastPeriodicDatabaseRefresh;
-        RWDBDateTime lastCheck;
+        CtiTime lastPeriodicDatabaseRefresh;
+        CtiTime lastCheck;
 
         while(TRUE)
         {
             rwRunnable().serviceCancellation();
-            RWDBDateTime now;
+            CtiTime now;
 
             // When we cross midnight these dates won't match and we can do our daily midnight maintenance
-            if( now.rwdate() != lastCheck.rwdate() )
+            if( now.day() != lastCheck.day() )
             {//check to see if it is midnight
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Resetting midnight defaults" << endl;
+                    dout << CtiTime() << " - Resetting midnight defaults" << endl;
                 }
                 checkMidnightDefaultsForReset();
             }
@@ -2054,11 +2059,11 @@ void CtiLMControlAreaStore::doResetThr()
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Periodic restore of control area list from the database" << endl;
+                    dout << CtiTime() << " - Periodic restore of control area list from the database" << endl;
                 }
 
                 setValid(false);
-                lastPeriodicDatabaseRefresh = RWDBDateTime();
+                lastPeriodicDatabaseRefresh = CtiTime();
             }
             else
             {
@@ -2074,7 +2079,7 @@ void CtiLMControlAreaStore::doResetThr()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -2186,12 +2191,12 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 
         updater.where( yukonPAObjectTable["paobjectid"] == controlArea->getPAOId() );
 
-        updater << yukonPAObjectTable["disableflag"].assign( RWCString((controlArea->getDisableFlag()?'Y':'N')) );
+        updater << yukonPAObjectTable["disableflag"].assign( (controlArea->getDisableFlag()?"Y":"N") );
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << updater.asString().data() << endl;
+            dout << CtiTime() << " - " << updater.asString().data() << endl;
         }
 
         updater.execute( conn );
@@ -2225,12 +2230,12 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBase* progr
 
         updater.where( yukonPAObjectTable["paobjectid"] == program->getPAOId() );
 
-        updater << yukonPAObjectTable["disableflag"].assign( RWCString((program->getDisableFlag()?'Y':'N')) );
+        updater << yukonPAObjectTable["disableflag"].assign( (program->getDisableFlag()?"Y":"N") );
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << updater.asString().data() << endl;
+            dout << CtiTime() << " - " << updater.asString().data() << endl;
         }
 
         updater.execute( conn );
@@ -2264,12 +2269,12 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 
         updater.where( yukonPAObjectTable["paobjectid"] == group->getPAOId() );
 
-        updater << yukonPAObjectTable["disableflag"].assign( RWCString((group->getDisableFlag()?'Y':'N')) );
+        updater << yukonPAObjectTable["disableflag"].assign( (group->getDisableFlag()?"Y":"N") );
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << updater.asString().data() << endl;
+            dout << CtiTime() << " - " << updater.asString().data() << endl;
         }
 
         updater.execute( conn );
@@ -2310,7 +2315,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << updater.asString().data() << endl;
+            dout << CtiTime() << " - " << updater.asString().data() << endl;
         }
 
         updater.execute( conn );
@@ -2337,21 +2342,21 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     bool returnBool = false;
-    RWOrdered& controlAreas = *getControlAreas(RWDBDateTime().seconds());
+    RWOrdered& controlAreas = *getControlAreas(CtiTime().seconds());
     for(long i=0;i<controlAreas.entries();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         // not equal, so no "!" on the compareTo()
-        if( currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateNone,RWCString::ignoreCase) )
+        if( stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )
         {//check default operational state
-            if( ( !currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateEnabled,RWCString::ignoreCase) &&
+            if( ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateEnabled ) &&
                   currentControlArea->getDisableFlag() ) ||
-                ( !currentControlArea->getDefOperationalState().compareTo(CtiLMControlArea::DefOpStateDisabled,RWCString::ignoreCase) &&
+                ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateDisabled ) &&
                   !currentControlArea->getDisableFlag() ) )
             {
                 {
-                    RWCString text = RWCString("Automatic Disable Flag Update");
-                    RWCString additional = RWCString(" Disable Flag not set to Default Operational State.  Control Area: ");
+                    string text = ("Automatic Disable Flag Update");
+                    string additional = (" Disable Flag not set to Default Operational State.  Control Area: ");
                     additional += currentControlArea->getPAOName();
                     additional += " was automatically ";
                     additional += currentControlArea->getDefOperationalState();
@@ -2359,7 +2364,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                     CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                        dout << CtiTime() << " - " << text << ", " << additional << endl;
                     }
                 }
                 currentControlArea->setDisableFlag(!currentControlArea->getDisableFlag());
@@ -2373,8 +2378,8 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
             if( currentControlArea->getCurrentDailyStartTime() != currentControlArea->getDefDailyStartTime() )
             {
                 char tempchar[80] = "";
-                RWCString text = RWCString("Automatic Daily Start Time Update");
-                RWCString additional = RWCString(" Current Daily Start Time not set to Default Start Time.  Control Area: ");
+                string text = ("Automatic Daily Start Time Update");
+                string additional = (" Current Daily Start Time not set to Default Start Time.  Control Area: ");
                 additional += currentControlArea->getPAOName();
                 additional += " Daily Start Time was automatically set back to default of ";
                 LONG defStartTimeHours = currentControlArea->getDefDailyStartTime() / 3600;
@@ -2396,14 +2401,14 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                    dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
             }
             if( currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )
             {
                 char tempchar[80] = "";
-                RWCString text = RWCString("Automatic Daily Stop Time Update");
-                RWCString additional = RWCString(" Current Daily Stop Time not set to Default Stop Time.  Control Area: ");
+                string text = ("Automatic Daily Stop Time Update");
+                string additional = (" Current Daily Stop Time not set to Default Stop Time.  Control Area: ");
                 additional += currentControlArea->getPAOName();
                 additional += " Daily Stop Time was automatically set back to default of ";
                 LONG defStopTimeHours = currentControlArea->getDefDailyStopTime() / 3600;
@@ -2425,7 +2430,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << text << ", " << additional << endl;
+                    dout << CtiTime() << " - " << text << ", " << additional << endl;
                 }
             }
             currentControlArea->setCurrentDailyStartTime(currentControlArea->getDefDailyStartTime());
@@ -2459,8 +2464,8 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
             for(LONG j=0;j<lmControlAreaTriggers.entries();j++)
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[j];
-                if( !currentLMControlAreaTrigger->getProjectionType().compareTo(CtiLMControlAreaTrigger::LSFProjectionType,RWCString::ignoreCase) &&
-                    currentLMControlAreaTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
+                    stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )
                 {// don't need "!" on compareTo() because supposed to be !=
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2563,7 +2568,7 @@ void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupPtr& group)
     }
 }
 
-const RWCString CtiLMControlAreaStore::LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE = "LOAD_MANAGEMENT_SERVER";
+const string CtiLMControlAreaStore::LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE = "LOAD_MANAGEMENT_SERVER";
 
 
 //*************************************************************
@@ -2624,7 +2629,7 @@ CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::operator=(const CtiLMSaved
 //**********  This is equivalent to an inner class,  **********
 //**********  only used for saving control strings   **********
 //*************************************************************
-CtiLMSavedControlString::CtiLMSavedControlString(LONG paoId, const RWCString& controlString)
+CtiLMSavedControlString::CtiLMSavedControlString(LONG paoId, const string& controlString)
 {
     setPAOId(paoId);
     setControlString(controlString);
@@ -2643,7 +2648,7 @@ LONG CtiLMSavedControlString::getPAOId() const
 {
     return _paoId;
 }
-const RWCString& CtiLMSavedControlString::getControlString() const
+const string& CtiLMSavedControlString::getControlString() const
 {
     return _controlString;
 }
@@ -2653,7 +2658,7 @@ CtiLMSavedControlString& CtiLMSavedControlString::setPAOId(LONG paoId)
     _paoId = paoId;
     return *this;
 }
-CtiLMSavedControlString& CtiLMSavedControlString::setControlString(const RWCString& controlstr)
+CtiLMSavedControlString& CtiLMSavedControlString::setControlString(const string& controlstr)
 {
     _controlString = controlstr;
     return *this;
@@ -2669,3 +2674,5 @@ CtiLMSavedControlString& CtiLMSavedControlString::operator=(const CtiLMSavedCont
 
     return *this;
 }
+
+

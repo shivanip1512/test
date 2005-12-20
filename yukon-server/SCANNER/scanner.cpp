@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/12/16 16:26:38 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2005/12/20 17:20:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,10 +44,8 @@
 #include <windows.h>       // These next few are required for Win32
 #include <process.h>
 #include <vector>
-using namespace std;
 
 #include <rw/toolpro/winsock.h>
-#include <rw\cstring.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -108,14 +106,16 @@ using namespace std;
 #define WINDOW_OPENS    3
 #define MAX_SCAN_TYPE   4
 
+using namespace std;
+
 static INT     SCANNER_RELOAD_RATE = 86400;
-static RWTime  LastPorterOutTime;
-static RWTime  LastPorterInTime;
+static CtiTime  LastPorterOutTime;
+static CtiTime  LastPorterInTime;
 
 static CtiMutex inmessMux;
 static RWTPtrSlist< INMESS > inmessList;
 
-const RWTime   MAXTime(YUKONEOT);
+const CtiTime   MAXTime(YUKONEOT);
 
 void  LoadScannableDevices(void *ptr = NULL);
 void  DispatchMsgHandlerThread(VOID *Arg);
@@ -123,9 +123,9 @@ void  DatabaseHandlerThread(VOID *Arg);
 
 /* Local Declarations... Utility Functions */
 
-RWTime  TimeOfNextRemoteScan(void);
-RWTime  TimeOfNextLPScan(void);
-static RWTime  TimeOfNextWindow( void );
+CtiTime  TimeOfNextRemoteScan(void);
+CtiTime  TimeOfNextLPScan(void);
+static CtiTime  TimeOfNextWindow( void );
 
 VOID    NexusThread(VOID *Arg);
 INT     RecordDynamicData();
@@ -148,12 +148,12 @@ HANDLE hLockArray[] = {
     hScannerSyncs[S_LOCK_MUTEX]
 };
 
-void barkAboutCurrentTime(CtiDeviceSPtr Device, RWTime &rt, INT line)
+void barkAboutCurrentTime(CtiDeviceSPtr Device, CtiTime &rt, INT line)
 {
     if(ScannerDebugLevel & SCANNER_DEBUG_NEXTSCAN)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt;
+        dout << CtiTime() << " Next scan is for " << Device->getName() << " at " << rt;
         if(ScannerDebugLevel & 0x00000001)
         {
             dout << " on " << line;
@@ -192,13 +192,13 @@ static void applyResetScanFlags(const long key, CtiDeviceSPtr Device, void *d)
 static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void *d)
 {
     INT   nRet = 0;
-    RWTime TimeNow;
+    CtiTime TimeNow;
     RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
 
     if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Looking at " << pBase->getName() << endl;
+        dout << CtiTime() << " Looking at " << pBase->getName() << endl;
     }
 
     if(pBase->isSingle() && !pBase->isInhibited())
@@ -214,7 +214,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             if(ScannerDebugLevel & SCANNER_DEBUG_ACCUMSCAN)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+                dout << CtiTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
@@ -230,7 +230,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             if(ScannerDebugLevel & SCANNER_DEBUG_INTEGRITYSCAN)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+                dout << CtiTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
@@ -246,14 +246,14 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             if((nRet = DeviceRecord->initiateGeneralScan(outList)) > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
+                dout << CtiTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
             }
             else
             {
                 if(ScannerDebugLevel & SCANNER_DEBUG_GENERALSCAN)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+                    dout << CtiTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
                 }
                 DeviceRecord->setScanFlag(CtiDeviceSingle::ScanException);   // Results need NOT be forced though the exception system
             }
@@ -271,13 +271,13 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
 {
     INT nRet;
-    RWTime TimeNow;
+    CtiTime TimeNow;
     RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
 
     if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Looking at " << pBase->getName() << endl;
+        dout << CtiTime() << " Looking at " << pBase->getName() << endl;
     }
 
     //  only MCTs do DLC load profile scans
@@ -290,7 +290,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
             if((nRet = pMCT->initiateLoadProfileScan(outList)) > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Load Profile Scan Fail to Device: " << pBase->getName() << endl;
+                dout << CtiTime() << " Load Profile Scan Fail to Device: " << pBase->getName() << endl;
                 dout << "\tError " << nRet << ": " << GetError(nRet) << endl;
             }
             else
@@ -298,7 +298,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
                 if(ScannerDebugLevel & SCANNER_DEBUG_LPSCAN)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Load Profile Checkpoint ****   " << pBase->getID() << " / " <<  pBase->getName() << endl;
+                    dout << CtiTime() << " **** Load Profile Checkpoint ****   " << pBase->getID() << " / " <<  pBase->getName() << endl;
                 }
             }
         }
@@ -329,7 +329,7 @@ static void applyGenerateScannerDataRows(const long key, CtiDeviceSPtr Device, v
             if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+                dout << CtiTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
             }
             // DeviceRecord->getScanData().Update(conn);
             CtiTableDeviceScanData msd = DeviceRecord->getScanData();
@@ -355,8 +355,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     CtiDeviceSPtr Device;
     CtiDeviceSingle *DeviceRecord = NULL;
 
-    RWTime      NextScan[MAX_SCAN_TYPE];
-    RWTime      TimeNow;
+    CtiTime      NextScan[MAX_SCAN_TYPE];
+    CtiTime      TimeNow;
 
     /* Define for the porter interface */
     IM_EX_CTIBASE extern USHORT   PrintLogEvent;
@@ -409,7 +409,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     PortPipeInit (NOWAIT);
 
     SET_CRT_OUTPUT_MODES;
-    if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
 
@@ -439,7 +439,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Nothing to Scan.. Sleeping 30 seconds" << endl;
+                dout << CtiTime() << " Nothing to Scan.. Sleeping 30 seconds" << endl;
             }
 
             for(int i = 0; i < 30 && !ScannerQuit; i++)
@@ -483,7 +483,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Init Complete. Entering Main Scan Loop" << endl;
+            dout << CtiTime() << " Init Complete. Entering Main Scan Loop" << endl;
         }
     }
 
@@ -509,7 +509,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         if(TimeNow < NextScan[NEXT_SCAN])
         {
-            sprintf(tstr, "At Start of Loop -- Will Sleep %d Seconds", NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()  );
+            ::sprintf(tstr, "At Start of Loop -- Will Sleep %d Seconds", NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()  );
 
             {
                 ULONG omc = OutMessageCount();
@@ -533,7 +533,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Quit Event Posted" << endl << endl;
+                        dout << CtiTime() << " Quit Event Posted" << endl << endl;
                     }
                     ScannerQuit = TRUE;
                     continue;            // the main for loop I hope.
@@ -542,7 +542,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Scan Event Set. Will examine devices now.  " << endl;
+                        dout << CtiTime() << " Scan Event Set. Will examine devices now.  " << endl;
                     }
                     ResetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
@@ -583,7 +583,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Quit Event Posted" << endl << endl;
+                    dout << CtiTime() << " Quit Event Posted" << endl << endl;
                 }
                 ScannerQuit = TRUE;
                 break;            // the main for loop I hope.
@@ -612,12 +612,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 if(!(PortPipeInit(NOWAIT)))
                 {
                     // Make sure we don't hang up on him again.
-                    LastPorterOutTime = rwEpoch;
+                    LastPorterOutTime = PASTDATE;
                     LastPorterInTime  = LastPorterInTime.now();
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Reconnected to Port Control" << endl;
+                        dout << CtiTime() << " Reconnected to Port Control" << endl;
                     }
 
                     /* now walk through the scannable "Remote" devices */
@@ -635,7 +635,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     {
                         ScannerQuit = TRUE;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Quit Event Posted" << endl << endl;
+                        dout << CtiTime() << " Quit Event Posted" << endl << endl;
                         break;
                     }
                 case WAIT_OBJECT_0 + 1:                                // This is a quit request!
@@ -661,7 +661,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** ERROR!!!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** ERROR!!!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  There should be only NONE!" << endl;
             }
         }
@@ -705,7 +705,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 dout << LastPorterOutTime << " > " << LastPorterInTime << " + (3600 * 6) seconds? " << endl;
             }
 
-            LastPorterOutTime = rwEpoch;  // Make sure we don't repeat this forever!
+            LastPorterOutTime = PASTDATE;  // Make sure we don't repeat this forever!
 
             // I haven't heard from porter in a long long time...  Let's make sure he's init ok.
             PorterNexus.CTINexusClose();
@@ -736,7 +736,7 @@ VOID ResultThread (VOID *Arg)
     CtiDeviceSingle   *DeviceRecord;
 
     /* Define the various time variable */
-    RWTime      TimeNow;
+    CtiTime      TimeNow;
 
     /* Define the pipe variables */
     ULONG       BytesRead;
@@ -803,7 +803,7 @@ VOID ResultThread (VOID *Arg)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Unable to lock SCANNERS's INMESS list. You should not see this much." << endl;
+                    dout << CtiTime() << " Unable to lock SCANNERS's INMESS list. You should not see this much." << endl;
                 }
             }
         }
@@ -851,7 +851,7 @@ VOID ResultThread (VOID *Arg)
             if(ScannerDebugLevel & SCANNER_DEBUG_INREPLYS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
+                dout << CtiTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
             }
 
             if(pBase && pBase->isSingle())
@@ -861,7 +861,7 @@ VOID ResultThread (VOID *Arg)
                     DeviceRecord = (CtiDeviceSingle*)pBase.get();
 
                     /* get the time for use in the decodes */
-                    TimeNow = RWTime();
+                    TimeNow = CtiTime();
 
                     // Do some device dependent work on this Inbound message!
                     DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
@@ -871,7 +871,7 @@ VOID ResultThread (VOID *Arg)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -901,7 +901,7 @@ VOID ResultThread (VOID *Arg)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -938,7 +938,7 @@ VOID NexusThread (VOID *Arg)
     /* Misc. definitions */
     ULONG       i;
     /* Define the various time variable */
-    RWTime      TimeNow;
+    CtiTime      TimeNow;
 
     /* Define the pipe variables */
     ULONG       BytesRead;
@@ -957,7 +957,7 @@ VOID NexusThread (VOID *Arg)
             {
                 PortPipeInit(NOWAIT);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " NexusThread: Waiting for reconnection to Port Control" << endl;
+                dout << CtiTime() << " NexusThread: Waiting for reconnection to Port Control" << endl;
             }
 
             CTISleep (1000L);
@@ -970,7 +970,7 @@ VOID NexusThread (VOID *Arg)
 
         BytesRead = 0;
         InMessage = CTIDBG_new INMESS;
-        memset(InMessage, 0, sizeof(*InMessage));
+        ::memset(InMessage, 0, sizeof(*InMessage));
 
         /* get a result off the port pipe */
         if(PorterNexus.CTINexusRead(InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))     // Make sure we have an InMessage worth!
@@ -1019,16 +1019,16 @@ VOID ScannerCleanUp ()
     VanGoghConnection.ShutdownConnection();
 
 
-    dout << RWTime() << " Scanner terminated!" << endl;
+    dout << CtiTime() << " Scanner terminated!" << endl;
 
 }
 
 
 static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, void *d)
 {
-    RWTime TimeNow;
-    RWTime TempTime(YUKONEOT);
-    RWTime &nextRemoteScanTime = *((RWTime*)d);
+    CtiTime TimeNow;
+    CtiTime TempTime(YUKONEOT);
+    CtiTime &nextRemoteScanTime = *((CtiTime*)d);
 
     CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
 
@@ -1054,10 +1054,10 @@ static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, voi
     }
 }
 
-RWTime TimeOfNextRemoteScan()
+CtiTime TimeOfNextRemoteScan()
 {
-    RWTime            nextRemoteScanTime(YUKONEOT);
-    RWTime            TimeNow;
+    CtiTime            nextRemoteScanTime(YUKONEOT);
+    CtiTime            TimeNow;
 
     CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextRemoteScan, (void*)&nextRemoteScanTime);
@@ -1075,9 +1075,9 @@ RWTime TimeOfNextRemoteScan()
 
 static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d)
 {
-    RWTime TimeNow;
-    RWTime TempTime(YUKONEOT);
-    RWTime &nextLPScanTime = *((RWTime*)d);
+    CtiTime TimeNow;
+    CtiTime TempTime(YUKONEOT);
+    CtiTime &nextLPScanTime = *((CtiTime*)d);
 
     if(isCarrierLPDevice(Device))
     {
@@ -1096,9 +1096,9 @@ static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d
     }
 }
 
-RWTime TimeOfNextLPScan( void )
+CtiTime TimeOfNextLPScan( void )
 {
-    RWTime         nextLPScanTime(YUKONEOT);
+    CtiTime         nextLPScanTime(YUKONEOT);
 
     CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextLPScan, (void*)&nextLPScanTime);
@@ -1108,9 +1108,9 @@ RWTime TimeOfNextLPScan( void )
 
 static void applyAnalyzeNextWindow(const long key, CtiDeviceSPtr Device, void *d)
 {
-    RWTime TimeNow;
-    RWTime TempTime(YUKONEOT);
-    RWTime &nextWindow = *((RWTime*)d);
+    CtiTime TimeNow;
+    CtiTime TempTime(YUKONEOT);
+    CtiTime &nextWindow = *((CtiTime*)d);
 
     if(Device->isSingle())
     {
@@ -1129,9 +1129,9 @@ static void applyAnalyzeNextWindow(const long key, CtiDeviceSPtr Device, void *d
     }
 }
 
-RWTime TimeOfNextWindow( void )
+CtiTime TimeOfNextWindow( void )
 {
-    RWTime nextWindow(YUKONEOT);
+    CtiTime nextWindow(YUKONEOT);
 
     CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextWindow, (void*)&nextWindow);
@@ -1144,26 +1144,26 @@ void InitScannerGlobals(void)
 {
     if(gConfigParms.isOpt("SCANNER_RELOAD_RATE"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
-        SCANNER_RELOAD_RATE = atoi (Temp.data());
+        string Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
+        SCANNER_RELOAD_RATE = atoi (Temp.c_str());
     }
 
     if(gConfigParms.isOpt("SCANNER_DEBUGLEVEL"))
     {
-        RWCString str = gConfigParms.getValueAsString("SCANNER_DEBUGLEVEL");
+        string str = gConfigParms.getValueAsString("SCANNER_DEBUGLEVEL");
         char *eptr;
-        ScannerDebugLevel = strtoul(str.data(), &eptr, 16);
+        ScannerDebugLevel = strtoul(str.c_str(), &eptr, 16);
         if(ScannerDebugLevel & 0x00000001)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Scanner DEBUGLEVEL " << hex << ScannerDebugLevel << dec << endl;
+            dout << CtiTime() << " Scanner DEBUGLEVEL " << hex << ScannerDebugLevel << dec << endl;
         }
     }
 
     if(gConfigParms.isOpt("SCANNER_STATUS_PRIORITY"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_STATUS_PRIORITY");
-        DLCStatusPriority = atoi (Temp.data());
+        string Temp = gConfigParms.getValueAsString("SCANNER_STATUS_PRIORITY");
+        DLCStatusPriority = atoi (Temp.c_str());
 
         if(DLCStatusPriority < 1 || DLCStatusPriority > MAXPRIORITY)
         {
@@ -1178,8 +1178,8 @@ void InitScannerGlobals(void)
 
     if(gConfigParms.isOpt("SCANNER_VALUE_PRIORITY"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_VALUE_PRIORITY");
-        DLCValuePriority = atoi (Temp.data());
+        string Temp = gConfigParms.getValueAsString("SCANNER_VALUE_PRIORITY");
+        DLCValuePriority = atoi (Temp.c_str());
 
         if(DLCValuePriority < 1 || DLCValuePriority > MAXPRIORITY)
         {
@@ -1194,9 +1194,9 @@ void InitScannerGlobals(void)
 
     if(gConfigParms.isOpt("SCANNER_QUEUE"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_QUEUE");
-        Temp.toLower();
-
+        string Temp = gConfigParms.getValueAsString("SCANNER_QUEUE");
+        std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
+        
         if(Temp == "true" || Temp == "yes")
         {
             CCUNoQueue = FALSE;
@@ -1209,8 +1209,8 @@ void InitScannerGlobals(void)
 
     if(gConfigParms.isOpt("SCANNER_QUEUE_SCANS"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_QUEUE_SCANS");
-        Temp.toLower();
+        string Temp = gConfigParms.getValueAsString("SCANNER_QUEUE_SCANS");
+        std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
 
         if(Temp == "true" || Temp == "yes")
         {
@@ -1224,8 +1224,8 @@ void InitScannerGlobals(void)
 
     if(gConfigParms.isOpt("SCANNER_OUTPUT_INTERVAL"))
     {
-        RWCString Temp = gConfigParms.getValueAsString("SCANNER_OUTPUT_INTERVAL");
-        dout.setWriteInterval(atoi(Temp.data()) * 1000);
+        string Temp = gConfigParms.getValueAsString("SCANNER_OUTPUT_INTERVAL");
+        dout.setWriteInterval(atoi(Temp.c_str()) * 1000);
     }
 }
 
@@ -1238,8 +1238,8 @@ void LoadScannableDevices(void *ptr)
 
     bool bforce = ((pChg == NULL) ? false : true);
 
-    RWTime start;
-    RWTime stop;
+    CtiTime start;
+    CtiTime stop;
 
 
     InitScannerGlobals();      // Go fetch from the environmant
@@ -1249,7 +1249,7 @@ void LoadScannableDevices(void *ptr)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
+        dout << CtiTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
     }
     ScannerDeviceManager.setIncludeScanInfo();
 
@@ -1265,8 +1265,8 @@ void LoadScannableDevices(void *ptr)
             start = start.now();
 
             LONG chgid = 0;
-            RWCString catstr;
-            RWCString devstr;
+            string catstr;
+            string devstr;
 
             if(pChg)
             {
@@ -1283,7 +1283,7 @@ void LoadScannableDevices(void *ptr)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " RefreshList took " << stop.seconds() - start.seconds() << endl;
+                    dout << CtiTime() << " RefreshList took " << stop.seconds() - start.seconds() << endl;
                 }
             }
         }
@@ -1322,7 +1322,7 @@ void LoadScannableDevices(void *ptr)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " validateScanTimes took " << stop.seconds() - start.seconds() << endl;
+            dout << CtiTime() << " validateScanTimes took " << stop.seconds() - start.seconds() << endl;
         }
     }
 
@@ -1344,7 +1344,7 @@ void LoadScannableDevices(void *ptr)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
+                            dout << CtiTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
                             pChg->dump();
                         }
                         pBase->RefreshDevicePoints();
@@ -1377,7 +1377,7 @@ void LoadScannableDevices(void *ptr)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Done LoadScannableDevices." << endl;
+        dout << CtiTime() << " Done LoadScannableDevices." << endl;
     }
 
     return;
@@ -1387,8 +1387,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
 {
     BOOL           bServerClosing = FALSE;
 
-    RWTime         TimeNow;
-    RWTime         LastTime;
+    CtiTime         TimeNow;
+    CtiTime         LastTime;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1425,7 +1425,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                             {
                                 Cmd->dump();
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
+                                dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
                             }
                             break;
                         }
@@ -1486,7 +1486,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scanner is absorbing an unhandled message " <<
+                    dout << CtiTime() << " Scanner is absorbing an unhandled message " <<
                     MsgPtr->isA() << " from VanGogh " << endl;
                     break;
                 }
@@ -1503,7 +1503,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  Scanner's connection queue to dispatch is panicked." << endl;
                 }
 
@@ -1520,8 +1520,8 @@ void DatabaseHandlerThread(VOID *Arg)
 {
     BOOL           bServerClosing = FALSE;
 
-    RWTime         TimeNow;
-    RWTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
+    CtiTime         TimeNow;
+    CtiTime         RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, SCANNER_RELOAD_RATE );
     ULONG          delta;
 
     {
@@ -1596,7 +1596,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         if(OutMessage->ExpirationTime == 0)
         {
             // Scanner is about to make some big decisions...
-            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 600);
+            OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 10800);
         }
 
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
@@ -1605,7 +1605,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
             {
                 PortPipeInit(NOWAIT);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " MakePorterRequests: Waiting for reconnection to Port Control" << endl;
+                dout << CtiTime() << " MakePorterRequests: Waiting for reconnection to Port Control" << endl;
             }
 
 
@@ -1615,7 +1615,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 status = PIPEWASBROKEN;
                 break;              // Did not connect after 15 minutes!
@@ -1631,11 +1631,11 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                                      (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_General) ||
                                      (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Integrity))) )
             {
-                RWCString cmdStr(OutMessage->Request.CommandStr);
+                string cmdStr(OutMessage->Request.CommandStr);
 
-                if( cmdStr.subString("noqueue",0,RWCString::ignoreCase).isNull() )  // Make sure we don't stuff it on there multiple times!
+                if( findStringIgnoreCase(cmdStr, "noqueue") )  // Make sure we don't stuff it on there multiple times!
                 {
-                    _snprintf(OutMessage->Request.CommandStr, 254, "%s noqueue", cmdStr.data());
+                    _snprintf(OutMessage->Request.CommandStr, 254, "%s noqueue", cmdStr.c_str());
                 }
             }
 
@@ -1644,13 +1644,13 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                 if(ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
+                    dout << CtiTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " OutMessage to TargetID: " << OutMessage->TargetID << endl;
+                        dout << CtiTime() << " OutMessage to TargetID: " << OutMessage->TargetID << endl;
                     }
                 }
             }
@@ -1719,7 +1719,7 @@ INT RecordDynamicData()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
                     dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
 
                 }

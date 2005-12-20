@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/02/17 15:08:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 * HISTORY      :
 * $Log: tbl_lmg_golay.h,v $
+* Revision 1.2  2005/12/20 17:16:08  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.1  2004/02/17 15:08:03  cplender
 * New files for GRE/SA support
 *
@@ -47,7 +50,7 @@ protected:
     LONG _lmGroupId;
     LONG _routeId;
 
-    RWCString _operationalAddress;
+    string _operationalAddress;
     int _nominalTimeout;        // Switch is hardcoded to be off for this duration in seconds!
     int _virtualTimeout;        // Group is desired to control for this duration in seconds.  If these are not equal multiple control messages must be sent to make it occur (master cycle-like)
 
@@ -61,19 +64,19 @@ public:
 
     LONG getLmGroupId() const;
     LONG getRouteId() const;
-    RWCString getOperationalAddress() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    string getOperationalAddress() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     int getFunction() const;
     int getNominalTimeout() const;
     int getVirtualTimeout() const;
 
     CtiTableGolayGroup& setLmGroupId(LONG newVal);
     CtiTableGolayGroup& setRouteId(LONG newVal);
-    CtiTableGolayGroup& setOperationalAddress(RWCString newVal);
+    CtiTableGolayGroup& setOperationalAddress(string newVal);
     CtiTableGolayGroup& setFunction(int newVal);          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     CtiTableGolayGroup& setNominalTimeout(int newVal);
     CtiTableGolayGroup& setVirtualTimeout(int newVal);
 
-    static RWCString getTableName();
+    static string getTableName();
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

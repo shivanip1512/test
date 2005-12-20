@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,8 +16,8 @@
 
 
 #include <math.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
 
 #include "porter.h"
 #include "dev_schlum.h"
@@ -102,7 +102,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     if (OutMessage != NULL)
@@ -215,9 +215,9 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
                     {
                         if (passwordLength == 1)
                         {
-                            if ((getIED().getPassword()(z) != ' ') && (getIED().getPassword()(z) != '0'))
+                            if ((getIED().getPassword()[z] != ' ') && (getIED().getPassword()[z] != '0'))
                             {
-                                Transfer.getOutBuffer()[z+1] = getIED().getPassword()(z);
+                                Transfer.getOutBuffer()[z+1] = getIED().getPassword()[z];
                             }
                             else
                             {
@@ -226,7 +226,7 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
                         }
                         else
                         {
-                            Transfer.getOutBuffer()[z+1] = getIED().getPassword()(z);
+                            Transfer.getOutBuffer()[z+1] = getIED().getPassword()[z];
                         }
                     }
                     else
@@ -245,7 +245,7 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -284,7 +284,7 @@ INT CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessa
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -426,7 +426,7 @@ INT CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlis
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -480,7 +480,7 @@ INT CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiM
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -547,7 +547,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
         case StateScanValueSet3:
             {
                 // grabbing the mass memory configuration
-                if ((localLProfile->porterLPTime - rwEpoch) > 0)
+                if ((localLProfile->porterLPTime) > 0)
                 {
                     fillUploadTransferObject (Transfer, 0x2500, 0x2540);
                     setPreviousState (StateScanValueSet3);
@@ -653,20 +653,19 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                  *  Schlumberger keeps modulo 100 years.. bad bad bad and I must fixee here
                                  ******************************
                                  */
-                                if (RWDate().year() > 1999)
+                                if (CtiDate().year() > 1999)
                                 {
                                     /*
                                      *  Now build a unix time out of the prior settings.
                                      *  NOTE:  This is a UNIX time of RECORD START!
                                      */
 
-                                    LPTime = RWTime (RWDate ((INT)localRTReg->DayOfMonth,
+                                    LPTime = CtiTime (CtiDate ((INT)localRTReg->DayOfMonth,
                                                              (INT)localRTReg->Month,
                                                              (INT)localRTReg->Year+2000),
                                                      (INT)localRTReg->Hours, 0, 0).seconds()
                                              + (((INT)localRTReg->Minutes - ((INT)localRTReg->Minutes % (INT)localMMConfig->Real.intervalLength)
-                                                 - ((INT)localMMConfig->Real.currentInterval * (INT)localMMConfig->Real.intervalLength)) * 60)
-                                             - rwEpoch;
+                                                 - ((INT)localMMConfig->Real.currentInterval * (INT)localMMConfig->Real.intervalLength)) * 60);
 
                                 }
                                 else
@@ -676,21 +675,20 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                      *  NOTE:  This is a UNIX time of RECORD START!
                                      */
 
-                                    LPTime = RWTime (RWDate ((INT)localRTReg->DayOfMonth,
+                                    LPTime = CtiTime (CtiDate ((INT)localRTReg->DayOfMonth,
                                                              (INT)localRTReg->Month,
                                                              (INT)localRTReg->Year+1900),
                                                      (INT)localRTReg->Hours, 0, 0).seconds()
                                              + (((INT)localRTReg->Minutes - ((INT)localRTReg->Minutes % (INT)localMMConfig->Real.intervalLength)
-                                                 - ((INT)localMMConfig->Real.currentInterval * (INT)localMMConfig->Real.intervalLength)) * 60)
-                                             - rwEpoch;
+                                                 - ((INT)localMMConfig->Real.currentInterval * (INT)localMMConfig->Real.intervalLength)) * 60);
                                 }
 
                                 /*************************
                                 * Check the validity of the time received
                                 **************************
                                 */
-                                if ((RWTime(LPTime+rwEpoch) < (RWTime()-(2*86400))) ||
-                                    (RWTime(LPTime+rwEpoch) > (RWTime()+(2*86400))))
+                                if ((CtiTime(LPTime) < (CtiTime()-(2*86400))) ||
+                                    (CtiTime(LPTime) > (CtiTime()+(2*86400))))
                                 {
                                     /***********************
                                     * if meter time is not within a 2 day window, its
@@ -728,10 +726,10 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                 */
 
                                 LPTime = LPTime - ((INT)localMMConfig->Real.intervalLength * 3600 );
-                                LPTime = RWTime (RWDate (RWTime(LPTime + rwEpoch)),
-                                                 RWTime (LPTime + rwEpoch).hour(),
+                                LPTime = CtiTime (CtiDate (CtiTime(LPTime )),
+                                                 CtiTime (LPTime ).hour(),
                                                  0,
-                                                 0).seconds() - rwEpoch;
+                                                 0).seconds() ;
 
                                 localMMLoadProfile[localMMInputs->MMIndex].RecordTime    = LPTime;       // UNIX time of record start!
                                 localMMInputs->MMIndex += 1;
@@ -754,7 +752,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                              *  looking at the Current Address
                              */
 
-                        } while (localMMInputs->MMScanStartAddress != MMCurrent && ((localLProfile->porterLPTime - rwEpoch) < LPTime) &&
+                        } while (localMMInputs->MMScanStartAddress != MMCurrent && ((localLProfile->porterLPTime ) < LPTime) &&
                                  validMeterClock);
 
                         // if the meter's time was valid
@@ -795,7 +793,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << RWTime(LPTime+rwEpoch).asString()<< endl;
+                                dout << CtiTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << CtiTime(LPTime).asString()<< endl;
                             }
                             Transfer.setOutCount( 0 );
                             Transfer.setInCountExpected( 0 );
@@ -817,7 +815,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
+                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
                     }
 
                     Transfer.setOutCount( 0 );
@@ -935,7 +933,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -963,7 +961,7 @@ INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: Vectron " << getName() << " already online"<< endl;
+                        dout << CtiTime() << " NAK: Vectron " << getName() << " already online"<< endl;
                     }
                     break;
                 }
@@ -974,7 +972,7 @@ INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ACK: Vectron " << getName() << " already online"<< endl;
+                        dout << CtiTime() << " ACK: Vectron " << getName() << " already online"<< endl;
                     }
                     break;
                 }
@@ -1060,14 +1058,14 @@ INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Data failed CRC " << getName() << endl;
+                            dout << CtiTime() << " Data failed CRC " << getName() << endl;
                         }
                     }
                     else if ( Transfer.doTrace (READTIMEOUT))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No Reply from meter " << getName() << endl;
+                            dout << CtiTime() << " No Reply from meter " << getName() << endl;
                         }
                     }
                     CTISleep(2000);
@@ -1095,7 +1093,7 @@ INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
                 retCode = StateHandshakeAbort;
@@ -1161,7 +1159,7 @@ INT CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
                         retCode = StateScanAbort;
@@ -1173,7 +1171,7 @@ INT CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -1328,7 +1326,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Successfully switched to master " << getName() << endl;
+                                        dout << CtiTime() << " Successfully switched to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanComplete);
 
@@ -1337,7 +1335,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to master " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1355,7 +1353,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 1 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1365,7 +1363,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 1 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1374,7 +1372,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 1 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1392,7 +1390,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 2 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1402,7 +1400,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 2 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1411,7 +1409,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 2 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1429,7 +1427,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 3 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1439,7 +1437,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 3 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1448,7 +1446,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 3 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1466,7 +1464,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 4 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1476,7 +1474,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 4 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1485,7 +1483,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 4 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1505,7 +1503,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
             retCode = StateScanAbort;
@@ -1565,7 +1563,7 @@ INT CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
                 retCode = StateScanAbort;
@@ -1630,7 +1628,7 @@ INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
+                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
                         }
                         setCurrentState (StateScanComplete);
                     }
@@ -1674,7 +1672,7 @@ INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
                 retCode = StateScanAbort;
@@ -1690,7 +1688,7 @@ INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 }
 
 INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList)
@@ -1721,8 +1719,8 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1731,7 +1729,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.UserID);
 
     VectronScanData_t  *vsd = (VectronScanData_t*) DUPRep->Message;
-    RWTime peakTime;
+    CtiTime peakTime;
 
 
     if (isScanFlagSet(ScanRateGeneral))
@@ -1779,7 +1777,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, vsd))
                     {
                         double Value;
-                        RWCString valReport;
+                        string valReport;
 
                         Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)PValue);
                         valReport = getName() + " / " + pNumericPoint->getName() + " = " + CtiNumStr((int)Value);
@@ -1822,7 +1820,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
 
 
 INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
-                                               RWTime &TimeNow,
+                                               CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
                                                RWTPtrSlist< OUTMESS > &outList)
@@ -1849,8 +1847,8 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
 
     ULONG          goodPoint = !NORMAL;
     ULONG          lastLPTime;
-    ULONG          startingLPTime = getLastLPTime().seconds() - rwEpoch;
-    RWTime         intervalTime;
+    ULONG          startingLPTime = getLastLPTime().seconds() ;
+    CtiTime         intervalTime;
 
     BOOL           regTypeSupported = FALSE;
 
@@ -1863,8 +1861,8 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1967,7 +1965,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
                 if (lastLPTime < currentIntervalTime)
                 {
                     pulseCount = (INT)nibblesAndBits(pulseTemp, numActiveChannels, programNumber, i);
-                    intervalTime = RWTime(currentIntervalTime + rwEpoch);
+                    intervalTime = CtiTime(currentIntervalTime );
 
                     pValue = ((60.0 / (DOUBLE)intervalLength) * (DOUBLE)pulseWeight * (DOUBLE)pulseCount * pNumericPoint->getMultiplier()) / 1000.0;
 
@@ -1982,9 +1980,9 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
                         lastLPTime = currentIntervalTime;
 
                         // save the last profile interval
-                        if (lastLPTime + rwEpoch > getLastLPTime())
+                        if (lastLPTime  > getLastLPTime())
                         {
-                            setLastLPTime (RWTime(lastLPTime + rwEpoch));
+                            setLastLPTime (CtiTime(lastLPTime ));
                         }
                     }
                 }
@@ -1994,7 +1992,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
+                dout << CtiTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
             }
         }
     }
@@ -2028,7 +2026,7 @@ INT CtiDeviceVectron::ResultDisplay (INMESS *InMessage)
     */
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Result display for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
         sprintf(buffer,"Meter ID          :   %.9s",vsd->Real.meterId);
         dout << endl << buffer << endl;
         sprintf(buffer,"Unit Type         :   %.3s",vsd->Real.unitType);
@@ -2783,13 +2781,13 @@ USHORT CtiDeviceVectron::getRate (int aOffset)
 }
 
 
-BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, VectronScanData_t *aScanData)
+BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, VectronScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
 
     // this is initial value
-    peak = rwEpoch;
+    peak = PASTDATE;
     aValue = 0.0;
 
     /* Get the value from InMessage */
@@ -2891,11 +2889,11 @@ BOOL CtiDeviceVectron::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
 }
 
 
-BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, RWTime &aPeak, VectronScanData_t *data)
+BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data)
 {
     int x;
     BOOL retCode=FALSE;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
 
     // check all registers
@@ -2925,12 +2923,12 @@ BOOL CtiDeviceVectron::getRateValueFromRegister (DOUBLE &aValue, USHORT aType, U
 
 BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                                                   USHORT aRate,
-                                                  RWTime &aPeak,
+                                                  CtiTime &aPeak,
                                                   VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -2940,9 +2938,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                 if (aScanData->Real.register1.data.demand.rateA.Month > 0 &&
                     aScanData->Real.register1.data.demand.rateA.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.register1.data.demand.rateA.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.register1.data.demand.rateA.Day,
                                             aScanData->Real.register1.data.demand.rateA.Month,
-                                            RWDate().year()),
+                                            CtiDate().year()),
                                     aScanData->Real.register1.data.demand.rateA.Hour,
                                     aScanData->Real.register1.data.demand.rateA.Minute,
                                     0);
@@ -2957,9 +2955,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                 if (aScanData->Real.register1.data.demand.rateB.Month > 0 &&
                     aScanData->Real.register1.data.demand.rateB.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.register1.data.demand.rateB.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.register1.data.demand.rateB.Day,
                                             aScanData->Real.register1.data.demand.rateB.Month,
-                                            RWDate().year()),
+                                            CtiDate().year()),
                                     aScanData->Real.register1.data.demand.rateB.Hour,
                                     aScanData->Real.register1.data.demand.rateB.Minute,
                                     0);
@@ -2974,9 +2972,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                 if (aScanData->Real.register1.data.demand.rateC.Month > 0 &&
                     aScanData->Real.register1.data.demand.rateC.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.register1.data.demand.rateC.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.register1.data.demand.rateC.Day,
                                             aScanData->Real.register1.data.demand.rateC.Month,
-                                            RWDate().year()),
+                                            CtiDate().year()),
                                     aScanData->Real.register1.data.demand.rateC.Hour,
                                     aScanData->Real.register1.data.demand.rateC.Minute,
                                     0);
@@ -2992,9 +2990,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                 if (aScanData->Real.register1.data.demand.rateD.Month > 0 &&
                     aScanData->Real.register1.data.demand.rateD.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.register1.data.demand.rateD.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.register1.data.demand.rateD.Day,
                                             aScanData->Real.register1.data.demand.rateD.Month,
-                                            RWDate().year()),
+                                            CtiDate().year()),
                                     aScanData->Real.register1.data.demand.rateD.Hour,
                                     aScanData->Real.register1.data.demand.rateD.Minute,
                                     0);
@@ -3009,9 +3007,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
                 if (aScanData->Real.register1.data.demand.rateE.Month > 0 &&
                     aScanData->Real.register1.data.demand.rateE.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.register1.data.demand.rateE.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.register1.data.demand.rateE.Day,
                                             aScanData->Real.register1.data.demand.rateE.Month,
-                                            RWDate().year()),
+                                            CtiDate().year()),
                                     aScanData->Real.register1.data.demand.rateE.Hour,
                                     aScanData->Real.register1.data.demand.rateE.Minute,
                                     0);
@@ -3029,12 +3027,12 @@ BOOL CtiDeviceVectron::getRateValueFromRegister1 (DOUBLE &aValue,
 
 BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
                                                   USHORT aRate,
-                                                  RWTime &aPeak,
+                                                  CtiTime &aPeak,
                                                   VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3046,9 +3044,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
                     if (aScanData->Real.register2.data.demand.rateA.Month > 0 &&
                         aScanData->Real.register2.data.demand.rateA.Month < 13)
                     {
-                        aPeak = RWTime (RWDate (aScanData->Real.register2.data.demand.rateA.Day,
+                        aPeak = CtiTime (CtiDate (aScanData->Real.register2.data.demand.rateA.Day,
                                                 aScanData->Real.register2.data.demand.rateA.Month,
-                                                RWDate().year()),
+                                                CtiDate().year()),
                                         aScanData->Real.register2.data.demand.rateA.Hour,
                                         aScanData->Real.register2.data.demand.rateA.Minute,
                                         0);
@@ -3071,9 +3069,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
                     if (aScanData->Real.register2.data.demand.rateB.Month > 0 &&
                         aScanData->Real.register2.data.demand.rateB.Month < 13)
                     {
-                        aPeak = RWTime (RWDate (aScanData->Real.register2.data.demand.rateB.Day,
+                        aPeak = CtiTime (CtiDate (aScanData->Real.register2.data.demand.rateB.Day,
                                                 aScanData->Real.register2.data.demand.rateB.Month,
-                                                RWDate().year()),
+                                                CtiDate().year()),
                                         aScanData->Real.register2.data.demand.rateB.Hour,
                                         aScanData->Real.register2.data.demand.rateB.Minute,
                                         0);
@@ -3115,9 +3113,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
                     if (aScanData->Real.register2.data.demand.rateE.Month > 0 &&
                         aScanData->Real.register2.data.demand.rateE.Month < 13)
                     {
-                        aPeak = RWTime (RWDate (aScanData->Real.register2.data.demand.rateE.Day,
+                        aPeak = CtiTime (CtiDate (aScanData->Real.register2.data.demand.rateE.Day,
                                                 aScanData->Real.register2.data.demand.rateE.Month,
-                                                RWDate().year()),
+                                                CtiDate().year()),
                                         aScanData->Real.register2.data.demand.rateE.Hour,
                                         aScanData->Real.register2.data.demand.rateE.Minute,
                                         0);
@@ -3141,12 +3139,12 @@ BOOL CtiDeviceVectron::getRateValueFromRegister2 (DOUBLE &aValue,
 
 BOOL CtiDeviceVectron::getRateValueFromRegister3 (DOUBLE &aValue,
                                                   USHORT aRate,
-                                                  RWTime &aPeak,
+                                                  CtiTime &aPeak,
                                                   VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3163,9 +3161,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister3 (DOUBLE &aValue,
                     if (aScanData->Real.register3.data.demand.rateE.Month > 0 &&
                         aScanData->Real.register3.data.demand.rateE.Month < 13)
                     {
-                        aPeak = RWTime (RWDate (aScanData->Real.register3.data.demand.rateE.Day,
+                        aPeak = CtiTime (CtiDate (aScanData->Real.register3.data.demand.rateE.Day,
                                                 aScanData->Real.register3.data.demand.rateE.Month,
-                                                RWDate().year()),
+                                                CtiDate().year()),
                                         aScanData->Real.register3.data.demand.rateE.Hour,
                                         aScanData->Real.register3.data.demand.rateE.Minute,
                                         0);
@@ -3188,12 +3186,12 @@ BOOL CtiDeviceVectron::getRateValueFromRegister3 (DOUBLE &aValue,
 
 BOOL CtiDeviceVectron::getRateValueFromRegister4 (DOUBLE &aValue,
                                                   USHORT aRate,
-                                                  RWTime &aPeak,
+                                                  CtiTime &aPeak,
                                                   VectronScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3210,9 +3208,9 @@ BOOL CtiDeviceVectron::getRateValueFromRegister4 (DOUBLE &aValue,
                     if (aScanData->Real.register4.data.demand.rateE.Month > 0 &&
                         aScanData->Real.register4.data.demand.rateE.Month < 13)
                     {
-                        aPeak = RWTime (RWDate (aScanData->Real.register4.data.demand.rateE.Day,
+                        aPeak = CtiTime (CtiDate (aScanData->Real.register4.data.demand.rateE.Day,
                                                 aScanData->Real.register4.data.demand.rateE.Month,
-                                                RWDate().year()),
+                                                CtiDate().year()),
                                         aScanData->Real.register4.data.demand.rateE.Hour,
                                         aScanData->Real.register4.data.demand.rateE.Minute,
                                         0);

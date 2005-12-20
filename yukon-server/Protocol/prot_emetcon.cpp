@@ -8,15 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/04/11 16:50:17 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#include <rw\rwtime.h>
 
 #include "cmdparse.h"
 #include "devicetypes.h"
@@ -149,7 +148,7 @@ INT Emetcon::parseRequest(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand() << endl;
             }
 

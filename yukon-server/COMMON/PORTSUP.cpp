@@ -38,7 +38,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw\rwtime.h>
 #include <rw\thr\mutex.h>
 
 #include "os2_2w32.h"
@@ -460,7 +459,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
       if(!(++tCount % 300))
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << "  Port " << Port << " No Modem CTS.  Modem may be off or configured wrong" << endl;
+         dout << CtiTime() << "  Port " << Port << " No Modem CTS.  Modem may be off or configured wrong" << endl;
       }
 
       LowerModemDTR (PortHandle);
@@ -486,7 +485,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Port " << Port << " No Modem CTS..." << endl;
+               dout << CtiTime() << " Port " << Port << " No Modem CTS..." << endl;
             }
          }
 
@@ -514,7 +513,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+            dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
          }
       }
 
@@ -524,7 +523,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Sent to Modem:  AT" << endl;
+         dout << CtiTime() << " Port " << Port << " Sent to Modem:  AT" << endl;
       }
 
       /* Wait for a response or till we time out */
@@ -536,7 +535,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Sent to Modem:  +++" << endl;
+            dout << CtiTime() << " Port " << Port << " Sent to Modem:  +++" << endl;
          }
 
          ResponseSize = sizeof (Response);
@@ -547,7 +546,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
             if(Trace)
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
+               dout << CtiTime() << " Port " << Port << " Modem Response Timeout" << endl;
             }
 
             CTIWrite (PortHandle, "\r", 1, &BytesWritten);    // Get rid of the trash that didn't give a good return.
@@ -557,7 +556,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
       else if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+         dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
       }
 
 
@@ -568,7 +567,7 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Sent to Modem:  ATZ" << endl;
+         dout << CtiTime() << " Port " << Port << " Sent to Modem:  ATZ" << endl;
       }
 
       ResponseSize = sizeof (Response);
@@ -579,14 +578,14 @@ ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
+            dout << CtiTime() << " Port " << Port << " Modem Response Timeout" << endl;
          }
          return(READTIMEOUT);
       }
       else if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+         dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
       }
 
       /* Make sure that we got OK */
@@ -644,7 +643,7 @@ ModemSetup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dc
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Sent to Modem:  " << MyMessage << endl;
+         dout << CtiTime() << " Port " << Port << " Sent to Modem:  " << MyMessage << endl;
       }
 
       ResponseSize = sizeof (Response);
@@ -655,7 +654,7 @@ ModemSetup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dc
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
+            dout << CtiTime() << " Port " << Port << " Modem Response Timeout" << endl;
          }
          continue;
       }
@@ -663,7 +662,7 @@ ModemSetup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dc
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+         dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
       }
 
       /* Make sure that we got OK */
@@ -725,7 +724,7 @@ ModemConnect (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL 
    if(Trace)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Port " << Port << " Sent to Modem:  " << MyMessage << endl;
+      dout << CtiTime() << " Port " << Port << " Sent to Modem:  " << MyMessage << endl;
    }
 
    ResponseSize = sizeof (Response);
@@ -736,7 +735,7 @@ ModemConnect (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL 
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
+         dout << CtiTime() << " Port " << Port << " Modem Response Timeout" << endl;
       }
       return(READTIMEOUT);
    }
@@ -744,7 +743,7 @@ ModemConnect (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL 
    if(Trace)
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+      dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
    }
 
    /* We have a response so see what it is */
@@ -800,7 +799,7 @@ ModemConnect (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL 
    else
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    return(NOTNORMAL);
@@ -1083,7 +1082,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+            dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
          }
       }
 
@@ -1092,7 +1091,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << Port << " Sent to Modem:  AT" << endl;
+         dout << CtiTime() << " Port " << Port << " Sent to Modem:  AT" << endl;
       }
 
       if(WaitForResponse (PortHandle, &ResponseSize, Response, 3, "OK"))
@@ -1100,7 +1099,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Modem Response Timeout (this may be ok)" << endl;
+            dout << CtiTime() << " Port " << Port << " Modem Response Timeout (this may be ok)" << endl;
          }
 
          // Maybe we are not in command mode...
@@ -1111,14 +1110,14 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Sent to Modem:  +++" << endl;
+            dout << CtiTime() << " Port " << Port << " Sent to Modem:  +++" << endl;
          }
          if(WaitForResponse (PortHandle, &ResponseSize, Response, 3, "OK"))
          {
             if(Trace)
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Port " << Port << " Modem Response Timeout (will re-try)" << endl;
+               dout << CtiTime() << " Port " << Port << " Modem Response Timeout (will re-try)" << endl;
             }
 
             status = READTIMEOUT;
@@ -1127,7 +1126,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          else if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+            dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
 
             status = NORMAL;
             break;
@@ -1154,7 +1153,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          if(Trace)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port << " Sent to Modem:  ATH0" << endl;
+            dout << CtiTime() << " Port " << Port << " Sent to Modem:  ATH0" << endl;
          }
 
          ResponseSize = sizeof (Response);
@@ -1164,7 +1163,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
             if(Trace)
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
+               dout << CtiTime() << " Port " << Port << " Modem Response Timeout" << endl;
             }
 
             status = READTIMEOUT;     // Hangup Failed
@@ -1175,7 +1174,7 @@ ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
             if(Trace)
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
+               dout << CtiTime() << " Port " << Port << " Received from Modem:  " << Response <<  endl;
             }
 
             status = NORMAL;

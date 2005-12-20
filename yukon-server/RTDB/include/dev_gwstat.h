@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/01/18 19:11:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,9 @@
 #include <set>
 #include <map>
 #include <vector>
-using namespace std;
+using std::set;
+using std::map;
+using std::vector;
 
 #include "cmdparse.h"
 #include "ctitypes.h"
@@ -90,7 +92,7 @@ class IM_EX_DEVDB CtiDeviceGatewayStat : public CtiDeviceIED
 public:
 
     typedef set< CtiPendingStatOperation > OpCol_t;        // The outstanding operaitons.
-    typedef map< UINT, RWCString > StatPrintList_t;
+    typedef map< UINT, string > StatPrintList_t;
     typedef vector< pair<USHORT, USHORT> > StatResponse_t;
 
     CtiDeviceGatewayStat(ULONG sn = 0);
@@ -160,8 +162,8 @@ public:
     bool generatePrintList( );
     bool generatePacketData( USHORT Type, int day = 0, int period = 0 );
     bool clearPrintList();
-    bool updatePrintList(USHORT Type, RWCString &str );
-    RWCString generateSchedulePeriod(int day, int period);
+    bool updatePrintList(USHORT Type, string &str );
+    string generateSchedulePeriod(int day, int period);
 
     int returnCodeCount(USHORT message_type);
     int removeReturnCode(USHORT message_type);
@@ -174,7 +176,7 @@ public:
 
     short convertFromStatTemp (short Temp, int tempScale = scaleToStat);
     short convertToStatTemp (short Temp, int tempScale = scaleToStat);
-    RWCString getUnitName(bool abbreviated = true, bool nospaces = false);
+    string getUnitName(bool abbreviated = true, bool nospaces = false);
 
 
     static int convertCDayToStatDay(int dow);
@@ -191,7 +193,7 @@ public:
     static int estimateSetpointPriority();
 
     virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
-    RWCString printListAsString(UINT Type) const;
+    string printListAsString(UINT Type) const;
 
 
 protected:
@@ -417,7 +419,7 @@ private:
     int parsePutConfigRequest(CtiCommandParser &parse);
     void generateReplyVector(OpCol_t::value_type &valtype, UINT operation = 0);
     bool generateTidbitToDatabase( USHORT Type, int day, int period );
-    RWCString generateTidbitScheduleToDatabase(int day, int period);
+    string generateTidbitScheduleToDatabase(int day, int period);
     int processSchedulePeriod(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, int dow, int pod, BYTE per);
 
     bool verifyGatewayDid();

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,8 @@
 #include "mgr_holiday.h"
 #include "dbaccess.h"
 
-const RWCString CtiHolidayManager::holidaysql("select holidayschedule.holidayscheduleid,dateofholiday.holidaymonth,dateofholiday.holidayday,dateofholiday.holidayyear \
+
+const string CtiHolidayManager::holidaysql("select holidayschedule.holidayscheduleid,dateofholiday.holidaymonth,dateofholiday.holidayday,dateofholiday.holidayyear \
 from holidayschedule,dateofholiday \
 where dateofholiday.holidayscheduleid=holidayschedule.holidayscheduleid");
 
@@ -28,7 +29,7 @@ CtiHolidayManager::CtiHolidayManager()
     refresh();
 }
 
-bool CtiHolidayManager::isHoliday(const RWDate& date, long holiday_sched_id)
+bool CtiHolidayManager::isHoliday(const CtiDate& date, long holiday_sched_id)
 {
     bool is_holiday = false;
 
@@ -48,7 +49,7 @@ bool CtiHolidayManager::isHoliday(const RWDate& date, long holiday_sched_id)
     return is_holiday;
 }
 
-bool CtiHolidayManager::isHoliday(long holiday_sched_id, const RWDate& date)
+bool CtiHolidayManager::isHoliday(long holiday_sched_id, const CtiDate& date)
 {
     return isHoliday(date,holiday_sched_id);
 }
@@ -67,7 +68,7 @@ void CtiHolidayManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, holidaysql);
+            RWDBReader rdr = ExecuteQuery(conn, holidaysql.c_str());
 
             while( rdr() )
             {

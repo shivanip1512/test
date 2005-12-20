@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2005/10/19 15:55:39 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2005/12/20 17:17:14 $
  */
 
 #include <windows.h>
@@ -24,10 +24,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>
@@ -108,17 +107,17 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
 {
   // can't check debuglevel in this function because it is static
 
-  RWCString tempStr = iConfigParameters.getValueAsString( KEY_FLAVOR, "POLL" );
+  string tempStr = iConfigParameters.getValueAsString( KEY_FLAVOR, "POLL" );
   if (tempStr == "POLL")
   {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime::now() << " FDRPI: Instantiating POLL flavor of FDRPI" << endl;
+    dout << CtiTime::now() << " FDRPI: Instantiating POLL flavor of FDRPI" << endl;
     return new CtiFDRPiPoll();
   }
   else
   {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime::now() << " FDRPI: Instantiating NOTIFY flavor of FDRPI" << endl;
+    dout << CtiTime::now() << " FDRPI: Instantiating NOTIFY flavor of FDRPI" << endl;
     return new CtiFDRPiNotify();
   }
 }
@@ -137,7 +136,7 @@ bool CtiFDRPiBase::connect()
   }
   //connect to the Pi server
   piut_setprocname("YUKON");
-  err = piut_setservernode(_serverNodeName);
+  err = piut_setservernode(_serverNodeName.c_str());
   if (err != 0)
   {
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
@@ -150,8 +149,8 @@ bool CtiFDRPiBase::connect()
   }
 
   int32 valid = 0;
-  err = piut_login(_serverUsername.data(),
-                   _serverPassword.data(),
+  err = piut_login(_serverUsername.c_str(),
+                   _serverPassword.c_str(),
                    &valid);
   if (err != 0)
   {
@@ -224,11 +223,12 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
   PiPointInfo info;
   info.ctiPoint = ctiPoint;
 
+
   // we're interested in the first (and only) destination
-  RWCString tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
+  string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
 
   char tagBuf[80]; // max length of a tag, pipt_findpoint writes the tag back to this buffer
-  strcpy(tagBuf, tagName);
+  strcpy(tagBuf, tagName.c_str());
   PiPointId piId = 0;
   int err = 0;
   err = pipt_findpoint(tagBuf, &piId);

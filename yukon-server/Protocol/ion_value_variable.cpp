@@ -48,7 +48,7 @@ CtiIONValueVariable &CtiIONValueVariable::operator=( const CtiIONValueVariable &
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _variableType = aRef._variableType;
@@ -169,7 +169,7 @@ CtiIONValue *CtiIONValueVariable::restoreVariable( unsigned char ionClass, unsig
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 

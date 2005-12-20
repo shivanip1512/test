@@ -13,6 +13,8 @@
 
 #include "mutex.h"
 
+using namespace std;
+
 CtiMutex::CtiMutex()
 {
 #ifdef _WINDOWS
@@ -56,8 +58,9 @@ bool CtiMutex::acquire()
 bool CtiMutex::acquire(unsigned long millis)
 {
 #ifdef _WINDOWS
-    DWORD result = WaitForSingleObject( hMutex, millis );
-    // assert(result != WAIT_FAILED);   // Why??? CGP 021502
+	DWORD result = WaitForSingleObject( hMutex, millis );
+    //assert(result != WAIT_FAILED);   // Why??? CGP 021502
+
 #ifdef _DEBUG
     if(result == WAIT_OBJECT_0)
         _threadID = GetCurrentThreadId();
@@ -75,7 +78,7 @@ void CtiMutex::release()
 {
 #ifdef _WINDOWS
     ReleaseMutex( hMutex );
-
+	 
 #ifdef _DEBUG
     _threadID = 0;
 #endif
@@ -88,4 +91,3 @@ DWORD CtiMutex::lastAcquiredByTID() const
     return _threadID;
 }
 #endif
-

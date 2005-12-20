@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/23 12:54:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,13 +150,13 @@ private:
                            RWTPtrSlist< OUTMESS > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS *InMessage,
-                            RWTime &TimeNow,
+                            CtiTime &TimeNow,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS > &outList);
 
    virtual INT ErrorDecode(INMESS*,
-                           RWTime&,
+                           CtiTime&,
                            RWTPtrSlist< CtiMessage >   &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
                            RWTPtrSlist<OUTMESS> &outList);
@@ -164,10 +164,10 @@ private:
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,
                                               USHORT        aQuality,
-                                              RWTime        aTime,
+                                              CtiTime        aTime,
                                               CtiReturnMsg *aReturnMsg,
                                               USHORT        aIntervalType=0,
-                                              RWCString     aValReport=RWCString());
+                                              string        aValReport=string());
 
    virtual BOOL insertPointIntoReturnMsg (CtiMessage    *aDataPoint,
                                   CtiReturnMsg   *aReturnMsg);

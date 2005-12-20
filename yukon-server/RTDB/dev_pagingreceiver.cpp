@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 
 #include <map>
 #include <string>
-using namespace std;
 
 #include <windows.h>
 
@@ -44,6 +43,8 @@ using namespace std;
 
 #include "dev_pagingreceiver.h"
 
+using namespace std;
+
 const char *CtiDevicePagingReceiver::_change_mode = "J2";
 const char *CtiDevicePagingReceiver::_read= "R";
 const char *CtiDevicePagingReceiver::_save = "T";
@@ -67,7 +68,7 @@ CtiDevicePagingReceiver::~CtiDevicePagingReceiver()
 {
 }
 
-INT CtiDevicePagingReceiver::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDevicePagingReceiver::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     //So far I am doing nothing with the result...
     resetScanFlag();
@@ -90,7 +91,7 @@ INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan general");
@@ -172,7 +173,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     _cmdVectorIterator = _commandVector.begin();//This must be set to the first value to be sent
                     strncpy((char *)xfer.getOutBuffer(),_change_mode,25);//Change Mode command
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(DoInit);
@@ -186,7 +187,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
 
                     strncpy((char *)xfer.getOutBuffer(),*_cmdVectorIterator,25);//enable configuration.
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendWhatStringPointerPointsTo);
@@ -194,7 +195,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     {
                         setPreviousState(SendCapcodeNumber);// ADD_CODE_HERE
                         break;
-                    }
+                    }                  
                     break;
                 }
             case SendCapcodeNumber:
@@ -203,7 +204,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     strncpy((char*)xfer.getOutBuffer(),_capcode_number,10);
                     strncat((char*)xfer.getOutBuffer(),getFormattedHexCapcodeNumber(_capcodeCount).c_str(),20);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendCapcodeConfig);
@@ -214,9 +215,9 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     char buffer[10];
                     xfer.setInCountExpected(2);
                     strncpy((char*)xfer.getOutBuffer(),_capcode_config,20);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_capcodeCount),10);
-                    strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    ::strncat((char*)xfer.getOutBuffer(),CtiNumStr(_capcodeCount).toString().c_str(),10);
+                    ::strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendCapcodeNumber);
@@ -230,7 +231,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     xfer.setInCountExpected(2);
                     strncpy((char*)xfer.getOutBuffer(),getFormattedFrequency().c_str(),20);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendSave);
@@ -241,7 +242,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     xfer.setInCountExpected(2);
                     strncpy((char*)xfer.getOutBuffer(),_save,20);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendQuit);
@@ -252,7 +253,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     xfer.setInCountExpected(2);
                     strncpy((char*)xfer.getOutBuffer(),_stop,20);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(::strlen((char *)xfer.getOutBuffer()));
 
                     setCurrentState(ReadResult);
                     setPreviousState(Done);
@@ -260,10 +261,10 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                 }
             case ReadAndCheck:
                 {
-                    xfer.setInBuffer(_inBuffer);
+					xfer.setInBuffer(_inBuffer);
                     xfer.setOutBuffer(_outBuffer);
                     xfer.setBufferSize(DEV_PAGERRECEIVE_IN_BUFFER_SIZE);
-                    xfer.setOutCount(0);
+					xfer.setOutCount(0);
                     xfer.setInCountActual(&_inCountActual);
                     xfer.setNonBlockingReads(true);//reads dont block
                     xfer.setInCountExpected(0);//no delay.

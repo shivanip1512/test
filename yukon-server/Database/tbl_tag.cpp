@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_tag.h"
+#include "rwutil.h"
 
 CtiTableTag::CtiTableTag() :
 _tagId(0),
@@ -53,9 +54,9 @@ int CtiTableTag::operator==(const CtiTableTag &right) const
     return( getTagId() == right.getTagId() );
 }
 
-RWCString CtiTableTag::getTableName()
+string CtiTableTag::getTableName()
 {
-    return RWCString("Tags");
+    return string("Tags");
 }
 
 
@@ -64,7 +65,7 @@ RWDBStatus CtiTableTag::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector<<
@@ -97,7 +98,7 @@ RWDBStatus CtiTableTag::Restore()
 
 void CtiTableTag::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(CtiTableTag::getTableName());
+    keyTable = db.table(CtiTableTag::getTableName().c_str());
 
     selector <<
     keyTable["tagid"] <<
@@ -112,7 +113,7 @@ void CtiTableTag::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &s
 
 void CtiTableTag::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     rdr["tagid"]        >> _tagId;
     rdr["tagname"]      >> _tagName;
@@ -121,7 +122,7 @@ void CtiTableTag::DecodeDatabaseReader(RWDBReader& rdr)
     rdr["colorid"]      >> _colorId;
     rdr["imageid"]      >> _imageId;
 
-    _inhibit = ( rwsTemp.compareTo("Y", RWCString::ignoreCase) == 0 ? true : false );
+    _inhibit = ( stringCompareIgnoreCase(rwsTemp,"Y") == 0 ? true : false );
 
     resetDirty(FALSE);
 }
@@ -136,7 +137,7 @@ bool CtiTableTag::getInhibit() const
     return _inhibit;
 }
 
-RWCString CtiTableTag::getTagName() const
+string CtiTableTag::getTagName() const
 {
     return _tagName;
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PTPRINT.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,14 +45,13 @@
 #include <process.h>
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw\thr\mutex.h>
 
 #include "os2_2w32.h"
@@ -75,6 +74,8 @@ using namespace std;
 #include "logger.h"
 #include "guard.h"
 
+using namespace std;
+
 // #include "proclog.hpp"
 
 DLLIMPORT extern RWMutexLock coutMux;
@@ -94,7 +95,7 @@ TraceIn (PBYTE   Message,          /* message to print out in hex */
       CtiLockGuard<CtiLogger> doubt_guard(dout);
 
       /* set bright yellow for the time message */
-      dout << RWTime();
+      dout << CtiTime();
 
       /* set bright cyan for the info message */
       dout << "  Port: " << setw(2);
@@ -141,7 +142,7 @@ TraceOut (PBYTE   Message,          /* message to print out in hex */
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       /* set bright yellow for the time message */
-      dout << RWTime();
+      dout << CtiTime();
 
       /* set bright cyan for the info message */
       dout << "  Port: " << setw(2);

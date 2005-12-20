@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/10/19 16:54:02 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/12/20 17:17:13 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.8  2005/12/20 17:17:13  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.7  2005/10/19 16:54:02  dsutton
       Changed the logging to the system log so we don't log every unknown
       point as it comes in from the foreign system.  It will now log these points
@@ -58,10 +61,9 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_cmd.h"
@@ -72,6 +74,7 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrdsm2filein.h"
+#include "ctitokenizer.h"
 
 
 CtiFDR_Dsm2Filein * textImportInterface;
@@ -87,10 +90,10 @@ const CHAR * CtiFDR_Dsm2Filein::KEY_USE_SYSTEM_TIME = "FDR_DSM2FILEIN_USE_SYSTEM
 
 // Constructors, Destructor, and Operators
 CtiFDR_Dsm2Filein::CtiFDR_Dsm2Filein()
-: CtiFDRTextFileBase(RWCString("DSM2FILEIN"))
+: CtiFDRTextFileBase(string("DSM2FILEIN"))
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE));
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
     getReceiveFromList().setPointList (recList);
     recList = NULL;
     init();
@@ -173,16 +176,16 @@ BOOL CtiFDR_Dsm2Filein::stop( void )
 }
 
 
-RWTime CtiFDR_Dsm2Filein::ForeignToYukonTime (RWCString aTime)
+CtiTime CtiFDR_Dsm2Filein::ForeignToYukonTime (string aTime)
 {
     struct tm ts;
-    RWTime retVal;
+    CtiTime retVal;
 
     if (aTime.length() == 19)
     {
         try
         {
-            if (sscanf (aTime.data(),
+            if (sscanf (aTime.c_str(),
                         "%2ld/%2ld/%4ld %2ld:%2ld:%2ld",
                         &ts.tm_mon,
                         &ts.tm_mday,
@@ -191,65 +194,69 @@ RWTime CtiFDR_Dsm2Filein::ForeignToYukonTime (RWCString aTime)
                         &ts.tm_min,
                         &ts.tm_sec) != 6)
             {
-                retVal = rwEpoch;
+                retVal = PASTDATE;
             }
             else
             {
                 ts.tm_year -= 1900;
                 ts.tm_mon--;
-                ts.tm_isdst = RWTime().isDST();
+                ts.tm_isdst = CtiTime().isDST();
 
                 try
                 {
-                    retVal = RWTime(&ts);
+                    retVal = CtiTime(&ts);
 
-                    // if RWTime can't make a time ???
+                    // if CtiTime can't make a time ???
                     if (!retVal.isValid())
                     {
-                        retVal = rwEpoch;
+                        retVal = PASTDATE;
                     }
                 }
                 catch (...)
                 {
-                    retVal = rwEpoch;
+                    retVal = PASTDATE;
                 }
             }
         }
         catch (...)
         {
-            retVal = rwEpoch;
+            retVal = PASTDATE;
         }
     }
     else
-        retVal = rwEpoch;
+        retVal = PASTDATE;
     return retVal;
 }
 
-USHORT CtiFDR_Dsm2Filein::ForeignToYukonQuality (RWCString aQuality)
+USHORT CtiFDR_Dsm2Filein::ForeignToYukonQuality (string aQuality)
 {
     USHORT Quality = NonUpdatedQuality;
 
-    if (!aQuality.compareTo ("N",RWCString::ignoreCase))
+    if (!stringCompareIgnoreCase(aQuality,"N"))
         Quality = NormalQuality;
-    if (!aQuality.compareTo ("M",RWCString::ignoreCase))
+    if (!stringCompareIgnoreCase(aQuality,"M"))
         Quality = ManualQuality;
 
     return(Quality);
 }
 
 
-bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetMsg)
+bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
 {
     bool retCode = false;
     bool pointValidFlag=true;
-    RWCString tempString1;                // Will receive each token
-    RWCTokenizer cmdLine(aLine);           // Tokenize the string a
+    string tempString1;                // Will receive each token
+
+    boost::char_separator<char> sep(",\r\n");
+    Boost_char_tokenizer cmdLine(aLine, sep);
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+
     CtiFDRPoint         point;
     int fieldNumber=1,quality;
     double value;
     CHAR   action[60];
-    RWCString linetimestamp,translationName,desc;
-    RWTime pointtimestamp;
+    string linetimestamp,translationName,desc;
+    CtiTime pointtimestamp;
 
 
     /****************************
@@ -257,7 +264,7 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
     * function,id,value,quality,timestamp,daylight savings flag
     *****************************
     */
-    while (!(tempString1 = cmdLine(",\r\n")).isNull() && pointValidFlag)
+    while (!(tempString1 = *tok_iter++).empty() && pointValidFlag)
     {
         switch (fieldNumber)
         {
@@ -284,13 +291,12 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Translation for point " << translationName;
+                                dout << CtiTime() << " Translation for point " << translationName;
                                 dout << " from " << getFileName() << " was not found" << endl;
                             }
-                        
-                            desc = getFileName() + RWCString ("'s point ") + translationName + RWCString( " is not listed in the translation table");
-                            _snprintf(action,60,"%s", translationName);
-                            logEvent (desc,RWCString (action));
+			    desc = getFileName() + string ("'s point ") + translationName + string( " is not listed in the translation table");
+			    _snprintf(action,60,"%s", translationName);
+			    logEvent (desc,string (action));                        
                         }
                     }
 
@@ -298,7 +304,7 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                 }
             case 3:
                 {
-                    value = atof(tempString1);
+                    value = atof(tempString1.c_str());
                     break;
                 }
             case 4:
@@ -318,12 +324,12 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
 
                     if (useSystemTime())
                     {
-                        pointtimestamp=RWTime();
+                        pointtimestamp=CtiTime();
                     }
                     else
                     {
                         pointtimestamp = ForeignToYukonTime (linetimestamp);
-                        if (pointtimestamp == rwEpoch)
+                        if (pointtimestamp == PASTDATE)
                         {
                             pointValidFlag = false;
                         }
@@ -344,18 +350,18 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
 }
 
 
-bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetMsg)
+bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
 {
 	bool retCode = false;
     bool pointValidFlag=true;
-    RWCString tempString1;                // Will receive each token
-    RWCTokenizer cmdLine(aLine);           // Tokenize the string a
+    string tempString1;                // Will receive each token
+    CtiTokenizer cmdLine(aLine);           // Tokenize the string a
     CtiFDRPoint         point;
     int fieldNumber=1,quality;
     double value;
     CHAR   action[60];
-    RWCString linetimestamp,translationName,desc,lookupName;
-    RWTime pointtimestamp;
+    string linetimestamp,translationName,desc,lookupName;
+    CtiTime pointtimestamp;
 
 
     /****************************
@@ -363,7 +369,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
     * function,id,value,quality,timestamp,daylight savings flag
     *****************************
     */
-    while (!(tempString1 = cmdLine(",\r\n")).isNull() && pointValidFlag)
+    while (!(tempString1 = cmdLine(",\r\n")).empty() && pointValidFlag)
     {
         switch (fieldNumber)
         {
@@ -387,7 +393,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
                     // lock the list while we're returning the point
                     {
                         CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
-                        pointValidFlag = findTranslationNameInList (lookupName, getReceiveFromList(), point);
+                        pointValidFlag = findTranslationNameInList (lookupName.c_str(), getReceiveFromList(), point);
                     }
 
                     if (pointValidFlag != true)
@@ -396,13 +402,14 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Translation for point " << translationName;
+                                dout << CtiTime() << " Translation for point " << translationName;
                                 dout << " from " << getFileName() << " was not found" << endl;
                             }
 
-                            desc = getFileName() + RWCString ("'s point ") + translationName + RWCString( " is not listed in the translation table");
+                            desc = getFileName().c_str() + string ("'s point ") + translationName + string( " is not listed in the translation table");
                             _snprintf(action,60,"%s", translationName);
-                            logEvent (desc,RWCString (action));
+                            logEvent ( string(desc.c_str()),
+				       string(action));
                         }
                     }
 
@@ -410,12 +417,12 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
                 }
             case 4:
                 {
-                    value = atof(tempString1);
+                    value = atof(tempString1.c_str());
                     break;
                 }
             case 5:
                 {
-                    quality = ForeignToYukonQuality(tempString1);
+                    quality = ForeignToYukonQuality(tempString1.c_str());
                     break;
                 }
 
@@ -430,12 +437,12 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
 
                     if (useSystemTime()) 
                     {
-                        pointtimestamp=RWTime();
+                        pointtimestamp=CtiTime();
                     }
                     else
                     {
-                        pointtimestamp = ForeignToYukonTime (linetimestamp);
-                        if (pointtimestamp == rwEpoch)
+                        pointtimestamp = ForeignToYukonTime (linetimestamp.c_str());
+                        if (pointtimestamp == PASTDATE)
                         {
                             pointValidFlag = false;
                         }
@@ -450,7 +457,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
 
     if (pointValidFlag)
     {
-        retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
+        retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName.c_str(),aRetMsg);
     }
     return retCode;
 }
@@ -458,12 +465,12 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetM
 
 bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                                           DOUBLE aValue,
-                                          RWTime aTimestamp,
+                                          CtiTime aTimestamp,
                                           int aQuality,
-                                          RWCString aTranslationName,
+                                          string aTranslationName,
                                           CtiMessage **aRetMsg)
 {
-    RWCString desc;
+    string desc;
     CHAR   action[60];
     bool retCode = false;
 
@@ -489,7 +496,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Analog point " << aTranslationName;
+                dout << CtiTime() << " Analog point " << aTranslationName;
                 dout << " value " << value << " from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
             }
             retCode = true;
@@ -506,7 +513,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << aTranslationName;
+                        dout << CtiTime() << " Control point " << aTranslationName;
                         if (aValue == OPENED)
                         {
                             dout << " control: Open " ;
@@ -535,17 +542,17 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Invalid control state " << aValue;
+                            dout << CtiTime() << " Invalid control state " << aValue;
                             dout << " for " << aTranslationName << " received from " << getFileName() << endl;
                         }
 
                         CHAR state[20];
                         _snprintf (state,20,"%.0f",aValue);
-                        desc = getFileName() + RWCString (" control point received with an invalid state ") + RWCString (state);
+                        desc = getFileName() + string (" control point received with an invalid state ") + string (state);
                         _snprintf(action,60,"%s for pointID %d",
                                   aTranslationName,
                                   aPoint.getPointID());
-                        logEvent (desc,RWCString (action));
+                        logEvent (desc,string (action));
                     }
                 }
             }
@@ -553,14 +560,14 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
             {
                 if ((aValue == OPENED) || (aValue == CLOSED))
                 {
-                    RWCString tracestate;
+                    string tracestate;
                     if (aValue == OPENED)
                     {
-                        tracestate = RWCString ("Open");
+                        tracestate = string ("Open");
                     }
                     else
                     {
-                        tracestate = RWCString ("Closed");
+                        tracestate = string ("Closed");
                     }
                     *aRetMsg = new CtiPointDataMsg(aPoint.getPointID(),
                                                 aValue,
@@ -570,7 +577,7 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Status point " << aTranslationName;
+                        dout << CtiTime() << " Status point " << aTranslationName;
                         dout << " new state: " << tracestate;
                         dout <<" from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
                     }
@@ -582,17 +589,17 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                    {
                        {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Status point " << aTranslationName;
+                            dout << CtiTime() << " Status point " << aTranslationName;
                             dout << " received an invalid state " << (int)aValue;
                             dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
                        }
                         CHAR state[20];
                         _snprintf (state,20,"%.0f",aValue);
-                        desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);
+                        desc = getFileName() + string (" status point received with an invalid state ") + string (state);
                         _snprintf(action,60,"%s for pointID %d",
                                 aTranslationName,
                                 aPoint.getPointID());
-                        logEvent (desc,RWCString (action));
+                        logEvent (desc,string (action));
                    }
                 }
             }
@@ -603,20 +610,24 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
 }
 
 
-bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aRetMsg)
+bool CtiFDR_Dsm2Filein::validateAndDecodeLine (string &aLine, CtiMessage **aRetMsg)
 {
     bool retCode = false;
     bool flag;
-    aLine.toLower();
-    RWCString tempString1;                // Will receive each token
-    RWCTokenizer cmdLine(aLine);           // Tokenize the string a
+    std::transform(aLine.begin(), aLine.end(), aLine.begin(), tolower);
+    string tempString1;                // Will receive each token
+
+    boost::char_separator<char> sep(",\r\n");
+    Boost_char_tokenizer cmdLine(aLine, sep);
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+
     CtiFDRPoint         point;
     int function;
 
     // grab the function number
-    if (!(tempString1 = cmdLine(",\r\n")).isNull())
+    if (!(tempString1 = *tok_iter++).empty())
     {
-        function = atoi (tempString1);
+        function = atoi (tempString1.c_str());
 
         // check the function number
         switch (function)
@@ -644,7 +655,7 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aR
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unknown function number from import file" << endl;
+                dout << CtiTime() << " Unknown function number from import file" << endl;
                 break;
             }
         }
@@ -658,18 +669,18 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aR
 int CtiFDR_Dsm2Filein::readConfig( void )
 {
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        if (atoi (tempStr) <=1)
+        if (atoi (tempStr.c_str()) <=1)
         {
             setInterval(1);
         }
         else
         {
-            setInterval(atoi(tempStr));
+            setInterval(atoi(tempStr.c_str()));
         }
     }
     else
@@ -684,7 +695,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     }
     else
     {
-        setFileName(RWCString ("yukon.txt"));
+        setFileName(string ("yukon.txt"));
     }
 
     tempStr = getCparmValueAsString(KEY_DRIVE_AND_PATH);
@@ -694,13 +705,13 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     }
     else
     {
-        setDriveAndPath(RWCString ("\\yukon\\server\\import"));
+        setDriveAndPath(string ("\\yukon\\server\\import"));
     }
 
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -710,7 +721,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -722,7 +733,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DELETE_FILE);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("false",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr,"false"))
         {
             setDeleteFileAfterImport (false);
         }
@@ -732,7 +743,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     tempStr = getCparmValueAsString(KEY_USE_SYSTEM_TIME);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("true",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr, "true"))
         {
             setUseSystemTime (true);
         }
@@ -741,20 +752,20 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " DSM2 filein file name " << getFileName() << endl;
-        dout << RWTime() << " DSM2 filein directory " << getDriveAndPath() << endl;
-        dout << RWTime() << " DSM2 filein interval " << getInterval() << endl;
-        dout << RWTime() << " DSM2 filein dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << RWTime() << " DSM2 filein db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " DSM2 filein file name " << getFileName() << endl;
+        dout << CtiTime() << " DSM2 filein directory " << getDriveAndPath() << endl;
+        dout << CtiTime() << " DSM2 filein interval " << getInterval() << endl;
+        dout << CtiTime() << " DSM2 filein dispatch queue flush rate " << getQueueFlushRate() << endl;
+        dout << CtiTime() << " DSM2 filein db reload rate " << getReloadRate() << endl;
 
         if (shouldDeleteFileAfterImport())
-            dout << RWTime() << " DSM2 filein file will be deleted after import" << endl;
+            dout << CtiTime() << " DSM2 filein file will be deleted after import" << endl;
         else
-            dout << RWTime() << " DSM2 filein file will NOT be deleted after import" << endl;
+            dout << CtiTime() << " DSM2 filein file will NOT be deleted after import" << endl;
         if (useSystemTime())
-            dout << RWTime() << " DSM2 filein will stamp data with time at import" << endl;
+            dout << CtiTime() << " DSM2 filein will stamp data with time at import" << endl;
         else
-            dout << RWTime() << " DSM2 filein file stamp data according to time included in the import" << endl;
+            dout << CtiTime() << " DSM2 filein file stamp data according to time included in the import" << endl;
 
 
     }
@@ -777,9 +788,9 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -787,7 +798,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
-                                                       RWCString (FDR_INTERFACE_RECEIVE));
+                                                       string (FDR_INTERFACE_RECEIVE));
 
         // keep the status
         listStatus = pointList->loadPointList();
@@ -809,7 +820,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
                 int x;
-                RWCString translation_name;
+                string translation_name;
 
                 for ( ; myIterator(); )
                 {
@@ -825,37 +836,46 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                             //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
 
-                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        boost::char_separator<char> sep1(";");
+                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+                        if (!(tempString1 = *tok_iter).empty())
                         {
-                            RWCTokenizer nextTempToken(tempString1);
+                            boost::char_separator<char> sep2(":");
+                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            // do not care about the first part
-                            nextTempToken(":");
+                            tok_iter1++;
+                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
 
-                            tempString2 = nextTempToken(";");
-                            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+
+                            tempString2 = *nextTempToken_.begin();
+                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
 
                             // this is the function number
-                            if ( !tempString2.isNull() )
+                            if ( !tempString2.empty() )
                             {
                                 translation_name = tempString2 + "-----";
-                                //translation_name += RWCString ('-----');
+                                //translation_name += string ('-----');
+                                tok_iter ++;
 
-                                if (!(tempString1 = nextTranslate(";")).isNull())
+                                if (!(tempString1 = *tok_iter).empty())
                                 {
                                     // now we have a point id
                                     // this could be a unique id or a combination of device name and point name separated
-                                    // by a colon
-                                    RWCTokenizer nextTempToken(tempString1);
+                                    // by a colon	    
+                                    boost::char_separator<char> sep2(":");
+                                    Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                                    // do not care about the first part
-                                    nextTempToken(":");
+                                    tok_iter1++;
+                                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
 
-                                    tempString2 = nextTempToken(";");
-                                    tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
-                                    if (!tempString2.isNull()) 
+                                    tempString2 = *nextTempToken_.begin();
+                                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
+                                    if (!tempString2.empty())
                                     {
                                         translation_name+=tempString2;
                                         translationPoint->getDestinationList()[x].setTranslation (translation_name);
@@ -889,7 +909,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -898,14 +918,14 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 
@@ -914,7 +934,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
         RWTHROW(e);
     }
 
@@ -922,7 +942,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
     return successful;
@@ -939,9 +959,9 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0,tries=0;
-    RWTime         timeNow;
-    RWTime         refreshTime(rwEpoch);
-    RWCString action,desc;
+    CtiTime         timeNow;
+    CtiTime         refreshTime(PASTDATE);
+    string action,desc;
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -954,7 +974,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
             pSelf.serviceCancellation( );
             pSelf.sleep (1000);
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             // now is the time to get the file
             if (timeNow >= refreshTime)
@@ -973,17 +993,17 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << getInterfaceName() << "'s file " << RWCString (fileName) << " was either not found or could not be opened" << endl;
+                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
                     }
                 }
                 else
                 {
-                    vector<RWCString>     pointVector;
+                    vector<string>     pointVector;
 
                     // load list in the command vector
                     while ( fgets( (char*) workBuffer, 500, fptr) != NULL )
                     {
-                        RWCString entry (workBuffer);
+                        string entry (workBuffer);
                         pointVector.push_back (entry);
                     }
 
@@ -1015,7 +1035,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
                     DeleteFile (fileName);
                 }
 
-                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
+                refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }
@@ -1030,7 +1050,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRTextIMport::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRTextIMport::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/06/13 19:06:45 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ CtiDeviceGroupRipple& CtiDeviceGroupRipple::operator=(const CtiDeviceGroupRipple
         _rippleTable = aRef.getRippleTable();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -75,11 +75,11 @@ LONG CtiDeviceGroupRipple::getRouteID()
     return _rippleTable.getRouteID();
 }
 
-RWCString CtiDeviceGroupRipple::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupRipple::getDescription(const CtiCommandParser & parse) const
 {
     char tdesc[256];
-    sprintf(tdesc, "Group: %s", getName().data());
-    return RWCString(tdesc);
+    sprintf(tdesc, "Group: %s", getName().c_str());
+    return string(tdesc);
 }
 
 void CtiDeviceGroupRipple::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
@@ -92,7 +92,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
@@ -128,8 +128,8 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         {
             for(size_t i = 0; i < parse.getActionItems().entries(); i++)
             {
-                RWCString actn = parse.getActionItems()[i];
-                RWCString desc = getDescription(parse);
+                string actn = parse.getActionItems()[i];
+                string desc = getDescription(parse);
 
                 CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                 LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
@@ -140,12 +140,12 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         /*
          *  Form up the reply here since the ExecuteRequest funciton will consume the OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            sprintf(Temp, "ERROR %3d performing command on route %s", nRet,  Route->getName().data());
+            sprintf(Temp, "ERROR %3d performing command on route %s", nRet,  Route->getName().c_str());
             pRet->setStatus(nRet);
             pRet->setResultString(Temp);
             retList.insert( pRet );
@@ -159,15 +159,15 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
     {
         nRet = NoRouteGroupDevice;
 
-        RWCString Temp (" ERROR: Route or Route Transmitter not available for group device " + getName());
-        RWCString Reply = RWCString(Temp);
+        string Temp (" ERROR: Route or Route Transmitter not available for group device " + getName());
+        string Reply = string(Temp);
 
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << Temp << endl;
+            dout << CtiTime() << Temp << endl;
         }
     }
 
@@ -187,7 +187,7 @@ void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -196,7 +196,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     INT count = getResponsesOnTrxID();
     CtiPoint *pPoint;
 
-    bool erdb = !gConfigParms.getValueAsString("EASTRIVER_DEBUG").compareTo("true", RWCString::ignoreCase);
+    bool erdb = !stringCompareIgnoreCase(gConfigParms.getValueAsString("EASTRIVER_DEBUG"), "true");
 
     if( trx == getCurrentTrxID() )
     {
@@ -216,7 +216,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
             }
 
             //create a CTIDBG_new data message
-            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) ));
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), string( getName() + " / " +  pPoint->getName() + CtiNumStr(val) ));
 
             if (pData != NULL)
             {
@@ -241,7 +241,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  " << getName() << " is probably setShed(INVALID)" << endl;
             }
         }
@@ -250,7 +250,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  " << getName() << ": TrxID is not equal to the current group TrxID" << endl;
         }
     }
@@ -281,7 +281,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSli
             val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)0.0 );
         }
 
-        RWCString resString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) );
+        string resString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) );
 
         //create a CTIDBG_new data message
         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
@@ -303,22 +303,22 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
 
     // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
 
-    RWCString mybits = getRippleTable().getControlBits();
-    RWCString otherbits = otherGroup->getRippleTable().getControlBits();
+    string mybits = getRippleTable().getControlBits();
+    string otherbits = otherGroup->getRippleTable().getControlBits();
 
-    RWCString thegroup = mybits((size_t)0, (size_t)10);
-    RWCString agroup = otherbits((size_t)0, (size_t)10);
+    string thegroup = (char*)mybits[(size_t)0, (size_t)10];
+    string agroup = (char*)otherbits[(size_t)0, (size_t)10];
 
-    RWCString thearea = mybits((size_t)10, (size_t)6);
-    RWCString aarea = otherbits((size_t)10, (size_t)6);
+    string thearea = (char*)mybits[(size_t)10, (size_t)6];
+    string aarea = (char*)otherbits[(size_t)10, (size_t)6];
 
-    RWCString parentDO = mybits((size_t)16, (size_t)(mybits.length()-16));
-    RWCString childDO = otherbits((size_t)16, (size_t)(otherbits.length()-16));
+    string parentDO = (char*)mybits[(size_t)16, (size_t)(mybits.length()-16)];
+    string childDO = (char*)otherbits[(size_t)16, (size_t)(otherbits.length()-16)];
 
     // First 10 bits are the group!  They must match.
     if(thegroup == agroup)
     {
-        if( !thearea.compareTo("000000") || thearea == aarea)  // This is a universal group or a match on the area.
+        if( !thearea.compare("000000") || thearea == aarea)  // This is a universal group or a match on the area.
         {
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
@@ -346,23 +346,23 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
 
     // The only ripple groups that can support any type of heirarchy are Minnkota Landis & Gyr LCRs.  The have a universal group which can control area codes.
 
-    RWCString mybits = getRippleTable().getRestoreBits();
-    RWCString otherbits = otherGroup->getRippleTable().getRestoreBits();
+    string mybits = getRippleTable().getRestoreBits();
+    string otherbits = otherGroup->getRippleTable().getRestoreBits();
 
-    RWCString thegroup = mybits((size_t)0, (size_t)10);
-    RWCString agroup = otherbits((size_t)0, (size_t)10);
+    string thegroup = (char*)mybits[(size_t)0, (size_t)10];
+    string agroup = (char*)otherbits[(size_t)0, (size_t)10];
 
-    RWCString thearea = mybits((size_t)10, (size_t)6);
-    RWCString aarea = otherbits((size_t)10, (size_t)6);
+    string thearea = (char*)mybits[(size_t)10, (size_t)6];
+    string aarea = (char*)otherbits[(size_t)10, (size_t)6];
 
-    RWCString parentDO = mybits((size_t)16, (size_t)(mybits.length()-16));
-    RWCString childDO = otherbits((size_t)16, (size_t)(otherbits.length()-16));
+    string parentDO = (char*)mybits[(size_t)16, (size_t)(mybits.length()-16)];
+    string childDO = (char*)otherbits[(size_t)16, (size_t)(otherbits.length()-16)];
 
 
     // First 10 bits are the group!  They must match.
     if(thegroup == agroup)
     {
-        if( !thearea.compareTo("000000") || thearea == aarea)  // This is a universal group or a match on the area.
+        if( !thearea.compare("000000") || thearea == aarea)  // This is a universal group or a match on the area.
         {
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
@@ -409,7 +409,7 @@ CtiMessage* CtiDeviceGroupRipple::rsvpToDispatch( bool clearMessage )
     return tMsg;
 }
 
-bool CtiDeviceGroupRipple::matchRippleDoubleOrders(RWCString parentDO, RWCString childDO) const
+bool CtiDeviceGroupRipple::matchRippleDoubleOrders(string parentDO, string childDO) const
 {
     bool match = true;
 

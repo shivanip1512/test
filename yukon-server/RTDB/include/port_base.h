@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/10/04 20:19:03 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,8 @@
 #include <iostream>
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
-using namespace std;
+using std::list;
+using std::iostream;
 
 #include <rw/thr/thrfunc.h>
 
@@ -118,9 +119,9 @@ public:
 
     virtual HANDLE    getHandle() const;
     virtual INT       getIPPort() const;
-    virtual RWCString getIPAddress() const;
-    virtual RWCString getPhysicalPort() const;
-    virtual RWCString getModemInit() const;
+    virtual string getIPAddress() const;
+    virtual string getPhysicalPort() const;
+    virtual string getModemInit() const;
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
     virtual INT reset(INT trace);
@@ -153,13 +154,13 @@ public:
 
     void haltLog();
 
-    RWCString getSharedPortType() const;
+    string getSharedPortType() const;
     INT getSharedSocketNumber() const;
     INT getType() const;
     LONG getPortID() const;
     INT isDialup() const;
     bool isDialin() const;
-    RWCString getName() const;
+    string getName() const;
     bool isInhibited() const;
     bool isSimulated() const;
     virtual INT getBaudRate() const;
@@ -232,10 +233,10 @@ public:
 
     virtual bool isExecutionProhibitedByInternalLogic() const;
 
-    RWTime getLastOMRead() const;
-    void setLastOMRead(RWTime &atime = RWTime());
-    RWTime getLastOMComplete() const;
-    void setLastOMComplete(RWTime &atime = RWTime());
+    CtiTime getLastOMRead() const;
+    void setLastOMRead(CtiTime &atime = CtiTime());
+    CtiTime getLastOMComplete() const;
+    void setLastOMComplete(CtiTime &atime = CtiTime());
 
     ULONG getQueueSlot() const;
     CtiPort& setQueueSlot(const ULONG slot = 0);
@@ -250,9 +251,9 @@ public:
     CtiPort& resetDevicePreload(LONG id);
     set<LONG> getPreloads(void);
 
-    INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-    INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
-    INT setQueueOrphans(int num, RWTime &rwt);          // Number of queue entries remaining on device following this pass.
+    INT incQueueSubmittal(int bumpcnt, CtiTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+    INT incQueueProcessed(int bumpCnt, CtiTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
+    INT setQueueOrphans(int num, CtiTime &rwt);          // Number of queue entries remaining on device following this pass.
     void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
 
 protected:
@@ -298,11 +299,11 @@ private:
     bool                        _executing;             // Port is currently executing work...
     prohibitions                _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
-    RWTime                      _lastReport;    // Last comm fail report happened here.
+    CtiTime                      _lastReport;    // Last comm fail report happened here.
     bool                        _minMaxIdle;
 
-    RWTime                      _lastOMRead;
-    RWTime                      _lastOMComplete;
+    CtiTime                      _lastOMRead;
+    CtiTime                      _lastOMComplete;
 
     list< LONG >                _devicesQueued;
     set< LONG >                 _devicesPreloaded;
@@ -319,9 +320,9 @@ inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMax
 inline INT CtiPort::getType() const   { return _tblPAO.getType();}
 inline LONG CtiPort::getPortID() const { return _tblPAO.getID();}
 inline bool CtiPort::isInhibited() const { return _tblPAO.isInhibited();}
-inline RWCString CtiPort::getName() const { return _tblPAO.getName();}
+inline string CtiPort::getName() const { return _tblPAO.getName();}
 
-inline RWCString CtiPort::getSharedPortType() const { return _tblPortBase.getSharedPortType();}
+inline string CtiPort::getSharedPortType() const { return _tblPortBase.getSharedPortType();}
 inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSharedSocketNumber();}
 inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 

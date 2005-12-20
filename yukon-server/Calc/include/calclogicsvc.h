@@ -41,10 +41,10 @@ private:
     RWThreadFunction _inputFunc;
     RWThreadFunction _outputFunc;
 
-    RWTime _dispatchPingedFailed;
+    CtiTime _dispatchPingedFailed;
     bool _dispatchConnectionBad;
     bool _ok, _restart;
-    RWCString _dispatchMachine;
+    string _dispatchMachine;
     INT _dispatchPort;
     CtiCalculateThread *calcThread;
     CtiConnection *_conxion;

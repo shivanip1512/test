@@ -17,7 +17,7 @@ using namespace std;
 
 
 // Constructors, Destructor, and Operators
-CtiFDRScadaServer::CtiFDRScadaServer(RWCString &name)
+CtiFDRScadaServer::CtiFDRScadaServer(string &name)
 : CtiFDRSocketServer(name)
 {
 }

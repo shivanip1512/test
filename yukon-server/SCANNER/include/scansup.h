@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/scansup.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:20:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,16 +16,16 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\rwtime.h>
+#include "ctitime.h"
 
 /* Prototypes from SCANSUP.C */
-IM_EX_SCANSUP RWTime   FirstScan(const RWTime&, ULONG);
+IM_EX_SCANSUP CtiTime   FirstScan(const CtiTime&, ULONG);
 IM_EX_SCANSUP INT      ReportError (CtiDeviceBase *, USHORT);
 IM_EX_SCANSUP INT      TracePrint (PBYTE, USHORT);
 
 //IM_EX_SCANSUP INT      InitDLCScanning (VOID);
-//IM_EX_SCANSUP INT      Time2ScanDLCValue (RWTime &, const RWTime &);
-//IM_EX_SCANSUP INT      Time2ScanDLCStatus(RWTime &, const RWTime &);
+//IM_EX_SCANSUP INT      Time2ScanDLCValue (CtiTime &, const CtiTime &);
+//IM_EX_SCANSUP INT      Time2ScanDLCStatus(CtiTime &, const CtiTime &);
 
 IM_EX_SCANSUP INT      ProcessDLCStatus (INT, DSTRUCT *, CtiDeviceBase *);
 IM_EX_SCANSUP ULONG    NextScan (ULONG, ULONG, USHORT);

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/06/29 19:44:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
 #include "tbl_dv_tappaging.h"

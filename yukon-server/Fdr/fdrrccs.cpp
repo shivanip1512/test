@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2005/10/19 16:54:02 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.12  2005/12/20 17:17:14  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.11  2005/10/19 16:54:02  dsutton
       Changed the logging to the system log so we don't log every unknown
       point as it comes in from the foreign system.  It will now log these points
@@ -119,10 +122,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -229,12 +231,12 @@ bool CtiFDR_Rccs::isAMaster (int aID)
             if (standbyFailFlag)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " RCCS" << aID <<" has been failed by its standby, command rejected" <<endl;
+                dout << CtiTime() << " RCCS" << aID <<" has been failed by its standby, command rejected" <<endl;
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " RCCS" << aID <<" is not an authorized master, command rejected" <<endl;
+                dout << CtiTime() << " RCCS" << aID <<" is not an authorized master, command rejected" <<endl;
             }
         }
     }
@@ -243,8 +245,8 @@ bool CtiFDR_Rccs::isAMaster (int aID)
 
 CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
 {
-    RWCString            desc;
-    RWCString            action;
+    string            desc;
+    string            action;
     CHAR                id[10];
 
     itoa (aID,id,10);
@@ -256,11 +258,11 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
 		{
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " RCCS" << aID <<" changing from BACKUP to MASTER " <<endl;
+                dout << CtiTime() << " RCCS" << aID <<" changing from BACKUP to MASTER " <<endl;
             }
 
-            action = RWCString ("RCCS") + RWCString(id) + RWCString (" : is now MASTER");
-            desc = RWCString ("RCCS") + RWCString (id) + RWCString (" has changed from BACKUP to MASTER");
+            action = string ("RCCS") + string(id) + string (" : is now MASTER");
+            desc = string ("RCCS") + string (id) + string (" has changed from BACKUP to MASTER");
             logEvent (desc,action, true);
 		}
 
@@ -274,10 +276,10 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
 		{
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " RCCS" << aID <<" changing from MASTER to BACKUP" <<endl;
+                dout << CtiTime() << " RCCS" << aID <<" changing from MASTER to BACKUP" <<endl;
             }
-            action = RWCString ("RCCS") + RWCString (id) + RWCString (" : is now BACKUP");
-            desc = RWCString ("RCCS") + RWCString (id) + RWCString (" has changed from MASTER to BACKUP");
+            action = string ("RCCS") + string (id) + string (" : is now BACKUP");
+            desc = string ("RCCS") + string (id) + string (" has changed from MASTER to BACKUP");
             logEvent (desc,action,true);
 		}
 
@@ -288,19 +290,19 @@ CtiFDR_Rccs& CtiFDR_Rccs::setAuthorizationFlag (int aID, bool aFlag)
     return *this;
 }
 
-int CtiFDR_Rccs::resolvePairNumber(RWCString &aPair)
+int CtiFDR_Rccs::resolvePairNumber(string &aPair)
 {
     int retVal = 0;
 
-    if (!(aPair.compareTo(RWCString (RCCS_PAIR_ONE),RWCString::ignoreCase)))
+    if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_ONE))))
         retVal = 1;
-    else if (!(aPair.compareTo(RWCString (RCCS_PAIR_TWO),RWCString::ignoreCase)))
+    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_TWO))))
         retVal = 2;
-    else if (!(aPair.compareTo(RWCString (RCCS_PAIR_THREE),RWCString::ignoreCase)))
+    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_THREE))))
         retVal = 3;
-    else if (!(aPair.compareTo(RWCString (RCCS_PAIR_FOUR),RWCString::ignoreCase)))
+    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_PAIR_FOUR))))
         retVal = 4;
-    else if (!(aPair.compareTo(RWCString (RCCS_STANDALONE),RWCString::ignoreCase)))
+    else if (!(stringCompareIgnoreCase(aPair,string (RCCS_STANDALONE))))
         retVal = 1;
 
 
@@ -333,7 +335,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
         **************************
         */
         int rccsPair=-1; 
-        RWCString destinationName;
+        string destinationName;
         bool foundFlag = true;
 
         rccsPair = resolvePairNumber(aPoint.getDestinationList()[x].getDestination());
@@ -342,7 +344,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
         if (rccsPair == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Invalid RCCS destination pair for point " << aPoint.getPointID() << endl;
+            dout << CtiTime() << " Invalid RCCS destination pair for point " << aPoint.getPointID() << endl;
         }
         else
         {
@@ -356,10 +358,10 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                 * around.  Maybe on the next sweep that can happen
                 **********************************
                 */
-                destinationName = RWCString ("RCCS");
+                destinationName = string ("RCCS");
                 int tmp ((rccsPair-1)*2+y);
                 CHAR id[3];
-                destinationName+= RWCString (itoa(tmp,id,10));
+                destinationName+= string (itoa(tmp,id,10));
 
                 // grab the connection list mutex
                 CtiLockGuard<CtiMutex> guard(getConnectionMux());  
@@ -381,29 +383,29 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         // put everything in the message
                         ptr->Type = INETTYPEVALUE;
                         getSourceName().resize(INETDESTSIZE);
-                        strncpy (ptr->SourceName, getSourceName().data(), INETDESTSIZE);
+                        strncpy (ptr->SourceName, getSourceName().c_str(), INETDESTSIZE);
 
-                        RWTime timestamp(aPoint.getLastTimeStamp());
-                        if (timestamp < RWTime(RWDate(1,1,2001)))
+                        CtiTime timestamp(aPoint.getLastTimeStamp());
+                        if (timestamp < CtiTime(CtiDate(1,1,2001)))
                         {
-                            timestamp = RWTime();
+                            timestamp = CtiTime();
                         }
 
-                        ptr->msgUnion.value.TimeStamp = (timestamp.seconds() - rwEpoch);
-                        strncpy (ptr->msgUnion.value.DeviceName, aPoint.getDestinationList()[x].getTranslation(),20);
-                        strncpy (ptr->msgUnion.value.PointName, &aPoint.getDestinationList()[x].getTranslation().data()[20],20);
+                        ptr->msgUnion.value.TimeStamp = (timestamp.seconds());
+                        strncpy (ptr->msgUnion.value.DeviceName, aPoint.getDestinationList()[x].getTranslation().c_str(),20);
+                        strncpy (ptr->msgUnion.value.PointName, &aPoint.getDestinationList()[x].getTranslation()[20],20);
 
                         // intercept the batch marker point name here if it exists
                         memset (tempStr,'\0',21);
                         memcpy (tempStr,ptr->msgUnion.value.PointName,20);
-                        RWCString point_name (tempStr);
+                        string point_name (tempStr);
                         point_name.resize(20);
-                        RWCString small_point (point_name.strip());
+                        string small_point (trim(point_name));
                         if (small_point == iBatchMarkerName)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Batch marker being sent to " << getConnectionList()[connectionIndex]->getName() << endl;
+                                dout << CtiTime() << " Batch marker being sent to " << getConnectionList()[connectionIndex]->getName() << endl;
                             }
                         }
 
@@ -443,15 +445,15 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         */
                         memset (tempStr,'\0',21);
                         memcpy (tempStr,ptr->SourceName,INETDESTSIZE);
-                        RWCString clientName(tempStr);
+                        string clientName(tempStr);
 
                         memset (tempStr,'\0',21);
                         memcpy (tempStr,ptr->msgUnion.value.DeviceName,20);
-                        RWCString deviceName(tempStr);
+                        string deviceName(tempStr);
 
                         memset (tempStr,'\0',21);
                         memcpy (tempStr,ptr->msgUnion.value.PointName,20);
-                        RWCString pointName(tempStr);
+                        string pointName(tempStr);
 
                         // memory is consumed no matter what
                         if (!getConnectionList()[connectionIndex]->write (foreignSys))
@@ -464,7 +466,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << RWCString (deviceName.strip()) << " " << RWCString(pointName.strip()) << " sent to " << getConnectionList()[connectionIndex]->getName() << endl;
+                                dout << CtiTime() << " " << string (trim(deviceName)) << " " << string(trim(pointName)) << " sent to " << getConnectionList()[connectionIndex]->getName() << endl;
                             }
 
                             // successfully sent message
@@ -492,9 +494,9 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
     DWORD semRet;
     BYTE *ptr;
     bool retVal=true,foundFlag=false;
-    RWCString destinationName("RCCS");
-    RWCString            action;
-    RWCString            desc;
+    string destinationName("RCCS");
+    string            action;
+    string            desc;
 
     CtiLockGuard<CtiMutex> destGuard(getClientListMux());  
     CtiLockGuard<CtiMutex> guard(getConnectionMux());  
@@ -514,10 +516,10 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
         for (int y=1; y < 3; y++)
         {
             // we know the naming convetions will be pair 1=RCCS1,RCCS2, pair 2=RCCS3,RCCS4, etc
-            destinationName = RWCString ("RCCS");
+            destinationName = string ("RCCS");
             int tmp (x*2+y);
             CHAR id[3];
-            destinationName+= RWCString (itoa(tmp,id,10));
+            destinationName+= string (itoa(tmp,id,10));
 
             foundFlag = false;
 
@@ -525,7 +527,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
             for (int y = 0; y < connEntries; y++)
             {
                 // if the names match
-                if(!(getConnectionList()[y]->getName().compareTo (destinationName,RWCString::ignoreCase)))
+                if(!(stringCompareIgnoreCase(getConnectionList()[y]->getName(),destinationName)))
                 {
                     foundFlag = true;
                 }
@@ -550,17 +552,17 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Initialization failed for " << destinationName << endl;
+                            dout << CtiTime() << " Initialization failed for " << destinationName << endl;
                         }
                     }
                     else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Client connection initialized for " << destinationName << " at ";
-                            dout << RWCString (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr)) << endl;
+                            dout << CtiTime() << " Client connection initialized for " << destinationName << " at ";
+                            dout << string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr)) << endl;
                         }
-                        desc = destinationName + RWCString ("'s client link has been established at ") + RWCString (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr));
+                        desc = destinationName + string ("'s client link has been established at ") + string (inet_ntoa(layer->getOutBoundConnection()->getAddr().sin_addr));
                         logEvent (desc,action, true);
                         getConnectionList().push_back (layer);
                     }
@@ -570,7 +572,7 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Initialization failed for " << destinationName << endl;
+                        dout << CtiTime() << " Initialization failed for " << destinationName << endl;
                     }
                     delete layer;
                     retVal = false;
@@ -599,10 +601,10 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
         for (int y=1; y < 3; y++)
         {
             // we know the naming convetions will be pair 1=RCCS1,RCCS2, pair 2=RCCS3,RCCS4, etc
-            RWCString destinationName = RWCString ("RCCS");
+            string destinationName = string ("RCCS");
             int tmp (x*2+y);
             CHAR id[3];
-            destinationName+= RWCString (itoa(tmp,id,10));
+            destinationName+= string (itoa(tmp,id,10));
 
             foundClient = false;
             linkID = getClientLinkStatusID (destinationName);
@@ -611,7 +613,7 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
             for (int y = 0; y < connEntries; y++)
             {
                 // if the names match
-                if(!(getConnectionList()[y]->getName().compareTo (destinationName,RWCString::ignoreCase)))
+                if(!(stringCompareIgnoreCase(getConnectionList()[y]->getName(),destinationName)))
                 {
                     getConnectionList()[y]->setLinkStatusID(linkID);
                     getConnectionList()[y]->sendLinkState (FDR_CONNECTED);
@@ -650,13 +652,13 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
 int CtiFDR_Rccs::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPortNumber (atoi(tempStr));
+        setPortNumber (atoi(tempStr.c_str()));
     }
     else
     {
@@ -666,7 +668,7 @@ int CtiFDR_Rccs::readConfig( void )
     tempStr = getCparmValueAsString(KEY_CONNECT_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setConnectPortNumber (atoi(tempStr));
+        setConnectPortNumber (atoi(tempStr.c_str()));
     }
     else
     {
@@ -677,7 +679,7 @@ int CtiFDR_Rccs::readConfig( void )
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
     {
-        setTimestampReasonabilityWindow (atoi (tempStr));
+        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
     }
     else
     {
@@ -687,7 +689,7 @@ int CtiFDR_Rccs::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -701,7 +703,7 @@ int CtiFDR_Rccs::readConfig( void )
     }
     else
     {
-        setSourceName (RWCString("YUKON"));
+        setSourceName (string("YUKON"));
     }
 
     tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
@@ -717,7 +719,7 @@ int CtiFDR_Rccs::readConfig( void )
     }
     else
     {
-        iBatchMarkerName = RWCString ("RCCSSTART");
+        iBatchMarkerName = string ("RCCSSTART");
     }
 
     tempStr = getCparmValueAsString(KEY_STANDALONE);
@@ -738,35 +740,35 @@ int CtiFDR_Rccs::readConfig( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS listen port number " << getPortNumber() << endl;
-            dout << RWTime() << " RCCS connect port number " << getConnectPortNumber() << endl;
-            dout << RWTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
-            dout << RWTime() << " RCCS db reload rate " << getReloadRate() << endl;
-            dout << RWTime() << " RCCS source name " << getSourceName() << endl;
-            dout << RWTime() << " RCCS batch marker name " << iBatchMarkerName << endl;
+            dout << CtiTime() << " RCCS listen port number " << getPortNumber() << endl;
+            dout << CtiTime() << " RCCS connect port number " << getConnectPortNumber() << endl;
+            dout << CtiTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
+            dout << CtiTime() << " RCCS db reload rate " << getReloadRate() << endl;
+            dout << CtiTime() << " RCCS source name " << getSourceName() << endl;
+            dout << CtiTime() << " RCCS batch marker name " << iBatchMarkerName << endl;
         }
 
 
         if (isInterfaceInDebugMode())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS running in debug mode " << endl;
+            dout << CtiTime() << " RCCS running in debug mode " << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS running in normal mode "<< endl;
+            dout << CtiTime() << " RCCS running in normal mode "<< endl;
         }
 
         if (iStandalone)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS running in standalone mode " << endl;
+            dout << CtiTime() << " RCCS running in standalone mode " << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS running in failover mode "<< endl;
+            dout << CtiTime() << " RCCS running in failover mode "<< endl;
         }
 
 
@@ -780,9 +782,9 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
     int retVal = NORMAL;
 
     InetInterface_t *data = (InetInterface_t*)aBuffer;
-    RWCString clientName(data->SourceName);
-    RWCString deviceName(data->msgUnion.value.DeviceName);
-    RWCString pointName(data->msgUnion.value.PointName);
+    string clientName(data->SourceName);
+    string deviceName(data->msgUnion.value.DeviceName);
+    string pointName(data->msgUnion.value.PointName);
 
     clientName.resize(INETDESTSIZE);
     deviceName.resize(20);
@@ -795,13 +797,13 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Shutdown message received from " << clientName << endl;
+                    dout << CtiTime() << " Shutdown message received from " << clientName << endl;
                 }
                 // nothing to do if we're standalone
                 if (!iStandalone)
                 {
-                    RWCString temp (data->SourceName[4]);
-                    setAuthorizationFlag (atoi(temp.data()), FALSE);
+                    string temp (char2string(data->SourceName[4]));
+                    setAuthorizationFlag (atoi(temp.c_str()), FALSE);
                 }
                 break;
             }
@@ -810,7 +812,7 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Heartbeat message received from " << clientName << endl;
+                    dout << CtiTime() << " Heartbeat message received from " << clientName << endl;
                 }
 
                 break;
@@ -820,7 +822,7 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << RWCString (deviceName.strip()) << " " << RWCString(pointName.strip()) << " received from " << RWCString (clientName.strip()) << endl;
+                    dout << CtiTime() << " " << string (trim(deviceName)) << " " << string(trim(pointName)) << " received from " << string (trim(clientName)) << endl;
                 }
                 retVal = processValueMessage (data);
                 break;
@@ -829,7 +831,7 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Default or invalid type from  " << clientName << " type " << data->Type << endl;
+                    dout << CtiTime() << " Default or invalid type from  " << clientName << " type " << data->Type << endl;
                 }
 
                 // process them all as value messages
@@ -846,58 +848,58 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
-    RWCString           translationName (data->msgUnion.value.DeviceName);
+    string           translationName (data->msgUnion.value.DeviceName);
     int                 quality;
     DOUBLE              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool                flag = true;
-    RWCString temp (data->SourceName[4]);
+    string temp (char2string(data->SourceName[4]));
     CHAR                 action[60];
-    RWCString            desc;
+    string            desc;
 
-    RWCString deviceName (data->msgUnion.value.DeviceName);
-    RWCString pointName (data->msgUnion.value.PointName);
+    string deviceName (data->msgUnion.value.DeviceName);
+    string pointName (data->msgUnion.value.PointName);
     translationName.resize(20);
     deviceName.resize(20);
     pointName.resize(20);
 
     // check for our special device names
-    if (!(deviceName.compareTo(RWCString (RCCSDEVICEPRIMARY),RWCString::ignoreCase))
-        || !(deviceName.compareTo(RWCString (RCCSDEVICESTANDBY),RWCString::ignoreCase)))
+    if (!(stringCompareIgnoreCase(deviceName,string (RCCSDEVICEPRIMARY)))
+        || !(stringCompareIgnoreCase(deviceName,string (RCCSDEVICESTANDBY))))
     {
 
 //        {
 //            CtiLockGuard<CtiLogger> doubt_guard(dout);
-//           dout << RWTime() << " Current State of RCCS" << temp << ":  " << deviceName << " / " << pointName << endl;
+//           dout << CtiTime() << " Current State of RCCS" << temp << ":  " << deviceName << " / " << pointName << endl;
 //        }
 
 
         //we've got a primary, check his status
-        if (!(pointName.compareTo(RWCString (RCCSPOINTMASTER),RWCString::ignoreCase)))
+        if (!(stringCompareIgnoreCase(pointName,string (RCCSPOINTMASTER))))
         {
 
-            setAuthorizationFlag (atoi(temp.data()), TRUE);
+            setAuthorizationFlag (atoi(temp.c_str()), TRUE);
 //            {
 //                CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                dout << RWTime() << " Machine: RCCS" << temp << " has switched itself to primary" << endl;
+//                dout << CtiTime() << " Machine: RCCS" << temp << " has switched itself to primary" << endl;
 //            }
 
         }
         else
         {
-            setAuthorizationFlag (atoi(temp.data()), FALSE);
+            setAuthorizationFlag (atoi(temp.c_str()), FALSE);
 //            {
 //                CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                dout << RWTime() << " Machine: RCCS" << temp << " has switched itself to backup " << endl;
+//                dout << CtiTime() << " Machine: RCCS" << temp << " has switched itself to backup " << endl;
 //            }
         }
     }
     else
     {
-        if (isAMaster (atoi(temp.data())))
+        if (isAMaster (atoi(temp.c_str())))
         {
-            RWCString tmp = RWCString (data->msgUnion.value.PointName);
+            string tmp = string (data->msgUnion.value.PointName);
             tmp.resize(20);
 
             // convert to our name
@@ -923,16 +925,16 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Invalid control state " << data->msgUnion.value.Value;
+                        dout << CtiTime() << " Invalid control state " << data->msgUnion.value.Value;
                         dout << " for " << translationName << " received from RCCS " << endl;
                     }
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",data->msgUnion.value.Value);
-                    desc = decodeClientName((CHAR*)data) + RWCString (" control point received with an invalid state ") + RWCString (state);
+                    desc = decodeClientName((CHAR*)data) + string (" control point received with an invalid state ") + string (state);
                     _snprintf(action,60,"%s for pointID %d", 
                               translationName,
                               point.getPointID());
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                     retVal = !NORMAL;
                 }
                 
@@ -941,7 +943,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << translationName;
+                        dout << CtiTime() << " Control point " << translationName;
                         if (controlState == OPENED)
                         {
                             dout << " control: Open " ;
@@ -973,12 +975,12 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Translation for control point " <<  translationName;
+                            dout << CtiTime() << " Translation for control point " <<  translationName;
                             dout << " from " << getInterfaceName() << " was not found" << endl;
                         }
-                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is not listed in the translation table");
+                        desc = decodeClientName((CHAR*)data) + string (" control point is not listed in the translation table");
                         _snprintf(action,60,"%s", translationName);
-                        logEvent (desc,RWCString (action));
+                        logEvent (desc,string (action));
                     }
                 }
                 else if (!point.isControllable())
@@ -987,15 +989,15 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Control point " << translationName;
+                            dout << CtiTime() << " Control point " << translationName;
                             dout << " received from " << getInterfaceName();
                             dout << " was not configured receive for control for point " << point.getPointID() << endl;
                         }
-                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is not configured to receive controls");
+                        desc = decodeClientName((CHAR*)data) + string (" control point is not configured to receive controls");
                         _snprintf(action,60,"%s for pointID %d", 
                                   translationName,
                                   point.getPointID());
-                        logEvent (desc,RWCString (action));
+                        logEvent (desc,string (action));
                     }
                 }
                 else
@@ -1004,14 +1006,14 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Control point " << translationName;
+                            dout << CtiTime() << " Control point " << translationName;
                             dout << " received from " << getInterfaceName();
                             dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
                         }
                         CHAR pointID[20];
-                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                        desc = decodeClientName((CHAR*)data) + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                         _snprintf(action,60,"%s", translationName);
-                        logEvent (desc,RWCString (action));
+                        logEvent (desc,string (action));
                     }
                 }
 

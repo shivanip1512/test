@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtristate.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtristate.cpp,v $
+      Revision 1.6  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.5.2.3  2005/08/12 19:53:46  jliu
+      Date Time Replaced
+
+      Revision 1.5.2.2  2005/07/14 22:26:56  jliu
+      RWCStringRemoved
+
+      Revision 1.5.2.1  2005/07/12 21:08:37  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.5  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -76,10 +88,9 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -116,7 +127,7 @@ const CHAR * CtiFDR_Tristate::KEY_30_MINUTE_AVG_LABEL = "30 MINUTE AVG" ;
 
 // Constructors, Destructor, and Operators
 CtiFDR_Tristate::CtiFDR_Tristate()
-: CtiFDRFtpInterface(RWCString("TRISTATE"))
+: CtiFDRFtpInterface(string("TRISTATE"))
 {   
     init();
 }
@@ -200,20 +211,20 @@ int CtiFDR_Tristate::decodeFile ()
     CHAR buffer[300];
     int lineNumber=0, cnt;
     CHAR *ptr, *token=NULL;
-    RWDate date;
-    RWTime finalTime;
-    RWCString desc,action;
+    CtiDate date;
+    CtiTime finalTime;
+    string desc,action;
 
-    if ((fileHandle = _open(getLocalFileName().data(), _O_TEXT|_O_RDONLY)) != -1)
+    if ((fileHandle = _open(getLocalFileName().c_str(), _O_TEXT|_O_RDONLY)) != -1)
     {
         if (filelength(fileHandle) > 290 || filelength(fileHandle) < 60)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Tristate file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
+                dout << CtiTime() << " Tristate file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
             }
 
-            desc = getInterfaceName() + RWCString ("'s data file ") + getLocalFileName() + RWCString(" failed size reasonability check");
+            desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
             retVal = !NORMAL;
@@ -222,10 +233,10 @@ int CtiFDR_Tristate::decodeFile ()
         {
 
             // first of all, read file input 
-            if ((controlFile = fopen(getLocalFileName().data(), "r")) == NULL)
+            if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Tristate file failed to open after download " << endl;
+                dout << CtiTime() << " Tristate file failed to open after download " << endl;
                 retVal = !NORMAL;
             }
             else
@@ -239,7 +250,7 @@ int CtiFDR_Tristate::decodeFile ()
                             {
                                 if (strlen (buffer) > 15)
                                 {
-                                    finalTime = RWTime (RWDate(atoi(buffer+3), atoi (buffer), (atoi(buffer+6))),
+                                    finalTime = CtiTime (CtiDate(atoi(buffer+3), atoi (buffer), (atoi(buffer+6))),
                                                         atoi(buffer+11), 
                                                      atoi (buffer+14), 
                                                      atoi(buffer+17));
@@ -307,7 +318,7 @@ int CtiFDR_Tristate::decodeFile ()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Tristate file failed to open after download " << endl;
+        dout << CtiTime() << " Tristate file failed to open after download " << endl;
         retVal = !NORMAL;
     }
 
@@ -320,18 +331,18 @@ int CtiFDR_Tristate::fail ()
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
-    RWCString           translationName;
+    string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;
 
-    RWCString desc,action;
+    string desc,action;
 
     sendLinkState (FDR_NOT_CONNECTED);
     desc = getInterfaceName() + " failed to retrieve a new data file";
     logEvent (desc, action, true);
 
     // see if the point exists
-    flag = findTranslationNameInList (RWCString (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
 
     if (flag == true)
     {
@@ -349,7 +360,7 @@ int CtiFDR_Tristate::fail ()
         }
     }
 
-    flag = findTranslationNameInList (RWCString (KEY_30_MINUTE_AVG_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_30_MINUTE_AVG_LABEL), getReceiveFromList(), point);
 
     if (flag == true)
     {
@@ -369,15 +380,15 @@ int CtiFDR_Tristate::fail ()
     return retVal;
 }
 
-int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30MinuteAvg)
+int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30MinuteAvg)
 {
     int retVal = NORMAL;
-    RWCString           translationName;
+    string           translationName;
     CtiFDRPoint         point;
     bool                 flag = true;
 
     // see if the point exists
-    flag = findTranslationNameInList (RWCString (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_SYSTEM_TOTAL_LABEL), getReceiveFromList(), point);
 
     if ((flag == true) &&
         ((point.getPointType() == AnalogPointType) ||
@@ -386,7 +397,7 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
          (point.getPointType() == CalculatedPointType)))
     {
         // assign last stuff	
-        if (aTime != rwEpoch)
+        if (aTime != PASTDATE)
         {
             aSystemLoad *= point.getMultiplier();
             aSystemLoad += point.getOffset();
@@ -404,7 +415,7 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " --- Tristate Interface:  Current Load " << aSystemLoad << endl;
+                dout << CtiTime() << " --- Tristate Interface:  Current Load " << aSystemLoad << endl;
             }
         }
     }
@@ -415,20 +426,20 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for analog point " << RWCString (KEY_SYSTEM_TOTAL_LABEL);
+                dout << CtiTime() << " Translation for analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
                 dout << " from " << getInterfaceName() << " was not found" << endl;
             }
         }
         else
         {         
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Analog point " << RWCString (KEY_SYSTEM_TOTAL_LABEL);
+            dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
         }
     }
 
 
-    flag = findTranslationNameInList (RWCString (KEY_30_MINUTE_AVG_LABEL), getReceiveFromList(), point);
+    flag = findTranslationNameInList (string (KEY_30_MINUTE_AVG_LABEL), getReceiveFromList(), point);
 
     if ((flag == true) &&
         ((point.getPointType() == AnalogPointType) ||
@@ -437,7 +448,7 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
          (point.getPointType() == CalculatedPointType)))
     {
         // assign last stuff	
-        if (aTime != rwEpoch)
+        if (aTime != PASTDATE)
         {
             a30MinuteAvg *= point.getMultiplier();
             a30MinuteAvg += point.getOffset();
@@ -455,7 +466,7 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " --- Tristate Interface:  30 Minute Average " << a30MinuteAvg << endl;
+                dout << CtiTime() << " --- Tristate Interface:  30 Minute Average " << a30MinuteAvg << endl;
             }
 
         }
@@ -467,14 +478,14 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for analog point " << RWCString (KEY_30_MINUTE_AVG_LABEL);
+                dout << CtiTime() << " Translation for analog point " << string (KEY_30_MINUTE_AVG_LABEL);
                 dout << " from " << getInterfaceName() << " was not found" << endl;
             }
         }
         else
         {         
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Analog point " << RWCString (KEY_30_MINUTE_AVG_LABEL);
+            dout << CtiTime() << " Analog point " << string (KEY_30_MINUTE_AVG_LABEL);
             dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
         }
     }
@@ -486,12 +497,12 @@ int CtiFDR_Tristate::sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT a30Mi
 int CtiFDR_Tristate::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPort(atoi(tempStr));
+        setPort(atoi(tempStr.c_str()));
     }
     else
     {
@@ -501,7 +512,7 @@ int CtiFDR_Tristate::readConfig( void )
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        setDownloadInterval(atoi(tempStr));
+        setDownloadInterval(atoi(tempStr.c_str()));
     }
     else
     {
@@ -515,7 +526,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setServerFileName(RWCString ("tsload\\load.dat"));
+        setServerFileName(string ("tsload\\load.dat"));
     }
 
     tempStr = getCparmValueAsString(KEY_FTP_DIRECTORY);
@@ -525,7 +536,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setFTPDirectory(RWCString ("\\yukon\\server\\import"));
+        setFTPDirectory(string ("\\yukon\\server\\import"));
     }
 
 
@@ -536,7 +547,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setLogin(RWCString ("cannon"));
+        setLogin(string ("cannon"));
     }
 
     tempStr = getCparmValueAsString(KEY_PASSWORD);
@@ -546,7 +557,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setPassword(RWCString ("jesse"));
+        setPassword(string ("jesse"));
     }
 
     tempStr = getCparmValueAsString(KEY_IP_ADDRESS);
@@ -556,7 +567,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setIPAddress(RWCString());
+        setIPAddress(string());
 		  successful = false;
     }
 
@@ -564,7 +575,7 @@ int CtiFDR_Tristate::readConfig( void )
     tempStr = getCparmValueAsString(KEY_TRIES);
     if (tempStr.length() > 0)
     {
-        setTries(atoi(tempStr));
+        setTries(atoi(tempStr.c_str()));
     }
     else
     {
@@ -574,7 +585,7 @@ int CtiFDR_Tristate::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -584,7 +595,7 @@ int CtiFDR_Tristate::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -593,19 +604,19 @@ int CtiFDR_Tristate::readConfig( void )
     }
 
     // default local file name, it changes everytime
-    setLocalFileName(RWCString ("tristate1.txt"));
+    setLocalFileName(string ("tristate1.txt"));
 
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Tristate server file name " << getServerFileName() << endl;
-        dout << RWTime() << " Tristate FTP directory " << getFTPDirectory() << endl;
-        dout << RWTime() << " Tristate download interval " << getDownloadInterval() << endl;
-        dout << RWTime() << " Tristate number of tries " << getTries() << endl;
-        dout << RWTime() << " Tristate login " << getLogin() << endl;
-        dout << RWTime() << " Tristate IP " << getIPAddress() << endl;
-        dout << RWTime() << " Tristate db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " Tristate server file name " << getServerFileName() << endl;
+        dout << CtiTime() << " Tristate FTP directory " << getFTPDirectory() << endl;
+        dout << CtiTime() << " Tristate download interval " << getDownloadInterval() << endl;
+        dout << CtiTime() << " Tristate number of tries " << getTries() << endl;
+        dout << CtiTime() << " Tristate login " << getLogin() << endl;
+        dout << CtiTime() << " Tristate IP " << getIPAddress() << endl;
+        dout << CtiTime() << " Tristate db reload rate " << getReloadRate() << endl;
     }
 
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/11/09 00:13:14 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include "numstr.h"
 
 using Cti::Protocol::Emetcon;
+using std::make_pair;
 
 
 set< CtiDLCCommandStore > CtiDeviceRepeater900::_commandStore;
@@ -158,7 +159,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand() << endl;
             }
 
@@ -170,17 +171,17 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     if(nRet != NORMAL)
     {
-        RWCString resultString;
+        string resultString;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << RWTime() << "   Command: " << pReq->CommandString() << endl;
+            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
+            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
-                                               RWCString(OutMessage->Request.CommandStr),
+                                               string(OutMessage->Request.CommandStr),
                                                resultString,
                                                nRet,
                                                OutMessage->Request.RouteID,
@@ -215,7 +216,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
         if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
 
@@ -242,7 +243,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
             status = NoMethod;
@@ -285,7 +286,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 3;
         OutMessage->Request.RouteID = getRouteID();
 
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -348,7 +349,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 3;
 
         OutMessage->Request.RouteID = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -366,7 +367,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
     bool  found = false;
     INT   nRet = NoError;
     CHAR  Temp[80];
-    RWCString temp2;
+    string temp2;
 
     INT function;
 
@@ -420,17 +421,19 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        int firstrole = parse.getiValue("multi_rolenum") - 1;                // The first role to send.
        int rolenum = parse.getiValue("multi_rolenum") - 1;                  // The first role to send.
 
-       RWCString strFixed = parse.getsValue("multi_rolefixed");
-       RWCString strVarOut = parse.getsValue("multi_roleout");
-       RWCString strVarIn = parse.getsValue("multi_rolein");
-       RWCString strStages = parse.getsValue("multi_rolerpt");
+       string strFixed = parse.getsValue("multi_rolefixed");
+       string strVarOut = parse.getsValue("multi_roleout");
+       string strVarIn = parse.getsValue("multi_rolein");
+       string strStages = parse.getsValue("multi_rolerpt");
 
-       RWCString strTemp;
+       string strTemp;
+       
+       //boost::tokenizer<>::iterator beg=tok.begin(); 
 
-       RWCTokenizer fixtok(strFixed);
-       RWCTokenizer vouttok(strVarOut);
-       RWCTokenizer vintok(strVarIn);
-       RWCTokenizer stftok(strStages);
+       boost::tokenizer<> fixtok(strFixed);
+       boost::tokenizer<> vouttok(strVarOut);
+       boost::tokenizer<> vintok(strVarIn);
+       boost::tokenizer<> stftok(strStages);
 
        for(j = 0; j < msgcnt; j++)
        {
@@ -456,22 +459,22 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
            for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
            {
-               strTemp = fixtok();
-               fixbits = !strTemp.isNull() ? atoi(strTemp.data()) : 31;
+               strTemp = *fixtok.begin();
+               fixbits = !strTemp.empty() ? atoi(strTemp.c_str()) : 31;
 
-               strTemp = vouttok();
-               varbits_out = !strTemp.isNull() ? atoi(strTemp.data()) : 7;
+               strTemp = *vouttok.begin();
+               varbits_out = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               strTemp = vintok();
-               varbits_in = !strTemp.isNull() ? atoi(strTemp.data()) : 7;
+               strTemp = *vintok.begin();
+               varbits_in = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               strTemp = stftok();
-               stagestf = !strTemp.isNull() ? atoi(strTemp.data()) : 15;
+               strTemp = *stftok.begin();
+               stagestf = !strTemp.empty() ? atoi(strTemp.c_str()) : 15;
 
                #if 0
                {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                   dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                    dout << " Role       " << rolenum + i/2 << endl;
                    dout << " Fix   bits " << fixbits << endl;
                    dout << " OD    bits " << varbits_out << endl;
@@ -501,7 +504,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
            pOutMessage->Request.RouteID = getRouteID();
            // Tell the porter side to complete the assembly of the message.
-           strncpy(pOutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+           strncpy(pOutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
            outList.insert( pOutMessage );
        }
@@ -527,7 +530,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
        OutMessage->Request.RouteID = getRouteID();
        // Tell the porter side to complete the assembly of the message.
-       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -571,14 +574,14 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
 
       OutMessage->Request.RouteID = getRouteID();
       // Tell the porter side to complete the assembly of the message.
-      strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+      strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
    }
 
    return nRet;
 }
 
 
-INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -613,7 +616,7 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
       {
           {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
              dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
           }
           status = NoMethod;
@@ -625,7 +628,7 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -646,7 +649,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
       if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
          return MEMORY;
       }
@@ -662,7 +665,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -682,7 +685,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
       if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
          return MEMORY;
       }
@@ -691,14 +694,14 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
 
       int  sspec;
       char revision;
-      RWCString modelStr;
+      string modelStr;
 
       sspec  = DSt->Message[0] << 8;
       sspec |= DSt->Message[1];
 
       revision = DSt->Message[2] + '@';  //  '@' is just before 'A' - thus 1 represents 'A', as intended
 
-      modelStr = getName() + " / sspec: " + CtiNumStr(sspec) + RWCString(revision);
+      modelStr = getName() + " / sspec: " + CtiNumStr(sspec) + revision;
 
       ReturnMsg->setResultString( modelStr );
 
@@ -709,7 +712,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -725,7 +728,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
 
       int   rolenum;
       unsigned char *buf;
-      RWCString roleStr, tmpStr;
+      string roleStr, tmpStr;
 
       CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
       CtiPointDataMsg      *pData = NULL;
@@ -733,7 +736,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
       if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
          return MEMORY;
       }
@@ -748,7 +751,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
       for( int i = 0; i < 6; i++ )
       {
           tmpStr = getName() + " / role " + CtiNumStr(i+rolenum).spad(2) + ": ";
-          tmpStr += "F = " + CtiNumStr((int)(buf[(i*2)+0] & 0x1F)).spad(2)        + ", " +
+          tmpStr += "F = " + CtiNumStr((int)(buf[(i*2)+0] & 0x1F)).spad(2)        + string(", ") +
                     "O = " + CtiNumStr((int)((buf[(i*2)+0] & 0xE0) >> 5)).spad(2) + ", " +
                     "I = " + CtiNumStr((int)((buf[(i*2)+1] & 0xE0) >> 5)).spad(2) + ", " +
                     "S = " + CtiNumStr((int)((buf[(i*2)+1] & 0x1E) >> 1)).spad(2) + "\n";
@@ -765,7 +768,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
 }
 
 
-INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -777,14 +780,14 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow
    {
       INT   j;
       ULONG pfCount = 0;
-      RWCString resultString;
+      string resultString;
 
       CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
       if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
          return MEMORY;
       }

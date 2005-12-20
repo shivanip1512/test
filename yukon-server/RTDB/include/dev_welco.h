@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,13 +87,13 @@ public:
                              INT ScanPriority = MAXPRIORITY - 4);
 
    virtual INT ErrorDecode(INMESS*,
-                           RWTime&,
+                           CtiTime&,
                            RWTPtrSlist< CtiMessage >   &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
                            RWTPtrSlist<OUTMESS> &outList);
 
    virtual INT ResultDecode(INMESS*,
-                            RWTime&,
+                            CtiTime&,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist<OUTMESS> &outList);

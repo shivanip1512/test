@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.25 $
- * DATE         :  $Date: 2005/10/04 19:42:28 $
+ * REVISION     :  $Revision: 1.26 $
+ * DATE         :  $Date: 2005/12/20 17:20:30 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -109,7 +109,7 @@ public:
         return _smartMap.entries();
     }
 
-    void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
+    void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, string category = string(""), string devicetype = string(""));
     void writeDynamicPaoInfo(void);
 
     void dumpList(void);
@@ -119,7 +119,7 @@ public:
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetEqual(LONG Remote);
-    ptr_type RemoteGetEqualbyName (const RWCString &RemoteName);
+    ptr_type RemoteGetEqualbyName (const string &RemoteName);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
     ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);

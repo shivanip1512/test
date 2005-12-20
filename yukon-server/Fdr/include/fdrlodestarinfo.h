@@ -24,31 +24,31 @@
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
                         //         with ctitypes.h...  i only put this in here because
                         //         the compiler was having fits with BOOL.
-
-#include <rw/cstring.h>
+#include <string>
 #include "dlldefs.h"
 #include "fdr.h"
+using std::string;
 
 
 class IM_EX_FDRBASE CtiFDR_LodeStarInfoTable 
 {
 public:
-    CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName,RWCString &aFolderName);
+    CtiFDR_LodeStarInfoTable(string &aDrivePath, string &aFileName,string &aFolderName);
     ~CtiFDR_LodeStarInfoTable();
     CtiFDR_LodeStarInfoTable& operator=( const CtiFDR_LodeStarInfoTable &other );
-    RWCString & getLodeStarDrivePath(void);
-    RWCString getLodeStarDrivePath(void) const;
-    RWCString & getLodeStarFileName(void);
-    RWCString getLodeStarFileName(void) const;
-    RWCString & getLodeStarFolderName(void);
-    RWCString getLodeStarFolderName(void) const;
-    CtiFDR_LodeStarInfoTable& setLodeStarDrivePath(RWCString aDrivePath);
-    CtiFDR_LodeStarInfoTable& setLodeStarFileName(RWCString aFileName);
-    CtiFDR_LodeStarInfoTable& setLodeStarFolderName(RWCString aFolderName);
+    string & getLodeStarDrivePath(void);
+    string getLodeStarDrivePath(void) const;
+    string & getLodeStarFileName(void);
+    string getLodeStarFileName(void) const;
+    string & getLodeStarFolderName(void);
+    string getLodeStarFolderName(void) const;
+    CtiFDR_LodeStarInfoTable& setLodeStarDrivePath(string aDrivePath);
+    CtiFDR_LodeStarInfoTable& setLodeStarFileName(string aFileName);
+    CtiFDR_LodeStarInfoTable& setLodeStarFolderName(string aFolderName);
 private:
-    RWCString _lodeStarDrivePath;
-    RWCString _lodeStarFileName;
-    RWCString _lodeStarFolderName;
+    string _lodeStarDrivePath;
+    string _lodeStarFileName;
+    string _lodeStarFolderName;
 
 };
 

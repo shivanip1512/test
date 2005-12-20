@@ -1,9 +1,9 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <iostream>
-using namespace std;
+using std::iostream;
 
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "fdrio.h"
 
@@ -11,7 +11,7 @@ template <class T>
 class CtiFDRIOSocket : public CtiFDRIO<T>
 {
 public:
-    CtiFDRIOSocket::CtiFDRIOSocket( RWCString &destination, long portNumber, 
+    CtiFDRIOSocket::CtiFDRIOSocket( string &destination, long portNumber, 
                                     FDRSocketNum socketStyle = FDRSingleSocket )
         : CtiFDRIO<T>( ), _destination(destination), _portNumber(portNumber), _socketStyle(socketStyle)
     {
@@ -23,7 +23,7 @@ public:
     ~CtiFDRIOSocket( );
 
 private:
-    RWCString           _destination;       //  the destination IP
+    string           _destination;       //  the destination IP
     long                _portNumber;        //  the socket's port#
     enum FDRSocketNum   _socketStyle;       //  one or two sockets for the connection
     RWInetPort          *_inetPort;

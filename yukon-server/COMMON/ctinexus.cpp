@@ -162,7 +162,7 @@ bool CTINEXUS::CTINexusIsFatalSocketError(INT Error)
 INT  CTINEXUS::CTINexusReportError(CHAR *Label, INT Line, INT Error) const
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime() << " Socket " << sockt;
+    dout << CtiTime() << " Socket " << sockt;
 
     if(CTINexusIsSocketError(Error))
     {
@@ -376,7 +376,7 @@ INT CTINEXUS::CTINexusOpen(CHAR *szServer, SHORT nPort, ULONG Flags)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "    Socket is being re-opened without being closed first.  Closing now.." << endl;
         }
 
@@ -430,8 +430,8 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
 
     *BytesWritten = 0;
 
-    RWTime  now;
-    RWTime  then(now + TimeOut);
+    CtiTime  now;
+    CtiTime  then(now + TimeOut);
     int     wbLoops = 0;        //  number of "would block" loops
 
     try
@@ -459,7 +459,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                         if( !(++wbLoops % 10) )  //  gripe every 5 seconds
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " TID: " << GetCurrentThreadId() << " reports outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
+                            dout << CtiTime() << " Outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
                         }
                         Sleep(500);
                     }
@@ -485,14 +485,14 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
             if(len > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Outbound nexus to " << Name << " could not be written. " << len << " bytes unwritten." << endl;
+                dout << CtiTime() << " Outbound nexus to " << Name << " could not be written. " << len << " bytes unwritten." << endl;
             }
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "   A send was attempted to an invalid socket handle.  " << endl;
             }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/08/01 16:20:57 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 
 
 #include <iostream>
-using namespace std;
+
 
 #include <rw/rwerr.h>
 
@@ -97,7 +97,7 @@ public:
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Exchange istream has bad status " << __FILE__ << " (" << __LINE__ << ") " << iStream << endl;
+                    dout << CtiTime() << " Exchange istream has bad status " << __FILE__ << " (" << __LINE__ << ") " << iStream << endl;
                 }
 
                 RWxmsg   err("Exchange has problems on the inbound stream");
@@ -120,9 +120,9 @@ public:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " oStream has BAD status " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " oStream has BAD status " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-
+ 
             RWxmsg   err("EXCEPTION: Exchange's outbound socket has a BAD status.  It will be reset.");
             err.raise();
         }

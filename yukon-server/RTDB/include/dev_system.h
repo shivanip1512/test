@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_system.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public:
                               RWTPtrSlist< CtiMessage >      &retList,
                               RWTPtrSlist< OUTMESS >         &outList);
 
-   virtual RWCString getDescription(const CtiCommandParser &parse) const;
+   virtual string getDescription(const CtiCommandParser &parse) const;
 
 };
 #endif // #ifndef __DEV_SYSTEM_H__

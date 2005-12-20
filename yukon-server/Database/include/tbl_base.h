@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,9 +21,8 @@
 
 #include <rw/db/db.h>
 
-#include <rw\cstring.h>
 
-#include "resolvers.h"
+
 #include "dllbase.h"
 #include "logger.h"
 #include "dbmemobject.h"
@@ -60,7 +59,7 @@ public:
     bool  getControlInhibit() const;
     bool  getRadioDelay() const;
     bool  useRadioDelays() const;
-    static RWCString getTableName();
+    static string getTableName();
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DumpData();
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

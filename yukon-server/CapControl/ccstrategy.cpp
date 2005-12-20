@@ -28,6 +28,8 @@
 #include "resolvers.h"
 #include "mgr_holiday.h"
 
+#include "rwutil.h"
+
 RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
 
 /*---------------------------------------------------------------------------
@@ -154,14 +156,14 @@ CtiCCStrategy* CtiCCStrategy::replicate() const
 
 void CtiCCStrategy::restore(RWDBReader &rdr)
 {
-    RWCString tempBoolString;
+    string tempBoolString;
 
     rdr["strategyid"] >> _strategyid;
     rdr["strategyname"] >> _strategyname;
     rdr["controlmethod"] >> _controlmethod;
     rdr["maxdailyoperation"] >> _maxdailyoperation;
     rdr["maxoperationdisableflag"] >> tempBoolString;
-    tempBoolString.toLower();
+    CtiToLower(tempBoolString);
     _maxoperationdisableflag = (tempBoolString=="y"?TRUE:FALSE);
     //rdr["peaksetpoint"] >> _peaksetpoint;
     //rdr["offpeaksetpoint"] >> _offpeaksetpoint;
@@ -198,11 +200,11 @@ LONG CtiCCStrategy::getStrategyId() const
 
 
 
-const RWCString& CtiCCStrategy::getStrategyName() const
+const string& CtiCCStrategy::getStrategyName() const
 {
     return _strategyname;
 }
-const RWCString& CtiCCStrategy::getControlMethod() const
+const string& CtiCCStrategy::getControlMethod() const
 {
     return _controlmethod;
 }
@@ -267,12 +269,12 @@ LONG CtiCCStrategy::getFailurePercent() const
     return _failurepercent;
 }
 
-const RWCString& CtiCCStrategy::getDaysOfWeek() const
+const string& CtiCCStrategy::getDaysOfWeek() const
 {
     return _daysofweek;
 }
 
-const RWCString& CtiCCStrategy::getControlUnits() const
+const string& CtiCCStrategy::getControlUnits() const
 {
     return _controlunits;
 }
@@ -294,13 +296,13 @@ CtiCCStrategy& CtiCCStrategy::setStrategyId(LONG id)
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setStrategyName(const RWCString& strategyname)
+CtiCCStrategy& CtiCCStrategy::setStrategyName(const string& strategyname)
 {
     _strategyname = strategyname;
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setControlMethod(const RWCString& method)
+CtiCCStrategy& CtiCCStrategy::setControlMethod(const string& method)
 {
     _controlmethod = method;
     return *this;
@@ -377,13 +379,13 @@ CtiCCStrategy& CtiCCStrategy::setFailurePercent(LONG failure)
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setDaysOfWeek(const RWCString& days)
+CtiCCStrategy& CtiCCStrategy::setDaysOfWeek(const string& days)
 {
     _daysofweek = days;
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setControlUnits(const RWCString& contunit)
+CtiCCStrategy& CtiCCStrategy::setControlUnits(const string& contunit)
 {
     _controlunits = contunit;
     return *this;
@@ -407,12 +409,12 @@ CtiCCStrategy& CtiCCStrategy::setControlSendRetries(LONG retries)
 
 
 /* Public Static members */
-/*const RWCString CtiCCStrategy::IndividualFeederControlMethod   = "IndividualFeeder";
-const RWCString CtiCCStrategy::SubstationBusControlMethod      = "SubstationBus";
-const RWCString CtiCCStrategy::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
-const RWCString CtiCCStrategy::ManualOnlyControlMethod         = "ManualOnly";
+/*const string CtiCCStrategy::IndividualFeederControlMethod   = "IndividualFeeder";
+const string CtiCCStrategy::SubstationBusControlMethod      = "SubstationBus";
+const string CtiCCStrategy::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
+const string CtiCCStrategy::ManualOnlyControlMethod         = "ManualOnly";
 
-const RWCString CtiCCStrategy::KVARControlUnits         = "KVAR";
-const RWCString CtiCCStrategy::PF_BY_KVARControlUnits   = "P-Factor KW/KVar";
-const RWCString CtiCCStrategy::PF_BY_KQControlUnits     = "P-Factor KW/KQ";
+const string CtiCCStrategy::KVARControlUnits         = "KVAR";
+const string CtiCCStrategy::PF_BY_KVARControlUnits   = "P-Factor KW/KVar";
+const string CtiCCStrategy::PF_BY_KQControlUnits     = "P-Factor KW/KQ";
   */

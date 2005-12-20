@@ -37,7 +37,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
 
     virtual ~CtiLMProgramThermoStatGear();
     
-    const RWCString& getSettings() const;
+    const string& getSettings() const;
     LONG getMinValue() const;
     LONG getMaxValue() const;
     LONG getValueB() const;
@@ -51,7 +51,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
     LONG getValueTe() const;
     LONG getValueTf() const;
 
-    CtiLMProgramThermoStatGear& setSettings(const RWCString& settings);
+    CtiLMProgramThermoStatGear& setSettings(const string& settings);
     CtiLMProgramThermoStatGear& setMinValue(LONG val);
     CtiLMProgramThermoStatGear& setMaxValue(LONG val);
     CtiLMProgramThermoStatGear& setValueB(LONG val);
@@ -80,7 +80,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
 
 private:
 
-    RWCString _settings;
+    string _settings;
     LONG _minvalue;
     LONG _maxvalue;
     LONG _valueb;

@@ -19,6 +19,7 @@
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
+#include "ctitime.h"
 
 #include "observe.h"
                 
@@ -37,18 +38,18 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
     
     LONG getOfferId() const;
     LONG getRevisionNumber() const;
-    const RWDBDateTime& getActionDateTime() const;
-    const RWDBDateTime& getNotificationDateTime() const;
-    const RWDBDateTime& getOfferExpirationDateTime() const;
-    const RWCString& getAdditionalInfo() const;
+    const CtiTime& getActionDateTime() const;
+    const CtiTime& getNotificationDateTime() const;
+    const CtiTime& getOfferExpirationDateTime() const;
+    const string& getAdditionalInfo() const;
     RWOrdered& getLMEnergyExchangeHourlyOffers();
 
     CtiLMEnergyExchangeOfferRevision& setOfferId(LONG offid);
     CtiLMEnergyExchangeOfferRevision& setRevisionNumber(LONG revnum);
-    CtiLMEnergyExchangeOfferRevision& setActionDateTime(const RWDBDateTime& actiontime);
-    CtiLMEnergyExchangeOfferRevision& setNotificationDateTime(const RWDBDateTime& notifytime);
-    CtiLMEnergyExchangeOfferRevision& setOfferExpirationDateTime(const RWDBDateTime& expirationtime);
-    CtiLMEnergyExchangeOfferRevision& setAdditionalInfo(const RWCString& additional);
+    CtiLMEnergyExchangeOfferRevision& setActionDateTime(const CtiTime& actiontime);
+    CtiLMEnergyExchangeOfferRevision& setNotificationDateTime(const CtiTime& notifytime);
+    CtiLMEnergyExchangeOfferRevision& setOfferExpirationDateTime(const CtiTime& expirationtime);
+    CtiLMEnergyExchangeOfferRevision& setAdditionalInfo(const string& additional);
 
     CtiLMEnergyExchangeOfferRevision* replicate() const;
 
@@ -80,10 +81,10 @@ private:
 
     LONG _offerid;
     LONG _revisionnumber;
-    RWDBDateTime _actiondatetime;
-    RWDBDateTime _notificationdatetime;
-    RWDBDateTime _offerexpirationdatetime;
-    RWCString _additionalinfo;
+    CtiTime _actiondatetime;
+    CtiTime _notificationdatetime;
+    CtiTime _offerexpirationdatetime;
+    string _additionalinfo;
 
     RWOrdered _lmenergyexchangehourlyoffers;
 };

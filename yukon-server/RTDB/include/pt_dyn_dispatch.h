@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/09/27 00:53:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,21 +61,21 @@ public:
    double         getValue() const;
    UINT           getQuality() const;
 
-   RWTime         getTimeStamp() const;
+   CtiTime         getTimeStamp() const;
    UINT           getTimeStampMillis() const;
 
    BOOL           getArchivePending() const;
    BOOL           isArchivePending() const;
    CtiDynamicPointDispatch&  setArchivePending(BOOL b = TRUE);
-   CtiDynamicPointDispatch&  setPoint(const RWTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask);
+   CtiDynamicPointDispatch&  setPoint(const CtiTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask);
 
    VOID*          getAttachment();
    void           setAttachment(VOID *aptr);
 
 
-   RWTime         getNextArchiveTime() const;
-   // RWTime&        getNextArchiveTime();
-   CtiDynamicPointDispatch&  setNextArchiveTime(const RWTime &aTime);
+   CtiTime         getNextArchiveTime() const;
+   // CtiTime&        getNextArchiveTime();
+   CtiDynamicPointDispatch&  setNextArchiveTime(const CtiTime &aTime);
 
    bool inDelayedData() const;
    CtiDynamicPointDispatch&  setInDelayedData(const bool in = true);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/11/03 17:58:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,12 +20,9 @@
 #include "config_base.h"
 #include "config_resolvers.h"
 #include "mgr_config.h"
+#include "rwutil.h"
 
-
-
-
-
-class RWCString;
+using std::string;
 
 using namespace Cti;
 using namespace Config;
@@ -42,7 +39,7 @@ void CtiConfigManager::refreshConfigurations()
 {
     CtiConfigDeviceSPtr  pTempCtiConfigDevice;
 
-    RWTime start, stop, querytime;
+    CtiTime start, stop, querytime;
 
     _typeConfig.clear();
     _deviceConfig.clear();
@@ -54,7 +51,7 @@ void CtiConfigManager::refreshConfigurations()
     
         RWDBSelector selector = db.selector();
 
-        RWDBTable typeTbl = db.table( getConfigValuesTableName());
+        RWDBTable typeTbl = db.table( string2RWCString(getConfigValuesTableName()) );
     
         selector << typeTbl["partid"]
             << typeTbl["value"]
@@ -63,7 +60,7 @@ void CtiConfigManager::refreshConfigurations()
     
         selector.from(typeTbl);
 
-        RWDBTable confTbl = db.table(getConfigTypeTableName() );
+        RWDBTable confTbl = db.table(string2RWCString(getConfigTypeTableName()) );
     
         selector << confTbl["partid"]
             << confTbl["partname"]
@@ -79,7 +76,7 @@ void CtiConfigManager::refreshConfigurations()
         {
             int partID;
             CtiConfig_type type;
-            RWCString tempString,value,valueid;
+            string tempString,value,valueid;
     
             rdr[confTbl["partid"]]>>partID;
             rdr["parttype"] >>tempString;
@@ -93,7 +90,7 @@ void CtiConfigManager::refreshConfigurations()
                 _typeConfig.insert(ConfigTypeMap::value_type(partID,createConfigByType(type)));//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
             }
 
-            if(!valueid.isNull() && !value.isNull())
+            if(!valueid.empty() && !value.empty())
             {
                 try{
                     insertValueIntoConfigMap(partID, value, valueid);
@@ -101,8 +98,8 @@ void CtiConfigManager::refreshConfigurations()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -111,7 +108,7 @@ void CtiConfigManager::refreshConfigurations()
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
     }
 
     start = start.now();
@@ -121,7 +118,7 @@ void CtiConfigManager::refreshConfigurations()
     
         RWDBSelector selector = db.selector();
     
-        RWDBTable typeTbl = db.table(getConfigPartsTableName() );
+        RWDBTable typeTbl = db.table( string2RWCString(getConfigPartsTableName()) );
     
         selector << typeTbl["configid"]
             << typeTbl["partid"]
@@ -161,8 +158,7 @@ void CtiConfigManager::refreshConfigurations()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
-
+                dout << CtiTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
             }
         }
 
@@ -171,7 +167,7 @@ void CtiConfigManager::refreshConfigurations()
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
     }
 
     //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
@@ -184,7 +180,7 @@ void CtiConfigManager::refreshConfigurations()
     
         RWDBSelector selector = db.selector();
     
-        RWDBTable typeTbl = db.table(getConfigDeviceTableName() );
+        RWDBTable typeTbl = db.table(string2RWCString(getConfigDeviceTableName()) );
     
         selector << typeTbl["deviceid"]
             << typeTbl["configid"];
@@ -219,29 +215,29 @@ void CtiConfigManager::refreshConfigurations()
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
     }
 
 
 
 }
 
-RWCString CtiConfigManager::getConfigPartsTableName()
+string CtiConfigManager::getConfigPartsTableName()
 {
     return "ConfigurationParts";
 }
 
-RWCString CtiConfigManager::getConfigValuesTableName()
+string CtiConfigManager::getConfigValuesTableName()
 {
     return "ConfigurationValue";
 }
 
-RWCString CtiConfigManager::getConfigDeviceTableName()
+string CtiConfigManager::getConfigDeviceTableName()
 {
     return "DeviceConfiguration";
 }
 
-RWCString CtiConfigManager::getConfigTypeTableName()
+string CtiConfigManager::getConfigTypeTableName()
 {
     return "ConfigurationPartsName";
 }
@@ -316,7 +312,7 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "*** CHECKPOINT *** " << " No constructor for config type "<<type<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " No constructor for config type "<<type<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 BaseSPtr tempBasePtr (CTIDBG_new Base());
                 return tempBasePtr;
@@ -328,12 +324,12 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "*** CHECKPOINT *** " << " Exception thrown in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << "*** CHECKPOINT *** " << " Exception thrown in " << __FILE__ << " (" << __LINE__ << ")" << endl;
         return  BaseSPtr();
     }
 }
 
-bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const RWCString &value, const RWCString &valueid)
+bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const string &value, const string &valueid)
 {
     BaseSPtr    pTempCtiConfigBase;
 
@@ -341,7 +337,7 @@ bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const RWCStrin
     if(!pTempCtiConfigBase)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "*** CHECKPOINT *** " << " No config loaded with partID "<<partID<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded with partID "<<partID<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     else
     {
@@ -349,7 +345,7 @@ bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const RWCStrin
         if(resolvedKey == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "*** CHECKPOINT *** "<< " No resolver for " << valueid<<" in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << "*** CHECKPOINT *** "<< " No resolver for " << valueid<<" in " << __FILE__ << " (" << __LINE__ << ")" << endl;
             return false;
         }
         return pTempCtiConfigBase->setProtectedValueWithKey(value,resolvedKey);

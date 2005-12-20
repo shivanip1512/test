@@ -112,7 +112,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
             if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() <<" Initializing FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << endl;
+                dout << CtiTime() <<" Initializing FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << endl;
             }
 
             for ( ; ; )
@@ -136,7 +136,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                         closeAndFailConnection();
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Read failed - client " << getParent()->getName() << endl;
+                            dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
                         }
                     }
                     else
@@ -156,7 +156,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                 closeAndFailConnection();
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Read failed - client " << getParent()->getName() << endl;
+                                    dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
                                 }
                             }
                             else
@@ -168,7 +168,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                 *******************
                                 */
 
-                                if (getParent()->getName() == RWCString())
+                                if (getParent()->getName() == string())
                                 {
                                     getParent()->setName (getParent()->decodeClientName(data));
 
@@ -186,7 +186,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                         closeAndFailConnection();
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Return client connection to " << RWCString (inet_ntoa(getAddr().sin_addr)) << " failed" << endl;
+                                            dout << CtiTime() << " Return client connection to " << string (inet_ntoa(getAddr().sin_addr)) << " failed" << endl;
                                         }
                                     }
                                     else
@@ -206,7 +206,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                             closeAndFailConnection();
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Read failed - client " << getParent()->getName() << endl;
+                                dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
                             }
                         }
                     }
@@ -233,7 +233,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to open semaphore in server thread for " << getParent()->getName() << " loading interface failed" << endl;
+            dout << CtiTime() << " Unable to open semaphore in server thread for " << getParent()->getName() << " loading interface failed" << endl;
         }
 
     }
@@ -250,7 +250,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
         setConnectionStatus (CtiFDRSocketConnection::Failed);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Fatal Error:  FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << " is dead! " << endl;
+            dout << CtiTime() << " Fatal Error:  FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << " is dead! " << endl;
         }
     }
 }
@@ -304,7 +304,7 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
                     else
                     {
 			CtiLockGuard<CtiLogger> dout_guard(dout);
-			dout << RWTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
+			dout << CtiTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
 			
                         // problem with the receive
                         retVal = SOCKET_ERROR;
@@ -323,7 +323,7 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Socket read in FDR server connection failed, re-initializing connection" <<endl;
+        dout << CtiTime() << " Socket read in FDR server connection failed, re-initializing connection" <<endl;
     }
 
     return retVal;

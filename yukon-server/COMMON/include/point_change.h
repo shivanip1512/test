@@ -1,7 +1,6 @@
 #ifndef __POINT_CHANGE_H__
 #define __POINT_CHANGE_H__
 
-#include <rw\rwtime.h>
 #include <rw\thr\mutex.h>
 #include "yukon.h"
 #include "dlldefs.h"
@@ -15,33 +14,14 @@ private:
    double            PointValue;
    int               PointType;
    PointQuality_t    PointQuality;
-   RWTime            PointChangeTime;     // Time the point changed
+   CtiTime            PointChangeTime;     // Time the point changed
 
 public:
 
-   CtiPointChange() :
-      PointNumber(0),
-      PointValue(0.0),
-      PointType(StatusPointType),
-      PointQuality(QuestionableQuality)
-   {}
+   CtiPointChange();
+   CtiPointChange(unsigned ptid, double ptval, PointQuality_t ptq, INT ptype = InvalidPointType, CtiTime now = CtiTime());
 
-   CtiPointChange(unsigned ptid, double ptval, PointQuality_t ptq, INT ptype = InvalidPointType, RWTime now = RWTime()) :
-      PointNumber(ptid),
-      PointValue(ptval),
-      PointQuality(ptq),
-      PointType(ptype),
-      PointChangeTime(now)
-   {}
-
-   CtiPointChange(const CtiPointChange &aRef) :
-      PointNumber(aRef.getPointNumber()),
-      PointValue(aRef.getPointValue()),
-      PointQuality(aRef.getPointQuality()),
-      PointType(aRef.getPointType()),
-      PointChangeTime(aRef.getPointChangeTime())
-   {}
-
+   CtiPointChange(const CtiPointChange &aRef);
    CtiPointChange& operator=(const CtiPointChange &aRef)
    {
       if(this != &aRef)
@@ -61,24 +41,18 @@ public:
    }
 
 
-   INT            getPointType() const                   { return PointType; }
-   LONG           getPointNumber() const                 { return PointNumber; }
-   double         getPointValue() const                  { return PointValue;  }
-   PointQuality_t getPointQuality() const                { return PointQuality;}
-   RWTime         getPointChangeTime() const             { return PointChangeTime; }
-   RWTime         UpdatePointChangeTime()
-   {
-      PointChangeTime = PointChangeTime.now();
-      return PointChangeTime;
-   }
-
-   RWTime&        getPointChangeTime()                   { return PointChangeTime; }
-
-   void           setPointNumber(LONG id)                { PointNumber = id; }
-   void           setPointType(INT  i)                   { PointType = i;}
-   void           setPointValue(double val)              { PointValue = val; }
-   void           setPointQuality(PointQuality_t q)      { PointQuality = q; }
-   void           setPointChangeTime(RWTime rt)          { PointChangeTime = rt; }
+   INT            getPointType() const;                   
+   LONG           getPointNumber() const;                 
+   double         getPointValue() const;                  
+   PointQuality_t getPointQuality() const;                
+   const CtiTime&         getPointChangeTime() const;     
+   const CtiTime&         UpdatePointChangeTime();
+   
+   void           setPointNumber(LONG id);                
+   void           setPointType(INT  i);                   
+   void           setPointValue(double val);              
+   void           setPointQuality(PointQuality_t q);      
+   void           setPointChangeTime(CtiTime rt);         
 
    void           Dump();
 };

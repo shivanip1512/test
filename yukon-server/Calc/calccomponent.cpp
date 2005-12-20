@@ -6,24 +6,25 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/thr/mutex.h>
 
+#include <rw/thr/mutex.h>
 #include "calccomponent.h"
 #include "logger.h"
 #include "calc.h"
 #include "utility.h"
+#include "rwutil.h"
 
 extern ULONG _CALC_DEBUG;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
-CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long componentPointId,
-                                    const RWCString &operationType,
-                                    double constantValue, const RWCString &functionName )
+CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentPointId,
+                                    const string &operationType,
+                                    double constantValue, const string &functionName )
 {
     _valid = TRUE;
 
-    if( componentPointId <= 0 && !componentType.compareTo("operation", RWCString::ignoreCase) )
+    if( componentPointId <= 0 && !stringCompareIgnoreCase(componentType,"operation" ) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -31,7 +32,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         }
         _valid = FALSE;
     }
-    else if( !componentType.compareTo("operation", RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(componentType,"operation") )
     {
         _componentType = operation;
         _componentPointId = componentPointId;
@@ -46,7 +47,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == ">=" )    _operationType = geq;
         else if( operationType == "<" )     _operationType = less;
         else if( operationType == "<=" )    _operationType = leq;
-        else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
+        else if( !stringCompareIgnoreCase(operationType,"push" ) )  _operationType = push;
         else
         {
             {
@@ -63,7 +64,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         }
 
     }
-    else if( !componentType.compareTo("constant", RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(componentType,"constant" ) )
     {
         _componentType = constant;
         _constantValue = constantValue;
@@ -73,7 +74,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
         else if( operationType == "%" )     _operationType = modulo;
-        else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
+        else if( !stringCompareIgnoreCase(operationType,"push" ) )  _operationType = push;
         else
         {
             {
@@ -89,7 +90,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
             dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
         }
     }
-    else if( !componentType.compareTo("function", RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(componentType,"function" ) )
     {
         _componentType = function;
         _functionName = functionName;
@@ -149,7 +150,7 @@ void CtiCalcComponent::saveGuts(RWvostream &aStream) const
    aStream << _valid;
 }
 */
-BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUpdateTime )
+BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastUpdateTime )
 {
     //  you can only be updated (or non-) if you're a point...
     if( _componentType == operation )
@@ -164,7 +165,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
             if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " - Point quality is constant or non-updated, Point ID: " << componentPointPtr->getPointNum() << endl;
+                dout << CtiTime() << " - Point quality is constant or non-updated, Point ID: " << componentPointPtr->getPointNum() << endl;
             }
             return TRUE;
         }
@@ -173,7 +174,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
             if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " - Point tags mark component disabled, Point ID: " << componentPointPtr->getPointNum() << endl;
+                dout << CtiTime() << " - Point tags mark component disabled, Point ID: " << componentPointPtr->getPointNum() << endl;
             }
             return TRUE;
         }
@@ -197,7 +198,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
         return TRUE;
 }
 
-double CtiCalcComponent::calculate( double input, int &component_quality, RWTime &component_time, bool &calcValid )
+double CtiCalcComponent::calculate( double input, int &component_quality, CtiTime &component_time, bool &calcValid )
 {
     double orignal = input;
 
@@ -231,11 +232,11 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
     {
         switch( _operationType )
         {
-        case addition:       input = _doFunction(RWCString("addition"), calcValid);  break;
-        case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
-        case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
-        case division:       input = _doFunction(RWCString("division"), calcValid);  break;
-        case modulo:         input = _doFunction(RWCString("modulo divide"), calcValid);  break;
+        case addition:       input = _doFunction(string("addition"), calcValid);  break;
+        case subtraction:    input = _doFunction(string("subtraction"), calcValid);  break;
+        case multiplication: input = _doFunction(string("multiplication"), calcValid);  break;
+        case division:       input = _doFunction(string("division"), calcValid);  break;
+        case modulo:         input = _doFunction(string("modulo divide"), calcValid);  break;
         case push:
             {
                 // Handled above with the push based on _componentPointId.
@@ -259,21 +260,21 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
 
         switch( _operationType )
         {
-        case addition:       input = _doFunction(RWCString("addition"), calcValid);  break;
-        case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
-        case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
-        case division:       input = _doFunction(RWCString("division"), calcValid);  break;
-        case modulo:         input = _doFunction(RWCString("modulo divide"), calcValid);  break;
-        case greater:        input = _doFunction(RWCString(">"), calcValid);  break;
-        case geq:            input = _doFunction(RWCString(">="), calcValid);  break;
-        case less:           input = _doFunction(RWCString("<"), calcValid);  break;
-        case leq:            input = _doFunction(RWCString("<="), calcValid);  break;
+        case addition:       input = _doFunction(string("addition"), calcValid);  break;
+        case subtraction:    input = _doFunction(string("subtraction"), calcValid);  break;
+        case multiplication: input = _doFunction(string("multiplication"), calcValid);  break;
+        case division:       input = _doFunction(string("division"), calcValid);  break;
+        case modulo:         input = _doFunction(string("modulo divide"), calcValid);  break;
+        case greater:        input = _doFunction(string(">"), calcValid);  break;
+        case geq:            input = _doFunction(string(">="), calcValid);  break;
+        case less:           input = _doFunction(string("<"), calcValid);  break;
+        case leq:            input = _doFunction(string("<="), calcValid);  break;
         case push:           break; // This was completed with the above push!
         }
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return: " << input << endl;
+            dout << CtiTime() << " CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return: " << input << endl;
         }
     }
     else if( _componentType == function )
@@ -283,7 +284,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " CtiCalcComponent::calculate(); function return: " << input << endl;
+            dout << CtiTime() << " CtiCalcComponent::calculate(); function return: " << input << endl;
         }
     }
 
@@ -292,35 +293,35 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
 }
 
 
-double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
+double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 {
     double retVal = 0.0;
     validCalc = true;
 
     try
     {
-        if( !functionName.compareTo("addition",RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(functionName,"addition" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 + operand2;
         }
-        else if( !functionName.compareTo("subtraction",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"subtraction" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 - operand2;
         }
-        else if( !functionName.compareTo("multiplication",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"multiplication" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = operand1 * operand2;
         }
-        else if( !functionName.compareTo("division",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"division" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -332,7 +333,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             else
                 validCalc = false;
         }
-        else if( !functionName.compareTo("modulo divide",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"modulo divide" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -344,55 +345,55 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             else
                 validCalc = false;
         }
-        else if( !functionName.compareTo(">") || !functionName.compareTo("greater than",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,">") || !stringCompareIgnoreCase(functionName,"greater than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 > operand2) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo(">=",RWCString::ignoreCase) || !functionName.compareTo("geq than",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,">=" ) || !stringCompareIgnoreCase(functionName,"geq than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 >= operand2) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("<",RWCString::ignoreCase) || !functionName.compareTo("less than",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"<" ) || !stringCompareIgnoreCase(functionName,"less than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 < operand2) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("<=",RWCString::ignoreCase) || !functionName.compareTo("leq than",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"<=" ) || !stringCompareIgnoreCase(functionName,"leq than" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 <= operand2) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("logical and",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"logical and" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 != 0.0 && operand2 != 0.0) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("logical or",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"logical or" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
             retVal = (operand1 != 0.0 || operand2 != 0.0) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("logical not",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"logical not" ) )
         {
             double operand = _calcpoint->pop( );
 
             retVal = (operand == 0.0) ? 1.0 : 0.0;
         }
-        else if( !functionName.compareTo("logical xor",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"logical xor" ) )
         {
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
@@ -403,7 +404,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
         //  params:  Thermal Age Hours - the current thermal age of the transformer
         //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
         //           UpdateFreq - the minutes between updates of the thermal age
-        else if( !functionName.compareTo("XfrmThermAge",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"XfrmThermAge" ) )
         {
             double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
             ThermalAgeHours = _calcpoint->pop( );
@@ -424,7 +425,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
         }
         //  Hot Spot Calculation
         //  params:
-        else if( !functionName.compareTo("HotSpot",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"HotSpot" ) )
         {
             double HotSpotTemp, OilTemp, TempRise, Load;
             double Rating, Mfactor, LoadWatts, LoadVARs;
@@ -455,27 +456,27 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = HotSpotTemp;
         }
-        else if( !functionName.compareTo("DemandAvg1",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"DemandAvg1" ) )
         {
             retVal = _calcpoint->figureDemandAvg(60);// seconds in avg
         }
-        else if( !functionName.compareTo("DemandAvg5",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"DemandAvg5" ) )
         {
             retVal = _calcpoint->figureDemandAvg(300);// seconds in avg
         }
-        else if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"DemandAvg15" ) )
         {
             retVal = _calcpoint->figureDemandAvg(900);// seconds in avg
         }
-        else if( !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"DemandAvg30" ) )
         {
             retVal = _calcpoint->figureDemandAvg(1800);// seconds in avg
         }
-        else if( !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"DemandAvg60" ) )
         {
             retVal = _calcpoint->figureDemandAvg(3600);// seconds in avg
         }
-        else if( !functionName.compareTo("P-Factor KW/KVar",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KVar" ) )
         {
             double kvar = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -503,7 +504,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             }
             retVal = newPowerFactorValue;
         }
-        else if( !functionName.compareTo("P-Factor KW/KQ",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -532,7 +533,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             }
             retVal = newPowerFactorValue;
         }
-        else if( !functionName.compareTo("P-Factor KW/KVa",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"P-Factor KW/KVa" ) )
         {
             double kva = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -554,7 +555,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             retVal = newPowerFactorValue;
         }
         //added 3/4/03 JW
-        else if( !functionName.compareTo("KVar from KW/KQ",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"KVar from KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -562,7 +563,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = kvar;
         }
-        else if( !functionName.compareTo("KVa from KW/KVar",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"KVa from KW/KVar" ) )
         {
             double kvar = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -581,7 +582,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = kva;
         }
-        else if( !functionName.compareTo("KVa from KW/KQ",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"KVa from KW/KQ" ) )
         {
             double kq = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -601,7 +602,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = kva;
         }
-        else if( !functionName.compareTo("KW from KVa/KVAR",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"KW from KVa/KVAR" ) )
         {
             double kvar = _calcpoint->pop();
             double kva = _calcpoint->pop();
@@ -620,7 +621,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = kw;
         }
-        else if( !functionName.compareTo("KVAR from KW/KVa",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"KVAR from KW/KVa" ) )
         {
             double kva = _calcpoint->pop();
             double kw = _calcpoint->pop();
@@ -639,13 +640,13 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = kvar;
         }
-        else if( !functionName.compareTo("Squared",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Squared" ) )
         {
             double componentPointValue = _calcpoint->pop( );;
 
             retVal = componentPointValue*componentPointValue;
         }
-        else if( !functionName.compareTo("Square Root",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Square Root" ) )
         {
             double componentPointValue = _calcpoint->pop( );;
 
@@ -659,7 +660,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
                 retVal = sqrt(componentPointValue);
             }
         }
-        else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"COS from P/Q" ) )
         {
             double q = _calcpoint->pop();
             double p = _calcpoint->pop();
@@ -677,66 +678,66 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
                 validCalc = false;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
-        else if( !functionName.compareTo("sin",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"sin") )
         {
             double temp = _calcpoint->pop();
             retVal = sin(temp);
         }
-        else if( !functionName.compareTo("cos",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"cos") )
         {
             double temp = _calcpoint->pop();
             retVal = cos(temp);
         }
-        else if( !functionName.compareTo("tan",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"tan") )
         {
             double temp = _calcpoint->pop();
             retVal = tan(temp);
         }
-        else if( !functionName.compareTo("arcsin",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"arcsin") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = asin(componentPointValue);
         }
-        else if( !functionName.compareTo("arccos",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"arccos") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = acos(componentPointValue);
         }
-        else if( !functionName.compareTo("arctan",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"arctan") )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = atan(componentPointValue);
         }
-        else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"X^Y" ) )
         {
             double y = _calcpoint->pop();
             double x = _calcpoint->pop();
             retVal = pow(x,y);
         }
-        else if( !functionName.compareTo("Max",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Max" ) )
         {
             DOUBLE a = _calcpoint->pop();
             DOUBLE b = _calcpoint->pop();
 
             retVal = ((a)>(b))?(a):(b);
         }
-        else if( !functionName.compareTo("Min",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Min" ) )
         {
             DOUBLE a = _calcpoint->pop();
             DOUBLE b = _calcpoint->pop();
 
             retVal = ((a)<(b))?(a):(b);
         }
-        else if( !functionName.compareTo("Absolute Value",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Absolute Value" ) )
         {
             double a = _calcpoint->pop();
             retVal = fabs(a);
         }
-        else if( !functionName.compareTo("Max Difference",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"Max Difference" ) )
         {
             double a = _calcpoint->pop();
             double b = _calcpoint->pop();
@@ -745,7 +746,8 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             retVal = (fabs(a-b) + fabs(b-c) + fabs(c-a)) / 2.0;
 
         }
-        else if( !functionName.compareTo("lohi accumulator",RWCString::ignoreCase) )
+
+        else if( !stringCompareIgnoreCase(functionName,"lohi accumulator") )
         {
             CtiPointStore* pointStore = CtiPointStore::getInstance();
             CtiHashKey componentHashKey(_componentPointId);
@@ -765,7 +767,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = val + inc;
         }
-        else if( !functionName.compareTo("State Timer",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"State Timer") )
         {
             /*
              *  This function pops a number representing the trigger state of a status and returns the
@@ -784,15 +786,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
                 if(componentPointPtr != NULL)
                 {
-                    RWTime now;
-                    RWTime component_time = componentPointPtr->getLastValueChangedTime();
+                    CtiTime now;
+                    CtiTime component_time = componentPointPtr->getLastValueChangedTime();
 
                     if(pt_val == state)
                         retVal = now.seconds() - component_time.seconds();
                 }
             }
         }
-        else if( !functionName.compareTo("True,False,Condition",RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(functionName,"True,False,Condition") )
         {
             double c = _calcpoint->pop();
             double b = _calcpoint->pop();
@@ -800,7 +802,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = ( c != 0.0 ? a : b );
         }
-        else if( !functionName.compareTo("Regression",RWCString::ignoreCase) )      // Stack has Depth,Minutes,Value
+        else if( !stringCompareIgnoreCase(functionName,"Regression") )      // Stack has Depth,Minutes,Value
         {
             /*
              *  This function pops a number representing the trigger state of a status and returns the
@@ -819,7 +821,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
                 if(componentPointPtr != NULL)
                 {
-                    RWTime now;
+                    CtiTime now;
                     componentPointPtr->resize_regession( depth );
                     retVal = componentPointPtr->regression( now.seconds() + (min * 60) );
                 }
@@ -831,7 +833,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             validCalc = false;
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Function " << functionName << " not implemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Function " << functionName << " not implemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             retVal = _calcpoint->pop();     // Do a pop() to allow a retVal push() below to keep the stack sane.
         }
@@ -840,7 +842,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION performing component calculate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION performing component calculate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Failed point: " << _calcpoint->getPointId() << endl;
         }
     }

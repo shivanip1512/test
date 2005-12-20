@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_statistics.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 #include "tbl_port_statistics.h"
 #include "logger.h"
+#include "rwutil.h"
 
 CtiTablePortStatistics::CtiTablePortStatistics() :
    _type(0),
@@ -50,15 +51,15 @@ ULONG          CtiTablePortStatistics::getType() const                        { 
 ULONG          CtiTablePortStatistics::getAttemptCount() const                { return _attemptCount; }
 ULONG          CtiTablePortStatistics::getDataErrorCount() const              { return _dataErrorCount; }
 ULONG          CtiTablePortStatistics::getSystemErrorCount() const            { return _systemErrorCount; }
-RWTime         CtiTablePortStatistics::getStartTime() const                   { return _startTime; }
-RWTime         CtiTablePortStatistics::getStopTime() const                    { return _stopTime; }
+CtiTime         CtiTablePortStatistics::getStartTime() const                   { return _startTime; }
+CtiTime         CtiTablePortStatistics::getStopTime() const                    { return _stopTime; }
 
 ULONG&         CtiTablePortStatistics::getType()                              { return _type; }
 ULONG&         CtiTablePortStatistics::getAttemptCount()                      { return _attemptCount; }
 ULONG&         CtiTablePortStatistics::getDataErrorCount()                    { return _dataErrorCount; }
 ULONG&         CtiTablePortStatistics::getSystemErrorCount()                  { return _systemErrorCount; }
-RWTime&        CtiTablePortStatistics::getStartTime()                         { return _startTime; }
-RWTime&        CtiTablePortStatistics::getStopTime()                          { return _stopTime; }
+CtiTime&        CtiTablePortStatistics::getStartTime()                         { return _startTime; }
+CtiTime&        CtiTablePortStatistics::getStopTime()                          { return _stopTime; }
 
 CtiTablePortStatistics& CtiTablePortStatistics::setType(const ULONG t)
 {
@@ -84,13 +85,13 @@ CtiTablePortStatistics& CtiTablePortStatistics::getSystemErrorCount(const ULONG 
    return *this;
 
 }
-CtiTablePortStatistics& CtiTablePortStatistics::getStartTime(const RWTime& t)
+CtiTablePortStatistics& CtiTablePortStatistics::getStartTime(const CtiTime& t)
 {
    _startTime = t;
    return *this;
 
 }
-CtiTablePortStatistics& CtiTablePortStatistics::getStopTime(const RWTime& t)
+CtiTablePortStatistics& CtiTablePortStatistics::getStopTime(const CtiTime& t)
 {
    _stopTime = t;
    return *this;

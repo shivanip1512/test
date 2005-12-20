@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,7 +120,7 @@ INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
 
 
 INT CtiDeviceTCU::ResultDecode(INMESS *InMessage,
-                               RWTime &TimeNow,
+                               CtiTime &TimeNow,
                                RWTPtrSlist< CtiMessage > &vgList,
                                RWTPtrSlist< CtiMessage > &retList,
                                RWTPtrSlist< OUTMESS > &outList)
@@ -128,7 +128,7 @@ INT CtiDeviceTCU::ResultDecode(INMESS *InMessage,
 #if 0
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Result decode for device " << getName() << " in progress " << endl;
+      dout << CtiTime() << " Result decode for device " << getName() << " in progress " << endl;
    }
 #endif
    return(TCUDecode(InMessage, TimeNow, retList));
@@ -160,7 +160,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< CtiMessage > &retList)
+INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< CtiMessage > &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -185,7 +185,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
    case MASTERRESET:
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Unsupported MasterCom Request to TCU " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << CtiTime() << " Unsupported MasterCom Request to TCU " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
       /* TCU is unaware of these */
       break;
@@ -203,7 +203,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
                if(*Msg == NULL)
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " " << getName() << " scanned but has no points in the DB" << endl;
+                  dout << CtiTime() << " " << getName() << " scanned but has no points in the DB" << endl;
                }
                else
                {
@@ -212,7 +212,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
             }
             else
             {
-               dout << RWTime() << " TCU response unexpected.. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " TCU response unexpected.. " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                /* Something screwed up message goes here */
                resetScanFlag(ScanRateGeneral);
@@ -233,8 +233,8 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
    case MASTERLOOPBACK:
       {
          CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
-                                                  RWCString(InMessage->Return.CommandStr),
-                                                  RWCString(getName() + " / successful ping"),
+                                                  string(InMessage->Return.CommandStr),
+                                                  string(getName() + " / successful ping"),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
@@ -295,14 +295,14 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
-                                           RWCString("Control Request for TCU failed"),
+                                           string("Control Request for TCU failed"),
                                            LoadMgmtLogType,
                                            SignalEvent,
                                            pReq->getUser()));
 
             CtiReturnMsg* eMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                  RWCString(OutMessage->Request.CommandStr),
-                                                  RWCString("Control Request for TCU failed"),
+                                                  string(OutMessage->Request.CommandStr),
+                                                  string("Control Request for TCU failed"),
                                                   nRet,
                                                   OutMessage->Request.RouteID,
                                                   OutMessage->Request.MacroOffset,
@@ -335,20 +335,20 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " error scanning " << getName()<< endl;
+               dout << CtiTime() << " error scanning " << getName()<< endl;
             }
 
             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
-                                           RWCString("Scan All Request for TCU failed"),
+                                           string("Scan All Request for TCU failed"),
                                            GeneralLogType,
                                            SignalEvent,
                                            pReq->getUser()));
 
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("Scan All Request for TCU failed"),
+                                             string(OutMessage->Request.CommandStr),
+                                             string("Scan All Request for TCU failed"),
                                              nRet,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
@@ -387,11 +387,11 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                {
                   {
                      CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << RWTime() << " error looping " << getName()<< endl;
+                     dout << CtiTime() << " error looping " << getName()<< endl;
                   }
                   retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   RWCString(getName() + " / ping failed to TCU"),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(getName() + " / ping failed to TCU"),
                                                    nRet,
                                                    OutMTemp->Request.RouteID,
                                                    OutMTemp->Request.MacroOffset,
@@ -421,8 +421,8 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
          retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                          RWCString(OutMessage->Request.CommandStr),
-                                          RWCString("TCU Devices do not support this command (yet?)"),
+                                          string(OutMessage->Request.CommandStr),
+                                          string("TCU Devices do not support this command (yet?)"),
                                           nRet,
                                           OutMessage->Request.RouteID,
                                           OutMessage->Request.MacroOffset,
@@ -498,8 +498,8 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
    CtiPointDataMsg   *pData    = NULL;
 
    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                           RWCString(InMessage->Return.CommandStr),
-                                           RWCString("TCU status request complete"),
+                                           string(InMessage->Return.CommandStr),
+                                           string("TCU status request complete"),
                                            InMessage->EventCode & 0x7fff,
                                            InMessage->Return.RouteID,
                                            InMessage->Return.MacroOffset,
@@ -536,7 +536,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
 #if 0
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << temp << endl;
+            dout << CtiTime() << " " << temp << endl;
          }
 #endif
 
@@ -615,8 +615,8 @@ INT CtiDeviceTCU::getProtocolWrap() const
 
     if(gConfigParms.isOpt("TCU_PROTOCOLWRAP"))
     {
-        if( !gConfigParms.getValueAsString("TCU_PROTOCOLWRAP").compareTo("mastercom", RWCString::ignoreCase) ||
-            !gConfigParms.getValueAsString("TCU_PROTOCOLWRAP").compareTo("none", RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"mastercom") ||
+            !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCU_PROTOCOLWRAP"),"none") )
         {
             protocol = ProtocolWrapNone;
         }

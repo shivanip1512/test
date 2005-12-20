@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <iostream>
 #include <vector>
+#include <boost/regex.hpp>
+#include <boost/tokenizer.hpp>
 using namespace std;
 
 #include <stdio.h>
@@ -14,7 +16,7 @@ using namespace std;
 #include <rw/ctoken.h>
 #include <rw\re.h>
 #include <rw/rwfile.h>
-#include <rw/cstring.h>
+#include "rwutil.h"
 
 
 void usage()
@@ -63,8 +65,8 @@ int main(int argc, char **argv)
 
     char temp[128];
 
-    RWCString tstr;
-    RWCString filename;
+    string tstr;
+    string filename;
     INT gMajorRevision = -1;
     INT gMinorRevision = -1;
 
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
             {
             case 'l':
                 {
-                    filename = RWCString(argv[i+1]);
+                    filename = string(argv[i+1]);
                     i++; // Hop over two positions here!
                     break;
                 }
@@ -177,40 +179,45 @@ int main(int argc, char **argv)
         }
     }
 
-    if(!filename.isNull())
+    if(!filename.empty())
     {
         // cout << endl << "Opening " << filename << " for processing" << endl << endl;
-        fp = fopen(filename.data(), "rt");
+        fp = ::fopen(filename.c_str(), "rt");
 
         if(fp != NULL)
         {
-            RWCRExpr keyre("BR");
+            string keyre("BR");
 
             if(versionsFromTags)
             {
-                keyre = RWCRExpr("TG");
+                keyre = ("TG");
             }
 
             if(reportTagsOnly || reportBranchesOnly) cout << endl;
-            while( fgets(temp, 127, fp))
+            while( ::fgets(temp, 127, fp))
             {
-                temp[ strlen(temp) - 1 ] = '\0';
+                temp[ ::strlen(temp) - 1 ] = '\0';
 
-                RWCString str(temp);
+                string str(temp);
 
-                str = str.strip( RWCString::both, ' ' );
-                str = str.strip( RWCString::both, '\t' );
+                str = trim(str);
+                str = trim(str, "\t" );
 
-                if(reportTagsOnly && !str.match("TG").isNull())
+                if( reportTagsOnly && !str.find("TG")!=string::npos )
                 {
-                    RWCTokenizer next(str);
-                    RWCString token = next(":");
+                    
+                    boost::char_separator<char> sep(":");
+                    Boost_char_tokenizer next(str, sep);
+                    Boost_char_tokenizer::iterator tok_iter = next.begin(); 
+                    string token = *tok_iter;
                     cout << "    " << token << endl;
                 }
-                else if(!str.match(keyre).isNull())     // Might be looking for BR's or TG's based upon -t
+                else if(!str.find(keyre)!=string::npos)     // Might be looking for BR's or TG's based upon -t
                 {
-                    RWCTokenizer next(str);
-                    RWCString token = next(":");
+                    boost::char_separator<char> sep(":");
+                    Boost_char_tokenizer next(str, sep);
+                    Boost_char_tokenizer::iterator tok_iter = next.begin(); 
+                    string token = *tok_iter;
 
                     if(reportBranchesOnly)
                     {
@@ -218,21 +225,31 @@ int main(int argc, char **argv)
                     }
 
                     //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << token << endl;
-
-                    if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]_[0-9]+(_[0-9]+)?_[0-9][0-9][0-9][0-9]?")).isNull())
+                    boost::regex e1("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]_[0-9]+(_[0-9]+)?_[0-9][0-9][0-9][0-9]?");
+                    boost::match_results<std::string::const_iterator> what;
+                    if(boost::regex_search(token, what, e1, boost::match_default))
                     {
-                        str = str.strip(RWCString::both, '_');
+                        str = string(what[0]);
+                        str = trim(str, "_");
 
-                        RWCTokenizer next(str);
-                        RWCString datestr = next("_");
-                        RWCString majorRevision = next("_");
-                        RWCString minorRevision = next("_");
-                        RWCString buildRevision = next("_");
-                        RWCString timestr = next(" \0");
+                        boost::char_separator<char> sep("_");
+                        Boost_char_tokenizer next(str, sep);
+                        Boost_char_tokenizer::iterator tok_iter = next.begin(); 
 
-                        majorRevision = majorRevision.strip(RWCString::both, '_');
-                        minorRevision = minorRevision.strip(RWCString::both, '_');
-                        buildRevision = buildRevision.strip(RWCString::both, '_');
+                        string datestr = *tok_iter++;
+                        string majorRevision = *tok_iter++;
+                        string minorRevision = *tok_iter++;
+                        string buildRevision = *tok_iter;
+                        
+                        boost::char_separator<char> sep2(" \0");
+                        typedef boost::token_iterator_generator<boost::char_separator<char> >::type Iter;
+                        Iter beg = boost::make_token_iterator<string>(tok_iter.base(), tok_iter.end(),sep2);
+                        
+                        string timestr = *beg;
+
+                        majorRevision = trim(majorRevision, "_");
+                        minorRevision = trim(minorRevision, "_");
+                        buildRevision = trim(buildRevision, "_");
 
                         //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                         if(gMajorRevision > 0)
@@ -240,69 +257,86 @@ int main(int argc, char **argv)
                             if(gMinorRevision >= 0)
                             {
                                 // Looking for the largest build with these major and minor revisions.
-                                if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                    minorRevisionVal == atoi(minorRevision.data()) &&
-                                    buildRevisionVal < atoi(buildRevision.data()) )
+                                if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                    minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                    buildRevisionVal < atoi(buildRevision.c_str()) )
                                 {
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                     //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
                             }
                             else
                             {
                                 // Looking for the largest build with this major revision.
-                                if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                    minorRevisionVal < atoi(minorRevision.data()) )
+                                if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                    minorRevisionVal < atoi(minorRevision.c_str()) )
                                 {
-                                    minorRevisionVal = atoi(minorRevision.data());
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    minorRevisionVal = atoi(minorRevision.c_str());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                     //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
-                                else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                         minorRevisionVal == atoi(minorRevision.data()) &&
-                                         buildRevisionVal < atoi(buildRevision.data()) )
+                                else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                         minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                         buildRevisionVal < atoi(buildRevision.c_str()) )
                                 {
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                     //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                                 }
                             }
                         }
                         else
                         {
-                            if( majorRevisionVal < atoi(majorRevision.data()) )
+                            if( majorRevisionVal < atoi(majorRevision.c_str()) )
                             {
-                                majorRevisionVal = atoi(majorRevision.data());
-                                minorRevisionVal = atoi(minorRevision.data());
-                                buildRevisionVal = atoi(buildRevision.data());
+                                majorRevisionVal = atoi(majorRevision.c_str());
+                                minorRevisionVal = atoi(minorRevision.c_str());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
-                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                     minorRevisionVal < atoi(minorRevision.data()) )
+                            else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                     minorRevisionVal < atoi(minorRevision.c_str()) )
                             {
-                                minorRevisionVal = atoi(minorRevision.data());
-                                buildRevisionVal = atoi(buildRevision.data());
+                                minorRevisionVal = atoi(minorRevision.c_str());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
-                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                     minorRevisionVal == atoi(minorRevision.data()) &&
-                                     buildRevisionVal < atoi(buildRevision.data()) )
+                            else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                     minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                     buildRevisionVal < atoi(buildRevision.c_str()) )
                             {
-                                buildRevisionVal = atoi(buildRevision.data());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
                         }
                     }
-                    else if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9]?_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
+                    e1.assign("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9]?_[0-9]_[0-9]+(_[0-9]+)?");
+                    if(boost::regex_search(token, what, e1, boost::match_default))
                     {
-                        str = str.strip(RWCString::both, '_');
+                        str = string(what[0]);
+                        str = trim(str, "_");
 
-                        RWCTokenizer next(str);
-                        RWCString datestr = next("_");
-                        RWCString timestr = next("_");
-                        RWCString majorRevision = next("_");
-                        RWCString minorRevision = next("_ \0");
-                        RWCString buildRevision = next(" \0");
+                        boost::char_separator<char> sep("_");
+                        Boost_char_tokenizer next(str, sep);
+                        Boost_char_tokenizer::iterator tok_iter = next.begin(); 
 
-                        majorRevision = majorRevision.strip(RWCString::both, '_');
-                        minorRevision = minorRevision.strip(RWCString::both, '_');
-                        buildRevision = buildRevision.strip(RWCString::both, '_');
+                        string datestr = *tok_iter++;
+                        string timestr = *tok_iter++;
+                        string majorRevision = *tok_iter++;
+
+
+                        boost::char_separator<char> sep2("_ \0");
+                        typedef boost::token_iterator_generator<boost::char_separator<char> >::type Iter;
+                        Iter beg = boost::make_token_iterator<string>(tok_iter.base(), tok_iter.end(),sep2);
+                        Iter end;
+                        string minorRevision = *beg++;
+
+
+                        boost::char_separator<char> sep3(" \0");
+                        Iter beg1 = boost::make_token_iterator<string>(beg.base(), beg.end(), sep3);
+                        string buildRevision = *beg1;
+
+                        
+                        majorRevision = trim(majorRevision, "_");
+                        minorRevision = trim(minorRevision, "_");
+                        buildRevision = trim(buildRevision, "_");
+
 
                         //cout <<  " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << majorRevision << "." << minorRevision << "." << buildRevision << endl;
                         if(gMajorRevision > 0)
@@ -310,49 +344,49 @@ int main(int argc, char **argv)
                             if(gMinorRevision >= 0)
                             {
                                 // Looking for the largest build with these major and minor revisions.
-                                if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                    minorRevisionVal == atoi(minorRevision.data()) &&
-                                    buildRevisionVal < atoi(buildRevision.data()) )
+                                if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                    minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                    buildRevisionVal < atoi(buildRevision.c_str()) )
                                 {
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                 }
                             }
                             else
                             {
                                 // Looking for the largest build with this major revision.
-                                if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                    minorRevisionVal < atoi(minorRevision.data()) )
+                                if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                    minorRevisionVal < atoi(minorRevision.c_str()) )
                                 {
-                                    minorRevisionVal = atoi(minorRevision.data());
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    minorRevisionVal = atoi(minorRevision.c_str());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                 }
-                                else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                         minorRevisionVal == atoi(minorRevision.data()) &&
-                                         buildRevisionVal < atoi(buildRevision.data()) )
+                                else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                         minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                         buildRevisionVal < atoi(buildRevision.c_str()) )
                                 {
-                                    buildRevisionVal = atoi(buildRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.c_str());
                                 }
                             }
                         }
                         else
                         {
-                            if( majorRevisionVal < atoi(majorRevision.data()) )
+                            if( majorRevisionVal < atoi(majorRevision.c_str()) )
                             {
-                                majorRevisionVal = atoi(majorRevision.data());
-                                minorRevisionVal = atoi(minorRevision.data());
-                                buildRevisionVal = atoi(buildRevision.data());
+                                majorRevisionVal = atoi(majorRevision.c_str());
+                                minorRevisionVal = atoi(minorRevision.c_str());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
-                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                     minorRevisionVal < atoi(minorRevision.data()) )
+                            else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                     minorRevisionVal < atoi(minorRevision.c_str()) )
                             {
-                                minorRevisionVal = atoi(minorRevision.data());
-                                buildRevisionVal = atoi(buildRevision.data());
+                                minorRevisionVal = atoi(minorRevision.c_str());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
-                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                     minorRevisionVal == atoi(minorRevision.data()) &&
-                                     buildRevisionVal < atoi(buildRevision.data()) )
+                            else if( majorRevisionVal == atoi(majorRevision.c_str()) &&
+                                     minorRevisionVal == atoi(minorRevision.c_str()) &&
+                                     buildRevisionVal < atoi(buildRevision.c_str()) )
                             {
-                                buildRevisionVal = atoi(buildRevision.data());
+                                buildRevisionVal = atoi(buildRevision.c_str());
                             }
                         }
                     }
@@ -361,7 +395,7 @@ int main(int argc, char **argv)
 
             // cout << endl << " CURRENT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
 
-            fclose(fp);
+            ::fclose(fp);
         }
         else
         {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ int AnalogInput::restore(const unsigned char *buf, int len)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         pos = len;
@@ -112,7 +112,7 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             pos = len;
@@ -168,7 +168,7 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -211,7 +211,7 @@ int AnalogInput::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -260,7 +260,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -293,7 +293,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Analog input, value " << val << endl;
     }
 
@@ -325,7 +325,7 @@ int AnalogInputFrozen::restore(const unsigned char *buf, int len)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _valid = false;
@@ -377,7 +377,7 @@ int AnalogInputFrozen::restore(const unsigned char *buf, int len)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 break;
@@ -437,7 +437,7 @@ int AnalogInputFrozen::serialize(unsigned char *buf) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -494,7 +494,7 @@ int AnalogInputFrozen::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -525,7 +525,7 @@ int AnalogInputChange::restore(const unsigned char *buf, int len)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _valid = false;
@@ -565,7 +565,7 @@ int AnalogInputChange::restore(const unsigned char *buf, int len)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 break;
@@ -613,7 +613,7 @@ int AnalogInputChange::serialize(unsigned char *buf) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -672,7 +672,7 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
         case AI32BitWithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_toc.getSeconds() + rwEpoch);
+            tmpMsg->setTime(_toc.getSeconds());
             tmpMsg->setMillis(_toc.getMilliseconds());
 
             break;
@@ -701,7 +701,7 @@ int AnalogInputFrozenEvent::restore(const unsigned char *buf, int len)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return len;

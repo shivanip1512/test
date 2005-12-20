@@ -10,6 +10,7 @@
 #pragma warning( disable : 4786)
 
 #include <windows.h>
+#include <winsock.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -25,9 +26,6 @@
 #include <set>
 
 #include <rw/collect.h>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
 #include <rw/vstream.h>
 #include <rw/tvhdict.h>

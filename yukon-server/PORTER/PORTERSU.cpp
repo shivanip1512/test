@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/09/26 17:10:48 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 #include <windows.h>
 #include <process.h>
 #include <iostream>
-using namespace std;
 
 #include <rw\thr\mutex.h>
 
@@ -58,6 +57,8 @@ using namespace std;
 #include "numstr.h"
 #include "utility.h"
 
+using namespace std;
+
 extern CtiDeviceManager DeviceManager;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
@@ -73,9 +74,9 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
     {
         INT ErrorType = GetErrorType(ErrorCode);
 
-        RWCString cmd(OutMessage->Request.CommandStr);
-        RWCString omess;
-        RWCString imess;
+        string cmd(OutMessage->Request.CommandStr);
+        string omess;
+        string imess;
 
         traceBuffer(omess, OutMessage->Buffer.OutMessage, OutMessage->OutLength);
 
@@ -95,7 +96,7 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Dispatch is not accepting  messages.  " << VanGoghConnection.outQueueCount() << " queue entries waiting." << endl;
             }
         }
@@ -118,7 +119,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " SendError generally requires an OutMessage." << endl;
+            dout << CtiTime() << " SendError generally requires an OutMessage." << endl;
         }
         return NORMAL;
     }
@@ -132,9 +133,9 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         InMessage.InLength      = 0;
         InMessage.EventCode     = ErrorCode;
 
-        RWTime now;
+        CtiTime now;
 
-        InMessage.Time = now.seconds() - rwEpoch;
+        InMessage.Time = now.seconds();
 
         InMessage.MilliTime = 0; // TimeB.millitm;
         if(now.isDST())
@@ -155,7 +156,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
             if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " SendError returning an Inmessage for " << tempDev->getName() << " error " << ErrorCode << endl;
+                dout << CtiTime() << " SendError returning an Inmessage for " << tempDev->getName() << " error " << ErrorCode << endl;
             }
         }
 
@@ -168,7 +169,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime()  << " TID: " << GetCurrentThreadId() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
+                    dout << CtiTime()  << " TID: " << GetCurrentThreadId() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
                     dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
                 }
 
@@ -189,7 +190,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
+            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
         }
     }
 
@@ -219,18 +220,18 @@ ReportRemoteError (CtiDeviceSPtr RemoteRecord, ERRSTRUCT *ErrorRecord)
         ComErrorRecord.TimeStamp = LongTime ();
         ComErrorRecord.StatusFlag = DSTFlag();
 
-        memcpy (ComErrorRecord.DeviceName, RemoteRecord->getName(), STANDNAMLEN);
+        ::memcpy (ComErrorRecord.DeviceName, RemoteRecord->getName().c_str(), STANDNAMLEN);
 
         /* Figure out what to use for a port name */
-        strcpy (ComErrorRecord.RouteName, "$_");
+        ::strcpy (ComErrorRecord.RouteName, "$_");
 
-        if((PortRecord->getName())(0) = ' ')
+        if((PortRecord->getName())[0] = ' ')
         {
-            memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName(), STANDNAMLEN - 2);
+            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
         }
         else
         {
-            memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName(), STANDNAMLEN - 2);
+            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
         }
 
         // cout << __FILE__ << " " << __LINE__ << endl;
@@ -240,7 +241,7 @@ ReportRemoteError (CtiDeviceSPtr RemoteRecord, ERRSTRUCT *ErrorRecord)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could not find portid = " << RemoteRecord->getPortID() << " in the database.  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Could not find portid = " << RemoteRecord->getPortID() << " in the database.  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -263,24 +264,24 @@ ReportDeviceError (CtiDeviceSPtr DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT
     ComErrorRecord.TimeStamp   = LongTime ();
     ComErrorRecord.StatusFlag  = DSTFlag();
 
-    memcpy (ComErrorRecord.DeviceName, DeviceRecord->getName(), STANDNAMLEN);
+    ::memcpy (ComErrorRecord.DeviceName, DeviceRecord->getName().c_str(), STANDNAMLEN);
 
     /* Figure out what to use for a port name */
 
     if(PortRecord->isTCPIPPort())
     {
-        memcpy (ComErrorRecord.RouteName + 2, PortRecord->getIPAddress(), STANDNAMLEN - 2);
+        ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getIPAddress().c_str(), STANDNAMLEN - 2);
     }
     else
     {
-        strcpy (ComErrorRecord.RouteName, "$_");
-        if((PortRecord->getName())(0) != ' ')
+        ::strcpy (ComErrorRecord.RouteName, "$_");
+        if((PortRecord->getName())[0] != ' ')
         {
-            memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName(), STANDNAMLEN - 2);
+            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
         }
         else
         {
-            memcpy (ComErrorRecord.RouteName + 2, PortRecord->getPhysicalPort(), STANDNAMLEN - 2);
+            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getPhysicalPort().c_str(), STANDNAMLEN - 2);
         }
     }
 

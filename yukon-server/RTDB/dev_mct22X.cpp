@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -161,7 +161,7 @@ INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
             break;
@@ -173,7 +173,7 @@ INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
 
 
-INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -183,7 +183,7 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     setScanFlag(ScanRateIntegrity, false);    //    resetScanFlag(ScanPending);
@@ -194,7 +194,7 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         INT    j;
         ULONG  curead, prevrd;
         double Value;
-        RWCString resultString;
+        string resultString;
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
@@ -203,7 +203,7 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -233,7 +233,7 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if(pPoint != NULL)
         {
-            RWTime pointTime;
+            CtiTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
 

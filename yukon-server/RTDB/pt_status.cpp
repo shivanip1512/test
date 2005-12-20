@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,7 @@
 
 #include "pt_status.h"
 #include "tbl_pt_alarm.h"
+using namespace std;
 
 /*----------------------------------------------------------------------------*
  * This method examines the point state, which should be in the range of
@@ -80,7 +81,7 @@ void CtiPointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
 
 void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString rwsTemp;
+   string rwsTemp;
    Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
    //  this needs to be turned into a dout, if possible
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

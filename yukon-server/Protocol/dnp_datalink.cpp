@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/09 16:57:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ Datalink &Datalink::operator=(const Datalink &aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -88,7 +88,7 @@ void Datalink::setToOutput( unsigned char *buf, unsigned int len )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else
@@ -173,7 +173,7 @@ int Datalink::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - unhandled state " << _io_state << " in Cti::Protocol::DNP::Datalink::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unhandled state " << _io_state << " in Cti::Protocol::DNP::Datalink::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 //  fall through
             }
@@ -216,7 +216,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - unexpected error " << status << " on port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unexpected error " << status << " on port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -233,7 +233,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - datalink control message received, but DL confirm is not enabled for this devicetype **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - datalink control message received, but DL confirm is not enabled for this devicetype **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -334,7 +334,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -580,7 +580,7 @@ bool Datalink::processControl( const datalink_packet &packet )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 _control_state = State_Control_Ready;
@@ -628,7 +628,7 @@ bool Datalink::processControl( const datalink_packet &packet )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             break;
@@ -662,7 +662,7 @@ bool Datalink::processControl( const datalink_packet &packet )
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             break;
@@ -673,7 +673,7 @@ bool Datalink::processControl( const datalink_packet &packet )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     _control_state = State_Control_Request_LinkStatus_Out;
@@ -765,7 +765,7 @@ int Datalink::generateControl( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = NOTNORMAL;
@@ -904,7 +904,7 @@ int Datalink::decodeControl( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "unhandled state = " << _control_state << endl;
                 }
 
@@ -1136,7 +1136,7 @@ void Datalink::putPacketPayload( const datalink_packet &packet, unsigned char *b
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Buffer passed to putPayload() is NULL... ?" << endl;
         }
 

@@ -53,7 +53,7 @@ CtiLMGroupSA205OR105::~CtiLMGroupSA205OR105()
 CtiRequestMsg* CtiLMGroupSA205OR105::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTimeRefreshRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createTimeRefreshRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -67,7 +67,7 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createTimeRefreshRequestMsg(LONG refreshRat
 CtiRequestMsg* CtiLMGroupSA205OR105::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createSmartCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -80,7 +80,7 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createSmartCycleRequestMsg(LONG percent, LO
 CtiRequestMsg* CtiLMGroupSA205OR105::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTrueCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -93,7 +93,7 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createTrueCycleRequestMsg(LONG percent, LON
 CtiRequestMsg* CtiLMGroupSA205OR105::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createRotationRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createRotationRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -106,7 +106,7 @@ CtiRequestMsg* CtiLMGroupSA205OR105::createRotationRequestMsg(LONG sendRate, LON
 CtiRequestMsg* CtiLMGroupSA205OR105::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createMasterCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createMasterCycleRequestMsg() not implemented for SA205/105 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 
 }

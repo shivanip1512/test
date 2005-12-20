@@ -11,12 +11,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $                                                198
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.13 $                                                198
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.13  2005/12/20 17:19:53  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.12  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
+
+      Revision 1.11.2.2  2005/08/12 19:54:01  jliu
+      Date Time Replaced
+
+      Revision 1.11.2.1  2005/07/14 22:27:01  jliu
+      RWCStringRemoved
 
       Revision 1.11  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
@@ -45,6 +54,8 @@
 #include "ansi_application.h"
 #include "guard.h"
 #include "logger.h"
+
+using namespace std;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -173,7 +184,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
 
    {
        CtiLockGuard< CtiLogger > doubt_guard( dout );
-       dout << RWTime::now() << " xfer in buffer in dissamble packetTable 14 got here " << endl << " --";
+       dout << CtiTime::now() << " xfer in buffer in dissamble packetTable 14 got here " << endl << " --";
    }
 
    for (int x=0;x < xfer.getInCountActual();x++)

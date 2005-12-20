@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_holiday.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/09/22 23:18:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,20 +18,24 @@
 
 #include <map>
 
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
+
 
 #include "dlldefs.h"
 #include "mutex.h"
 #include "guard.h"
 #include "logger.h"
 
-using namespace std;
+using std::map;
+using std::multimap;
+using std::less;
 
 class IM_EX_HOLIDAYDB CtiHolidayManager
 {
 public:
-    bool isHoliday(const RWDate& date = RWDate(), long holiday_sched_id=0);
-    bool isHoliday(long holiday_sched_id, const RWDate& date = RWDate());
+    bool isHoliday(const CtiDate& date = CtiDate(), long holiday_sched_id=0);
+    bool isHoliday(long holiday_sched_id, const CtiDate& date = CtiDate());
     void refresh();
 
     static CtiHolidayManager& getInstance();
@@ -45,7 +49,7 @@ private:
         int year; // could be -1
     };
 
-    typedef multimap<long,holiday,less<long> > hSchedMap;
+    typedef std::multimap<long,holiday,less<long> > hSchedMap;
 
     hSchedMap _hsched_map;
 
@@ -55,7 +59,7 @@ private:
     CtiHolidayManager();
     ~CtiHolidayManager() { };
 
-    static const RWCString holidaysql;
+    static const string holidaysql;
 };
 #endif
 

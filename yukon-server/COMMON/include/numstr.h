@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,9 @@
 
 
 #include "dlldefs.h"
+#include <string>
+
+using std::string;
 
 class IM_EX_CTIBASE CtiNumStr
 {
@@ -92,12 +95,15 @@ public:
     CtiNumStr( void *vpVal );
 
     CtiNumStr( const CtiNumStr &aRef );
+
     ~CtiNumStr( );
 
     CtiNumStr &operator=( const CtiNumStr &aRef );
-    operator char *( );
-
+    operator string ( );
+ 
     void init( void );
+
+    string toString(void);
 
     CtiNumStr &hex( void );
     CtiNumStr &xhex( void );
@@ -123,4 +129,16 @@ public:
         Exponential
     };
 };
+
+//overload the + operator for (string, CtiNumStr)
+IM_EX_CTIBASE string operator +(const string & str, CtiNumStr & numStr);
+IM_EX_CTIBASE string operator +(CtiNumStr & numStr, const string & str);
+
+//overload the + operator for (char*, CtiNumStr)
+IM_EX_CTIBASE string operator +(const char * s, CtiNumStr & numStr);
+IM_EX_CTIBASE string operator +(CtiNumStr & numStr, const char * s);
+
+IM_EX_CTIBASE string operator +(const string & str, const char* s);
+IM_EX_CTIBASE string operator +(const char* s, const string& str);
+
 #endif // #ifndef __NUMSTR_H__

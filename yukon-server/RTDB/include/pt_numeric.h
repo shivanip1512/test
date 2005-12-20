@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/25 13:32:00 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ public:
    BOOL is_limitValid(int i) const;
    DOUBLE getHighLimit(int i)  const;
    DOUBLE getLowLimit(int i)  const;
-   /*nukepao RWCString getLimitName(int i)  const;*/
+   /*nukepao string getLimitName(int i)  const;*/
    /*nukepao CtiFilter_t   getFilterType(int i)  const;*/
    INT getRateOfChange() const;
    CtiPointNumeric setRateOfChange(INT rate);

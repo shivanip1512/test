@@ -6,17 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
 #include "porter.h"
 #include "dev_schlum.h"
@@ -169,7 +165,7 @@ LONG CtiDeviceSchlumberger::nibblesAndBits(BYTE* bptr, INT MaxChannel, INT Chann
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
+                    dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
                 }
                 lRet = 0;
                 break;
@@ -197,7 +193,7 @@ LONG CtiDeviceSchlumberger::nibblesAndBits(BYTE* bptr, INT MaxChannel, INT Chann
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
+                    dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
                 }
                 lRet = 0;
                 break;
@@ -206,7 +202,7 @@ LONG CtiDeviceSchlumberger::nibblesAndBits(BYTE* bptr, INT MaxChannel, INT Chann
 #else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
+        dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
     }
     lRet = 0;
 #endif
@@ -279,19 +275,19 @@ INT CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
             if (Transfer.doTrace(BADCRC))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "Data failed CRC verification" << endl;
+                dout << CtiTime() << "Data failed CRC verification" << endl;
             }
 
         }
         else if (Transfer.getInBuffer()[0] == NAK)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "NAK on receive " << getName() << " tries left " << getAttemptsRemaining() << endl;
+            dout << CtiTime() << "NAK on receive " << getName() << " tries left " << getAttemptsRemaining() << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "Comm error " << getName() << " tries left " << getAttemptsRemaining() << endl;
+            dout << CtiTime() << "Comm error " << getName() << " tries left " << getAttemptsRemaining() << endl;
         }
 
         setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -393,10 +389,10 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
 BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (LONG          aPointId,
                                                           DOUBLE        aValue,
                                                           USHORT        aQuality,
-                                                          RWTime        aTime,
+                                                          CtiTime        aTime,
                                                           CtiReturnMsg *aReturnMsg,
                                                           USHORT        aIntervalType,
-                                                          RWCString     aValReport)
+                                                          string     aValReport)
 
 {
     BOOL validPointFound = FALSE;
@@ -420,7 +416,7 @@ BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (LONG          aPointId
                 pData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
             }
 
-            if (aTime != rwEpoch)
+            if (aTime != PASTDATE)
             {
                 //
                 //  hack fix for non-DST compliant meters - someday to be absorbed by a big, global timekeeper
@@ -457,7 +453,7 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         delete aDataPoint;
         aDataPoint = NULL;
@@ -467,7 +463,7 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
 }
 
 INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList)
@@ -493,7 +489,7 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scan decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
                 }
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
@@ -504,7 +500,7 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " LP decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
                 }
 
                 // just in case we're getting an empty message
@@ -516,7 +512,7 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " LP decode failed device " << getName() << " invalid state " << endl;
+                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << endl;
                     }
                 }
                 break;
@@ -525,7 +521,7 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
                 }
 
             }
@@ -535,21 +531,21 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
 }
 
 INT CtiDeviceSchlumberger::ErrorDecode (INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -651,7 +647,7 @@ CtiDeviceSchlumberger::CtiDeviceSchlumberger(const CtiDeviceSchlumberger& aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "copy constructor is invalid for this device" << endl;
     }
 //      *this = aRef;
@@ -704,7 +700,7 @@ CtiDeviceSchlumberger& CtiDeviceSchlumberger::operator=(const CtiDeviceSchlumber
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Running equality operator on a Schlumberger" << endl << endl;
     }
 

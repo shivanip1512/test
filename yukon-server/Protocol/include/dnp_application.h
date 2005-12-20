@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/15 22:02:17 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 
 #include <queue>
 
-using namespace std;
+using std::queue;
 
 #include "message.h"
 

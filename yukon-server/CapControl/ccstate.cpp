@@ -50,7 +50,7 @@ CtiCCState::~CtiCCState()
     
     Returns the text of the state
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCState::getText() const
+const string& CtiCCState::getText() const
 {   
     return _text;
 }
@@ -79,7 +79,7 @@ LONG CtiCCState::getBackgroundColor() const
     
     Sets the Text of the state
 ---------------------------------------------------------------------------*/    
-CtiCCState& CtiCCState::setText(const RWCString& text)
+CtiCCState& CtiCCState::setText(const string& text)
 {
     _text = text;
 

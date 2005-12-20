@@ -258,18 +258,18 @@ public:
    virtual INT allocateDataBins( OUTMESS *outMess );
 
    virtual INT decodeResultScan( INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage > &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS >    &outList );
 
    virtual INT decodeResultLoadProfile( INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage > &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS >    &outList );
 
-   BOOL getMeterDataFromScanStruct( int aOffset, DOUBLE &aValue, RWTime &peak, QuantumScanData_t *aScanData );
+   BOOL getMeterDataFromScanStruct( int aOffset, DOUBLE &aValue, CtiTime &peak, QuantumScanData_t *aScanData );
 };
 
 

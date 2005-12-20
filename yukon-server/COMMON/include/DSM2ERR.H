@@ -6,8 +6,10 @@
 #include <windows.h>
 
 #include "dlldefs.h"
+#include <string>
 
-class RWCString;
+using std::string;
+
 
 //// #include "btrieve.h"
 
@@ -45,6 +47,6 @@ IM_EX_CTIBASE INT InitError (VOID);
 IM_EX_CTIBASE INT CloseError(VOID);
 IM_EX_CTIBASE INT PrintError (USHORT);
 IM_EX_CTIBASE INT GetErrorString (USHORT Error, char *ErrStr);
-IM_EX_CTIBASE RWCString FormatError(USHORT Error);
+IM_EX_CTIBASE string FormatError(USHORT Error);
 
 #endif

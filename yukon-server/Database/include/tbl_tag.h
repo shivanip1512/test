@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/12/30 21:57:24 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 
 
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -33,7 +32,7 @@ class IM_EX_CTIYUKONDB CtiTableTag : public CtiMemDBObject
 protected:
 
     int             _tagId;
-    RWCString       _tagName;
+    string       _tagName;
     int             _tagLevel;
     bool            _inhibit;
     int             _colorId;
@@ -52,7 +51,7 @@ public:
 
     virtual int operator==(const CtiTableTag& aRef) const;
 
-    static RWCString getTableName();
+    static string getTableName();
     virtual RWDBStatus Restore();
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -60,6 +59,6 @@ public:
 
     int getTagId() const;
     bool getInhibit() const;
-    RWCString getTagName() const;
+    string getTagName() const;
 };
 #endif // #ifndef __TBL_TAG_H__

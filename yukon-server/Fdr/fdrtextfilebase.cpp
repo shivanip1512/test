@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextfilebase.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextfilebase.cpp,v $
+      Revision 1.4  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.3.2.3  2005/08/12 19:53:46  jliu
+      Date Time Replaced
+
+      Revision 1.3.2.2  2005/07/14 22:26:56  jliu
+      RWCStringRemoved
+
+      Revision 1.3.2.1  2005/07/12 21:08:37  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.3  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -40,10 +52,9 @@
 #include <windows.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -54,7 +65,7 @@
 
 
 // Constructors, Destructor, and Operators
-CtiFDRTextFileBase::CtiFDRTextFileBase(RWCString &aInterface)
+CtiFDRTextFileBase::CtiFDRTextFileBase(string &aInterface)
 : CtiFDRInterface(aInterface),
 _textFileParts(),
 _linkStatusID(0)
@@ -90,33 +101,33 @@ CtiFDRTextFileBase &CtiFDRTextFileBase::setInterval (int aInterval)
     return *this;
 }
 
-RWCString & CtiFDRTextFileBase::getFileName()
+string & CtiFDRTextFileBase::getFileName()
 {
     return _textFileParts.getFileName();
 }
 
-RWCString  CtiFDRTextFileBase::getFileName() const
+string  CtiFDRTextFileBase::getFileName() const
 {
     return _textFileParts.getFileName();
 }
 
-CtiFDRTextFileBase &CtiFDRTextFileBase::setFileName (RWCString aFile)
+CtiFDRTextFileBase &CtiFDRTextFileBase::setFileName (string aFile)
 {
     _textFileParts.setFileName(aFile);
     return *this;
 }
 
-RWCString & CtiFDRTextFileBase::getDriveAndPath()
+string & CtiFDRTextFileBase::getDriveAndPath()
 {
     return _textFileParts.getDriveAndPath();
 }
 
-RWCString  CtiFDRTextFileBase::getDriveAndPath() const
+string  CtiFDRTextFileBase::getDriveAndPath() const
 {
     return _textFileParts.getDriveAndPath();
 }
 
-CtiFDRTextFileBase &CtiFDRTextFileBase::setDriveAndPath (RWCString aPath)
+CtiFDRTextFileBase &CtiFDRTextFileBase::setDriveAndPath (string aPath)
 {
     _textFileParts.setDriveAndPath(aPath);
     return *this;
@@ -211,7 +222,7 @@ bool CtiFDRTextFileBase::loadTranslationLists()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Seeing this error is bad, child class should have implemented the function loadTranslationLists()" << endl;
+        dout << CtiTime() << " Seeing this error is bad, child class should have implemented the function loadTranslationLists()" << endl;
     }
     return true;
 }

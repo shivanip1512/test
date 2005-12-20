@@ -127,7 +127,7 @@ CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LO
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -143,7 +143,7 @@ CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG pe
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -158,7 +158,7 @@ CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG she
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -173,7 +173,7 @@ CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG p
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -201,7 +201,7 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int prio
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending point latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending point latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
     }
     return returnCommandMsg;
 }
@@ -308,7 +308,7 @@ void CtiLMGroupPoint::restore(RWDBReader& rdr)
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 #endif
 }

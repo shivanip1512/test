@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/05/27 02:35:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,7 @@ LONG CtiTableSA205105Group::getLmGroupId() const
 //=============================================================================================================
 //=============================================================================================================
 
-RWCString CtiTableSA205105Group::getOperationalAddress() const
+string CtiTableSA205105Group::getOperationalAddress() const
 {
     return( _operationalAddress );
 }
@@ -81,17 +81,19 @@ int CtiTableSA205105Group::getFunction(bool shed) const
 {
     int function = 2;       // default to test off to prevent any bad errors.
 
-    if(!getLoadNumber().compareTo("load 1", RWCString::ignoreCase))
+    if(!stringCompareIgnoreCase(getLoadNumber(),"load 1"))
     {
         function = shed ? 8 : 9;
     }
-    else if(!getLoadNumber().compareTo("load 2", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 2"))
     {
         function = shed ? 10 : 11;
     }
-    else if(!getLoadNumber().compareTo("load 3", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 3"))
     {
-        if( gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase) )
+        string s = gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123");
+        std::transform(s.begin(), s.end(), s.begin(), tolower);
+        if( s.find("true")!=string::npos )
         {
             function = shed ? 1 : 6;        // Restores to 1,2,3
         }
@@ -100,27 +102,27 @@ int CtiTableSA205105Group::getFunction(bool shed) const
             function = 1; // restores must be handled with a 7.5m shed!
         }
     }
-    else if(!getLoadNumber().compareTo("load 4", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 4"))
     {
         function = shed ? 3 : 4;
     }
-    else if(!getLoadNumber().compareTo("load 1,2", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2"))
     {
         function = shed ? 14 : 15;
     }
-    else if(!getLoadNumber().compareTo("load 1,2,3", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2,3"))
     {
         function = shed ? 5 : 6;
     }
-    else if(!getLoadNumber().compareTo("load 1,2,3,4", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"load 1,2,3,4"))
     {
         function = shed ? 12 : 13;
     }
-    else if(!getLoadNumber().compareTo("test", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"test"))
     {
         function = shed ? 7 : 2;                // shed ? TEST_ON : TEST_OFF;
     }
-    else if(!getLoadNumber().compareTo("memory erase", RWCString::ignoreCase))
+    else if(!stringCompareIgnoreCase(getLoadNumber(),"memory erase"))
     {
         function = shed ? 0 : 0;
     }
@@ -130,7 +132,7 @@ int CtiTableSA205105Group::getFunction(bool shed) const
 //=============================================================================================================
 //=============================================================================================================
 
-RWCString CtiTableSA205105Group::getLoadNumber( void ) const
+string CtiTableSA205105Group::getLoadNumber( void ) const
 {
     return( _loadNumber );
 }
@@ -138,7 +140,7 @@ RWCString CtiTableSA205105Group::getLoadNumber( void ) const
 //=============================================================================================================
 //=============================================================================================================
 
-CtiTableSA205105Group& CtiTableSA205105Group::setLoadNumber( RWCString newVal )
+CtiTableSA205105Group& CtiTableSA205105Group::setLoadNumber( string newVal )
 {
     _loadNumber = newVal;
     return *this;
@@ -165,7 +167,7 @@ CtiTableSA205105Group& CtiTableSA205105Group::setRouteId( LONG newVal )
 //=============================================================================================================
 //=============================================================================================================
 
-CtiTableSA205105Group& CtiTableSA205105Group::setOperationalAddress( RWCString newVal )
+CtiTableSA205105Group& CtiTableSA205105Group::setOperationalAddress( string newVal )
 {
     _operationalAddress = newVal;
     return *this;
@@ -186,9 +188,9 @@ CtiTableSA205105Group& CtiTableSA205105Group::setAddressUsage( int newVal )
 //=============================================================================================================
 //=============================================================================================================
 
-RWCString CtiTableSA205105Group::getTableName( void )
+string CtiTableSA205105Group::getTableName( void )
 {
-    return( RWCString( "LMGroupSA205105" ) );
+    return( string( "LMGroupSA205105" ) );
 }
 
 //=============================================================================================================
@@ -196,7 +198,7 @@ RWCString CtiTableSA205105Group::getTableName( void )
 
 void CtiTableSA205105Group::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table( getTableName() );
+    RWDBTable devTbl = db.table( getTableName().c_str() );
 
     selector <<
         devTbl["groupid"] <<        //are these supposed to be case sensitive? the table scripts are caps!

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/06/15 19:19:38 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ void CtiRouteManager::DeleteList(void)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -246,7 +246,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                 }
             }
@@ -267,7 +267,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -413,7 +413,7 @@ CtiRouteManager::ptr_type CtiRouteManager::getEqual( LONG Rte )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -422,11 +422,12 @@ CtiRouteManager::ptr_type CtiRouteManager::getEqual( LONG Rte )
 
 
 
-CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( RWCString &rname )
+CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( string &rname )
 {
     ptr_type p;
-    RWCString tmpName;
-    rname.toLower();
+    string tmpName;
+    std::transform(rname.begin(), rname.end(), rname.begin(), tolower);
+    
 
     spiterator itr;
 
@@ -434,7 +435,7 @@ CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( RWCString &rname )
     for( itr = begin(); itr != end(); itr++)
     {
         tmpName = itr->second->getName();
-        tmpName.toLower();
+        std::transform(tmpName.begin(), tmpName.end(), tmpName.begin(), tolower);
 
         if( tmpName == rname )
         {
@@ -462,7 +463,7 @@ void CtiRouteManager::DumpList(void)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -476,7 +477,7 @@ void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -524,10 +525,10 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist<
                 // This CCURoute has repeater entries.
                 if(ccuroute->getCarrier().getCCUVarBits() == 7)
                 {
-                    RWCString resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
+                    string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << resStr << endl;
+                        dout << CtiTime() << " " << resStr << endl;
                         dout << "  It will be skipped. for role generation." << endl;
                     }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/porttest.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 #include <windows.h>
 #include <iostream>
 #include <exception>
-using namespace std;
+
 
 #include "dllbase.h"
 #include "mgr_port.h"
@@ -48,7 +48,7 @@ void main(int argc, char** argv)
     InitYukonBaseGlobals();
 
     dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputPath(gLogDirectory);
     dout.setOutputFile("porttester");
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
@@ -81,13 +81,13 @@ void main(int argc, char** argv)
         catch(exception &e)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  " << e.what() << endl;
         }
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
 

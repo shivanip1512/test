@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/09 16:41:05 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -23,9 +23,16 @@
 
 #include <string>
 #include <queue>
-using namespace std;
+
 
 #include "boost_time.h"
+using std::string;
+using std::queue;
+using std::map;
+using std::binary_function;
+using std::deque;
+using std::pair;
+using std::make_pair;
 
 //  the verification objects inherit from VerificationBase so that they can both be submitted to the same thread queue
 class IM_EX_CTIBASE CtiVerificationBase
@@ -135,7 +142,7 @@ private:
     ptime::time_duration_type _patience;
     ptime                     _expiration;
     const CtiOutMessage _retry_om;
-    long _sequence;
+    long                _sequence;
 
     CodeStatus _codeDisposition;
 
@@ -186,6 +193,7 @@ public:
     ptime getSubmissionTime()   const   {  return _birth;           };
 
     CtiOutMessage *getRetryOM() const;
+    //string         getCommand() const   { return _command; }
 
     void  addExpectation(long receiver_id, bool retransmit);
     bool  checkReceipt(const CtiVerificationReport &receipt);

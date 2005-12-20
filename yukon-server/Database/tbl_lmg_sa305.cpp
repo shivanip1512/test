@@ -10,11 +10,26 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_sa305.cpp,v $
+* Revision 1.4  2005/12/20 17:16:06  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.3.2.4  2005/08/12 19:53:39  jliu
+* Date Time Replaced
+*
+* Revision 1.3.2.3  2005/07/18 22:30:51  jliu
+* rebuild_cppunit&correct_find
+*
+* Revision 1.3.2.2  2005/07/14 22:26:53  jliu
+* RWCStringRemoved
+*
+* Revision 1.3.2.1  2005/07/12 21:08:32  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.3  2005/02/10 23:23:48  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -31,6 +46,8 @@
 
 #include "logger.h"
 #include "tbl_lmg_sa305.h"
+
+#include "rwutil.h"
 
 CtiTableSA305LoadGroup::CtiTableSA305LoadGroup()
 {
@@ -52,7 +69,7 @@ CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::operator=(const CtiTableSA305Loa
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -110,7 +127,7 @@ int CtiTableSA305LoadGroup::getFunction() const          // bitmask for function
     return _function;
 }
 
-RWCString CtiTableSA305LoadGroup::getAddressUsage() const          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+string CtiTableSA305LoadGroup::getAddressUsage() const          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
 {
     return _addressUsage;
 }
@@ -170,20 +187,20 @@ CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setFunction(int newVal)         
     _function = newVal;
     return *this;
 }
-CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setAddressUsage(RWCString newVal)          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+CtiTableSA305LoadGroup& CtiTableSA305LoadGroup::setAddressUsage(string newVal)          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
 {
     _addressUsage = newVal;
     return *this;
 }
 
-RWCString CtiTableSA305LoadGroup::getTableName()
+string CtiTableSA305LoadGroup::getTableName()
 {
-    return RWCString("lmgroupsa305");
+    return string("lmgroupsa305");
 }
 
 void CtiTableSA305LoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["groupid"           ] <<
@@ -205,7 +222,7 @@ void CtiTableSA305LoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 }
 void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     rdr["groupid"           ] >> _lmGroupId;
     rdr["routeid"           ] >> _routeId;
@@ -215,7 +232,7 @@ void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["divisionaddress"   ] >> _division;
     rdr["substationaddress" ] >> _substation;
     rdr["individualaddress" ] >> rwsTemp;
-    _individual = atoi(rwsTemp.data());
+    _individual = atoi(rwsTemp.c_str());
 
     rdr["ratefamily"        ] >> _rateFamily;
     rdr["ratemember"        ] >> _rateMember;
@@ -224,16 +241,16 @@ void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 
     _function &= 0x0000000F;
 
-    if(rwsTemp.contains("1"))       _function |= 0x00000001;
+    if(rwsTemp.find("1")!=string::npos)       _function |= 0x00000001;
     else                            _function &= ~0x00000001;
 
-    if(rwsTemp.contains("2"))       _function |= 0x00000002;
+    if(rwsTemp.find("2")!=string::npos)       _function |= 0x00000002;
     else                            _function &= ~0x00000002;
 
-    if(rwsTemp.contains("3"))       _function |= 0x00000004;
+    if(rwsTemp.find("3")!=string::npos)       _function |= 0x00000004;
     else                            _function &= ~0x00000004;
 
-    if(rwsTemp.contains("4"))       _function |= 0x00000008;
+    if(rwsTemp.find("4")!=string::npos)       _function |= 0x00000008;
     else                            _function &= ~0x00000008;
 
 }
@@ -242,7 +259,7 @@ RWDBStatus CtiTableSA305LoadGroup::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -252,7 +269,7 @@ RWDBStatus CtiTableSA305LoadGroup::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -262,7 +279,7 @@ RWDBStatus CtiTableSA305LoadGroup::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }
@@ -271,7 +288,7 @@ RWDBStatus CtiTableSA305LoadGroup::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }

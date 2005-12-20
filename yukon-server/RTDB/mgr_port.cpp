@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/04/27 14:03:48 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/12/20 17:20:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
         if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
+            dout << CtiTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
         }
     }
     }
@@ -120,7 +120,7 @@ inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -333,7 +333,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                 }
             }
@@ -343,7 +343,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                     }
                 }
@@ -362,7 +362,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
                                 }
                                 pTempPort.reset();      // Free the thing!
@@ -377,7 +377,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -393,7 +393,7 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
             }
             gaurd.tryAcquire(30000);
 
@@ -401,7 +401,7 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::apply " << endl;
+                    dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::apply " << endl;
                 }
                 break;
             }
@@ -417,7 +417,7 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -434,7 +434,7 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
             }
             gaurd.tryAcquire(30000);
 
@@ -442,7 +442,7 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::find " << endl;
+                    dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::find " << endl;
                 }
                 break;
             }
@@ -462,7 +462,7 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return p;
@@ -479,7 +479,7 @@ void CtiPortManager::DumpList(void)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             gaurd.tryAcquire(30000);
         }
@@ -494,7 +494,7 @@ void CtiPortManager::DumpList(void)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -509,7 +509,7 @@ CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -588,7 +588,7 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, Cti
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << lTemp << " not found in pao, but IS in portdialupmodem table" << endl;
+                dout << CtiTime() << " Port " << lTemp << " not found in pao, but IS in portdialupmodem table" << endl;
             }
         }
     }
@@ -673,7 +673,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Unable to match child port id " << child << " to add to " << pOwnerPort->getName() << endl;
                 }
             }
@@ -681,7 +681,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -689,7 +689,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -709,7 +709,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             gaurd.tryAcquire(30000);
         }
@@ -748,7 +748,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Port " << anxiousPort->getName() << " cannot execute because " << port->getName() << " is executing" << endl;
+                                            dout << CtiTime() << " Port " << anxiousPort->getName() << " cannot execute because " << port->getName() << " is executing" << endl;
                                         }
                                         portexclusion = paox;   // Pass this out to the callee!
                                         exlist.clear();         // Cannot use it!
@@ -766,7 +766,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                                 break;
                             }
@@ -775,13 +775,13 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
                     if(!exlist.empty())     // This tells me that I have noconflicting points!
                     {
-                        vector< ptr_type >::iterator xitr;
+                        std::vector< ptr_type >::iterator xitr;
                         for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Port " << port->getName() << " prohibited because " << anxiousPort->getName() << " is executing" << endl;
+                                dout << CtiTime() << " Port " << port->getName() << " prohibited because " << anxiousPort->getName() << " is executing" << endl;
                             }
                             port = *xitr;
                             port->setExecutionProhibited(anxiousPort->getPortID());
@@ -800,7 +800,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                 if(anxiousPort->hasExclusions() && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << anxiousPort->getName() << " is clear to execute" << endl;
+                    dout << CtiTime() << " Port " << anxiousPort->getName() << " is clear to execute" << endl;
                 }
                 anxiousPort->setExecuting(true);                    // Mark ourselves as executing!
             }
@@ -809,7 +809,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -833,7 +833,7 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -851,7 +851,7 @@ void CtiPortManager::refreshExclusions(LONG id)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         gaurd.tryAcquire(30000);
     }

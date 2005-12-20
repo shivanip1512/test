@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <rw\rwtime.h>
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
@@ -40,6 +39,9 @@
 #include "cmdparse.h"
 #include "dev_wctp.h"
 #include "verification_objects.h"
+#include "ctidate.h"
+#include "ctitime.h"
+
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
@@ -110,8 +112,8 @@ bool CtiDeviceWctpTerminal::devicePacingExceeded()
 
     if(pagesPerMinute > 0)
     {
-        RWTime now;
-        RWTime newbatch = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+        CtiTime now;
+        CtiTime newbatch = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
 
         if(now >= newbatch)
         {
@@ -125,7 +127,7 @@ bool CtiDeviceWctpTerminal::devicePacingExceeded()
             {
                 _pacingReport = true;
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
             }
 
             toofast = true;
@@ -187,8 +189,8 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("TAP Devices do not support this command (yet?)"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("TAP Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -319,9 +321,9 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setPageBuffer(const CHAR* copyBuff
 }*/
 
 
-RWCString CtiDeviceWctpTerminal::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceWctpTerminal::getDescription(const CtiCommandParser & parse) const
 {
-    RWCString trelay;
+    string trelay;
 
     trelay = "PAGE: " + getName();
 
@@ -394,7 +396,7 @@ void CtiDeviceWctpTerminal::destroyBuffers()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 }
@@ -481,32 +483,32 @@ CHAR* CtiDeviceWctpTerminal::trimMessage(CHAR *message)
 INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList)
 {
     ULONG i;
-    RWCString outStr;
+    string outStr;
 
     for(i = 0; i < Count; i++)
     {
-        outStr.append(Message[i]);
+        outStr.append(char2string(Message[i]));
     }
 
     CtiTraceMsg trace;
 
     trace.setBrightYellow();
-    trace.setTrace(  RWTime().asString() + RWCString(" ") );
+    trace.setTrace(  CtiTime().asString().c_str() + string(" ") );
     trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightCyan();
-    trace.setTrace(  getName() + RWCString(" ") );
+    trace.setTrace(  getName() + string(" ") );
     trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightWhite();
-    trace.setTrace(  RWCString("SENT: ") );
+    trace.setTrace(  string("SENT: ") );
     trace.setEnd(true);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightGreen();
-    trace.setTrace( RWCString("\"") + outStr + RWCString("\"\n\n") );
+    trace.setTrace( string("\"") + outStr + string("\"\n\n") );
     traceList.insert( trace.replicateMessage() );
 
     return(NORMAL);
@@ -520,7 +522,7 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< Ct
     {
         for(i = 0; i < Count; i++)
         {
-            _inStr.append( Message[i] );
+            _inStr.append( char2string(Message[i]) );
         }
     }
 
@@ -529,25 +531,25 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< Ct
         CtiTraceMsg trace;
 
         trace.setBrightYellow();
-        trace.setTrace(  RWTime().asString() + RWCString(" ") );
+        trace.setTrace(  CtiTime().asString().c_str() + string(" ") );
         trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightCyan();
-        trace.setTrace(  getName() + RWCString(" ") );
+        trace.setTrace(  getName() + string(" ") );
         trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightWhite();
-        trace.setTrace(  RWCString("RECV: ") );
+        trace.setTrace(  string("RECV: ") );
         trace.setEnd(true);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightMagenta();
-        trace.setTrace( RWCString("\"") + _inStr + RWCString("\"\n\n") );
+        trace.setTrace( string("\"") + _inStr + string("\"\n\n") );
         traceList.insert( trace.replicateMessage() );
 
-        _inStr = RWCString();     // Reset it for the next message
+        _inStr = string();     // Reset it for the next message
     }
 
     return(NORMAL);
@@ -680,7 +682,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         autopsy( __FILE__, __LINE__ );
@@ -708,8 +710,8 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             xfer.setOutBuffer( (UCHAR*)getOutBuffer() );     // Don't use any buffer which may have been supplied
             xfer.setInBuffer( (UCHAR*)getInBuffer() );       // Don't use any buffer which may have been supplied
 
-            RWTime nowTime;
-            RWDate nowDate;
+            CtiTime nowTime;
+            CtiDate nowDate;
             CHAR   timeStamp[20];
 
             _snprintf(timeStamp, 20, "%04d-%02d-%02dT%02d:%02d:%02d",
@@ -737,7 +739,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
 
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
-            CHAR* xmlMsg = buildXMLMessage((const char*)getWctp().getPagerNumber(),
+            CHAR* xmlMsg = buildXMLMessage(getWctp().getPagerNumber().c_str(),
                                            "yukonserver@cannontech.com",
                                            msgPayload,
                                            timeStamp);
@@ -745,7 +747,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             CHAR* out = getOutBuffer();
             out[0] = 0;
             strcat(out, "POST ");
-            strcat(out, getPassword());                 // The path information is stored in password for now
+            strcat(out, getPassword().c_str());                 // The path information is stored in password for now
             strcat(out, " HTTP/1.0\r\n");
             strcat(out, "Content-Type: text/xml\r\n");
             strcat(out, "Content-Length: ");
@@ -1089,20 +1091,20 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " WCTP getCurrentState " << getCurrentState() << endl;
         }
     }
@@ -1119,7 +1121,7 @@ CtiDeviceIED& CtiDeviceWctpTerminal::setInitialState (const LONG oldid)
         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Port has indicated a connected device swap. " << endl;
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
         }
@@ -1162,7 +1164,7 @@ _sendFiller(true),
 _pageCount(0),
 _pagePrefix('a'),
 _pageLength(0),
-_inStr(RWCString()),
+_inStr(string()),
 _pageBuffer(NULL),
 _outBuffer(NULL),
 _inBuffer(NULL),
@@ -1183,7 +1185,7 @@ CtiDeviceWctpTerminal::CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef) 
    _pageCount(0),
    _pagePrefix('a'),
    _pageLength(0),
-   _inStr(RWCString()),
+   _inStr(string()),
    _pageBuffer(NULL)
 {
    *this = aRef;
@@ -1210,7 +1212,7 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTermi
             _pageLength = aRef.getPageLength();
         }
 
-        _inStr = RWCString();
+        _inStr = string();
         _outBuffer = NULL;
         _inBuffer = NULL;
         _xmlBuffer = NULL;

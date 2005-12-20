@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/15 22:30:11 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"
+using std::make_pair;
 
 using Cti::Protocol::Emetcon;
 
@@ -168,7 +169,7 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, USHORT &function, USHORT &l
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT2XX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT2XX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -214,7 +215,7 @@ INT CtiDeviceMCT2XX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
             break;
@@ -225,7 +226,7 @@ INT CtiDeviceMCT2XX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -237,7 +238,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -246,7 +247,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         INT    j;
         ULONG  mread = 0;
         double Value;
-        RWCString resultString;
+        string resultString;
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
@@ -255,7 +256,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -271,7 +272,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         if(pPoint != NULL)
         {
-            RWTime pointTime;
+            CtiTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM((DOUBLE)mread);
 
@@ -300,7 +301,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -310,7 +311,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     setScanFlag(ScanRateIntegrity, false);
@@ -322,7 +323,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         INT    demand_interval;
         ULONG  pulses;
         double Value;
-        RWCString resultString;
+        string resultString;
         PointQuality_t quality;
         bool bad_data;
 
@@ -333,7 +334,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -366,7 +367,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if(pPoint != NULL)
         {
-            RWTime pointTime;
+            CtiTime pointTime;
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
@@ -395,7 +396,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
     INT status = NORMAL;
 
@@ -406,7 +407,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     ULONG pulseCount = 0;
-    RWCString resultString;
+    string resultString;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -415,7 +416,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -482,7 +483,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
 //  This code handles the decode for all 2XX series model configs..
 //
 
-INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -496,8 +497,8 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         char rev;
         char temp[80];
 
-        RWCString sspec;
-        RWCString options("Options:\n");
+        string sspec;
+        string options("Options:\n");
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -505,55 +506,55 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
         rev = 64 + InMessage->Buffer.DSt.Message[1];
 
-        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
+        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + string("  Rom Revision ") + rev + "\n";
 
         if( InMessage->Buffer.DSt.Message[2] & 0x01 )
         {
-            options+= RWCString("  Latched loads\n");
+            options+= string("  Latched loads\n");
         }
         if( InMessage->Buffer.DSt.Message[2] & 0x02 )
         {
-            options+= RWCString("  Timed loads\n");
+            options+= string("  Timed loads\n");
         }
         if( InMessage->Buffer.DSt.Message[2] & 0x40 )
         {
-            options+= RWCString("  Extended addressing\n");
+            options+= string("  Extended addressing\n");
         }
         if( InMessage->Buffer.DSt.Message[2] & 0x80 )
         {
-            options+= RWCString("  Metering of basic kWh\n");
+            options+= string("  Metering of basic kWh\n");
         }
 
         if( InMessage->Buffer.DSt.Message[3] & 0x01 )
         {
-            options+= RWCString("  Time-of-demand\n");
+            options+= string("  Time-of-demand\n");
         }
         if( InMessage->Buffer.DSt.Message[3] & 0x04 )
         {
-            options+= RWCString("  Load survey\n");
+            options+= string("  Load survey\n");
         }
         if( InMessage->Buffer.DSt.Message[3] & 0x08 )
         {
-            options+= RWCString("  Full group address support\n");
+            options+= string("  Full group address support\n");
         }
         if( InMessage->Buffer.DSt.Message[3] & 0x10 )
         {
-            options+= RWCString("  Feedback load control\n");
+            options+= string("  Feedback load control\n");
         }
         if( InMessage->Buffer.DSt.Message[3] & 0x40 )
         {
-            options+= RWCString("  Volt/VAR control\n");
+            options+= string("  Volt/VAR control\n");
         }
         if( InMessage->Buffer.DSt.Message[3] & 0x80 )
         {
-            options+= RWCString("  Capacitor control\n");
+            options+= string("  Capacitor control\n");
         }
 
         if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;
@@ -570,7 +571,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -581,7 +582,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
     {
         // No error occured, we must do a real decode!
 
-        RWCString options;
+        string options;
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -589,7 +590,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;

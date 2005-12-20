@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2005/12/15 22:28:56 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,9 +18,7 @@
 #include <windows.h>
 #include <time.h>
 #include <utility>
-using namespace std;
 
-#include <rw\cstring.h>
 #include "numstr.h"
 
 #include "devicetypes.h"
@@ -41,6 +39,8 @@ using namespace std;
 #include "dllyukon.h"
 #include "cparms.h"
 #include "yukon.h"
+#include "ctidate.h"
+
 
 using Cti::Protocol::Emetcon;
 
@@ -67,7 +67,8 @@ using Cti::Protocol::Emetcon;
 
 
 
-
+using std::make_pair;
+using std::set;
 
 set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
 
@@ -112,10 +113,10 @@ bool CtiDeviceMCT::getMCTDebugLevel(int mask)
     static time_t lastaccess;  //  initialized to 0 the first time through, as per static rules
     static int mct_debuglevel;
 
-    if( lastaccess + 300 < time(0) )
+    if( lastaccess + 300 < ::time(0) )
     {
         mct_debuglevel = gConfigParms.getValueAsInt("MCT_DEBUGLEVEL");
-        lastaccess = time(0);
+        lastaccess = ::time(0);
     }
 
     return mask & mct_debuglevel;
@@ -196,9 +197,9 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
 }
 
 
-RWCString CtiDeviceMCT::sspecIsFrom( int sspec )
+string CtiDeviceMCT::sspecIsFrom( int sspec )
 {
-    RWCString whois;
+    string whois;
 
     switch( sspec )
     {
@@ -248,7 +249,7 @@ RWCString CtiDeviceMCT::sspecIsFrom( int sspec )
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceMCT::getDescription(const CtiCommandParser &parse) const
+string CtiDeviceMCT::getDescription(const CtiCommandParser &parse) const
 {
     return getName();
 }
@@ -285,10 +286,10 @@ void CtiDeviceMCT::resetMCTScansPending( void )
     setScanFlag(ScanRateAccum, false);
 }
 
-RWTime CtiDeviceMCT::adjustNextScanTime(const INT scanType)
+CtiTime CtiDeviceMCT::adjustNextScanTime(const INT scanType)
 {
-    RWTime Now;
-    RWTime When(YUKONEOT);    // This is never!
+    CtiTime Now;
+    CtiTime When(YUKONEOT);    // This is never!
     long   scanRate;
     unsigned long nextLPTime;
 
@@ -562,7 +563,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
             nRet = NoMethod;
@@ -573,17 +574,17 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 
     if( nRet != NORMAL )
     {
-        RWCString resultString;
+        string resultString;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << RWTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                                RWCString(OutMessage->Request.CommandStr),
+                                                string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
                                                 OutMessage->Request.RouteID,
@@ -627,7 +628,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
         if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
 
@@ -647,7 +648,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
             OutMessage = NULL;
@@ -660,7 +661,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             OutMessage = NULL;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
+            dout << CtiTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
 
             status = NoMethod;
         }
@@ -689,7 +690,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
         if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if(getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
@@ -708,7 +709,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
             outList.insert(OutMessage);
             OutMessage = NULL;
 
@@ -722,7 +723,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             status = NoMethod;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
         }
     }
@@ -749,7 +750,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
         if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if(getOperation(Emetcon::Scan_Accum, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
@@ -768,7 +769,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
             OutMessage = NULL;
@@ -781,7 +782,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage = NULL;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
             status = NoMethod;
@@ -811,7 +812,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
         if( getMCTDebugLevel(MCTDebug_Scanrates) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if(getOperation(Emetcon::Scan_LoadProfile, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
@@ -830,7 +831,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
-            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
             calcAndInsertLPRequests(OutMessage, outList);
 
@@ -847,7 +848,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             OutMessage = NULL;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
 
             status = NoMethod;
@@ -858,7 +859,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -893,7 +894,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unhandled GetConfig_Model **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled GetConfig_Model **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -964,7 +965,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
             status = NoMethod;
@@ -1068,7 +1069,7 @@ bool CtiDeviceMCT::restoreMessageRead(INMESS *InMessage, int &ioType, int &locat
         {
             //retVal = false
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** Sequence is in proper range but is not in the set" << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** Sequence is in proper range but is not in the set" << __FILE__ << " (" << __LINE__ << ")" << endl;
             //If your getting this, either the range needs to be adjusted, or out messages are lasting longer then 2 hours before
             //being sent and returned.
         }
@@ -1086,14 +1087,14 @@ bool CtiDeviceMCT::restoreMessageRead(INMESS *InMessage, int &ioType, int &locat
     return retVal;
 }
 
-INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(InMessage->Return.CommandStr),
-                                                RWCString(),
+                                                string(InMessage->Return.CommandStr),
+                                                string(),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -1104,7 +1105,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     int ioType, location;
@@ -1257,7 +1258,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -1331,7 +1332,7 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
         OutMessage->Request.RouteID   = getRouteID();
 
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         for( i = 0; i < parse.getiValue("count"); i++ )
         {
@@ -1362,7 +1363,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
 {
     bool found = false;
     INT  nRet  = NoError;
-    RWCString tester;
+    string tester;
 
     INT            function;
     unsigned short stub;
@@ -1437,7 +1438,7 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
         OutMessage->Request.RouteID   = getRouteID();
 
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -1458,8 +1459,8 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
     INT function;
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   RWCString(),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
                                                    nRet,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
@@ -1637,7 +1638,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
 
@@ -1767,7 +1768,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         break;
                     }
@@ -1807,7 +1808,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - device \'" << getName() << "\' - demand reset to GE kV not implemented yet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - device \'" << getName() << "\' - demand reset to GE kV not implemented yet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         found = false;
@@ -1833,7 +1834,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         break;
                     }
@@ -1858,7 +1859,7 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
 
@@ -1945,7 +1946,7 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -1962,9 +1963,9 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
     bool  found = false;
     INT   nRet = NoError;
     int   intervallength;
-    RWCString temp;
-    RWTime NowTime;
-    RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
+    string temp;
+    CtiTime NowTime;
+    CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
     OUTMESS *tmpOutMess;
 
     INT function = -1;
@@ -2071,7 +2072,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
            else
            {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unable to allocate OUTMESS for MCT3XX powerfail reset" << endl;
            }
 
@@ -2088,12 +2089,12 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
            else
            {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unable to allocate OUTMESS for MCT3XX encoder error reset" << endl;
            }
        }
 
-       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -2109,7 +2110,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
 {
     bool found = false;
     INT   nRet = NoError;
-    RWCString temp;
+    string temp;
 
     INT function;
 
@@ -2219,7 +2220,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         {
             function = Emetcon::DLCCmd_Invalid;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid interval type **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid interval type **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if( function != Emetcon::DLCCmd_Invalid )
@@ -2275,7 +2276,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -2293,13 +2294,13 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     INT   function;
     INT   nRet = NoError;
     int   intervallength;
-    RWCString temp;
-    RWTime NowTime;
-    RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
+    string temp;
+    CtiTime NowTime;
+    CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   RWCString(),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
                                                    nRet,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
@@ -2413,7 +2414,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
                 if( errRet )
                 {
-                    temp = "Invalid address \"" + CtiNumStr(uadd) + "\" for device \"" + getName() + "\", not sending";
+                    temp = "Invalid address \"" + CtiNumStr(uadd) + string("\" for device \"") + getName() + "\", not sending";
                     errRet->setResultString(temp);
                     errRet->setStatus(NoMethod);
                     retList.insert(errRet);
@@ -2652,7 +2653,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Unknown IED type " << iedtype << " for device \'" << getName() << "\', aborting command **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Unknown IED type " << iedtype << " for device \'" << getName() << "\', aborting command **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     found = false;
@@ -2784,7 +2785,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -2797,7 +2798,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
         if( getType() == TYPEMCT410 || getType() == TYPEMCT470 )
         {
-            unsigned long time = NowTime.seconds() - rwEpoch;
+            unsigned long time = NowTime.seconds();
 
             OutMessage->Buffer.BSt.Message[0] = 0xff;  //  global SPID
             OutMessage->Buffer.BSt.Message[1] = (time >> 24) & 0x000000ff;
@@ -3000,13 +3001,13 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         //  trim string to be 15 bytes long
         if( temp.length() > 15 )
         {
-            temp.remove( 15 );
+            temp.erase( 15, 1 );
         }
 
         OutMessage->Buffer.BSt.Length = temp.length();
         for( int i = 0; i < temp.length(); i++ )
         {
-            OutMessage->Buffer.BSt.Message[i] = temp(i);
+            OutMessage->Buffer.BSt.Message[i] = temp[i];
         }
 
         if( parse.isKeyValid("rawfunc") )
@@ -3036,7 +3037,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->Retry     = 2;
 
        OutMessage->Request.RouteID   = getRouteID();
-       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+       strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -3167,7 +3168,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.append( OutMessage );
         OutMessage = NULL;
@@ -3178,12 +3179,12 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
           j;
     ULONG pfCount = 0;
-    RWCString resultString;
+    string resultString;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3195,7 +3196,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3212,7 +3213,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 }
 
 
-INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -3223,7 +3224,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     CtiPointBase         *pPoint;
 
     double Value;
-    RWCString resultStr;
+    string resultStr;
 
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -3233,7 +3234,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3278,7 +3279,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 }
 
 
-INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -3290,7 +3291,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     unsigned long multnum;  //  multiplier numerator - the value returned is multiplier * 1000
     double mult;  //  where the final multiplier value will be computed
 
-    RWCString resultStr;
+    string resultStr;
 
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -3302,7 +3303,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3322,11 +3323,11 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 silver     = (DSt->Message[4] & 0x3f);
 
                 resultStr  = getName() + " / Group Addresses:\n";
-                resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + "\n";
-                resultStr += "Silver:     " + CtiNumStr(silver + 1).spad(5) + "\n";
-                resultStr += "Bronze:     " + CtiNumStr(bronze + 1).spad(5) + "\n";
-                resultStr += "Lead Meter: " + CtiNumStr(lead_meter + 1).spad(5) + "\n";
-                resultStr += "Lead Load:  " + CtiNumStr(lead_load + 1).spad(5) + "\n";
+                resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + string("\n");
+                resultStr += "Silver:     " + CtiNumStr(silver + 1).spad(5) + string("\n");
+                resultStr += "Bronze:     " + CtiNumStr(bronze + 1).spad(5) + string("\n");
+                resultStr += "Lead Meter: " + CtiNumStr(lead_meter + 1).spad(5) + string("\n");
+                resultStr += "Lead Load:  " + CtiNumStr(lead_load + 1).spad(5) + string("\n");
 
                 ReturnMsg->setResultString( resultStr );
 
@@ -3344,7 +3345,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                 resultStr = getName() + " / Demand Interval: " + CtiNumStr( min ) + " min";
                 if( sec )
-                    resultStr += ", " + CtiNumStr( sec ) + " sec";
+                    resultStr += ", " + CtiNumStr( sec ) + string(" sec");
 
                 ReturnMsg->setResultString( resultStr );
 
@@ -3379,7 +3380,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "message[0] = " << (int)DSt->Message[0] << endl;
                     dout << "message[1] = " << (int)DSt->Message[1] << endl;
                 }
@@ -3396,7 +3397,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     k <<= 8;
                     k  |= (int)DSt->Message[3];
 
-                    resultStr = "Mp: " + CtiNumStr((int)multnum) + ", Kh: " + CtiNumStr((int)k) +
+                    resultStr = "Mp: " + CtiNumStr((int)multnum) + string(", Kh: ") + CtiNumStr((int)k) +
                                 ", metering ratio: " + CtiNumStr((double)multnum/(double)k, 3) + "\n";
                 }
                 else
@@ -3409,7 +3410,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     {
                         mult = (double)multnum;
                         mult /= 100.0;
-                        resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + "\n";
+                        resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + string("\n");
                     }
                 }
 
@@ -3453,7 +3454,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     resultStr = getName() + " / time sync:  ";
                 }
 
-                resultStr += RWCString(days[day]) + " " + CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2);
+                resultStr += string(days[day]) + " " + CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2);
 
                 ReturnMsg->setResultString( resultStr );
 
@@ -3494,7 +3495,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -3506,7 +3507,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
     CtiPointBase    *pPoint;
 
     double    Value;
-    RWCString resultStr, defaultStateName;
+    string resultStr, defaultStateName;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -3515,7 +3516,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3592,9 +3593,9 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
         {
             //  This isn't useful when the status to be returned is anything but "connected" or "disconnected" - we need "Connect armed" instead, so this
             //    will not work too well.
-            RWCString stateName; /* = ResolveStateName(pPoint->getStateGroupID(), Value);
+            string stateName; /* = ResolveStateName(pPoint->getStateGroupID(), Value);
 
-            if( stateName.isNull() )*/
+            if( stateName.empty() )*/
             {
                 stateName = defaultStateName;
             }
@@ -3625,12 +3626,12 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
 
 
 
-INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
           j;
     ULONG pfCount = 0;
-    RWCString resultString;
+    string resultString;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3642,7 +3643,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3659,12 +3660,12 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 }
 
 
-INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
           j;
     ULONG pfCount = 0;
-    RWCString resultString;
+    string resultString;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3676,7 +3677,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3693,12 +3694,12 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
           j;
     ULONG pfCount = 0;
-    RWCString resultString;
+    string resultString;
     OUTMESS *OutTemplate;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
@@ -3714,7 +3715,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -3863,7 +3864,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -3905,7 +3906,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         {
                             if( _mpkh[i] > 0 )
                             {
-                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + " " + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                                 if( pReq != NULL )
                                 {
@@ -3923,7 +3924,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                             }
                         }
@@ -4080,7 +4081,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     return((DOUBLE) INVALID);
 
@@ -4105,7 +4106,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
             {
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                }
                return((DOUBLE) INVALID);
             }
@@ -4149,7 +4150,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
 
@@ -4211,7 +4212,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4251,7 +4252,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4284,7 +4285,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4317,7 +4318,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4350,7 +4351,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4383,7 +4384,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4413,7 +4414,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4526,7 +4527,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4567,7 +4568,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
          default:
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             return((DOUBLE) INVALID);
          }
@@ -4598,7 +4599,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
       default:
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
          return((DOUBLE)  INVALID);
       }
@@ -4723,7 +4724,7 @@ INT CtiDeviceMCT::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUT
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Default load profile logic handler - request deleted" << endl;
     }
 
@@ -4741,7 +4742,7 @@ bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Default load profile request location handler - request deleted" << endl;
     }
 
@@ -4749,7 +4750,7 @@ bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
-void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] )
+void CtiDeviceMCT::setConfigData( const string &configName, int configType, const string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] )
 {
     _configName = configName;
 
@@ -4775,7 +4776,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -4798,7 +4799,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -4813,7 +4814,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _configType = ConfigInvalid;
@@ -4822,14 +4823,14 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
         }
     }
 
-    if( !configMode.compareTo("peakoffpeak", RWCString::ignoreCase) )    _peakMode = PeakModeOnPeakOffPeak;
-    else if( !configMode.compareTo("minmax", RWCString::ignoreCase) )    _peakMode = PeakModeMinMax;
+    if( !findStringIgnoreCase(configMode,"peakoffpeak") )    _peakMode = PeakModeOnPeakOffPeak;
+    else if( !findStringIgnoreCase(configMode,"minmax") )    _peakMode = PeakModeMinMax;
     else
     {
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _peakMode = PeakModeInvalid;
@@ -4846,7 +4847,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _wireConfig[i] = WireConfigInvalid;
@@ -4874,11 +4875,11 @@ void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setExpectedFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setExpectedFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, RWTime::now().seconds() - rwEpoch);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, (long)_expected_freeze);
     }
 }

@@ -16,12 +16,11 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.3 $
- *    DATE         :  $Date: 2005/09/13 20:44:58 $
+ *    REVISION     :  $Revision: 1.4 $
+ *    DATE         :  $Date: 2005/12/20 17:17:16 $
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>

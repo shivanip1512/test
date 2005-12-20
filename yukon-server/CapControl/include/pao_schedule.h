@@ -40,17 +40,17 @@ public:
     virtual ~CtiPAOSchedule();
     CtiPAOSchedule(RWDBReader& rdr);
 
-    long getScheduleId();
-    RWCString getScheduleName();
-    RWDBDateTime getNextRunTime();
-    RWDBDateTime getLastRunTime();
-    long getIntervalRate();  
+    long getScheduleId() const;
+    const string& getScheduleName() const;
+    const CtiTime& getNextRunTime() const;
+    const CtiTime& getLastRunTime() const;
+    long getIntervalRate() const;
     bool isDisabled();
 
     void setScheduleId(long schedId);
-    void setScheduleName(RWCString schedName);
-    void setNextRunTime(RWDBDateTime nextTime);
-    void setLastRunTime(RWDBDateTime lastTime);
+    void setScheduleName(const string& schedName);
+    void setNextRunTime(const CtiTime& nextTime);
+    void setLastRunTime(const CtiTime& lastTime);
     void setIntervalRate(long intervalRate);
     void setDisabledFlag(bool disabledFlag);
 
@@ -70,9 +70,9 @@ private:
     BOOL _dirty;
 
     long         _scheduleId;
-    RWCString    _scheduleName;
-    RWDBDateTime _nextRunTime;
-    RWDBDateTime _lastRunTime;
+    string    _scheduleName;
+    CtiTime _nextRunTime;
+    CtiTime _lastRunTime;
     long _intervalRate; //in seconds!
     bool _disabledFlag;                    
 

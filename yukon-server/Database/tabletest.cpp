@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tabletest.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 19:16:19 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ using namespace std;
 #include "ctibase.h"
 void main()
 {
-    RWDBDateTime now;
+    CtiTime now;
 
     {
         CtiTablePointHistory p_hist( 18L, now, 0, 100.1 );

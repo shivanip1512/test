@@ -8,10 +8,19 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/05/04 20:49:33 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.11  2005/12/20 17:19:59  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.10.2.2  2005/07/14 22:27:02  jliu
+* RWCStringRemoved
+*
+* Revision 1.10.2.1  2005/07/12 21:08:43  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.10  2005/05/04 20:49:33  cplender
 * Adjusted coldload and tamper detect code for the SA stuff.
 *
@@ -52,7 +61,7 @@
 #define __PROT_SA305_H__
 
 #include <vector>
-using namespace std;
+
 
 #include "cmdparse.h"
 #include "dlldefs.h"
@@ -60,6 +69,7 @@ using namespace std;
 #include "dsm2.h"
 #include "pointtypes.h"
 
+using std::vector;
 
 class IM_EX_PROT CtiProtocolSA305
 {
@@ -158,9 +168,9 @@ private:
 
     static bool _noCRC;
 
-    RWCString _bitStr;
+    string _bitStr;
 
-    static RWCString _strategyStr[64];
+    static string _strategyStr[64];
 
 public:
 
@@ -251,8 +261,8 @@ public:
     CtiProtocolSA305& setTransmitterType( int trans );
     CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
 
-    RWCString getBitString() const;
-    RWCString  asString() const;
+    string getBitString() const;
+    string  asString() const;
 
 };
 #endif // #ifndef __PROT_SA305_H__

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/16 23:08:18 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ private:
     struct tripclose_info_t
     {
         double state;
-        RWTime time;
+        CtiTime time;
         short  millis;
     } _trip_info, _close_info;
 
@@ -60,9 +60,9 @@ public:
 
     CtiDeviceCBC6510& operator=(const CtiDeviceCBC6510& aRef);
 
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
 
-    //void processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points );
+    //void processInboundPoints(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points );
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 };
 

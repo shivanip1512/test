@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/10 21:01:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,9 @@
 
 #include "dnp_datalink.h"
 #include "xfer.h"
+
+using std::endl;
+
 
 namespace Cti       {
 namespace Protocol  {

@@ -14,14 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/09/27 20:39:35 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <windows.h>
-#include <rw\cstring.h>
+
 #include "xfer.h"
 #include "dllbase.h"
 

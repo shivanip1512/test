@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/06/29 19:46:21 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,6 @@
 #include <windows.h>
 #include <process.h>
 #include <vector>
-using namespace std;
 
 #include <stdlib.h>
 #include <stdlib.h>
@@ -81,6 +80,8 @@ using namespace std;
 #include "dev_wctp.h"
 #include "prot_versacom.h"
 #include "expresscom.h"
+
+using namespace std;
 
 extern CtiRouteManager RouteManager;
 extern HCTIQUEUE* QueueHandle(LONG pid);
@@ -137,7 +138,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                dout << CtiTime() << " Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                             }
                             CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice.get();
 
@@ -186,7 +187,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -232,7 +233,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     case TYPE_SNPP:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " SNPP filler. PORTFILL.CPP" << endl;
+                            dout << CtiTime() << " SNPP filler. PORTFILL.CPP" << endl;
                         }
                         break;
                     case TYPE_WCTP:
@@ -245,7 +246,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                        dout << CtiTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                                     }
 
                                     OutMessage.DeviceID = tapTRX->getID();
@@ -308,11 +309,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 {
                                                     if(i % 2)
                                                     {
-                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
+                                                        ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
                                                     }
                                                     else
                                                     {
-                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
+                                                        ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
                                                     }
                                                 }
 
@@ -333,13 +334,13 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                        dout << CtiTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                                     }
 
                                     CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
 
-                                    RWCString byteString;
+                                    string byteString;
 
                                     // Add code here to send a sync page expresscom style.
                                     OutMessage.DeviceID = tapTRX->getID();
@@ -369,11 +370,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             BYTE curByte = xcom.getByte(i / 2);
                                             if(i % 2)
                                             {
-                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
                                             }
                                             else
                                             {
-                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
                                             }
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
@@ -402,7 +403,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                        dout << CtiTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                                     }
 
                                     OutMessage.DeviceID = tapTRX->getID();
@@ -465,11 +466,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 {
                                                     if(i % 2)
                                                     {
-                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
+                                                        ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
                                                     }
                                                     else
                                                     {
-                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
+                                                        ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
                                                     }
                                                 }
 
@@ -490,13 +491,13 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
+                                        dout << CtiTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                                     }
 
                                     CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
 
-                                    RWCString byteString;
+                                    string byteString;
 
                                     // Add code here to send a sync page expresscom style.
                                     OutMessage.DeviceID = tapTRX->getID();
@@ -526,11 +527,11 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                             BYTE curByte = xcom.getByte(i / 2);
                                             if(i % 2)
                                             {
-                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
                                             }
                                             else
                                             {
-                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                                                ::sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
                                             }
                                         }
                                         OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
@@ -559,7 +560,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -574,34 +575,34 @@ VOID FillerThread (PVOID Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Filler Thread Starting as TID: " << CurrentTID() << endl;
+        dout << CtiTime() << " Filler Thread Starting as TID: " << CurrentTID() << endl;
     }
 
     /* First try to get the utility ID */
-    if( !(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID")).isNull() )
+    if( !(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID")).empty() )
     {
-        if( !(gsUID = atoi(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID").data())) )
+        if( !(gsUID = atoi(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID").c_str())) )
         {
             // We have no joy in mudville.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Filler Thread found no PORTER_VERSACOM_UTILID cparm.  Exiting." << endl;
+                dout << CtiTime() << " Filler Thread found no PORTER_VERSACOM_UTILID cparm.  Exiting." << endl;
             }
             return;
         }
     }
 
-    if( !(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID")).isNull() )
+    if( !(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID")).empty() )
     {
-        gsSPID = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").data());
+        gsSPID = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").c_str());
     }
 
     if(gConfigParms.isOpt("PORTER_FILLER_RATE"))
     {
-        RWCString FillerCommand = gConfigParms.getValueAsString("PORTER_FILLER_RATE");
+        string FillerCommand = gConfigParms.getValueAsString("PORTER_FILLER_RATE");
 
         /* Find out how often to send fillers */
-        if(!(FillerRate = atol(FillerCommand.data())))
+        if(!(FillerRate = atol(FillerCommand.c_str())))
         {
             /* Unable to convert so assume every hour */
             FillerRate = 3600L;
@@ -615,10 +616,10 @@ VOID FillerThread (PVOID Arg)
         }
         else
         {
-            RWCString FillerCommand = gConfigParms.getValueAsString("PORTER_VERSACOM_FILLER_RATE");
+            string FillerCommand = gConfigParms.getValueAsString("PORTER_VERSACOM_FILLER_RATE");
 
             /* Find out how often to send fillers */
-            if(!(FillerRate = atol(FillerCommand.data())))
+            if(!(FillerRate = atol(FillerCommand.c_str())))
             {
                 /* Unable to convert so assume every five minutes */
                 FillerRate = 3600L;
@@ -648,7 +649,7 @@ VOID FillerThread (PVOID Arg)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Sending Filler Messages " << endl;
+                dout << CtiTime() << " Sending Filler Messages " << endl;
             }
             /* Send filler messages */
             PortManager.apply( applySendFiller, (void*)0);

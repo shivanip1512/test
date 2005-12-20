@@ -20,7 +20,7 @@ class CtiParseValue
 {
 protected:
 
-   RWCString      _str;
+   std::string      _str;
    INT            _int;
    DOUBLE         _dbl;
 
@@ -44,26 +44,11 @@ public:
       flag(0)
    {}
 
-   //  note the RWCSubString version of this below
-   CtiParseValue(const RWCString str, const INT ival = INT_MIN) :
+   CtiParseValue(const std::string str, const INT ival = INT_MIN) :
       flag(0),
       _str(str),
-      _int(ival)
-   {
-      _sValid = TRUE;
-      if(_int != INT_MIN)
-      {
-         _iValid = TRUE;
-         _dbl    = (DOUBLE)_int;
-         _dValid = TRUE;
-      }
-   }
-
-   //  this is the RWCSubString version of the above - make sure you implement any changes to the above down here as well
-   CtiParseValue(const RWCSubString substr, const INT ival = INT_MIN) :
-      flag(0),
-      _str(substr),
-      _int(ival)
+      _int(ival),
+      _dbl(0.0)
    {
       _sValid = TRUE;
       if(_int != INT_MIN)
@@ -133,9 +118,9 @@ public:
    }
 
    UINT           isStringValid() const               { return _sValid; }
-   RWCString      getString() const                   { return _str; }
-   RWCString&     getString()                         { return _str; }
-   CtiParseValue& setString(const RWCString aStr)
+   std::string      getString() const                   { return _str; }
+   std::string&     getString()                         { return _str; }
+   CtiParseValue& setString(const std::string aStr)
    {
       _str = aStr;
       return *this;

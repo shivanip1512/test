@@ -85,12 +85,12 @@ CtiTagMsg& CtiTagMsg::setTagID(int id)
   return *this;
 }
 
-const RWCString& CtiTagMsg::getDescriptionStr() const
+const string& CtiTagMsg::getDescriptionStr() const
 {
   return _descriptionStr;
 }
 
-CtiTagMsg& CtiTagMsg::setDescriptionStr(const RWCString& desc)
+CtiTagMsg& CtiTagMsg::setDescriptionStr(const string& desc)
 {
   _descriptionStr = desc;
   return *this;
@@ -107,34 +107,34 @@ CtiTagMsg& CtiTagMsg::setAction(int action)
   return *this;
 }
 
-const RWTime& CtiTagMsg::getTagTime() const
+const CtiTime& CtiTagMsg::getTagTime() const
 {
   return _tagtime;
 }
 
-CtiTagMsg& CtiTagMsg::setTagTime(const RWTime& tagtime)
+CtiTagMsg& CtiTagMsg::setTagTime(const CtiTime& tagtime)
 {
   _tagtime = tagtime;
   return *this;
 }
 
-const RWCString& CtiTagMsg::getReferenceStr() const
+const string& CtiTagMsg::getReferenceStr() const
 {
   return _referenceStr;
 }
 
-CtiTagMsg& CtiTagMsg::setReferenceStr(const RWCString& ref)
+CtiTagMsg& CtiTagMsg::setReferenceStr(const string& ref)
 {
   _referenceStr = ref;
   return *this;
 }
 
-const RWCString& CtiTagMsg::getTaggedForStr() const
+const string& CtiTagMsg::getTaggedForStr() const
 {
   return _taggedForStr;
 }
 
-CtiTagMsg& CtiTagMsg::setTaggedForStr(const RWCString& forStr)
+CtiTagMsg& CtiTagMsg::setTaggedForStr(const string& forStr)
 {
   _taggedForStr = forStr;
   return *this;
@@ -154,7 +154,7 @@ CtiMessage* CtiTagMsg::replicateMessage() const
 
 void CtiTagMsg::dump() const
 {
-    RWCString actn;
+    string actn;
     switch(getAction())
     {
     case (CtiTagMsg::AddAction):
@@ -170,7 +170,7 @@ void CtiTagMsg::dump() const
         actn = "ReportAction";
         break;
     default:
-        actn = RWCString("Unknown ") + CtiNumStr(getAction());
+        actn = "Unknown " + CtiNumStr(getAction());
         break;
     }
 

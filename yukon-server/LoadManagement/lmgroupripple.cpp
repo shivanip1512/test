@@ -13,7 +13,6 @@
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
 #include "dbaccess.h"
 #include "lmgroupripple.h"
 #include "lmid.h"
@@ -80,12 +79,12 @@ CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(LONG shed)
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed");
+    string controlString("control shed");
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -101,7 +100,7 @@ CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(LONG percent, LONG p
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not smart cycle an Ripple Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not smart cycle an Ripple Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -114,12 +113,12 @@ CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(LONG percent, LONG p
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed");
+    string controlString("control shed");
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -132,12 +131,12 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(LONG sendRate, LONG sh
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    RWCString controlString = RWCString("control shed");
+    string controlString("control shed");
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -161,7 +160,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
         _refreshsent = TRUE;
         /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed in: " << __FILE__ << " at:" << __LINE__ << endl;
         }*/
     }
     else if( trueShedTime!=0 )
@@ -177,7 +176,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
                     returnBOOL = TRUE;
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }*/
                 }
             }
@@ -186,7 +185,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return returnBOOL;
@@ -279,7 +278,7 @@ void CtiLMGroupRipple::restore(RWDBReader& rdr)
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 #endif
     _refreshsent = FALSE;

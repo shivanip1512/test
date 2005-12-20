@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:24:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:17:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@ using namespace std;
 
 #include <tcl.h>
 #include <rw/thr/threadid.h>
-#include <rw/rwtime.h>
 
 #include "interp.h"
 #include "ctibase.h"
@@ -61,7 +60,7 @@ bool CtiInterpreter::evaluate(const string& command, bool block )
 
     {
         _isevaluating = true;
-        _evalstring = (const char*) command.data();
+        _evalstring = command;
         _block = block;
 
         interrupt( CtiInterpreter::EVALUATE );
@@ -87,7 +86,7 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
 
     {
         _isevaluating = true;
-        _evalstring = (const char*) file.data();
+        _evalstring = file;
         _block = block;
 
         interrupt( CtiInterpreter::EVALUATE_FILE );
@@ -162,7 +161,7 @@ void CtiInterpreter::run()
                 else
                 if( isSet( CtiInterpreter::EVALUATE ) )
                 {                    
-                    int r = Tcl_Eval( interp, (char*) _evalstring.data() );
+                    int r = Tcl_Eval( interp, (char*) _evalstring.c_str() );
 
                     if( r != 0 )
                     {
@@ -176,8 +175,8 @@ void CtiInterpreter::run()
                            char* err = Tcl_GetVar(interp, "errorInfo", 0 );
                            if( err != NULL )
                            {
-                                dout << RWTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
-                                dout << RWTime() << " " << err << endl;
+                                dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
+                                dout << CtiTime() << " " << err << endl;
                            }                                               
                        }
                     }
@@ -185,7 +184,7 @@ void CtiInterpreter::run()
                 else
                 if( isSet( CtiInterpreter::EVALUATE_FILE ) )
                 {
-                    int r = Tcl_EvalFile( interp, (char*) _evalstring.data() );
+                    int r = Tcl_EvalFile( interp, (char*) _evalstring.c_str() );
 		    if(r != 0)
 		    {
 			char* result = Tcl_GetStringResult(interp);
@@ -194,8 +193,8 @@ void CtiInterpreter::run()
                         char* err = Tcl_GetVar(interp, "errorInfo", 0 );
                         if( err != NULL )
                         {
-			  dout << RWTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
-                          dout << RWTime() << " " << err << endl;
+			  dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
+                          dout << CtiTime() << " " << err << endl;
                         }                   
 		    }
                 }
@@ -214,12 +213,12 @@ void CtiInterpreter::run()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " An unknown exception occured in CtiInterpreter::run()" << endl;
+        dout << CtiTime() << " An unknown exception occured in CtiInterpreter::run()" << endl;
     }
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Interpreter shutting down." << endl;
+        dout << CtiTime() << " Interpreter shutting down." << endl;
     }
 
     Tcl_DeleteInterp(interp);
@@ -227,7 +226,7 @@ void CtiInterpreter::run()
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " interp exiting" << endl;
+        dout << CtiTime() << " interp exiting" << endl;
     }
 }
       

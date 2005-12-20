@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/06/29 19:44:35 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
 #include "tbl_dv_tappaging.h"
@@ -42,7 +41,7 @@ protected:
    CHAR                          *_pageBuffer;
    OUTMESS                       *_outMessage;
 
-   RWCString                     _inStr;
+   string                     _inStr;
 
 private:
 
@@ -50,7 +49,7 @@ private:
 
    bool                          _sendFiller;
 
-   RWTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
+   CtiTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
    int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
    bool     _pacingReport;
    bool     _allowPrefix;
@@ -102,7 +101,7 @@ public:
                               RWTPtrSlist< CtiMessage >      &retList,
                               RWTPtrSlist< OUTMESS >         &outList);
 
-   RWCString getDescription(const CtiCommandParser & parse) const;
+   string getDescription(const CtiCommandParser & parse) const;
 
    virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
    virtual INT generateCommandHandshake(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
@@ -121,7 +120,7 @@ public:
    INT traceOut(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList);
    INT traceIn(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage = FALSE);
 
-   INT printChar( RWCString &Str, CHAR Char );
+   INT printChar( string &Str, CHAR Char );
    bool devicePacingExceeded();
    bool blockedByPageRate() const;
    bool allowPrefix() const;

@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/12 20:34:30 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.14  2005/12/20 17:19:58  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.13  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -24,6 +27,11 @@
 
       Revision 1.12  2005/09/29 21:19:24  jrichter
       Merged latest 3.1 changes to head.
+      Revision 1.10.2.2  2005/07/28 21:38:28  jliu
+      string done after merge 1
+
+      Revision 1.10.2.1  2005/07/27 19:28:01  alauinger
+      merged from the head 20050720
 
       Revision 1.11  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
@@ -197,12 +205,12 @@ class IM_EX_PROT CtiANSIApplication
     BYTE getAnsiDeviceType();
     void setFWVersionNumber(BYTE fwVersionNumber);
     BYTE getFWVersionNumber();
-    RWCString getMeterTypeString();
-        
+    string getMeterTypeString();
+
     int encryptDataMethod();
 
-    const RWCString& getAnsiDeviceName() const;
-    void setAnsiDeviceName(const RWCString& devName);
+    const string& getAnsiDeviceName() const;
+    void setAnsiDeviceName(const string& devName);
     void setLPBlockSize(long blockSize);
     bool getPartialProcessLPDataFlag();
     void setPartialProcessLPDataFlag(bool flag);
@@ -270,10 +278,10 @@ class IM_EX_PROT CtiANSIApplication
        BYTE _maxNbrPkts;
        BYTE _negBaudRate;    
 
-       RWCString _devName;
-       static const RWCString KVmeter;
-       static const RWCString KV2meter;
-       static const RWCString SENTINELmeter;
+       string _devName;
+       static const string KVmeter;
+       static const string KV2meter;
+       static const string SENTINELmeter;
 
 };
 

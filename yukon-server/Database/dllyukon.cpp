@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/dllyukon.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,14 +99,14 @@ DLLEXPORT void ReloadStateNames(void)
             _stateGroupSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " State Group Set reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " State Group Set reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " INFO: State group names were not reloaded this pass.  Exclusion could not be obtained." << endl;
+        dout << CtiTime() << " INFO: State group names were not reloaded this pass.  Exclusion could not be obtained." << endl;
     }
 }
 
@@ -114,9 +114,9 @@ DLLEXPORT void ReloadStateNames(void)
 /*
  *  returns true if the point has a valid state group with this raw value
  */
-DLLEXPORT RWCString ResolveStateName(LONG grpid, LONG rawValue)
+DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
 {
-    RWCString rStr;
+    string rStr;
 
 /*    if( !_stateGroupsLoaded )
     {

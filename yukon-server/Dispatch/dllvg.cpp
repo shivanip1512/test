@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,30 +61,30 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
 {
-   RWCString str;
+   string str;
    char var[128];
 
    strcpy(var, "DISPATCH_RELOAD_RATE");
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
-      gDispatchReloadRate = atoi (str.data());
+      gDispatchReloadRate = atoi (str.c_str());
    }
 
    strcpy(var, "DISPATCH_COMMERROR_DAYS");
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
-      gCommErrorDays = atoi (str.data());
+      gCommErrorDays = atoi (str.c_str());
    }
 
    strcpy(var, "DISPATCH_DEBUGLEVEL");
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
       char *eptr;
-      gDispatchDebugLevel = strtoul(str.data(), &eptr, 16);
+      gDispatchDebugLevel = strtoul(str.c_str(), &eptr, 16);
       if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " DISPATCH_DEBUGLEVEL: 0x" << hex <<  gDispatchDebugLevel << dec << endl;
+         dout << CtiTime() << " DISPATCH_DEBUGLEVEL: 0x" << hex <<  gDispatchDebugLevel << dec << endl;
       }
    }
 }

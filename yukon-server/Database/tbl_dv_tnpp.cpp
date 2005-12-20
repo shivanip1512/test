@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dv_tnpp.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceTnpp::CtiTableDeviceTnpp() :
 _inertia(2),
@@ -55,7 +57,7 @@ CtiTableDeviceTnpp& CtiTableDeviceTnpp::operator=(const CtiTableDeviceTnpp& aRef
 
 void CtiTableDeviceTnpp::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector << devTbl["inertia"]
              << devTbl["destinationaddress"]
@@ -77,7 +79,7 @@ void CtiTableDeviceTnpp::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 void CtiTableDeviceTnpp::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -97,7 +99,7 @@ void CtiTableDeviceTnpp::DecodeDatabaseReader(RWDBReader &rdr)
 
 }
 
-RWCString CtiTableDeviceTnpp::getTableName()
+string CtiTableDeviceTnpp::getTableName()
 {
     return "DeviceTNPPSettings";
 }
@@ -116,7 +118,7 @@ RWDBStatus CtiTableDeviceTnpp::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -145,7 +147,7 @@ RWDBStatus CtiTableDeviceTnpp::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -166,7 +168,7 @@ RWDBStatus CtiTableDeviceTnpp::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -186,7 +188,7 @@ RWDBStatus CtiTableDeviceTnpp::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );
@@ -211,32 +213,32 @@ int CtiTableDeviceTnpp::getOriginAddress() const
 
 const char* CtiTableDeviceTnpp::getIdentifierFormat()
 {
-    return _identifierFormat.data();
+    return _identifierFormat.c_str();
 }
 
 const char* CtiTableDeviceTnpp::getPagerProtocol()
 {
-    return _pagerProtocol.data();
+    return _pagerProtocol.c_str();
 }
 
 const char* CtiTableDeviceTnpp::getPagerDataFormat()
 {
-    return _dataFormat.data();
+    return _dataFormat.c_str();
 }
 
 const char* CtiTableDeviceTnpp::getChannel()
 {
-    return _channel.data();
+    return _channel.c_str();
 }
 
 const char* CtiTableDeviceTnpp::getZone()
 {
-    return _zone.data();
+    return _zone.c_str();
 }
 
 const char* CtiTableDeviceTnpp::getFunctionCode()
 {
-    return _functionCode.data();
+    return _functionCode.c_str();
 }
 
 int CtiTableDeviceTnpp::getPagerID() const

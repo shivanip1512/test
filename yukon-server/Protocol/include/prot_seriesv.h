@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,9 @@
 #include <map>
 #include <vector>
 #include <queue>
-using namespace std;
+using std::vector;
+using std::map;
+using std::queue;
 
 #include "boost/crc.hpp"
 using boost::crc_16_type;

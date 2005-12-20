@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_ripple.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/01/18 19:11:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ protected:
     CtiMessage *_rsvp;
 
 private:
-    bool matchRippleDoubleOrders(RWCString parentDO, RWCString childDO) const;
+    bool matchRippleDoubleOrders(string parentDO, string childDO) const;
 
 
 public:
@@ -50,7 +50,7 @@ public:
     CtiDeviceGroupRipple&     setRippleTable(const CtiTableRippleLoadGroup& aRef);
 
     virtual LONG getRouteID();
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

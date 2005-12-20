@@ -13,8 +13,8 @@
  *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
 #include <string.h>
 #include "numstr.h"
 
@@ -201,7 +201,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> dout_guard( dout );
-        dout << RWTime( ) << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime( ) << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     if( OutMessage != NULL )
@@ -350,9 +350,9 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, RWTPtrSlist< 
                 {
                     if( z < passwordLength )
                     {
-                        //  getPassword( ) returns an RWCString, and so is indexed with (z).
+                        //  getPassword( ) returns an string, and so is indexed with (z).
                         //    wacky syntax.
-                        Transfer.getOutBuffer( )[z+1] = getIED( ).getPassword( )(z);
+                        Transfer.getOutBuffer( )[z+1] = getIED( ).getPassword( )[z];
                     }
                     else
                     {
@@ -375,7 +375,7 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, RWTPtrSlist< 
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - generating handshake command - Invalid state " << getCurrentState( )  << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating handshake command - Invalid state " << getCurrentState( )  << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -420,7 +420,7 @@ INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, RWTPtrSlist< CtiMessag
                 setCurrentState( StateScanAbort );
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - generating command - Invalid command " << getCurrentCommand( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating command - Invalid command " << getCurrentCommand( ) << endl;
                 }
                 retCode = StateScanAbort;
                 break;
@@ -479,9 +479,9 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, RWTPtrSlist
                 {
                     if( z < passwordLength )
                     {
-                        //  getPassword( ) returns an RWCString, and so is indexed with (z).
+                        //  getPassword( ) returns an string, and so is indexed with (z).
                         //    wacky syntax.
-                        Transfer.getOutBuffer( )[z+1] = getIED( ).getPassword( )(z);
+                        Transfer.getOutBuffer( )[z+1] = getIED( ).getPassword( )[z];
                     }
                     else
                     {
@@ -562,7 +562,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, RWTPtrSlist
         default:
             {
                 CtiLockGuard<CtiLogger> dout_guard( dout );
-                dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - generating select meter command - Invalid state " << getCurrentState( ) << endl;
+                dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating select meter command - Invalid state " << getCurrentState( ) << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -612,7 +612,7 @@ INT CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, RWTPtrSlist< CtiMe
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - generating scan command - Invalid state " << getCurrentState( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating scan command - Invalid state " << getCurrentState( ) << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -746,8 +746,8 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                 //  so we have to go to the previous record's timestamp to get the goods, which is performed in StateScanValueSet2
                 //    and StateScanDecode2.
 /*
-                //  today's date at the top of the current hour (in seconds, via RWTime)
-                currentRecordTime = RWTime( RWDate( (INT)mmCfg->realTime.dayOfMonth,
+                //  today's date at the top of the current hour (in seconds, via CtiTime)
+                currentRecordTime = CtiTime( CtiDate( (INT)mmCfg->realTime.dayOfMonth,
                                                     (INT)mmCfg->realTime.month,
                                                     (INT)mmCfg->realTime.year + 2000 ),
                                             (INT)mmCfg->realTime.hour ).seconds( );
@@ -801,7 +801,7 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                 if( DebugLevel & 0x0001 )
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - requesting record beginning at " << RWTime( _currentRecordTime ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - requesting record beginning at " << CtiTime( _currentRecordTime ) << endl;
                 }
 
                 //  if we have the whole record this time
@@ -835,7 +835,7 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - generating load profile command - Invalid state " << getCurrentState( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - generating load profile command - Invalid state " << getCurrentState( ) << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -880,7 +880,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                     if( Transfer.doTrace( ERRUNKNOWN ) )
                     {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << ((Transfer.getInBuffer( )[0] == NAK)?" NAK:":" ACK:")
+                        dout << CtiTime( ) << ((Transfer.getInBuffer( )[0] == NAK)?" NAK:":" ACK:")
                              << " Quantum " << getName() << " already online" << endl;
                     }
                 }
@@ -988,7 +988,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
                     if( Transfer.doTrace( READTIMEOUT ) )
                     {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << " " << getName() << " - no response to password" << endl;
+                        dout << CtiTime( ) << " " << getName() << " - no response to password" << endl;
                     }
 
                     //  if the meter doesn't respond, wait for 2 seconds before trying again
@@ -1011,7 +1011,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding handshake - Invalid state " << getCurrentState( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding handshake - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateHandshakeAbort );
                 retCode = StateHandshakeAbort;
@@ -1055,7 +1055,7 @@ INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, RW
                 setCurrentState( StateScanAbort );
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding - Invalid command " << getCurrentCommand( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding - Invalid command " << getCurrentCommand( ) << endl;
                 }
                 retCode = StateScanAbort;
                 break;
@@ -1101,12 +1101,12 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
 
 /*                    {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << " (" << __LINE__ << ") meterst.unitid: '" << MeterSt.UnitId << "'" << endl;
-                        dout << RWTime( ) << " (" << __LINE__ << ") devicename    : '" << getName() << "'" << endl;
-                        dout << RWTime( ) << " (" << __LINE__ << ") substring     : '" << getName().subString( MeterSt.UnitId, getName().length( ) - strlen( MeterSt.UnitId ) - 1 ) << "'" << endl;
+                        dout << CtiTime( ) << " (" << __LINE__ << ") meterst.unitid: '" << MeterSt.UnitId << "'" << endl;
+                        dout << CtiTime( ) << " (" << __LINE__ << ") devicename    : '" << getName() << "'" << endl;
+                        dout << CtiTime( ) << " (" << __LINE__ << ") substring     : '" << getName().subString( MeterSt.UnitId, getName().length( ) - strlen( MeterSt.UnitId ) - 1 ) << "'" << endl;
                     }
  */
-                    if( getName().subString( MeterSt.UnitId, getName().length( ) - strlen( MeterSt.UnitId ) - 1 ) == MeterSt.UnitId )
+                    if( getName().find( MeterSt.UnitId, getName().length( ) - strlen( MeterSt.UnitId ) - 1 )!=string::npos)
                     {
                         //  bad name for the state, but since we're not a handshake command, we get the catch-all ScanComplete state
                         //  this is our meter, we're done
@@ -1145,7 +1145,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
                     if( Transfer.doTrace( READTIMEOUT ) )
                     {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << " " << getName() << " - no response to password" << endl;
+                        dout << CtiTime( ) << " " << getName() << " - no response to password" << endl;
                     }
 
                     //  if the meter doesn't respond, wait for 2 seconds before trying again
@@ -1281,7 +1281,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
         default:
             {
                 CtiLockGuard<CtiLogger> dout_guard( dout );
-                dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding select meter - Invalid state " << getCurrentState( ) << endl;
+                dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding select meter - Invalid state " << getCurrentState( ) << endl;
             }
             setCurrentState( StateScanAbort );
             retCode = StateScanAbort;
@@ -1339,7 +1339,7 @@ INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding scan - Invalid state " << getCurrentState( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding scan - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateScanAbort );
                 retCode = StateScanAbort;
@@ -1370,7 +1370,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                           timestampDay,
                           timestampHour,
                           hoursSinceBeginningOfYear;
-    RWDate                tmpDate;
+    CtiDate                tmpDate;
 
     //  run the return through the wringer
     //    this will set the abort state if need be (no retry attempts left)
@@ -1407,14 +1407,14 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                         translateQuantumConfigData( (QuantumRawConfigData_t *)_dataBuffer, (QuantumConfigData_t *)_massMemoryConfig );
 
                         //  create a date with the meter's info
-                        tmpDate = RWDate( mmCfg->realTime.dayOfMonth, mmCfg->realTime.month, mmCfg->realTime.year + 2000 );
+                        tmpDate = CtiDate( mmCfg->realTime.dayOfMonth, mmCfg->realTime.month, mmCfg->realTime.year + 2000 );
 
-                        if( RWTime( tmpDate ) > (RWTime( ) + (24 * 60 * 60)) ||
-                            RWTime( tmpDate ) < (RWTime( ) - (24 * 60 * 60)) )
+                        if( CtiTime( tmpDate ) > (CtiTime( ) + (24 * 60 * 60)) ||
+                            CtiTime( tmpDate ) < (CtiTime( ) - (24 * 60 * 60)) )
                         {
                             {
                                 CtiLockGuard<CtiLogger> dout_guard( dout );
-                                dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding load profile - invalid meter time (" << RWTime( tmpDate ) << "), aborting LP scan" <<  endl;
+                                dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding load profile - invalid meter time (" << CtiTime( tmpDate ) << "), aborting LP scan" <<  endl;
                             }
                             setCurrentState( StateScanAbort );
                         }
@@ -1429,7 +1429,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                                 if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Skipping load profile for " << getName( ) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " Skipping load profile for " << getName( ) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 setCurrentState( StateScanComplete );
@@ -1456,7 +1456,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                         timestampYear--;
 
                     //  start out at the last record's last interval time, and then...
-                    _currentRecordTime = RWTime( RWDate( timestampDay,
+                    _currentRecordTime = CtiTime( CtiDate( timestampDay,
                                                          timestampMonth,
                                                          timestampYear + 2000 ),
                                                  timestampHour ).seconds( );
@@ -1467,10 +1467,10 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     if( DebugLevel & 0x0001 )
                     {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - current record time: " << RWTime( _currentRecordTime ) << " = " << _currentRecordTime << endl;
+                        dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - current record time: " << CtiTime( _currentRecordTime ) << " = " << _currentRecordTime << endl;
                     }
 
-                    mmRealTime = RWTime( RWDate( (INT)mmCfg->realTime.dayOfMonth,
+                    mmRealTime = CtiTime( CtiDate( (INT)mmCfg->realTime.dayOfMonth,
                                                  (INT)mmCfg->realTime.month,
                                                  (INT)mmCfg->realTime.year + 2000 ),
                                          (INT)mmCfg->realTime.hour,
@@ -1479,7 +1479,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     if( DebugLevel & 0x0001 )
                     {
                         CtiLockGuard<CtiLogger> dout_guard( dout );
-                        dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - mmrealtime: " << RWTime( mmRealTime ) << " = " << mmRealTime << endl;
+                        dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - mmrealtime: " << CtiTime( mmRealTime ) << " = " << mmRealTime << endl;
                     }
 
                     //  if the calculated start time for this record is more than one record
@@ -1540,7 +1540,7 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
             default:
                 {
                     CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding load profile - Invalid state " << getCurrentState( ) << endl;
+                    dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - decoding load profile - Invalid state " << getCurrentState( ) << endl;
                 }
                 setCurrentState( StateScanAbort );
                 retCode = StateScanAbort;
@@ -1741,35 +1741,35 @@ void CtiDeviceQuantum::translateQuantumConfigData( QuantumRawConfigData_t *rawCo
         if( DebugLevel & 0x0001 )
         {
             CtiLockGuard<CtiLogger> dout_guard( dout );
-            dout << RWTime( ) << " " << getName() << " - Begin scan data block ---" << endl;
-            dout << RWTime( ) << " software revision: " << translated->softwareRevision << endl;
-            dout << RWTime( ) << " regMultInstW:      " << translated->regMultInstW << endl;
-            dout << RWTime( ) << " regMultInstV:      " << translated->regMultInstV << endl;
-            dout << RWTime( ) << " regMultInstA:      " << translated->regMultInstA << endl;
-            dout << RWTime( ) << " kt:                " << translated->kt << endl;
-            dout << RWTime( ) << " regMultAmpDemand:  " << translated->regMultAmpDemand << endl;
-            dout << RWTime( ) << " regMultDemand:     " << translated->regMultDemand << endl;
-            dout << RWTime( ) << " regMultVSq:        " << translated->regMultVSq << endl;
-            dout << RWTime( ) << " regMultASq:        " << translated->regMultASq << endl;
-            dout << RWTime( ) << " regMultEnergy:     " << translated->regMultEnergy << endl;
-            dout << RWTime( ) << " time:              " << translated->realTime.year << " " <<
+            dout << CtiTime( ) << " " << getName() << " - Begin scan data block ---" << endl;
+            dout << CtiTime( ) << " software revision: " << translated->softwareRevision << endl;
+            dout << CtiTime( ) << " regMultInstW:      " << translated->regMultInstW << endl;
+            dout << CtiTime( ) << " regMultInstV:      " << translated->regMultInstV << endl;
+            dout << CtiTime( ) << " regMultInstA:      " << translated->regMultInstA << endl;
+            dout << CtiTime( ) << " kt:                " << translated->kt << endl;
+            dout << CtiTime( ) << " regMultAmpDemand:  " << translated->regMultAmpDemand << endl;
+            dout << CtiTime( ) << " regMultDemand:     " << translated->regMultDemand << endl;
+            dout << CtiTime( ) << " regMultVSq:        " << translated->regMultVSq << endl;
+            dout << CtiTime( ) << " regMultASq:        " << translated->regMultASq << endl;
+            dout << CtiTime( ) << " regMultEnergy:     " << translated->regMultEnergy << endl;
+            dout << CtiTime( ) << " time:              " << translated->realTime.year << " " <<
                                                            translated->realTime.month << " " <<
                                                            translated->realTime.dayOfMonth << ", " <<
                                                            translated->realTime.hour << ":" <<
                                                            translated->realTime.minute << ":" <<
                                                            translated->realTime.second << endl;
-/*            dout << RWTime( ) << " to DST:            " << translated->toDST.month << "/"
+/*            dout << CtiTime( ) << " to DST:            " << translated->toDST.month << "/"
                                                         << translated->toDST.day << " "
                                                         << translated->toDST.hour << ":00 " <<  endl;
-            dout << RWTime( ) << " from DST:          " << translated->fromDST.month << "/"
+            dout << CtiTime( ) << " from DST:          " << translated->fromDST.month << "/"
                                                         << translated->fromDST.day << " "
                                                         << translated->fromDST.hour << ":00 " <<  endl;  */
-            dout << RWTime( ) << " mmStart:           " << translated->mmStart << endl;
-            dout << RWTime( ) << " mmEnd:             " << translated->mmEnd << endl;
-            dout << RWTime( ) << " currentRecord:     " << translated->currentRecord << endl;
-            dout << RWTime( ) << " currentInterval:   " << translated->currentInterval << endl;
-            dout << RWTime( ) << " numChannels:       " << translated->numChannels << endl;
-            dout << RWTime( ) << " " << getName() << " - End scan data block ---" << endl;
+            dout << CtiTime( ) << " mmStart:           " << translated->mmStart << endl;
+            dout << CtiTime( ) << " mmEnd:             " << translated->mmEnd << endl;
+            dout << CtiTime( ) << " currentRecord:     " << translated->currentRecord << endl;
+            dout << CtiTime( ) << " currentInterval:   " << translated->currentInterval << endl;
+            dout << CtiTime( ) << " numChannels:       " << translated->numChannels << endl;
+            dout << CtiTime( ) << " " << getName() << " - End scan data block ---" << endl;
         }
 
         for( int i = 0; i < 32; i++ )
@@ -1826,7 +1826,7 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
             if( getDebugLevel( ) & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> dout_guard( dout );
-                dout << RWTime( ) << " " << getName() << " -  register " << i << "(" << translated->programTable[i].regNum << "," <<
+                dout << CtiTime( ) << " " << getName() << " -  register " << i << "(" << translated->programTable[i].regNum << "," <<
                                                                  translated->programTable[i].nonRegNum << "," <<
                                                                  translated->mmPhaseTable[i] << ") *" <<
                                                                  translated->programTable[i].displayMultiplier << ": " <<
@@ -1839,7 +1839,7 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
 
 
 INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList )
@@ -1868,8 +1868,8 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     CtiPointNumeric *pNumericPoint = NULL;
 
     CtiReturnMsg    *pPIL          = CTIDBG_new CtiReturnMsg( getID( ),
-                                                       RWCString( InMessage->Return.CommandStr ),
-                                                       RWCString( ),
+                                                       string( InMessage->Return.CommandStr ),
+                                                       string( ),
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
@@ -1879,7 +1879,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
 
     QuantumRawScanData_t *rawScanData = (QuantumRawScanData_t *)DUPRep->Message;
     QuantumScanData_t    *processedScanData;
-    RWTime peakTime;
+    CtiTime peakTime;
 
     processedScanData = CTIDBG_new QuantumScanData_t;
 
@@ -1887,7 +1887,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     if( processedScanData == NULL )
     {
         CtiLockGuard<CtiLogger> dout_guard( dout );
-        dout << RWTime( ) << " (" << __LINE__ << ") " << getName() << " - result decode scan - Unable to allocate memory to translate scan data" << endl;
+        dout << CtiTime( ) << " (" << __LINE__ << ") " << getName() << " - result decode scan - Unable to allocate memory to translate scan data" << endl;
     }
     else
     {
@@ -1947,7 +1947,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                             {
                                 //  then check to see if we know about it
                                 pNumericPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( regMap[j].CTIOffset, AnalogPointType );
-                                peakTime = RWTime( RWDate( processedScanData->configData.realTime.dayOfMonth,
+                                peakTime = CtiTime( CtiDate( processedScanData->configData.realTime.dayOfMonth,
                                                            processedScanData->configData.realTime.month,
                                                            processedScanData->configData.realTime.year + 2000 ),
                                                    processedScanData->configData.realTime.hour,
@@ -1957,7 +1957,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                 if( pNumericPoint != NULL )
                                 {
                                     double Value;
-                                    RWCString resultString;
+                                    string resultString;
 
                                     Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)processedScanData->programmedRegisters[i]);
 
@@ -2006,7 +2006,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
 
 
 INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
-                                               RWTime &TimeNow,
+                                               CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
                                                RWTPtrSlist< OUTMESS > &outList)
@@ -2031,10 +2031,10 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     INT                         tmpPulseData[16];
     ULONG                       lpTimestamp;
     CtiPointNumeric             **pNumericPoint;
-    RWTime                      peakTime;
+    CtiTime                      peakTime;
     CtiReturnMsg                *pPIL = CTIDBG_new CtiReturnMsg( getID( ),
-                                                          RWCString( InMessage->Return.CommandStr ),
-                                                          RWCString( ),
+                                                          string( InMessage->Return.CommandStr ),
+                                                          string( ),
                                                           InMessage->EventCode & 0x7fff,
                                                           InMessage->Return.RouteID,
                                                           InMessage->Return.MacroOffset,
@@ -2088,7 +2088,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     if( DebugLevel & 0x0001 )
     {
         CtiLockGuard<CtiLogger> dout_guard( dout );
-        dout << RWTime( ) << " " << getName() << " - current record address:  " << lpCfg.currentRecord << ", this record: " << lpMess->recordAddress << endl;
+        dout << CtiTime( ) << " " << getName() << " - current record address:  " << lpCfg.currentRecord << ", this record: " << lpMess->recordAddress << endl;
     }
 
 
@@ -2146,7 +2146,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
         {
             for( i = 0; i < lpCfg.numChannels; i++ )
             {
-                peakTime = RWTime( lpTimestamp );
+                peakTime = CtiTime( lpTimestamp );
 
                 if( pNumericPoint[i] != NULL )
                 {
@@ -2180,7 +2180,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
         lpTimestamp += lpCfg.intervalLength * 60;
     }
 
-    setLastLPTime( RWTime(lpTimestamp) );
+    setLastLPTime( CtiTime(lpTimestamp) );
 
 
     delete [] pNumericPoint;
@@ -2219,7 +2219,7 @@ INT CtiDeviceQuantum::allocateDataBins( OUTMESS *outMess )
             if( DebugLevel & 0x0001 )
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime( ) << " " << getName() << " - last LPtime is: " << RWTime( *((ULONG *)_loadProfileTimeDate) ) << endl;
+                dout << CtiTime( ) << " " << getName() << " - last LPtime is: " << CtiTime( *((ULONG *)_loadProfileTimeDate) ) << endl;
             }
         }
     }

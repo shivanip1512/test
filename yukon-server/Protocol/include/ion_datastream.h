@@ -15,7 +15,7 @@
 
 
 #include <vector>
-using namespace std;
+using std::vector;
 
 #include "ion_value.h"
 #include "ion_value_fixed.h"

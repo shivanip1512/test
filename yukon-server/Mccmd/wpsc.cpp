@@ -29,7 +29,7 @@ int gFMConfigSerialHigh[10];  //   = -1;
     returns TRUE if successfull
     FALSE otherwise
 -----------------------------------------------------------------------------*/
-bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
+bool DecodeCFDATAFile(const string& file, RWOrdered* ordered)
 {
     FILE* fptr;
     char l_buf[36];  //each line is 33 char's long + \r\n + add a byte for NULL
@@ -37,7 +37,7 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
     if( ordered == NULL )
         return false;
 
-    if( (fptr = fopen( file, "r")) == NULL )
+    if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -50,8 +50,8 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
             continue;
 
         RWCollectableString* decoded = new RWCollectableString();
-
-        if( DecodeCFDATALine( l_buf, decoded ) == false)
+        
+        if( DecodeCFDATALine( l_buf, string(decoded->data()) ) == false)
         {
             fclose(fptr);
             delete decoded;
@@ -70,7 +70,7 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* ordered)
 }
 
 
-bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
+bool DecodeEOIFile(const string& file, RWOrdered* ordered)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -78,7 +78,7 @@ bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
     if( ordered == NULL )
         return false;
 
-    if( (fptr = fopen( file, "r")) == NULL )
+    if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -102,7 +102,7 @@ bool DecodeEOIFile(const RWCString& file, RWOrdered* ordered)
     return true;
 }
 
-bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
+bool DecodeWepcoFile(const string& file, RWOrdered* ordered)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -110,7 +110,7 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
     if( ordered == NULL )
         return true;
 
-    if( (fptr = fopen( file, "r")) == NULL )
+    if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -134,7 +134,7 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
     return true;
 }
 
-bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
+bool DecodeWepcoFileService(const string& file, RWOrdered* results)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -142,7 +142,7 @@ bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
     if ( results == NULL )
         return true;
 
-    if ( (fptr = fopen( file, "r")) == NULL )
+    if ( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -168,7 +168,7 @@ bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
 }
 
 
-bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results)
+bool DecodeWepcoFileConfig(const string& file, RWOrdered* results)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -176,7 +176,7 @@ bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results)
     if ( results == NULL )
         return false;
 
-    if ( (fptr = fopen( file, "r")) == NULL )
+    if ( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -203,7 +203,7 @@ bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results)
 
 
 
-bool DecodeCFDATALine( char* line, RWCString* decoded )
+bool DecodeCFDATALine( char* line, string& decoded )
 {
     char delim = ' ';
     char* pos = 0;
@@ -217,7 +217,7 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     unsigned short class_id = 0;
     unsigned short div_id = 0;
 
-    *decoded = "set MessagePriority 6 ; putconfig versacom serial ";
+    decoded = "set MessagePriority 6 ; putconfig versacom serial ";
 
     //DLC Function (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -235,19 +235,19 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
 
     serial_num = atol(pos);
 
-    *decoded += pos;
+    decoded += pos;
 
     if( func == 4 )
     {
-        *decoded += " service in ";
-        *decoded += GetSelectCustomRouteID(serial_num);
+        decoded += " service in ";
+        decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
     else
     if( func == 5 )
     {
-        *decoded += " service out ";
-        *decoded += GetSelectCustomRouteID(serial_num);
+        decoded += " service out ";
+        decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
 
@@ -262,8 +262,8 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
         temp = atoi(pos);
         sprintf( buf, "%d", temp );
 
-        *decoded += " utility ";
-        *decoded += buf;
+        decoded += " utility ";
+        decoded += buf;
     }
 
     //Division Code - aux (3 bytes)
@@ -275,8 +275,8 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     temp = atoi(pos);
     sprintf(buf, "%d", temp);
 
-    *decoded += " aux ";
-    *decoded += buf;
+    decoded += " aux ";
+    decoded += buf;
 
     //Operating Disctrict - section (3 bytes )
     if( (pos = strtok( line, &delim)) == NULL )
@@ -287,8 +287,8 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
     temp = atoi(pos);
     sprintf(buf, "%d", temp);
 
-    *decoded += " section ";
-    *decoded += buf;
+    decoded += " section ";
+    decoded += buf;
 
     //Class #1 (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -325,8 +325,8 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
 
     sprintf(buf, "0x%04x", class_id);
 
-    *decoded += " class ";
-    *decoded += buf;
+    decoded += " class ";
+    decoded += buf;
 
     //DLC Division (2 bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -341,13 +341,13 @@ bool DecodeCFDATALine( char* line, RWCString* decoded )
 
     sprintf(buf, "0x%04x", div_id);
 
-    *decoded += " division ";
-    *decoded += buf;
+    decoded += " division ";
+    decoded += buf;
 
-    RWCString route_select = GetSelectCustomRouteID(serial_num);
+    string route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
-        *decoded += " ";
-        *decoded += route_select;
+        decoded += " ";
+        decoded += route_select;
     }
 
     return true;
@@ -419,8 +419,8 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
 
     //Either use the serial number or the group, not both
-    RWCString serial_str;
-    RWCString select_str(" select name \"System Device\"");
+    string serial_str;
+    string select_str(" select name \"System Device\"");
 
     if( serial != NULL ) {
 
@@ -429,7 +429,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
 
         long serial_num = atol(serial);
 
-        RWCString route_select = GetSelectCustomRouteID(serial_num);
+        string route_select = GetSelectCustomRouteID(serial_num);
         if( route_select.length() > 0 ) {
             select_str = " ";
             select_str += route_select;
@@ -448,10 +448,10 @@ bool DecodeEOILine( char* line, RWOrdered* results)
     if( contract != NULL ) {
         RWCollectableString* decoded = new RWCollectableString();
         *decoded = "set MessagePriority 6 ; putconfig versacom ";
-        *decoded += serial_str;
+        *decoded += serial_str.c_str();
         *decoded += " service ";
         *decoded += contract;
-        *decoded += select_str;
+        *decoded += select_str.c_str();
 
         results->insert(decoded);
     }
@@ -459,11 +459,11 @@ bool DecodeEOILine( char* line, RWOrdered* results)
     if( temp != NULL ) {
         RWCollectableString* decoded = new RWCollectableString();
         *decoded = "set MessagePriority 6 ; putconfig versacom ";
-        *decoded += serial_str;
+        *decoded += serial_str.c_str();
         *decoded += " service ";
         *decoded += temp;
         *decoded += " t";
-        *decoded += select_str;
+        *decoded += select_str.c_str();
 
         results->insert(decoded);
     }
@@ -485,9 +485,9 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
     char buf[80];
     int temp;
 
-    RWCString serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
-    RWCString serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
-    RWCString configCmd("set MessagePriority 4 ; putconfig versacom serial ");
+    string serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    string serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
+    string configCmd("set MessagePriority 4 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
@@ -512,18 +512,18 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
     {
         serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceTempCmd));
+        results->insert(new RWCollectableString(serviceTempCmd.c_str()));
 
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceCmd));
+        results->insert(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     if( func == 5 )
     {
         serviceCmd += " service out ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceCmd));
+        results->insert(new RWCollectableString(serviceCmd.c_str()));
         return true;
     }
 
@@ -555,13 +555,13 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
     configCmd += " division ";
     configCmd += token;
 
-    RWCString route_select = GetSelectCustomRouteID(serial_num);
+    string route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
         configCmd += " ";
         configCmd += route_select;
     }
 
-    results->insert(new RWCollectableString(configCmd));
+    results->insert(new RWCollectableString(configCmd.c_str()));
     return true;
 }
 
@@ -569,8 +569,8 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
 /*
     Returns a select route id command
 */
-RWCString GetSelectCustomRouteID(long serial_num) {
-    RWCString cmd;
+string GetSelectCustomRouteID(long serial_num) {
+    string cmd;
 
     if( gFMConfigRouteID != -1 )
     {
@@ -612,8 +612,8 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
     char buf[80];
     int temp;
 
-    RWCString serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
-    RWCString serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
+    string serviceTempCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    string serviceCmd("set MessagePriority 5 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
@@ -637,18 +637,18 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
     {
         serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceTempCmd));
+        results->insert(new RWCollectableString(serviceTempCmd.c_str()));
 
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceCmd));
+        results->insert(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     if( func == 5 )
     {
         serviceCmd += " service out ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->insert(new RWCollectableString(serviceCmd));
+        results->insert(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     {
@@ -672,7 +672,7 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
     char buf[80];
     int temp;
 
-    RWCString configCmd("set MessagePriority 4 ; putconfig versacom serial ");
+    string configCmd("set MessagePriority 4 ; putconfig versacom serial ");
 
     // function
     if( (token = strtok(line,delim)) == NULL )
@@ -723,13 +723,13 @@ bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
     configCmd += " division ";
     configCmd += token;
 
-    RWCString route_select = GetSelectCustomRouteID(serial_num);
+    string route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
         configCmd += " ";
         configCmd += route_select;
     }
 
-    results->insert(new RWCollectableString(configCmd));
+    results->insert(new RWCollectableString(configCmd.c_str()));
     return true;
 }
 

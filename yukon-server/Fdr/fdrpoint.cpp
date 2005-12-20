@@ -14,10 +14,13 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2005/09/13 20:44:27 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *    History:
       $Log: fdrpoint.cpp,v $
+      Revision 1.7  2005/12/20 17:17:14  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.6  2005/09/13 20:44:27  tmack
       In the process of working on the new ACS(MULTI) implementation, the following changes were made:
 
@@ -41,13 +44,14 @@
 *****************************************************************************/
 #include "yukon.h"
 
-#include <rw/rwtime.h>
+#include "ctitime.h"
 using namespace std;
 #include "fdrpoint.h"
 #include "fdrdestination.h"
 #include "pointdefs.h"
 
 #include "logger.h"
+#include "rwutil.h"
 
 
 /** local definitions **/
@@ -61,7 +65,7 @@ CtiFDRPoint::CtiFDRPoint( long pointID)
     iPointType (InvalidPointType),
     iValue (0.0),
     iQuality (UnintializedQuality),
-    iLastTimeStamp(rwEpoch + (86400 * 10))
+    iLastTimeStamp(PASTDATE + (86400 * 10))
 {
 }
 
@@ -192,13 +196,13 @@ CtiFDRPoint &  CtiFDRPoint::setQuality( const unsigned aQuality )
     return *this;
 }
 
-RWTime CtiFDRPoint::getLastTimeStamp ( void ) const
+CtiTime CtiFDRPoint::getLastTimeStamp ( void ) const
 {
     return iLastTimeStamp;
 }
 
 
-CtiFDRPoint &  CtiFDRPoint::setLastTimeStamp( const RWTime & aTimeStamp )
+CtiFDRPoint &  CtiFDRPoint::setLastTimeStamp( const CtiTime & aTimeStamp )
 {
     iLastTimeStamp = aTimeStamp;
     return *this;
@@ -225,23 +229,23 @@ CtiFDRPoint & CtiFDRPoint::setPointType(CtiPointType_t aType)
     return *this;
 }
 
-RWCString CtiFDRPoint::getTranslateName( RWCString &aDestinationName )
+string CtiFDRPoint::getTranslateName( string &aDestinationName )
 {
-    RWCString retVal;
+    string retVal;
     int entries = iDestinationList.size();
 
     for (int x=0; x < entries; x++)
     {
-        if(!(iDestinationList[x].getDestination().compareTo (aDestinationName,RWCString::ignoreCase)))
+        if(!stringCompareIgnoreCase(iDestinationList[x].getDestination(), aDestinationName))
             retVal = iDestinationList[x].getTranslation();
     }
 
     return retVal;
 }
 
-RWCString CtiFDRPoint::getTranslateName( int aIndex )
+string CtiFDRPoint::getTranslateName( int aIndex )
 {
-    RWCString retVal;
+    string retVal;
 
     if (iDestinationList.size() >= aIndex+1)
         retVal = iDestinationList[aIndex].getTranslation();

@@ -11,16 +11,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/12 20:34:30 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.cpp,v $
+      Revision 1.8  2005/12/20 17:19:58  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_zero_zero.cpp
+      Revision 1.6.2.2  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
+      Revision 1.6.2.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.7  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6.4.1  2005/12/12 19:50:40  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.7
       Revision 1.6  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -38,6 +50,7 @@
 
 #include "std_ansi_tbl_zero_zero.h"
 #include "logger.h"
+using namespace std;
 
 //=========================================================================================================================================
 //We've gotten all the data back from the device and we're going to fill up our table
@@ -211,10 +224,10 @@ void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroZero::printResult(RWCString deviceName)
+void CtiAnsiTableZeroZero::printResult(const string& deviceName)
 {
     int integer;
-    RWCString string;
+    string string;
     bool flag;
 
     /**************************************************************
@@ -337,13 +350,13 @@ bool CtiAnsiTableZeroZero::getRawMfgSerialNumberFlag( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedMfgSerialNumberFlag( void )
+string CtiAnsiTableZeroZero::getResolvedMfgSerialNumberFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_1.mfg_sn_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -358,13 +371,13 @@ bool CtiAnsiTableZeroZero::getRawIdFormat( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedIdFormat( void )
+string CtiAnsiTableZeroZero::getResolvedIdFormat( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_2.id_format == 0)
-        ret = RWCString ("Character string");
+        ret = string ("Character string");
     else
-        ret = RWCString ("BCD string");
+        ret = string ("BCD string");
 
    return ret;
 }
@@ -377,7 +390,7 @@ int CtiAnsiTableZeroZero::getRawNIFormat1( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedNIFormat1( void )
+string CtiAnsiTableZeroZero::getResolvedNIFormat1( void )
 {
    return getNonIntegerFormat((int)_control_3.ni_format1);
 }
@@ -389,7 +402,7 @@ int CtiAnsiTableZeroZero::getRawNIFormat2( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedNIFormat2( void )
+string CtiAnsiTableZeroZero::getResolvedNIFormat2( void )
 {
    return getNonIntegerFormat((int)_control_3.ni_format2);
 }
@@ -402,21 +415,21 @@ int CtiAnsiTableZeroZero::getRawTimeFormat( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedTimeFormat( void )
+string CtiAnsiTableZeroZero::getResolvedTimeFormat( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_2.tm_format == 0)
-        ret = RWCString ("No Clock");
+        ret = string ("No Clock");
     else if ((int)_control_2.tm_format == 1)
-        ret = RWCString ("BCD");
+        ret = string ("BCD");
     else if ((int)_control_2.tm_format == 2)
-        ret = RWCString ("UINT8");
+        ret = string ("UINT8");
     else if ((int)_control_2.tm_format == 3)
-        ret = RWCString ("Binary long counter referenced to base in minutes");
+        ret = string ("Binary long counter referenced to base in minutes");
     else if ((int)_control_2.tm_format == 4)
-        ret = RWCString ("Binary long counter referenced to base in seconds");
+        ret = string ("Binary long counter referenced to base in seconds");
     else
-        ret = RWCString ("Unassigned");
+        ret = string ("Unassigned");
 
    return ret;
 }
@@ -429,19 +442,19 @@ int CtiAnsiTableZeroZero::getRawDataAccess( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedDataAccess( void )
+string CtiAnsiTableZeroZero::getResolvedDataAccess( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_2.data_access_method == 0)
-        ret = RWCString ("Complete reads only, no partial access allowed");
+        ret = string ("Complete reads only, no partial access allowed");
     else if ((int)_control_2.data_access_method == 1)
-        ret = RWCString ("Offset-count access supported");
+        ret = string ("Offset-count access supported");
     else if ((int)_control_2.data_access_method == 2)
-        ret = RWCString ("Index-count method is supported");
+        ret = string ("Index-count method is supported");
     else if ((int)_control_2.data_access_method == 3)
-        ret = RWCString ("Both offset-count and index-count are supported");
+        ret = string ("Both offset-count and index-count are supported");
     else
-        ret = RWCString ("??? Unknown Data Access???");
+        ret = string ("??? Unknown Data Access???");
 
    return ret;
 }
@@ -454,19 +467,19 @@ int CtiAnsiTableZeroZero::getRawIntFormat( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedIntFormat( void )
+string CtiAnsiTableZeroZero::getResolvedIntFormat( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_2.int_format == 0)
-        ret = RWCString ("Signed integers represented in twos complement");
+        ret = string ("Signed integers represented in twos complement");
     else if ((int)_control_2.int_format == 1)
-        ret = RWCString ("Signed integers represented in ones complement");
+        ret = string ("Signed integers represented in ones complement");
     else if ((int)_control_2.int_format == 2)
-        ret = RWCString ("Signed integers represented in sign/magnitude format");
+        ret = string ("Signed integers represented in sign/magnitude format");
     else if ((int)_control_2.int_format == 3)
-        ret = RWCString ("Reserved");
+        ret = string ("Reserved");
     else
-        ret = RWCString ("??? Unknown Int Format ???");
+        ret = string ("??? Unknown Int Format ???");
 
    return ret;
 }
@@ -479,13 +492,13 @@ int CtiAnsiTableZeroZero::getRawDataOrder( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedDataOrder( void )
+string CtiAnsiTableZeroZero::getResolvedDataOrder( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_1.data_order == 0)
-        ret = RWCString ("LSB");
+        ret = string ("LSB");
     else
-        ret = RWCString ("MSB");
+        ret = string ("MSB");
 
    return ret;
 }
@@ -498,17 +511,17 @@ int CtiAnsiTableZeroZero::getRawCharFormat( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableZeroZero::getResolvedCharFormat( void )
+string CtiAnsiTableZeroZero::getResolvedCharFormat( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_control_1.char_format == 0)
-        ret= RWCString ("Unassigned");
+        ret= string ("Unassigned");
     else if ((int)_control_1.char_format == 1)
-        ret= RWCString ("ISO 7-bit");
+        ret= string ("ISO 7-bit");
     else if ((int)_control_1.char_format == 2)
-        ret= RWCString ("ISo 8859/1");
+        ret= string ("ISo 8859/1");
     else
-        ret= RWCString ("Unassigned");
+        ret= string ("Unassigned");
 
    return ret;
 }
@@ -520,53 +533,53 @@ RWCString CtiAnsiTableZeroZero::getResolvedCharFormat( void )
    return (int)_control_1.char_format;
 } */
 
-RWCString CtiAnsiTableZeroZero::getNonIntegerFormat( int aFormat )
+string CtiAnsiTableZeroZero::getNonIntegerFormat( int aFormat )
 {
-    RWCString retVal;
+    string retVal;
 
    switch( aFormat )
    {
        case ANSI_NI_FORMAT_FLOAT64:
-           retVal = RWCString("Float64");
+           retVal = string("Float64");
            break;
        case ANSI_NI_FORMAT_FLOAT32:
-           retVal = RWCString("Float32");
+           retVal = string("Float32");
             break;
        case ANSI_NI_FORMAT_ARRAY12_CHAR:
-           retVal = RWCString("Array[12] Of Char");
+           retVal = string("Array[12] Of Char");
            break;
        case ANSI_NI_FORMAT_ARRAY6_CHAR:
-           retVal = RWCString("Array[6] Of Char");
+           retVal = string("Array[6] Of Char");
            break;
        case ANSI_NI_FORMAT_INT32_IMPLIED:
-           retVal = RWCString("Int32 Implied Decimal");
+           retVal = string("Int32 Implied Decimal");
            break;
        case ANSI_NI_FORMAT_ARRAY6_BCD:
-           retVal = RWCString("Array[6] Of BCD");
+           retVal = string("Array[6] Of BCD");
            break;
        case ANSI_NI_FORMAT_ARRAY4_BCD:
-           retVal = RWCString("Array[4] Of BCD");
+           retVal = string("Array[4] Of BCD");
            break;
        case ANSI_NI_FORMAT_INT24:
-           retVal = RWCString("Int24");
+           retVal = string("Int24");
            break;
        case ANSI_NI_FORMAT_INT32:
-           retVal = RWCString("Int32");
+           retVal = string("Int32");
            break;
        case ANSI_NI_FORMAT_INT40:
-           retVal = RWCString("Int40");
+           retVal = string("Int40");
            break;
        case ANSI_NI_FORMAT_INT48:
-           retVal = RWCString("Int48");
+           retVal = string("Int48");
            break;
        case ANSI_NI_FORMAT_INT64:
-           retVal = RWCString("Int64");
+           retVal = string("Int64");
            break;
        case ANSI_NI_FORMAT_ARRAY8_BCD:
-           retVal = RWCString("Array[8] Of BCD");
+           retVal = string("Array[8] Of BCD");
            break;
        case ANSI_NI_FORMAT_ARRAY21_CHAR:
-           retVal = RWCString("Array[21] Of Char");
+           retVal = string("Array[21] Of Char");
            break;
    }
    return( retVal );
@@ -590,7 +603,7 @@ int CtiAnsiTableZeroZero::getRawDeviceClass( void )
 {
     return (int) _device_class[4];
 }
-/*RWCString CtiAnsiTableZeroZero::getResolvedDeviceClass( void )
+/*string CtiAnsiTableZeroZero::getResolvedDeviceClass( void )
 {
 
 } */
@@ -598,17 +611,17 @@ int CtiAnsiTableZeroZero::getRawNameplateType( void )
 {
     return (int) _nameplate_type;
 }
-RWCString CtiAnsiTableZeroZero::getResolvedNameplateType( void )
+string CtiAnsiTableZeroZero::getResolvedNameplateType( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_nameplate_type == 0)
-        ret= RWCString ("Gas");
+        ret= string ("Gas");
     else if ((int)_nameplate_type == 1)
-        ret= RWCString ("Water");
+        ret= string ("Water");
     else if ((int)_nameplate_type == 2)
-        ret= RWCString ("Electric");
+        ret= string ("Electric");
     else
-        ret= RWCString ("Unassigned");
+        ret= string ("Unassigned");
 
    return ret;
 }
@@ -616,21 +629,21 @@ int CtiAnsiTableZeroZero::getRawDefaultSetUsed( void )
 {
     return (int) _default_set_used;
 }
-RWCString CtiAnsiTableZeroZero::getResolvedDefaultSetUsed( void )
+string CtiAnsiTableZeroZero::getResolvedDefaultSetUsed( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_default_set_used == 0)
-        ret= RWCString ("No default values in use");
+        ret= string ("No default values in use");
     else if ((int)_default_set_used == 1)
-        ret= RWCString ("Default Set #1, Simple Meter Register");
+        ret= string ("Default Set #1, Simple Meter Register");
     else if ((int)_default_set_used == 2)
-        ret= RWCString ("Default Set #2, Simple Demand Meter");
+        ret= string ("Default Set #2, Simple Demand Meter");
     else if ((int)_default_set_used == 3)
-        ret= RWCString ("Default Set #3, Simple TOU Meter");
+        ret= string ("Default Set #3, Simple TOU Meter");
     else if ((int)_default_set_used == 4)
-        ret= RWCString ("Default Set #4, Simple Profile Recorder");
+        ret= string ("Default Set #4, Simple Profile Recorder");
     else
-        ret= RWCString ("Unassigned");
+        ret= string ("Unassigned");
 
    return ret;
 }
@@ -638,28 +651,28 @@ int CtiAnsiTableZeroZero::getRawMaxProcParmLength( void )
 {
     return (int) _max_proc_parm_len;
 }
-/*RWCString CtiAnsiTableZeroZero::getResolvedMaxProcParmLength( void ) 
+/*string CtiAnsiTableZeroZero::getResolvedMaxProcParmLength( void ) 
 {
 } int CtiAnsiTableZeroZero::getRawMaxRespDataLen( void )
 {
     return (int)  _max_resp_data_len;
 
 }
-RWCString CtiAnsiTableZeroZero::getResolvedMaxRespDataLen( void )
+string CtiAnsiTableZeroZero::getResolvedMaxRespDataLen( void )
 {
 }
 int CtiAnsiTableZeroZero::getRawStdVersionNo( void )
 {
     return (int) _std_version_no;
 }
-RWCString CtiAnsiTableZeroZero::getResolvedStdVersionNo( void )
+string CtiAnsiTableZeroZero::getResolvedStdVersionNo( void )
 {
 }
 int CtiAnsiTableZeroZero::getRawStdRevisionNo( void )
 {
     return (int) _std_revision_no;
 }
-RWCString CtiAnsiTableZeroZero::getResolvedStdRevisionNo( void )
+string CtiAnsiTableZeroZero::getResolvedStdRevisionNo( void )
 {
 }
 */

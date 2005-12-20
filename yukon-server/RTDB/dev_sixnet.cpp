@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,12 +40,12 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
     FIELDHISTORY::iterator histitr;
 
-    newRec.setTime( RWTime(tstamp + rwEpoch) );
+    newRec.setTime( CtiTime(tstamp ) );
 
     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Record Time is " << newRec.getTime().asString() << endl;
+        dout << CtiTime() << " Record Time is " << newRec.getTime().asString() << endl;
     }
 
     switch (m_eType)
@@ -136,16 +136,16 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else if (deltaT > interval * 2)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Outage detected.  Current pulse reading consumed for next delta compute." << endl;
-                            dout << "  Previous read time " << RWTime(aHist._time + rwEpoch) << endl;
-                            dout << "  Current read time  " << RWTime(hist._time + rwEpoch) << endl;
+                            dout << CtiTime() << " Outage detected.  Current pulse reading consumed for next delta compute." << endl;
+                            dout << "  Previous read time " << CtiTime(aHist._time ) << endl;
+                            dout << "  Current read time  " << CtiTime(hist._time ) << endl;
                             //dout << "  interval = " << interval << endl;
                             //dout << "  deltaT =   " << deltaT << endl;
                             //dout << "  ahist time " << aHist._time << endl;
@@ -161,7 +161,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  DeltaP  " << deltaP << " = " << hist._pulses << " - " << aHist._pulses << endl;
                             dout << "  DeltaPH " << deltaPH << endl;
 
@@ -241,7 +241,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
             // should never happen
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -253,7 +253,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 CtiSxlRecord::CtiSxlRecord()
 {
 }
-CtiSxlRecord::CtiSxlRecord(int type, int offset, double val, const RWTime &time) :
+CtiSxlRecord::CtiSxlRecord(int type, int offset, double val, const CtiTime &time) :
 _ptTime(time),
 _ptType(type),
 _ptOffset(offset),
@@ -281,7 +281,7 @@ bool CtiSxlRecord::getLPStruct(BYTE *bp, UINT tag)
     return true;
 }
 
-RWTime& CtiSxlRecord::getTime()
+CtiTime& CtiSxlRecord::getTime()
 {
     return _ptTime;
 }
@@ -298,7 +298,7 @@ double CtiSxlRecord::getValue() const
     return _ptValue;
 }
 
-CtiSxlRecord& CtiSxlRecord::setTime(const RWTime& ref)
+CtiSxlRecord& CtiSxlRecord::setTime(const CtiTime& ref)
 {
     _ptTime = ref;
     return *this;
@@ -472,7 +472,7 @@ int CtiDeviceSixnet::processGetFields()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return _fields.size();
@@ -544,7 +544,7 @@ int CtiDeviceSixnet::processGetHeaderInfo()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -601,7 +601,7 @@ int CtiDeviceSixnet::processGetHeadTail()
 #if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "  Found " << cnt << " records out there" << endl;
     }
 #endif
@@ -628,7 +628,7 @@ int CtiDeviceSixnet::assembleGetAlias()
     if (_recordData.size()) _recordData.clear();
 
     // Fill out the request message and return the number of bytes to be sent into the world.
-    return getSixnetProtocol().FsGetAliasGenerate(_logfileName.data());
+    return getSixnetProtocol().FsGetAliasGenerate(_logfileName.c_str());
 }
 
 bool CtiDeviceSixnet::processGetAlias()
@@ -679,7 +679,7 @@ CtiDeviceSixnet& CtiDeviceSixnet::operator=(const CtiDeviceSixnet& aRef)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -746,7 +746,7 @@ INT CtiDeviceSixnet::allocateDataBins (OUTMESS *OutMessage)
     _executionState = SXNT_START;
     _completedState = SXNT_START;
 
-    _lpTime = RWTime((ULONG)OutMessage->Buffer.DUPReq.LP_Time);
+    _lpTime = CtiTime((ULONG)OutMessage->Buffer.DUPReq.LP_Time);
 
     return status;
 }
@@ -761,7 +761,7 @@ void CtiDeviceSixnet::flushVectors()
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -792,7 +792,7 @@ void CtiDeviceSixnet::destroyBuffers()
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 }
@@ -861,7 +861,7 @@ INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, RWTPtrSlist< C
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
                 }
                 break;
             }
@@ -923,7 +923,7 @@ INT CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, INT commReturnVa
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
                 }
                 _executionState = SXNT_START;
 
@@ -946,7 +946,7 @@ INT CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, RWTPtrSlist< 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Sixnet communication completed to " << getName() << endl;
+        dout << CtiTime() << " Sixnet communication completed to " << getName() << endl;
     }
 
     return status;
@@ -957,7 +957,7 @@ INT CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, INT commReturnV
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Sixnet disconnecting " << getName() << endl;
+        dout << CtiTime() << " Sixnet disconnecting " << getName() << endl;
     }
 
 
@@ -1074,7 +1074,7 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
                     _executionState = SXNT_BAIL;        // Done...
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Sixnet " << getName() << " all collected records have been returned " << endl;
+                        dout << CtiTime() << " Sixnet " << getName() << " all collected records have been returned " << endl;
                     }
                     setCurrentState( CtiDeviceIED::StateScanComplete );
                 }
@@ -1101,7 +1101,7 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  CS " << _completedState << "  ES  " << _executionState << endl;
                 }
                 setCurrentState( CtiDeviceIED::StateScanAbort );
@@ -1175,7 +1175,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             sprintf (junk, "%02x ", getRxBuffer()[i]);
-                            dout << RWCString (junk);
+                            dout << string (junk);
                         }
                         dout << endl;
                     }
@@ -1188,12 +1188,12 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                 {
                     _tailTime = getFirstRecordTime();
 
-                    RWTime recordtime( rwEpoch + _tailTime );
+                    CtiTime recordtime( PASTDATE + _tailTime );
 
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  tail record was recorded at " << recordtime << endl;
                     }
 
@@ -1221,7 +1221,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
@@ -1239,8 +1239,8 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                 if (CtiProtocolSixnet::GETCOMPLETE == protocolreturn )
                 {
                     time_t recordtime = getFirstRecordTime();
-                    RWTime headTime( rwEpoch + recordtime );
-                    RWTime tailtime( rwEpoch + _tailTime );
+                    CtiTime headTime( PASTDATE + recordtime );
+                    CtiTime tailtime( PASTDATE + _tailTime );
 
                     if ( _lpTime >= headTime )
                     {
@@ -1248,7 +1248,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getName() << " No CTIDBG_new data " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " " << getName() << " No CTIDBG_new data " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " " << _lpTime << " >= " << headTime << endl;
                         }
 
@@ -1273,7 +1273,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << "   deltaR " << deltaR << endl;
                                 dout << "   skip   " << skiprecords << endl;
                             }
@@ -1313,7 +1313,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                                 // Whoops the logic sucks.. This better not happen
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << " _tail = " << _tail << "  newtail = " << newtail << "  _head = " << _head << endl;
                                 }
                                 newtail = _tail;     // Just be a slop monger.
@@ -1330,7 +1330,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                         // The fan has been hit!
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         // We must collect ALL the records now..
@@ -1354,7 +1354,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
 
                 if (CtiProtocolSixnet::GETCOMPLETE == protocolreturn )
                 {
-                    RWTime recordtime( rwEpoch + getFirstRecordTime() );
+                    CtiTime recordtime( PASTDATE + getFirstRecordTime() );
 
                     int recCnt = processGetRecords(recProcessed);
 
@@ -1404,7 +1404,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << getName() << " has no CTIDBG_new records." << endl;
+                        dout << CtiTime() << " " << getName() << " has no CTIDBG_new records." << endl;
                     }
                 }
                 break;
@@ -1418,7 +1418,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  CS " << _completedState << "  ES  " << _executionState << endl;
                 }
                 setCurrentState( CtiDeviceIED::StateScanAbort );
@@ -1461,7 +1461,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " returning record  " << Record.getTime() << "  Type " << Record.getType() << " Offset " << Record.getOffset() << "  Value " << Record.getValue() << endl;
+                dout << CtiTime() << " returning record  " << Record.getTime() << "  Type " << Record.getType() << " Offset " << Record.getOffset() << "  Value " << Record.getValue() << endl;
             }
 
             _recordData.erase(itr);
@@ -1480,7 +1480,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " NumLeft = " << numLeft << endl;
                 dout << "  TAG = " << tag << endl;
             }
@@ -1516,7 +1516,7 @@ CtiDeviceIED::CtiMeterMachineStates_t CtiDeviceSixnet::determineHandshakeNextSta
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 nextstate = CtiDeviceIED::StateAbsorb;
@@ -1565,7 +1565,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Execution State " << _executionState << endl;
             dout << " Completion State " << _executionState << endl;
         }
@@ -1595,7 +1595,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
             setCurrentState( CtiDeviceIED::StateAbort );
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
+                dout << CtiTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
             }
 
             _executionState = SXNT_BAIL;
@@ -1609,7 +1609,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         // We are not timed out, but are in an intermediate state and need MORE data from the port
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Going after some more bytes... " << bytesleft << endl;
+            dout << CtiTime() << " Going after some more bytes... " << bytesleft << endl;
         }
 
         if (infloopprevention++ > 5)
@@ -1617,7 +1617,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
             setCurrentState( CtiDeviceIED::StateAbort );
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
+                dout << CtiTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
             }
             _executionState = SXNT_BAIL;
             infloopprevention = 0;
@@ -1626,7 +1626,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Protocol object returned " << protocolreturn << endl;
             }
 
@@ -1666,7 +1666,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " General Scan of device " << getName() << " in progress. Collect from " << getLastLPTime() << endl;
+            dout << CtiTime() << " General Scan of device " << getName() << " in progress. Collect from " << getLastLPTime() << endl;
         }
 
         ULONG BytesWritten;
@@ -1714,7 +1714,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -1732,7 +1732,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scan decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
                 }
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
@@ -1742,7 +1742,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " LP decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
                 }
 
                 // just in case we're getting an empty message
@@ -1754,7 +1754,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
+                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
                     }
                 }
 
@@ -1764,7 +1764,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
+                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
                 }
             }
     }
@@ -1772,16 +1772,16 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSli
     return status;
 }
 
-INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     INT retCode = NORMAL;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
+                                            string(InMessage->Return.CommandStr),
                                             FormatError(InMessage->EventCode & 0x7fff),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
@@ -1838,7 +1838,7 @@ void CtiDeviceSixnet::DecodeDatabaseReader(RWDBReader &rdr)
 
 
 
-INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int status = NORMAL;
 
@@ -1852,8 +1852,8 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
     ULONG lastLPTime = getLastLPTime().seconds();  // OK I think, this IS a scanner side value..
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1871,14 +1871,14 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
 
         bpcurr += sizeof(CtiSixnetLPData);
 
-        RWTime logTime(pSxnt->time);    // When was this log taken?
+        CtiTime logTime(pSxnt->time);    // When was this log taken?
 
         if (logTime > getLastLPTime())
         {
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  Time " << logTime << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
             }
 
@@ -1886,7 +1886,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
             {
                 // We have a point match here...
 
-                RWCString resString;   // Add description to this here please!
+                string resString;   // Add description to this here please!
                 double val;
 
                 if (pPoint->isNumeric())
@@ -1898,7 +1898,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                     val = pSxnt->val;
                 }
 
-                pRetMsg = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.TrxID,InMessage->Return.UserID);
+                pRetMsg = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.TrxID,InMessage->Return.UserID);
 
                 //create a CTIDBG_new data message
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString, TAG_POINT_LOAD_PROFILE_DATA);
@@ -1920,7 +1920,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "   No point of type " << pSxnt->type << " offset " << pSxnt->offset << endl;
                 }
             }
@@ -1930,7 +1930,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 setLastLPTime (logTime);
 
@@ -1942,7 +1942,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " OLD DATA:  " << logTime << " Type " << pSxnt->type << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
+            dout << CtiTime() << " OLD DATA:  " << logTime << " Type " << pSxnt->type << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
         }
     }
 
@@ -1965,7 +1965,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
 
 
 
-INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);

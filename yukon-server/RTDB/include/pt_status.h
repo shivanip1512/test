@@ -2,14 +2,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/31 14:08:32 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 */
 #ifndef __PT_STATUS_H__
 #define __PT_STATUS_H__
 
-#include <rw\cstring.h>
 #include "dlldefs.h"
 #include "pt_base.h"
 #include "tbl_pt_status.h"

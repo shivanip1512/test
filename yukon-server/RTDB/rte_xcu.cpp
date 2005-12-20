@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/10/04 19:15:06 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,6 @@
 
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
 #include "desolvers.h"
 #include "dsm2.h"
@@ -43,6 +42,7 @@ using namespace std;
 #include "prot_sa305.h"
 #include "prot_sa3rdparty.h"
 #include "prot_lmi.h"
+using namespace std;
 
 static INT NoQueing = FALSE;
 
@@ -171,7 +171,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
+                dout << CtiTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
             }
             status = -1;
         }
@@ -180,7 +180,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -197,8 +197,8 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     ULONG          i, j;
     USHORT         Length;
     VSTRUCT        VSt;
@@ -250,11 +250,11 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     {
                         if(i % 2)
                         {
-                            sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
+                            ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
                         }
                         else
                         {
-                            sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
+                            ::sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
                         }
                     }
 
@@ -289,7 +289,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
+                            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
                         }
 
                         delete NewOutMessage;
@@ -297,7 +297,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     else
                     {
                         /* Copy message into buffer */
-                        memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
+                        ::memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
 
                         /* Now add it to the collection of outbound messages */
                         outList.insert( NewOutMessage );
@@ -315,7 +315,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
+                        dout << CtiTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
                     }
 
                     break;
@@ -333,7 +333,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom commands";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -341,7 +341,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -365,7 +365,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
+    string      resultString;
     ULONG          i, j;
     USHORT         Length;
 
@@ -399,7 +399,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
         xmore = false;
         resultString = "Route " + getName() + " did not transmit control";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -407,7 +407,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -438,7 +438,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
+    string      resultString;
     ULONG          i, j;
     USHORT         Length;
     FPSTRUCT       FPSt;
@@ -456,10 +456,10 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     FPPCCST *PCC = &(OutMessage->Buffer.FPSt.u.PCC);
 
     PCC->PRE[0] = '*';                        /* Select Paging Terminal header */
-    memcpy(PCC->UID  , "001"     , 3);        /* Utility ID.... 001 is CP&L */
-    memcpy(PCC->VID  , "001"     , 3);        /* Vendor ID      001 is FP   */
-    memcpy(PCC->D    , "01"      , 2);        /* _transmitterDevice ID      01 is Capacitor Control */
-    memcpy(PCC->VALUE, "000000"  , 6);        /* This is set on the calling side */
+    ::memcpy(PCC->UID  , "001"     , 3);        /* Utility ID.... 001 is CP&L */
+    ::memcpy(PCC->VID  , "001"     , 3);        /* Vendor ID      001 is FP   */
+    ::memcpy(PCC->D    , "01"      , 2);        /* _transmitterDevice ID      01 is Capacitor Control */
+    ::memcpy(PCC->VALUE, "000000"  , 6);        /* This is set on the calling side */
 
     // memcpy(PCC->GRP  , "0000"    , 4);     /* Group Addressing ... 0000 is Individual. This is set by the grp object. object*/
     // memcpy(PCC->ADDRS, "0000000" , 7);     /* Address        This is set by the dev_cbc object */
@@ -484,7 +484,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     // FALL THROUGH ???? Probably true....
@@ -502,12 +502,12 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                     NewOutMessage->Buffer.TAPSt.Length  = Length;
 
                     /* Build the message */
-                    memcpy(NewOutMessage->Buffer.TAPSt.Message, FPSt.u.Message, 29);
+                    ::memcpy(NewOutMessage->Buffer.TAPSt.Message, FPSt.u.Message, 29);
 
                     if(getDebugLevel() & 0x00000002 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " FP-CBC TAP Message:  ";
+                        dout << CtiTime() << " FP-CBC TAP Message:  ";
                         for(i = 0; i < Length; i++)
                         {
                             dout << NewOutMessage->Buffer.TAPSt.Message[i];
@@ -524,7 +524,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -541,7 +541,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
         xmore = false;
         resultString = "Route " + getName() + " did not transmit FisherPierce commands";
 
-        RWCString   desc, actn;
+        string   desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -549,7 +549,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -568,8 +568,8 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     ULONG          i, j;
     USHORT         Length;
 
@@ -577,7 +577,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
      * Addressing variables SHALL have been assigned at an earlier level!
      */
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     OutMessage->DeviceID = _transmitterDevice->getID();
     OutMessage->Port     = _transmitterDevice->getPortID();
@@ -609,18 +609,18 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 // BEGIN serialpatch here
                 j = 0;
-                RWCString serialpatch;
+                string serialpatch;
 
                 if(parse.getiValue("xcprefix", FALSE))
                 {
                     serialpatch = parse.getsValue("xcprefixstr");
                 }
 
-                if(!serialpatch.isNull() && (xcom.getByte(0) == 0))
+                if(!serialpatch.empty() && (xcom.getByte(0) == 0))
                 {
                     for(j = 0; j <= serialpatch.length(); j++)
                     {
-                        OutMessage->Buffer.TAPSt.Message[j] = serialpatch.data()[j];
+                        OutMessage->Buffer.TAPSt.Message[j] = serialpatch[j];
                     }
 
                     OutMessage->OutLength            += serialpatch.length();
@@ -638,11 +638,11 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     BYTE curByte = xcom.getByte(i / 2);
                     if(i % 2)
                     {
-                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", curByte & 0x0f);
+                        ::sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", curByte & 0x0f);
                     }
                     else
                     {
-                        sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", (curByte >> 4) & 0x0f);
+                        ::sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1 + j], "%1x", (curByte >> 4) & 0x0f);
                     }
                 }
                 OutMessage->Buffer.TAPSt.Message[i + 1 + j] = xcom.getStopByte();
@@ -664,21 +664,21 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
+                    dout << CtiTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
                 }
 
                 break;
             }
         }
 
-        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands (" + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName() + "\n" + byteString;
+        resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName() + "\n" + byteString;
     }
     else
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Expresscom commands";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -711,8 +711,8 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     ULONG          i, j;
     USHORT         Length;
     VSTRUCT        VSt;
@@ -775,9 +775,9 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     NewOutMessage->Buffer.SASt._bufferLen = prot305.buildMessage(CtiProtocolSA305::ModeHex, (char*)(NewOutMessage->Buffer.SASt._buffer));
                     NewOutMessage->OutLength = NewOutMessage->Buffer.SASt._bufferLen;
 
-                    memcpy(NewOutMessage->Buffer.SASt._code305, (char*)(NewOutMessage->Buffer.SASt._buffer) ,NewOutMessage->Buffer.SASt._bufferLen);
+                    ::memcpy(NewOutMessage->Buffer.SASt._code305, (char*)(NewOutMessage->Buffer.SASt._buffer) ,NewOutMessage->Buffer.SASt._bufferLen);
                     NewOutMessage->Buffer.SASt._code305[NewOutMessage->Buffer.SASt._bufferLen + 1] = '\0';
-                    strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
+                    strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr().c_str(),COMMAND_STR_SIZE);
 
                     for(i = 0; i < NewOutMessage->OutLength; i++)
                     {
@@ -796,14 +796,14 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             default:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send SA305 to TYPE:" << _transmitterDevice->getType() << endl;
+                        dout << CtiTime() << "  Cannot send SA305 to TYPE:" << _transmitterDevice->getType() << endl;
                     }
 
                     break;
@@ -826,7 +826,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
         xmore = false;
         resultString = "Route " + getName() + " did not transmit commands.  Syntax may be in error.";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -834,7 +834,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -858,8 +858,8 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     ULONG          i, j;
 
     OutMessage->DeviceID = _transmitterDevice->getID();
@@ -885,7 +885,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                 OutMessage->OutLength = prot.getSABufferLen();
 
                 CtiOutMessage *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );
-                strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
+                strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr().c_str() ,COMMAND_STR_SIZE);
 
                 outList.insert( NewOutMessage );
 
@@ -899,8 +899,8 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE: " << _transmitterDevice->getType() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE: " << _transmitterDevice->getType() << endl;
             }
 
             break;
@@ -909,20 +909,20 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send to TYPE:" << _transmitterDevice->getType() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << "  Cannot send to TYPE:" << _transmitterDevice->getType() << endl;
             }
 
             break;
         }
     }
 
-    if( resultString.isNull() )
+    if( resultString.empty() )
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit commands";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -930,7 +930,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -954,8 +954,8 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 {
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     ULONG          i, j;
 
     OutMessage->DeviceID = _transmitterDevice->getID();
@@ -1017,8 +1017,8 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
             }
 
             break;
@@ -1027,20 +1027,20 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
             }
 
             break;
         }
     }
 
-    if( resultString.isNull() )
+    if( resultString.empty() )
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit commands";
 
-        RWCString desc, actn;
+        string desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -1048,7 +1048,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {

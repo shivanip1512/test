@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/15 22:29:49 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,8 @@
 #include "numstr.h"
 
 using Cti::Protocol::Emetcon;
-
+using std::make_pair;
+using std::string;
 
 set< CtiDLCCommandStore > CtiDeviceRepeater800::_commandStore;
 
@@ -98,7 +99,7 @@ bool CtiDeviceRepeater800::getOperation( const UINT &cmd, USHORT &function, USHO
 }
 
 
-INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -117,7 +118,7 @@ INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
          if(status != NORMAL)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
          }
          break;
@@ -128,7 +129,7 @@ INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
    INT status = NORMAL;
 
@@ -148,7 +149,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
       if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
          return MEMORY;
       }
@@ -161,7 +162,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
       }
 
       {
-         RWCString resultString, pointString;
+         string resultString, pointString;
          double value;
 
          LockGuard guard(monitor());               // Lock the MCT device!

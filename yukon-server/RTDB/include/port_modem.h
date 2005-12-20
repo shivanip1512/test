@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ protected:
 
     int _status;        // Modem status.
     int _delay_value;
-    RWCString _match_string;
+    string _match_string;
     CHAR_PRINTER _character_printer;
 
 private:

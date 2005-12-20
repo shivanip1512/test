@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/10/25 14:36:21 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,11 +75,11 @@ LONG CtiDeviceGroupExpresscom::getRouteID()
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceGroupExpresscom::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupExpresscom::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
     {
         tmpStr = "Group: " + getName() + " Relay:";
@@ -119,7 +119,7 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     /*
@@ -190,7 +190,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
                 resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
                                " The group must specify program, splinter or load level addressing";
-                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
                 retList.insert( pRet );
 
                 if(OutMessage)
@@ -201,7 +201,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << resultString << endl;
+                    dout << CtiTime() << resultString << endl;
                 }
 
                 return nRet;
@@ -225,12 +225,12 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
          *  Form up the reply here since the ExecuteRequest function will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -248,7 +248,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -259,17 +259,17 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
     return nRet;
 }
 
-RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
+string CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
 {
     #if 0
-    RWCString assign = RWCString("xcom assign") +
+    string assign = string("xcom assign") +
                        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
                        " G" + CtiNumStr(_expresscomGroup.getGeo()) +
                        " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
@@ -296,7 +296,7 @@ RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
      */
     bool forcefullconfig = (modifier & CtiDeviceBase::PutconfigAssignForce);
 
-    RWCString assign = RWCString("xcom assign");
+    string assign = string("xcom assign");
 
     if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)           assign += " S" + CtiNumStr(_expresscomGroup.getServiceProvider());
     if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)            assign += " G" + CtiNumStr(_expresscomGroup.getGeo());
@@ -333,7 +333,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
 {
     bool status = false;
 
-    RWCString issue;
+    string issue;
 
     if(parse.isKeyValid("xc_serial"))
     {
@@ -390,14 +390,14 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
 
     if(status)
     {
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         pRet->setExpectMore( FALSE );
 
         retList.insert( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << issue << endl;
+            dout << CtiTime() << issue << endl;
         }
     }
 

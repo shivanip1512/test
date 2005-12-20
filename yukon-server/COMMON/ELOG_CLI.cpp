@@ -52,29 +52,29 @@ PUSHORT     LCFunctionCode = (PUSHORT) NULL;
 
 ostream& operator<<( ostream& ostrm, SYSTEMLOGMESS &sl )
 {
-    ostrm << RWTime( sl.TimeStamp + rwEpoch ); //  << " " << sl.DeviceName << " " << sl.PointName;
+    ostrm << CtiTime( sl.TimeStamp ); //  << " " << sl.DeviceName << " " << sl.PointName;
 
     if( sl.EventLable[0] != '\0' )
     {
         ostrm << " " << sl.EventLable;
     }
 
-    if(!sl.DeviceName.isNull())
+    if(!sl.DeviceName.empty())
     {
         ostrm << " " << sl.DeviceName;
     }
 
-    if(!sl.PointName.isNull())
+    if(!sl.PointName.empty())
     {
         ostrm << " " << sl.PointName;
     }
 
-    if(!sl.LogMessage1.isNull())
+    if(!sl.LogMessage1.empty())
     {
         ostrm << " " << sl.LogMessage1;
     }
 
-    if(!sl.LogMessage2.isNull())
+    if(!sl.LogMessage2.empty())
     {
         ostrm << " " << sl.LogMessage2;
     }
@@ -92,7 +92,7 @@ IM_EX_CTIBASE INT InitELog ()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return(NORMAL);
@@ -203,7 +203,7 @@ IM_EX_CTIBASE VOID SendProcessStop (ULONG Reason)
 
 
 /* Routine to format and send a general text message to the logger */
-IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message, RWCString majorName, RWCString minorName)
+IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message, const string& majorName, const string& minorName)
 {
     SYSTEMLOGMESS LogMessage;
     ULONG i;
@@ -218,7 +218,7 @@ IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message, RWCString major
     LogMessage.EventLable[3] = ' ';
 
     /* Process LogMessage1 */
-    LogMessage.LogMessage1 = RWCString( Message );
+    LogMessage.LogMessage1 = string( Message );
 
     /* Process PointName */
     LogMessage.PointName = minorName;
@@ -235,7 +235,8 @@ IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message, RWCString major
 
 
 /* Routine to send up to four part message to logger */
-IM_EX_CTIBASE INT Send4PartToLogger (PCHAR Source, RWCString MajorName, RWCString MinorName, RWCString Message1, RWCString Message2)
+IM_EX_CTIBASE INT Send4PartToLogger (PCHAR Source, const string& MajorName, const string& MinorName,
+                                     const string& Message1, const string& Message2)
 {
     SYSTEMLOGMESS LogMessage;
     ULONG i;

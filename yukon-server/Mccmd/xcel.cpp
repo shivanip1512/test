@@ -36,13 +36,13 @@ I,2355642216,KUEHN STEVEN.J,,,3440 BUCKBEE RD,WHITE BEAR LK.,MN,55110,6517772595
 *  send service commands, etc
 ****************************
 */
-bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
+bool DecodePMSIFile(const string& fileName, RWOrdered* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
 	char command;
-	RWCString serialNum;
-	RWCString programming;
+	string serialNum;
+	string programming;
 
     if( commandList == NULL )
         return false;
@@ -50,7 +50,7 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 // cout << "file to open is:  " << fileName << endl;
 
    	// open file
-    if( (fptr = fopen( fileName, "r")) == NULL )
+    if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << "unable to open file" << endl;
@@ -74,7 +74,7 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 					{
 						// activate command
 						*decodedCommand = "PutConfig versacom serial ";
-						*decodedCommand +=serialNum;
+						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service in";
 						commandList->insert(decodedCommand);
 						break;
@@ -83,7 +83,7 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 				case 'R':
 					{
 						*decodedCommand = "PutConfig versacom serial ";
-						*decodedCommand +=serialNum;
+						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service out";
 						commandList->insert(decodedCommand);
 						break;
@@ -93,7 +93,7 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 					{
 						// send the activate first
 						*decodedCommand = "PutConfig versacom serial ";
-						*decodedCommand +=serialNum;
+						*decodedCommand +=serialNum.c_str();
 						*decodedCommand += " service in";
 						commandList->insert(decodedCommand);
 
@@ -101,9 +101,9 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 
 						// send the programming
 						*programCommand = "PutConfig versacom serial ";
-						*programCommand +=serialNum;
+						*programCommand +=serialNum.c_str();
 						*programCommand += " ";
-						*programCommand += programming;
+						*programCommand += programming.c_str();
 						commandList->insert(programCommand);
 						programCommand= NULL;
 						break;
@@ -132,11 +132,11 @@ bool DecodePMSIFile(const RWCString& fileName, RWOrdered* commandList)
 }
 
 
-bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString &programming)
+bool isValidPMSILine( char* line, char &command, string &serialNum, string &programming)
 {
     char* wPtr = line;
 	bool retCode = true;
-	RWCString entry;
+	string entry;
 
 	for (int fieldNumber=0; fieldNumber < 41; fieldNumber++)
 	{
@@ -164,8 +164,8 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 					* this is the command type
 					************************
 					*/
-					entry.toUpper();
-					switch (entry.data()[0])
+					std::transform(entry.begin(), entry.end(), entry.begin(), toupper);
+					switch (entry[0])
 					{
 						case 'A':
 						case 'D':
@@ -173,7 +173,7 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 						case 'I':
 						case 'N':
 							{
-								memcpy (&command, &entry.data()[0],1);
+								memcpy (&command, &entry[0],1);
 							   	break;
 							}
 						default:
@@ -192,7 +192,7 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 				{
 					// type of device 
 					// strcmp returns 0 if match is made
-					if ((stricmp(entry.data(),"500")) && (stricmp(entry.data(),"501")))
+					if ((stricmp(entry.c_str(),"500")) && (stricmp(entry.c_str(),"501")))
 					{
 						retCode = false;
 					}
@@ -200,8 +200,8 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 				}
 			case 37:
 				{
-					entry.toUpper();
-					switch (entry.data()[0])
+					std::transform(entry.begin(), entry.end(), entry.begin(), toupper);
+					switch (entry[0])
 					{
 						case 'O':
 							{
@@ -227,8 +227,8 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 			case 40:
 				{
 					// program type R=residential or C=Commercial
-					entry.toUpper();
-					switch (entry.data()[0])
+					std::transform(entry.begin(), entry.end(), entry.begin(), toupper);
+					switch (entry[0])
 					{
 						case 'R':
 							break;
@@ -251,7 +251,7 @@ bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString
 ***********************
 */
 char * getEntry (char *InBuffer,
-                 RWCString &outBuffer)
+                 string &outBuffer)
 {
     char *ptr;
 

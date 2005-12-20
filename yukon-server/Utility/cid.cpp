@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <iostream>
 #include <vector>
+#include <boost/regex.hpp>
 using namespace std;
 
 #include <stdio.h>
@@ -12,9 +13,9 @@ using namespace std;
 
 #include <rw\re.h>
 #include <rw/rwfile.h>
-#include <rw/cstring.h>
+#include "rwutil.h"
 
-static RWCString gCompileBase;
+static string gCompileBase;
 static INT gMajorRevision = -1;
 static INT gMinorRevision = -1;
 static INT gBuildRevision = -1;
@@ -24,9 +25,9 @@ class CtiPVCS
 {
 public:
 
-   RWCString filename;
-   RWCString rev;
-   RWCString date;
+   string filename;
+   string rev;
+   string date;
 
    CtiPVCS() :
       rev("Unknown"),
@@ -58,8 +59,8 @@ class CtiDirBuild
 {
 public:
 
-   RWCString _dir;
-   RWCString _project;
+   string _dir;
+   string _project;
 
    UINT _majorRevision;
    UINT _minorRevision;
@@ -117,24 +118,24 @@ typedef vector< CtiDirBuild > CTIDIRVECTOR;
 #define MAJORINCREMENT 0x00000008
 #define MINORINCREMENT 0x00000004
 
-void ProcessCID(CtiDirBuild &db, RWCString &cidfile);
-void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename);
-void ProcessDirectory( CTIFILEVECTOR &vect, const RWCString &path);
-void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname);
+void ProcessCID(CtiDirBuild &db, string &cidfile);
+void ProcessFile(CTIFILEVECTOR &vect, string &filename);
+void ProcessDirectory( CTIFILEVECTOR &vect, const string &path);
+void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, string &infoname);
 
 
-void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
+void ProcessDirectory(CTIFILEVECTOR &vect, const string &path)
 {
    WIN32_FIND_DATA wfd;
    HANDLE fHandle;
 
-   RWCString findthis = path;
-   RWCString newdir;
-   RWCString filename;
+   string findthis = path;
+   string newdir;
+   string filename;
 
    findthis += "\\*";
 
-   fHandle = FindFirstFile( findthis, &wfd );
+   fHandle = FindFirstFile( findthis.c_str(), &wfd );
 
    if( fHandle != INVALID_HANDLE_VALUE )
    {
@@ -144,18 +145,22 @@ void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
 
 
          // Sleep(1000);
+         boost::regex e1("\\.h");
+         boost::regex e2("\\.cpp");
 
          if(filename[filename.length() - 1] != '.' && wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
          {
             // cout << "Processing directory " << filename << endl;
-            ProcessDirectory(vect, RWCString(path + "\\" + filename));
+            ProcessDirectory(vect, string(path + "\\" + filename));
+            
+
          }
-         else if( !(filename.match("\\.h")).isNull() )
+         else if( boost::regex_search(filename, e1, boost::match_default) )
          {
             //cout << "Found header file named " << filename << endl;
             ProcessFile(vect, path + "\\" + filename);
          }
-         else if( !(filename.match("\\.cpp")).isNull() )
+         else if( boost::regex_search(filename, e2, boost::match_default) )
          {
             //cout << "Found cpp file named " << filename << endl;
             ProcessFile(vect, path + "\\" + filename);
@@ -166,7 +171,7 @@ void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
    return;
 }
 
-void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
+void ProcessFile(CTIFILEVECTOR &vect, string &filename)
 {
 
    FILE *fp;
@@ -175,15 +180,15 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
    char temp[128];
 
-   RWCString tstr;
+   string tstr;
 
-   filename.toLower();
+   std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
 
 
-   if( !filename.match("id.h").isNull() ||            // Any file with id.h in it.
-       !filename.match("version.cpp").isNull() ||
-       !filename.match("version.h").isNull() ||
-       !filename.match("vinfo.h").isNull() )
+   if( !filename.find("id.h")!=string::npos ||            // Any file with id.h in it.
+       !filename.find("version.cpp")!=string::npos ||
+       !filename.find("version.h")!=string::npos ||
+       !filename.find("vinfo.h")!=string::npos )
    {
       // Do not include these files in the output..
       return;
@@ -194,40 +199,47 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
       finfo.rev = "Unknown";
       finfo.date = "Unknown";
 
-      fp = fopen(filename.data(), "rt");
+      fp = ::fopen(filename.c_str(), "rt");
 
       if(fp != NULL)
       {
          int linecnt = 0;
          while( fgets(temp, 127, fp)  && linecnt++ < 50)
          {
-            temp[ strlen(temp) - 1 ] = '\0';
+            temp[ ::strlen(temp) - 1 ] = '\0';
 
-            RWCString str(temp);
+            string str(temp);
+            boost::match_results<std::string::const_iterator> what;
 
-            if(!str.match("Revision").isNull())
+            if(!str.find("Revision")!=string::npos)
             {
-               if( !(tstr = str.match("\\$Revision:[ \t0-9\\.]*")).isNull() )
+                boost::regex e1("\\$Revision:[ \t0-9\\.]*");
+               if( boost::regex_search(str, what, e1, boost::match_default) )
                {
-                  finfo.rev = tstr.strip(RWCString::both, '$');
+                   tstr = string(what[0]);
+                  finfo.rev = trim(tstr, "$");
                   //cout << filename << " : " << finfo.rev << endl;
                }
             }
 
-            if(!str.match("Date").isNull())
+            if(!str.find("Date")!=string::npos)
             {
-               if( !(tstr = str.match("\\$Date:[ \ta-zA-Z0-9\\.:/]*")).isNull() )
+                boost::regex e1("\\$Date:[ \ta-zA-Z0-9\\.:/]*");
+               if( boost::regex_search(str, what, e1, boost::match_default) )
                {
-                  tstr = tstr.strip(RWCString::both, '$');
-                  tstr.replace("Date:","");
-                  tstr = tstr.strip(RWCString::both);
+                  tstr = string(what[0]);
+                  tstr = trim(tstr, "$");
+                  boost::regex e2 = "Date:";
+                  tstr = boost::regex_replace(tstr, e1, "", boost::match_default | boost::format_all | boost::format_first_only);
+
+                  tstr = trim(tstr);
                   finfo.date = tstr;
                   //cout << filename << " : " << finfo.date << endl;
                }
             }
          }
 
-         fclose(fp);
+         ::fclose(fp);
 
          vect.push_back(finfo);
       }
@@ -240,7 +252,7 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
 }
 
-void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
+void ProcessCID(CtiDirBuild &db, string &cidfile)
 {
 
    bool bWritable = false;
@@ -256,11 +268,13 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
    char dir[128];
    char file[128];
    char *ptr = NULL;
-   vector< RWCString > fileStrings;
+   vector< string > fileStrings;
 
-   cidfile.toLower();
-
-   RWCString tstr = cidfile.match("([_a-z0-9.]+h)$");
+   std::transform(cidfile.begin(), cidfile.end(), cidfile.begin(), ::tolower);
+   boost::regex e1("([_a-z0-9.]+h)$");
+   boost::match_results<std::string::const_iterator> what;
+   boost::regex_search(cidfile, what, e1, boost::match_default);
+   string tstr = string(what[0]);
 
    // cout << tstr << endl;
 
@@ -270,59 +284,68 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
       cout << tstr << endl;
    }
 
-   if(!GetFullPathName(cidfile, 128, dir, &ptr))
+   if(!GetFullPathName(cidfile.c_str(), 128, dir, &ptr))
    {
       cout << "It failed" << endl;
    }
    else
    {
-      strcpy(file, ptr);
+      ::strcpy(file, ptr);
       *ptr = '\0';
    }
 
    dinfo._dir = cidfile;
-   dinfo._dir = dinfo._dir.replace(tstr, "");
-
-   fp = fopen(cidfile.data(), "rt");
+   e1.assign(tstr);
+   dinfo._dir = boost::regex_replace(dinfo._dir, e1, "", boost::match_default | boost::format_all | boost::format_first_only);
+   
+   fp = ::fopen(cidfile.c_str(), "rt");
 
    if(fp != NULL)
    {
-      while( fgets(temp, 127, fp) )
+      while( ::fgets(temp, 127, fp) )
       {
-         temp[ strlen(temp) - 1 ] = '\0';
+         temp[ ::strlen(temp) - 1 ] = '\0';
 
-         RWCString str(temp);
-         RWCString origstr(temp);
-         str.toLower();
+         string str(temp);
+         string origstr(temp);
+         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 
-         if(!str.match("project").isNull())
+         if(!str.find("project")!=string::npos)
          {
             // store it off for the write.
             fileStrings.push_back(origstr);
 
-            str.replace("#define","");
-            str.replace("project","");
-            str.strip (RWCString::both);
+            boost::regex e1("#define");
+            str = boost::regex_replace(str, e1, "", boost::match_default | boost::format_all | boost::format_first_only);
+            e1.assign("project");
+            str = boost::regex_replace(str, e1, "", boost::match_default | boost::format_all | boost::format_first_only);
+            str = trim(str);
 
             dinfo._project = str;
             // cout << "Project " << dinfo._project << endl;
          }
-         else if(!str.match("majorrevision").isNull())
+         else if(!str.find("majorrevision")!=string::npos)
          {
-            if( !(tstr = str.match("[0-9]+")).isNull() )
+             boost::regex e1("[0-9]+");
+             boost::match_results<std::string::const_iterator> what;
+             
+            if( boost::regex_search(str, what, e1, boost::match_default) )
             {
-               dinfo._majorRevision = atoi(tstr.data());
+                tstr = string(what[0]);
+               dinfo._majorRevision = ::atoi(tstr.c_str());
             }
 
             if(gMajorRevision > 0 && dinfo._majorRevision != gMajorRevision)
             {
                // We need to generate a CTIDBG_new buildnumber define!
-               sprintf(oldnum, "%d", dinfo._majorRevision);
+               ::sprintf(oldnum, "%d", dinfo._majorRevision);
 
                dinfo._majorRevision = gMajorRevision;
-               sprintf(newnum, "%d", dinfo._majorRevision);
+               ::sprintf(newnum, "%d", dinfo._majorRevision);
 
-               origstr.replace(oldnum,newnum);
+               e1.assign(oldnum);
+               origstr = boost::regex_replace(origstr, e1, newnum, boost::match_default | boost::format_all | boost::format_first_only);
+
             }
             else
             {
@@ -335,22 +358,27 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
             fileStrings.push_back(origstr);
 
          }
-         else if(!str.match("minorrevision").isNull())
+         else if(!str.find("minorrevision")!=string::npos)
          {
-            if( !(tstr = str.match("[0-9]+")).isNull() )
+             boost::regex e1("[0-9]+");
+             boost::match_results<std::string::const_iterator> what;
+
+            if( boost::regex_search(str, what, e1, boost::match_default) )
             {
-               dinfo._minorRevision = atoi(tstr.data());
+                tstr = string(what[0]);
+               dinfo._minorRevision = atoi(tstr.c_str());
             }
 
             if(gMinorRevision >= 0 && dinfo._minorRevision != gMinorRevision)
             {
                // We need to generate a CTIDBG_new buildnumber define!
-               sprintf(oldnum, "%d", dinfo._minorRevision);
+               ::sprintf(oldnum, "%d", dinfo._minorRevision);
 
                dinfo._minorRevision = gMinorRevision;
-               sprintf(newnum, "%d", dinfo._minorRevision);
+               ::sprintf(newnum, "%d", dinfo._minorRevision);
 
-               origstr.replace(oldnum,newnum);
+               e1.assign(oldnum);
+               origstr = boost::regex_replace(origstr, e1, newnum, boost::match_default | boost::format_all | boost::format_first_only);
             }
             else
             {
@@ -361,46 +389,52 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
 
             // store it off for the write.
             fileStrings.push_back(origstr);
-         } else if(!str.match("buildnumber").isNull())
+         } else if(!str.find("buildnumber")!=string::npos)
          {
-            if( !(tstr = str.match("[0-9]+")).isNull() )
+             boost::regex e1("[0-9]+");
+             boost::match_results<std::string::const_iterator> what;
+            if( boost::regex_search(str, what, e1, boost::match_default) )
             {
-               dinfo._buildNumber = atoi(tstr.data()) + 1;
+               tstr = string(what[0]);
+               dinfo._buildNumber = atoi(tstr.c_str()) + 1;
             }
 
             if(gBuildRevision >= 0 && dinfo._buildNumber != gBuildRevision)         // If specified and different.
             {
                // We need to generate a CTIDBG_new buildnumber define!
-               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+               ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = gBuildRevision;
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               ::sprintf(newnum, "%d", dinfo._buildNumber);
 
-               origstr.replace(oldnum,newnum);
+               e1.assign(oldnum);
+               origstr = boost::regex_replace(origstr, e1, newnum, boost::match_default | boost::format_all | boost::format_first_only);
 
+               
                cout << __LINE__ << " " << gBuildRevision << endl;
             }
             else if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
             {
                // We need to generate a CTIDBG_new buildnumber define!
-               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+              ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = 0;
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               ::sprintf(newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
             else
             {
                // We need to generate a CTIDBG_new buildnumber define!
-               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               ::sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+               ::sprintf(newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
 
-            origstr.replace(oldnum,newnum);
-
+            e1.assign(oldnum);
+            origstr = boost::regex_replace(origstr, e1, newnum, boost::match_default | boost::format_all | boost::format_first_only);
+            
             //cout << "BuildNumber " << dinfo._buildNumber << endl;
 
             // store it off for the write.
@@ -414,13 +448,13 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
 
       }
 
-      fclose(fp);
+      ::fclose(fp);
 
 
       // cout << dinfo << endl;
 
 
-      if( !access(cidfile, 2) )
+      if( !access(cidfile.c_str(), 2) )
       {
          bWritable = true;
       }
@@ -431,19 +465,19 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
       }
 
 
-      fp = fopen(cidfile.data(), "w");
+      fp = ::fopen(cidfile.c_str(), "w");
 
       if(fp != NULL)
       {
-         vector< RWCString >::iterator fit;
+         vector< string >::iterator fit;
 
          for(fit = fileStrings.begin(); fit != fileStrings.end(); fit++)
          {
-            RWCString str = *fit;
+            string str = *fit;
             // cout << str << endl;
-            fprintf(fp, "%s\n", str.data());
+            ::fprintf(fp, "%s\n", str.c_str());
          }
-         fclose(fp);
+         ::fclose(fp);
 
          fileStrings.clear();
       }
@@ -454,11 +488,11 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
    }
    else
    {
-      cout << " Couldn't open CID file " << cidfile.data() << " for writing" << endl;
+      cout << " Couldn't open CID file " << cidfile.c_str() << " for writing" << endl;
    }
 }
 
-void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname)
+void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, string &infoname)
 {
    char temp[128];
    char dir[128];
@@ -466,28 +500,28 @@ void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname)
    char *ptr = NULL;
    FILE *fp;
 
-   RWCString vinfo(db._dir);
+   string vinfo(db._dir);
    vinfo = vinfo + "\\" + infoname;
 
-   if(!GetFullPathName(vinfo, 128, dir, &ptr))
+   if(!GetFullPathName(vinfo.c_str(), 128, dir, &ptr))
    {
       cout << "It failed" << endl;
    }
    else
    {
-      strcpy(file, ptr);
+      ::strcpy(file, ptr);
       *ptr = '\0';
    }
 
 
    // Now prepare to generate the id_vinfo.h file
 
-   fp = fopen(vinfo.data(), "w");
+   fp = ::fopen(vinfo.c_str(), "w");
 
    if(fp != NULL)
    {
 
-      fprintf(fp, \
+      ::fprintf(fp, \
               "static struct {\n" \
               "   char *fname;\n" \
               "   double rev;\n" \
@@ -500,23 +534,29 @@ void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname)
       {
          CtiPVCS pS = *it;
 
-         RWCString tstr = pS.rev.match("[0-9.]+");
+         boost::regex e1("[0-9.]+");
+         boost::match_results<std::string::const_iterator> what;
+         boost::regex_search(pS.rev, what, e1, boost::match_default);
+
+         string tstr = string(what[0]);
          double revision = 0;
 
-         if(!tstr.isNull())
+         if(!tstr.empty())
          {
-            revision = atof(tstr.data());
+            revision = atof(tstr.c_str());
          }
+         e1.assign(gCompileBase);
+         pS.filename = boost::regex_replace(pS.filename, e1, "", boost::match_default | boost::format_all | boost::format_first_only);
+         e1.assign("\\\\");
+         pS.filename = boost::regex_replace(pS.filename, e1, "\\\\", boost::match_default | boost::format_all);
+         
 
-         pS.filename = pS.filename.replace(gCompileBase, "");
-         pS.filename = pS.filename.replace("\\\\", "\\\\", RWCString::all);
-
-         fprintf(fp, "{ \"%s\", %f, \"%s\" },\n", pS.filename, revision, pS.date);
+         ::fprintf(fp, "{ \"%s\", %f, \"%s\" },\n", pS.filename, revision, pS.date);
       }
 
-      fprintf(fp, "{ NULL, 0.0, NULL },\n");
-      fprintf(fp, "};\n");
-      fclose(fp);
+      ::fprintf(fp, "{ NULL, 0.0, NULL },\n");
+      ::fprintf(fp, "};\n");
+      ::fclose(fp);
 
    }
    else
@@ -532,7 +572,7 @@ int main(int argc, char **argv)
    INT flag = 0;
    CTIFILEVECTOR vect;
 
-   RWCString infoname;
+   string infoname;
 
    if(argc < 2)
    {
@@ -542,11 +582,11 @@ int main(int argc, char **argv)
 
    if( argc > 2 )
    {
-       infoname = RWCString( argv[2] );
+       infoname = string( argv[2] );
    }
 
    char temp[128];
-   RWCString path(".");
+   string path(".");
 
    if(GetEnvironmentVariable("YUKON_MAJOR_REVISION", temp, 128) > 0)
    {
@@ -574,27 +614,29 @@ int main(int argc, char **argv)
    {
       gCompileBase = temp;
       path = temp;
-      gCompileBase.toLower();
+      std::transform(gCompileBase.begin(), gCompileBase.end(), gCompileBase.begin(), ::tolower);
+      
 
       if(gCompileBase[gCompileBase.length()-1] != '\\')
       {
          gCompileBase = gCompileBase + "\\";
       }
-
-      gCompileBase = gCompileBase.replace("\\\\", "\\\\", RWCString::all);
+      boost::regex e1("\\\\");
+      gCompileBase = boost::regex_replace(gCompileBase, e1, "\\\\", boost::match_default | boost::format_all);
+      
    }
 
    // First find out if it has a CID.H file in it!
 
    CtiDirBuild db;
 
-   RWCString cidname(argv[1]);
+   string cidname(argv[1]);
 
    if(gDoCheckouts)
    {
        ProcessCID(db, cidname);
 
-       if(!infoname.isNull())
+       if(!infoname.empty())
        {
            ProcessDirectory(vect, path);
            GenerateVInfo(db, vect, infoname);

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/12/15 22:03:29 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,9 +171,9 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_WriteTime:
             {
                 DNP::Time *time_now = CTIDBG_new DNP::Time(Time::TimeAndDate);
-                RWTime Now;
+                CtiTime Now;
 
-                time_now->setSeconds(Now.seconds() - rwEpoch);
+                time_now->setSeconds(Now.seconds() );
 
                 _app_layer.setCommand(Application::RequestWrite);
 
@@ -268,7 +268,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     _command = Command_Invalid;
@@ -326,7 +326,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     _command = Command_Invalid;
@@ -338,7 +338,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - invalid command " << _command << " in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - invalid command " << _command << " in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _command = Command_Invalid;
@@ -432,7 +432,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - empty command parameters for SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - empty command parameters for SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
 
                                 _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
@@ -475,7 +475,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                         string s;
 
                         //  change to ptime
-                        RWTime t(time->getSeconds() + rwEpoch);
+                        CtiTime t(time->getSeconds());
 
                         s = "Device time: ";
                         s.append(t.asString());

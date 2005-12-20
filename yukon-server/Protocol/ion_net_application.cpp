@@ -67,7 +67,7 @@ void CtiIONApplicationLayer::initInPacketReserved( void )
 
 void CtiIONApplicationLayer::setToTimeSync( void )
 {
-    CtiIONTimeSync ts(RWTime::now().seconds() - rwEpoch);
+    CtiIONTimeSync ts(CtiTime::now().seconds() );
 
     freeOutPacketMemory();
     initOutPacketReserved();
@@ -109,7 +109,7 @@ void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
     else
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << dataLength << " bytes in CtiIONApplicationLayer ctor;"
+        dout << CtiTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << dataLength << " bytes in CtiIONApplicationLayer ctor;"
                                                                  << "  proceeding with zero-length ION data payload, setting valid = false" << endl;
         _appOut.header.length.byte1 = 0;
         _appOut.header.length.byte0 = 0;
@@ -144,7 +144,7 @@ int CtiIONApplicationLayer::generate( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _ioState = Failed;
@@ -172,7 +172,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         //  error conditions propagate back up to the protocol object
@@ -234,7 +234,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ioState = Failed;

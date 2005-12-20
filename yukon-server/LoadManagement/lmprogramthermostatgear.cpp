@@ -51,7 +51,7 @@ CtiLMProgramThermoStatGear::~CtiLMProgramThermoStatGear()
 {
 }
 
-const RWCString& CtiLMProgramThermoStatGear::getSettings() const
+const string& CtiLMProgramThermoStatGear::getSettings() const
 {
     return _settings;
 }
@@ -105,7 +105,7 @@ LONG CtiLMProgramThermoStatGear::getValueTf() const
 }
 
 
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setSettings(const RWCString& settings)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setSettings(const string& settings)
 {
     _settings = settings;
     return *this;

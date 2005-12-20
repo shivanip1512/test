@@ -14,13 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#include <string>
 
-#include <rw/cstring.h>
 #include "collectable.h"
 #include "logger.h"
 #include "dllbase.h"
@@ -28,16 +28,18 @@
 #include "yukon.h"
 #include "msg_notif_email_attachment.h"
 
+using std::string;
+
 class IM_EX_MSG CtiNotifEmailMsg : public CtiMessage
 {
 private:
    
    int                           _notifGroupID;
-   RWCString                     _to;          
-   RWCString                     _subject;
-   RWCString                     _body;
-   RWCString                     _toCC;        
-   RWCString                     _toBCC;       
+   string                     _to;          
+   string                     _subject;
+   string                     _body;
+   string                     _toCC;        
+   string                     _toBCC;       
    RWOrdered                     _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
@@ -57,19 +59,19 @@ public:
    virtual void dump() const;
 
    CtiMessage* replicateMessage() const;
-   void setAttachment( RWCString file );
+   void setAttachment( string file );
    int getNotifGroupId( void );
    void setNotifGroupId( int );
-   RWCString getTo( void );
-   void setTo( RWCString );
-   RWCString getSubject( void );
-   void setSubject( RWCString );
-   RWCString getBody( void );
-   void setBody( RWCString );
-   RWCString getToCC( void );
-   void setToCC( RWCString );
-   RWCString getToBCC( void );
-   void setToBCC( RWCString );
+   string getTo( void );
+   void setTo( string );
+   string getSubject( void );
+   void setSubject( string );
+   string getBody( void );
+   void setBody( string );
+   string getToCC( void );
+   void setToCC( string );
+   string getToBCC( void );
+   void setToBCC( string );
    RWOrdered& getAttachments( void );
 
 protected:
@@ -86,11 +88,11 @@ class IM_EX_MSG CtiCustomerNotifEmailMsg : public CtiMessage
 private:
    
    int                           _customerID;
-   RWCString                     _to;          
-   RWCString                     _subject;
-   RWCString                     _body;
-   RWCString                     _toCC;        
-   RWCString                     _toBCC;       
+   string                     _to;          
+   string                     _subject;
+   string                     _body;
+   string                     _toCC;        
+   string                     _toBCC;       
    RWOrdered                     _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
@@ -110,19 +112,19 @@ public:
    virtual void dump() const;
 
    CtiMessage* replicateMessage() const;
-   void setAttachment( RWCString file );
+   void setAttachment( string file );
    int getCustomerId( void );
    void setCustomerId( int );
-   RWCString getTo( void );
-   void setTo( RWCString );
-   RWCString getSubject( void );
-   void setSubject( RWCString );
-   RWCString getBody( void );
-   void setBody( RWCString );
-   RWCString getToCC( void );
-   void setToCC( RWCString );
-   RWCString getToBCC( void );
-   void setToBCC( RWCString );
+   string getTo( void );
+   void setTo( string );
+   string getSubject( void );
+   void setSubject( string );
+   string getBody( void );
+   void setBody( string );
+   string getToCC( void );
+   void setToCC( string );
+   string getToBCC( void );
+   void setToBCC( string );
    RWOrdered& getAttachments( void );
 
 protected:

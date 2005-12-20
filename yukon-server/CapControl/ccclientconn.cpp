@@ -29,7 +29,7 @@ CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _p
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getpeername() << endl;
+        dout << CtiTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getpeername() << endl;
     }
 
     try
@@ -60,7 +60,7 @@ CtiCCClientConnection::~CtiCCClientConnection()
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection closing." << endl;
+        dout << CtiTime() << " - Client Connection closing." << endl;
     }
     try
     {
@@ -69,12 +69,12 @@ CtiCCClientConnection::~CtiCCClientConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection closed." << endl;
+        dout << CtiTime() << " - Client Connection closed." << endl;
     }
 }
 
@@ -178,13 +178,13 @@ void CtiCCClientConnection::_sendthr()
 
             
             CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(RWDBDateTime().seconds()),msgBitMask));
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(CtiTime().seconds()),msgBitMask));
             executor->Execute();
             delete executor;
-            executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(RWDBDateTime().seconds())));
+            executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())));
             executor->Execute();
             delete executor;
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(RWDBDateTime().seconds())) );
+            executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())) );
             executor->Execute();
             delete executor;
         }*/
@@ -212,7 +212,7 @@ void CtiCCClientConnection::_sendthr()
                             catch(...)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                         delete out;
@@ -220,14 +220,14 @@ void CtiCCClientConnection::_sendthr()
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         while ( isValid() && oStream->good() );
@@ -246,7 +246,7 @@ void CtiCCClientConnection::_sendthr()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
@@ -273,7 +273,7 @@ void CtiCCClientConnection::_recvthr()
         do
         {
             rwRunnable().serviceCancellation();
-            //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
+            //cout << CtiTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
              try
                 {
@@ -283,7 +283,7 @@ void CtiCCClientConnection::_recvthr()
              catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             if ( current != NULL )
             {
@@ -297,7 +297,7 @@ void CtiCCClientConnection::_recvthr()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             } 
         }
@@ -317,7 +317,7 @@ void CtiCCClientConnection::_recvthr()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;

@@ -14,16 +14,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_one.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/12 20:34:47 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:20:00 $
 *    History: 
       $Log: std_ansi_tbl_one_one.h,v $
+      Revision 1.5  2005/12/20 17:20:00  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_one_one.h
+      Revision 1.3.18.1  2005/07/12 21:08:43  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.4  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.3.20.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.4
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -101,15 +110,15 @@ public:
    bool getRawSlidingDemandFlag( void );
    bool getRawThermalDemandFlag( void );
 
-   RWCString getResolvedConstantsSelector( void );
-   RWCString getResolvedNoOffsetFlag( void );
-   RWCString getResolvedSetOnePresentFlag( void );
-   RWCString getResolvedSetTwoPresentFlag( void );
-   RWCString getResolvedPFExcludeFlag( void );
-   RWCString getResolvedResetExcludeFlag( void );
-   RWCString getResolvedBlockDemandFlag( void );
-   RWCString getResolvedSlidingDemandFlag( void );
-   RWCString getResolvedThermalDemandFlag( void );
+   string getResolvedConstantsSelector( void );
+   string getResolvedNoOffsetFlag( void );
+   string getResolvedSetOnePresentFlag( void );
+   string getResolvedSetTwoPresentFlag( void );
+   string getResolvedPFExcludeFlag( void );
+   string getResolvedResetExcludeFlag( void );
+   string getResolvedBlockDemandFlag( void );
+   string getResolvedSlidingDemandFlag( void );
+   string getResolvedThermalDemandFlag( void );
 
    CtiAnsiTableOneOne( );
    CtiAnsiTableOneOne( BYTE *dataBlob );
@@ -118,7 +127,7 @@ public:
 
    void generateResultPiece( BYTE **dataBlob );
    void decodeResultPiece( BYTE **dataBlob );
-   void printResult(RWCString deviceName);
+   void printResult(const string& deviceName);
 
 
 private:

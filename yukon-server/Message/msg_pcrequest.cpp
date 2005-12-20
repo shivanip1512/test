@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcrequest.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,12 +68,12 @@ CtiRequestMsg& CtiRequestMsg::setDeviceId( long device_id )
     return *this;
 }
 
-const RWCString& CtiRequestMsg::CommandString() const
+const string& CtiRequestMsg::CommandString() const
 {
     return _command_string;
 }
 
-CtiRequestMsg& CtiRequestMsg::setCommandString(const RWCString& command_string)
+CtiRequestMsg& CtiRequestMsg::setCommandString(const string& command_string)
 {
     _command_string = command_string;
     return *this;
@@ -180,7 +180,7 @@ CtiRequestMsg::CtiRequestMsg() :
  {};
 
 CtiRequestMsg::CtiRequestMsg(long device_id,
-               const RWCString& command_string,
+               const string& command_string,
                long user_message_id,
                long transmission_id,
                long route_id,

@@ -4,8 +4,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/04/26 22:33:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:17:12 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -33,10 +33,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/toolpro/winsock.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 //#include <rw/thr/thrfunc.h>
 //#include <rw/thr/mutex.h>
-#include <rw/cstring.h>
 
 //#include "dbaccess.h"
 #include "dlldefs.h"
@@ -104,12 +103,12 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << " - " << RWCString (tstr) << endl;
+            cout << " - " << string (tstr) << endl;
         }
         else
         {
             dout.start();     // fire up the logger thread
-            dout.setOutputPath(gLogDirectory.data());
+            dout.setOutputPath(gLogDirectory);
             dout.setOutputFile("fdr");
             dout.setToStdOut(true);
             dout.setWriteInterval(0);
@@ -117,11 +116,11 @@ int main( int argc, char *argv[] )
             {
                 sprintf(tstr," (Build %d.%d.%d) Foreign Data Router", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << RWCString (tstr) << " starting console mode ..." << endl;
+                dout << CtiTime( ) << string (tstr) << " starting console mode ..." << endl;
             }
 
 
-            //cout << RWTime( ) << " - FDR starting up..." << endl;
+            //cout << CtiTime( ) << " - FDR starting up..." << endl;
             CtiFDRService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
             service.RunInConsole( argc, argv );
@@ -130,7 +129,7 @@ int main( int argc, char *argv[] )
     else
     {
         dout.start();     // fire up the logger thread
-        dout.setOutputPath(gLogDirectory.data());
+        dout.setOutputPath(gLogDirectory);
         dout.setOutputFile("fdr");
       dout.setToStdOut(false);
         dout.setWriteInterval(5000);
@@ -138,7 +137,7 @@ int main( int argc, char *argv[] )
         {
             sprintf(tstr," (Build %d.%d.%d) Foreign Data Router", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << RWCString (tstr) << " starting up..." << endl;
+            dout << CtiTime( ) << string (tstr) << " starting up..." << endl;
         }
 
 
@@ -156,7 +155,7 @@ int main( int argc, char *argv[] )
 int install( DWORD dwStart )
 {
     CtiConfigParameters configParameters;
-    RWCString           depends;
+    string           depends;
 
     if ( configParameters.isOpt(CPARM_NAME_SRV_DEPENDENCIES) )
     {
@@ -164,14 +163,14 @@ int install( DWORD dwStart )
         cout << "FDR Services Dependencies specified: " << depends << endl;
     }
 
-    cout << RWTime( ) << " - Installing FDR as a service..." << endl;
+    cout << CtiTime( ) << " - Installing FDR as a service..." << endl;
 
 
     CServiceConfig si(szServiceName, szDisplayName);
 
     si.Install( SERVICE_WIN32_OWN_PROCESS,
                 dwStart,
-                depends,
+                depends.c_str(),
                 NULL,   // Use LocalSystem Account
                 NULL);
 
@@ -180,7 +179,7 @@ int install( DWORD dwStart )
 
 int remove( void )
 {
-    cout << RWTime( )  << " - Removing FDR service..." << endl;
+    cout << CtiTime( )  << " - Removing FDR service..." << endl;
     CServiceConfig si(szServiceName, szDisplayName);
     si.Remove( );
 

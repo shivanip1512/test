@@ -106,7 +106,7 @@ IM_EX_CTIBASE INT CheckDataStateQuality (DEVICE *DeviceRecord,
 #if 1
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 #else
     USHORT LoggedEvent = FALSE;

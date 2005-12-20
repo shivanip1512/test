@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2004/08/18 21:46:02 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,15 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.h,v $
+      Revision 1.5  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.4.4.2  2005/08/12 19:53:47  jliu
+      Date Time Replaced
+
+      Revision 1.4.4.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.4  2004/08/18 21:46:02  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
       2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
@@ -64,22 +73,22 @@ public:
     virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const;
     virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList ();
    
-    virtual RWCString getCustomerIdentifier(void);
-    virtual RWTime    getlodeStarStartTime(void);
-    virtual RWTime    getlodeStarStopTime(void);
+    virtual string getCustomerIdentifier(void);
+    virtual CtiTime    getlodeStarStartTime(void);
+    virtual CtiTime    getlodeStarStopTime(void);
     virtual long       getlodeStarSecsPerInterval(void);
     virtual long       getlodeStarPointId(void);
     virtual void       reinitialize(void);
-    virtual bool decodeFirstHeaderRecord(RWCString& aLine, int fileIndex);
-    virtual bool decodeSecondHeaderRecord(RWCString& aLine);
-    virtual bool decodeThirdHeaderRecord(RWCString& aLine);
-    virtual bool decodeFourthHeaderRecord(RWCString& aLine);
-    virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg);
+    virtual bool decodeFirstHeaderRecord(string& aLine, int fileIndex);
+    virtual bool decodeSecondHeaderRecord(string& aLine);
+    virtual bool decodeThirdHeaderRecord(string& aLine);
+    virtual bool decodeFourthHeaderRecord(string& aLine);
+    virtual bool decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg);
     virtual const CHAR * getKeyInterval();
     virtual const CHAR * getKeyFilename();
     virtual const CHAR * getKeyImportDrivePath();
-    virtual const RWCString& getFileImportBaseDrivePath();
-    virtual const RWCString& setFileImportBaseDrivePath(RWCString importBase);
+    virtual const string& getFileImportBaseDrivePath();
+    virtual const string& setFileImportBaseDrivePath(string importBase);
     virtual const CHAR * getKeyDBReloadRate();
     virtual const CHAR * getKeyQueueFlushRate();
     virtual const CHAR * getKeyDeleteFile();
@@ -87,7 +96,7 @@ public:
     virtual int getSubtractValue();
     virtual int getExpectedNumOfEntries();
 
-    RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
+    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
     static const CHAR * KEY_IMPORT_BASE_PATH;
@@ -98,15 +107,15 @@ public:
 
 private:
     //information obtained from the first header record
-    RWCString  _stdLsCustomerIdentifier;
+    string  _stdLsCustomerIdentifier;
     long        _pointId;//determined from the Customer Identifier
     long        _stdLsChannel;
-    RWTime     _stdLsStartTime;
-    RWTime     _stdLsStopTime;
+    CtiTime     _stdLsStartTime;
+    CtiTime     _stdLsStopTime;
     long        _stdLsIntervalsPerHour;
     long        _stdLsUnitOfMeasure; 
     long        _stdLsAltFormat;
-    RWCString  _stdLsFiller;
+    string  _stdLsFiller;
     double        _stdLsSecondsPerInterval;//calculated value from intervals per hour
         
     //information obtained from the second header record
@@ -118,13 +127,13 @@ private:
     double      _stdLsPulseOffset;
                             
     //information obtained from the third header record
-    RWCString  _stdLsDescriptor;
+    string  _stdLsDescriptor;
     double      _stdLsAltPulseMultiplier;
     double      _stdLsPopulation;
     double      _stdLsWeight;
 
 
-    RWCString _fileImportBaseDrivePath;
+    string _fileImportBaseDrivePath;
 
     int _stdLsExpectedNumEntries;
 

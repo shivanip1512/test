@@ -82,7 +82,7 @@ LONG CtiLMEnergyExchangeOfferRevision::getRevisionNumber() const
     Returns the action datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getActionDateTime() const
+const CtiTime& CtiLMEnergyExchangeOfferRevision::getActionDateTime() const
 {
 
     return _actiondatetime;
@@ -94,7 +94,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getActionDateTime() const
     Returns the Notification datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getNotificationDateTime() const
+const CtiTime& CtiLMEnergyExchangeOfferRevision::getNotificationDateTime() const
 {
 
     return _notificationdatetime;
@@ -106,7 +106,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getNotificationDateTime() 
     Returns the expiration datetime of the current offer for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getOfferExpirationDateTime() const
+const CtiTime& CtiLMEnergyExchangeOfferRevision::getOfferExpirationDateTime() const
 {
 
     return _offerexpirationdatetime;
@@ -118,7 +118,7 @@ const RWDBDateTime& CtiLMEnergyExchangeOfferRevision::getOfferExpirationDateTime
     Returns the additional info of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeOfferRevision::getAdditionalInfo() const
+const string& CtiLMEnergyExchangeOfferRevision::getAdditionalInfo() const
 {
 
     return _additionalinfo;
@@ -169,7 +169,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setRevisionN
     Sets the action datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setActionDateTime(const RWDBDateTime& actiontime)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setActionDateTime(const CtiTime& actiontime)
 {
 
     _actiondatetime = actiontime;
@@ -183,7 +183,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setActionDat
     Sets the notification datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setNotificationDateTime(const RWDBDateTime& notifytime)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setNotificationDateTime(const CtiTime& notifytime)
 {
 
     _notificationdatetime = notifytime;
@@ -197,7 +197,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setNotificat
     Sets the expirtation datetime of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferExpirationDateTime(const RWDBDateTime& expirationtime)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferExpirationDateTime(const CtiTime& expirationtime)
 {
 
     _offerexpirationdatetime = expirationtime;
@@ -211,7 +211,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferExpi
     Sets the additional info of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setAdditionalInfo(const RWCString& additional)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setAdditionalInfo(const string& additional)
 {
 
     _additionalinfo = additional;
@@ -278,9 +278,9 @@ void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
 
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime1;
-    RWTime tempTime2;
-    RWTime tempTime3;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
 
     istrm >> _offerid
     >> _revisionnumber
@@ -290,9 +290,9 @@ void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
     >> _additionalinfo
     >> _lmenergyexchangehourlyoffers;
 
-    _actiondatetime = RWDBDateTime(tempTime1);
-    _notificationdatetime = RWDBDateTime(tempTime2);
-    _offerexpirationdatetime = RWDBDateTime(tempTime3);
+    _actiondatetime = CtiTime(tempTime1);
+    _notificationdatetime = CtiTime(tempTime2);
+    _offerexpirationdatetime = CtiTime(tempTime3);
 }
 
 /*---------------------------------------------------------------------------
@@ -309,9 +309,9 @@ void CtiLMEnergyExchangeOfferRevision::saveGuts(RWvostream& ostrm ) const
 
     ostrm << _offerid
     << _revisionnumber
-    << _actiondatetime.rwtime()
-    << _notificationdatetime.rwtime()
-    << _offerexpirationdatetime.rwtime()
+    << _actiondatetime
+    << _notificationdatetime
+    << _offerexpirationdatetime
     << _additionalinfo
     << _lmenergyexchangehourlyoffers;
 
@@ -406,7 +406,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
+                dout << CtiTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
             }
 
             RWDBDatabase db = getDatabase();
@@ -424,7 +424,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -432,7 +432,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -456,10 +456,10 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
             RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
             RWDBUpdater updater = lmEnergyExchangeOfferRevisionTable.updater();
 
-            updater << lmEnergyExchangeOfferRevisionTable["actiondatetime"].assign(getActionDateTime())
-            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"].assign(getNotificationDateTime())
-            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"].assign(getOfferExpirationDateTime())
-            << lmEnergyExchangeOfferRevisionTable["additionalinfo"].assign(getAdditionalInfo());
+            updater << lmEnergyExchangeOfferRevisionTable["actiondatetime"].assign(toRWDBDT(getActionDateTime()))
+            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"].assign(toRWDBDT(getNotificationDateTime()))
+            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"].assign(toRWDBDT(getOfferExpirationDateTime()))
+            << lmEnergyExchangeOfferRevisionTable["additionalinfo"].assign(getAdditionalInfo()[0]);
 
             updater.where(lmEnergyExchangeOfferRevisionTable["offerid"]==getOfferId() &&
                           lmEnergyExchangeOfferRevisionTable["revisionnumber"]==getRevisionNumber());
@@ -467,7 +467,7 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -475,7 +475,7 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -526,14 +526,14 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData(RWDBReader& rdr)
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << selector.asString().data() << endl;
+                dout << CtiTime() << " - " << selector.asString().data() << endl;
             }
 
             RWDBReader rdr = selector.reader(conn);
 
             if(rdr())
             {
-                RWCString tempBoolString;
+                string tempBoolString;
                 rdr["offerid"] >> _offerid;
                 rdr["revisionnumber"] >> _revisionnumber;
                 rdr["actiondatetime"] >> _actiondatetime;
@@ -546,7 +546,7 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData(RWDBReader& rdr)
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }

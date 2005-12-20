@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/12/20 17:20:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -283,7 +283,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 #ifdef DEBUG1
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Accum Scan of device " << getName() << " in progress " << endl;
+                dout << CtiTime() << " Accum Scan of device " << getName() << " in progress " << endl;
             }
 #endif
         }
@@ -291,7 +291,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Integrity Scan of device " << getName() << " in progress " << endl;
+            dout << CtiTime() << " Integrity Scan of device " << getName() << " in progress " << endl;
         }
 #endif
 
@@ -351,7 +351,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -414,7 +414,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
         return MEMORY;
     }
@@ -435,19 +435,19 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_DIAGNOSTICS:
             {
-                RWCString result("Diagnostic Scan\n");
-                RWCString tstr = result;
+                string result("Diagnostic Scan\n");
+                string tstr = result;
 
                 if(MyInMessage[2] & (EW_HDW_BIT))
                 {
-                    result += RWCString("Hardware error is indicated by RTU\n");
+                    result += string("Hardware error is indicated by RTU\n");
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Hardware error is indicated by RTU " << getName() << endl;
+                    dout << CtiTime() << " Hardware error is indicated by RTU " << getName() << endl;
                 }
 
                 if(MyInMessage[2] & (EW_FMW_BIT))
                 {
-                    result += RWCString("Firmware error is indicated by RTU\n");
+                    result += string("Firmware error is indicated by RTU\n");
                     OutMessage = CTIDBG_new OUTMESS;
 
                     if(OutMessage != NULL)
@@ -469,7 +469,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                 if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT))
                 {
-                    result += RWCString("Deadbands downloaded due to powerfail bit\n");
+                    result += string("Deadbands downloaded due to powerfail bit\n");
 
                     setDeadbandsSent(false);
 
@@ -483,7 +483,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                 if(MyInMessage[2] & (EW_FMW_BIT | EW_PWR_BIT | EW_SYN_BIT))
                 {
-                    result += RWCString("Time synchronization sent to RTU\n");
+                    result += string("Time synchronization sent to RTU\n");
                     if((i = WelCoTimeSync (InMessage, outList, MAXPRIORITY - 1)) != NORMAL)
                     {
                         /* Send Error to logger */
@@ -493,7 +493,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                 if(tstr == result)
                 {
-                    result += RWCString("RTU indicates GOOD status\n");
+                    result += string("RTU indicates GOOD status\n");
                 }
 
                 ReturnMsg->setResultString(result);
@@ -511,9 +511,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     if(useScanFlags())
                     {
                         setPrevFreezeTime(getLastFreezeTime());
-                        setLastFreezeTime( RWTime(InMessage->Time) );
+                        setLastFreezeTime( CtiTime(InMessage->Time) );
                         resetScanFlag(ScanFreezeFailed);
-
                         setPrevFreezeNumber(getLastFreezeNumber());
                         setLastFreezeNumber(TRUE);
                     }
@@ -547,7 +546,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Throwing away unexpected freeze response" << endl;
+                        dout << CtiTime() << " Throwing away unexpected freeze response" << endl;
                     }
                     // What is this ??? DeviceRecord->ScanStatus &= SCANFREEZEFAILED;
                     setScanFlag(ScanFreezeFailed);   // FIX FIX FIX 090799 CGP ?????
@@ -844,7 +843,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         dout << " " << getName() << " Demand Accum pt. " << pAccumPoint->getName() << " = " << PValue << endl;
                                         dout << " Previous Pulses   " << prevpulses << endl;
                                         dout << " Present Pulses    " << prespulses << endl;
@@ -916,7 +915,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 #if (DEBUG_PRINT_DECODE > 0)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                            dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
                         }
 #endif
                         /*
@@ -936,12 +935,12 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 #if (DEBUG_PRINT_DECODE > 0)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                                dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
                             }
 #endif
                         }
 
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
@@ -956,7 +955,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
 
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
@@ -999,7 +998,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 #if (DEBUG_PRINT_DECODE > 0)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                            dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
                         }
 #endif
 
@@ -1008,11 +1007,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
                         }
 
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                     PValue,
@@ -1029,7 +1028,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).c_str() );
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                         PValue,
                                                         NormalQuality,
@@ -1258,7 +1257,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
         {
             retList.append( ReturnMsg );
         }
@@ -1313,7 +1312,7 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
     if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Issuing a continue message! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Issuing a continue message! " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     /* Load the sectn to scan the stati */
@@ -1607,7 +1606,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         MyOutMessage->Sequence                 = 0;
                         MyOutMessage->Retry                    = 0;
 
-                        MyOutMessage->ExpirationTime = RWTime().seconds() + 120;     // These guys do not need to be on-queue for too long.
+                        MyOutMessage->ExpirationTime = CtiTime().seconds() + 120;     // These guys do not need to be on-queue for too long.
 
                         outList.insert(MyOutMessage);
                         MyOutMessage = NULL;                // Out of our hands now...
@@ -1643,7 +1642,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
 
 
 INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
-                                RWTime &TimeNow,
+                                CtiTime &TimeNow,
                                 RWTPtrSlist< CtiMessage >   &vgList,
                                 RWTPtrSlist< CtiMessage > &retList,
                                 RWTPtrSlist<OUTMESS> &outList)
@@ -1673,7 +1672,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
 
     if(InMessage)
     {
-        resetForScan(desolveScanRateType(RWCString(InMessage->Return.CommandStr)));
+        resetForScan(desolveScanRateType(string(InMessage->Return.CommandStr)));
     }
 
     /* see what handshake was */
@@ -1687,7 +1686,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
             setPrevFreezeTime(getLastFreezeTime());
             setPrevFreezeNumber(getLastFreezeNumber());
             setLastFreezeNumber(0);
-            setLastFreezeTime(InMessage->Time + rwEpoch);
+            setLastFreezeTime(InMessage->Time );
         }
         else if(isScanFlagSet(ScanRateGeneral))
         {
@@ -1794,7 +1793,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
                     Message[6] = HIBYTE (TimeB.millitm);
 
                     ret->setResultString("Time set to " +
-                                         CtiNumStr(TimeSt.tm_mon + 1) + "/" +
+                                         CtiNumStr(TimeSt.tm_mon + 1) + string("/") +
                                          CtiNumStr(TimeSt.tm_mday) + " " +
                                          CtiNumStr(TimeSt.tm_hour).zpad(2) + ":" +
                                          CtiNumStr(TimeSt.tm_min).zpad(2) + ":" +
@@ -1826,8 +1825,8 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("Welco Devices do not support this command (yet?)"),
+                                             string(OutMessage->Request.CommandStr),
+                                             string("Welco Devices do not support this command (yet?)"),
                                              nRet,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
@@ -1880,7 +1879,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
         if(ctlpt < 0)
         {
             // Must have provided only a name... Find it the hard way.
-            RWCString pname = parse.getsValue("point");
+            string pname = parse.getsValue("point");
             ctlPoint = (CtiPointStatus*)getDevicePointEqualByName(pname);
         }
         else
@@ -1901,7 +1900,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                     if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  Poorly formed control message.  Specify select pointid and open or close" << endl;
                     }
                     else    // We have all our info available.
@@ -1932,13 +1931,13 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         MyOutMessage->Buffer.OutMessage[7] = LOBYTE(ctloffset - 1);
 
                         /* Load the appropriate times into the message */
-                        if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        if( findStringIgnoreCase(parse.getCommandStr(),ctlPoint->getPointStatus().getStateZeroControl()) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                         {
                             controlState = STATEZERO;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10);
                             MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
                         }
-                        else if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        else if( findStringIgnoreCase(parse.getCommandStr(),ctlPoint->getPointStatus().getStateOneControl()) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
                             controlState = STATEONE;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10);
@@ -1966,7 +1965,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         outList.insert( OutMessage );
                         OutMessage = 0;
 
-                        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, RWTime(), -1, 100 );
+                        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, CtiTime(), -1, 100 );
 
                         hist->setMessagePriority( hist->getMessagePriority() + 1 );
                         vgList.insert( hist );
@@ -1978,19 +1977,19 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                                                                          (DOUBLE)controlState,
                                                                          NormalQuality,
                                                                          StatusPointType,
-                                                                         RWCString("This point has been controlled"));
+                                                                         string("This point has been controlled"));
                             pData->setUser( pReq->getUser() );
                             vgList.insert(pData);
                         }
 
-                        retList.insert( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), RWCString("Command submitted to port control")) );
+                        retList.insert( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), string("Command submitted to port control")) );
                     }
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  Control Point " << ctlPoint->getName() << " is disabled" << endl;
                     }
                 }
@@ -2000,7 +1999,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
+                dout << CtiTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
             }
         }
     }
@@ -2008,7 +2007,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " is disabled" << endl;
+            dout << CtiTime() << " " << getName() << " is disabled" << endl;
         }
     }
 

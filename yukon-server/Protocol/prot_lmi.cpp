@@ -8,15 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/12/15 22:27:11 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#include <rw/rwdate.h>
+//#include <rw/rwdate.h>
 
 #include "logger.h"
 #include "porter.h"
@@ -26,6 +26,7 @@
 #include "utility.h"
 #include "numstr.h"
 #include "cparms.h"
+#include "ctidate.h"
 
 #include "verification_objects.h"
 
@@ -73,7 +74,7 @@ CtiProtocolLMI &CtiProtocolLMI::operator=(const CtiProtocolLMI &aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if( this != &aRef )
@@ -92,7 +93,7 @@ void CtiProtocolLMI::setAddress( unsigned char address )
 }
 
 
-void CtiProtocolLMI::setName( const RWCString &name )
+void CtiProtocolLMI::setName( const string &name )
 {
     _name = name;
 }
@@ -218,7 +219,7 @@ bool CtiProtocolLMI::hasInboundData( void )
 }
 
 
-void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info )
+void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, string &info )
 {
     int i = 1;
     CtiPointDataMsg *pdm;
@@ -376,7 +377,7 @@ void CtiProtocolLMI::queueCode(CtiOutMessage *om)
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << om->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << om->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     _codes.push(om);
@@ -397,7 +398,7 @@ bool CtiProtocolLMI::codeVerificationPending( void ) const
 
 bool CtiProtocolLMI::canDownloadCodes( void ) const
 {
-    RWTime now, transmit_begin, transmit_end;
+    CtiTime now, transmit_begin, transmit_end;
     int percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
     transmit_begin -= now.seconds() % (_tick_time * 60);
@@ -447,7 +448,7 @@ int CtiProtocolLMI::getPreloadDataLength( void ) const
     }
 
     //  add on the config length
-    if( _config_sent < (RWTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
+    if( _config_sent < (CtiTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
     {
         total_comms += PacketOverheadLen * 2 + 18;
     }
@@ -459,13 +460,13 @@ int CtiProtocolLMI::getPreloadDataLength( void ) const
 }
 
 
-RWTime CtiProtocolLMI::getTransmissionEnd( void ) const
+CtiTime CtiProtocolLMI::getTransmissionEnd( void ) const
 {
     return _transmission_end;
 }
 
 
-RWTime CtiProtocolLMI::getLastCodeDownload( void ) const
+CtiTime CtiProtocolLMI::getLastCodeDownload( void ) const
 {
     return _last_code_download;
 }
@@ -475,13 +476,13 @@ bool CtiProtocolLMI::isTransactionComplete( void )
 {
     bool retval = false;
 
-    if( _comm_end_time && _comm_end_time < RWTime::now().seconds() )
+    if( _comm_end_time && _comm_end_time < CtiTime::now().seconds() )
     {
         retval = true;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else
@@ -517,13 +518,13 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 {
     int retval = NoError;
     bool reply_expected = true;
-    RWTime NowTime;
-    RWDate NowDate;
+    CtiTime NowTime;
+    CtiDate NowDate;
 
     if( gConfigParms.getValueAsULong("LMI_DEBUGLEVEL", 0) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(slog);
-        slog << RWTime() << " **** prot_lmi generating with command = " << _command << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        slog << CtiTime() << " **** prot_lmi generating with command = " << _command << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if( _in_total > 0 )
@@ -567,7 +568,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - persistent 'questionable request' respose from LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - persistent 'questionable request' respose from LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _transaction_complete = true;
@@ -575,7 +576,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 retval = NOTNORMAL;
             }
             //  if we've never downloaded the system parameters, send them out (once per day by default)
-            else if( _config_sent < (RWTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
+            else if( _config_sent < (CtiTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
             {
                 _outbound.length  = 19;
                 _outbound.body_header.message_type = Opcode_DownloadSystemData;
@@ -614,7 +615,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " LMI device \"" << _name << "\" removing previous outbound codes" << endl;
+                                slog << CtiTime() << " LMI device \"" << _name << "\" removing previous outbound codes" << endl;
                             }
 
                             _num_codes_loaded = 0;
@@ -651,19 +652,19 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - removing null OM from device queue for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - removing null OM from device queue for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
                         if( expired_code_count )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" pruned " << expired_code_count << " codes this pass" << endl;
+                            slog << CtiTime() << " LMI device \"" << _name << "\" pruned " << expired_code_count << " codes this pass" << endl;
                         }
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
+                            slog << CtiTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
                         }
 
                         _outbound_code_count = viable_codes.size();
@@ -712,10 +713,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                             long id = om->DeviceID;
 
-                            if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                            if( !findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY") ,"false" ))
                             {
                                 ptime::time_duration_type expiration(seconds(60));
-                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).data(), codestr, expiration);
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).c_str(), codestr, expiration);
 
                                 _verification_objects.push(work);
                             }
@@ -861,7 +862,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - retval = " << retval << " in CtiProtocolLMI::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - retval = " << retval << " in CtiProtocolLMI::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _transaction_complete = true;
@@ -880,7 +881,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     CtiXfer seriesv_xfer;
     unsigned long seriesv_incount_actual;
     const unsigned char *buf = (unsigned char *)&_inbound;
-    RWTime Now;
+    CtiTime Now;
 
     if( !status )
     {
@@ -936,7 +937,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                     }
                     else if( _inbound.body_header.message_type == Opcode_DownloadSystemData )
                     {
-                        _config_sent = RWTime::now().seconds();
+                        _config_sent = CtiTime::now().seconds();
                     }
                     else
                     {
@@ -956,13 +957,13 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //    to pull it out of _outbound.data[0]...  that would be gross, dude
                                 _num_codes_loaded += _outbound_code_count;
 
-                                _last_code_download = RWTime::now().seconds();
+                                _last_code_download = CtiTime::now().seconds();
 
-                                _transmission_end  = RWTime::now().seconds();
+                                _transmission_end  = CtiTime::now().seconds();
                                 _transmission_end -= _transmission_end % (_tick_time * 60);
                                 _transmission_end += _time_offset;
 
-                                while( _transmission_end < RWTime::now().seconds() )
+                                while( _transmission_end < CtiTime::now().seconds() )
                                 {
                                     _transmission_end += _tick_time * 60;
                                 }
@@ -1028,7 +1029,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                     if( _command == Command_ReadEchoedCodes )
                                     {
-                                        if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                                        if( !findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY"),"false") )
                                         {
                                             CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
                                             _verification_objects.push(report);
@@ -1051,7 +1052,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
 
                                     //  clear them out for safety
@@ -1093,7 +1094,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                         _transmitter_power  = _inbound.data[1];
                                         _transmitter_power |= _inbound.data[2] << 8;
 
-                                        _transmitter_power_time = RWTime::now().seconds();
+                                        _transmitter_power_time = CtiTime::now().seconds();
 
                                         _transaction_complete = true;
                                     }
@@ -1120,7 +1121,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            dout << CtiTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         }
                                     }
                                 }
@@ -1174,7 +1175,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     {
         if( _outbound.body_header.message_type == Opcode_DownloadSystemData )
         {
-            _config_sent = RWTime::now().seconds();
+            _config_sent = CtiTime::now().seconds();
         }
 
         if( _preload_sequence )

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,6 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 #include "pt_base.h"
 #include "yukon.h"
 #include "dlldefs.h"
@@ -63,7 +62,7 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr)
    {
-      RWCString rwsTemp;
+      string rwsTemp;
       Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
 
       if(getDebugLevel() & DEBUGLEVEL_DATABASE) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

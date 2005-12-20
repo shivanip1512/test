@@ -13,10 +13,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
+
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -39,17 +38,19 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // this class header
 #include "fdrsocketserver.h"
+#include "ctitime.h"
+#include "ctidate.h"
 
 // Constructors, Destructor, and Operators
-CtiFDRSocketServer::CtiFDRSocketServer(RWCString &name)
+CtiFDRSocketServer::CtiFDRSocketServer(string &name)
 : CtiFDRInterface(name)
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
-    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), RWCString(FDR_INTERFACE_SEND));
+    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (sendList);
     sendList = NULL;
 }
@@ -128,9 +129,9 @@ BOOL CtiFDRSocketServer::run( void )
     // log this now so we dont' have to everytime one comes in 
     if (!shouldUpdatePCTime())
     {
-        RWCString desc = getInterfaceName() 
-            + RWCString (" has been configured to NOT process time sync updates to PC clock");
-        logEvent (desc,RWCString());
+        string desc = getInterfaceName() 
+            + string (" has been configured to NOT process time sync updates to PC clock");
+        logEvent (desc,string());
     }
 
     return TRUE;
@@ -168,21 +169,21 @@ bool CtiFDRSocketServer::loadTranslationLists()
 
     begineNewPoints();
 
-    retCode = loadList(RWCString(FDR_INTERFACE_SEND),getSendToList());
+    retCode = loadList(string(FDR_INTERFACE_SEND),getSendToList());
 
     if (retCode)
     {
-        retCode = loadList(RWCString (FDR_INTERFACE_RECEIVE),getReceiveFromList());
+        retCode = loadList(string (FDR_INTERFACE_RECEIVE),getReceiveFromList());
     }
     return retCode;
 }
 
-bool CtiFDRSocketServer::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
+bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
     bool                successful = true;
     CtiFDRPoint *       translationPoint = NULL;
     CtiFDRPoint *       point = NULL;
-    RWCString           translationName;
+    string           translationName;
     bool                foundPoint = false, translatedPoint(false);
     RWDBStatus          listStatus;
     bool isSend = (aDirection == FDR_INTERFACE_SEND);
@@ -556,7 +557,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
             }
             continue;
         }
-        if (point->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+        if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
@@ -639,7 +640,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     * then don't route the point because it is uninitialized (uninitialized points 
     * come across as 11-10-1990). 
     */
-    if (point.getLastTimeStamp() < RWTime(RWDate(1,1,2000)))
+    if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2000)))
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {

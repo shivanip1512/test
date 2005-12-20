@@ -13,11 +13,11 @@
 
 *-----------------------------------------------------------------------------*/
 
-#include <rw/cstring.h>
 
 #include "guard.h"
 #include "logger.h"
 #include "prot_ansi_sentinel.h"
+#include "ctidate.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -75,7 +75,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating KV2 table 0" << endl;
+                   dout << CtiTime() << " Creating KV2 table 0" << endl;
                 }
                 _tableZero = new CtiAnsiKV2ManufacturerTableZero( data );
                 _tableZero->printResult();
@@ -106,8 +106,8 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
           memcpy((void *)&_dstConfigured, data, sizeof(unsigned char));
           data += 1;
 
-          RWTime tempTime1 = RWTime(_timeOfLastOutage + RWTime(RWDate(1,1,2000)).seconds());
-          RWTime tempTime2 = RWTime(_timeOfLastInterrogation + RWTime(RWDate(1,1,2000)).seconds());
+          CtiTime tempTime1 = CtiTime(_timeOfLastOutage + CtiTime(CtiDate(1,1,2000)).seconds());
+          CtiTime tempTime2 = CtiTime(_timeOfLastInterrogation + CtiTime(CtiDate(1,1,2000)).seconds());
 
 
           if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
@@ -131,7 +131,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating KV2 table 70" << endl;
+                   dout << CtiTime() << " Creating KV2 table 70" << endl;
                 }
 
                 _tableSeventy = new CtiAnsiKV2ManufacturerTableSeventy( data );
@@ -142,7 +142,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating Sentinel table 110" << endl;
+                   dout << CtiTime() << " Creating Sentinel table 110" << endl;
                 }
 
 //                _table_110 = new CtiKV2AnsiTable_110( data );
@@ -173,9 +173,9 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
 
-    reqData.u.pm22.time = lastLPTime - RWTime(RWDate(1,1,2000)).seconds();
+    reqData.u.pm22.time = lastLPTime - CtiTime(CtiDate(1,1,2000)).seconds();
 
-    //UINT32 tempTime =  RWTime().seconds() - 60 - RWTime(RWDate(1,1,2000)).seconds() - /*(26 * 3600 * 24) - */10800;
+    //UINT32 tempTime =  CtiTime().seconds() - 60 - CtiTime(CtiDate(1,1,2000)).seconds() - /*(26 * 3600 * 24) - */10800;
     getApplicationLayer().populateParmPtr((BYTE *) &reqData.u.pm22.time, 4) ;
     //getApplicationLayer().populateParmPtr((BYTE *) &tempTime, 4) ;
 

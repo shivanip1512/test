@@ -11,17 +11,29 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_two.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_two.cpp,v $
+      Revision 1.9  2005/12/20 17:19:56  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_five_two.cpp
+      Revision 1.6.2.2  2005/08/12 19:54:04  jliu
+      Date Time Replaced
+
+      Revision 1.6.2.1  2005/07/27 19:28:01  alauinger
+      merged from the head 20050720
+
+=======
       Revision 1.8  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.7.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.8
       Revision 1.7  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -43,6 +55,8 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_five_two.h"
+#include "ctidate.h"
+#include "ctitime.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -70,8 +84,8 @@ CtiAnsiTableFiveTwo::CtiAnsiTableFiveTwo( BYTE *dataBlob, int timefmat )
     }
 
 
-    ULONG timeNow = RWTime().seconds();
-    _meterServerTimeDifference = abs(timeNow - RWTime(clock_table.clock_calendar).seconds());
+    ULONG timeNow = CtiTime().seconds();
+    _meterServerTimeDifference = abs(timeNow - CtiTime(clock_table.clock_calendar).seconds());
 
 }
 
@@ -113,7 +127,7 @@ void CtiAnsiTableFiveTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveTwo::printResult( RWCString deviceName )
+void CtiAnsiTableFiveTwo::printResult( const string& deviceName )
 {
  
     /**************************************************************
@@ -138,7 +152,7 @@ void CtiAnsiTableFiveTwo::printResult( RWCString deviceName )
         dout << "                    - greenwich meantime flag "<<(bool)clock_table.time_date_qual.gmt_flag<<endl;
         dout << "                     - time zone applied flag "<<(bool)clock_table.time_date_qual.tm_zn_applied_flag<<endl;
         dout << "         - daylight savings time applied flag "<<(bool)clock_table.time_date_qual.dst_applied_flag<<endl;
-        dout << "         - TIME  "<<RWTime(clock_table.clock_calendar)<<endl;
+        dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar)<<endl;
 
         /* switch (_timefmt) 
         {
@@ -166,32 +180,32 @@ void CtiAnsiTableFiveTwo::printResult( RWCString deviceName )
 
 int CtiAnsiTableFiveTwo::getClkCldrYear()
 {
-    return (int)RWDate(RWTime(clock_table.clock_calendar)).year();
+    return (int)CtiDate(CtiTime(clock_table.clock_calendar)).year();
 }
 
 int CtiAnsiTableFiveTwo::getClkCldrMon()
 {
-    return (int)RWDate(RWTime(clock_table.clock_calendar)).month();
+    return (int)CtiDate(CtiTime(clock_table.clock_calendar)).month();
 }
 
 int CtiAnsiTableFiveTwo::getClkCldrDay()
 {
-    return (int)RWDate(RWTime(clock_table.clock_calendar)).dayOfMonth();
+    return (int)CtiDate(CtiTime(clock_table.clock_calendar)).dayOfMonth();
 }
 
 int CtiAnsiTableFiveTwo::getClkCldrHour()
 {
-    return (int)RWTime(clock_table.clock_calendar).hour();
+    return (int)CtiTime(clock_table.clock_calendar).hour();
 }
 
 int CtiAnsiTableFiveTwo::getClkCldrMin()
 {
-    return (int)RWTime(clock_table.clock_calendar).minute();
+    return (int)CtiTime(clock_table.clock_calendar).minute();
 }
 
 int CtiAnsiTableFiveTwo::getClkCldrSec()
 {
-    return (int)RWTime(clock_table.clock_calendar).second();
+    return (int)CtiTime(clock_table.clock_calendar).second();
 }
 
 ULONG CtiAnsiTableFiveTwo::getMeterServerTimeDifference()

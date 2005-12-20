@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2005/10/27 20:59:52 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,7 @@
 
 #include <rw/db/db.h>
 #include <rw/re.h>
-#include <rw\cstring.h>
+
 
 #include "dsm2.h"
 #include "resolvers.h"
@@ -23,13 +23,22 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "numstr.h"
+#include "rwutil.h"
 
-INT resolveRouteType(RWCString rwsTemp)
+using std::transform;
+using std::endl;
+
+
+
+
+
+INT resolveRouteType( const string& _rwsTemp)
 {
     INT Ret = 0;
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
 
+	trim(rwsTemp);//was missing..
     if(rwsTemp == "ccu")
     {
         Ret = RouteTypeCCU;
@@ -58,10 +67,11 @@ INT resolveRouteType(RWCString rwsTemp)
     {
         Ret = RouteTypeTap;
     }
-    else if(rwsTemp == "snpp terminal")
-    {
-        Ret = RouteTypeSNPP;
-    }
+    else if(rwsTemp == "snpp terminal") 
+    { 
+        Ret = RouteTypeSNPP; 
+    } 
+
     else if(rwsTemp == "wctp terminal")
     {
         Ret = RouteTypeWCTP;
@@ -82,12 +92,13 @@ INT resolveRouteType(RWCString rwsTemp)
     return Ret;
 }
 
-INT resolveAmpUseType(RWCString rwsTemp)
+INT resolveAmpUseType(const string& _rwsTemp)
 {
     int autype = RouteAmpAlternating;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    
+    trim(rwsTemp);
 
     if( rwsTemp == "alternating" )
     {
@@ -121,11 +132,12 @@ INT resolveAmpUseType(RWCString rwsTemp)
     return autype;
 }
 
-INT resolvePointType(RWCString rwsTemp)
+INT resolvePointType(const string& _rwsTemp)
 {
     INT Ret;
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "analog")
     {
@@ -170,11 +182,12 @@ INT resolvePointType(RWCString rwsTemp)
     return Ret;
 }
 
-INT resolvePointArchiveType(RWCString rwsTemp)
+INT resolvePointArchiveType(const string& _rwsTemp)
 {
     INT Ret = ArchiveTypeNone;
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "none")
     {
@@ -204,7 +217,7 @@ INT resolvePointArchiveType(RWCString rwsTemp)
     return Ret;
 }
 
-INT resolvePAOType(RWCString category, RWCString rwsTemp)
+INT resolvePAOType(const string& category, const string& rwsTemp)
 {
     INT result = 0;
 
@@ -235,30 +248,31 @@ INT resolvePAOType(RWCString category, RWCString rwsTemp)
 }
 
 
-INT resolvePAOCategory(RWCString category)
+INT resolvePAOCategory(const string& _category)
 {
     INT result = -1;
+    string category = _category;
+    CtiToLower(category);
+    trim(category);
 
-    category.toLower();
-    category = category.strip(RWCString::both);
 
-    if(category == RWCString("device"))
+    if(category == ("device"))
     {
         result = PAO_CATEGORY_DEVICE;
     }
-    else if(category == RWCString("port"))
+    else if(category == ("port"))
     {
         result = PAO_CATEGORY_PORT;
     }
-    else if(category == RWCString("route"))
+    else if(category == ("route"))
     {
         result = PAO_CATEGORY_ROUTE;
     }
-    else if(category == RWCString("loadmanagement"))
+    else if(category == ("loadmanagement"))
     {
         result = PAO_CATEGORY_LOAD_MANAGEMENT;
     }
-    else if(category == RWCString("capcontrol"))
+    else if(category == ("capcontrol"))
     {
         result = PAO_CATEGORY_CAP_CONTROL;
     }
@@ -267,12 +281,12 @@ INT resolvePAOCategory(RWCString category)
 }
 
 
-INT resolveDeviceType(RWCString rwsTemp)
+INT resolveDeviceType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "ccu-711")
     {
@@ -657,12 +671,13 @@ INT resolveDeviceType(RWCString rwsTemp)
     return nRet;
 }
 
-INT resolveCapControlType(RWCString rwsTemp)
+
+INT resolveCapControlType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "ccsubbus")
     {
@@ -683,12 +698,12 @@ INT resolveCapControlType(RWCString rwsTemp)
     return nRet;
 }
 
-INT resolveLoadManagementType(RWCString rwsTemp)
+INT resolveLoadManagementType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "lm direct program")
     {
@@ -721,12 +736,13 @@ INT resolveLoadManagementType(RWCString rwsTemp)
     return nRet;
 }
 
-INT resolveScanType(RWCString rwsTemp)
+
+INT resolveScanType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
 
     if(rwsTemp == "general")
@@ -763,12 +779,12 @@ INT resolveScanType(RWCString rwsTemp)
     return nRet;
 }
 
-LONG resolveDeviceWindowType(RWCString rwsTemp)
+LONG resolveDeviceWindowType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
 
     if(rwsTemp == DEVICE_WINDOW_TYPE_SCAN)
@@ -794,12 +810,12 @@ LONG resolveDeviceWindowType(RWCString rwsTemp)
 }
 
 
-INT resolvePAOClass(RWCString rwsTemp)
+INT resolvePAOClass(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     /* The mantra of a professor I once had... Make the common case fast! */
     if(rwsTemp == "transmitter")
@@ -864,12 +880,12 @@ INT resolvePAOClass(RWCString rwsTemp)
     return nRet;
 }
 
-INT resolveDeviceState(RWCString rwsTemp)
+INT resolveDeviceState(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "normal")
     {
@@ -893,12 +909,12 @@ INT resolveDeviceState(RWCString rwsTemp)
     return nRet;
 }
 
-INT resolveStatisticsType(RWCString rwsTemp)
+INT resolveStatisticsType(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
 
     if(rwsTemp == "monthly")
@@ -923,11 +939,12 @@ INT resolveStatisticsType(RWCString rwsTemp)
     return nRet;
 }
 
-CtiFilter_t resolveFilterType(RWCString rwsTemp)
+CtiFilter_t resolveFilterType(const string& _rwsTemp)
 {
     CtiFilter_t Ret = InvalidFilter;
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "none")
     {
@@ -947,12 +964,12 @@ CtiFilter_t resolveFilterType(RWCString rwsTemp)
 
 
 
-INT resolveProtocol(RWCString str)
+INT resolveProtocol(const string& _str)
 {
     INT nRet = 0;
-
-    str.toLower();
-    str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
+    trim(str);
 
     if(str == "idlc")
     {
@@ -965,19 +982,19 @@ INT resolveProtocol(RWCString str)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Unknown port protocol wrap " << str << endl;
     }
 
     return nRet;
 }
 
-INT resolvePortType(RWCString str)
+INT resolvePortType(const string& _str)
 {
     INT nRet = 0;
-
-    str.toLower();
-    str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
+    trim(str);
 
     if(str == "local serial port")
     {
@@ -1015,12 +1032,14 @@ INT resolvePortType(RWCString str)
     return nRet;
 }
 
-INT resolvePortState(RWCString rwsTemp)
+
+
+INT resolvePortState(const string& _rwsTemp)
 {
     INT nRet = 0;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    CtiToLower(rwsTemp);
+    trim(rwsTemp);
 
     if(rwsTemp == "normal")
     {
@@ -1145,7 +1164,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Unable to determine whether device type " << Type <<  " is a targetable device type!" << endl;
         }
     }
@@ -1153,7 +1172,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     return bRet;
 }
 
-INT resolveRelayUsage(RWCString str)
+INT resolveRelayUsage(const string& _str)
 {
 
 /*
@@ -1168,9 +1187,8 @@ INT resolveRelayUsage(RWCString str)
  */
 
     INT nRet = 0;
-
-    str.toLower();
-    // str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
 
     if(str == "r")
     {
@@ -1212,13 +1230,13 @@ INT resolveRelayUsage(RWCString str)
          *  First check if we use the other form of relay db string (a. la versacomgroups)
          */
 
-        RWCString numAsStr;
+        string numAsStr;
 
         for(int i = 0; i < 10; i++)
         {
             numAsStr = CtiNumStr(i + 1);
 
-            if(!str.match(numAsStr).isNull())
+            if(!(str.find(numAsStr)==string::npos))
             {
                 nRet |= (0x00000001 << i);
             }
@@ -1237,42 +1255,42 @@ INT resolveRelayUsage(RWCString str)
     return nRet;
 }
 
-INT resolveAddressUsage(RWCString str, int type)
+INT resolveAddressUsage(const string& _str, int type)
 {
     INT nRet = 0;
-
-    str.toLower();
+    string str = _str;
+    CtiToLower(str);
 
     switch(type)
     {
     case (versacomAddressUsage):
         {
-            if(!str.match("u").isNull()) nRet |= 0x08;  // Utility
-            if(!str.match("s").isNull()) nRet |= 0x04;  // Section
-            if(!str.match("c").isNull()) nRet |= 0x02;  // Class
-            if(!str.match("d").isNull()) nRet |= 0x01;  // Division
+            if(!(str.find("u")==string::npos)) nRet |= 0x08;  // Utility
+            if(!(str.find("s")==string::npos)) nRet |= 0x04;  // Section
+            if(!(str.find("c")==string::npos)) nRet |= 0x02;  // Class
+            if(!(str.find("d")==string::npos)) nRet |= 0x01;  // Division
 
             break;
         }
     case (expresscomAddressUsage):
         {
-            if(!str.match("s").isNull()) nRet |= 0x80;  // Service Provider Id
-            if(!str.match("g").isNull()) nRet |= 0x40;  // Geo
-            if(!str.match("b").isNull()) nRet |= 0x20;  // Substation
-            if(!str.match("f").isNull()) nRet |= 0x10;  // Feeder
-            if(!str.match("z").isNull()) nRet |= 0x08;  // Zip
-            if(!str.match("u").isNull()) nRet |= 0x04;  // User Defined
-            if(!str.match("p").isNull()) nRet |= 0x02;  // Program
-            if(!str.match("r").isNull()) nRet |= 0x01;  // Splinter
+            if(!(str.find("s")==string::npos)) nRet |= 0x80;  // Service Provider Id
+            if(!(str.find("g")==string::npos)) nRet |= 0x40;  // Geo
+            if(!(str.find("b")==string::npos)) nRet |= 0x20;  // Substation
+            if(!(str.find("f")==string::npos)) nRet |= 0x10;  // Feeder
+            if(!(str.find("z")==string::npos)) nRet |= 0x08;  // Zip
+            if(!(str.find("u")==string::npos)) nRet |= 0x04;  // User Defined
+            if(!(str.find("p")==string::npos)) nRet |= 0x02;  // Program
+            if(!(str.find("r")==string::npos)) nRet |= 0x01;  // Splinter
 
-            if(!str.match("l").isNull()) nRet |= 0x8000;  // Load addressing  040903
+            if(!(str.find("l")==string::npos)) nRet |= 0x8000;  // Load addressing  040903
 
             break;
         }
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "    Invalid address usage type " << str << endl;
             break;
         }
@@ -1365,30 +1383,30 @@ INT resolveAWordTime(INT Seconds)
     return nRet;
 }
 
-RWCString   resolveDBChangeType(INT type)
+string   resolveDBChangeType(INT type)
 {
-    RWCString rStr;
+    string rStr;
 
     switch(type)
     {
     case ChangeTypeAdd:
         {
-            rStr = RWCString(" ADDED TO");
+            rStr = (" ADDED TO");
             break;
         }
     case ChangeTypeDelete:
         {
-            rStr = RWCString(" DELETED FROM");
+            rStr = (" DELETED FROM");
             break;
         }
     case ChangeTypeUpdate:
         {
-            rStr = RWCString(" UPDATED IN");
+            rStr = (" UPDATED IN");
             break;
         }
     default:
         {
-            rStr = RWCString(" CHANGED IN");
+            rStr = (" CHANGED IN");
             break;
         }
     }
@@ -1396,114 +1414,114 @@ RWCString   resolveDBChangeType(INT type)
     return rStr;
 }
 
-RWCString   resolveDBChanged(INT dbnum)
+string   resolveDBChanged(INT dbnum)
 {
-    RWCString rStr;
+    string rStr;
     switch(dbnum)
     {
     case ChangePAODb:
         {
-            rStr = RWCString(" PAO DB");
+            rStr = (" PAO DB");
             break;
         }
     case ChangePointDb:
         {
-            rStr = RWCString(" POINT DB");
+            rStr = (" POINT DB");
             break;
         }
     case ChangeStateGroupDb:
         {
-            rStr = RWCString(" GROUP DB");
+            rStr = (" GROUP DB");
             break;
         }
     case ChangeNotificationGroupDb:
         {
-            rStr = RWCString(" NOTIFICATIONGROUP/DESTINATION DB");
+            rStr = (" NOTIFICATIONGROUP/DESTINATION DB");
             break;
         }
     case ChangeNotificationRecipientDb:
         {
-            rStr = RWCString(" GROUPRECIPIENT DB");
+            rStr = (" GROUPRECIPIENT DB");
             break;
         }
     case ChangeAlarmCategoryDb:
         {
-            rStr = RWCString(" ALARM Category DB");
+            rStr = (" ALARM Category DB");
             break;
         }
     case ChangeCustomerContactDb:
         {
-            rStr = RWCString(" Customer Contact DB");
+            rStr = (" Customer Contact DB");
             break;
         }
     case ChangeGraphDb:
         {
-            rStr = RWCString(" Graph DB");
+            rStr = (" Graph DB");
             break;
         }
     case ChangeHolidayScheduleDb:
         {
-            rStr = RWCString(" Holiday Schedule DB");
+            rStr = (" Holiday Schedule DB");
             break;
         }
     case ChangeEnergyCompanyDb:
         {
-            rStr = RWCString(" Energy Company DB");
+            rStr = (" Energy Company DB");
             break;
         }
     case ChangeYukonUserDb:
         {
-            rStr = RWCString(" Yukon User DB");
+            rStr = (" Yukon User DB");
             break;
         }
     case ChangeCustomerDb:
         {
-            rStr = RWCString(" Yukon Customer DB");
+            rStr = (" Yukon Customer DB");
             break;
         }
     case ChangeCustomerAccountDb:
         {
-            rStr = RWCString(" Yukon Customer Account DB");
+            rStr = (" Yukon Customer Account DB");
             break;
         }
     case ChangeYukonImageDb:
         {
-            rStr = RWCString(" Yukon Image DB");
+            rStr = (" Yukon Image DB");
             break;
         }
     case ChangeBaselineDb:
         {
-            rStr = RWCString(" Yukon Baseline DB");
+            rStr = (" Yukon Baseline DB");
             break;
         }
     case ChangeConfigDb:
         {
-        rStr = RWCString(" Yukon Config DB");
+        rStr = (" Yukon Config DB");
         break;
         }
     case ChangeTagDb:
         {
-        rStr = RWCString(" Yukon Tag DB");
+        rStr = (" Yukon Tag DB");
         break;
     }
     case ChangeCICustomerDb:
         {
-        rStr = RWCString(" Yukon CI Customer DB");
+        rStr = (" Yukon CI Customer DB");
         break;
     }
     case ChangeLMConstraintDb:
         {
-        rStr = RWCString(" Yukon LM Constraint DB");
+        rStr = (" Yukon LM Constraint DB");
         break;
     }
     case ChangeSeasonScheduleDb:
         {
-        rStr = RWCString(" Yukon Season Schedule DB");
+        rStr = (" Yukon Season Schedule DB");
         break;
         }
     default:
         {
-            rStr = RWCString(" DATABASE");
+            rStr = (" DATABASE");
             break;
         }
     }
@@ -1511,19 +1529,19 @@ RWCString   resolveDBChanged(INT dbnum)
     return rStr;
 }
 
-INT resolveSlaveAddress(const INT DeviceType, RWCString str)
+INT resolveSlaveAddress(const INT DeviceType, const string& _str)
 {
     INT slaveAddress = 0;
-
-    str.toLower();
-    str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
+    trim(str);
 
     switch( DeviceType )
     {
     case TYPE_FULCRUM:
     case TYPE_VECTRON:
         {
-            if(str.isNull() || str == "standalone")
+            if(str.empty() || str == "standalone")
             {
                 slaveAddress = -1;
             }
@@ -1558,7 +1576,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
         }
     case TYPE_QUANTUM:
         {
-            if(str.isNull() || str == "standalone")
+            if(str.empty() || str == "standalone")
             {
                 slaveAddress = -1;
             }
@@ -1594,12 +1612,12 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_RTM:
     case TYPE_SIXNET:
         {
-            slaveAddress = atoi(str.data());
+            slaveAddress = atoi(str.c_str());
             break;
         }
     case TYPE_ALPHA_PPLUS:
         {
-            if(str.isNull() || str == "standalone")
+            if(str.empty() || str == "standalone")
             {
                 slaveAddress = 0;
             }
@@ -1677,11 +1695,12 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
 }
 
 
-CtiControlType_t  resolveControlType(RWCString& str)
+CtiControlType_t  resolveControlType(const string& _str)
 {
     CtiControlType_t Ret = InvalidControlType;
-    str.toLower();
-    str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
+    trim(str);
 
     if(str == "none")
     {
@@ -1716,13 +1735,14 @@ CtiControlType_t  resolveControlType(RWCString& str)
     return Ret;
 }
 
-INT resolveUomToCalcType(RWCString str)
+INT resolveUomToCalcType(const string& _str)
 {
     INT Ret = CalcTypeNormal;
 
 #if 0
-    str.toLower();
-    str = str.strip(RWCString::both);
+    string str = _str;
+    CtiToLower(str);
+    trim(str);
 
     if(str == "volts")
     {

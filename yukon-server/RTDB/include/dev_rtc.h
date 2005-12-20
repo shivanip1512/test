@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/11/08 16:24:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.10  2005/12/20 17:20:30  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.9  2004/11/08 16:24:58  mfisher
 * implemented getVerificationObjects() instead of just thinking about it
 *
@@ -50,7 +53,7 @@
 #define __DEV_RTC_H__
 
 #include <list>
-using namespace std;
+using std::list;
 
 #include "dev_remote.h"
 #include "queue.h"
@@ -60,7 +63,7 @@ class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote
 {
 public:
 
-    typedef list< pair< RWTime, CtiOutMessage* > > CtiRepeatCol;
+    typedef list< pair< CtiTime, CtiOutMessage* > > CtiRepeatCol;
 
 protected:
 
@@ -68,7 +71,7 @@ protected:
 
     CtiQueue< CtiOutMessage, less<CtiOutMessage> > _workQueue;
 
-    RWTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
+    CtiTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
     CtiRepeatCol _repeatList;
 
 private:
@@ -88,12 +91,12 @@ public:
     virtual ~CtiDeviceRTC();
 
     CtiDeviceRTC& operator=(const CtiDeviceRTC& aRef);
-    CtiDeviceRTC& setRepeatTime(const RWTime& aRef);
+    CtiDeviceRTC& setRepeatTime(const CtiTime& aRef);
 
     const CtiTableDeviceRTC& getRTCTable() const;
 
     virtual LONG getAddress() const;
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
@@ -110,8 +113,8 @@ public:
     INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
     void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);

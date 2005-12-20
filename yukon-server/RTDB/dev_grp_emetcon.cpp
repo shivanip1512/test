@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/06/15 19:23:46 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           RWTPtrSlist< OUTMESS >         &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     /*
@@ -113,8 +113,8 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                 {
                     for(size_t offset = 0; offset < parse.getActionItems().entries(); offset++ )
                     {
-                        RWCString actn = parse.getActionItems()[offset];
-                        RWCString desc = getDescription(parse);
+                        string actn = parse.getActionItems()[offset];
+                        string desc = getDescription(parse);
 
                         _lastCommand = generateCommandString(OutMessage);
 
@@ -129,10 +129,10 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                resultString = "Control command submitted on route " + CtiNumStr(Route->getRouteID()) + ": " + Route->getName();
+                resultString = "Control command submitted on route " + CtiNumStr(Route->getRouteID()) + string(": ") + Route->getName();
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(OutMessage->Request.CommandStr),
+                                                      string(OutMessage->Request.CommandStr),
                                                       resultString,
                                                       nRet,
                                                       OutMessage->Request.RouteID,
@@ -158,7 +158,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                 }
                 else     // An error occured in the processing/communication
                 {
-                    resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing control on route " + CtiNumStr(Route->getRouteID());
+                    resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing control on route ") + CtiNumStr(Route->getRouteID());
                     pRet->setStatus(nRet);
                     pRet->setResultString(resultString);
                 }
@@ -179,8 +179,8 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                 nRet = NoExecuteRequestMethod;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(OutMessage->Request.CommandStr),
-                                                      RWCString("EMETCON GROUP Class devices do not support this command (yet?)"),
+                                                      string(OutMessage->Request.CommandStr),
+                                                      string("EMETCON GROUP Class devices do not support this command (yet?)"),
                                                       nRet,
                                                       OutMessage->Request.RouteID,
                                                       OutMessage->Request.MacroOffset,
@@ -212,7 +212,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(OutMessage->Request.CommandStr),
+                                              string(OutMessage->Request.CommandStr),
                                               resultString,
                                               nRet,
                                               OutMessage->Request.RouteID,
@@ -233,16 +233,16 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
     return nRet;
 }
 
-RWCString CtiDeviceGroupEmetcon::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupEmetcon::getDescription(const CtiCommandParser & parse) const
 {
-    RWCString  ch_relay("Group: " + getName());
+    string  ch_relay("Group: " + getName());
 
     if(EmetconGroup.getRelay() == A_SHED_A) // 0)
     {
@@ -281,7 +281,7 @@ RWCString CtiDeviceGroupEmetcon::getDescription(const CtiCommandParser & parse) 
         ch_relay += " DB Error. Invalid Emetcon entry.";
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  " << ch_relay << endl;
         }
 
@@ -340,37 +340,37 @@ void CtiDeviceGroupEmetcon::DecodeDatabaseReader(RWDBReader &rdr)
     EmetconGroup.DecodeDatabaseReader(rdr);
 }
 
-RWCString CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage)
+string CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage)
 {
-    RWCString str("SHED ");
+    string str("SHED ");
 
-    RWCString tmstr;
+    string tmstr;
 
     switch(OutMessage->Buffer.ASt.Time)
     {
     case TIME_7_5:
         {
-            tmstr = RWCString(" 7.5M");
+            tmstr = string(" 7.5M");
             break;
         }
     case TIME_15:
         {
-            tmstr = RWCString(" 15M");
+            tmstr = string(" 15M");
             break;
         }
     case TIME_30:
         {
-            tmstr = RWCString(" 30M");
+            tmstr = string(" 30M");
             break;
         }
     case TIME_60:
         {
-            tmstr = RWCString(" 60M");
+            tmstr = string(" 60M");
             break;
         }
     default:
         {
-            tmstr = RWCString("RESTORE");
+            tmstr = string("RESTORE");
             break;
         }
     }
@@ -379,43 +379,43 @@ RWCString CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage)
     {
     case A_SHED_A:
         {
-            str += RWCString("Relay A") + tmstr;
+            str += string("Relay A") + tmstr;
             break;
         }
     case A_SHED_B:
         {
-            str += RWCString("Relay B") + tmstr;
+            str += string("Relay B") + tmstr;
             break;
         }
     case A_SHED_C:
         {
-            str += RWCString("Relay C") + tmstr;
+            str += string("Relay C") + tmstr;
             break;
         }
     case A_SHED_D:
         {
-            str += RWCString("Relay D") + tmstr;
+            str += string("Relay D") + tmstr;
             break;
         }
     case A_LATCH_OPEN:
         {
-            str += RWCString("OPEN");
+            str += string("OPEN");
             break;
         }
     case A_LATCH_CLOSE:
         {
-            str += RWCString("CLOSE ");
+            str += string("CLOSE ");
             break;
         }
     case A_SCRAM:
         {
-            str += RWCString("SCRAM ");
+            str += string("SCRAM ");
             break;
         }
     case A_RESTORE:
     default:
         {
-            str = RWCString("RESTORE");
+            str = string("RESTORE");
             break;
         }
     }

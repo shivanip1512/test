@@ -8,20 +8,22 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/04/15 19:03:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#include <rw/cstring.h>
+
 
 #include "guard.h"
+#include "mutex.h"
 #include "logger.h"
 #include "prot_sixnet.h"
 
+using namespace std;
 
 int CtiProtocolSixnet::nNextSeq = 0;  // message sequence common for all messages
 CtiMutex CtiProtocolSixnet::seqMux;
@@ -76,7 +78,7 @@ CtiProtocolSixnet& CtiProtocolSixnet::operator=(const CtiProtocolSixnet& aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -94,7 +96,7 @@ void CtiProtocolSixnet::DisplayMsg(void)
     if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " receive message OK, len:" << _rxLength
+        dout << CtiTime() << " receive message OK, len:" << _rxLength
         << " dest:" << _rxDest << " source:" << _rxSrc
         << " sess:" << _rxSession << " seq:" << _rxSequence << endl
         << "   " << " cmd:" << _rxCmd << " data len:" << _rxdata.size()
@@ -222,7 +224,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " receive message timed out" << endl << flush;
+                dout << CtiTime() << " receive message timed out" << endl << flush;
             }
             _state = GETTIMEOUT;
             // empty the receive buffer
@@ -237,7 +239,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " receive message timed out" << endl << flush;
+                dout << CtiTime() << " receive message timed out" << endl << flush;
             }
             _state = GETTIMEOUT;
             // empty the receive buffer
@@ -253,26 +255,26 @@ int CtiProtocolSixnet::disassemble(int nRcv)
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " received " << nRcv << " byte(s)" << endl << flush;
+                dout << CtiTime() << " received " << nRcv << " byte(s)" << endl << flush;
             }
 
             while(pNextRx < pNextRcv        // at least one byte is available and
                   && (_state == GETLEAD          // one is enough
                       || _rxFormat != HEX       // one is enough
-                      || !isxdigit(*pNextRx)      // one is enough
+                      || !::isxdigit(*pNextRx)      // one is enough
                       || pNextRx + 1 < pNextRcv   // hex digit + one more is enough
                      )
                  )
             {
                 if(_state != GETLEAD && _rxFormat == HEX)
                 {
-                    if(!isxdigit(*pNextRx) || !isxdigit(*(pNextRx+1)))
+                    if(!::isxdigit(*pNextRx) || !::isxdigit(*(pNextRx+1)))
                     {
                         // may be CTIDBG_new lead char, but is NOT valid here in message
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " receive HEX message aborted" << endl << flush;
+                            dout << CtiTime() << " receive HEX message aborted" << endl << flush;
                         }
                         _state = GETLEAD;
                     }
@@ -316,7 +318,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                         {
                             // discarded data is at start of buffer
                             // must clear it out so buffer can never overflow
-                            memmove(pRx, pNextRx, pNextRcv - pNextRx);
+                            ::memmove(pRx, pNextRx, pNextRcv - pNextRx);
                             pNextRcv = pRx + (pNextRcv - pNextRx);
                             pNextRx = pRx;
                         }
@@ -356,7 +358,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "receive message length bad " << _rxLength << endl << flush;
+                            dout << CtiTime() << "receive message length bad " << _rxLength << endl << flush;
                         }
                         _state = GETLEAD;
                         pNextRx = pRx + 1; // look for CTIDBG_new start of message
@@ -453,7 +455,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Processing starting!" << endl << flush;
+                            dout << CtiTime() << " Processing starting!" << endl << flush;
                         }
 
                         ProcessMessage();
@@ -492,7 +494,7 @@ uint32 CtiProtocolSixnet::getBytesLeftInRead() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         bl = 0;
@@ -671,7 +673,7 @@ void CtiProtocolSixnet::OutHex(int x, int bytes)
     if(_txFormat == HEX)
     {
         char szHex[5];
-        sprintf(szHex,"%4.4X",x & 0xffff);
+        ::sprintf(szHex,"%4.4X",x & 0xffff);
         if(bytes == 2)
         {
             *(pNextTx++) = szHex[0];
@@ -700,7 +702,7 @@ void CtiProtocolSixnet::OutHex(int x, int bytes)
 //
 int CtiProtocolSixnet::HexValue(int nHexDigit)
 {
-    if(!isxdigit(nHexDigit))
+    if(!::isxdigit(nHexDigit))
         return 0;
     if(nHexDigit <= '9')
         return nHexDigit - '0';
@@ -814,7 +816,7 @@ bool CtiProtocolSixnet::isForMe()
 }
 
 // send a message to get the alias
-int CtiProtocolSixnet::FsGetAliasGenerate(RWCString szName, RWCString szOptions)
+int CtiProtocolSixnet::FsGetAliasGenerate(string szName, string szOptions)
 {
     int nOptions = 3;           // assume read/write
 
@@ -838,14 +840,14 @@ int CtiProtocolSixnet::FsGetAliasGenerate(RWCString szName, RWCString szOptions)
 
     send8(_txSubCommand);    // GETALIAS subcommand
 
-    if(!szOptions.isNull())
+    if(!szOptions.empty())
     {
         // options d0 = read, d1 = write
-        if(stricmp(szOptions.data(), "rw") == 0)
+        if(stricmp(szOptions.c_str(), "rw") == 0)
             nOptions = 3;
-        else if(stricmp(szOptions.data(), "r") == 0)
+        else if(stricmp(szOptions.c_str(), "r") == 0)
             nOptions = 1;
-        else if(stricmp(szOptions.data(), "w") == 0)
+        else if(stricmp(szOptions.c_str(), "w") == 0)
             nOptions = 2;
     }
 
@@ -854,11 +856,11 @@ int CtiProtocolSixnet::FsGetAliasGenerate(RWCString szName, RWCString szOptions)
     if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Requesting file " << szName << endl;
+        dout << CtiTime() << " Requesting file " << szName << endl;
     }
 
     // also copy terminating '\0'
-    LPCTSTR p = szName;
+    LPCTSTR p = szName.c_str();
     do
     {
         send8(*p);
@@ -889,7 +891,7 @@ int CtiProtocolSixnet::FsGetAliasProcess()
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  ALIAS RECEIVED " << _alias << endl;
             }
         }
@@ -899,7 +901,7 @@ int CtiProtocolSixnet::FsGetAliasProcess()
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  Error " << _error << endl;
                 dout << "  Data bytes " << _rxdata.size() << endl;
             }
@@ -1098,7 +1100,7 @@ int CtiProtocolSixnet::DlGetRecsProcess()
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  Collected " << _numRecs << " records beginning from " << _first << endl;
             }
         }
@@ -1150,7 +1152,7 @@ int CtiProtocolSixnet::ProcessMessage()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -1180,7 +1182,7 @@ int CtiProtocolSixnet::ProcessMessage()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -1192,7 +1194,7 @@ int CtiProtocolSixnet::ProcessMessage()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  " << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  " << endl;
             }
 
             break;

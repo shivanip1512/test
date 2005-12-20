@@ -61,7 +61,7 @@ fdrrccs.dll: fdrrccs.obj fdrrccs.mak
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS)  /Fe..\$@
+                $(CC) $(DLLFLAGS) fdrrccs.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS)  /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

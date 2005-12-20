@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/11/22 21:52:00 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,10 +24,11 @@
 #include <iostream>
 #include <set>
 #include <map>
-using namespace std;
+using std::set;
+using std::map;
+using std::iostream;
 
 
-#include <rw\cstring.h>
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
@@ -64,8 +65,10 @@ using namespace std;
 #include "tbl_ci_cust.h"
 #include "tbl_contact_notification.h"
 #include "rtdb.h"
+#include "numstr.h"
 
 
+#include <string.h>
 
 #define MAX_ALARM_TRX 256
 
@@ -90,7 +93,7 @@ public:
     typedef struct
     {
         INT grpid;
-        RWCString name;
+        string name;
     } CtiA2DTranslation_t;
 
 private:
@@ -140,7 +143,7 @@ private:
     void updateDynTagsForSignalMsg( CtiPointBase &point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
-    bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
+    bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi);
 
     void bumpDeviceFromAlternateRate(CtiPointBase *pPoint);
     void bumpDeviceToAlternateRate(CtiPointBase *pPoint);
@@ -240,20 +243,20 @@ public:
     void  loadAlarmToDestinationTranslation();
 
     INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp);
-    RWCString getAlarmStateName( INT alarm );
+    string getAlarmStateName( INT alarm );
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
-    virtual RWCString getMyServerName() const;
+    virtual string getMyServerName() const;
     virtual int   clientRegistration(CtiConnectionManager *CM);
     virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
-    RWCString resolveDeviceNameByPaoId(const LONG PAOId);
-    RWCString resolveDeviceName(const CtiPointBase &aPoint);
-    RWCString resolveDeviceObjectType(const LONG devid);
-    RWCString resolveDeviceDescription(LONG PAO);
+    string resolveDeviceNameByPaoId(const LONG PAOId);
+    string resolveDeviceName(const CtiPointBase &aPoint);
+    string resolveDeviceObjectType(const LONG devid);
+    string resolveDeviceDescription(LONG PAO);
     bool isDeviceIdValid(const LONG devid);
     bool isDeviceGroupType(const LONG devid);
     CtiTableContactNotification* getContactNotification(LONG notifID);
@@ -267,14 +270,14 @@ public:
     void establishListener();
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
-    void writeMessageToClient(CtiMessage *&pReq, RWCString clientName);
+    void writeMessageToClient(CtiMessage *&pReq, string clientName);
     void writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatus *pPoint, const CtiCommandMsg *&Cmd  );
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
 
-    INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
-    INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
-    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, RWCString user = RWCString("System"));
+    INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList);
+    INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList);
+    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, string user = string("System"));
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn, bool activate);
@@ -283,10 +286,10 @@ public:
 
     int processTagMessage(CtiTagMsg &tagMsg);
     int loadPendingControls();
-    void updateGroupPseduoControlPoint(CtiPointBase *&pPt, const RWTime &delaytime);
+    void updateGroupPseduoControlPoint(CtiPointBase *&pPt, const CtiTime &delaytime);
 
     void checkForPendingLimitViolation(CtiPointDataMsg *pData, CtiPointNumeric &pointNumeric );
-    bool addToPendingSet(CtiPendingPointOperations *&pendingOp, RWTime &updatetime = RWTime());
+    bool addToPendingSet(CtiPendingPointOperations *&pendingOp, CtiTime &updatetime = CtiTime());
     bool removePointDataFromPending(LONG pID);
     bool isPointInPendingControl(LONG pointid);
 

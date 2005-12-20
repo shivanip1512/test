@@ -21,7 +21,7 @@ int remove( void );
 LPTSTR szServiceName = "CALCLOGIC";
 LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
-extern RWCString CALCVERSION;
+extern string CALCVERSION;
 
 int main( int argc, char *argv[] )
 {
@@ -67,7 +67,7 @@ int main( int argc, char *argv[] )
         }
         else
         {
-            cout << RWTime( ) << " - Calc and Logic starting up..." << endl;
+            cout << CtiTime( ) << " - Calc and Logic starting up..." << endl;
             CtiCalcLogicService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
             service.RunInConsole( argc, argv );
@@ -89,15 +89,15 @@ int main( int argc, char *argv[] )
 
 int install( DWORD dwStart )
 {
-    cout << RWTime( ) << " - Installing as a service..." << endl;
+    cout << CtiTime( ) << " - Installing as a service..." << endl;
 
-    RWCString depends;
+    string depends;
 
-    RWCString str;
+    string str;
     char var[128];
 
     strcpy(var, "SERVICE_DEPENDENCIES");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         depends = str;
         cout << "Service is dependent on the following services:" << endl
@@ -130,7 +130,7 @@ int install( DWORD dwStart )
         }
     }*/
 
-    cout << RWTime( )  << " - Installing Calc and Logic service..." << endl;
+    cout << CtiTime( )  << " - Installing Calc and Logic service..." << endl;
 
     /*char* tmp = str;
 
@@ -156,7 +156,7 @@ int install( DWORD dwStart )
 
 int remove( void )
 {
-    cout << RWTime( )  << " - Removing Calc and Logic service..." << endl;
+    cout << CtiTime( )  << " - Removing Calc and Logic service..." << endl;
     CServiceConfig si(szServiceName, szDisplayName);
     si.Remove( );
 

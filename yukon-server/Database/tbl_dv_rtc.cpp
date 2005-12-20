@@ -7,11 +7,26 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * HISTORY      :
 * $Log: tbl_dv_rtc.cpp,v $
+* Revision 1.5  2005/12/20 17:16:06  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.4.2.4  2005/08/12 19:53:38  jliu
+* Date Time Replaced
+*
+* Revision 1.4.2.3  2005/07/18 22:30:50  jliu
+* rebuild_cppunit&correct_find
+*
+* Revision 1.4.2.2  2005/07/14 22:26:53  jliu
+* RWCStringRemoved
+*
+* Revision 1.4.2.1  2005/07/12 21:08:32  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.4  2005/04/15 18:28:39  mfisher
 * got rid of magic number debuglevel checks
 *
@@ -32,8 +47,6 @@
 
 #include <windows.h>
 
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
 
 //#include <rw/db/table.h>
 //#include <rw/db/reader.h>
@@ -43,6 +56,7 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "tbl_dv_rtc.h"
+#include "rwutil.h"
 
 CtiTableDeviceRTC::CtiTableDeviceRTC() :
     _deviceID(-1),
@@ -77,7 +91,7 @@ int  CtiTableDeviceRTC::getLBTMode() const
 
 void CtiTableDeviceRTC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector << devTbl["rtcaddress"] <<
         devTbl["response"] <<
@@ -90,7 +104,7 @@ void CtiTableDeviceRTC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -102,13 +116,13 @@ void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["rtcaddress"] >> _rtcAddress;
     rdr["response"]  >> rwsTemp;
 
-    if(rwsTemp.contains("Y",RWCString::ignoreCase)) _responseBit = true;
+    if(rwsTemp.find("Y")!=string::npos||rwsTemp.find("y")!=string::npos) _responseBit = true;
     else _responseBit = false;
 
     rdr["lbtmode"]  >> _lbtMode;
 }
 
-RWCString CtiTableDeviceRTC::getTableName()
+string CtiTableDeviceRTC::getTableName()
 {
     return "DeviceRTC";
 }
@@ -117,7 +131,7 @@ RWDBStatus CtiTableDeviceRTC::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -127,7 +141,7 @@ RWDBStatus CtiTableDeviceRTC::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -137,7 +151,7 @@ RWDBStatus CtiTableDeviceRTC::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -147,7 +161,7 @@ RWDBStatus CtiTableDeviceRTC::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;

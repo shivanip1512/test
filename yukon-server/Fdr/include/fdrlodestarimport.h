@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/08/17 17:42:48 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,8 +20,16 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.9  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.8  2005/08/17 17:42:48  jrichter
       Merged  changes from 3.1.  handled massive point data with list of multimsg.  handled white space in data record for optional interval time field, handled massively long file format (extended workbuffer to 1500 bytes)
+      Revision 1.7.4.2  2005/08/12 19:53:47  jliu
+      Date Time Replaced
+
+      Revision 1.7.4.1  2005/07/12 21:08:38  jliu
+      rpStringWithoutCmpParser
 
       Revision 1.7  2004/08/18 21:46:01  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
@@ -64,7 +72,7 @@ class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRT
 public:
     // constructors and destructors
     //CtiFDR_LodeStarImportBase(); 
-    CtiFDR_LodeStarImportBase(RWCString &aInterface);
+    CtiFDR_LodeStarImportBase(string &aInterface);
     
     virtual ~CtiFDR_LodeStarImportBase();
     virtual BOOL    init( void );   
@@ -76,22 +84,22 @@ public:
     virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
     virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;
         
-    virtual RWCString getCustomerIdentifier(void)=0;
-    virtual RWTime    getlodeStarStartTime(void)=0;
-    virtual RWTime    getlodeStarStopTime(void)=0;
+    virtual string getCustomerIdentifier(void)=0;
+    virtual CtiTime    getlodeStarStartTime(void)=0;
+    virtual CtiTime    getlodeStarStopTime(void)=0;
     virtual long       getlodeStarSecsPerInterval(void) = 0;
     virtual long       getlodeStarPointId(void) = 0;
     virtual void       reinitialize(void) = 0;
-    virtual bool decodeFirstHeaderRecord(RWCString& aLine, int fileIndex) = 0;
-    virtual bool decodeSecondHeaderRecord(RWCString& aLine) = 0;
-    virtual bool decodeThirdHeaderRecord(RWCString& aLine) = 0;
-    virtual bool decodeFourthHeaderRecord(RWCString& aLine) = 0;
-    virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual bool decodeFirstHeaderRecord(string& aLine, int fileIndex) = 0;
+    virtual bool decodeSecondHeaderRecord(string& aLine) = 0;
+    virtual bool decodeThirdHeaderRecord(string& aLine) = 0;
+    virtual bool decodeFourthHeaderRecord(string& aLine) = 0;
+    virtual bool decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual const CHAR * getKeyInterval() = 0;
     virtual const CHAR * getKeyFilename() = 0;
     virtual const CHAR * getKeyImportDrivePath() = 0;
-    virtual const RWCString& getFileImportBaseDrivePath() = 0;
-    virtual const RWCString& setFileImportBaseDrivePath(RWCString importBase) = 0;
+    virtual const string& getFileImportBaseDrivePath() = 0;
+    virtual const string& setFileImportBaseDrivePath(string importBase) = 0;
 
     virtual const CHAR * getKeyDBReloadRate() = 0;
     virtual const CHAR * getKeyQueueFlushRate() = 0;
@@ -104,11 +112,10 @@ public:
     int readConfig( void );
 
     const char * getIntervalKey();
-    USHORT ForeignToYukonQuality (RWCString aQuality);
-    RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
+    USHORT ForeignToYukonQuality (string aQuality);
+    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
-    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, RWTPtrSlist< CtiMultiMsg > &dispatchList, const RWTime& savedStartTime,const RWTime& savedStopTime,long stdLsSecondsPerInterval);
-    //bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg,const RWTime& savedStartTime,const RWTime& savedStopTime,long lsSecondsPerInterval);
+    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, RWTPtrSlist< CtiMultiMsg > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);
@@ -116,7 +123,7 @@ public:
     bool shouldRenameSaveFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setRenameSaveFileAfterImport (bool aFlag);
 
-    bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg);
+    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);

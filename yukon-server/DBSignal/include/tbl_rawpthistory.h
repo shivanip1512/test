@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_rawpthistory.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/12/12 20:39:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,8 +18,7 @@
 #define __TBL_RAWPTHISTORY_H__
 
 #include <windows.h>
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw/db/datetime.h>
 
 #include "dlldefs.h"
@@ -33,7 +32,7 @@ protected:
 
    LONG        _changeID;
    LONG        _pointID;
-   RWTime      _time;
+   CtiTime      _time;
    INT         _millis;
    INT         _quality;
    DOUBLE      _value;
@@ -45,7 +44,7 @@ public:
    CtiTableRawPointHistory(LONG     pid            = 0L,
                            INT      qual           = NormalQuality,
                            DOUBLE   val            = 0.0,
-                           const RWTime    &tme    = RWTime(),
+                           const CtiTime    &tme    = CtiTime(),
                            INT      millis         = 0,
                            LONG     cid            = ChangeIdGen()) :
       _changeID(cid),
@@ -71,25 +70,25 @@ public:
    virtual void Insert(RWDBConnection &conn);
    virtual void Restore();
    void RestoreMax();
-   virtual RWCString getTableName() const;
+   virtual string getTableName() const;
 
    virtual void DecodeDatabaseReader( RWDBReader& rdr );
 
 
    LONG                       getChangeID() const;
    LONG                       getPointID() const;
-   RWTime                     getTime() const;
+   CtiTime                     getTime() const;
    INT                        getMillis() const;
    INT                        getQuality() const;
    DOUBLE                     getValue() const;
 
    CtiTableRawPointHistory&   setChangeID(LONG id);
    CtiTableRawPointHistory&   setPointID(LONG id);
-   CtiTableRawPointHistory&   setTime(const RWTime &rwt);
+   CtiTableRawPointHistory&   setTime(const CtiTime &rwt);
    CtiTableRawPointHistory&   setMillis(INT millis);
    CtiTableRawPointHistory&   setQuality(const INT &qual);
    CtiTableRawPointHistory&   setValue(const DOUBLE &val);
-   CtiTableRawPointHistory&   setBookmark(const RWCString &mark);
+   CtiTableRawPointHistory&   setBookmark(const string &mark);
 
 
 };

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ class IM_EX_DEVDB CtiDeviceTCU : public CtiDeviceIDLC
 {
 protected:
 
-   RWTime              LastPointRefresh;
+   CtiTime              LastPointRefresh;
 
 private:
 
@@ -57,7 +57,7 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   INT               TCUDecode(INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< CtiMessage > &retList);
+   INT               TCUDecode(INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< CtiMessage > &retList);
    CtiReturnMsg*  TCUDecodeStatus(INMESS *InMessage);
 
    INT               TCUControl(OUTMESS*, VSTRUCT*);
@@ -79,7 +79,7 @@ public:
                            RWTPtrSlist< OUTMESS > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS*,
-                            RWTime&,
+                            CtiTime&,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS > &outList);

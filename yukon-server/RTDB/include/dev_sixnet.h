@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ class CtiSxlRecord
 {
 protected:
 
-    RWTime      _ptTime;        // When this all went and happened.
+    CtiTime      _ptTime;        // When this all went and happened.
     int         _ptType;        // Corresponds to the types in pointtypes.h
     int         _ptOffset;      // 1 based offset on this device for this point type.
     double      _ptValue;       // Go figure.
@@ -48,15 +48,15 @@ protected:
 public:
 
     CtiSxlRecord();
-    CtiSxlRecord(int type, int offset, double val, const RWTime &time);
+    CtiSxlRecord(int type, int offset, double val, const CtiTime &time);
     virtual ~CtiSxlRecord();
 
-    RWTime& getTime();
+    CtiTime& getTime();
     int getOffset() const;
     int getType() const;
     double getValue() const;
 
-    CtiSxlRecord& setTime(const RWTime& ref);
+    CtiSxlRecord& setTime(const CtiTime& ref);
     CtiSxlRecord& setType(int type);
     CtiSxlRecord& setOffset(int offset);
     CtiSxlRecord& setValue(const double& val);
@@ -192,7 +192,7 @@ public:
 
 protected:
 
-   RWCString _logfileName;
+   string _logfileName;
    UCHAR* _txBuffer;
    UCHAR* _rxBuffer;
 
@@ -217,7 +217,7 @@ protected:
    uint32 _logRate;         // milleseconds between each log!
    time_t _tailTime;        // tail record (or tail we care about) timestamp.
 
-   RWTime _lpTime;
+   CtiTime _lpTime;
 
 
    CtiProtocolSixnet *_protocol;
@@ -320,13 +320,13 @@ public:
    void checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfer);
 
    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority);
-   virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList,  RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-   virtual INT ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList,  RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   virtual INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
 
-   INT decodeResultLoadProfile(INMESS *InMessage,RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-   INT decodeResultScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
 };
 #endif // #ifndef __DEV_SIXNET_H__

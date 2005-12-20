@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/11/09 14:17:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:19:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -20,7 +20,12 @@
 
 #include <map>
 #include <queue>
-using namespace std;
+using std::map;
+using std::queue;
+using std::multimap;
+using std::less;
+using std::priority_queue;
+
 
 #include "queue.h"
 #include "thread.h"
@@ -40,15 +45,15 @@ private:
         bool retransmit;
     };
 
-    typedef multimap< long, association >  association_map;
+    typedef std::multimap< long, association >  association_map;
     typedef association_map::iterator      association_itr;
 
     association_map _associations;
 
     unsigned long _sequence;
 
-    typedef deque< CtiVerificationWork * > pending_queue;  //  this could also be made to a map if iterating is too slow
-    typedef map< long, pending_queue >     receiver_map;    //  maps receivers to their work queues
+    typedef std::deque< CtiVerificationWork * > pending_queue;  //  this could also be made to a map if iterating is too slow
+    typedef std::map< long, pending_queue >     receiver_map;    //  maps receivers to their work queues
 
     typedef pending_queue::iterator        pending_itr;
     typedef receiver_map::iterator         receiver_itr;

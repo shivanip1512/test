@@ -15,7 +15,7 @@ int CtiFDRClientServerConnection::_nextConnectionNumber = 1;
  * This class should throw a StartupException if it cannot create itself (CtiFDRSocketServer
  * will catch this exception).
  */
-CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString& connectionName, 
+CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connectionName, 
                                      SOCKET theSocket,
                                      CtiFDRScadaServer *aParent)
 {
@@ -79,12 +79,12 @@ void CtiFDRClientServerConnection::setRegistered (bool registered)
     _isRegistered = registered;
 }
 
-RWCString  CtiFDRClientServerConnection::getName() const
+string  CtiFDRClientServerConnection::getName() const
 {
     return _connectionName;
 }
 
-void CtiFDRClientServerConnection::setName(RWCString aName)
+void CtiFDRClientServerConnection::setName(string aName)
 {
   _connectionName = aName;
 }

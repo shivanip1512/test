@@ -52,7 +52,7 @@ LONG CtiLMCICustomerBase::getCustomerId() const
     return _customerid;
 }
 
-const RWCString& CtiLMCICustomerBase::getCompanyName() const
+const string& CtiLMCICustomerBase::getCompanyName() const
 {
     return _companyname;
 }
@@ -67,12 +67,12 @@ DOUBLE CtiLMCICustomerBase::getCurtailAmount() const
     return _curtailamount;
 }
 
-const RWCString& CtiLMCICustomerBase::getCurtailmentAgreement() const
+const string& CtiLMCICustomerBase::getCurtailmentAgreement() const
 {
     return _curtailmentagreement;
 }
 
-const RWCString& CtiLMCICustomerBase::getTimeZone() const
+const string& CtiLMCICustomerBase::getTimeZone() const
 {
     return _timezone;
 }
@@ -91,7 +91,7 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::setCustomerId(LONG id)
     return *this;
 }
 
-CtiLMCICustomerBase& CtiLMCICustomerBase::setCompanyName(const RWCString& name)
+CtiLMCICustomerBase& CtiLMCICustomerBase::setCompanyName(const string& name)
 {
     _companyname = name;
     return *this;
@@ -109,13 +109,13 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::setCurtailAmount(DOUBLE amount)
     return *this;
 }
 
-CtiLMCICustomerBase& CtiLMCICustomerBase::setCurtailmentAgreement(const RWCString& agreement)
+CtiLMCICustomerBase& CtiLMCICustomerBase::setCurtailmentAgreement(const string& agreement)
 {
     _curtailmentagreement = agreement;
     return *this;
 }
 
-CtiLMCICustomerBase& CtiLMCICustomerBase::setTimeZone(const RWCString& timezone)
+CtiLMCICustomerBase& CtiLMCICustomerBase::setTimeZone(const string& timezone)
 {
     _timezone = timezone;
     return *this;
@@ -211,7 +211,7 @@ int CtiLMCICustomerBase::operator!=(const CtiLMCICustomerBase& right) const
 ---------------------------------------------------------------------------*/
 void CtiLMCICustomerBase::restore(RWDBReader& rdr)
 {
-    RWCString tempBoolString;
+    string tempBoolString;
 
     rdr["customerid"] >> _customerid;
     rdr["companyname"] >> _companyname;

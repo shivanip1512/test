@@ -36,14 +36,14 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
     if(cat_null || type_null)
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "No paotype available in the given RWDBReader:" << endl;
+        dout << CtiTime() << " - " << "No paotype available in the given RWDBReader:" << endl;
         return CtiLMGroupPtr();
     }
 
     rdr["category"] >> category;
     rdr["type"] >> paotype;
 
-    switch(resolvePAOType(category.data(), paotype.data()))
+    switch(resolvePAOType(category, paotype))
     {
     case TYPE_LMGROUP_VERSACOM:
         lm_group = new CtiLMGroupVersacom(rdr);
@@ -84,7 +84,7 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
     default:
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " <<  "Invalid paotype: " << paotype << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " <<  "Invalid paotype: " << paotype << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     break;
     }

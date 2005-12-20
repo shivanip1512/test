@@ -16,12 +16,23 @@
 *				  design document for more information
 *    History: 
       $Log: fdrvalmet.h,v $
+      Revision 1.5  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.4  2005/10/19 16:53:23  dsutton
       Added the ability to set the connection timeout using a cparm.  Interfaces will
       kill the connection if they haven't heard anything from the other system after
       this amount of time.  Defaults to 60 seconds.  Also changed the logging to
       the system log so we don't log every unknown point as it comes in from the
       foreign system.  It will no log these points only if a debug level is set.
+      Revision 1.3.58.3  2005/08/12 19:53:48  jliu
+      Date Time Replaced
+
+      Revision 1.3.58.2  2005/07/14 22:26:57  jliu
+      RWCStringRemoved
+
+      Revision 1.3.58.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
 
       Revision 1.3  2002/04/16 15:58:47  softwarebuild
       20020416_1031_2_16
@@ -65,7 +76,6 @@
 #define __FDRVALMET_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -139,7 +149,7 @@ typedef struct
 
 #pragma pack(pop, valmet_packing)     // Restore the prior packing alignment..
 
-class RWTime;
+class CtiTime;
 
 class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
 {                                    
@@ -154,7 +164,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual RWCString decodeClientName(CHAR *data);
+        virtual string decodeClientName(CHAR *data);
 
         virtual int readConfig( void );
 
@@ -177,9 +187,9 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
 
         USHORT      ForeignToYukonQuality (USHORT aQuality);
         int         ForeignToYukonStatus (USHORT aStatus);
-        RWTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
+        CtiTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
 
-        RWCString   YukonToForeignTime (RWTime aTimeStamp);
+        string   YukonToForeignTime (CtiTime aTimeStamp);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 

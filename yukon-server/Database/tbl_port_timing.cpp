@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_timing.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ ULONG  CtiTablePortTimings::getDelay(int Offset) const
 
 void CtiTablePortTimings::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable portTbl = db.table(getTableName() );
+   RWDBTable portTbl = db.table(getTableName().c_str() );
 
    selector <<
       portTbl["pretxwait"] <<
@@ -101,7 +101,7 @@ void CtiTablePortTimings::DecodeDatabaseReader(RWDBReader &rdr)
    }
 }
 
-RWCString CtiTablePortTimings::getTableName()
+string CtiTablePortTimings::getTableName()
 {
    return "PortTiming";
 }

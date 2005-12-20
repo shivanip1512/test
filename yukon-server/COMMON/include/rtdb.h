@@ -24,7 +24,7 @@
 #include <windows.h>
 #include <iostream>
 #include <functional>
-using namespace std;
+
 
 #include <rw/tphdict.h>
 #include <rw/tpslist.h>
@@ -32,16 +32,19 @@ using namespace std;
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <rw\thr\mutex.h>
-#include <rw\cstring.h>
 
 #include "dlldefs.h"
 #include "hashkey.h"
+
 
 /*
  *  These are the Configuration Parameters for the Port Real Time Database
  */
 
 #include "dllbase.h"
+
+using std::equal_to;
+
 
 template <class K>
 struct my_hash
@@ -95,7 +98,7 @@ public:
        }
        else
        {
-           cout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
        }
 
        return status;

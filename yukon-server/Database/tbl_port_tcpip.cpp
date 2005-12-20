@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_port_tcpip.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
 _ipPort(TSDEFAULTPORT)
@@ -58,17 +60,17 @@ CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPPort(const INT i)
     return *this;
 }
 
-RWCString CtiTablePortTCPIP::getIPAddress() const
+string CtiTablePortTCPIP::getIPAddress() const
 {
     return _ipAddress;
 }
 
-RWCString& CtiTablePortTCPIP::getIPAddress()
+string& CtiTablePortTCPIP::getIPAddress()
 {
     return _ipAddress;
 }
 
-CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const RWCString &str)
+CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const string &str)
 {
     _ipAddress = str;
     return *this;
@@ -76,7 +78,7 @@ CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const RWCString &str)
 
 void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable portTbl = db.table(getTableName());
+    RWDBTable portTbl = db.table(getTableName().c_str());
 
     selector <<
     portTbl["ipaddress"] <<
@@ -105,11 +107,11 @@ void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
-RWCString CtiTablePortTCPIP::getTableName()
+string CtiTablePortTCPIP::getTableName()
 {
     return "PortTerminalServer";
 }

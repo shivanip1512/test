@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_tappaging.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/06/13 13:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,14 +17,12 @@
 #define __TBL_DV_TAPPAGING_H__
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -40,17 +38,17 @@ class IM_EX_CTIYUKONDB CtiTableDeviceTapPaging : public CtiMemDBObject
 protected:
 
    LONG           _deviceID;
-   RWCString      _pagerNumber;                    // a.k.a. CAPCODE
+   string      _pagerNumber;                    // a.k.a. CAPCODE
 
-   RWCString    _senderID;
-   RWCString    _securityCode;
-   RWCString    _postPath;
+   string    _senderID;
+   string    _securityCode;
+   string    _postPath;
 
 private:
 
 public:
 
-   CtiTableDeviceTapPaging(RWCString pn = RWCString());
+   CtiTableDeviceTapPaging(string pn = string());
 
    CtiTableDeviceTapPaging(const CtiTableDeviceTapPaging& aRef);
 
@@ -58,13 +56,13 @@ public:
 
    CtiTableDeviceTapPaging& operator=(const CtiTableDeviceTapPaging& aRef);
 
-   RWCString                  getPagerNumber() const;
-   RWCString&                 getPagerNumber();
-   CtiTableDeviceTapPaging&   setPagerNumber(const RWCString &aStr);
+   string                  getPagerNumber() const;
+   string&                 getPagerNumber();
+   CtiTableDeviceTapPaging&   setPagerNumber(const string &aStr);
 
-   RWCString                  getSenderID() const;
-   RWCString                  getSecurityCode() const;
-   RWCString                  getPOSTPath() const;
+   string                  getSenderID() const;
+   string                  getSecurityCode() const;
+   string                  getPOSTPath() const;
 
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -74,7 +72,7 @@ public:
    LONG getDeviceID() const;
    CtiTableDeviceTapPaging& setDeviceID(const LONG did);
 
-   static RWCString getTableName();
+   static string getTableName();
    virtual RWDBStatus Restore();
    virtual RWDBStatus Update();
    virtual RWDBStatus Insert();

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/07 21:51:30 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -18,6 +18,9 @@
 #include "logger.h"
 #include "utility.h"
 #include "thread_monitor.h"
+
+using std::pair;
+using std::map;
 
 /*********************************************************************************************
         Example usage of thread_monitor. 
@@ -32,7 +35,7 @@
                 //It should be included or excluded based on thread. Every thread can be implemented differently
                 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
             }
 
             //Replace DNP Inbound Thread with whatever thread you want to use
@@ -59,7 +62,7 @@
                 pointMessage.setType(StatusPointType);
                 pointMessage.setValue(next);
 
-                pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
+                pointMessage.setString((ThreadMonitor.getString().c_str()));
 
                 VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
             }
@@ -339,7 +342,7 @@ void CtiThreadMonitor::dump( void )
    //if we only operate on a copy, we can't explode if someone changes the map
    ThreadData temp_map = _threadData;
 
-   for( map < int, CtiThreadRegData >::iterator i = temp_map.begin(); i != temp_map.end(); i++ )
+   for( std::map < int, CtiThreadRegData >::iterator i = temp_map.begin(); i != temp_map.end(); i++ )
    {
       CtiThreadRegData temp = i->second;
 

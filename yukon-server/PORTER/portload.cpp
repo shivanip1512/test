@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,8 @@
 #include "rte_ccu.h"
 #include "trx_711.h"
 #include "dev_ccu.h"
+
+using namespace std;
 
 extern CtiRouteManager    RouteManager;
 
@@ -161,7 +163,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Route " << RouteCount << " **** " << endl;
+                            dout << CtiTime() << " **** Route " << RouteCount << " **** " << endl;
                         }
 
                         /* Load route */
@@ -265,7 +267,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 /* Allocate some memory for additional functions */

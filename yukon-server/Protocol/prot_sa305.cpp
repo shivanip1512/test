@@ -7,11 +7,23 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/05/31 21:05:55 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.20  2005/12/20 17:19:56  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.19.2.3  2005/08/12 19:54:04  jliu
+* Date Time Replaced
+*
+* Revision 1.19.2.2  2005/07/14 22:27:01  jliu
+* RWCStringRemoved
+*
+* Revision 1.19.2.1  2005/07/12 21:08:42  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.19  2005/05/31 21:05:55  cplender
 * the cycle "count" is now one based to match versacom and expresscom parse syntax.
 * Control history was off by one repeat prior to this checkin.
@@ -82,73 +94,74 @@
 #include "numstr.h"
 #include "prot_sa305.h"
 
+using namespace std;
 
-RWCString CtiProtocolSA305::_strategyStr[64] =
+string CtiProtocolSA305::_strategyStr[64] =
 {
-    RWCString("Strategy 00: n/a"),
-    RWCString("Strategy 01: 7.5 / 7.5"),
-    RWCString("Strategy 02: 7.5 / 15"),
-    RWCString("Strategy 03: n/a"),
-    RWCString("Strategy 04: 5 / 30"),
-    RWCString("Strategy 05: 7.5 / 30"),
-    RWCString("Strategy 06: 10 / 30"),
-    RWCString("Strategy 07: 12 / 30"),
-    RWCString("Strategy 08: 13.5 / 30"),
-    RWCString("Strategy 09: 15 / 30"),
-    RWCString("Strategy 10: 16.5 / 30"),
-    RWCString("Strategy 11: 18 / 30"),
-    RWCString("Strategy 12: 19.5 / 30"),
-    RWCString("Strategy 13: 21 / 30"),
-    RWCString("Strategy 14: 22.5 / 30"),
-    RWCString("Strategy 15: 24 / 30"),
-    RWCString("Strategy 16: 25.5 / 30"),
-    RWCString("Strategy 17: 27 / 30"),
-    RWCString("Strategy 18: 28.5 / 30"),
-    RWCString("Strategy 19: 30 / 30"),
-    RWCString("Strategy 20: n/a"),
-    RWCString("Strategy 21: 5 / 20"),
-    RWCString("Strategy 22: 6.6 / 20"),
-    RWCString("Strategy 23: 8 / 20"),
-    RWCString("Strategy 24: 9 / 20"),
-    RWCString("Strategy 25: 10 / 20"),
-    RWCString("Strategy 26: 11 / 20"),
-    RWCString("Strategy 27: 12 / 20"),
-    RWCString("Strategy 28: 13 / 20"),
-    RWCString("Strategy 29: 14 / 20"),
-    RWCString("Strategy 30: 15 / 20"),
-    RWCString("Strategy 31: 16 / 20"),
-    RWCString("Strategy 32: 17 / 20"),
-    RWCString("Strategy 33: 18 / 20"),
-    RWCString("Strategy 34: 19 / 20"),
-    RWCString("Strategy 35: 20 / 20"),
-    RWCString("Strategy 36: n/a"),
-    RWCString("Strategy 37: 5 / 60"),
-    RWCString("Strategy 38: 10 / 60"),
-    RWCString("Strategy 39: 15 / 60"),
-    RWCString("Strategy 40: 20 / 60"),
-    RWCString("Strategy 41: 24 / 60"),
-    RWCString("Strategy 42: 27 / 60"),
-    RWCString("Strategy 43: 30 / 60"),
-    RWCString("Strategy 44: 33 / 60"),
-    RWCString("Strategy 45: 36 / 60"),
-    RWCString("Strategy 46: 39 / 60"),
-    RWCString("Strategy 47: 42 / 60"),
-    RWCString("Strategy 48: 45 / 60"),
-    RWCString("Strategy 49: 48 / 60"),
-    RWCString("Strategy 50: 51 / 60"),
-    RWCString("Strategy 51: 54 / 60"),
-    RWCString("Strategy 52: 57 / 60"),
-    RWCString("Strategy 53: 60 / 60"),
-    RWCString("Strategy 54: Undefined"),
-    RWCString("Strategy 55: Undefined"),
-    RWCString("Strategy 56: Undefined"),
-    RWCString("Strategy 57: Undefined"),
-    RWCString("Strategy 58: Undefined"),
-    RWCString("Strategy 59: Undefined"),
-    RWCString("Strategy 60: Undefined"),
-    RWCString("Strategy 61: Restore"),
-    RWCString("Strategy 62: Undefined"),
-    RWCString("Strategy 63: Undefined")
+    string("Strategy 00: n/a"),
+    string("Strategy 01: 7.5 / 7.5"),
+    string("Strategy 02: 7.5 / 15"),
+    string("Strategy 03: n/a"),
+    string("Strategy 04: 5 / 30"),
+    string("Strategy 05: 7.5 / 30"),
+    string("Strategy 06: 10 / 30"),
+    string("Strategy 07: 12 / 30"),
+    string("Strategy 08: 13.5 / 30"),
+    string("Strategy 09: 15 / 30"),
+    string("Strategy 10: 16.5 / 30"),
+    string("Strategy 11: 18 / 30"),
+    string("Strategy 12: 19.5 / 30"),
+    string("Strategy 13: 21 / 30"),
+    string("Strategy 14: 22.5 / 30"),
+    string("Strategy 15: 24 / 30"),
+    string("Strategy 16: 25.5 / 30"),
+    string("Strategy 17: 27 / 30"),
+    string("Strategy 18: 28.5 / 30"),
+    string("Strategy 19: 30 / 30"),
+    string("Strategy 20: n/a"),
+    string("Strategy 21: 5 / 20"),
+    string("Strategy 22: 6.6 / 20"),
+    string("Strategy 23: 8 / 20"),
+    string("Strategy 24: 9 / 20"),
+    string("Strategy 25: 10 / 20"),
+    string("Strategy 26: 11 / 20"),
+    string("Strategy 27: 12 / 20"),
+    string("Strategy 28: 13 / 20"),
+    string("Strategy 29: 14 / 20"),
+    string("Strategy 30: 15 / 20"),
+    string("Strategy 31: 16 / 20"),
+    string("Strategy 32: 17 / 20"),
+    string("Strategy 33: 18 / 20"),
+    string("Strategy 34: 19 / 20"),
+    string("Strategy 35: 20 / 20"),
+    string("Strategy 36: n/a"),
+    string("Strategy 37: 5 / 60"),
+    string("Strategy 38: 10 / 60"),
+    string("Strategy 39: 15 / 60"),
+    string("Strategy 40: 20 / 60"),
+    string("Strategy 41: 24 / 60"),
+    string("Strategy 42: 27 / 60"),
+    string("Strategy 43: 30 / 60"),
+    string("Strategy 44: 33 / 60"),
+    string("Strategy 45: 36 / 60"),
+    string("Strategy 46: 39 / 60"),
+    string("Strategy 47: 42 / 60"),
+    string("Strategy 48: 45 / 60"),
+    string("Strategy 49: 48 / 60"),
+    string("Strategy 50: 51 / 60"),
+    string("Strategy 51: 54 / 60"),
+    string("Strategy 52: 57 / 60"),
+    string("Strategy 53: 60 / 60"),
+    string("Strategy 54: Undefined"),
+    string("Strategy 55: Undefined"),
+    string("Strategy 56: Undefined"),
+    string("Strategy 57: Undefined"),
+    string("Strategy 58: Undefined"),
+    string("Strategy 59: Undefined"),
+    string("Strategy 60: Undefined"),
+    string("Strategy 61: Restore"),
+    string("Strategy 62: Undefined"),
+    string("Strategy 63: Undefined")
 };
 
 CtiProtocolSA305::CtiProtocolSA305() :
@@ -235,7 +248,7 @@ CtiProtocolSA305& CtiProtocolSA305::operator=(const CtiProtocolSA305& aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -253,8 +266,8 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
     if(_strategy == 0)
     {
         if(parse.isKeyValid("sa_restore") ||
-           parse.getCommandStr().contains(" restore", RWCString::ignoreCase) ||
-           parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
+           findStringIgnoreCase(parse.getCommandStr()," restore") ||
+           findStringIgnoreCase(parse.getCommandStr()," terminate") )
         {
             strategy = 61;
             _period = 0.0;
@@ -294,7 +307,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ALERT: That's a BIG Control!" << endl;
+                        dout << CtiTime() << " ALERT: That's a BIG Control!" << endl;
                     }
                     _period = 60.0;
                     period_sec = 3600;
@@ -335,7 +348,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
                 }
             }
         }
@@ -565,7 +578,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
     if(gConfigParms.getValueAsInt("SA305_DEBUGLEVEL",0) & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << " period        : " << _period << endl;
         dout << " % off         : " << _percentageOff << endl;
         dout << " repetitions   : " << _repetitions << endl;
@@ -604,7 +617,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
 
     if(_strategy <= 0) _strategy = parse.getiValue("sa_strategy", 0);
 
-    if( parse.getCommandStr().contains(" adapt", RWCString::ignoreCase) )   // Adaptive algorithm!
+    if( findStringIgnoreCase(parse.getCommandStr()," adapt") )   // Adaptive algorithm!
     {
         setStartBits(5);
     }
@@ -632,7 +645,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
             }
 
             status = CtiInvalidRequest;
@@ -653,7 +666,7 @@ void CtiProtocolSA305::resetMessage()
 {
     _messageReady = false;
     _messageBits.clear();
-    _bitStr = RWCString();
+    _bitStr = string();
     return;
 }
 
@@ -781,7 +794,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     {
         status = NoMethod;
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
     }
 
     return status;
@@ -862,13 +875,13 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         else if(parse.isKeyValid("sa_coldload"))
         {
             bool configed = false;
-            RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
-            RWCString clpstr;
+            string serialstr = CtiNumStr(parse.getiValue("serial"));
+            string clpstr;
 
             int i, clsec, clpCount;
             for(i = 1; i <= 4; i++)
             {
-                clpstr = RWCString("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
+                clpstr = string("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
 
                 if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
                 {
@@ -877,7 +890,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
                     // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
                     {
                         CtiLockGuard<CtiLogger> slog_guard(slog);
-                        slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         slog << " Setting coldLoadPickup. Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
                     }
 
@@ -959,19 +972,19 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         else if(parse.isKeyValid("sa_tamper"))
         {
             // There has been an assignment request!
-            RWCString tdstr;
-            RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+            string tdstr;
+            string serialstr = CtiNumStr(parse.getiValue("serial"));
 
             int i, tdCount;
             for(i = 1; i <= 2; i++)
             {
-                tdstr = RWCString("tamperdetect_f") + CtiNumStr(i);
+                tdstr = string("tamperdetect_f") + CtiNumStr(i);
 
                 if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
                 {
                     {
                         CtiLockGuard<CtiLogger> slog_guard(slog);
-                        slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         slog << " Setting tamperDetectCount. Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
                     }
 
@@ -1092,7 +1105,7 @@ UINT CtiProtocolSA305::getBits(unsigned int &offset, int len) const
         #if 0
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Getting " << len << " bits of data from " << offset << " as " << val << endl;
         }
         #endif
@@ -1341,7 +1354,7 @@ void CtiProtocolSA305::testCRC(char* testData)
 {
     unsigned i;
     unsigned char crc=0;
-    for (i=0; i<strlen(testData)-3; i++)
+    for (i=0; i<::strlen(testData)-3; i++)
         crc = addOctalCharToCRC(crc,testData[i]);
     // shift in one false 0
     crc = addBitToCRC(crc, 0);
@@ -1389,7 +1402,7 @@ int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the lengt
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ERROR Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ERROR Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << " RTCs should not execute this code!" << endl;
                     }
                 }
@@ -1410,7 +1423,7 @@ int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the lengt
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -1444,7 +1457,7 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  RTCs should never execute this code" << endl;
                     }
                 }
@@ -1542,7 +1555,7 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -1592,14 +1605,14 @@ CtiProtocolSA305& CtiProtocolSA305::setPadBits(int val)
     return *this;
 }
 
-RWCString CtiProtocolSA305::getBitString() const
+string CtiProtocolSA305::getBitString() const
 {
     return _bitStr;
 }
 
-RWCString  CtiProtocolSA305::asString() const
+string  CtiProtocolSA305::asString() const
 {
-    RWCString rstr;
+    string rstr;
     UINT bit = 0;       // This is just past the Uaddr.
 
     rstr += "SA 305 - code. ";
@@ -1625,29 +1638,29 @@ RWCString  CtiProtocolSA305::asString() const
     UINT maddr = 0;
     UINT haddr = 0;
 
-    rstr += "Util: " + CtiNumStr(uaddr) + " ";
+    rstr += "Util: " + CtiNumStr(uaddr) + string(" ");
 
     if(!addresstype)
     { // Individual Addressed switch
         serial = getBits(bit, 22);
-        rstr += ".  SN: " + CtiNumStr(serial) + " ";
+        rstr += ".  SN: " + CtiNumStr(serial) + string(" ");
     }
     else
     {
         if(group)
         {
             gaddr = getBits(bit, 6);
-            rstr += ". Grp: " + CtiNumStr(gaddr) + " ";
+            rstr += ". Grp: " + CtiNumStr(gaddr) + string(" ");
         }
         if(div)
         {
             daddr = getBits(bit, 6);
-            rstr += ". Div: " + CtiNumStr(daddr) + " ";
+            rstr += ". Div: " + CtiNumStr(daddr) + string(" ");
         }
         if(sub)
         {
             saddr = getBits(bit, 10);
-            rstr += ". Sub: " + CtiNumStr(saddr) + " ";
+            rstr += ". Sub: " + CtiNumStr(saddr) + string(" ");
         }
 
         faddr = getBits(bit, 3);
@@ -1656,7 +1669,7 @@ RWCString  CtiProtocolSA305::asString() const
 
         raddr = faddr*16 + maddr;
 
-        if(!f1) rstr += ", Fam: " + CtiNumStr(faddr) + ", Mbr: " + CtiNumStr(maddr) + " (R: " + CtiNumStr(raddr) + ").";
+        if(!f1) rstr += ", Fam: " + CtiNumStr(faddr) + string(", Mbr: ") + CtiNumStr(maddr) + " (R: " + CtiNumStr(raddr) + ").";
     }
 
     if(!f1)
@@ -1724,7 +1737,7 @@ RWCString  CtiProtocolSA305::asString() const
             rstr += ", Substation " + CtiNumStr(saddr);
             rstr += ", Substation " + CtiNumStr(saddr);
             rstr += ", Family " + CtiNumStr(faddr);
-            rstr += ", Member " + CtiNumStr(maddr) + " (Rate = " + CtiNumStr(raddr) + ")";
+            rstr += ", Member " + CtiNumStr(maddr) + string(" (Rate = ") + CtiNumStr(raddr) + ")";
         }
         else    // 13 byte address command.
         {
@@ -1735,27 +1748,27 @@ RWCString  CtiProtocolSA305::asString() const
             {
             case 0:
                 {
-                    rstr += ". CLP F1 = " + CtiNumStr(dataval * 14.0616) + " sec";
+                    rstr += ". CLP F1 = " + CtiNumStr(dataval * 14.0616) + string(" sec");
                     break;
                 }
             case 1:
                 {
-                    rstr += ". CLP F2 = " + CtiNumStr(dataval * 14.0616) + " sec";
+                    rstr += ". CLP F2 = " + CtiNumStr(dataval * 14.0616) + string(" sec");
                     break;
                 }
             case 2:
                 {
-                    rstr += ". CLP F3 = " + CtiNumStr(dataval * 14.0616) + " sec";
+                    rstr += ". CLP F3 = " + CtiNumStr(dataval * 14.0616) + string(" sec");
                     break;
                 }
             case 3:
                 {
-                    rstr += ". CLP F4 = " + CtiNumStr(dataval * 14.0616) + " sec";
+                    rstr += ". CLP F4 = " + CtiNumStr(dataval * 14.0616) + string(" sec");
                     break;
                 }
             case 4:
                 {
-                    rstr += ". CLP F1-F4 = " + CtiNumStr(dataval * 14.0616) + " sec";
+                    rstr += ". CLP F1-F4 = " + CtiNumStr(dataval * 14.0616) + string(" sec");
                     break;
                 }
             case 5:
@@ -1822,7 +1835,7 @@ RWCString  CtiProtocolSA305::asString() const
                 }
             default:
                 {
-                    rstr += ". Unknown Command Type " + CtiNumStr(datatype) + "  Data " + CtiNumStr(dataval);
+                    rstr += ". Unknown Command Type " + CtiNumStr(datatype) + string("  Data ") + CtiNumStr(dataval);
                     break;
                 }
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
-using namespace std;
 
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
@@ -66,7 +65,7 @@ public:
             Inherited::operator=(aRef);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " FIX FIX FIX  **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " FIX FIX FIX  **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
         }
@@ -120,7 +119,7 @@ public:
 
 
     LONG getRouteID() const;
-    RWCString getName() const;
+    string getName() const;
     INT getType() const;
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
@@ -128,7 +127,7 @@ public:
 };
 
 inline LONG CtiRouteBase::getRouteID() const { return _tblPAO.getID(); }
-inline RWCString CtiRouteBase::getName() const { return _tblPAO.getName(); }
+inline string CtiRouteBase::getName() const { return _tblPAO.getName(); }
 inline INT CtiRouteBase::getType() const { return _tblPAO.getType(); }
 inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { return false; }
 

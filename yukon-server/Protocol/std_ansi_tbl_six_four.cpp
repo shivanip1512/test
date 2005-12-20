@@ -284,7 +284,7 @@ void CtiAnsiTableSixFour::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixFour::printResult( RWCString deviceName )
+void CtiAnsiTableSixFour::printResult( const string& deviceName )
 {
     int index, i, j;
     int nbrBlkInts;
@@ -312,14 +312,14 @@ void CtiAnsiTableSixFour::printResult( RWCString deviceName )
             nbrBlkInts = _nbrBlkIntsSet1;
         } 
         //printStime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time);
-        //RWTime = temp
+        //CtiTime = temp
         {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **B*L*O*C*K** : "<<index<<endl;
         }
         {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Block End Time: "<<RWTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
+                dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
         }
         if (_blkEndReadFlag) 
         {

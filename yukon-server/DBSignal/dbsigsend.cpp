@@ -9,21 +9,21 @@ void main(int argc, char** argv)
    if(argc >= 5)
    {
       CtiTableSignal sig(atoi(argv[1]),
-                         RWTime().now(),
+                         CtiTime(),
                          0,
-                         RWCString(argv[2]),
-                         RWCString(argv[3]),
+                         string(argv[2]),
+                         string(argv[3]),
                          0,
                          0,
                          0,
-                         RWCString("dbsigsend"));
+                         string("dbsigsend"));
 
       sig.setPriority(atoi(argv[4]));
       sig.Insert();
    }
    else
    {
-      cout << argv[0] << " parameters: PointId, Description, Action, Priority" << endl;
+      std::cout << argv[0] << " parameters: PointId, Description, Action, Priority" << std::endl;
 
    }
 

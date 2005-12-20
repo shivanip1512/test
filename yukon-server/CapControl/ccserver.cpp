@@ -44,23 +44,23 @@ CtiCCServer* CtiCCServer::getInstance()
 ---------------------------------------------------------------------------*/
 void CtiCCServer::start()
 {
-    RWCString str;
+    string str;
     char var[128];
 
     strcpy(var, "CAP_CONTROL_PORT");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
-        _capcontrolclientsport = atoi(str.data());
+        _capcontrolclientsport = atoi(str.c_str());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << _capcontrolclientsport << endl;
+            dout << CtiTime() << " - " << var << ":  " << _capcontrolclientsport << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     if ( !_running && !_dostop )
@@ -114,7 +114,7 @@ void CtiCCServer::Broadcast(CtiMessage* message)
     if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
+        dout << CtiTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
     }
 
     setChanged();
@@ -159,7 +159,7 @@ void CtiCCServer::_checkstatus()
 
             /*{
                 RWMutexLock::LockGuard guard(coutMux);
-                cout << RWTime()  << " - CtiCCServer::_checkstatus - " << msg.why() << endl;
+                cout << CtiTime()  << " - CtiCCServer::_checkstatus - " << msg.why() << endl;
             }*/
         }
 
@@ -169,7 +169,7 @@ void CtiCCServer::_checkstatus()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 

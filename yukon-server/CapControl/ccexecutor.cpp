@@ -125,7 +125,7 @@ void CtiCCCommandExecutor::Execute()
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - unknown command type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - unknown command type in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
         break;
 
@@ -143,7 +143,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -157,8 +157,8 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                 currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                RWCString text = RWCString("Substation Bus Verification Enabled");
-                RWCString additional = RWCString("Bus: ");
+                string text("Substation Bus Verification Enabled");
+                string additional("Bus: ");
                 additional += currentSubstationBus->getPAOName();
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
             }
@@ -172,8 +172,8 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                    //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                    RWCString text = RWCString("Substation Bus Verification Enabled");
-                    RWCString additional = RWCString("Bus: ");
+                    string text("Substation Bus Verification Enabled");
+                    string additional("Bus: ");
                     additional += currentSubstationBus->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
                 }
@@ -193,7 +193,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -229,8 +229,8 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
             }
 
             //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-            RWCString text = RWCString("Substation Bus Verification Disabled");
-            RWCString additional = RWCString("Bus: ");
+            string text("Substation Bus Verification Disabled");
+            string additional("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
             break;
@@ -248,7 +248,7 @@ void CtiCCCommandExecutor::EnableSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -258,8 +258,8 @@ void CtiCCCommandExecutor::EnableSubstationBus()
             currentSubstationBus->setDisableFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             store->UpdateBusDisableFlagInDB(currentSubstationBus);
-            RWCString text = RWCString("Substation Bus Enabled");
-            RWCString additional = RWCString("Bus: ");
+            string text = string("Substation Bus Enabled");
+            string additional = string("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             break;
@@ -276,7 +276,7 @@ void CtiCCCommandExecutor::DisableSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -286,8 +286,8 @@ void CtiCCCommandExecutor::DisableSubstationBus()
             currentSubstationBus->setDisableFlag(TRUE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             store->UpdateBusDisableFlagInDB(currentSubstationBus);
-            RWCString text = RWCString("Substation Bus Disabled");
-            RWCString additional = RWCString("Bus: ");
+            string text = string("Substation Bus Disabled");
+            string additional = string("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             break;
@@ -305,7 +305,7 @@ void CtiCCCommandExecutor::EnableFeeder()
 
     LONG feederID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -321,15 +321,15 @@ void CtiCCCommandExecutor::EnableFeeder()
                     currentFeeder->setDisableFlag(FALSE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     store->UpdateFeederDisableFlagInDB(currentFeeder);
-                    RWCString text = RWCString("Feeder Enabled");
-                    RWCString additional = RWCString("Feeder: ");
+                    string text("Feeder Enabled");
+                    string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                     dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                       <<".  Cannot perform ENABLE on Feeder: " << currentFeeder->getPAOName() << " PAOID: " << currentFeeder->getPAOId() << "."<<endl;
                 }
                 found = TRUE;
@@ -351,7 +351,7 @@ void CtiCCCommandExecutor::DisableFeeder()
 
     LONG feederID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -367,15 +367,15 @@ void CtiCCCommandExecutor::DisableFeeder()
                     currentFeeder->setDisableFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     store->UpdateFeederDisableFlagInDB(currentFeeder);
-                    RWCString text = RWCString("Feeder Disabled");
-                    RWCString additional = RWCString("Feeder: ");
+                    string text("Feeder Disabled");
+                    string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                     dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                       <<".  Cannot perform DISABLE on Feeder: " << currentFeeder->getPAOName() << " PAOID: " << currentFeeder->getPAOId() << "."<<endl;
                 }
                 found = TRUE;
@@ -397,7 +397,7 @@ void CtiCCCommandExecutor::EnableCapBank()
 
     LONG capBankID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -417,8 +417,8 @@ void CtiCCCommandExecutor::EnableCapBank()
                         currentCapBank->setDisableFlag(FALSE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         store->UpdateCapBankDisableFlagInDB(currentCapBank);
-                        RWCString text = RWCString("Cap Bank Enabled");
-                        RWCString additional = RWCString("Cap Bank: ");
+                        string text("Cap Bank Enabled");
+                        string additional("Cap Bank: ");
                         additional += currentCapBank->getPAOName();
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
@@ -427,7 +427,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
@@ -436,7 +436,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform ENABLE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                     }   
 
@@ -462,7 +462,7 @@ void CtiCCCommandExecutor::DisableCapBank()
 
     LONG capBankID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -482,8 +482,8 @@ void CtiCCCommandExecutor::DisableCapBank()
                         currentCapBank->setDisableFlag(TRUE);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         store->UpdateCapBankDisableFlagInDB(currentCapBank);
-                        RWCString text = RWCString("Cap Bank Disabled");
-                        RWCString additional = RWCString("Cap Bank: ");
+                        string text("Cap Bank Disabled");
+                        string additional("Cap Bank: ");
                         additional += currentCapBank->getPAOName();
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
@@ -492,7 +492,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
@@ -501,7 +501,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform DISABLE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
 
                     }   
@@ -532,7 +532,7 @@ void CtiCCCommandExecutor::EnableOvUv()
     CtiMultiMsg* multi = new CtiMultiMsg();
    // RWOrdered& pointChanges = multi->getData();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -551,8 +551,8 @@ void CtiCCCommandExecutor::EnableOvUv()
                 {
                     controlID = currentCapBank->getControlDeviceId();
 
-                    RWCString text = RWCString("Cap Bank OV/UV Enabled");
-                    RWCString additional = RWCString("Cap Bank: ");
+                    string text = string("Cap Bank OV/UV Enabled");
+                    string additional = string("Cap Bank: ");
                     additional += currentCapBank->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
@@ -580,7 +580,7 @@ void CtiCCCommandExecutor::EnableOvUv()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
 
@@ -600,7 +600,7 @@ void CtiCCCommandExecutor::DisableOvUv()
     CtiMultiMsg* multi = new CtiMultiMsg();
     //RWOrdered& pointChanges = multi->getData();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -619,8 +619,8 @@ void CtiCCCommandExecutor::DisableOvUv()
                 {
                     controlID = currentCapBank->getControlDeviceId();
 
-                    RWCString text = RWCString("Cap Bank OV/UV Disabled");
-                    RWCString additional = RWCString("Cap Bank: ");
+                    string text = string("Cap Bank OV/UV Disabled");
+                    string additional = string("Cap Bank: ");
                     additional += currentCapBank->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
@@ -650,7 +650,7 @@ void CtiCCCommandExecutor::DisableOvUv()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
 }
@@ -677,11 +677,11 @@ void CtiCCCommandExecutor::OpenCapBank()
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
-    RWDBDateTime savedBusLastOperationTime = gInvalidRWDBDateTime;
-    RWDBDateTime savedFeederLastOperationTime = gInvalidRWDBDateTime;
+    CtiTime savedBusLastOperationTime = gInvalidCtiTime;
+    CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -711,8 +711,8 @@ void CtiCCCommandExecutor::OpenCapBank()
                         currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         currentSubstationBus->setLastFeederControlledPosition(j);
-                        currentSubstationBus->setLastOperationTime(RWDBDateTime());
-                        currentFeeder->setLastOperationTime(RWDBDateTime());
+                        currentSubstationBus->setLastOperationTime(CtiTime());
+                        currentFeeder->setLastOperationTime(CtiTime());
                         currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
@@ -726,32 +726,32 @@ void CtiCCCommandExecutor::OpenCapBank()
                         {
                             char tempchar[80] = "";
                             char tempchar1[80] = "";
-                            RWCString additional = RWCString("Sub: ");
+                            string additional("Sub: ");
                             additional += currentSubstationBus->getPAOName();
-                            additional += RWCString("  Feeder: ");
+                            additional += string("  Feeder: ");
                             additional += currentFeeder->getPAOName();
 
-                            RWCString text = RWCString("Manual Open Sent, Sub VarLoad = ");
+                            string text("Manual Open Sent, Sub VarLoad = ");
                             _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
                             text += tempchar;
-                            text += RWCString(" Feeder VarLoad = ");
+                            text += string(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
-                                (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
+                                (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                             {
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
-                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                                currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
 
@@ -763,7 +763,7 @@ void CtiCCCommandExecutor::OpenCapBank()
 
 
                         BOOL confirmImmediately = FALSE;
-                        if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -776,21 +776,21 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 confirmImmediately = TRUE;
                             }
                         }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) ||
-                                 !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
+                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                             {
@@ -800,7 +800,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
 
@@ -817,16 +817,17 @@ void CtiCCCommandExecutor::OpenCapBank()
                     }
                     else
                     {
+
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                            dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
                     }
@@ -853,7 +854,7 @@ void CtiCCCommandExecutor::OpenCapBank()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -871,11 +872,11 @@ void CtiCCCommandExecutor::CloseCapBank()
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
-    RWDBDateTime savedBusLastOperationTime = gInvalidRWDBDateTime;
-    RWDBDateTime savedFeederLastOperationTime = gInvalidRWDBDateTime;
+    CtiTime savedBusLastOperationTime = gInvalidCtiTime;
+    CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -906,8 +907,8 @@ void CtiCCCommandExecutor::CloseCapBank()
                         currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         currentSubstationBus->setLastFeederControlledPosition(j);
-                        currentSubstationBus->setLastOperationTime(RWDBDateTime());
-                        currentFeeder->setLastOperationTime(RWDBDateTime());
+                        currentSubstationBus->setLastOperationTime(CtiTime());
+                        currentFeeder->setLastOperationTime(CtiTime());
                         currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
@@ -921,32 +922,32 @@ void CtiCCCommandExecutor::CloseCapBank()
                         {
                             char tempchar[80] = "";
                             char tempchar1[80] = "";
-                            RWCString additional = RWCString("Sub: ");
+                            string additional("Sub: ");
                             additional += currentSubstationBus->getPAOName();
-                            additional += RWCString("  Feeder: ");
+                            additional += string("  Feeder: ");
                             additional += currentFeeder->getPAOName();
 
-                            RWCString text = RWCString("Manual Close Sent, Sub VarLoad = ");
+                            string text("Manual Close Sent, Sub VarLoad = ");
                             _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
                             text += tempchar;
-                            text += RWCString(" Feeder VarLoad = ");
+                            text += string(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
-                                (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
+                                (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) )
                             {
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
-                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                                currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
                         
@@ -958,7 +959,7 @@ void CtiCCCommandExecutor::CloseCapBank()
 
 
                         BOOL confirmImmediately = FALSE;
-                        if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -970,35 +971,34 @@ void CtiCCCommandExecutor::CloseCapBank()
                             {
                                 confirmImmediately = TRUE;
                             }
-                        }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) ||
-                                 !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                        }  
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
+                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) &&
+                            if( (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod)) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
-                                currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                                (currentFeeder->getCurrentVarPointQuality() != NormalQuality) )
                             {
                                 confirmImmediately = TRUE;
                             }
-                        }
+                        }  
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
-                            }
+                            
                             /*if (currentSubstationBus->getStrategyId() <= 0)
                             {
                                 confirmImmediately = TRUE;
@@ -1018,16 +1018,17 @@ void CtiCCCommandExecutor::CloseCapBank()
                     }
                     else
                     {
+
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                            dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
                     }
@@ -1054,7 +1055,7 @@ void CtiCCCommandExecutor::CloseCapBank()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -1072,11 +1073,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
     LONG savedControlStatus = -10;
-    RWDBDateTime savedBusLastOperationTime = gInvalidRWDBDateTime;
-    RWDBDateTime savedFeederLastOperationTime = gInvalidRWDBDateTime;
+    CtiTime savedBusLastOperationTime = gInvalidCtiTime;
+    CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1106,8 +1107,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         currentSubstationBus->setLastFeederControlledPosition(j);
-                        currentSubstationBus->setLastOperationTime(RWDBDateTime());
-                        currentFeeder->setLastOperationTime(RWDBDateTime());
+                        currentSubstationBus->setLastOperationTime(CtiTime());
+                        currentFeeder->setLastOperationTime(CtiTime());
                         savedControlStatus = currentCapBank->getControlStatus();
                         currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
@@ -1121,33 +1122,33 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         {
                             char tempchar[80] = "";
                             char tempchar1[80] = "";
-                            RWCString additional = RWCString("Sub: ");
+                            string additional("Sub: ");
                             additional += currentSubstationBus->getPAOName();
-                            additional += RWCString("  Feeder: ");
+                            additional += string("  Feeder: ");
                             additional += currentFeeder->getPAOName();
 
-                            RWCString text = RWCString("Manual Confirm Open Sent, Sub VarLoad = ");
+                            string text("Manual Confirm Open Sent, Sub VarLoad = ");
                             _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
                             text += tempchar;
-                            text += RWCString(" Feeder VarLoad = ");
+                            text += string(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
-                                  (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&
+                                  (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
                                  savedControlStatus != CtiCCCapBank::Open )
                             {
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
-                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                                currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
 
@@ -1162,7 +1163,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         {
                             confirmImmediately = TRUE;
                         }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
@@ -1176,8 +1177,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 confirmImmediately = TRUE;
                             }
                         }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) ||
-                                 !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
+                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
@@ -1185,13 +1186,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                             {
@@ -1201,7 +1202,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
 
@@ -1218,18 +1219,20 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     }
                     else
                     {
+
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                            dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
+
                     }
                     break;
                 }
@@ -1254,7 +1257,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -1271,12 +1274,12 @@ void CtiCCCommandExecutor::ConfirmClose()
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
-    RWDBDateTime savedBusLastOperationTime = gInvalidRWDBDateTime;
-    RWDBDateTime savedFeederLastOperationTime = gInvalidRWDBDateTime;
+    CtiTime savedBusLastOperationTime = gInvalidCtiTime;
+    CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     LONG savedControlStatus = -10;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1306,8 +1309,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                         currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         currentSubstationBus->setLastFeederControlledPosition(j);
-                        currentSubstationBus->setLastOperationTime(RWDBDateTime());
-                        currentFeeder->setLastOperationTime(RWDBDateTime());
+                        currentSubstationBus->setLastOperationTime(CtiTime());
+                        currentFeeder->setLastOperationTime(CtiTime());
                         savedControlStatus = currentCapBank->getControlStatus();
                         currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
@@ -1321,33 +1324,33 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {
                             char tempchar[80] = "";
                             char tempchar1[80] = "";
-                            RWCString additional = RWCString("Sub: ");
+                            string additional("Sub: ");
                             additional += currentSubstationBus->getPAOName();
-                            additional += RWCString("  Feeder: ");
+                            additional += string("  Feeder: ");
                             additional += currentFeeder->getPAOName();
 
-                            RWCString text = RWCString("Manual Confirm Close Sent, Sub VarLoad = ");
+                            string text("Manual Confirm Close Sent, Sub VarLoad = ");
                             _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
                             text += tempchar;
-                            text += RWCString(" Feeder VarLoad = ");
+                            text += string(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
-                                  (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&
+                                  (!stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) && !savedFeederRecentlyControlledFlag) ) &&
                                 savedControlStatus != CtiCCCapBank::Close )
                             {
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
-                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                                currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
 
@@ -1362,7 +1365,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {
                             confirmImmediately = TRUE;
                         }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
@@ -1376,8 +1379,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 confirmImmediately = TRUE;
                             }
                         }
-                        else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) ||
-                                 !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
+                                 !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
@@ -1385,13 +1388,13 @@ void CtiCCCommandExecutor::ConfirmClose()
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
                             {
                                 confirmImmediately = TRUE;
                             }
-                            if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) &&
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) &&
                                 _IGNORE_NOT_NORMAL_FLAG &&
                                 currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                             {
@@ -1400,11 +1403,10 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
-                            }
+                            
                             /*if (currentSubstationBus->getStrategyId() <= 0)
                             {
                                 confirmImmediately = TRUE;
@@ -1427,13 +1429,13 @@ void CtiCCCommandExecutor::ConfirmClose()
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                            dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+								<<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                            dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
                     }
@@ -1460,7 +1462,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -1490,7 +1492,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                   << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                 }
             }
@@ -1505,7 +1507,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                   << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                 }
             }
@@ -1513,7 +1515,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
         currentSubstationBus->setRecentlyControlledFlag(FALSE);
         currentFeeder->setRecentlyControlledFlag(FALSE);
 
-        if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
         {
             for(LONG x=0;x<ccFeeders.entries();x++)
             {
@@ -1548,7 +1550,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
                     }
@@ -1563,7 +1565,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
                     }
@@ -1571,7 +1573,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                 currentFeeder->setRecentlyControlledFlag(FALSE);
 
-                if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                 {
                     for(LONG x=0;x<ccFeeders.entries();x++)
                     {
@@ -1597,15 +1599,15 @@ void CtiCCCommandExecutor::SendAllData()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCExecutorFactory f;
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent));
+    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(CtiTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent));
     executor->Execute();
     delete executor;
-    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(RWDBDateTime().seconds())));
+    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())));
     executor->Execute();
     delete executor;
-    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(RWDBDateTime().seconds())));
+    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())));
     executor->Execute();
-    delete executor;   
+    delete executor;
 
 }
 
@@ -1624,7 +1626,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     LONG originalFeederId = 0;
     LONG capSwitchingOrder = 0;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1653,7 +1655,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform RETURN CAP TO ORIGINAL FEEDER on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
                     }
                     break;
@@ -1675,7 +1677,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     {
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Move Cap Bank to original feeder PAO Id: " << movedCapBankId << endl;
+            dout << CtiTime() << " - Move Cap Bank to original feeder PAO Id: " << movedCapBankId << endl;
         }
         moveCapBank(1, tempFeederId, movedCapBankId, originalFeederId, capSwitchingOrder);
     }
@@ -1684,17 +1686,17 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
         if( tempFeederId==0 )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Feeder not found PAO Id: " << tempFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Feeder not found PAO Id: " << tempFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
         if( originalFeederId==0 )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Feeder not found PAO Id: " << originalFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Feeder not found PAO Id: " << originalFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
         if( movedCapBankId==0 )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -1713,7 +1715,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     LONG paoId = _command->getId();
     BOOL found = FALSE;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1819,7 +1821,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     {
 		{
 			CtiLockGuard<CtiLogger> logger_guard(dout);
-			dout << RWTime() << "Reset Daily Operations for PAO Id: " << paoId << endl;
+			dout << CtiTime() << "Reset Daily Operations for PAO Id: " << paoId << endl;
 		}
 		if( pointChanges.entries() > 0 )
 		{
@@ -1829,7 +1831,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << "Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 
@@ -1842,7 +1844,7 @@ void CtiCCCommandExecutor::WaiveSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1853,15 +1855,15 @@ void CtiCCCommandExecutor::WaiveSubstationBus()
             {    
                 currentSubstationBus->setWaiveControlFlag(TRUE);
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
-                RWCString text = RWCString("Substation Bus Waived");
-                RWCString additional = RWCString("Bus: ");
+                string text("Substation Bus Waived");
+                string additional("Bus: ");
                 additional += currentSubstationBus->getPAOName();
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                  <<".  Cannot perform WAIVE SUBSTATION BUS."<<endl;
             }
             break;
@@ -1878,7 +1880,7 @@ void CtiCCCommandExecutor::UnwaiveSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1889,15 +1891,15 @@ void CtiCCCommandExecutor::UnwaiveSubstationBus()
             {   
                 currentSubstationBus->setWaiveControlFlag(FALSE);
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
-                RWCString text = RWCString("Substation Bus Unwaived");
-                RWCString additional = RWCString("Bus: ");
+                string text("Substation Bus Unwaived");
+                string additional("Bus: ");
                 additional += currentSubstationBus->getPAOName();
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                  <<".  Cannot perform UNWAIVE SUBSTATION BUS."<<endl;
             }
             break;
@@ -1914,7 +1916,7 @@ void CtiCCCommandExecutor::WaiveFeeder()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG feederID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1930,15 +1932,15 @@ void CtiCCCommandExecutor::WaiveFeeder()
                 {
                     currentFeeder->setWaiveControlFlag(TRUE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    RWCString text = RWCString("Feeder Waived");
-                    RWCString additional = RWCString("Feeder: ");
+                    string text("Feeder Waived");
+                    string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                    dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                      <<".  Cannot perform WAIVE FEEDER on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
                 }
                 break;
@@ -1957,7 +1959,7 @@ void CtiCCCommandExecutor::UnwaiveFeeder()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG feederID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1973,15 +1975,15 @@ void CtiCCCommandExecutor::UnwaiveFeeder()
                 {
                     currentFeeder->setWaiveControlFlag(FALSE);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    RWCString text = RWCString("Feeder Unwaived");
-                    RWCString additional = RWCString("Feeder: ");
+                    string text("Feeder Unwaived");
+                    string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                    dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                      <<".  Cannot perform UNWAIVE FEEDER on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
                 }
                 break;
@@ -2044,7 +2046,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     CtiCCFeeder* newFeederPtr = NULL;
     CtiCCCapBank* movedCapBankPtr = NULL;
     
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     BOOL found = FALSE;
     BOOL verificationFlag = FALSE;
@@ -2063,7 +2065,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 {
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                      <<".  Cannot perform MOVE CAPBANK on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
                     }
                     verificationFlag = TRUE;
@@ -2081,7 +2083,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 {
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                      <<".  Cannot perform MOVE CAPBANK on Feeder: "<<currentFeeder->getPAOName()<<" PAOID: "<<currentFeeder->getPAOId()<<"."<<endl;
                     }
                     verificationFlag = TRUE;
@@ -2107,7 +2109,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                              <<".  Cannot perform MOVE CAPBANK on CapBank: "<<currentCapBank->getPAOName()<<" PAOID: "<<currentCapBank->getPAOId()<<"."<<endl;
                             }
                             verificationFlag = TRUE;
@@ -2251,10 +2253,10 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         store->UpdateFeederBankListInDB(newFeederPtr);
 
         {
-            RWCString typeString = (permanentFlag?"Temporary":"Permanent");
+            string typeString = (permanentFlag?"Temporary":"Permanent");
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Manual "
+            dout << CtiTime() << " - Manual "
                  << typeString
                  << " Cap Bank with PAO Id: "
                  << movedCapBankPtr->getPAOId() << ", name: "
@@ -2274,17 +2276,17 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             if( oldFeederPtr==NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
             if( newFeederPtr==NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
             if( movedCapBankPtr==NULL )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
             } 
         }
     }
@@ -2329,12 +2331,12 @@ void CtiCCPointDataMsgExecutor::Execute()
     long pointID = _pointDataMsg->getId();
     double value = _pointDataMsg->getValue();
     unsigned tags = _pointDataMsg->getTags();
-    RWTime& timestamp = _pointDataMsg->getTime();
+    CtiTime& timestamp = _pointDataMsg->getTime();
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
 	{
         char tempchar[80];
-        RWCString outString = "Manual point value received from client, ID:";
+        string outString = "Manual point value received from client, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
         outString += " Val:";
@@ -2345,15 +2347,15 @@ void CtiCCPointDataMsgExecutor::Execute()
         _ultoa(tags,tempchar,10);
         outString += tempchar;
         outString += " Timestamp: ";
-        outString += RWDBDateTime(timestamp).asString();
+        outString += CtiTime(timestamp).asString();
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << outString.data() << endl;
+        dout << CtiTime() << " - " << outString.c_str() << endl;
 	}
 
     BOOL found = FALSE;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(int i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -2388,7 +2390,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
-                                if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                 {
                                     for(LONG x=0;x<ccFeeders.entries();x++)
                                     {
@@ -2476,7 +2478,7 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down client listener thread..." << endl;
+            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
         }
 
         CtiCCClientListener::getInstance()->stop();
@@ -2484,13 +2486,13 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Client listener thread shutdown." << endl;
+            dout << CtiTime() << " - Client listener thread shutdown." << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -2498,7 +2500,7 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down cap controller thread..." << endl;
+            dout << CtiTime() << " - Shutting down cap controller thread..." << endl;
         }
     
         CtiCapController::getInstance()->stop();
@@ -2506,13 +2508,13 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Cap controller thread shutdown." << endl;
+            dout << CtiTime() << " - Cap controller thread shutdown." << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -2520,7 +2522,7 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down substation bus store..." << endl;
+            dout << CtiTime() << " - Shutting down substation bus store..." << endl;
         }
     
         CtiCCSubstationBusStore::deleteInstance();
@@ -2528,13 +2530,13 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Substation bus store shutdown." << endl;
+            dout << CtiTime() << " - Substation bus store shutdown." << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -2586,7 +2588,7 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
         default:
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
+                dout << CtiTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
             }
     }
 

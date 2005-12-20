@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #include <windows.h>
 #include <iostream>
 #include <map>
-using namespace std;
 
 #include "connection.h"
 #include "cparms.h"
@@ -41,6 +40,7 @@ using namespace std;
 #include "port_base.h"
 #include "queue.h"
 #include "thread_monitor.h"
+using namespace std;
 
 extern CtiPortManager PortManager;
 extern CtiDeviceManager DeviceManager;
@@ -73,9 +73,9 @@ static void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperatio
 
 void GWTimeSyncThread (void *Dummy)
 {
-    RWTime now;
-    RWTime midnightnext = now + 60;
-    RWTime querynext = now + 60;
+    CtiTime now;
+    CtiTime midnightnext = now + 60;
+    CtiTime querynext = now + 60;
     UINT sanity = 0;
 
     while(!PorterQuit)
@@ -88,7 +88,7 @@ void GWTimeSyncThread (void *Dummy)
         {
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
       
             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, 300 );
@@ -120,7 +120,7 @@ void GWTimeSyncThread (void *Dummy)
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Gateway Runtimes queried." << endl;
+                            dout << CtiTime() << " Gateway Runtimes queried." << endl;
                         }
                     }
                 }
@@ -128,7 +128,7 @@ void GWTimeSyncThread (void *Dummy)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -158,7 +158,7 @@ void GWTimeSyncThread (void *Dummy)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         Sleep (1000);
@@ -168,7 +168,7 @@ void GWTimeSyncThread (void *Dummy)
 
 void KeepAliveThread (void *Dummy)
 {
-    RWTime now;
+    CtiTime now;
     UINT sanity = 0;
 
     while(!PorterQuit)
@@ -178,7 +178,7 @@ void KeepAliveThread (void *Dummy)
         {
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
             }
       
             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, 300 );
@@ -213,7 +213,7 @@ void KeepAliveThread (void *Dummy)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -235,7 +235,7 @@ void KeepAliveThread (void *Dummy)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -245,7 +245,7 @@ void KeepAliveThread (void *Dummy)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "   Unable to acquire gwmux" << endl;
             }
         }
@@ -259,7 +259,7 @@ void GWConnectionThread(VOID *Arg)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " GWConnectionThread started as TID  " << CurrentTID() << endl;
+        dout << CtiTime() << " GWConnectionThread started as TID  " << CurrentTID() << endl;
     }
 
     int address_request;
@@ -280,7 +280,7 @@ void GWConnectionThread(VOID *Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " socket() failed with error " << WSAGetLastError() << endl;
+            dout << CtiTime() << " socket() failed with error " << WSAGetLastError() << endl;
         }
         return;
     }
@@ -292,7 +292,7 @@ void GWConnectionThread(VOID *Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " bind() failed with error " << WSAGetLastError() << endl;
+            dout << CtiTime() << " bind() failed with error " << WSAGetLastError() << endl;
         }
         return;
     }
@@ -304,7 +304,7 @@ void GWConnectionThread(VOID *Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " listen() failed with error " << WSAGetLastError() << endl;
+            dout << CtiTime() << " listen() failed with error " << WSAGetLastError() << endl;
         }
         return;
     }
@@ -328,14 +328,14 @@ void GWConnectionThread(VOID *Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Unrecoverable error **** " << WSAGetLastError() << " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Unrecoverable error **** " << WSAGetLastError() << " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " New gateway initiating connection." << endl;
+            dout << CtiTime() << " New gateway initiating connection." << endl;
         }
 
         pGW = new CtiDeviceGateway(msgsock);
@@ -358,7 +358,7 @@ void GWConnectionThread(VOID *Arg)
                     pGW = (*itr).second;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << " Gateway already in the list! " << endl;
                     }
                     pGW = 0;
@@ -372,7 +372,7 @@ void GWConnectionThread(VOID *Arg)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -385,7 +385,7 @@ void GWConnectionThread(VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " GWConnectionThread shutdown." << endl;
+        dout << CtiTime() << " GWConnectionThread shutdown." << endl;
     }
 
     return;
@@ -402,7 +402,7 @@ VOID PorterGWThread(void *pid)
     BYTE           ReadPriority;
     ULONG          ReadLength;
     ULONG          QueEntries;
-    RWTime         lastQueueReportTime;
+    CtiTime         lastQueueReportTime;
 
     LONG portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiDeviceSPtr Device;
@@ -411,24 +411,28 @@ VOID PorterGWThread(void *pid)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PorterGWThread started as TID  " << CurrentTID() << endl;
+        dout << CtiTime() << " PorterGWThread started as TID  " << CurrentTID() << endl;
     }
 
     lastQueueReportTime = lastQueueReportTime.seconds() - (lastQueueReportTime.seconds() % 300L);
 
     // Start a connection thread for each port in the list
     {
-        RWCString portstr = gConfigParms.getValueAsString("PORTER_GATEWAY_PORTS", "4990, 4995, 5000");
-        RWCString tempstr;
-        RWTokenizer porttok(portstr);
+        string portstr = gConfigParms.getValueAsString("PORTER_GATEWAY_PORTS", "4990, 4995, 5000");
+        string tempstr;
 
-        while( !((tempstr = porttok(", ")).isNull()) )
+
+        boost::char_separator<char> sep(", ");
+        Boost_char_tokenizer porttok(portstr, sep);
+        Boost_char_tokenizer::iterator tok_iter = porttok.begin(); 
+
+        while( !((tempstr = *tok_iter++).empty()) )
         {
-            unsigned short portnumber = atoi(tempstr.data());
+            unsigned short portnumber = atoi(tempstr.c_str());
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " PorterGWThread starting port number " << portnumber << endl;
+                dout << CtiTime() << " PorterGWThread starting port number " << portnumber << endl;
 
             }
 
@@ -448,7 +452,7 @@ VOID PorterGWThread(void *pid)
             {
                 {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
+                    dout << CtiTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
                 }
           
                 CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, 300 );
@@ -482,7 +486,7 @@ VOID PorterGWThread(void *pid)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -495,7 +499,7 @@ VOID PorterGWThread(void *pid)
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -517,14 +521,14 @@ VOID PorterGWThread(void *pid)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PorterGWThread shutdown." << endl;
+        dout << CtiTime() << " PorterGWThread shutdown." << endl;
     }
 
     return;
@@ -552,7 +556,7 @@ int SendGet(USHORT Type, LONG dev)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return cnt;
@@ -578,14 +582,14 @@ int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage )
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Parse Processed by " << processedby << " EnergyPro Thermostats" << endl;
+                dout << CtiTime() << " Parse Processed by " << processedby << " EnergyPro Thermostats" << endl;
             }
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -613,7 +617,7 @@ void GWResultThread (void *Dummy)
         {
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
             }
       
             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, 400 );
@@ -678,7 +682,7 @@ void GWResultThread (void *Dummy)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Operation already in the reportable list!  (This is a logic problem)" << endl;
+                                dout << CtiTime() << " **** Operation already in the reportable list!  (This is a logic problem)" << endl;
                                 dout << " Stat      " << op.getSerial() << endl;
                                 dout << " Operation " << op.getOperation() << endl;
                             }
@@ -700,7 +704,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
 {
     extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 
-    RWTime now;
+    CtiTime now;
     INMESS InMessage;
 
     try
@@ -713,7 +717,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Stat      " << op.getSerial() << endl;
                 dout << " Operation " << op.getOperation() << endl;
             }
@@ -733,7 +737,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
                 {
                     for(citr = rv.begin(); citr != rv.end(); citr++)
                     {
-                        _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", (*citr).data());
+                        _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", (*citr).c_str());
                         ReturnResultMessage( NORMAL, &InMessage, pOM );
                     }
                 }
@@ -741,7 +745,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Reply vector is empty" << endl;
                     }
                 }
@@ -762,7 +766,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << (*citr).data() << endl;
+                            dout << CtiTime() << " " << (*citr).c_str() << endl;
                         }
                     }
                 }
@@ -775,7 +779,7 @@ void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 

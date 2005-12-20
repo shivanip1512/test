@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtroute.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,15 +18,15 @@
 #ifndef __TBL_RTROUTE_H__
 #define __TBL_RTROUTE_H__
 
+#include "yukon.h"
 #include <rw/db/db.h>
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
-#include "yukon.h"
+
 #include "dlldefs.h"
 #include "dbmemobject.h"
-#include "resolvers.h"
 #include "ctibase.h"
+
 
 IM_EX_CTIBASE INT getDebugLevel(void);
 
@@ -35,7 +35,7 @@ class IM_EX_CTIYUKONDB CtiTableRoute : public CtiMemDBObject
 protected:
 
    LONG        RouteID;
-   RWCString   Name;
+   string   Name;
    INT         Type;
 
 
@@ -44,19 +44,19 @@ public:
    typedef CtiMemDBObject Inherited;
 
    CtiTableRoute();
-   CtiTableRoute(LONG &aRoute, RWCString aStr, INT aType);
+   CtiTableRoute(LONG &aRoute, string aStr, INT aType);
    CtiTableRoute(const CtiTableRoute& aRef);
    virtual ~CtiTableRoute();
 
    CtiTableRoute& operator=(const CtiTableRoute& aRef);
    void DumpData();
 
-   static RWCString& getSQLColumns(RWCString &str);
-   static RWCString& getSQLTables(RWCString &str);
-   static RWCString& getSQLConditions(RWCString &str);
+   static string& getSQLColumns(string &str);
+   static string& getSQLTables(string &str);
+   static string& getSQLConditions(string &str);
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static void getSQL(RWCString &Columns, RWCString &Tables, RWCString &Conditions);
+   static void getSQL(string &Columns, string &Tables, string &Conditions);
 
    virtual void Insert();
    virtual void Update();
@@ -65,15 +65,15 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   virtual RWCString getTableName() const;
+   virtual string getTableName() const;
 
    INT  getType() const;
 
    CtiTableRoute& setType( const INT aType );
 
-   RWCString  getName() const;
+   string  getName() const;
 
-   CtiTableRoute& setName( const RWCString aName );
+   CtiTableRoute& setName( const string aName );
    LONG  getID() const;
    LONG  getRouteID() const;
 

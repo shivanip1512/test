@@ -14,20 +14,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_scandata.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/10/19 19:10:21 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
-#include <rw/cstring.h>
 
 #include "dbmemobject.h"
 #include "yukon.h"
@@ -39,15 +36,15 @@ protected:
 
    LONG                 _deviceID;
 
-   RWDBDateTime         lastFreezeTime;
-   RWDBDateTime         prevFreezeTime;
-   RWDBDateTime         lastLPTime;
+   CtiTime         lastFreezeTime;
+   CtiTime         prevFreezeTime;
+   CtiTime         lastLPTime;
 
    LONG                 lastFreezeNumber;
    LONG                 prevFreezeNumber;
 
-   RWDBDateTime         _nextScan[ScanRateInvalid];
-   RWTime               _lastCommunicationTime[ScanRateInvalid];
+   CtiTime         _nextScan[ScanRateInvalid];
+   CtiTime               _lastCommunicationTime[ScanRateInvalid];
 
 private:
 
@@ -62,21 +59,21 @@ private:
 
    LONG  getLastFreezeNumber() const;
    LONG& getLastFreezeNumber();
-   RWTime getNextScan(INT a) const;
-   CtiTableDeviceScanData& setNextScan(INT a, const RWTime &b);
-   RWTime nextNearestTime(int maxrate = ScanRateInvalid) const;
+   CtiTime getNextScan(INT a) const;
+   CtiTableDeviceScanData& setNextScan(INT a, const CtiTime &b);
+   CtiTime nextNearestTime(int maxrate = ScanRateInvalid) const;
    CtiTableDeviceScanData& setLastFreezeNumber( const LONG aLastFreezeNumber );
    LONG  getPrevFreezeNumber() const;
    LONG& getPrevFreezeNumber();
    CtiTableDeviceScanData& setPrevFreezeNumber( const LONG aPrevFreezeNumber );
-   RWTime  getLastFreezeTime() const;
-   CtiTableDeviceScanData& setLastFreezeTime( const RWTime& aLastFreezeTime );
-   RWTime  getPrevFreezeTime() const;
-   CtiTableDeviceScanData& setPrevFreezeTime( const RWTime& aPrevFreezeTime );
-   RWTime  getLastLPTime() const;
-   CtiTableDeviceScanData& setLastLPTime( const RWTime& aLastFreezeTime );
-   RWTime getLastCommunicationTime(int i) const;
-   CtiTableDeviceScanData& setLastCommunicationTime( int i, const RWTime& tme );
+   CtiTime  getLastFreezeTime() const;
+   CtiTableDeviceScanData& setLastFreezeTime( const CtiTime& aLastFreezeTime );
+   CtiTime  getPrevFreezeTime() const;
+   CtiTableDeviceScanData& setPrevFreezeTime( const CtiTime& aPrevFreezeTime );
+   CtiTime  getLastLPTime() const;
+   CtiTableDeviceScanData& setLastLPTime( const CtiTime& aLastFreezeTime );
+   CtiTime getLastCommunicationTime(int i) const;
+   CtiTableDeviceScanData& setLastCommunicationTime( int i, const CtiTime& tme );
 
 
    void DecodeDatabaseReader( RWDBReader& rdr );
@@ -84,7 +81,7 @@ private:
    virtual RWDBStatus Restore();
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
-   virtual RWCString getTableName() const;
+   virtual string getTableName() const;
 
    RWDBStatus Update(RWDBConnection &conn);
 

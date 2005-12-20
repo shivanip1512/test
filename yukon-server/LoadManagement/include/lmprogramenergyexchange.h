@@ -38,20 +38,20 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     virtual ~CtiLMProgramEnergyExchange();
 
     LONG getMinNotifyTime() const;
-    const RWCString& getHeading() const;
-    const RWCString& getMessageHeader() const;
-    const RWCString& getMessageFooter() const;
-    const RWCString& getCanceledMsg() const;
-    const RWCString& getStoppedEarlyMsg() const;
+    const string& getHeading() const;
+    const string& getMessageHeader() const;
+    const string& getMessageFooter() const;
+    const string& getCanceledMsg() const;
+    const string& getStoppedEarlyMsg() const;
     RWOrdered& getLMEnergyExchangeOffers();
     RWOrdered& getLMEnergyExchangeCustomers();
 
     CtiLMProgramEnergyExchange& setMinNotifyTime(LONG notifytime);
-    CtiLMProgramEnergyExchange& setHeading(const RWCString& head);
-    CtiLMProgramEnergyExchange& setMessageHeader(const RWCString& msgheader);
-    CtiLMProgramEnergyExchange& setMessageFooter(const RWCString& msgfooter);
-    CtiLMProgramEnergyExchange& setCanceledMsg(const RWCString& canceled);
-    CtiLMProgramEnergyExchange& setStoppedEarlyMsg(const RWCString& stoppedearly);
+    CtiLMProgramEnergyExchange& setHeading(const string& head);
+    CtiLMProgramEnergyExchange& setMessageHeader(const string& msgheader);
+    CtiLMProgramEnergyExchange& setMessageFooter(const string& msgfooter);
+    CtiLMProgramEnergyExchange& setCanceledMsg(const string& canceled);
+    CtiLMProgramEnergyExchange& setStoppedEarlyMsg(const string& stoppedearly);
 
     BOOL isOfferWithId(LONG offerid);
     BOOL isOfferRevisionOpen(LONG offerID, LONG revisionNumber);
@@ -61,7 +61,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiNotifMsg);
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
@@ -85,11 +85,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
 private:
 
     LONG _minnotifytime;
-    RWCString _heading;
-    RWCString _messageheader;
-    RWCString _messagefooter;
-    RWCString _canceledmsg;
-    RWCString _stoppedearlymsg;
+    string _heading;
+    string _messageheader;
+    string _messagefooter;
+    string _canceledmsg;
+    string _stoppedearlymsg;
 
     RWOrdered _lmenergyexchangeoffers;
     RWOrdered _lmenergyexchangecustomers;

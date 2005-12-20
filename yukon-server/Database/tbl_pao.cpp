@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,10 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "tbl_pao.h"
+
+#include "rwutil.h"
+
+using std::transform;
 
 CtiTblPAO::CtiTblPAO() :
 _paObjectID(-1)
@@ -50,7 +54,7 @@ CtiTblPAO& CtiTblPAO::operator=(const CtiTblPAO& aRef)
         /* WHAT WAS THIS CHECKPOINT FOR?
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         } */
     }
     return *this;
@@ -70,19 +74,19 @@ CtiTblPAO& CtiTblPAO::setID( LONG paObjectID )
     return *this;
 }
 
-RWCString CtiTblPAO::getCategory() const
+string CtiTblPAO::getCategory() const
 {
 
     return _category;
 }
 
-RWCString& CtiTblPAO::getCategory()
+string& CtiTblPAO::getCategory()
 {
 
     return _category;
 }
 
-CtiTblPAO& CtiTblPAO::setCategory(const RWCString &catStr)
+CtiTblPAO& CtiTblPAO::setCategory(const string &catStr)
 {
 
 
@@ -111,13 +115,13 @@ CtiTblPAO& CtiTblPAO::setClass(const INT &aInt)
     return *this;
 }
 
-const RWCString& CtiTblPAO::getClassStr() const
+const string& CtiTblPAO::getClassStr() const
 {
 
     return _classStr;
 }
 
-CtiTblPAO& CtiTblPAO::setClassStr(const RWCString& classStr)
+CtiTblPAO& CtiTblPAO::setClassStr(const string& classStr)
 {
 
     _class = resolvePAOClass(classStr);
@@ -125,19 +129,19 @@ CtiTblPAO& CtiTblPAO::setClassStr(const RWCString& classStr)
     return *this;
 }
 
-RWCString CtiTblPAO::getName() const
+string CtiTblPAO::getName() const
 {
 
     return _name;
 }
 
-RWCString& CtiTblPAO::getName()
+string& CtiTblPAO::getName()
 {
 
     return _name;
 }
 
-CtiTblPAO& CtiTblPAO::setName(const RWCString &nmStr)
+CtiTblPAO& CtiTblPAO::setName(const string &nmStr)
 {
 
 
@@ -160,13 +164,13 @@ CtiTblPAO& CtiTblPAO::setType( const INT &aint )
     return *this;
 }
 
-const RWCString& CtiTblPAO::getTypeStr() const
+const string& CtiTblPAO::getTypeStr() const
 {
 
     return _typeStr;
 }
 
-CtiTblPAO& CtiTblPAO::setTypeStr(const RWCString& typeStr)
+CtiTblPAO& CtiTblPAO::setTypeStr(const string& typeStr)
 {
 
     _type = resolvePAOType(getCategory(), typeStr);
@@ -174,14 +178,14 @@ CtiTblPAO& CtiTblPAO::setTypeStr(const RWCString& typeStr)
     return *this;
 }
 
-RWCString CtiTblPAO::getDisableFlagStr() const
+string CtiTblPAO::getDisableFlagStr() const
 {
 
 
     return( _disableFlag ? "Y" : "N" );
 }
 
-CtiTblPAO& CtiTblPAO::setDisableFlagStr(const RWCString& flag)
+CtiTblPAO& CtiTblPAO::setDisableFlagStr(const string& flag)
 {
     assert( flag == "Y" || flag == "y" ||
             flag == "N" || flag == "n" );
@@ -205,19 +209,19 @@ void CtiTblPAO::resetDisableFlag(bool b)
     _disableFlag = b;
 }
 
-RWCString CtiTblPAO::getDescription() const
+string CtiTblPAO::getDescription() const
 {
 
     return _category;
 }
 
-RWCString& CtiTblPAO::getDescription()
+string& CtiTblPAO::getDescription()
 {
 
     return _category;
 }
 
-CtiTblPAO& CtiTblPAO::setDescription(const RWCString &desStr)
+CtiTblPAO& CtiTblPAO::setDescription(const string &desStr)
 {
 
 
@@ -225,14 +229,14 @@ CtiTblPAO& CtiTblPAO::setDescription(const RWCString &desStr)
     return *this;
 }
 
-RWCString CtiTblPAO::getTableName()
+string CtiTblPAO::getTableName()
 {
     return "YukonPAObject";
 }
 
 void CtiTblPAO::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(getTableName() );
+    keyTable = db.table(getTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -256,7 +260,7 @@ RWDBStatus CtiTblPAO::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -290,7 +294,7 @@ RWDBStatus CtiTblPAO::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -319,19 +323,19 @@ RWDBStatus CtiTblPAO::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["paobjectid"] == getID() );
 
     updater <<
-    table["category"].assign(getCategory()) <<
-    table["paoclass"].assign(getClassStr()) <<
-    table["paoname"].assign(getName()) <<
-    table["type"].assign(getTypeStr()) <<
-    table["description"].assign(getDescription()) <<
-    table["disableflag"].assign(getDisableFlagStr()) <<
-    table["paostatistics"].assign(getStatisticsStr());
+    table["category"].assign(getCategory().c_str()) <<
+    table["paoclass"].assign(getClassStr().c_str()) <<
+    table["paoname"].assign(getName().c_str()) <<
+    table["type"].assign(getTypeStr().c_str()) <<
+    table["description"].assign(getDescription().c_str()) <<
+    table["disableflag"].assign(getDisableFlagStr().c_str()) <<
+    table["paostatistics"].assign(getStatisticsStr().c_str());
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -346,7 +350,7 @@ RWDBStatus CtiTblPAO::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["paobjectid"] == getID() );
@@ -358,7 +362,7 @@ RWDBStatus CtiTblPAO::Delete()
 void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -379,8 +383,8 @@ void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["description"] >> _description;
 
     rdr["disableflag"] >> rwsTemp;
-    rwsTemp.toLower();
-    _disableFlag = ((rwsTemp == 'y') ? true : false);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    _disableFlag = ((rwsTemp == "y") ? true : false);
 
     rdr["paostatistics"] >> _paostatistics;
 }
@@ -400,12 +404,12 @@ void CtiTblPAO::DumpData()
 }
 
 
-RWCString CtiTblPAO::getStatisticsStr() const
+string CtiTblPAO::getStatisticsStr() const
 {
     return _paostatistics;
 }
 
-CtiTblPAO& CtiTblPAO::setStatisticsStr(const RWCString &Str)
+CtiTblPAO& CtiTblPAO::setStatisticsStr(const string &Str)
 {
     _paostatistics = Str;
     return *this;

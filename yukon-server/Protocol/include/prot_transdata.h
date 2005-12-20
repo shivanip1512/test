@@ -14,19 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/09/27 20:38:42 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <windows.h>
-#include <rw\cstring.h>
 
 #include "transdata_application.h"
 #include "transdata_data.h"
 #include "xfer.h"
 #include "dllbase.h"
+using std::vector;
 
 class IM_EX_PROT CtiProtocolTransdata
 {
@@ -53,7 +53,7 @@ class IM_EX_PROT CtiProtocolTransdata
       int recvOutbound( OUTMESS *OutMessage );
 
       bool isTransactionComplete( void );
-      void injectData( RWCString str );
+      void injectData( string str );
       void reinitalize( void );
       void destroy( void );
       void setCommand( int cmd, bool lp );
@@ -65,7 +65,7 @@ class IM_EX_PROT CtiProtocolTransdata
       void setError( int err );
       int getError( void );
       bool getDidProcess( void );
-      RWTime getLastLoadProfileTime( void );
+      CtiTime getLastLoadProfileTime( void );
 
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
@@ -86,7 +86,7 @@ class IM_EX_PROT CtiProtocolTransdata
          Failed
       };
 
-      RWTime                     _lastLPTime;
+      CtiTime                     _lastLPTime;
 
       bool                       _finished;
       bool                       _collectLP;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/27 17:10:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,8 +22,7 @@
 
 #include <windows.h>
 
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include <vector>
 
@@ -40,11 +39,11 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
         virtual ~CtiTelegyrGroup();
         CtiTelegyrGroup& operator=( const CtiTelegyrGroup &other );
 
-        RWCString getGroupName( void ) const;
-        CtiTelegyrGroup& setGroupName( RWCString aGroupName );
+        string getGroupName( void ) const;
+        CtiTelegyrGroup& setGroupName( string aGroupName );
 
-        RWCString getGroupType( void ) const;
-        CtiTelegyrGroup& setGroupType( RWCString aGroupType );
+        string getGroupType( void ) const;
+        CtiTelegyrGroup& setGroupType( string aGroupType );
 
         int getInterval( void );
         CtiTelegyrGroup& setInterval( int interval );
@@ -57,8 +56,8 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
 
     private:
 
-        RWCString             _groupName;
-        RWCString             _groupType;
+        string             _groupName;
+        string             _groupType;
 
         int                   _interval;
         int                   _groupID;

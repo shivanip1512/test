@@ -11,11 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_five.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_five.cpp,v $
+      Revision 1.7  2005/12/20 17:19:56  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.6  2005/12/12 20:34:28  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -84,7 +87,7 @@ void CtiAnsiTableFiveFive::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveFive::printResult( RWCString deviceName )
+void CtiAnsiTableFiveFive::printResult( const string& deviceName )
 {
  
     /**************************************************************

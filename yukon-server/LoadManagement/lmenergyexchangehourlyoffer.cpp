@@ -298,7 +298,7 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
+                dout << CtiTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
             }
 
             RWDBDatabase db = getDatabase();
@@ -315,7 +315,7 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -323,7 +323,7 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -357,7 +357,7 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -365,7 +365,7 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -412,14 +412,14 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData(RWDBReader& rdr)
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << selector.asString().data() << endl;
+                dout << CtiTime() << " - " << selector.asString().data() << endl;
             }
 
             RWDBReader rdr = selector.reader(conn);
 
             if(rdr())
             {
-                RWCString tempBoolString;
+                string tempBoolString;
                 rdr["offerid"] >> _offerid;
                 rdr["revisionnumber"] >> _revisionnumber;
                 rdr["hour"] >> _hour;
@@ -431,7 +431,7 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData(RWDBReader& rdr)
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }

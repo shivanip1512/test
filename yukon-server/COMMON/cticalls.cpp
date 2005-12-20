@@ -11,6 +11,8 @@
 #include "dsm2.h"
 #include "logger.h"
 
+using namespace std;
+
 /* CTI Sleep Function */
 APIRET IM_EX_CTIBASE CTISleep (ULONG SleepTime)
 {
@@ -116,7 +118,7 @@ VOID IM_EX_CTIBASE CTIExit (ULONG ExitType, ULONG ExitCode)
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint CTIExit (deprecated) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint CTIExit (deprecated) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    ExitThread(ExitCode);
@@ -230,7 +232,7 @@ APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG time)
        {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** CTIRequestMutexSem: Wait Abandoned **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
+              dout << CtiTime() << " **** CTIRequestMutexSem: Wait Abandoned **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
            }
 
            rVal = 0;
@@ -245,7 +247,7 @@ APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG time)
        {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** CTIRequestMutexSem: WaitResult = " << rVal << " **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
+              dout << CtiTime() << " **** CTIRequestMutexSem: WaitResult = " << rVal << " **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
            }
 
            rVal = 1;
@@ -1379,7 +1381,7 @@ void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *F
 
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ERROR " << Error << " executing in " << FileName << " (" << Line << ")." << endl;
+         dout << CtiTime() << " ERROR " << Error << " executing in " << FileName << " (" << Line << ")." << endl;
          dout << "\tWin32 Error: " << lpMsgBuf << endl;
       }
 
@@ -1397,7 +1399,7 @@ void IM_EX_CTIBASE DumpOutMessage(void *Mess)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "  Device ID:          " << Om->DeviceID << endl;
         dout << "  Target ID:          " << Om->TargetID << endl;
         dout << "  Port:               " << Om->Port << endl;

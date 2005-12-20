@@ -4,6 +4,7 @@
 INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(COMMON)\include \
+-I$(BOOST) \
 -I$(RW) \
 
 
@@ -24,7 +25,7 @@ cparms.dll:     $(CPARM2OBJ) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARM2OBJ) -link $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARM2OBJ) -link $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

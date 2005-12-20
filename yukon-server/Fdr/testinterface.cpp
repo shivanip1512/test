@@ -21,7 +21,7 @@ extern "C" {
     {
 
         //  grab the FDR points
-        RWCString sql;
+        string sql;
         sql =    "SELECT UNIQUE INTERFACETYPE, DESTINATION";
         sql +=   " FROM FDR_TRANSLATION";
         sql +=   " WHERE INTERFACETYPE='TESTINTERFACE'";
@@ -32,7 +32,7 @@ extern "C" {
 
         tivec = new vector<CtiTestInterface *>;
 
-        RWCString interfacetype, destination;
+        string interfacetype, destination;
 
         //  iterate through them all
         for( int i = 0; rdr( ); i++ )
@@ -56,7 +56,7 @@ extern "C" {
             for( int j = 0; subrdr( ); j++ )
             {
                 long pointid;
-                RWCString destination, directiontype, translation;
+                string destination, directiontype, translation;
 
                 //  grab the point information from the database and stuff it into our class
                 subrdr["POINTID"]       >> pointid;
@@ -132,7 +132,7 @@ void CtiTestInterface::_outgoingThread( void )
     RWRunnableSelf _pSelf = rwRunnable( );
     CtiMessage *msg;
     int i = globl++;
-    cout << RWTime( ) << " - _outgoingThread( )" << endl;
+    cout << CtiTime( ) << " - _outgoingThread( )" << endl;
     //  while there's something to receive (otherwise, recv( ) returns NULL)
     try
     {

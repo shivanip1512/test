@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
-#include <rw/rwtime.h>
+
 
 #include "collectable.h"
 #include "logger.h"
@@ -63,7 +63,7 @@ CtiMultiMsg&  CtiMultiMsg::setData(const RWOrdered& Data)
       else
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " setPointData failed to copy an element of type " << Data[i]->isA() << endl;
+         dout << CtiTime() << " setPointData failed to copy an element of type " << Data[i]->isA() << endl;
       }
    }
 

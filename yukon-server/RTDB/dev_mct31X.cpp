@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/11/08 22:24:58 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 #include "dllyukon.h"
+#include "ctidate.h"
+#include "ctitime.h"
 
 using Cti::Protocol::Emetcon;
 
@@ -37,7 +39,7 @@ CtiDeviceMCT31X::CtiDeviceMCT31X( )
 {
     for( int i = 0; i < MCT31X_ChannelCount; i++ )
     {
-        _lastLPTime[i] = RWTime(0UL);
+        _lastLPTime[i] = CtiTime(0UL);
     }
 }
 
@@ -55,7 +57,7 @@ CtiDeviceMCT31X& CtiDeviceMCT31X::operator=( const CtiDeviceMCT31X &aRef )
         //  ACH
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - in CtiDeviceMCT31X::operator= **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::operator= **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         Inherited::operator=( aRef );
@@ -258,7 +260,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
 ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 {
-    RWTime        Now, channelTime, blockStart;
+    CtiTime        Now, channelTime, blockStart;
     unsigned long midnightOffset;
     int           lpBlockSize, lpDemandRate, lpMaxBlocks;
 
@@ -309,7 +311,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 
                     if(pd.Restore().errorCode() == RWDBStatus::ok)
                     {
-                        _lastLPTime[i] = pd.getTimeStamp().rwtime().seconds();
+                        _lastLPTime[i] = pd.getTimeStamp().seconds();
                     }
                 }
 
@@ -354,7 +356,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
+        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(nextTime) << endl;
     }
 */
     return _nextLPScanTime;
@@ -371,10 +373,10 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                    lpMaxBlocks,
                    lpBlockSize,
                    lpMidnightOffset;
-    RWTime         lpBlockStartTime;
-    RWTime         Now;
+    CtiTime         lpBlockStartTime;
+    CtiTime         Now;
     OUTMESS       *tmpOutMess;
-    RWCString      lpDescriptorString;
+    string      lpDescriptorString;
     int            lpChannel;
 
     lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
@@ -427,17 +429,17 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     //  adjust for wraparound
                     lpBlockAddress %= lpMaxBlocks;
 
-                    lpDescriptorString = RWCString(" channel ") + CtiNumStr(i+1) +
-                                         RWCString(" block ") + CtiNumStr(lpBlockAddress+1);
+                    lpDescriptorString = string(" channel ") + CtiNumStr(i+1) +
+                                         string(" block ") + CtiNumStr(lpBlockAddress+1);
 
                     strncat( tmpOutMess->Request.CommandStr,
-                             lpDescriptorString.data(),
+                             lpDescriptorString.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
@@ -449,7 +451,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -474,7 +476,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
         dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
     }
@@ -508,7 +510,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
+            dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
         }
 
         retVal = false;
@@ -519,7 +521,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
 
 
-INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -565,7 +567,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 if(status)  //  FIX - OR these or something, we should be smarter
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - status scan error codes for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - status scan error codes for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
@@ -610,7 +612,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - errors on Inherited::ResultDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - errors on Inherited::ResultDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
@@ -620,13 +622,13 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, bool expectMore)
+INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, bool expectMore)
 {
     INT status = NORMAL;
     ULONG i;
     USHORT StatusData[8];
     USHORT SaveCount;
-    RWCString resultString;
+    string resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -640,7 +642,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Status Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Status Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     setScanFlag(ScanRateGeneral, false);  //resetScanFlag(ScanPending);
@@ -654,7 +656,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;
@@ -699,11 +701,11 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
-    RWCString resultString, name, ratename;
+    string resultString, name, ratename;
 
     ULONG lValue;
 
@@ -713,8 +715,8 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
     DOUBLE demandValue, Value;
-    RWTime timestamp;
-    RWDate datestamp;
+    CtiTime timestamp;
+    CtiDate datestamp;
     CtiPointBase    *pPoint       = NULL;
     CtiPointBase    *pDemandPoint = NULL;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -723,7 +725,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -733,7 +735,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -795,7 +797,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                                 case 6:     resultString += "  Invalid password\n";                     break;
                                 case 7:     resultString += "  NAK received from MCT\n";                break;
                                 case 15:    resultString += "  Normal communications\n";                break;
-                                default:    resultString += "  Error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + " not implemented\n";
+                                default:    resultString += "  Error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + string(" not implemented\n");
                             }
 
                             if( DSt->Message[1] & 0x80 )    resultString += "  Last IED write failed\n";
@@ -852,9 +854,9 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                                 if( (DSt->Message[4] & 0xf0) == 0x30 )
                                     resultString += "  L&G S4 RX Firmware Rev: ";
                                 else
-                                    resultString += "  L&G S4 Product Code " + CtiNumStr((DSt->Message[4] & 0xf0)) + ", Rev ";
+                                    resultString += "  L&G S4 Product Code " + CtiNumStr((DSt->Message[4] & 0xf0)) + string(", Rev ");
 
-                                resultString += CtiNumStr((int)(DSt->Message[4] & 0x0f)) + "." + CtiNumStr((int)DSt->Message[5]) + "\n";
+                                resultString += CtiNumStr((int)(DSt->Message[4] & 0x0f)) + "." + CtiNumStr((int)DSt->Message[5]) + string("\n");
 
                                 resultString += "  MCT to S4 Data Link:  ";
 
@@ -915,7 +917,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
                                 case 0xc:
                                 case 0xe:
-                                case 0xf:   resultString += "undefined error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + "\n"; break;
+                                case 0xf:   resultString += "undefined error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + string("\n"); break;
                             }
 
                             if( DSt->Message[1] & 0x08 )    resultString += "  Last communication failed\n";
@@ -941,12 +943,12 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             else if( (DSt->Message[4] & 0xf0) == 0x10 )  resultString += "5.3\n";
                             else if( (DSt->Message[4] & 0xf0) == 0x20 )  resultString += ">= 5.4\n";
                             else if( (DSt->Message[4] & 0xf0) == 0xf0 )  resultString += "unrecognized version\n";
-                            else                                         resultString += "bad firmware ID byte: " + CtiNumStr(DSt->Message[4] & 0xf0).xhex() + "\n";
+                            else                                         resultString += "bad firmware ID byte: " + CtiNumStr(DSt->Message[4] & 0xf0).xhex() + string("\n");
 
                             resultString += "Meter type:  ";
                             if(      (DSt->Message[4] & 0x0f) == 0x00 )  resultString += "GE kV\n";
                             else if( (DSt->Message[4] & 0x0f) == 0x01 )  resultString += "GE kV2\n";
-                            else                                         resultString += "unknown meter type " + CtiNumStr(DSt->Message[4] & 0x0f) + "\n";
+                            else                                         resultString += "unknown meter type " + CtiNumStr(DSt->Message[4] & 0x0f) + string("\n");
 
                             break;
                         }
@@ -954,7 +956,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                         default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -966,7 +968,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                 default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -978,11 +980,11 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
-    RWCString resultString, name, ratename;
+    string resultString, name, ratename;
 
     ULONG lValue;
 
@@ -992,8 +994,8 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
     DOUBLE demandValue, Value;
-    RWTime timestamp;
-    RWDate datestamp;
+    CtiTime timestamp;
+    CtiDate datestamp;
     CtiPointBase    *pPoint       = NULL;
     CtiPointBase    *pDemandPoint = NULL;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1002,7 +1004,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1012,7 +1014,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -1050,14 +1052,14 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             }
 
                             resultString += getName() + " / IED / current time: ";
-                            resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
+                            resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + string("/") +
                                             CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
                                             CtiNumStr((int)DSt->Message[0]).zpad(2) + " " +
                                             CtiNumStr((int)DSt->Message[3]).zpad(2) + ":" +
                                             CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
                                             CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
-                            resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
-                            resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
+                            resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + string("\n");
+                            resultString += "Current TOU Rate: " + (char)('A' + ((DSt->Message[7] & 0x0C) >> 2));
 
                             break;
                         }
@@ -1073,18 +1075,18 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             resultString += getName() + " / IED / current time: ";
                             if( DSt->Message[6] <= 5 )
                             {
-                                resultString += "(autoread #" + CtiNumStr((int)DSt->Message[6] + 1) + ") ";
+                                resultString += "(autoread #" + CtiNumStr((int)DSt->Message[6] + 1) + string(") ");
                             }
 
-                            resultString += CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
+                            resultString += CtiNumStr((int)DSt->Message[5]).zpad(2) + string("/") +
                                             CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
                                             CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
                                             CtiNumStr((int)DSt->Message[2]).zpad(2) + ":" +
                                             CtiNumStr((int)DSt->Message[1]).zpad(2) + ":" +
                                             CtiNumStr((int)DSt->Message[0]).zpad(2) + "\n";
 
-                            resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + "\n";
-                            resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07)));
+                            resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + string("\n");
+                            resultString += "Current TOU Rate: " + (char)('A' + (DSt->Message[8] & 0x07));
 
                             break;
                         }
@@ -1107,8 +1109,8 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             second      =   DSt->Message[4];
 
 
-                            resultString += CtiNumStr(hour) + ":" + CtiNumStr(minute).zpad(2) + ":" + CtiNumStr(second).zpad(2) + " ";
-                            resultString += CtiNumStr(month) + "/" + CtiNumStr(day) + "/" + CtiNumStr(year + 2000) + "\n";
+                            resultString += CtiNumStr(hour) + ":" + CtiNumStr(minute).zpad(2) + string(":") + CtiNumStr(second).zpad(2) + " ";
+                            resultString += CtiNumStr(month) + "/" + CtiNumStr(day) + string("/") + CtiNumStr(year + 2000) + "\n";
 
                             rate        =  (DSt->Message[5] & 0xe0) >> 5;
 
@@ -1116,7 +1118,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             meter_class =  (DSt->Message[6] & 0x74) >> 3;
                             frequency   =  (DSt->Message[6] & 0x80) >> 7;
 
-                            resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07))) + "\n";
+                            resultString += "Current TOU Rate: " + (char)('A' + (DSt->Message[8] & 0x07)) + string("\n");
 
                             holiday     =  (DSt->Message[7] & 0xf0) >> 4;
                             season      =   DSt->Message[7] & 0x0f;
@@ -1149,7 +1151,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                         default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -1180,10 +1182,10 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                     {
                         resultString += getName() + " / Landis and Gyr S4 scan info:\n";
 
-                        if( DSt->Message[5] == 0 )  resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
-                        else                        resultString += "  Buffer Contains: S4 Meter Read Cmd: "      + CtiNumStr((int)DSt->Message[4]) + "\n";
+                        if( DSt->Message[5] == 0 )  resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + string("\n");
+                        else                        resultString += "  Buffer Contains: S4 Meter Read Cmd: "      + CtiNumStr((int)DSt->Message[4]) + string("\n");
 
-                        resultString += "  Scan Offset:     " + CtiNumStr(((int)DSt->Message[3] * 256) + (int)DSt->Message[4]).spad(3) + "\n";
+                        resultString += "  Scan Offset:     " + CtiNumStr(((int)DSt->Message[3] * 256) + (int)DSt->Message[4]).spad(3) + string("\n");
 
                         break;
                     }
@@ -1207,10 +1209,10 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                         }
                         else
                         {
-                            resultString += "  Buffer contains table " + CtiNumStr(tableid) + "\n";
+                            resultString += "  Buffer contains table " + CtiNumStr(tableid) + string("\n");
                         }
 
-                        resultString += "  Scan Offset: " + CtiNumStr(offset) + "\n";
+                        resultString += "  Scan Offset: " + CtiNumStr(offset) + string("\n");
 
                         break;
                     }
@@ -1218,17 +1220,17 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                     default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
-                resultString += "  Scan Rate: " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
-                resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
+                resultString += "  Scan Rate: " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + string(" seconds\n");
+                resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + string(" seconds\n");
 
                 if( DSt->Message[2] == 0 )
                     DSt->Message[2] = 128;
 
-                resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
+                resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + string(" bytes\n");
 
                 ReturnMsg->setResultString( resultString );
 
@@ -1238,7 +1240,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -1249,11 +1251,11 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
-    RWCString pointDescriptor, resultString, name, ratename;
+    string pointDescriptor, resultString, name, ratename;
 
     ULONG lValue;
 
@@ -1263,8 +1265,8 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
     CtiCommandParser parse( InMessage->Return.CommandStr );
 
     DOUBLE demandValue, Value;
-    RWTime timestamp;
-    RWDate datestamp;
+    CtiTime timestamp;
+    CtiDate datestamp;
 
     CtiPointBase    *pPoint       = NULL;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1273,7 +1275,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1283,7 +1285,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -1398,7 +1400,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -1456,7 +1458,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -1541,7 +1543,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase A Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         lValue = MAKEUSHORT(DSt->Message[6], DSt->Message[7]);
@@ -1567,7 +1569,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase B Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         lValue = MAKEUSHORT(DSt->Message[8], DSt->Message[9]);
@@ -1593,7 +1595,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase C Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         lValue = MAKEUSHORT(DSt->Message[10], DSt->Message[11]);
@@ -1619,7 +1621,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Neutral current: " + CtiNumStr(Value) + "\n";
+                            resultString += "Neutral current: " + CtiNumStr(Value) + string("\n");
                         }
 
                         break;
@@ -1652,7 +1654,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase A Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         Value = voltsB * kvVoltageMultiplier;
@@ -1673,7 +1675,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase B Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         Value = voltsC * kvVoltageMultiplier;
@@ -1694,7 +1696,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
                         else
                         {
-                            resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+                            resultString += "Phase C Volts: " + CtiNumStr(Value) + string("\n");
                         }
 
                         if( DSt->Message[12] == 0xff )
@@ -1721,7 +1723,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -1817,7 +1819,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -1897,7 +1899,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
@@ -1940,12 +1942,14 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
                         }
 
-                        datestamp = RWDate((unsigned)DSt->Message[5],
+                        datestamp = CtiDate((unsigned)DSt->Message[5],
                                            (unsigned)DSt->Message[4],
                                            (unsigned)DSt->Message[3] + 2000 );
-                        timestamp = RWTime(datestamp,
+
+                        timestamp = CtiTime(datestamp,
                                            (unsigned)DSt->Message[6],
                                            (unsigned)DSt->Message[7] );
+
 
                         break;
                     }
@@ -1960,10 +1964,10 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
                         }
 
-                        datestamp = RWDate((unsigned)DSt->Message[11],
+                        datestamp = CtiDate((unsigned)DSt->Message[11],
                                            (unsigned)DSt->Message[12],
                                            (unsigned)DSt->Message[10] + 2000);
-                        timestamp = RWTime(datestamp,
+                        timestamp = CtiTime(datestamp,
                                            (unsigned)DSt->Message[9],
                                            (unsigned)DSt->Message[8]);
 
@@ -1991,8 +1995,9 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         hour        =   DSt->Message[11];
                         minute      =   DSt->Message[12];
 
-                        datestamp = RWDate(day, month, year + 2000);
-                        timestamp = RWTime(datestamp, hour, minute);
+
+                        datestamp = CtiDate(day, month, year + 2000);
+                        timestamp = CtiTime(datestamp, hour, minute);
 
                         break;
                     }
@@ -2001,7 +2006,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
@@ -2020,7 +2025,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     if( datestamp.isValid() && timestamp.isValid() )
                     {
-                        pointDescriptor += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
+                        pointDescriptor += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + string("/") +
                                                    CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
                                                    CtiNumStr(datestamp.year()).zpad(2)       + " " +
                                                    CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
@@ -2041,12 +2046,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 //  code BL346H is really just the word "bleagh," placed there at the request of CGP and BA
-                                dout << RWTime() << " **** Checkpoint - invalid time on device \"" << getName() << "\", code BL346H **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << RWTime() << " data: ";
+                                dout << CtiTime() << " **** Checkpoint - invalid time on device \"" << getName() << "\", code BL346H **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " data: ";
 
                                 for( int i = 0; i < 13; i++ )
                                 {
-                                    dout << hex << (int)DSt->Message[i] << " ";
+                                    dout << std::hex << (int)DSt->Message[i] << " ";
                                 }
 
                                 dout << endl;
@@ -2063,7 +2068,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     if( datestamp.isValid() )
                     {
-                        resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
+                        resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + string("/") +
                                                 CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
                                                 CtiNumStr(datestamp.year()).zpad(2)       + " " +
                                                 CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
@@ -2088,11 +2093,11 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pid;
-    RWCString resultString;
+    string resultString;
 
     ULONG accums[3];
 
@@ -2109,7 +2114,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -2119,7 +2124,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -2128,7 +2133,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         decodeAccumulators(accums, 3, InMessage->Buffer.DSt.Message);
 
-        RWTime pointTime;
+        CtiTime pointTime;
         pointTime -= pointTime.seconds() % 300;
 
         for(pid = 1; pid <= 3; pid++)
@@ -2154,7 +2159,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any KYZ 1 messages we might've appended before this point - we now have a real one
-                    ReturnMsg->setResultString( RWCString() );
+                    ReturnMsg->setResultString( string() );
                 }
             }
             //  else send the raw pulses for pulse input 1
@@ -2176,13 +2181,13 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
-    RWCString resultString;
+    string resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -2197,12 +2202,12 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    RWTime pointTime;
+    CtiTime pointTime;
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     setScanFlag(ScanRateIntegrity, false);
@@ -2215,7 +2220,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;
@@ -2267,7 +2272,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any demand input 1 messages we may have appended - we have a real one
-                    ReturnMsg->setResultString("");
+                    ReturnMsg->setResultString( string() );
                 }
             }
             //  else send the raw pulses for offset 1
@@ -2286,7 +2291,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
         {
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );
@@ -2295,7 +2300,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - No demand accumulators defined in DB for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - No demand accumulators defined in DB for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             delete ReturnMsg;
         }
@@ -2305,11 +2310,11 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int       status = NORMAL;
     double    Value;
-    RWCString resultString;
+    string resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -2321,7 +2326,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     resetScanFlag(ScanRateGeneral);
@@ -2334,7 +2339,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -2354,7 +2359,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
 
             if( pPoint != NULL)
             {
-                RWTime pointTime;
+                CtiTime pointTime;
 
                 Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
 
@@ -2392,13 +2397,13 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int status = NORMAL;
 
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    RWCString val_report, result_string;
+    string val_report, result_string;
 
     int     demand_rate, block_size, max_blocks;
     int     current_block_num, retrieved_block_num, retrieved_channel, midnight_offset;
@@ -2416,7 +2421,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -2426,7 +2431,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -2439,7 +2444,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retrieved_block_num--;
@@ -2483,7 +2488,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << InMessage->Return.CommandStr << endl;
                     }
 
@@ -2494,7 +2499,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << InMessage->Return.CommandStr << endl;
                         dout << "retrieved_block_num = " << retrieved_block_num << endl;
                         dout << "retrieved_channel = " << retrieved_channel << endl;
@@ -2547,10 +2552,10 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "value = " << value << endl;
                             dout << "interval_offset = " << interval_offset << endl;
-                            dout << "timestamp = " << RWTime(timestamp) << endl;
+                            dout << "timestamp = " << CtiTime(timestamp) << endl;
                         }
 
                         point_data->setTime(timestamp);
@@ -2570,7 +2575,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             result_string  = "scan_loadprofile tokens not found in command string \"";
@@ -2602,7 +2607,7 @@ void CtiDeviceMCT31X::DecodeDatabaseReader(RWDBReader &rdr)
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - in CtiDeviceMCT31X::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Default data class: " << _iedPort.getDefaultDataClass() << endl;
             dout << "Default data offset: " << _iedPort.getDefaultDataOffset() << endl;
             dout << "Device ID: " << _iedPort.getDeviceID() << endl;

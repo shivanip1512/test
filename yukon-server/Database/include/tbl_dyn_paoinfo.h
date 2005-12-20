@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/09 16:41:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,11 +19,9 @@
 #define __TBL_DYN_PAOINFO_H__
 
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
 
 #include <string>
 #include <map>
-using namespace std;
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -31,6 +29,8 @@ using namespace std;
 #include "pointdefs.h"
 #include "yukon.h"
 
+using std::map;
+using std::string;
 
 class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiMemDBObject
 {
@@ -239,7 +239,7 @@ public:
     CtiTableDynamicPaoInfo& operator=(const CtiTableDynamicPaoInfo &aRef);
     bool                    operator<(const CtiTableDynamicPaoInfo &rhs) const;  //  this is for the set in dev_base
 
-    static RWCString getTableName();
+    static string getTableName();
 
     bool hasRow() const;
 

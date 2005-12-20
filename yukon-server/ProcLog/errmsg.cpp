@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 /* RW stuff MUST be first to avoid crap with macros max and min.. these WILL bite your butt */
-#include <rw\rwtime.h>
 
 #include <windows.h>
 #include <stdlib.h>
@@ -26,9 +25,8 @@ extern "C" {
    #include "dsm2.h"
 #endif
 
-
+#include "ctitime.h"
 #include "proclog.h"
-
 #include "errmsg.h"
 
 CErrMsg::CErrMsg()
@@ -220,7 +218,7 @@ ostream& operator << (ostream &out, CErrMsg e)
 {
    out.flags(ios::left);
    // get the time adjusted and blasted to the file
-   out << RWTime((ULONG)e.getEMsgTime() + rwEpoch).asString() <<": ";
+   out << CtiTime((ULONG)e.getEMsgTime()).asString() <<": ";
    out << setw(10) << e.getEMsgSource() << ": ";
    return (out << " " << e.getEMsgMessage());
 }

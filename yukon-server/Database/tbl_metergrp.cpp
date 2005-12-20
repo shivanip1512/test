@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_metergrp.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "logger.h"
 #include "tbl_metergrp.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceMeterGroup::CtiTableDeviceMeterGroup():
 _deviceID(-1)
@@ -42,52 +44,52 @@ CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::operator=(const CtiTableDevi
     return *this;
 }
 
-RWCString  CtiTableDeviceMeterGroup::getCollectionGroup() const
+string  CtiTableDeviceMeterGroup::getCollectionGroup() const
 {
 
     return _collectionGroup;
 }
 
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setCollectionGroup( const RWCString &aCycleGroup )
+CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setCollectionGroup( const string &aCycleGroup )
 {
 
     _collectionGroup = aCycleGroup;
     return *this;
 }
 
-RWCString CtiTableDeviceMeterGroup::getBillingGroup() const
+string CtiTableDeviceMeterGroup::getBillingGroup() const
 {
 
     return _billingGroup;
 }
 
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setBillingGroup( const RWCString &billGroup )
+CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setBillingGroup( const string &billGroup )
 {
 
     _billingGroup = billGroup;
     return *this;
 }
 
-RWCString CtiTableDeviceMeterGroup::getMeterNumber() const
+string CtiTableDeviceMeterGroup::getMeterNumber() const
 {
 
     return _meterNumber;
 }
 
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setMeterNumber( const RWCString &meterNumber )
+CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setMeterNumber( const string &meterNumber )
 {
 
     _meterNumber = meterNumber;
     return *this;
 }
 
-RWCString  CtiTableDeviceMeterGroup::getTestCollectionGroup() const
+string  CtiTableDeviceMeterGroup::getTestCollectionGroup() const
 {
 
     return _testCollectionGroup;
 }
 
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setTestCollectionGroup( const RWCString &aAreaCodeGroup )
+CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setTestCollectionGroup( const string &aAreaCodeGroup )
 {
 
     _testCollectionGroup = aAreaCodeGroup;
@@ -96,7 +98,7 @@ CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setTestCollectionGroup( cons
 
 void CtiTableDeviceMeterGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector <<
     devTbl["collectiongroup"] <<
@@ -137,7 +139,7 @@ CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setDeviceID( const LONG devi
     return *this;
 }
 
-RWCString CtiTableDeviceMeterGroup::getTableName()
+string CtiTableDeviceMeterGroup::getTableName()
 {
     return "DeviceMeterGroup";
 }
@@ -150,7 +152,7 @@ RWDBStatus CtiTableDeviceMeterGroup::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -183,7 +185,7 @@ RWDBStatus CtiTableDeviceMeterGroup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -210,16 +212,16 @@ RWDBStatus CtiTableDeviceMeterGroup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["collectiongroup"].assign(getCollectionGroup() ) <<
-    table["testcollectiongroup"].assign(getTestCollectionGroup() ) <<
-    table["meternumber"].assign(getMeterNumber() ) <<
-    table["billinggroup"].assign(getBillingGroup() );
+    table["collectiongroup"].assign(getCollectionGroup().c_str() ) <<
+    table["testcollectiongroup"].assign(getTestCollectionGroup().c_str() ) <<
+    table["meternumber"].assign(getMeterNumber().c_str() ) <<
+    table["billinggroup"].assign(getBillingGroup().c_str() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -236,7 +238,7 @@ RWDBStatus CtiTableDeviceMeterGroup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

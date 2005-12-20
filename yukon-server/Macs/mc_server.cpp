@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/07/01 20:38:23 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,9 +30,12 @@
 #include "mc_server.h"
 #include "numstr.h"
 
+#include "rwutil.h"
 #include <time.h>
 #include <algorithm>
-#include <utility.h>
+#include <utility.h> 
+
+using namespace std;
 
 /* The global debug level stored here, defined in mc.h */
 unsigned gMacsDebugLevel = 0x00000000;
@@ -81,7 +84,7 @@ void CtiMCServer::run()
                     delete msg;
 
                     delay = secondsToNextMinute();
-                    RWTime nextTime = _scheduler.getNextEventTime();
+                    CtiTime nextTime = _scheduler.getNextEventTime();
                     if( nextTime.isValid() ) {
                         unsigned long next = secondsToTime(nextTime);
                         if( next < delay ) delay = next;
@@ -96,7 +99,7 @@ void CtiMCServer::run()
                 if( gMacsDebugLevel & MC_DEBUG_EVENTS )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << RWTime() << " Checking event queue" << endl;
+                    dout << CtiTime() << " Checking event queue" << endl;
                 }
 
                 if( gMacsDebugLevel & MC_DEBUG_EVENTS )
@@ -104,7 +107,7 @@ void CtiMCServer::run()
 
                 // Check to see if the next event is ready to go.
 
-                _scheduler.getEvents( RWTime::now(), work_around );
+                _scheduler.getEvents( CtiTime::now(), work_around );
 
                 for( work_around_iter = work_around.begin();
                      work_around_iter != work_around.end();
@@ -123,7 +126,7 @@ void CtiMCServer::run()
             checkRunningScripts();
 
             delay = secondsToNextMinute();
-            RWTime nextTime = _scheduler.getNextEventTime();
+            CtiTime nextTime = _scheduler.getNextEventTime();
             if( nextTime.isValid() ) {
                 long next = secondsToTime(nextTime);
                 if( next < delay ) delay = next;
@@ -133,14 +136,14 @@ void CtiMCServer::run()
             {
             CtiLockGuard<CtiLogger> guard(dout);
                 _scheduler.dumpEventQueue();
-                dout << RWTime() << " Sleeping for " << delay << " millis" << endl;
+                dout << CtiTime() << " Sleeping for " << delay << " millis" << endl;
             }
          }
         }
         else
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An error occured during initialization" << endl;
+            dout << CtiTime() << " An error occured during initialization" << endl;
         }
         /* End of Main Loop */
     }
@@ -148,21 +151,21 @@ void CtiMCServer::run()
     {
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " *PANIC* MC MAIN THREAD CAUGHT AN EXCEPTION OF UNKNOWN TYPE!" << endl;
+            dout << CtiTime() << " *PANIC* MC MAIN THREAD CAUGHT AN EXCEPTION OF UNKNOWN TYPE!" << endl;
         }
     }
 
     /* We're done lets close down the server */
     {
       CtiLockGuard<CtiLogger> guard(dout);
-      dout << RWTime() << " Metering and Control shutting down" << endl;
+      dout << CtiTime() << " Metering and Control shutting down" << endl;
     }
 
     deinit();
 
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Metering and Control exiting" << endl;
+        dout << CtiTime() << " Metering and Control exiting" << endl;
     }
 }
 
@@ -196,7 +199,7 @@ void CtiMCServer::logEvent(const string& user, const string& text) const
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << cmd_string << endl;
+        dout << CtiTime() << cmd_string << endl;
     }
 
     // Acquire an interpreter and send out the command
@@ -232,7 +235,7 @@ void CtiMCServer::executeCommand(const string& command, const string& target)
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
              << " Sending command to tcl for eval:  " << to_send << endl;
     }
 
@@ -262,7 +265,7 @@ bool CtiMCServer::init()
     /* Start Initialization */
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Metering and Control starting up..." << endl;
+        dout << CtiTime() << " Metering and Control starting up..." << endl;
     }
 
     // load up the database and start the db update thread
@@ -273,7 +276,7 @@ bool CtiMCServer::init()
     {
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An error occured retrieving accessing the database, it may not be initialized.  Retry in 15 seconds." << endl;
+            dout << CtiTime() << " An error occured retrieving accessing the database, it may not be initialized.  Retry in 15 seconds." << endl;
         }
 
         if( sleep(15000) )
@@ -283,24 +286,24 @@ bool CtiMCServer::init()
     if( !loadCParms() )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " At least one cparm not found in master.cfg" << endl;
+        dout << CtiTime() << " At least one cparm not found in master.cfg" << endl;
     }
 
     if( status )
     {
         RWRecursiveLock<class RWMutexLock>::LockGuard map_guard(_schedule_manager.getMux() );
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Loaded " << _schedule_manager.getMap().entries() << " schedules from the database." << endl;
+        dout << CtiTime() << " Loaded " << _schedule_manager.getMap().entries() << " schedules from the database." << endl;
     }
     else
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " An error occured retrieving schedules from the database." << endl;
+        dout << CtiTime() << " An error occured retrieving schedules from the database." << endl;
         status = false;
     }
 
     /* Set up our events */
-    RWTime now = stripSeconds(RWTime::now());
+    CtiTime now = stripSeconds(CtiTime::now());
     _scheduler.initEvents(now);
 
     _db_update_thread.start();
@@ -336,7 +339,7 @@ bool CtiMCServer::deinit()
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Stopping MACS file interface" << endl;
+        dout << CtiTime() << " Stopping MACS file interface" << endl;
     }
 
     /* stop the file interface */
@@ -345,7 +348,7 @@ bool CtiMCServer::deinit()
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Stopping MACS client listener" << endl;
+        dout << CtiTime() << " Stopping MACS client listener" << endl;
     }
 
     /* stop accepting connections */
@@ -355,7 +358,7 @@ bool CtiMCServer::deinit()
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Stopping MACS tcl interpreter pool" << endl;
+        dout << CtiTime() << " Stopping MACS tcl interpreter pool" << endl;
     }
 
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
@@ -367,7 +370,7 @@ bool CtiMCServer::deinit()
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Stopping MACS database update thread" << endl;
+        dout << CtiTime() << " Stopping MACS database update thread" << endl;
     }
 
     _db_update_thread.interrupt( CtiThread::SHUTDOWN );
@@ -391,7 +394,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
         dumpRunningScripts();
 
-        dout << RWTime() << " Dumping interpreter pool before executing a new script" << endl;
+        dout << CtiTime() << " Dumping interpreter pool before executing a new script" << endl;
         _interp_pool.dumpPool();
 
 
@@ -424,7 +427,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " [" << interp->getID() << "] " << script.getScriptName() << endl;
+            dout << CtiTime() << " [" << interp->getID() << "] " << script.getScriptName() << endl;
         }
 
         // start the evaluation, non-blocking
@@ -436,7 +439,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
     else
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Failed to load script:  "
+        dout << CtiTime() << " Failed to load script:  "
              << script.getScriptName() << endl;
     }
 
@@ -445,7 +448,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         CtiLockGuard< CtiLogger > guard(dout);
         dumpRunningScripts();
 
-        dout << RWTime() << " Dumping interpreter pool after executing a new script" << endl;
+        dout << CtiTime() << " Dumping interpreter pool after executing a new script" << endl;
         _interp_pool.dumpPool();
     }
 }
@@ -463,7 +466,7 @@ void CtiMCServer::stopScript(long sched_id)
         CtiLockGuard< CtiLogger > guard(dout);
         dumpRunningScripts();
 
-        dout << RWTime() << " Dumping interpreter before stopping script" << endl;
+        dout << CtiTime() << " Dumping interpreter before stopping script" << endl;
         _interp_pool.dumpPool();
     }
 
@@ -471,8 +474,8 @@ void CtiMCServer::stopScript(long sched_id)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
         CtiMCSchedule* sched = _schedule_manager.findSchedule( sched_id );
-        sched->setManualStartTime( RWTime( (unsigned long) 0 ));
-        sched->setManualStopTime( RWTime( (unsigned long) 0 ));
+        sched->setManualStartTime( CtiTime( (unsigned long) 0 ));
+        sched->setManualStopTime( CtiTime( (unsigned long) 0 ));
         _schedule_manager.updateSchedule( *sched );
     }
 
@@ -501,7 +504,7 @@ void CtiMCServer::stopScript(long sched_id)
         CtiLockGuard< CtiLogger > guard(dout);
         dumpRunningScripts();
 
-        dout << RWTime() << " Dumping interpreter after stopping script" << endl;
+        dout << CtiTime() << " Dumping interpreter after stopping script" << endl;
         _interp_pool.dumpPool();
     }
 
@@ -538,7 +541,7 @@ void CtiMCServer::releaseInterpreters()
  ----------------------------------------------------------------------------*/
 void CtiMCServer::checkRunningScripts()
 {
-    RWTime now( stripSeconds(RWTime::now()) );
+    CtiTime now( stripSeconds(CtiTime::now()) );
 
     map< long, CtiInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
@@ -576,7 +579,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
     if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Processing Message:  " <<  endl;
+        dout << CtiTime() << " Processing Message:  " <<  endl;
         msg->dump();
     }
 
@@ -587,7 +590,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
                 CtiLockGuard<CtiLogger> guard(dout);
-                dout << RWTime() << " Received AddSchedule message" << endl;
+                dout << CtiTime() << " Received AddSchedule message" << endl;
             }
 
             RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
@@ -612,7 +615,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             if( (new_sched = _schedule_manager.addSchedule( add_msg->getSchedule() )) != NULL )
             {
 
-                 _scheduler.initEvents( stripSeconds( RWTime::now()), *new_sched );
+                 _scheduler.initEvents( stripSeconds( CtiTime::now()), *new_sched );
 
                  _client_listener.BroadcastMessage( new_sched->replicateMessage() );
 
@@ -620,9 +623,10 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                  event_text += new_sched->getScheduleName();
                  event_text += "\\\"";
 
-                 logEvent( string( add_msg->getUser().data() ), event_text );
+                 logEvent( add_msg->getUser(), event_text );
                  sleep(2500); // CGP Let the writer thread have a chance.  Yes this is bad, but we are lazy.
-                 sendDBChange( new_sched->getScheduleID(), string( add_msg->getUser().data() ) );
+                 sendDBChange( new_sched->getScheduleID(), add_msg->getUser() );
+
                  ret_val = true;
             }
             else
@@ -639,7 +643,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
                     CtiLockGuard<CtiLogger> guard(dout);
-                    dout << RWTime() << " Received UpdateSchedule message" << endl;
+                    dout << CtiTime() << " Received UpdateSchedule message" << endl;
                 }
 
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
@@ -672,7 +676,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                      }
 
                     _scheduler.removeEvents(updated_sched->getScheduleID());
-                    _scheduler.initEvents( stripSeconds( RWTime::now()), *updated_sched );
+                    _scheduler.initEvents( stripSeconds( CtiTime::now()), *updated_sched );
 
                     _client_listener.BroadcastMessage( updated_sched->replicateMessage() );
 
@@ -699,7 +703,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
                 CtiLockGuard<CtiLogger> guard(dout);
-                dout << RWTime() << " Received Retrieve Schedule message" << endl;
+                dout << CtiTime() << " Received Retrieve Schedule message" << endl;
             }
             id = ((CtiMCRetrieveSchedule*) msg)->getScheduleID();
 
@@ -744,7 +748,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
                     CtiLockGuard<CtiLogger> guard(dout);
-                    dout << RWTime() << " Received Delete Schedule message" << endl;
+                    dout << CtiTime() << " Received Delete Schedule message" << endl;
                 }
 
                 CtiMCDeleteSchedule* delete_msg = (CtiMCDeleteSchedule*) msg;
@@ -792,7 +796,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                {
                    CtiLockGuard<CtiLogger> guard(dout);
-                   dout << RWTime() << " Received Retrieve Script message" << endl;
+                   dout << CtiTime() << " Received Retrieve Script message" << endl;
                }
 
                CtiMCRetrieveScript* retrieve_msg = (CtiMCRetrieveScript*) msg;
@@ -815,7 +819,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
                     CtiLockGuard<CtiLogger> guard(dout);
-                    dout << RWTime() << " Received Override Request message" << endl;
+                    dout << CtiTime() << " Received Override Request message" << endl;
                 }
 
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
@@ -824,7 +828,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 CtiMCSchedule* sched = _schedule_manager.findSchedule( request_msg->getID() );
 
                 string event_text;
-                RWTime real_time( (unsigned long) 0);
+                CtiTime real_time( (unsigned long) 0);
 
                 if( sched != NULL )
                 {
@@ -834,7 +838,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                         if( !request_msg->getStartTime().isValid() )
                         {
-                            real_time = stripSeconds( RWTime::now() );
+                            real_time = stripSeconds( CtiTime::now() );
                             sched->setManualStartTime(real_time);
                         }
                         else
@@ -843,26 +847,26 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                             sched->setManualStartTime(real_time);
                         }
 
-                        _scheduler.scheduleManualStart( stripSeconds(RWTime::now()), *sched);
+                        _scheduler.scheduleManualStart( stripSeconds(CtiTime::now()), *sched);
 
                         event_text = "Start Schedule: \\\"";
                         event_text += sched->getScheduleName();
                         event_text += "\\\" @ ";
-                        event_text += real_time.asString().data();
+                        event_text += real_time.asString().c_str();
 
                         break;
 
                         case CtiMCOverrideRequest::StartNow:
 
-                        real_time = stripSeconds(RWTime::now());
+                        real_time = stripSeconds(CtiTime::now());
                         sched->setManualStartTime(real_time);
 
-                        _scheduler.scheduleManualStart( stripSeconds(RWTime::now()), *sched);
+                        _scheduler.scheduleManualStart( stripSeconds(CtiTime::now()), *sched);
 
                         event_text = "Start Schedule: \\\"";
                         event_text += sched->getScheduleName();
                         event_text += "\\\" @ ";
-                        event_text += real_time.asString().data();
+                        event_text += real_time.asString().c_str();
 
                         break;
 
@@ -871,7 +875,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                         if( !request_msg->getStopTime().isValid() )
                         {
-                            real_time = stripSeconds( RWTime::now() );
+                            real_time = stripSeconds( CtiTime::now() );
                             sched->setManualStopTime(real_time);
                         }
                         else
@@ -880,26 +884,26 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                             sched->setManualStopTime(real_time);
                         }
 
-                        _scheduler.scheduleManualStop( stripSeconds(RWTime::now()), *sched);
+                        _scheduler.scheduleManualStop( stripSeconds(CtiTime::now()), *sched);
 
                         event_text = "Stop Schedule: \\\"";
                         event_text += sched->getScheduleName();
                         event_text += "\\\" @ ";
-                        event_text += real_time.asString().data();
+                        event_text += real_time.asString().c_str();
 
                         break;
 
                         case CtiMCOverrideRequest::StopNow:
 
-                        real_time = stripSeconds(RWTime::now());
+                        real_time = stripSeconds(CtiTime::now());
                         sched->setManualStopTime(real_time);
 
-                        _scheduler.scheduleManualStop( stripSeconds(RWTime::now()), *sched);
+                        _scheduler.scheduleManualStop( stripSeconds(CtiTime::now()), *sched);
 
                         event_text = "Stop Schedule: \\\"";
                         event_text += sched->getScheduleName();
                         event_text += "\\\" @ ";
-                        event_text += real_time.asString().data();
+                        event_text += real_time.asString().c_str();
 
                         break;
 
@@ -912,7 +916,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                             //reschedule it
                             _scheduler.removeEvents(sched->getScheduleID());
-                            _scheduler.initEvents( stripSeconds( RWTime::now()), *sched );
+                            _scheduler.initEvents( stripSeconds( CtiTime::now()), *sched );
 
                             event_text = "Enabled Schedule:  \\\"";
                             event_text += sched->getScheduleName();
@@ -930,10 +934,10 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                             if( sched->getCurrentState() == CtiMCSchedule::Running )
                             {
 
-                                real_time = stripSeconds(RWTime::now());
+                                real_time = stripSeconds(CtiTime::now());
                                 sched->setManualStopTime(real_time);
 
-                                _scheduler.scheduleManualStop( stripSeconds(RWTime::now()), *sched);
+                                _scheduler.scheduleManualStop( stripSeconds(CtiTime::now()), *sched);
                             }
 
                             sched->setCurrentState( CtiMCSchedule::Disabled );
@@ -953,7 +957,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                         default:
                         {
                             CtiLockGuard< CtiLogger > g(dout);
-                            dout << RWTime() << " Unknown action in a CtiMCOverrideRequest received" << endl;
+                            dout << CtiTime() << " Unknown action in a CtiMCOverrideRequest received" << endl;
                         }
 
                         sched = NULL;
@@ -993,10 +997,10 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
         CtiLockGuard<CtiLogger> g(dout);
-        dout << RWTime() << " Processing Event: " << endl;
-        dout << RWTime() <<" schedule id:  " << event.sched_id << endl;
-        dout << RWTime() << " event type:   " << event.event_type << endl;
-        dout << RWTime() << " timestamp:    " << event.timestamp << endl << endl;
+        dout << CtiTime() << " Processing Event: " << endl;
+        dout << CtiTime() <<" schedule id:  " << event.sched_id << endl;
+        dout << CtiTime() << " event type:   " << event.event_type << endl;
+        dout << CtiTime() << " timestamp:    " << event.timestamp << endl << endl;
     }
 
     RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
@@ -1005,8 +1009,8 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
     if( sched == NULL )
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Attempting to process an event with schedule id:  " << event.sched_id << endl;
-        dout << RWTime() << " No schedule was found with that id." << endl;
+        dout << CtiTime() << " Attempting to process an event with schedule id:  " << event.sched_id << endl;
+        dout << CtiTime() << " No schedule was found with that id." << endl;
         return false;
     }
 
@@ -1077,18 +1081,18 @@ bool CtiMCServer::loadCParms()
 {
    bool result = true;
 
-   RWCString str;
+   string str;
    char var[128];
 
    strcpy(var, MC_DEBUG_LEVEL );
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
       char *eptr;
-      gMacsDebugLevel = strtoul(str.data(), &eptr, 16);
+      gMacsDebugLevel = strtoul(str.c_str(), &eptr, 16);
 
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " " << MC_DEBUG_LEVEL << ": 0x" << hex <<  gMacsDebugLevel << dec << endl;
+         dout << CtiTime() << " " << MC_DEBUG_LEVEL << ": 0x" << hex <<  gMacsDebugLevel << dec << endl;
       }
    }
    else
@@ -1097,16 +1101,16 @@ bool CtiMCServer::loadCParms()
 
        {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " " << MC_DEBUG_LEVEL << " not found in master.cfg" << endl;
+            dout << CtiTime() << " " << MC_DEBUG_LEVEL << " not found in master.cfg" << endl;
        }
 
        result = false;
    }
 
    strcpy(var, FTP_INTERFACE_DIR );
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
-       RWCString consumed(str);
+       string consumed(str);
        consumed += "\\processed";
 
        _file_interface.setDirectory(str);
@@ -1114,20 +1118,20 @@ bool CtiMCServer::loadCParms()
    }
    else
    {
-       RWCString consumed(DEFAULT_MC_FTP_INTERFACE_DIR);
+       string consumed(DEFAULT_MC_FTP_INTERFACE_DIR);
        consumed += "\\processed";
 
        _file_interface.setDirectory(DEFAULT_MC_FTP_INTERFACE_DIR);
        _file_interface.setConsumedDirectory(consumed);
        {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " " << FTP_INTERFACE_DIR << " not found in master.cfg" << endl;
+            dout << CtiTime() << " " << FTP_INTERFACE_DIR << " not found in master.cfg" << endl;
        }
        result = false;
    }
 
    strcpy(var, FTP_INTERFACE_EXT );
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
        _file_interface.setExtension(str);
    }
@@ -1137,17 +1141,17 @@ bool CtiMCServer::loadCParms()
 
        {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " " << FTP_INTERFACE_EXT << " not found in master.cfg" << endl;
+            dout << CtiTime() << " " << FTP_INTERFACE_EXT << " not found in master.cfg" << endl;
        }
 
        result = false;
    }
 
    strcpy(var, FTP_DELETE_ON_START );
-   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
-       str.toLower();
-       str.strip();
+       std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+       str = trim(str);
 
        if( str == "true" )
        {
@@ -1164,7 +1168,7 @@ bool CtiMCServer::loadCParms()
 
        {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " " << FTP_DELETE_ON_START << " not found in master.cfg" << endl;
+            dout << CtiTime() << " " << FTP_DELETE_ON_START << " not found in master.cfg" << endl;
        }
 
        result = false;
@@ -1173,33 +1177,33 @@ bool CtiMCServer::loadCParms()
    return result;
 }
 
-RWTime CtiMCServer::stripSeconds(const RWTime& now) const
+CtiTime CtiMCServer::stripSeconds(const CtiTime& now) const
 {
     struct tm now_tm;
     now.extract(&now_tm);
     now_tm.tm_sec = 0;
 
-    return RWTime(&now_tm);
+    return CtiTime(&now_tm);
 }
 
-bool CtiMCServer::isToday(const RWTime& t) const
+bool CtiMCServer::isToday(const CtiTime& t) const
 {
-    return ( RWDate(t) == RWDate::now() );
+    return ( CtiDate(t) == CtiDate::now() );
 }
 
 unsigned long CtiMCServer::secondsToNextMinute() const
 {
     struct tm* b_time;
 
-    time_t now = time(NULL);
-    b_time = localtime(&now);
+    time_t now = ::time(NULL);
+    b_time = CtiTime::localtime_r(&now);
     return (60 - b_time->tm_sec);
 }
 
-unsigned long CtiMCServer::secondsToTime(const RWTime& t) const
+unsigned long CtiMCServer::secondsToTime(const CtiTime& t) const
 {
     unsigned long t_secs = t.seconds();
-    unsigned long now_secs = RWTime::now().seconds();
+    unsigned long now_secs = CtiTime::now().seconds();
 
     return ( t_secs < now_secs ?
              0 :
@@ -1210,14 +1214,14 @@ void CtiMCServer::dumpRunningScripts()
 {
     CtiLockGuard< CtiLogger > guard(dout);
 
-    dout << RWTime() << " Running scripts:" << endl;
+    dout << CtiTime() << " Running scripts:" << endl;
 
     map< long, CtiInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
          iter++ )
     {
-        dout << RWTime() << " Schedule id: " << iter->first << " Interpreter: " << iter->second << endl;
+        dout << CtiTime() << " Schedule id: " << iter->first << " Interpreter: " << iter->second << endl;
     }
 }
 
@@ -1244,7 +1248,7 @@ void CtiMCServer::sendDBChange(const int& paoid, const string& user) const
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << cmd_string << endl;
+        dout << CtiTime() << cmd_string << endl;
     }
 
     // Acquire an interpreter and send out the command

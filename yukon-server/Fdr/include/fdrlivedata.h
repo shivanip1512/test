@@ -10,14 +10,13 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.1 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *    REVISION     :  $Revision: 1.2 $
+ *    DATE         :  $Date: 2005/12/20 17:17:16 $
  *    History:
  *      $History:$
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>

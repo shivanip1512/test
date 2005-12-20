@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/08/01 16:20:32 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include <ctype.h>
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 #include <rw\db\nullind.h>
 
@@ -208,7 +207,7 @@ public:
 
         if(!isNull)
         {
-            RWCString tempstr;
+            string tempstr;
             rdr["phonenumber"] >> tempstr;
 
             if(tempstr.length() > 1)
@@ -226,7 +225,7 @@ public:
                 if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;
+                    dout << CtiTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;
                 }
             }
         }
@@ -243,20 +242,20 @@ public:
 
         if(pDialup)
         {
-            RWCString num;
+            string num;
 
             for(int i = 0; i < pDialup->getPhoneNumber().length(); i++ )
             {
-                CHAR ch = pDialup->getPhoneNumber().data()[(size_t)i];
+                CHAR ch = pDialup->getPhoneNumber()[(size_t)i];
 
-                if( isdigit(ch) )
+                if( ::isdigit(ch) )
                 {
-                    num.append(ch);
+                    num.append((char*)ch);
                 }
             }
 
             // Now get a standard CRC
-            CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+            CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.c_str(), num.length(), FALSE);
         }
         else
         {
@@ -266,9 +265,9 @@ public:
         return CSum;
     }
 
-    virtual RWCString getPhoneNumber() const
+    virtual string getPhoneNumber() const
     {
-        RWCString   rStr;
+        string   rStr;
         if(pDialup)
         {
             rStr = pDialup->getPhoneNumber();

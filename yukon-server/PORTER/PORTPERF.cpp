@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,9 @@
 #include "guard.h"
 #include "utility.h"
 
+using std::make_pair;
+using std::vector;
+
 static CtiStatisticsMap_t   gDeviceStatMap;
 static bool                 gDeviceStatDirty = false;
 static CtiMutex             gDeviceStatMapMux;
@@ -91,7 +94,7 @@ VOID PerfUpdateThread (PVOID Arg)
     HEV PerfUpdateSem;
     PSZ Environment;
     ULONG Rate;
-    RWTime now;
+    CtiTime now;
     LONG delay;
 
     /* set the priority of this guy high */
@@ -104,7 +107,7 @@ VOID PerfUpdateThread (PVOID Arg)
         {
             if(gConfigParms.isOpt("PORTER_DEVICESTATUPDATERATE"))
             {
-                if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").data())))
+                if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").c_str())))
                 {
                     PerfUpdateRate = 3600L;
                 }
@@ -115,7 +118,7 @@ VOID PerfUpdateThread (PVOID Arg)
             {
                 {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
+                    dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
                 }
 
                 CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, 400 );
@@ -125,13 +128,13 @@ VOID PerfUpdateThread (PVOID Arg)
 
             now = now.now();
 
-            RWTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
+            CtiTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
 
             if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (nextTime.seconds() - now.seconds())) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved quit event." << endl;
+                    dout << CtiTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved quit event." << endl;
                 }
                 PorterQuit = TRUE;
                 break;
@@ -142,19 +145,19 @@ VOID PerfUpdateThread (PVOID Arg)
             /* Do the statistics */
             statisticsRecord();
 
-            delay = RWTime().seconds() - now.seconds();
+            delay = CtiTime().seconds() - now.seconds();
             if(delay > 5)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << delay << " seconds to update statistics." << endl;
+                    dout << CtiTime() << " " << delay << " seconds to update statistics." << endl;
                 }
             }
         }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved shutdown request." << endl;
+            dout << CtiTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved shutdown request." << endl;
         }
 
 
@@ -168,7 +171,7 @@ VOID PerfUpdateThread (PVOID Arg)
 #else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         {
             CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -181,13 +184,13 @@ VOID PerfUpdateThread (PVOID Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PerfUpdateThread: TID " << CurrentTID() << " exiting" << endl;
+        dout << CtiTime() << " PerfUpdateThread: TID " << CurrentTID() << " exiting" << endl;
     }
 }
 
@@ -232,7 +235,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -240,7 +243,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -251,7 +254,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
-    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -265,14 +268,14 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementRequest( RWTime() );
+                dStats.incrementRequest( CtiTime() );
             }
             dStatItr = statisticsPaoFind( devicepaoid );
 
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementRequest( RWTime() );
+                dStats.incrementRequest( CtiTime() );
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -282,7 +285,7 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
                 if( dStatItr != gDeviceStatMap.end() )
                 {
                     CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementRequest( RWTime() );
+                    dStats.incrementRequest( CtiTime() );
                 }
             }
         }
@@ -292,7 +295,7 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -308,8 +311,8 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
 
                 if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
                 {
-                    dStats.incrementAttempts( RWTime(), result );
-                    dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                    dStats.incrementAttempts( CtiTime(), result );
+                    dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
                 }
             }
 
@@ -318,8 +321,8 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementAttempts( RWTime(), result );
-                dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                dStats.incrementAttempts( CtiTime(), result );
+                dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -329,8 +332,8 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
                 if( dStatItr != gDeviceStatMap.end() )
                 {
                     CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementAttempts( RWTime(), result );
-                    dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                    dStats.incrementAttempts( CtiTime(), result );
+                    dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
                 }
             }
         }
@@ -340,7 +343,7 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -354,7 +357,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementCompletion( RWTime(), result );
+                dStats.incrementCompletion( CtiTime(), result );
             }
 
             dStatItr = statisticsPaoFind( devicepaoid );
@@ -362,7 +365,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementCompletion( RWTime(), result );
+                dStats.incrementCompletion( CtiTime(), result );
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -372,7 +375,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
                 if( dStatItr != gDeviceStatMap.end() )
                 {
                     CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementCompletion( RWTime(), result );
+                    dStats.incrementCompletion( CtiTime(), result );
                 }
             }
         }
@@ -389,10 +392,10 @@ void statisticsRecord()
             if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Start statisticsRecord() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Start statisticsRecord() " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            vector< CtiStatistics > dirtyStatCol( gDeviceStatMap.size() );
-            vector< CtiStatistics >::iterator dirtyStatItr;
+            std::vector< CtiStatistics > dirtyStatCol( gDeviceStatMap.size() );
+            std::vector< CtiStatistics >::iterator dirtyStatItr;
             CtiStatisticsIterator_t dstatitr;
 
             int cnt = 0;
@@ -402,7 +405,7 @@ void statisticsRecord()
                 if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " statisticsRecord() acquired exclusion object " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " statisticsRecord() acquired exclusion object " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 for(dstatitr = gDeviceStatMap.begin(); dstatitr != gDeviceStatMap.end(); dstatitr++)
@@ -422,7 +425,7 @@ void statisticsRecord()
             if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " statisticsRecord() generated table candidates. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " statisticsRecord() generated table candidates. " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             // Ok, now we stuff the dirtyStatCol out on the DB.  WITHOUT BLOCKING OPERATIONS!
             {
@@ -446,14 +449,14 @@ void statisticsRecord()
             if(cnt && getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Recorded " << cnt << " device's performance statistics." << endl;
+                dout << CtiTime() << " Recorded " << cnt << " device's performance statistics." << endl;
             }
         }
         catch(...)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

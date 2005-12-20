@@ -17,8 +17,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_nine_two.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/12 20:34:47 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:20:00 $
 *    History: 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
@@ -70,7 +70,7 @@ public:
 
    CtiAnsiTableNineTwo& operator=(const CtiAnsiTableNineTwo& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult(RWCString deviceName);
+   void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 };
 #endif // #ifndef __STD_ANSI_TBL_NINE_TWO_H__

@@ -9,7 +9,7 @@
 #define __FDRSCADAHELPER_H__
 
 #include <windows.h>
-#include <rw/cstring.h>
+
 #include <rw/tpslist.h>
 #include <map>
 
@@ -32,8 +32,8 @@ class IM_EX_FDRBASE CtiFDRScadaHelper
         CtiFDRScadaHelper(CtiFDRScadaServer* parent); 
         virtual ~CtiFDRScadaHelper();
         
-        bool handleValueUpdate(const T& id, double rawValue, int quality, RWTime timestamp) const;
-        bool handleStatusUpdate(const T& id, int value, int quality, RWTime timestamp) const;
+        bool handleValueUpdate(const T& id, double rawValue, int quality, CtiTime timestamp) const;
+        bool handleStatusUpdate(const T& id, int value, int quality, CtiTime timestamp) const;
         bool handleControl(const T& id, int controlState) const;
         void addSendMapping(const T& id, const CtiFDRDestination& destination);
         void addReceiveMapping(const T& id, const CtiFDRDestination& destination);
@@ -44,7 +44,7 @@ class IM_EX_FDRBASE CtiFDRScadaHelper
         typedef bool(*CheckStatusFunc)(CtiPointType_t);
         
         bool handleUpdate(const T& id, double value, int quality, 
-                          RWTime timestamp, CheckStatusFunc checkFunc) const;
+                          CtiTime timestamp, CheckStatusFunc checkFunc) const;
         
         typedef std::map<CtiFDRDestination, T> SendMap;
         SendMap sendMap;

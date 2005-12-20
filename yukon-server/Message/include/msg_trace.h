@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_trace.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/04/29 13:43:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@
 #include <wincon.h>         // console colors.
 
 #include <rw/collect.h>
-#include <rw/rwtime.h>
 
 #include "dlldefs.h"
 #include "message.h"       // get the base class
@@ -34,7 +33,7 @@ protected:
 
     bool _end;
     INT _attributes;        // FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED default
-    RWCString _trace;
+    string _trace;
 
 private:
 
@@ -50,11 +49,11 @@ public:
     CtiTraceMsg& operator=(const CtiTraceMsg& aRef);
 
     INT getAttributes() const;
-    RWCString getTrace() const;
-    RWCString& getTrace();
+    string getTrace() const;
+    string& getTrace();
 
     CtiTraceMsg& setAttributes(const INT& attr);
-    CtiTraceMsg& setTrace(const RWCString& str);
+    CtiTraceMsg& setTrace(const string& str);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);

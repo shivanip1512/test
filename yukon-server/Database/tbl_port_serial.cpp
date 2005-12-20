@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_serial.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 #include "tbl_port_serial.h"
 #include "logger.h"
+#include "rwutil.h"
 
 CtiTablePortLocalSerial::CtiTablePortLocalSerial()
 {}
@@ -37,10 +38,10 @@ CtiTablePortLocalSerial& CtiTablePortLocalSerial::operator=(const CtiTablePortLo
    return *this;
 }
 
-RWCString CtiTablePortLocalSerial::getPhysicalPort() const    { return _physicalPort; }
-RWCString& CtiTablePortLocalSerial::getPhysicalPort()          { return _physicalPort; }
+string CtiTablePortLocalSerial::getPhysicalPort() const    { return _physicalPort; }
+string& CtiTablePortLocalSerial::getPhysicalPort()          { return _physicalPort; }
 
-CtiTablePortLocalSerial&   CtiTablePortLocalSerial::setPhysicalPort(const RWCString& str )
+CtiTablePortLocalSerial&   CtiTablePortLocalSerial::setPhysicalPort(const string& str )
 {
    _physicalPort = str;
    return *this;

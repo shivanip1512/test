@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_711.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -250,7 +250,7 @@ void CtiProtocol711::describeSlaveResponse() const
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 void CtiProtocol711::describeMasterRequest() const
@@ -465,7 +465,7 @@ void CtiProtocol711::describeMasterRequest() const
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ACH: Command type not yet decoded **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ACH: Command type not yet decoded **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -475,7 +475,7 @@ void CtiProtocol711::describeMasterRequest() const
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     dout.fill(oldfill);
@@ -765,7 +765,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH: short format does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** ACH: short format does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else  // long format LGRPQ
@@ -776,7 +776,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** ACH: does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** ACH: does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
@@ -834,7 +834,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                     case 0x00:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             break;
                         }
                     case 0x02:
@@ -845,18 +845,18 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                     case 0x03:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     case 0x01:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     default:
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             break;
                         }
@@ -895,7 +895,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                 case 0x00:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         break;
                     }
                 case 0x02:
@@ -907,18 +907,18 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                 case 0x03:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 case 0x01:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 default:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         break;
                     }
@@ -939,7 +939,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

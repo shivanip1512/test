@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2005/06/24 20:07:59 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/20 17:17:12 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.3  2005/12/20 17:17:12  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.2  2005/06/24 20:07:59  dsutton
       New interface for KEM electric to send information to their
       power supplier Basin Electric
@@ -39,14 +42,15 @@
 #include "yukon.h"
 #include <windows.h>
 #include <wininet.h>
+
+#include <string>
 #include <fcntl.h>
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_cmd.h"
@@ -57,7 +61,9 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrbepc.h"
+#include "ctitokenizer.h"
 
+using std::string;
 
 CtiFDR_BEPC * textExportInterface;
 
@@ -73,10 +79,10 @@ const CHAR * CtiFDR_BEPC::KEY_TOTAL_LOAD_KW = "TOTAL LOAD KW";
 
 // Constructors, Destructor, and Operators
 CtiFDR_BEPC::CtiFDR_BEPC()
-: CtiFDRTextFileBase(RWCString("BEPC"))
+: CtiFDRTextFileBase(string("BEPC"))
 {  
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_SEND)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND)); 
     getSendToList().setPointList (recList);
     recList = NULL;
     init();
@@ -87,17 +93,17 @@ CtiFDR_BEPC::~CtiFDR_BEPC()
 {
 }
 
-RWCString & CtiFDR_BEPC::getCoopID()
+string & CtiFDR_BEPC::getCoopID()
 {
     return _coopid;
 }
 
-RWCString  CtiFDR_BEPC::getCoopID() const
+string  CtiFDR_BEPC::getCoopID() const
 {
     return _coopid;
 }
 
-CtiFDR_BEPC &CtiFDR_BEPC::setCoopID (RWCString aID)
+CtiFDR_BEPC &CtiFDR_BEPC::setCoopID (string aID)
 {
     _coopid = aID;
     return *this;
@@ -163,19 +169,19 @@ BOOL CtiFDR_BEPC::stop( void )
 }
 
 
-RWCString CtiFDR_BEPC::YukonToForeignTime (RWTime aTime)
+string CtiFDR_BEPC::YukonToForeignTime (CtiTime aTime)
 {
     CHAR workBuffer[50];
-    RWDate date;
-    RWCString retVal;
-    struct tm *gmTime;
-    RWTime newTime;
+    CtiDate date;
+    string retVal;
+    struct tm *gmTime = NULL;
+    CtiTime newTime;
 
     if (aTime.isValid())
     {
         // get a gmtime from our time
-        LONG longTime=aTime.seconds()-rwEpoch;
-        gmTime=gmtime(&longTime);
+        LONG longTime=aTime.seconds();
+        gmTime=CtiTime::gmtime_r(&longTime);
 
         _snprintf (workBuffer,
                        50,
@@ -186,11 +192,11 @@ RWCString CtiFDR_BEPC::YukonToForeignTime (RWTime aTime)
                    gmTime->tm_hour,
                    gmTime->tm_min);
 
-        retVal = RWCString (workBuffer);
+        retVal = string (workBuffer);
     }
     else
     {
-        retVal = RWCString ("200001010000");
+        retVal = string ("200001010000");
     }
     return retVal;
 }
@@ -210,19 +216,19 @@ CHAR CtiFDR_BEPC::YukonToForeignDST (bool aFlag)
 int CtiFDR_BEPC::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
     bool        defaultID=true;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        if (atoi (tempStr) <=1)
+        if (atoi (tempStr.c_str()) <=1)
         {
             setInterval(1);
         }
         else
         {
-            setInterval(atoi(tempStr));
+            setInterval(atoi(tempStr.c_str()));
         }
     }
     else
@@ -237,13 +243,13 @@ int CtiFDR_BEPC::readConfig( void )
     }
     else
     {
-        setDriveAndPath(RWCString ("\\yukon\\server\\Export"));
+        setDriveAndPath(string ("\\yukon\\server\\Export"));
     }
 
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -253,7 +259,7 @@ int CtiFDR_BEPC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -270,9 +276,9 @@ int CtiFDR_BEPC::readConfig( void )
     }
     else
     {
-        setCoopID(RWCString ("CTI"));
+        setCoopID(string ("CTI"));
     }
-    setFileName (RWCString(getCoopID())+RWCString("_total.txt"));
+    setFileName (string(getCoopID())+string("_total.txt"));
 
 
     // we build this to coopid_total.  If different, we can change here
@@ -286,7 +292,7 @@ int CtiFDR_BEPC::readConfig( void )
     tempStr = getCparmValueAsString(KEY_APPEND_FILE);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("true",RWCString::ignoreCase))
+        if (stringCompareIgnoreCase("true", tempStr) )
         {
             setAppendToFile(true);
         }
@@ -297,30 +303,30 @@ int CtiFDR_BEPC::readConfig( void )
         if (defaultID)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << endl << endl << "Coop ID has not been defined !!!" << endl << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
-            dout << RWTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << endl << endl << "Coop ID has not been defined !!!" << endl << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
+            dout << CtiTime() << "---------------------------------------------" << endl;
 
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " BEPC Coop ID " << getCoopID() << endl;
-            dout << RWTime() << " BEPC file name " << getFileName() << endl;
-            dout << RWTime() << " BEPC directory " << getDriveAndPath() << endl;
-            dout << RWTime() << " BEPC interval " << getInterval() << endl;
-            dout << RWTime() << " BEPC dispatch queue flush rate " << getQueueFlushRate() << endl;
-            dout << RWTime() << " BPEC db reload rate " << getReloadRate() << endl;
+            dout << CtiTime() << " BEPC Coop ID " << getCoopID() << endl;
+            dout << CtiTime() << " BEPC file name " << getFileName() << endl;
+            dout << CtiTime() << " BEPC directory " << getDriveAndPath() << endl;
+            dout << CtiTime() << " BEPC interval " << getInterval() << endl;
+            dout << CtiTime() << " BEPC dispatch queue flush rate " << getQueueFlushRate() << endl;
+            dout << CtiTime() << " BPEC db reload rate " << getReloadRate() << endl;
 
             if (shouldAppendToFile())
-                dout << RWTime() << " Export will append to existing" << endl;
+                dout << CtiTime() << " Export will append to existing" << endl;
             else
-                dout << RWTime() << " Export will overwrite existing file" << endl;
+                dout << CtiTime() << " Export will overwrite existing file" << endl;
         }
     }
 
@@ -342,9 +348,9 @@ bool CtiFDR_BEPC::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -352,7 +358,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       RWCString (FDR_INTERFACE_SEND));
+                                                       string (FDR_INTERFACE_SEND));
 
         // keep the status
         listStatus = pointList->loadPointList();
@@ -388,22 +394,22 @@ bool CtiFDR_BEPC::loadTranslationLists()
                             dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+                        CtiTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
 
-                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        if (!(tempString1 = nextTranslate(";")).empty())
                         {
-                            RWCTokenizer nextTempToken(tempString1);
+                            CtiTokenizer nextTempToken(tempString1);
 
                             // do not care about the first part
                             nextTempToken(":");
 
                             tempString2 = nextTempToken(";");
-                            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+                            tempString2 = tempString2.substr(1,(tempString2.length()-1));
 
                             // now we have a point id
-                            if ( !tempString2.isNull() )
+                            if ( !tempString2.empty() )
                             {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                                translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
                                 successful = true;
                             }
                         }   // first token invalid
@@ -430,7 +436,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -439,14 +445,14 @@ bool CtiFDR_BEPC::loadTranslationLists()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 
@@ -455,7 +461,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
         RWTHROW(e);
     }
 
@@ -463,7 +469,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
     return successful;
@@ -492,9 +498,9 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0,tries=0;
-    RWTime         timeNow;
-    RWTime         refreshTime(rwEpoch);
-    RWCString action,desc;
+    CtiTime         timeNow;
+    CtiTime         refreshTime(PASTDATE);
+    string action,desc;
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -505,25 +511,25 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDR_BEPC::threadFunctionWriteToFile " << endl;
+            dout << CtiTime() << " Initializing CtiFDR_BEPC::threadFunctionWriteToFile " << endl;
         }
 
         // first output is 15 seconds after startup
-        refreshTime = RWTime() + 15;
+        refreshTime = CtiTime() + 15;
 
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
             pSelf.sleep (1000);
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             // now is the time to write the file
             if (timeNow >= refreshTime)
             {
 //                {
 //                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                    dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
+//                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
 //                }
 
                 _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
@@ -541,7 +547,7 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                 if ( fptr == NULL )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getInterfaceName() << "'s file " << RWCString (fileName) << " could not be opened" << endl;
+                    dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
                 }
                 else
                 {
@@ -549,18 +555,18 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
                     {
                         CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                        flag = findTranslationNameInList (RWCString (KEY_TOTAL_LOAD_KW), getSendToList(), translationPoint);
+                        flag = findTranslationNameInList (string (KEY_TOTAL_LOAD_KW), getSendToList(), translationPoint);
                     }
 
                     if (flag)
                     {
                         // if data is older than 2001, it can't be valid
-                        if (translationPoint.getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                        if (translationPoint.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " PointId " << translationPoint.getPointID();
-                                dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint.getLastTimeStamp() << ") was out of range " << endl;
+                                dout << CtiTime() << " PointId " << translationPoint.getPointID();
+                                dout << " was not exported to  " << string (fileName) << " because the timestamp (" << translationPoint.getLastTimeStamp() << ") was out of range " << endl;
                             }
                         }
                         else
@@ -574,15 +580,15 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
-                                dout << " value " << (int)translationPoint.getValue() << " to file " << RWCString(fileName) << endl;
+                                dout << CtiTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
+                                dout << " value " << (int)translationPoint.getValue() << " to file " << string(fileName) << endl;
                             }
                             fprintf (fptr,workBuffer);
                         }
                     }
                     fclose(fptr);
                 }
-                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
+                refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }
@@ -597,7 +603,7 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRBEPCBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRBEPCBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }
 

@@ -8,7 +8,6 @@ using namespace std;
 #include <string.h>
 #include <stdio.h>
 
-#include <rw/cstring.h>
 
 #include "dlldefs.h"
 #include "cparms.h"

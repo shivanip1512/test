@@ -17,7 +17,6 @@
 // IM_EX_YUKONDB
 
 #include <windows.h>
-#include <rw\cstring.h>
 
 class CtiDeviceBase;
 

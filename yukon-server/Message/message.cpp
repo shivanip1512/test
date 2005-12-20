@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/22 21:52:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,21 +82,21 @@ CtiMessage& CtiMessage::setSOE( const INT & soe )
 }
 
 
-const RWCString& CtiMessage::getUser() const
+const string& CtiMessage::getUser() const
 {
    return _usr;
 }
-CtiMessage& CtiMessage::setUser(const RWCString& usr)
+CtiMessage& CtiMessage::setUser(const string& usr)
 {
    _usr  = usr;
    return *this;
 }
 
-const RWCString& CtiMessage::getPassword() const
+const string& CtiMessage::getPassword() const
 {
    return _pwd;
 }
-CtiMessage& CtiMessage::setPassword(const RWCString& pwd)
+CtiMessage& CtiMessage::setPassword(const string& pwd)
 {
    _pwd = pwd;
    return *this;
@@ -206,8 +206,8 @@ VOID CtiMessage::setMessagePriority(INT n)   { MessagePriority = n & 0x0000000f;
 INT  CtiMessage::getMessagePriority() const  { return MessagePriority;           }
 INT  CtiMessage::getSOE() const;
 
-RWTime CtiMessage::getMessageTime() const    { return MessageTime;}
-CtiMessage&  CtiMessage::setMessageTime(const RWTime &mTime)
+CtiTime CtiMessage::getMessageTime() const    { return MessageTime;}
+CtiMessage&  CtiMessage::setMessageTime(const CtiTime &mTime)
 {
    MessageTime = mTime;
    return *this;
@@ -228,12 +228,12 @@ void CtiMessage::PreInsert()
 }
 
 
-const RWCString& CtiMessage::getSource() const
+const string& CtiMessage::getSource() const
 {
     return _src;
 }
 
-CtiMessage& CtiMessage::setSource(const RWCString& src)
+CtiMessage& CtiMessage::setSource(const string& src)
 {
     _src = src;
     return *this;
@@ -244,9 +244,9 @@ bool CtiMessage::isValid()
     return true;
 }
 
-RWCString CtiMessage::typeString() const
+string CtiMessage::typeString() const
 {
-    RWCString rstr(CtiNumStr(isA()));
+    string rstr(CtiNumStr(isA()));
     /*
     #define MSG_BASE                          1500
     #define MSG_NULL                          (MSG_BASE)

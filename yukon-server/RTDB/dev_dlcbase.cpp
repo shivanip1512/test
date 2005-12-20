@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/10/26 21:39:02 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddres
 LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore )
+INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore )
 {
     CtiReturnMsg *tmpVGRetMsg = NULL;
     RWOrdered subMsgs;
@@ -139,7 +139,7 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturn
     /*
       if(ReturnMsg != NULL)
       {
-         if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+         if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
          {
             retList.append( ReturnMsg );
          }
@@ -154,7 +154,7 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturn
 
     if( retMsg != NULL)
     {
-        if(!(retMsg->ResultString().isNull()) || retMsg->PointData().entries() > 0)
+        if(!(retMsg->ResultString().empty()) || retMsg->PointData().entries() > 0)
         {
             //  if it's an update command
 
@@ -234,7 +234,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     CtiReturnMsg    *retMsg;
-    RWCString        resultString;
+    string        resultString;
 
     CtiCommandMsg   *pMsg;
 
@@ -257,7 +257,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Wrong DLC Address: \"" << getName() << "\" ";
+                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << getName() << "\" ";
                 dout << "(" << getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
@@ -269,8 +269,8 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     if(ErrReturn)
     {
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         RWCString(InMessage->Return.CommandStr),
-                                         RWCString(),
+                                         string(InMessage->Return.CommandStr),
+                                         string(),
                                          ErrReturn,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
@@ -339,7 +339,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 
             GetErrorString(ErrReturn, error_str);
 
-            resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+            resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
             retMsg->setResultString(resultString);
 
@@ -353,7 +353,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " MacroOffset specified, generating a request for the next macro. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " MacroOffset specified, generating a request for the next macro. " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             OUTMESS *NewOutMessage = CTIDBG_new OUTMESS;
@@ -392,7 +392,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
     CtiRouteSPtr Route;
 
-    RWCString resultString;
+    string resultString;
     long      routeID;
 
     CtiReturnMsg* pRet = 0;
@@ -443,8 +443,8 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             {
                 for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
                 {
-                    RWCString actn = parse.getActionItems()[offset];
-                    RWCString desc = getDescription(parse);
+                    string actn = parse.getActionItems()[offset];
+                    string desc = getDescription(parse);
 
                     vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
@@ -480,7 +480,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - error sending ARMC to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - error sending ARMC to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -513,7 +513,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - error sending ARML to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - error sending ARML to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -526,7 +526,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
              *  Form up the reply here since the ExecuteRequest funciton will consume the
              *  OutMessage.
              */
-            pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
@@ -544,7 +544,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
         {
             // Tell the porter side to complete the assembly of the message.
             pOut->Request.BuildIt = TRUE;
-            strncpy(pOut->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(pOut->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
             outList.insert( pOut );       // May porter have mercy.
             pOut = 0;
@@ -556,7 +556,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             resultString = getName() + ": ERROR: Route or Route Transmitter not available for device ";
 
             pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                           RWCString(pOut->Request.CommandStr),
+                                           string(pOut->Request.CommandStr),
                                            resultString,
                                            nRet,
                                            pOut->Request.RouteID,

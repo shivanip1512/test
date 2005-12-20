@@ -22,10 +22,11 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+#include <string.h>
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+
+using std::ostream;
+using std::string;
 
 
 #define SERVERTHREADSTACKSIZE 32768
@@ -68,17 +69,17 @@ class SYSTEMLOGMESS
 public:
     ULONG TimeStamp;
     USHORT StatusFlag;                      // bit 1 logged on logger, bit 16 DST
-    RWCString DeviceName;
-    RWCString PointName;                    // this can be a point name or route name
-    RWCString LogMessage1;                   // first log it point name is used
-    RWCString LogMessage2;                   // first log it point name is used
+    string DeviceName;
+    string PointName;                    // this can be a point name or route name
+    string LogMessage1;                   // first log it point name is used
+    string LogMessage2;                   // first log it point name is used
     USHORT EventType;                       // type of logged event
     CHAR EventLable[5];                     // event label for logging only use 3 char
     USHORT Originator;                      // who logged the event
 
     SYSTEMLOGMESS()
     {
-        memset( EventLable, '\0', sizeof(EventLable) );
+        ::memset( EventLable, '\0', sizeof(EventLable) );
     }
 };
 
@@ -125,13 +126,14 @@ int IM_EX_CTIBASE SendProcessStart (PCHAR ProcessName);
 VOID IM_EX_CTIBASE SendProcessStop (ULONG);
 IM_EX_CTIBASE int SendTextToLogger (PCHAR Source,
                                     PCHAR Message = NULL,
-                                    RWCString majorName = RWCString(""),
-                                    RWCString minorName = RWCString(""));
+                                    const string& majorName = string(""),
+                                    const string& minorName = string(""));
 
 int IM_EX_CTIBASE InitLCFunctionVar (USHORT);
 int IM_EX_CTIBASE setLCFunctionFlag (USHORT);
 int IM_EX_CTIBASE GetLCFunctionFlag (VOID);
-IM_EX_CTIBASE int  Send4PartToLogger (PCHAR Source, RWCString MajorName, RWCString MinorName, RWCString Message1 = RWCString(""), RWCString Message2 = RWCString(""));
+IM_EX_CTIBASE int  Send4PartToLogger (PCHAR Source, const string& MajorName, const string& MinorName, 
+                                      const string& Message1 = string(""), const string& Message2 = string(""));
 
 /* Prototypes from ELOGGER.C */
 VOID ServerThread (PVOID);

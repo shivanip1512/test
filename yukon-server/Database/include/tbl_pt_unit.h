@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_unit.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/30 16:32:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,10 +24,7 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
-#include <rw\rwtime.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/datetime.h>
@@ -99,7 +96,7 @@ public:
    static void          getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    void                 DecodeDatabaseReader(RWDBReader &rdr);
    void                 dump() const;
-   static RWCString     getTableName();
+   static string     getTableName();
 };
 
 #endif // #ifndef __TBL_PT_UNIT_H__

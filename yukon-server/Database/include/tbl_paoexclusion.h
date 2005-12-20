@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/10/04 19:06:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #ifndef __TBL_PAOEXCLUSION_H__
 #define __TBL_PAOEXCLUSION_H__
 
-#include <rw\cstring.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
@@ -34,9 +33,9 @@ protected:
     long        _pointId;           // This is a pointid which may figure into the exclusion question.
     double      _value;             // This is a value which may relate to the point, or to the functionid.
     long        _functionId;        // function id represents the type of exclusion that is defined by this data set.
-    RWCString   _funcName;          // a rwcstring which can represent a dynamicly loaded function (future)
+    string   _funcName;          // a string which can represent a dynamicly loaded function (future)
     long        _funcRequeue;       // This value indicates the requeue behaviour to execute if excluded.
-    RWCString   _funcParams;        // a rwcstring which can represent arguments to a function (to be parsed by that function)
+    string   _funcParams;        // a string which can represent arguments to a function (to be parsed by that function)
 
     // This is the componentry of the _funcParams, i.f.f. the function is a Time Method
     int         _cycleTime;
@@ -54,7 +53,7 @@ public:
                          long pointid = 0,
                          double value = 0.0,
                          long function = ExFunctionInvalid,
-                         RWCString str = RWCString(),
+                         string str = string(),
                          long funcrequeue = 0);
 
     CtiTablePaoExclusion(const CtiTablePaoExclusion& aRef);
@@ -79,16 +78,16 @@ public:
     long getFunctionId() const;
     CtiTablePaoExclusion& setFunctionId(long val);
 
-    RWCString getFunctionName() const;
-    CtiTablePaoExclusion& setFunctionName(RWCString val);
+    string getFunctionName() const;
+    CtiTablePaoExclusion& setFunctionName(string val);
 
     long getFunctionRequeue() const;
     CtiTablePaoExclusion& setFunctionRequeue(long val);
 
-    RWCString getFunctionParams() const;
-    CtiTablePaoExclusion& setFunctionParams(RWCString val);
+    string getFunctionParams() const;
+    CtiTablePaoExclusion& setFunctionParams(string val);
 
-    static RWCString getTableName();
+    static string getTableName();
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

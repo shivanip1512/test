@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -490,12 +490,12 @@ public:
                              INT                         ScanPriority );
 
     virtual INT ResultDecode( INMESS                    *InMessage,
-                              RWTime                    &TimeNow,
+                              CtiTime                    &TimeNow,
                               RWTPtrSlist< CtiMessage > &vgList,
                               RWTPtrSlist< CtiMessage > &retList,
                               RWTPtrSlist< OUTMESS >    &outList );
     virtual INT ErrorDecode ( INMESS                    *InMessage,
-                              RWTime                    &TimeNow,
+                              CtiTime                    &TimeNow,
                               RWTPtrSlist< CtiMessage > &vgList,
                               RWTPtrSlist< CtiMessage > &retList,
                               RWTPtrSlist<OUTMESS>      &outList );
@@ -518,12 +518,12 @@ public:
     virtual INT freeDataBins( );
 
     virtual INT decodeResultScan( INMESS                    *InMessage,
-                                  RWTime                    &TimeNow,
+                                  CtiTime                    &TimeNow,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
                                   RWTPtrSlist< OUTMESS >    &outList );
     virtual INT decodeResultLoadProfile( INMESS                    *InMessage,
-                                         RWTime                    &TimeNow,
+                                         CtiTime                    &TimeNow,
                                          RWTPtrSlist< CtiMessage > &vgList,
                                          RWTPtrSlist< CtiMessage > &retList,
                                          RWTPtrSlist< OUTMESS >    &outList );
@@ -531,10 +531,10 @@ public:
     virtual BOOL verifyAndAddPointToReturnMsg( LONG          aPointID,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,
-                                               RWTime        aTime,
+                                               CtiTime        aTime,
                                                CtiReturnMsg *aReturnMsg,
                                                USHORT        aIntervalType=0,
-                                               RWCString     aValReport=RWCString() );
+                                               string     aValReport=string() );
 
     virtual BOOL insertPointIntoReturnMsg( CtiMessage   *aDataPoint,
                                            CtiReturnMsg *aReturnMsg );
@@ -550,7 +550,7 @@ public:
 
     BOOL getMeterDataFromScanStruct( int             aOffset,
                                      DOUBLE         &aValue,
-                                     RWTime         &peak,
+                                     CtiTime         &peak,
                                      LGS4ScanData_t *aScanData);
 
 

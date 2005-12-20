@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/12 20:34:28 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.15  2005/12/20 17:19:53  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.14  2005/12/12 20:34:28  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -23,6 +26,19 @@
 
       Revision 1.13  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
+
+      Revision 1.11.2.4  2005/08/12 19:54:01  jliu
+      Date Time Replaced
+
+      Revision 1.11.2.3  2005/07/28 21:38:28  jliu
+      string done after merge 1
+
+      Revision 1.11.2.2  2005/07/27 19:28:00  alauinger
+      merged from the head 20050720
+
+
+      Revision 1.11.2.1  2005/07/14 22:27:01  jliu
+      RWCStringRemoved
 
       Revision 1.12  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
@@ -53,13 +69,13 @@
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/cstring.h>
 
 #include "guard.h"
 #include "logger.h"
 #include "configparms.h"
 #include "ansi_application.h"
 
+using namespace std;
 
 const CHAR * CtiANSIApplication::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //=========================================================================================================================================
@@ -178,7 +194,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Identify**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Identify**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -198,7 +214,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Negotiate**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Negotiate**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -214,7 +230,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Timing**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Timing**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -230,7 +246,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Log On**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Log On**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -246,7 +262,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Secure**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Secure**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -262,7 +278,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Authenticate**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Authenticate**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -282,7 +298,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
-                   dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Request Read LP Table**" << endl;
+                   dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Request Read LP Table**" << endl;
                    dout << endl;
                 }
                 _requestedState = _currentState;
@@ -319,15 +335,15 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 if( getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                   dout << RWTime::now() << " ** _ansiDeviceType == " <<(int)_ansiDeviceType<< endl;
-                   dout << RWTime::now() << " ** pktSize == " <<(int)pktSize<< endl;
+                   dout << CtiTime::now() << " ** _ansiDeviceType == " <<(int)_ansiDeviceType<< endl;
+                   dout << CtiTime::now() << " ** pktSize == " <<(int)pktSize<< endl;
                 }
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, operation, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
-                   dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Request Read**" << endl;
+                   dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Request Read**" << endl;
                    dout << endl;
                 }
                 _requestedState = _currentState;
@@ -340,7 +356,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
-                   dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Request Write**" << endl;
+                   dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Request Write**" << endl;
                    dout << endl;
                 }
                 _requestedState = _currentState;
@@ -356,7 +372,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
              {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << endl;
-                dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Request Wait**" << endl;
+                dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Request Wait**" << endl;
                 dout << endl;
              }
              _requestedState = _currentState;
@@ -371,7 +387,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Log Off**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Log Off**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -387,7 +403,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Terminate**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Terminate**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -403,7 +419,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
-              dout << RWTime::now() << "  " << getAnsiDeviceName() <<"  **Disconnect**" << endl;
+              dout << CtiTime::now() << "  " << getAnsiDeviceName() <<"  **Disconnect**" << endl;
               dout << endl;
            }
            _requestedState = _currentState;
@@ -448,10 +464,10 @@ void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigne
     if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << RWTime::now() << " ** DEBUG ****  _currentTableID  " <<(int)_currentTableID<< endl;
-        dout << RWTime::now() << " ** DEBUG ****  _currentTableOffset  " <<(int)_currentTableOffset<< endl;
-        dout << RWTime::now() << " ** DEBUG ****  _currentBytesExpected  " <<(int)_currentBytesExpected<< endl;
-        dout << RWTime::now() << " ** DEBUG ****  _initialOffset  " <<(int)_initialOffset<< endl;
+        dout << CtiTime::now() << " ** DEBUG ****  _currentTableID  " <<(int)_currentTableID<< endl;
+        dout << CtiTime::now() << " ** DEBUG ****  _currentTableOffset  " <<(int)_currentTableOffset<< endl;
+        dout << CtiTime::now() << " ** DEBUG ****  _currentBytesExpected  " <<(int)_currentBytesExpected<< endl;
+        dout << CtiTime::now() << " ** DEBUG ****  _initialOffset  " <<(int)_initialOffset<< endl;
     }
 }
 
@@ -508,8 +524,8 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                 {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout << endl;
-                  dout << RWTime::now() << " ** CRC Not Valid **" << endl;
-                  dout << RWTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
+                  dout << CtiTime::now() << " ** CRC Not Valid **" << endl;
+                  dout << CtiTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
                   dout << endl;
                }   
 
@@ -671,8 +687,8 @@ bool CtiANSIApplication::analyzePacket()
                      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                      {
                           CtiLockGuard< CtiLogger > doubt_guard( dout );
-                          dout << RWTime::now() << " ** DEBUG ****  _currentTableOffset " << _currentTableOffset<< endl;
-                          dout << RWTime::now() << " ** DEBUG ****  _totalBytesInTable " << _totalBytesInTable<< endl;
+                          dout << CtiTime::now() << " ** DEBUG ****  _currentTableOffset " << _currentTableOffset<< endl;
+                          dout << CtiTime::now() << " ** DEBUG ****  _totalBytesInTable " << _totalBytesInTable<< endl;
                      }
                      setTableComplete(false);
                      _currentState = passThrough;
@@ -738,7 +754,7 @@ bool CtiANSIApplication::analyzePacket()
     {
         {
            CtiLockGuard< CtiLogger > doubt_guard( dout );
-           dout << RWTime::now() << " " << (int)getDatalinkLayer().getCurrentPacket()[6] << " response is not ok " << endl;
+           dout << CtiTime::now() << " " << (int)getDatalinkLayer().getCurrentPacket()[6] << " response is not ok " << endl;
         }
         retFlag = false;
     }
@@ -799,7 +815,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {  
           CtiLockGuard< CtiLogger > doubt_guard( dout );
           dout << endl;
-          dout << RWTime::now() <<"The " << getAnsiDeviceName() << " responded: Service Request Rejected"<< endl;
+          dout << CtiTime::now() <<"The " << getAnsiDeviceName() << " responded: Service Request Rejected"<< endl;
           msg = err;
       }
       break;
@@ -808,7 +824,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Service Not Supported" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Service Not Supported" << endl;
 
          msg = sns;
       }
@@ -818,7 +834,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Insufficent Security Clearance" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Insufficent Security Clearance" << endl;
 
          msg = isc;
       }
@@ -828,7 +844,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Operation Not Possible" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Operation Not Possible" << endl;
 
          msg = onp;
       }
@@ -838,7 +854,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Inappropriate Action Requested" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Inappropriate Action Requested" << endl;
 
          msg = iar;
       }
@@ -848,7 +864,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Device Busy" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Device Busy" << endl;
 
          msg = bsy;
       }
@@ -858,7 +874,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Data Not Ready" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Data Not Ready" << endl;
 
          msg = dnr;
       }
@@ -868,7 +884,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Data Locked" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Data Locked" << endl;
 
          msg = dlk;
       }
@@ -878,7 +894,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Renegotiate Request" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Renegotiate Request" << endl;
 
          msg = rno;
       }
@@ -888,7 +904,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The " << getAnsiDeviceName() << " responded: Invalid Service Sequence State" << endl;
+         dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Invalid Service Sequence State" << endl;
 
          msg = isss;
       }
@@ -1189,9 +1205,9 @@ BYTE CtiANSIApplication::getFWVersionNumber()
 }
 
 
-RWCString CtiANSIApplication::getMeterTypeString()
+string CtiANSIApplication::getMeterTypeString()
 {
-    RWCString meterTypeString = "";
+    string meterTypeString = "";
 
     switch (getAnsiDeviceType())
     {
@@ -1212,7 +1228,7 @@ RWCString CtiANSIApplication::getMeterTypeString()
        }
        default:
        {
-           meterTypeString = RWCString("Unknown ANSI DeviceType");
+           meterTypeString = string("Unknown ANSI DeviceType");
            break;
        }
    }
@@ -1445,25 +1461,25 @@ bool CtiANSIApplication::getANSIDebugLevel(int mask)
     static int ansi_debuglevel;
     char *eptr;
 
-    RWCString   str;
-    if( lastaccess + 300 < time(0) )
+    string   str;
+    if( lastaccess + 300 < ::time(0) )
     {
-        if( !(str = gConfigParms.getValueAsString(ANSI_DEBUGLEVEL)).isNull() )
+        if( !(str = gConfigParms.getValueAsString(ANSI_DEBUGLEVEL)).empty() )
         {
-            ansi_debuglevel = strtoul(str.data(), &eptr, 16);
+            ansi_debuglevel = strtoul(str.c_str(), &eptr, 16);
         }
         else
             ansi_debuglevel = 0;
-        lastaccess = time(0);
+        lastaccess = ::time(0);
     }
 
     return mask & ansi_debuglevel;
 }
-const RWCString& CtiANSIApplication::getAnsiDeviceName() const
+const string& CtiANSIApplication::getAnsiDeviceName() const
 {
     return _devName;
 }
-void CtiANSIApplication::setAnsiDeviceName(const RWCString& devName)
+void CtiANSIApplication::setAnsiDeviceName(const string& devName)
 {
     _devName = devName;
     return;
@@ -1490,8 +1506,8 @@ int CtiANSIApplication::getLPByteCount()
     return _lpByteCount;
 }
 
-const RWCString CtiANSIApplication::KVmeter = "kv";
-const RWCString CtiANSIApplication::KV2meter = "kv2";
-const RWCString CtiANSIApplication::SENTINELmeter = "Sentinel";
+const string CtiANSIApplication::KVmeter = "kv";
+const string CtiANSIApplication::KV2meter = "kv2";
+const string CtiANSIApplication::SENTINELmeter = "Sentinel";
 
 

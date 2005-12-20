@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/10/08 20:40:42 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,7 @@
 
 #include <rw/tpsldict.h>
 #include <set>
-using namespace std;
+using std::set;
 
 #include <rw/tpslist.h>
 
@@ -109,7 +109,7 @@ extern IM_EX_PORTGLOB UINT          PorterPortInitQueuePurgeDelay;
 extern CtiSyncDefStruct             PorterSyncs[];
 extern IM_EX_PORTGLOB CTINEXUS      PorterListenNexus;
 
-extern IM_EX_PORTGLOB RWCString     gDelayDatFile;
+extern IM_EX_PORTGLOB string     gDelayDatFile;
 
 
 

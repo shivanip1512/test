@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/09 10:54:07 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,8 @@
 #include "tbl_dv_seriesv.h"
 #include "dllbase.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceSeriesV::CtiTableDeviceSeriesV()
 {
@@ -46,9 +48,9 @@ CtiTableDeviceSeriesV &CtiTableDeviceSeriesV::operator=( const CtiTableDeviceSer
 }
 
 
-RWCString CtiTableDeviceSeriesV::getTableName()
+string CtiTableDeviceSeriesV::getTableName()
 {
-    return RWCString("deviceseries5rtu");
+    return string("deviceseries5rtu");
 }
 
 
@@ -89,7 +91,7 @@ string CtiTableDeviceSeriesV::getStopCode() const
 
 void CtiTableDeviceSeriesV::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl       = db.table(getTableName());
+    RWDBTable devTbl       = db.table(string2RWCString(getTableName()));
 
     selector << devTbl["deviceid"] <<
                 devTbl["ticktime"] <<
@@ -111,7 +113,7 @@ void CtiTableDeviceSeriesV::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
 void CtiTableDeviceSeriesV::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString tmp;
+    string tmp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -149,7 +151,7 @@ RWDBStatus CtiTableDeviceSeriesV::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -160,7 +162,7 @@ RWDBStatus CtiTableDeviceSeriesV::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -171,7 +173,7 @@ RWDBStatus CtiTableDeviceSeriesV::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }
@@ -181,7 +183,7 @@ RWDBStatus CtiTableDeviceSeriesV::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }

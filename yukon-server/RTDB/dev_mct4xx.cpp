@@ -8,20 +8,23 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/07 22:08:36 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
+
 #include <rw\re.h>
 #undef mask_                // Stupid RogueWave re.h
 
 #include "dev_mct4xx.h"
+#include <boost/regex.hpp>
+#include "ctistring.h"
 #include "numstr.h"
+
+using namespace::std;
 
 using Cti::Protocol::Emetcon;
 
@@ -121,13 +124,18 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                 {
                     if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
                     {
-                        RWCString tempString = pReq->CommandString();
-                        RWCString replaceString = " ";
+                        string tempString = pReq->CommandString();
+                        string replaceString = " ";
                         replaceString += *tempItr; //FIX_ME Consider not keeping the old string but just creating a new, internal string.
                         replaceString += " ";
+                        
+                        CtiToLower(tempString);
 
-                        tempString.toLower();
-                        tempString.replace(" all($| )",replaceString);
+                        CtiString ts_tempString = tempString;
+                        boost::regex re (" all($| )");
+                        ts_tempString.replace( re,replaceString );
+                        tempString = ts_tempString;
+
                         tempReq->setCommandString(tempString);
 
                         tempReq->setConnectionHandle(pReq->getConnectionHandle());
@@ -138,17 +146,17 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
 
                         if( sRet != NORMAL )
                         {
-                            RWCString resultString;
+                            string resultString;
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-                                dout << RWTime( ) << "   Command: " << tempReq->CommandString( ) << endl;
+                                dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+                                dout << CtiTime( ) << "   Command: " << tempReq->CommandString( ) << endl;
                             }
 
                             resultString = "ERROR: NoMethod or invalid config. Config name:" + replaceString;
                             retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                                                    RWCString(OutMessage->Request.CommandStr),
+                                                                    string(OutMessage->Request.CommandStr),
                                                                     resultString,
                                                                     sRet,
                                                                     OutMessage->Request.RouteID,
@@ -173,7 +181,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
         }
         else
         {
-            strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+            strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
             nRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
         }
         recordMultiMessageRead(outList);
@@ -212,7 +220,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
     OutMessage->Request.RouteID   = getRouteID();
 
-    RWCString installValue = parse.getsValue("installvalue");
+    string installValue = parse.getsValue("installvalue");
 
     int nRet = NORMAL;
     if( installValue == PutConfigPart_tou )
@@ -277,12 +285,12 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
 }
 
 
-INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
           j;
     ULONG pfCount = 0;
-    RWCString resultString;
+    string resultString;
 
     CtiReturnMsg  *ReturnMsg = NULL;    
 
@@ -295,7 +303,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrS
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -309,7 +317,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrS
                     resultString = "Config data received: ";
                     for(int i = 0; i<InMessage->Buffer.DSt.Length;i++)
                     {
-                        resultString.append(CtiNumStr(InMessage->Buffer.DSt.Message[i]).hex().zpad(2),2);
+                        resultString.append( (CtiNumStr(InMessage->Buffer.DSt.Message[i]).hex().zpad(2)).toString(),0,2);
                     }
                 }
                 ReturnMsg->setUserMessageId(InMessage->Return.UserID);
@@ -364,13 +372,13 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
             if(!getOperation(Emetcon::PutConfig_VThreshold, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Operation PutConfig_VTreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_VTreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
-            if(underVThreshold == numeric_limits<long>::min())
+            if(underVThreshold == std::numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for UnderVoltageThreshold **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored for UnderVoltageThreshold **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
@@ -459,14 +467,14 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
             if(!getOperation(Emetcon::PutConfig_Addressing, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
-            if(lead == numeric_limits<long>::min() || bronze == numeric_limits<long>::min() || collection == numeric_limits<long>::min() || spid == numeric_limits<long>::min() )
+            if(lead == std::numeric_limits<long>::min() || bronze == std::numeric_limits<long>::min() || collection == std::numeric_limits<long>::min() || spid == std::numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
@@ -525,14 +533,14 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
             if(!getOperation(Emetcon::PutConfig_DST, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Operation PutConfig_DST not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_DST not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
-            if(dstBegin == numeric_limits<long>::min() || dstEnd == numeric_limits<long>::min() || timezoneOffset == numeric_limits<long>::min())
+            if(dstBegin == std::numeric_limits<long>::min() || dstEnd == std::numeric_limits<long>::min() || timezoneOffset == std::numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
@@ -608,14 +616,14 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParse
             if(!getOperation(Emetcon::PutConfig_Holiday, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
-            if(holiday1 == numeric_limits<long>::min() || holiday2 == numeric_limits<long>::min() || holiday3 == numeric_limits<long>::min() )
+            if(holiday1 == std::numeric_limits<long>::min() || holiday2 == std::numeric_limits<long>::min() || holiday3 == std::numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
@@ -689,7 +697,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             if(!getOperation(Emetcon::PutConfig_LongloadProfile, function, length, io))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_LongloadProfile not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else
@@ -697,7 +705,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                || channel4 == numeric_limits<long>::min() || ssid == numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 nRet = NOTNORMAL;
             }
             else

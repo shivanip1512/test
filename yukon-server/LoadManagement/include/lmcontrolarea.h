@@ -46,19 +46,19 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     virtual ~CtiLMControlArea();
 
     LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
+    const string& getPAOCategory() const;
+    const string& getPAOClass() const;
+    const string& getPAOName() const;
     LONG getPAOType() const;
-    const RWCString& getPAODescription() const;
+    const string& getPAODescription() const;
     BOOL getDisableFlag() const;
-    const RWCString& getDefOperationalState() const;
+    const string& getDefOperationalState() const;
     LONG getControlInterval() const;
     LONG getMinResponseTime() const;
     LONG getDefDailyStartTime() const;
     LONG getDefDailyStopTime() const;
     BOOL getRequireAllTriggersActiveFlag() const;
-    const RWDBDateTime& getNextCheckTime() const;
+    const CtiTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
     BOOL getUpdatedFlag() const;
     LONG getControlAreaStatusPointId() const;
@@ -72,13 +72,13 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     RWOrdered& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);
-    CtiLMControlArea& setPAOCategory(const RWCString& category);
-    CtiLMControlArea& setPAOClass(const RWCString& pclass);
-    CtiLMControlArea& setPAOName(const RWCString& name);
+    CtiLMControlArea& setPAOCategory(const string& category);
+    CtiLMControlArea& setPAOClass(const string& pclass);
+    CtiLMControlArea& setPAOName(const string& name);
     CtiLMControlArea& setPAOType(LONG type);
-    CtiLMControlArea& setPAODescription(const RWCString& description);
+    CtiLMControlArea& setPAODescription(const string& description);
     CtiLMControlArea& setDisableFlag(BOOL disable);
-    CtiLMControlArea& setDefOperationalState(const RWCString& opstate);
+    CtiLMControlArea& setDefOperationalState(const string& opstate);
     CtiLMControlArea& setControlInterval(LONG interval);
     CtiLMControlArea& setMinResponseTime(LONG response);
     CtiLMControlArea& setDefDailyStartTime(LONG start);
@@ -122,7 +122,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
     
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -136,9 +136,9 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea* replicate() const;
 
     // Possible def operational states
-    static const RWCString DefOpStateEnabled;
-    static const RWCString DefOpStateDisabled;
-    static const RWCString DefOpStateNone;
+    static const string DefOpStateEnabled;
+    static const string DefOpStateDisabled;
+    static const string DefOpStateNone;
 
     // Possible control area states
     static int InactiveState;
@@ -151,19 +151,19 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 private:
     
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
     LONG _paotype;
-    RWCString _paodescription;
+    string _paodescription;
     BOOL _disableflag;
-    RWCString _defoperationalstate;
+    string _defoperationalstate;
     LONG _controlinterval;
     LONG _minresponsetime;
     LONG _defdailystarttime;
     LONG _defdailystoptime;
     BOOL _requirealltriggersactiveflag;
-    RWDBDateTime _nextchecktime;
+    CtiTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
     BOOL _updatedflag;
     LONG _controlareastatuspointid;
@@ -179,6 +179,6 @@ private:
     BOOL _insertDynamicDataFlag;
 
     void restore(RWDBReader& rdr);
-    RWCString* getAutomaticallyStartedSignalString();
+    string* getAutomaticallyStartedSignalString();
 };
 #endif

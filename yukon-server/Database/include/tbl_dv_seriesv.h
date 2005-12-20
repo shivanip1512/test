@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/09 10:54:07 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,14 +17,13 @@
 #pragma warning( disable : 4786)
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
+
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -40,7 +39,7 @@ class IM_EX_CTIYUKONDB CtiTableDeviceSeriesV : public CtiMemDBObject
 protected:
 
     LONG      _device_id;
-    RWCString _start_code,
+    string _start_code,
               _stop_code;
     bool      _save_history;
     INT       _tick_time,
@@ -78,7 +77,7 @@ public:
 
     void DecodeDatabaseReader(RWDBReader &rdr);
 
-    static RWCString getTableName();
+    static string getTableName();
 
     virtual RWDBStatus Restore();
     virtual RWDBStatus Insert();

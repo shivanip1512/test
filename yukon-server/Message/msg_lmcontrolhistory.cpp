@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_lmcontrolhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,11 +90,11 @@ CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setRawState( const int rs )
     return *this;
 }
 
-const RWTime& CtiLMControlHistoryMsg::getStartDateTime() const
+const CtiTime& CtiLMControlHistoryMsg::getStartDateTime() const
 {
     return _startDateTime;
 }
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setStartDateTime(const RWTime& time)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setStartDateTime(const CtiTime& time)
 {
     _startDateTime = time;
     return *this;
@@ -122,22 +122,22 @@ CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setReductionRatio( const int red
     return *this;
 }
 
-const RWCString& CtiLMControlHistoryMsg::getControlType() const
+const string& CtiLMControlHistoryMsg::getControlType() const
 {
     return _controlType;
 }
 
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlType(const RWCString& string)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlType(const string& string)
 {
     _controlType = string;
     return *this;
 }
 
-const RWCString& CtiLMControlHistoryMsg::getActiveRestore() const
+const string& CtiLMControlHistoryMsg::getActiveRestore() const
 {
     return _activeRestore;
 }
-CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setActiveRestore(const RWCString& string)
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setActiveRestore(const string& string)
 {
     _activeRestore = string;
     return *this;
@@ -182,8 +182,8 @@ CtiMessage* CtiLMControlHistoryMsg::replicateMessage() const
 }
 
 
-CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(long paoid, long pointid, int raw, RWTime start,
-                                               int dur, int redrat,  RWCString type, RWCString restore,
+CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(long paoid, long pointid, int raw, CtiTime start,
+                                               int dur, int redrat,  string type, string restore,
                                                double reduce, int pri) :
 Inherited(pri), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime(start),
 _controlDuration(dur), _reductionRatio(redrat), _controlType(type), _activeRestore(restore),

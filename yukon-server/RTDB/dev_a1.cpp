@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.14  2005/12/20 17:20:20  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.13  2005/10/19 02:50:22  cplender
       Altered the dev_single.h inherited scanflags methods.
       They are always available.
@@ -41,7 +44,6 @@
 #include <iostream>
 #include <vector>
 
-using namespace std ;
 
 #include "porter.h"
 #include "dev_alpha.h"
@@ -64,6 +66,10 @@ using namespace std ;
 
 #include "logger.h"
 #include "guard.h"
+#include "ctidate.h"
+
+
+using namespace std ;
 
 CTI_alpha_func   A1Functions[] = {
     {  0x01, 4     ,  "Password check"},
@@ -186,7 +192,7 @@ INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     if (OutMessage != NULL)
@@ -504,12 +510,12 @@ INT CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< CtiM
                                     if (localData->Real.class14.valid)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Class 11 billing data read failed for " << getName() << " aborting scan " << endl;
+                                        dout << CtiTime() << " Class 11 billing data read failed for " << getName() << " aborting scan " << endl;
                                     }
                                     else
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Class 14 load profile configuration read failed for " << getName() << " aborting scan " << endl;
+                                        dout << CtiTime() << " Class 14 load profile configuration read failed for " << getName() << " aborting scan " << endl;
                                     }
                                 }
                             }
@@ -533,7 +539,7 @@ INT CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< CtiM
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
@@ -823,7 +829,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                                 * I need DLS
                                 ***********************
                                 */
-                                int missingIntervals =((RWTime::now().seconds() - ptr->porterLPTime) / (ptr->class14.intervalLength * 60)) + 2;
+                                int missingIntervals =((CtiTime::now().seconds() - ptr->porterLPTime) / (ptr->class14.intervalLength * 60)) + 2;
                                 ptr->bytesRequested = missingIntervals * ptr->class14.numberOfChannels * 2;
 
                                 // we get back at most 64 bytes at a time
@@ -832,7 +838,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                                 if( DebugLevel & 0x0001 )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime().asString() << endl << "--------- Alpha Load Profile Inputs ---------------" << endl;
+                                    dout << CtiTime().asString() << endl << "--------- Alpha Load Profile Inputs ---------------" << endl;
                                     dout << "Number of Channels " << ptr->class14.numberOfChannels  << " Interval " << ptr->class14.intervalLength << endl;
                                     dout << "\tChannel 1: " << (USHORT)ptr->class14.channelInput[0] << endl;
                                     dout << "\tChannel 2: " << (USHORT)ptr->class14.channelInput[1] << endl;
@@ -888,7 +894,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
+                                    dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
                                 }
                                 setTotalByteCount(0);
                                 setPreviousState (StateScanComplete);
@@ -932,7 +938,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
@@ -1024,7 +1030,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                 int ret_crc,ret_length;
 
                 CtiTraceMsg trace;
-                RWCString msg;
+                string msg;
                 CHAR traceBuffer[20];
 
                 /********************************************
@@ -1050,20 +1056,20 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     if (ret_crc)
                     {
                         trace.setBrightYellow();
-                        trace.setTrace( RWTime().asString() );
+                        trace.setTrace( CtiTime().asString().c_str() );
                         traceList.insert(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                         trace.setTrace(msg);
                         traceList.insert (trace.replicateMessage());
                     }
                     else if (ret_length)
                     {
                         trace.setBrightYellow();
-                        trace.setTrace( RWTime().asString() );
+                        trace.setTrace( CtiTime().asString().c_str() );
                         traceList.insert(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                         trace.setTrace(msg);
                         traceList.insert (trace.replicateMessage());
                     }
@@ -1086,7 +1092,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                 {
                     try
                     {
-                        memcpy(&_dataBuffer[getTotalByteCount()],
+                        ::memcpy(&_dataBuffer[getTotalByteCount()],
                                &Transfer.getInBuffer()[5],
                                (Transfer.getInCountActual()) - 7);
 
@@ -1098,7 +1104,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     catch (...)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                        dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
@@ -1133,7 +1139,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     setBytesToRetrieve((Transfer.getInBuffer()[4] & ~0x80) + 1);
 
                     // grab the header information
-                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                    ::memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
                             Transfer.getInBuffer(),
                             Transfer.getInCountActual());
 
@@ -1177,7 +1183,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                 else
                 {
                     // move the data into the working buffer
-                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                    ::memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
                             Transfer.getInBuffer(),
                             Transfer.getInCountActual());
 
@@ -1192,7 +1198,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     */
                     int ret_crc,ret_length;
                     CtiTraceMsg trace;
-                    RWCString msg;
+                    string msg;
                     CHAR traceBuffer[20];
 
                     if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
@@ -1201,20 +1207,20 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                         if (ret_crc)
                         {
                             trace.setBrightYellow();
-                            trace.setTrace( RWTime().asString() );
+                            trace.setTrace( CtiTime().asString().c_str() );
                             traceList.insert(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                             trace.setTrace(msg);
                             traceList.insert (trace.replicateMessage());
                         }
                         else if (ret_length)
                         {
                             trace.setBrightYellow();
-                            trace.setTrace( RWTime().asString() );
+                            trace.setTrace( CtiTime().asString().c_str() );
                             traceList.insert(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                             trace.setTrace(msg);
                             traceList.insert (trace.replicateMessage());
                         }
@@ -1236,7 +1242,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                     {
                         try
                         {
-                            memcpy(&_dataBuffer[getTotalByteCount()],
+                            ::memcpy(&_dataBuffer[getTotalByteCount()],
                                    &_singleMsgBuffer[5],
                                    getSingleMsgByteCount() - 7);
 
@@ -1253,7 +1259,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
                         catch (...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Error retrieving " << getName() << "'s class " << getReadClass() << endl;
+                            dout << CtiTime() << " Error retrieving " << getName() << "'s class " << getReadClass() << endl;
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1304,7 +1310,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setPreviousState (StateScanAbort);
             setCurrentState (StateScanSendTerminate);
@@ -1397,7 +1403,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
             {
                 int ret_crc,ret_length;
                 CtiTraceMsg trace;
-                RWCString msg;
+                string msg;
                 CHAR traceBuffer[20];
 
                 /********************************************
@@ -1421,20 +1427,20 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     if (ret_crc)
                     {
                         trace.setBrightYellow();
-                        trace.setTrace( RWTime().asString() );
+                        trace.setTrace( CtiTime().asString().c_str() );
                         traceList.insert(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                        msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                         trace.setTrace(msg);
                         traceList.insert (trace.replicateMessage());
                     }
                     else if (ret_length)
                     {
                         trace.setBrightYellow();
-                        trace.setTrace( RWTime().asString() );
+                        trace.setTrace( CtiTime().asString().c_str() );
                         traceList.insert(trace.replicateMessage());
                         trace.setBrightRed();
-                        msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                        msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                         trace.setTrace(msg);
                         traceList.insert (trace.replicateMessage());
                     }
@@ -1457,7 +1463,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                 {
                     try
                     {
-                        memcpy(&_lpWorkBuffer[getTotalByteCount()],
+                        ::memcpy(&_lpWorkBuffer[getTotalByteCount()],
                                &Transfer.getInBuffer()[5],
                                (Transfer.getInCountActual()) - 7);
 
@@ -1468,7 +1474,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                             ((_lpWorkBuffer[getTotalByteCount()-8] == 0xBF) && (_lpWorkBuffer[getTotalByteCount()-7] == 0xFF)))
                         {
                             // copy into the data buffer for return to scanner
-                            memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
+                            ::memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
                             ptr->dataBytesActual = getTotalByteCount();
 
                             // see if we're done
@@ -1494,7 +1500,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
                         }
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
@@ -1528,7 +1534,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     setBytesToRetrieve((Transfer.getInBuffer()[4] & ~0x80) + 1);
 
                     // grab the header information
-                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                    ::memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
                             Transfer.getInBuffer(),
                             Transfer.getInCountActual());
 
@@ -1572,7 +1578,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                 else
                 {
                     // move the data into the working buffer
-                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                    ::memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
                             Transfer.getInBuffer(),
                             Transfer.getInCountActual());
 
@@ -1587,7 +1593,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     */
                     int ret_crc,ret_length;
                     CtiTraceMsg trace;
-                    RWCString msg;
+                    string msg;
                     CHAR traceBuffer[20];
 
                     if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
@@ -1596,20 +1602,20 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                         if (ret_crc)
                         {
                             trace.setBrightYellow();
-                            trace.setTrace( RWTime().asString() );
+                            trace.setTrace( CtiTime().asString().c_str() );
                             traceList.insert(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                            msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                             trace.setTrace(msg);
                             traceList.insert (trace.replicateMessage());
                         }
                         else if (ret_length)
                         {
                             trace.setBrightYellow();
-                            trace.setTrace( RWTime().asString() );
+                            trace.setTrace( CtiTime().asString().c_str() );
                             traceList.insert(trace.replicateMessage());
                             trace.setBrightRed();
-                            msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                            msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                             trace.setTrace(msg);
                             traceList.insert (trace.replicateMessage());
                         }
@@ -1631,7 +1637,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                     {
                         try
                         {
-                            memcpy(&_lpWorkBuffer[getTotalByteCount()],
+                            ::memcpy(&_lpWorkBuffer[getTotalByteCount()],
                                    &_singleMsgBuffer[5],
                                    getSingleMsgByteCount() - 7);
 
@@ -1647,7 +1653,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                                     ((_lpWorkBuffer[getTotalByteCount()-8] == 0xBF) && (_lpWorkBuffer[getTotalByteCount()-7] == 0xFF)))
                                 {
                                     // copy into the data buffer for return to scanner
-                                    memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
+                                    ::memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
                                     ptr->dataBytesActual = getTotalByteCount();
 
                                     // see if we're done
@@ -1673,7 +1679,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                                     ((_lpWorkBuffer[getTotalByteCount()-8] == 0xBF) && (_lpWorkBuffer[getTotalByteCount()-7] == 0xFF)))
                                 {
                                     // copy into the data buffer for return to scanner
-                                    memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
+                                    ::memcpy (&ptr->loadProfileData[0], _lpWorkBuffer, getTotalByteCount());
                                     ptr->dataBytesActual = getTotalByteCount();
 
                                     // see if we're done
@@ -1695,7 +1701,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                         catch (...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1740,7 +1746,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setPreviousState (StateScanAbort);
             setCurrentState (StateScanSendTerminate);
@@ -1754,7 +1760,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
 
 INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
-                                          RWTime &TimeNow,
+                                          CtiTime &TimeNow,
                                           RWTPtrSlist< CtiMessage >   &vgList,
                                           RWTPtrSlist< CtiMessage > &retList,
                                           RWTPtrSlist< OUTMESS > &outList)
@@ -1782,8 +1788,8 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1791,7 +1797,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
     AlphaA1ScanData_t  *ptr = (AlphaA1ScanData_t *)DUPRep->Message;
-    RWTime peakTime;
+    CtiTime peakTime;
 
     // here is the class we requested
     setReadClass (InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[2]);
@@ -1931,7 +1937,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
 }
 
 INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
-                                               RWTime &TimeNow,
+                                               CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
                                                RWTPtrSlist< OUTMESS > &outList)
@@ -1955,8 +1961,8 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
     int               dataQuality = NormalQuality;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1997,11 +2003,11 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
         *  in the loadProfile buffer after the data bytes
         ************************
         */
-        RWDate lastIntervalDate((USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+4],1),
+        CtiDate lastIntervalDate((USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+4],1),
                                 (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+3],1),
                                 (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+2],1)+2000);
 
-        RWTime lastIntervalTS (lastIntervalDate,
+        CtiTime lastIntervalTS (lastIntervalDate,
                                (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+5],1),
                                (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+6],1),
                                (USHORT)BCDtoBase10(&ptr->loadProfileData[ptr->dataBytesActual+7],1));
@@ -2010,8 +2016,8 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
         * Check the validity of the time received
         **************************
         */
-        if (lastIntervalTS < (RWTime()-(2*86400)) ||
-            (lastIntervalTS > (RWTime()+(2*86400))))
+        if (lastIntervalTS < (CtiTime()-(2*86400)) ||
+            (lastIntervalTS > (CtiTime()+(2*86400))))
         {
             /***********************
             * if meter time is not within a 2 day window, its
@@ -2020,7 +2026,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
             */
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << lastIntervalTS.asString()<< endl;
+                dout << CtiTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << lastIntervalTS.asString()<< endl;
             }
         }
         else
@@ -2086,7 +2092,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Parity calculation failed " << getName() << endl;
+                                dout << CtiTime() << " Parity calculation failed " << getName() << endl;
                             }
                         }
 
@@ -2132,26 +2138,26 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Result display for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
 
 
-        sprintf(buffer,"--------- Class 0 ---------");
+        ::sprintf(buffer,"--------- Class 0 ---------");
         dout << endl << buffer << endl;
-        sprintf(buffer,"DemandDecimals= %f",ptr->Real.class0.demandDecimals);
+        ::sprintf(buffer,"DemandDecimals= %f",ptr->Real.class0.demandDecimals);
         dout << buffer << endl;
-        sprintf(buffer,"EnergyDecimals= %f",ptr->Real.class0.energyDecimals);
+        ::sprintf(buffer,"EnergyDecimals= %f",ptr->Real.class0.energyDecimals);
         dout << buffer << endl;
 
 
         // class 11
-        sprintf(buffer,"--------- Class 11 ---------");
+        ::sprintf(buffer,"--------- Class 11 ---------");
         dout << endl << buffer << endl;
 
-        sprintf(buffer,"                    KWH        KW         Cum            Date/Time");
+        ::sprintf(buffer,"                    KWH        KW         Cum            Date/Time");
         dout << buffer << endl;
-        sprintf(buffer,"Block 1          %9.3f",ptr->Real.class11.KWH1);
+        ::sprintf(buffer,"Block 1          %9.3f",ptr->Real.class11.KWH1);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH1,
                 ptr->Real.class11.AKW1,
                 ptr->Real.class11.AKWCUM1,
@@ -2161,7 +2167,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD1.Hour,
                 ptr->Real.class11.ATD1.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH1,
                 ptr->Real.class11.BKW1,
                 ptr->Real.class11.BKWCUM1,
@@ -2171,7 +2177,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD1.Hour,
                 ptr->Real.class11.BTD1.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH1,
                 ptr->Real.class11.CKW1,
                 ptr->Real.class11.CKWCUM1,
@@ -2181,7 +2187,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD1.Hour,
                 ptr->Real.class11.CTD1.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
                 ptr->Real.class11.DKWH1,
                 ptr->Real.class11.DKW1,
                 ptr->Real.class11.DKWCUM1,
@@ -2192,9 +2198,9 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.DTD1.Minute);
         dout << buffer << endl << endl;
 
-        sprintf(buffer,"Block 2          %9.3f\n",ptr->Real.class11.KWH2);
+        ::sprintf(buffer,"Block 2          %9.3f\n",ptr->Real.class11.KWH2);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH2,
                 ptr->Real.class11.AKW2,
                 ptr->Real.class11.AKWCUM2,
@@ -2204,7 +2210,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD2.Hour,
                 ptr->Real.class11.ATD2.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH2,
                 ptr->Real.class11.BKW2,
                 ptr->Real.class11.BKWCUM2,
@@ -2214,7 +2220,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD2.Hour,
                 ptr->Real.class11.BTD2.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH2,
                 ptr->Real.class11.CKW2,
                 ptr->Real.class11.CKWCUM2,
@@ -2224,7 +2230,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD2.Hour,
                 ptr->Real.class11.CTD2.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
                 ptr->Real.class11.DKWH2,
                 ptr->Real.class11.DKW2,
                 ptr->Real.class11.DKWCUM2,
@@ -2235,9 +2241,9 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.DTD2.Minute);
         dout << buffer << endl << endl;
 
-        sprintf(buffer,"Block 3          %9.3f\n",ptr->Real.class11.KWH3);
+        ::sprintf(buffer,"Block 3          %9.3f\n",ptr->Real.class11.KWH3);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH3,
                 ptr->Real.class11.AKW3,
                 ptr->Real.class11.AKWCUM3,
@@ -2247,7 +2253,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD3.Hour,
                 ptr->Real.class11.ATD3.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH3,
                 ptr->Real.class11.BKW3,
                 ptr->Real.class11.BKWCUM3,
@@ -2257,7 +2263,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD3.Hour,
                 ptr->Real.class11.BTD3.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH3,
                 ptr->Real.class11.CKW3,
                 ptr->Real.class11.CKWCUM3,
@@ -2267,7 +2273,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD3.Hour,
                 ptr->Real.class11.CTD3.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.DKWH3,
                 ptr->Real.class11.DKW3,
                 ptr->Real.class11.DKWCUM3,
@@ -2278,9 +2284,9 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.DTD3.Minute);
         dout << buffer << endl << endl;
 
-        sprintf(buffer,"Block 4          %9.3f\n",ptr->Real.class11.KWH4);
+        ::sprintf(buffer,"Block 4          %9.3f\n",ptr->Real.class11.KWH4);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH4,
                 ptr->Real.class11.AKW4,
                 ptr->Real.class11.AKWCUM4,
@@ -2290,7 +2296,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD4.Hour,
                 ptr->Real.class11.ATD4.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH4,
                 ptr->Real.class11.BKW4,
                 ptr->Real.class11.BKWCUM4,
@@ -2300,7 +2306,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD4.Hour,
                 ptr->Real.class11.BTD4.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH4,
                 ptr->Real.class11.CKW4,
                 ptr->Real.class11.CKWCUM4,
@@ -2310,7 +2316,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD4.Hour,
                 ptr->Real.class11.CTD4.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.DKWH4,
                 ptr->Real.class11.DKW4,
                 ptr->Real.class11.DKWCUM4,
@@ -2321,9 +2327,9 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.DTD4.Minute);
         dout << buffer << endl << endl;
 
-        sprintf(buffer,"Block 5          %9.3f",ptr->Real.class11.KWH5);
+        ::sprintf(buffer,"Block 5          %9.3f",ptr->Real.class11.KWH5);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH5,
                 ptr->Real.class11.AKW5,
                 ptr->Real.class11.AKWCUM5,
@@ -2333,7 +2339,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD5.Hour,
                 ptr->Real.class11.ATD5.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH5,
                 ptr->Real.class11.BKW5,
                 ptr->Real.class11.BKWCUM5,
@@ -2343,7 +2349,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD5.Hour,
                 ptr->Real.class11.BTD5.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH5,
                 ptr->Real.class11.CKW5,
                 ptr->Real.class11.CKWCUM5,
@@ -2353,7 +2359,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD5.Hour,
                 ptr->Real.class11.CTD5.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.DKWH5,
                 ptr->Real.class11.DKW5,
                 ptr->Real.class11.DKWCUM5,
@@ -2364,9 +2370,9 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.DTD5.Minute);
         dout << buffer << endl << endl;
 
-        sprintf(buffer,"Block 6          %9.3f",ptr->Real.class11.KWH6);
+        ::sprintf(buffer,"Block 6          %9.3f",ptr->Real.class11.KWH6);
         dout << buffer << endl;
-        sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.AKWH6,
                 ptr->Real.class11.AKW6,
                 ptr->Real.class11.AKWCUM6,
@@ -2376,7 +2382,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.ATD6.Hour,
                 ptr->Real.class11.ATD6.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.BKWH6,
                 ptr->Real.class11.BKW6,
                 ptr->Real.class11.BKWCUM6,
@@ -2386,7 +2392,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.BTD6.Hour,
                 ptr->Real.class11.BTD6.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.CKWH6,
                 ptr->Real.class11.CKW6,
                 ptr->Real.class11.CKWCUM6,
@@ -2396,7 +2402,7 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
                 ptr->Real.class11.CTD6.Hour,
                 ptr->Real.class11.CTD6.Minute);
         dout << buffer << endl;
-        sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
+        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
                 ptr->Real.class11.DKWH6,
                 ptr->Real.class11.DKW6,
                 ptr->Real.class11.DKWCUM6,
@@ -2408,19 +2414,19 @@ INT CtiDeviceAlphaA1::ResultDisplay(INMESS *InMessage)
         dout << buffer << endl << endl;
 
 
-        sprintf(buffer,"--------- Class 14 ---------");
+        ::sprintf(buffer,"--------- Class 14 ---------");
         dout << endl << buffer << endl;
-        sprintf(buffer,"TOU Blk 1 Config:  %d",ptr->Real.class14.touInput[0]);
+        ::sprintf(buffer,"TOU Blk 1 Config:  %d",ptr->Real.class14.touInput[0]);
         dout << buffer << endl;
-        sprintf(buffer,"TOU Blk 2 Config:  %d",ptr->Real.class14.touInput[1]);
+        ::sprintf(buffer,"TOU Blk 2 Config:  %d",ptr->Real.class14.touInput[1]);
         dout << buffer << endl;
-        sprintf(buffer,"TOU Blk 3 Config:  %d",ptr->Real.class14.touInput[2]);
+        ::sprintf(buffer,"TOU Blk 3 Config:  %d",ptr->Real.class14.touInput[2]);
         dout << buffer << endl;
-        sprintf(buffer,"TOU Blk 4 Config:  %d",ptr->Real.class14.touInput[3]);
+        ::sprintf(buffer,"TOU Blk 4 Config:  %d",ptr->Real.class14.touInput[3]);
         dout << buffer << endl;
-        sprintf(buffer,"TOU Blk 5 Config:  %d",ptr->Real.class14.touInput[4]);
+        ::sprintf(buffer,"TOU Blk 5 Config:  %d",ptr->Real.class14.touInput[4]);
         dout << buffer << endl;
-        sprintf(buffer,"TOU Blk 6 Config:  %d",ptr->Real.class14.touInput[5]);
+        ::sprintf(buffer,"TOU Blk 6 Config:  %d",ptr->Real.class14.touInput[5]);
         dout << buffer << endl;
     }
 
@@ -2794,7 +2800,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         }
     }
 
-    memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaA1ScanData_t));
+    ::memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaA1ScanData_t));
     aTotalBytes = ptr->totalByteCount;
     ptr->bDataIsReal = TRUE;
     return NORMAL;
@@ -2802,7 +2808,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
 
 INT CtiDeviceAlphaA1::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 {
-    memcpy(aInMessBuffer, _loadProfileBuffer, sizeof (AlphaA1LoadProfile_t));
+    ::memcpy(aInMessBuffer, _loadProfileBuffer, sizeof (AlphaA1LoadProfile_t));
     aTotalBytes = sizeof (AlphaA1LoadProfile_t);
     return NORMAL;
 }
@@ -3015,7 +3021,7 @@ INT CtiDeviceAlphaA1::getA1ClassOffset(UINT Key, VOID *ptr)
                 Offset = -1;
                 for (i = 0; i < sizeof(A1Classes)/sizeof(CTI_alpha_class) ; i++)
                 {
-                    if (!strcmp((char*)ptr, A1Classes[i].Description))
+                    if (!::strcmp((char*)ptr, A1Classes[i].Description))
                     {
                         Offset = i;
                         break;
@@ -3120,7 +3126,7 @@ INT CtiDeviceAlphaA1::getA1FuncOffset(UINT Key, VOID *ptr)
                 Offset = -1;
                 for (i = 0; i < sizeof(A1Functions)/sizeof(CTI_alpha_func) ; i++)
                 {
-                    if (!strcmp((char*)ptr, A1Functions[i].Description))
+                    if (!::strcmp((char*)ptr, A1Functions[i].Description))
                     {
                         Offset = i;
                         break;
@@ -3310,13 +3316,13 @@ USHORT CtiDeviceAlphaA1::getRate (int aOffset)
 
 BOOL CtiDeviceAlphaA1::getMeterDataFromScanStruct (int aOffset,
                                                    DOUBLE &aValue,
-                                                   RWTime &peak,
+                                                   CtiTime &peak,
                                                    AlphaA1ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
     // this is initial value
-    peak = rwEpoch;
+    peak = PASTDATE;
 
     /* Get the value from InMessage */
     switch (aOffset)
@@ -3404,7 +3410,7 @@ BOOL CtiDeviceAlphaA1::getRateValueFromBlock (DOUBLE &aValue,
                                               USHORT aValueType,
                                               USHORT aBlockMapping,
                                               USHORT aRate,
-                                              RWTime &aPeak,
+                                              CtiTime &aPeak,
                                               AlphaA1ScanData_t *data)
 {
     int x;
@@ -3458,12 +3464,12 @@ BOOL CtiDeviceAlphaA1::getRateValueFromBlock (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3473,7 +3479,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD1.Month > 0 &&
                     aScanData->Real.class11.ATD1.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD1.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD1.Day,
                                             aScanData->Real.class11.ATD1.Month,
                                             aScanData->Real.class11.ATD1.Year+2000),
                                     aScanData->Real.class11.ATD1.Hour,
@@ -3490,7 +3496,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD1.Month > 0 &&
                     aScanData->Real.class11.BTD1.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD1.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD1.Day,
                                             aScanData->Real.class11.BTD1.Month,
                                             aScanData->Real.class11.BTD1.Year+2000),
                                     aScanData->Real.class11.BTD1.Hour,
@@ -3507,7 +3513,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD1.Month > 0 &&
                     aScanData->Real.class11.CTD1.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD1.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD1.Day,
                                             aScanData->Real.class11.CTD1.Month,
                                             aScanData->Real.class11.CTD1.Year+2000),
                                     aScanData->Real.class11.CTD1.Hour,
@@ -3524,7 +3530,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD1.Month > 0 &&
                     aScanData->Real.class11.DTD1.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD1.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD1.Day,
                                             aScanData->Real.class11.DTD1.Month,
                                             aScanData->Real.class11.DTD1.Year+2000),
                                     aScanData->Real.class11.DTD1.Hour,
@@ -3544,12 +3550,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock1 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3559,7 +3565,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD2.Month > 0 &&
                     aScanData->Real.class11.ATD2.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD2.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD2.Day,
                                             aScanData->Real.class11.ATD2.Month,
                                             aScanData->Real.class11.ATD2.Year+2000),
                                     aScanData->Real.class11.ATD2.Hour,
@@ -3576,7 +3582,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD2.Month > 0 &&
                     aScanData->Real.class11.BTD2.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD2.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD2.Day,
                                             aScanData->Real.class11.BTD2.Month,
                                             aScanData->Real.class11.BTD2.Year+2000),
                                     aScanData->Real.class11.BTD2.Hour,
@@ -3593,7 +3599,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD2.Month > 0 &&
                     aScanData->Real.class11.CTD2.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD2.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD2.Day,
                                             aScanData->Real.class11.CTD2.Month,
                                             aScanData->Real.class11.CTD2.Year+2000),
                                     aScanData->Real.class11.CTD2.Hour,
@@ -3610,7 +3616,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD2.Month > 0 &&
                     aScanData->Real.class11.DTD2.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD2.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD2.Day,
                                             aScanData->Real.class11.DTD2.Month,
                                             aScanData->Real.class11.DTD2.Year+2000),
                                     aScanData->Real.class11.DTD2.Hour,
@@ -3631,12 +3637,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock2 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3646,7 +3652,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD3.Month > 0 &&
                     aScanData->Real.class11.ATD3.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD3.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD3.Day,
                                             aScanData->Real.class11.ATD3.Month,
                                             aScanData->Real.class11.ATD3.Year+2000),
                                     aScanData->Real.class11.ATD3.Hour,
@@ -3663,7 +3669,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD3.Month > 0 &&
                     aScanData->Real.class11.BTD3.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD3.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD3.Day,
                                             aScanData->Real.class11.BTD3.Month,
                                             aScanData->Real.class11.BTD3.Year+2000),
                                     aScanData->Real.class11.BTD3.Hour,
@@ -3680,7 +3686,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD3.Month > 0 &&
                     aScanData->Real.class11.CTD3.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD3.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD3.Day,
                                             aScanData->Real.class11.CTD3.Month,
                                             aScanData->Real.class11.CTD3.Year+2000),
                                     aScanData->Real.class11.CTD3.Hour,
@@ -3697,7 +3703,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD3.Month > 0 &&
                     aScanData->Real.class11.DTD3.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD3.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD3.Day,
                                             aScanData->Real.class11.DTD3.Month,
                                             aScanData->Real.class11.DTD3.Year+2000),
                                     aScanData->Real.class11.DTD3.Hour,
@@ -3717,12 +3723,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock3 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3732,7 +3738,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD4.Month > 0 &&
                     aScanData->Real.class11.ATD4.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD4.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD4.Day,
                                             aScanData->Real.class11.ATD4.Month,
                                             aScanData->Real.class11.ATD4.Year+2000),
                                     aScanData->Real.class11.ATD4.Hour,
@@ -3749,7 +3755,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD4.Month > 0 &&
                     aScanData->Real.class11.BTD4.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD4.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD4.Day,
                                             aScanData->Real.class11.BTD4.Month,
                                             aScanData->Real.class11.BTD4.Year+2000),
                                     aScanData->Real.class11.BTD4.Hour,
@@ -3766,7 +3772,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD4.Month > 0 &&
                     aScanData->Real.class11.CTD4.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD4.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD4.Day,
                                             aScanData->Real.class11.CTD4.Month,
                                             aScanData->Real.class11.CTD4.Year+2000),
                                     aScanData->Real.class11.CTD4.Hour,
@@ -3783,7 +3789,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD4.Month > 0 &&
                     aScanData->Real.class11.DTD4.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD4.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD4.Day,
                                             aScanData->Real.class11.DTD4.Month,
                                             aScanData->Real.class11.DTD4.Year+2000),
                                     aScanData->Real.class11.DTD4.Hour,
@@ -3803,12 +3809,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock4 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3818,7 +3824,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD5.Month > 0 &&
                     aScanData->Real.class11.ATD5.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD5.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD5.Day,
                                             aScanData->Real.class11.ATD5.Month,
                                             aScanData->Real.class11.ATD5.Year+2000),
                                     aScanData->Real.class11.ATD5.Hour,
@@ -3835,7 +3841,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD5.Month > 0 &&
                     aScanData->Real.class11.BTD5.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD5.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD5.Day,
                                             aScanData->Real.class11.BTD5.Month,
                                             aScanData->Real.class11.BTD5.Year+2000),
                                     aScanData->Real.class11.BTD5.Hour,
@@ -3852,7 +3858,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD5.Month > 0 &&
                     aScanData->Real.class11.CTD5.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD5.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD5.Day,
                                             aScanData->Real.class11.CTD5.Month,
                                             aScanData->Real.class11.CTD5.Year+2000),
                                     aScanData->Real.class11.CTD5.Hour,
@@ -3869,7 +3875,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD5.Month > 0 &&
                     aScanData->Real.class11.DTD5.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD5.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD5.Day,
                                             aScanData->Real.class11.DTD5.Month,
                                             aScanData->Real.class11.DTD5.Year+2000),
                                     aScanData->Real.class11.DTD5.Hour,
@@ -3889,12 +3895,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock5 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -3904,7 +3910,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                 if (aScanData->Real.class11.ATD6.Month > 0 &&
                     aScanData->Real.class11.ATD6.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.ATD6.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.ATD6.Day,
                                             aScanData->Real.class11.ATD6.Month,
                                             aScanData->Real.class11.ATD6.Year+2000),
                                     aScanData->Real.class11.ATD6.Hour,
@@ -3921,7 +3927,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                 if (aScanData->Real.class11.BTD6.Month > 0 &&
                     aScanData->Real.class11.BTD6.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.BTD6.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.BTD6.Day,
                                             aScanData->Real.class11.BTD6.Month,
                                             aScanData->Real.class11.BTD6.Year+2000),
                                     aScanData->Real.class11.BTD6.Hour,
@@ -3938,7 +3944,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                 if (aScanData->Real.class11.CTD6.Month > 0 &&
                     aScanData->Real.class11.CTD6.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.CTD6.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.CTD6.Day,
                                             aScanData->Real.class11.CTD6.Month,
                                             aScanData->Real.class11.CTD6.Year+2000),
                                     aScanData->Real.class11.CTD6.Hour,
@@ -3955,7 +3961,7 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
                 if (aScanData->Real.class11.DTD6.Month > 0 &&
                     aScanData->Real.class11.DTD6.Month < 13)
                 {
-                    aPeak = RWTime (RWDate (aScanData->Real.class11.DTD6.Day,
+                    aPeak = CtiTime (CtiDate (aScanData->Real.class11.DTD6.Day,
                                             aScanData->Real.class11.DTD6.Month,
                                             aScanData->Real.class11.DTD6.Year+2000),
                                     aScanData->Real.class11.DTD6.Hour,
@@ -3976,12 +3982,12 @@ BOOL CtiDeviceAlphaA1::getDemandValueFromBlock6 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock1 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -4024,12 +4030,12 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock1 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock2 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -4072,12 +4078,12 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock2 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock3 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -4120,12 +4126,12 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock3 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock4 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -4168,12 +4174,12 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock4 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock5 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {
@@ -4217,12 +4223,12 @@ BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock5 (DOUBLE &aValue,
 
 BOOL CtiDeviceAlphaA1::getEnergyValueFromBlock6 (DOUBLE &aValue,
                                                  USHORT aRate,
-                                                 RWTime &aPeak,
+                                                 CtiTime &aPeak,
                                                  AlphaA1ScanData_t *aScanData)
 {
     BOOL retCode = FALSE;
     aValue = 0.0;
-    aPeak = rwEpoch;
+    aPeak = PASTDATE;
 
     switch (aRate)
     {

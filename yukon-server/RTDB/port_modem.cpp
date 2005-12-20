@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,11 +88,11 @@ CtiHayesModem& CtiHayesModem::setPort( CtiPort *port )
 
 int CtiHayesModem::hm3(  char *s, int ctrl )  /* Tag: Modem private */
 {
-    RWCString buf(s);
+    string buf(s);
     int error_code;
 
     buf += CtiNumStr(ctrl);
-    error_code = sendString( buf );
+    error_code = sendString( buf.c_str() );
 
     if( error_code >= NORMAL )
         return( NORMAL );
@@ -176,11 +176,11 @@ int CtiHayesModem::reset(  )  /* Tag: Modem public */
 
 int CtiHayesModem::setRegister(  int num, int val )  /* Tag: Modem public */
 {
-    RWCString str("ATS");
+    string str("ATS");
     int error_code;
 
     str += CtiNumStr(num) + "=" + CtiNumStr(val);
-    error_code = sendString( str.data() );
+    error_code = sendString( str.c_str() );
 
     if( error_code >= NORMAL )
         return( NORMAL );
@@ -915,12 +915,12 @@ int  CtiHayesModem::setDialingMethod(  int ctrl )  /* Tag: Modem public */
 
 int  CtiHayesModem::dial(  char *s)  /* Tag: Modem public */
 {
-    RWCString str("ATDT");
+    string str("ATDT");
     int error_code;
 
-    str += RWCString( s );
+    str += string( s );
 
-    error_code = sendStringNoWait( str.data(), '\r' );
+    error_code = sendStringNoWait( str.c_str(), '\r' );
 
     if( error_code >= NORMAL )
         return( NORMAL );
@@ -1004,11 +1004,11 @@ int  CtiHayesModem::repeatLastCommand(  )  /* Tag: Modem public */
 
 int  CtiHayesModem::dialInAnswerMode(  char *s )  /* Tag: Modem public */
 {
-    RWCString str( "ATDT" );
+    string str( "ATDT" );
     int error_code;
 
-    str += RWCString( s ) + RWCString( "R" );
-    error_code = sendStringNoWait( str, '\r' );
+    str += string( s ) + string( "R" );
+    error_code = sendStringNoWait( str.c_str(), '\r' );
 
     if( error_code >= NORMAL )
         return( NORMAL );
@@ -1050,11 +1050,11 @@ int  CtiHayesModem::dialInAnswerMode(  char *s )  /* Tag: Modem public */
 
 int  CtiHayesModem::dialAndReturnToCommandMode(  char *s )  /* Tag: Modem public */
 {
-    RWCString str( "ATDT" );
+    string str( "ATDT" );
     int error_code;
 
-    str += RWCString( s ) + RWCString( ";" );
-    error_code = sendStringNoWait( str, '\r' );
+    str += string( s ) + string( ";" );
+    error_code = sendStringNoWait( str.c_str(), '\r' );
 
     if( error_code >= NORMAL )
         return( NORMAL );
@@ -1663,7 +1663,7 @@ int  CtiHayesModem::sendString( const char *string )  /* Tag: Modem public */
  * lots of extra time to think things over after saying OK.
  */
     current_time = -_delay_value;
-    if( _match_string.isNull() )
+    if( _match_string.empty() )
     {
         return( retvalue );
     }
@@ -1678,7 +1678,7 @@ int  CtiHayesModem::sendString( const char *string )  /* Tag: Modem public */
         {
             return( ASNOHAYESOK );
         }
-        if(_match_string.compareTo(buffer) == 0)
+        if(_match_string.compare(buffer) == 0)
         {
             retvalue = PortKillTime( _port, 500 );
             return( retvalue );
@@ -1786,7 +1786,7 @@ int  CtiHayesModem::sendStringNoWait(  const char *string, int termination_seque
 
 int  CtiHayesModem::getRegister(  int num )  /* Tag: Modem public */
 {
-    RWCString buffer( "ATS" );
+    string buffer( "ATS" );
     int status;
     unsigned char return_value;
     long time_left;
@@ -1795,8 +1795,8 @@ int  CtiHayesModem::getRegister(  int num )  /* Tag: Modem public */
     char inbuffer[40];
 
 
-    buffer += CtiNumStr( num ) + RWCString("?");
-    status = sendStringNoWait( buffer.data(), '\r' );
+    buffer += CtiNumStr( num ) + string("?");
+    status = sendStringNoWait( buffer.c_str(), '\r' );
 
     if( status < 0)
     {

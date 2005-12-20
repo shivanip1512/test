@@ -26,7 +26,6 @@
 #define __FDRXA21LM_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -240,7 +239,7 @@ typedef struct _XNULL {
 
 #pragma pack(pop, xa21lm_packing)     // Restore the prior packing alignment..
 
-class RWTime;
+class CtiTime;
 
 /*
  * CurrentControl is a utility class to help keep track of pending controls.
@@ -287,7 +286,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
-        virtual RWCString decodeClientName(CHAR *data);
+        virtual string decodeClientName(CHAR *data);
 	
         virtual int readConfig( void );
 
@@ -304,7 +303,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
 	
         ULONG       ForeignToYukonQuality (ULONG aQuality);
         ULONG       ForeignToYukonStatus (ULONG aStatus);
-        RWTime      ForeignToYukonTime (PCHAR aTime);
+        CtiTime      ForeignToYukonTime (PCHAR aTime);
 
         // end getters and setters
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
@@ -316,7 +315,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
         static const CHAR * KEY_LINK_TIMEOUT;
 
-        RWCString   YukonToForeignTime (RWTime aTimeStamp);
+        string   YukonToForeignTime (CtiTime aTimeStamp);
         ULONG         YukonToForeignQuality (ULONG aQuality);
         ULONG         YukonToForeignStatus (ULONG aStatus);
 	ULONG YukonToXA21Time(time_t time, bool is_dst, XA21TIME* xa21_time);

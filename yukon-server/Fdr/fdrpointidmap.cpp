@@ -39,7 +39,7 @@
 *
 ***************************************************
 */
-CtiFDRPointIdMap::CtiFDRPointIdMap( long pointID, RWCString & translateName, RWCString & destinationName, FDRDbReloadReason aReason)
+CtiFDRPointIdMap::CtiFDRPointIdMap( long pointID, string & translateName, string & destinationName, FDRDbReloadReason aReason)
 :   iPointID(pointID),
     iTranslateName(translateName),
     iDestinationName(destinationName),
@@ -48,7 +48,7 @@ CtiFDRPointIdMap::CtiFDRPointIdMap( long pointID, RWCString & translateName, RWC
     iMultiplier(1.0),
     iOffset(0.0),
     iPointType (InvalidPointType),
-    iLastTimeStamp(rwEpoch + (86400 * 10))
+    iLastTimeStamp(PASTDATE + (86400 * 10))
 {
 }
 
@@ -121,25 +121,25 @@ CtiFDRPointIdMap &  CtiFDRPointIdMap::setPointID(const long aPointID)
     return *this;
 }
         
-RWCString CtiFDRPointIdMap::getTranslateName() const
+string CtiFDRPointIdMap::getTranslateName() const
 {
     return iTranslateName;
 }
         
 
-CtiFDRPointIdMap &  CtiFDRPointIdMap::setTranslateName(const RWCString & aName)
+CtiFDRPointIdMap &  CtiFDRPointIdMap::setTranslateName(const string & aName)
 {                                   
     iTranslateName = aName;
     return *this;
 }
 
-RWCString CtiFDRPointIdMap::getDestinationName() const
+string CtiFDRPointIdMap::getDestinationName() const
 {
     return iDestinationName;
 }
         
 
-CtiFDRPointIdMap &  CtiFDRPointIdMap::setDestinationName(const RWCString & aName)
+CtiFDRPointIdMap &  CtiFDRPointIdMap::setDestinationName(const string & aName)
 {                                   
     iDestinationName = aName;
     return *this;
@@ -170,13 +170,13 @@ CtiFDRPointIdMap &  CtiFDRPointIdMap::setOffset( const double aOffset )
     return *this;
 }
 
-RWTime CtiFDRPointIdMap::getLastTimeStamp ( void ) const
+CtiTime CtiFDRPointIdMap::getLastTimeStamp ( void ) const
 {
     return iLastTimeStamp;
 }
         
 
-CtiFDRPointIdMap &  CtiFDRPointIdMap::setLastTimeStamp( const RWTime & aTimeStamp )
+CtiFDRPointIdMap &  CtiFDRPointIdMap::setLastTimeStamp( const CtiTime & aTimeStamp )
 {
     iLastTimeStamp = aTimeStamp;
     return *this;

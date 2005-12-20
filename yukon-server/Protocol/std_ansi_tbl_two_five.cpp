@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_five.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
       $Log: std_ansi_tbl_two_five.cpp,v $
+      Revision 1.4  2005/12/20 17:19:57  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.3  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -79,7 +82,7 @@ CtiAnsiTableTwoFive& CtiAnsiTableTwoFive::operator=(const CtiAnsiTableTwoFive& a
    }
    return *this;
 }
-void CtiAnsiTableTwoFive::printResult(RWCString deviceName)
+void CtiAnsiTableTwoFive::printResult( const string& deviceName)
 {
 
     /**************************************************************
@@ -97,7 +100,7 @@ void CtiAnsiTableTwoFive::printResult(RWCString deviceName)
     if (_dateTimeFieldFlag)
     {                     
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "**End Date Time:  "<< RWTime(_endDateTime).asString()<<endl;
+        dout << "**End Date Time:  "<< CtiTime(_endDateTime).asString()<<endl;
     }
     if (_seasonInfoFieldFlag)
     {                     

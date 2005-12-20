@@ -8,7 +8,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ INT CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT
     LastDeviceId = 0L;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << " Dialable cannot be dialin" << endl;
     }
     return status;
@@ -50,7 +50,7 @@ INT CtiPortDialin::close(INT trace)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return status;
 }
@@ -61,13 +61,13 @@ INT CtiPortDialin::reset(INT trace)
 
     try
     {
-        setDialedUpNumber(RWCString());
+        setDialedUpNumber(string());
         if(_superPort) status = modemReset(_superPort->getPortID(), trace);
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return status;
 }
@@ -80,7 +80,7 @@ INT CtiPortDialin::setup(INT trace)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Cannot initialize Dialin Comm channel.  Port specification incomplete." << endl;
+                dout << CtiTime() << " Cannot initialize Dialin Comm channel.  Port specification incomplete." << endl;
             }
             Sleep(2500);
         }
@@ -89,13 +89,13 @@ INT CtiPortDialin::setup(INT trace)
         _modem.setPort(_superPort);
         _modem.waitForOK( 500, "OK" );
         _modem.reset();
-        _modem.sendString(getTablePortDialup().getModemInitString().data());
+        _modem.sendString(getTablePortDialup().getModemInitString().c_str());
         _modem.setAutoAnswerRingCount(1);
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return NORMAL;
@@ -108,7 +108,7 @@ CtiPortDialin& CtiPortDialin::operator=(const CtiPortDialin& aRef)
         _tblPortDialup = aRef.getTablePortDialup();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -127,7 +127,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return BADPORT;
@@ -148,7 +148,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         if(!(++tCount % 300))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "  Port " << _superPort->getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
+            dout << CtiTime() << "  Port " << _superPort->getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
         }
 
         _superPort->lowerDTR();
@@ -173,7 +173,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << _superPort->getName() << " No Modem CTS..." << endl;
+                    dout << CtiTime() << " Port " << _superPort->getName() << " No Modem CTS..." << endl;
                 }
             }
 
@@ -199,7 +199,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
             if(Trace)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+                dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
             }
         }
 
@@ -209,7 +209,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  AT" << endl;
+            dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  AT" << endl;
         }
 
         /* Wait for a response or till we time out */
@@ -221,7 +221,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
             if(Trace)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  +++" << endl;
+                dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  +++" << endl;
             }
 
             ResponseSize = sizeof (Response);
@@ -232,7 +232,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
                 if(Trace)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
+                    dout << CtiTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
                 }
 
                 _superPort->writePort("\r", 1, 1, &BytesWritten);    // Get rid of the trash that didn't give a good return.
@@ -241,17 +241,17 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         else if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+            dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
         }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
+            dout << CtiTime() << " " << _superPort->getName() << " modem reset" << endl;
         }
         if(gLogPorts)
         {
             CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-            _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem reset" << endl;
+            _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem reset" << endl;
         }
 
         /* Make sure that we got OK */
@@ -284,7 +284,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
 
         size_t initlen = getTablePortDialup().getModemInitString().length();
 
-        if(_superPort->writePort((PVOID)(getTablePortDialup().getModemInitString().data()),
+        if(_superPort->writePort((PVOID)(getTablePortDialup().getModemInitString().c_str()),
                                  initlen,
                                  1, &BytesWritten) || BytesWritten != initlen)
         {
@@ -297,7 +297,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
         if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << getTablePortDialup().getModemInitString() << endl;
+            dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << getTablePortDialup().getModemInitString() << endl;
         }
 
         ResponseSize = sizeof (Response);
@@ -308,7 +308,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
             if(Trace)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             continue;
         }
@@ -316,7 +316,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
         if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << endl;
+            dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << endl;
         }
 
         /* Make sure that we got OK */
@@ -328,7 +328,7 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  The modem init string \"" << getTablePortDialup().getModemInitString() << "\" was rejected." << endl;
             }
             return(DIALUPERROR);
@@ -337,13 +337,13 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
+        dout << CtiTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
     }
 
     if(gLogPorts)
     {
         CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << RWTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
+        _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
     }
 
     if(j >= 5)

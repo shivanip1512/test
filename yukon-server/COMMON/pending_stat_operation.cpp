@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,9 +23,9 @@
 CtiPendingStatOperation::CtiPendingStatOperation(ULONG ser, UINT op) :
         _serial(ser),
         _operation(op),
-        _expires(RWTime() + 300L),      // 5 minutes
-        _responded(RWTime(86400)),      // Dawn of time or so
-        _confirmed(RWTime(86400)),      // Dawn of time or so
+        _expires(CtiTime() + 300L),      // 5 minutes
+        _responded(CtiTime(86400)),      // Dawn of time or so
+        _confirmed(CtiTime(86400)),      // Dawn of time or so
         _match(false),                  // No match.
         _reportType(NoReport),
         _outMessage(0)
@@ -127,41 +127,41 @@ CtiPendingStatOperation& CtiPendingStatOperation::setOperation(UINT ui)
     return *this;
 }
 
-RWTime CtiPendingStatOperation::getTimeSubmitted() const
+const CtiTime& CtiPendingStatOperation::getTimeSubmitted() const
 {
     return _submitted;
 }
-CtiPendingStatOperation& CtiPendingStatOperation::setTimeSubmitted(const RWTime &rwt)
+CtiPendingStatOperation& CtiPendingStatOperation::setTimeSubmitted(const CtiTime &rwt)
 {
     _submitted = rwt;
     return *this;
 }
 
-RWTime CtiPendingStatOperation::getTimeExpires() const
+const CtiTime& CtiPendingStatOperation::getTimeExpires() const
 {
     return _expires;
 }
-CtiPendingStatOperation& CtiPendingStatOperation::setTimeExpires(const RWTime &rwt)
+CtiPendingStatOperation& CtiPendingStatOperation::setTimeExpires(const CtiTime &rwt)
 {
     _expires = rwt;
     return *this;
 }
 
-RWTime CtiPendingStatOperation::getTimeResponded() const
+const CtiTime& CtiPendingStatOperation::getTimeResponded() const
 {
     return _responded;
 }
-CtiPendingStatOperation& CtiPendingStatOperation::setTimeResponded(const RWTime &rwt)
+CtiPendingStatOperation& CtiPendingStatOperation::setTimeResponded(const CtiTime &rwt)
 {
     _responded = rwt;
     return *this;
 }
 
-RWTime CtiPendingStatOperation::getTimeConfirmed() const
+const CtiTime& CtiPendingStatOperation::getTimeConfirmed() const
 {
     return _confirmed;
 }
-CtiPendingStatOperation& CtiPendingStatOperation::setTimeConfirmed(const RWTime &rwt)
+CtiPendingStatOperation& CtiPendingStatOperation::setTimeConfirmed(const CtiTime &rwt)
 {
     _confirmed = rwt;
     return *this;
@@ -205,7 +205,7 @@ CtiPendingStatOperation::PGRReplyVector_t CtiPendingStatOperation::getConstReply
     return _replyVector;
 }
 
-void CtiPendingStatOperation::addReplyVector(RWCString &str)
+void CtiPendingStatOperation::addReplyVector(const string &str)
 {
     _replyVector.push_back(str);
     return;

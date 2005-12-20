@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/08/04 18:16:19 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,8 +51,8 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
     {
         for( size_t offset = 0; offset < parse.getActionItems().entries(); offset++)
         {
-            RWCString actn = parse.getActionItems()[offset];
-            RWCString desc = getDescription(parse);
+            string actn = parse.getActionItems()[offset];
+            string desc = getDescription(parse);
 
             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
         }
@@ -63,7 +63,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         OutMessage->TargetID = parse.getiValue("serial");
         OutMessage->MessageFlags |= MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD;   // Take the shortcut!
 
-        retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), "Gateway Request Submitted.  Results are async.",  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+        retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), "Gateway Request Submitted.  Results are async.",  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
 
         outList.insert( OutMessage );
         OutMessage = 0;
@@ -89,17 +89,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                         if( INT_MIN == xcserial )
                         {
-                            RWCString   problem;
+                            string   problem;
 
                             if( INT_MIN == xcserial )
                             {
-                                problem = RWCString("Invalid Request: Serial number not specified");
+                                problem = string("Invalid Request: Serial number not specified");
                             }
 
                             status = CtiInvalidRequest;
 
                             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                         }
 
                         OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -119,7 +119,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
                         }
                         break;
                     }
@@ -143,21 +143,21 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                           )
                           )
                         {
-                            RWCString   problem;
+                            string   problem;
 
                             if( INT_MIN == OutMessage->Buffer.VSt.Address )
                             {
-                                problem = RWCString("Invalid Request: Serial number not specified");
+                                problem = string("Invalid Request: Serial number not specified");
                             }
                             else
                             {
-                                problem = RWCString("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
+                                problem = string("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
                             }
 
                             status = CtiInvalidRequest;
 
                             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                         }
 
                         /*
@@ -179,21 +179,21 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                         if( INT_MIN == xcserial )
                         {
-                            RWCString   problem;
+                            string   problem;
 
                             if( INT_MIN == xcserial )
                             {
-                                problem = RWCString("Invalid Request: Serial number not specified");
+                                problem = string("Invalid Request: Serial number not specified");
                             }
                             else
                             {
-                                problem = RWCString("Invalid Request: (Load 1,2,3...) not specified");
+                                problem = string("Invalid Request: (Load 1,2,3...) not specified");
                             }
 
                             status = CtiInvalidRequest;
 
                             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                         }
 
                         OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -212,7 +212,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Control type " << iTemp << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Control type " << iTemp << endl;
                         }
                         break;
                     }
@@ -226,13 +226,13 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 case ProtocolVersacomType:
                     {
                         BOOL        error = TRUE;
-                        RWCString   problem(parse.getCommandStr() + ": " + FormatError(CtiInvalidRequest));
+                        string   problem(parse.getCommandStr() + ": " + FormatError(CtiInvalidRequest));
 
                         memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
 
                         if(INT_MIN == (OutMessage->Buffer.VSt.Address = parse.getiValue("serial")))
                         {
-                            problem = RWCString("Invalid Request: Serial number not specified");
+                            problem = string("Invalid Request: Serial number not specified");
                         }
                         if(INT_MIN != parse.getiValue("proptest"))
                         {
@@ -248,7 +248,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         {
                             status = CtiInvalidRequest;
                             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                         }
 
                         /*
@@ -267,17 +267,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                         if( INT_MIN == xcserial )
                         {
-                            RWCString   problem;
+                            string   problem;
 
                             if( INT_MIN == xcserial )
                             {
-                                problem = RWCString("Invalid Request: Serial number not specified");
+                                problem = string("Invalid Request: Serial number not specified");
                             }
 
                             status = CtiInvalidRequest;
 
                             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                         }
 
                         OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -292,7 +292,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
                         }
                         break;
                     }
@@ -308,7 +308,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             {
                 status = NoExecuteRequestMethod;
 
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("System Devices do not support this command (yet?)"), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("System Devices do not support this command (yet?)"), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
                 break;
             }
         }
@@ -331,7 +331,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
                         }
                         delete NewOMess;
@@ -343,7 +343,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     status = MEMORY;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -352,8 +352,8 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             {
                 status = BADROUTE;
                 retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                 RWCString(OutMessage->Request.CommandStr),
-                                                 RWCString("Bad route specified for execution on the \"system\" device"),
+                                                 string(OutMessage->Request.CommandStr),
+                                                 string("Bad route specified for execution on the \"system\" device"),
                                                  status,
                                                  OutMessage->Request.RouteID,
                                                  OutMessage->Request.MacroOffset,
@@ -380,7 +380,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                                pReq->getUser()));
 
                 retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                 RWCString(OutMessage->Request.CommandStr),
+                                                 string(OutMessage->Request.CommandStr),
                                                  "System has no default routes",
                                                  status,
                                                  OutMessage->Request.RouteID,
@@ -427,7 +427,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                         status = MEMORY;
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         }
                                     }
 
@@ -436,7 +436,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                             dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
                                         }
                                         delete NewOMess;
@@ -457,7 +457,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -474,9 +474,9 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
     return status;
 }
 
-RWCString CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
+string CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
 {
-    RWCString resultString;
+    string resultString;
     INT   ser;
     INT   relays;
     INT   mask = 1;
@@ -485,7 +485,7 @@ RWCString CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
     {
         if(INT_MIN != (relays = parse.getiValue("relaymask")))
         {
-            resultString =  "Serial: " + CtiNumStr(ser).spad(10) + " Relay:";
+            resultString =  "Serial: " + CtiNumStr(ser).spad(10) + string(" Relay:");
 
             for(int i = 0; i < 32; i++)
             {

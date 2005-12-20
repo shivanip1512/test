@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_resolvers.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/11/03 17:57:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ enum CtiConfig_type
     ConfigTypeMax
 };
 
-IM_EX_CONFIG CtiConfig_type resolveConfigType(RWCString rwsTemp);
+IM_EX_CONFIG CtiConfig_type resolveConfigType(string rwsTemp);
 
 }//Config
 }//Cti

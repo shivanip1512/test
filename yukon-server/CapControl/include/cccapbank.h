@@ -24,6 +24,9 @@
 
 #include "dbaccess.h"
 #include "observe.h"
+#include "ctitime.h"
+#include "ctidate.h"
+
 
 typedef enum
 {
@@ -57,11 +60,11 @@ public:
     virtual ~CtiCCCapBank();
 
     LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    const RWCString& getPAOType() const;
-    const RWCString& getPAODescription() const;
+    const string& getPAOCategory() const;
+    const string& getPAOClass() const;
+    const string& getPAOName() const;
+    const string& getPAOType() const;
+    const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
     BOOL getAlarmInhibitFlag() const;
@@ -69,22 +72,22 @@ public:
     LONG getMaxDailyOps() const;
     LONG getCurrentDailyOperations() const;
     BOOL getMaxOpsDisableFlag() const;
-    const RWCString& getOperationalState() const;
-    const RWCString& getControllerType() const;
+    const string& getOperationalState() const;
+    const string& getControllerType() const;
     LONG getControlDeviceId() const;
     LONG getControlPointId() const;
-    const RWCString& getControlDeviceType() const;
+    const string& getControlDeviceType() const;
     LONG getBankSize() const;
-    const RWCString& getTypeOfSwitch() const;
-    const RWCString& getSwitchManufacture() const;
-    const RWCString& getMapLocationId() const;
+    const string& getTypeOfSwitch() const;
+    const string& getSwitchManufacture() const;
+    const string& getMapLocationId() const;
     LONG getRecloseDelay() const;
     LONG getControlOrder() const;
     LONG getStatusPointId() const;
     LONG getControlStatus() const;
     LONG getOperationAnalogPointId() const;
     LONG getTotalOperations() const;
-    const RWDBDateTime& getLastStatusChangeTime() const;
+    const CtiTime& getLastStatusChangeTime() const;
     LONG getTagsControlStatus() const;
     LONG getOriginalFeederId() const;
     LONG getOriginalSwitchingOrder() const;
@@ -98,14 +101,14 @@ public:
     CCBANKVSTATE getVerificationState() const;
     int getAssumedOrigVerificationState() const;
 
-    list <LONG>* getPointIds() {return &_pointIds;};
+    std::list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCCapBank& setPAOId(LONG id);
-    CtiCCCapBank& setPAOCategory(const RWCString& category);
-    CtiCCCapBank& setPAOClass(const RWCString& pclass);
-    CtiCCCapBank& setPAOName(const RWCString& name);
-    CtiCCCapBank& setPAOType(const RWCString& type);
-    CtiCCCapBank& setPAODescription(const RWCString& description);
+    CtiCCCapBank& setPAOCategory(const string& category);
+    CtiCCCapBank& setPAOClass(const string& pclass);
+    CtiCCCapBank& setPAOName(const string& name);
+    CtiCCCapBank& setPAOType(const string& type);
+    CtiCCCapBank& setPAODescription(const string& description);
     CtiCCCapBank& setDisableFlag(BOOL disable);
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
@@ -113,23 +116,23 @@ public:
     CtiCCCapBank& setMaxDailyOperation(LONG maxdailyops);
     CtiCCCapBank& setCurrentDailyOperations(LONG operations);
     CtiCCCapBank& setMaxOpsDisableFlag(BOOL maxopsdisable);
-    CtiCCCapBank& setDeviceClass(const RWCString& deviceclass);
-    CtiCCCapBank& setOperationalState(const RWCString& operational);
-    CtiCCCapBank& setControllerType(const RWCString& controllertype);
+    CtiCCCapBank& setDeviceClass(const string& deviceclass);
+    CtiCCCapBank& setOperationalState(const string& operational);
+    CtiCCCapBank& setControllerType(const string& controllertype);
     CtiCCCapBank& setControlDeviceId(LONG controldevice);
     CtiCCCapBank& setControlPointId(LONG controlpoint);
-    CtiCCCapBank& setControlDeviceType(const RWCString& controlDeviceType);
+    CtiCCCapBank& setControlDeviceType(const string& controlDeviceType);
     CtiCCCapBank& setBankSize(LONG size);
-    CtiCCCapBank& setTypeOfSwitch(const RWCString& switchtype);
-    CtiCCCapBank& setSwitchManufacture(const RWCString& manufacture);
-    CtiCCCapBank& setMapLocationId(const RWCString& maplocation);
+    CtiCCCapBank& setTypeOfSwitch(const string& switchtype);
+    CtiCCCapBank& setSwitchManufacture(const string& manufacture);
+    CtiCCCapBank& setMapLocationId(const string& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(LONG order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
     CtiCCCapBank& setControlStatus(LONG status);
     CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
     CtiCCCapBank& setTotalOperations(LONG operations);
-    CtiCCCapBank& setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime);
+    CtiCCCapBank& setLastStatusChangeTime(const CtiTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
     CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
     CtiCCCapBank& setOriginalSwitchingOrder(LONG origorder);
@@ -154,7 +157,7 @@ public:
 
     BOOL isDirty() const;
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     void setDynamicData(RWDBReader& rdr);
 
@@ -170,10 +173,10 @@ public:
     /* Static Members */
 
     //Possible operational states
-    static const RWCString SwitchedOperationalState;
-    static const RWCString FixedOperationalState;
-    static const RWCString UninstalledState;
-    static const RWCString StandAloneState;
+    static const string SwitchedOperationalState;
+    static const string FixedOperationalState;
+    static const string UninstalledState;
+    static const string StandAloneState;
     
     //Possible states
     static int Open;
@@ -189,11 +192,11 @@ public:
 private:
 
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
-    RWCString _paotype;
-    RWCString _paodescription;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
+    string _paotype;
+    string _paodescription;
     BOOL _disableflag;
     LONG _parentId; //feederId
     BOOL _alarminhibitflag;
@@ -201,29 +204,29 @@ private:
     LONG _maxdailyops;
     LONG _currentdailyoperations;
     BOOL _maxopsdisableflag;
-    RWCString _operationalstate;
-    RWCString _controllertype;
+    string _operationalstate;
+    string _controllertype;
     LONG _controldeviceid;
     LONG _controlpointid;
-    RWCString _controlDeviceType;
+    string _controlDeviceType;
     LONG _banksize;
-    RWCString _typeofswitch;
-    RWCString _switchmanufacture;
-    RWCString _maplocationid;
+    string _typeofswitch;
+    string _switchmanufacture;
+    string _maplocationid;
     LONG _reclosedelay;
     LONG _controlorder;
     LONG _statuspointid;
     LONG _controlstatus;
     LONG _operationanalogpointid;
     LONG _totaloperations;
-    RWDBDateTime _laststatuschangetime;
+    CtiTime _laststatuschangetime;
     LONG _tagscontrolstatus;
     LONG _originalfeederid;
     LONG _originalswitchingorder;
 
 
     //verification info
-    RWCString _additionalFlags;
+    string _additionalFlags;
 
 
     LONG _verificationControlStatus;
@@ -251,7 +254,7 @@ private:
     void restoreCapBankTableValues(RWDBReader& rdr);
     CtiCCCapBank();
 
-    list <LONG> _pointIds;
+    std::list <LONG> _pointIds;
 };
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;

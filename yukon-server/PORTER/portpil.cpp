@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,6 @@
    -------------------------------------------------------------------- */
 #include <windows.h>
 #include <iostream>
-using namespace std;
 
 #include "mgr_device.h"
 #include "mgr_route.h"
@@ -53,6 +52,8 @@ using namespace std;
 
 #include "logger.h"
 #include "guard.h"
+
+using namespace std;
 
 // Some Global Manager types to allow us some RTDB stuff.
 extern CtiDeviceManager   DeviceManager;
@@ -67,7 +68,7 @@ VOID PorterInterfaceThread (VOID *Arg)
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " PorterInterfaceThread started as TID  " << CurrentTID() << endl;
+      dout << CtiTime() << " PorterInterfaceThread started as TID  " << CurrentTID() << endl;
    }
 
    try
@@ -81,7 +82,7 @@ VOID PorterInterfaceThread (VOID *Arg)
          {
              {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                 dout << RWTime() << " Porter Interface Thread active. TID:  " << rwThreadId() << endl;
+                 dout << CtiTime() << " Porter Interface Thread active. TID:  " << rwThreadId() << endl;
              }
        
              CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter Interface Thread", CtiThreadRegData::None, 400 );

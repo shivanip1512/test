@@ -10,8 +10,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_ngroup.cpp-arc  $
- * REVISION     :  $Revision: 1.7 $
- * DATE         :  $Date: 2005/10/20 21:41:27 $
+ * REVISION     :  $Revision: 1.8 $
+ * DATE         :  $Date: 2005/12/20 17:16:05 $
  *
  * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -20,12 +20,14 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
+
 
 #include "dbaccess.h"
 #include "tbl_alm_ngroup.h"
 #include "logger.h"
+#include "rwutil.h"
+
+using namespace std;
 
 bool CtiTableNotificationGroup::operator<( const CtiTableNotificationGroup &rhs ) const
 {
@@ -45,7 +47,7 @@ LONG CtiTableNotificationGroup::getGroupID() const
 
     return _notificationGroupID;
 }
-RWCString CtiTableNotificationGroup::getGroupName() const
+string CtiTableNotificationGroup::getGroupName() const
 {
 
     return _groupName;
@@ -63,7 +65,7 @@ CtiTableNotificationGroup& CtiTableNotificationGroup::setGroupID( const LONG &aR
     _notificationGroupID = aRef;
     return *this;
 }
-CtiTableNotificationGroup& CtiTableNotificationGroup::setGroupName( const RWCString &aStr )
+CtiTableNotificationGroup& CtiTableNotificationGroup::setGroupName( const string &aStr )
 {
 
     _groupName = aStr;
@@ -77,9 +79,9 @@ CtiTableNotificationGroup& CtiTableNotificationGroup::setDisabled( const BOOL b 
     return *this;
 }
 
-RWCString CtiTableNotificationGroup::getTableName()
+string CtiTableNotificationGroup::getTableName()
 {
-    return RWCString("NotificationGroup");
+    return string("NotificationGroup");
 }
 
 RWDBStatus CtiTableNotificationGroup::Insert()
@@ -87,13 +89,13 @@ RWDBStatus CtiTableNotificationGroup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
         getGroupID() <<
         getGroupName() <<
-        RWCString( ( isDisabled() ? 'Y': 'N' ) );
+        string( ( isDisabled() ? "Y": "N" ) );
 
     ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
@@ -105,13 +107,13 @@ RWDBStatus CtiTableNotificationGroup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["notificationgroupid"] == getGroupID() );
 
     updater <<
-        table["groupname"].assign( getGroupName() ) <<
+        table["groupname"].assign( getGroupName().c_str() ) <<
         table["disableflag"].assign( isDisabled() );
 
     ExecuteUpdater(conn,updater,__FILE__,__LINE__);
@@ -127,7 +129,7 @@ RWDBStatus CtiTableNotificationGroup::Restore()
     RWDBStatus dbstat;
 
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -155,7 +157,7 @@ RWDBStatus CtiTableNotificationGroup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["notificationgroupid"] == getGroupID() );
@@ -165,7 +167,7 @@ RWDBStatus CtiTableNotificationGroup::Delete()
 
 void CtiTableNotificationGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName().c_str() );
 
     selector <<
         keyTable["notificationgroupid"] <<
@@ -177,7 +179,7 @@ void CtiTableNotificationGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, R
 
 void CtiTableNotificationGroup::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString temp;
+    string temp;
 
 {
 
@@ -186,8 +188,8 @@ void CtiTableNotificationGroup::DecodeDatabaseReader(RWDBReader& rdr)
     rdr["disableflag"]         >> temp;
 }
 
-temp.toLower();
-setDisabled( (temp((size_t)0) == 'y') ? TRUE : FALSE );
+std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+setDisabled( (temp[0] == 'y') ? TRUE : FALSE );
 
 setDirty(false);  // Not dirty anymore
 

@@ -3,9 +3,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw\cstring.h>
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
@@ -20,6 +18,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dlldefs.h"
 #include "dlldev.h"
 
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 DLLIMPORT extern RWMutexLock coutMux;
 

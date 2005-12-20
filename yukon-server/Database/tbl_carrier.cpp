@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_carrier.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,14 +54,14 @@ CtiTableDeviceCarrier& CtiTableDeviceCarrier::setAddress( const INT aAddress )
     return *this;
 }
 
-RWCString CtiTableDeviceCarrier::getTableName()
+string CtiTableDeviceCarrier::getTableName()
 {
     return "DeviceCarrierSettings";
 }
 
 void CtiTableDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table( getTableName() );
+    RWDBTable devTbl = db.table( getTableName().c_str() );
 
     selector << devTbl["address"];
 
@@ -74,7 +74,7 @@ void CtiTableDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
     RWDBNullIndicator isNull;
-    RWCString   rwsTemp;
+    string   rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -107,7 +107,7 @@ RWDBStatus CtiTableDeviceCarrier::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -137,7 +137,7 @@ RWDBStatus CtiTableDeviceCarrier::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -161,7 +161,7 @@ RWDBStatus CtiTableDeviceCarrier::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -183,7 +183,7 @@ RWDBStatus CtiTableDeviceCarrier::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

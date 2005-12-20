@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/11/17 17:30:51 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -65,7 +65,7 @@ public:
 
     void RefreshList(CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
     ptr_type getEqual( LONG rid );
-    ptr_type getEqualByName( RWCString &rname );
+    ptr_type getEqualByName( string &rname );
 
     spiterator begin();
     spiterator end();

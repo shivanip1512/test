@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/08/24 20:49:15 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.37  2005/12/20 17:19:56  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.36  2005/08/24 20:49:15  cplender
 * Getting restores to work right on 205s
 *
@@ -28,6 +31,21 @@
 * Revision 1.32  2005/07/29 16:26:02  cplender
 * Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
 *
+* Revision 1.30.2.5  2005/08/12 19:54:04  jliu
+* Date Time Replaced
+*
+* Revision 1.30.2.4  2005/07/27 19:28:01  alauinger
+* merged from the head 20050720
+*
+
+* Revision 1.30.2.3  2005/07/18 22:30:51  jliu
+* rebuild_cppunit&correct_find
+*
+* Revision 1.30.2.2  2005/07/14 22:27:01  jliu
+* RWCStringRemoved
+*
+* Revision 1.30.2.1  2005/07/12 21:08:42  jliu
+* rpStringWithoutCmpParser
 * Revision 1.31  2005/06/16 21:25:14  cplender
 * Adding the RTC scan command and decode. Must be trested with a device.
 *
@@ -133,6 +151,7 @@
 
 
 #include <rw\re.h>
+#include <boost/regex.hpp>
 #undef mask_                // Stupid RogueWave re.h
 
 #include "cparms.h"
@@ -148,7 +167,7 @@ CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
 _onePeriodTime(YUKONEOT),
 _messageReady(false)
 {
-    memset(&_sa, 0, sizeof(_sa));
+    ::memset(&_sa, 0, sizeof(_sa));
     _sa._maxTxTime = (0x3c);
 }
 
@@ -173,7 +192,7 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::operator=(const CtiProtocolSA3rdPa
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH!!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** ACH!!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -192,7 +211,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
     case ProtocolGolayType:
         {
             _sa._groupType = GOLAY;
-            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").c_str(), 7);
             break;
         }
     case ProtocolSADigitalType:
@@ -200,13 +219,13 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
             _sa._groupType = SADIG;
             _sa._mark = parse.getiValue("sa_mark");
             _sa._space = parse.getiValue("sa_space");
-            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").c_str(), 7);
             break;
         }
     case ProtocolSA105Type:
         {
             _sa._groupType = SA105;
-            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").c_str(), 7);
             break;
         }
     case ProtocolSA205Type:
@@ -241,7 +260,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 if(  parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
                     // There has been an assignment request!
-                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    string serialstr = CtiNumStr(parse.getiValue("serial"));
                     INT totalLen = 0;
                     // More than one config might be generated into the buffer.
                     _errorBuf[0] = '\0';
@@ -252,15 +271,15 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 
                     _sa._function = sac_address_config;
 
-                    strncpy(_sa._serial, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.c_str(), 33);
 
                     for(int i = 1; i <= 6; i++)     // Look for each slot assignment and add a blurb for it!
                     {
-                        RWCString slotstr = RWCString("sa_slot") + CtiNumStr(i);
+                        string slotstr = string("sa_slot") + CtiNumStr(i);
 
                         if(parse.isKeyValid(slotstr))
                         {
-                            strncpy(_sa._codeSimple, parse.getsValue(slotstr).data(), 7);
+                            strncpy(_sa._codeSimple, parse.getsValue(slotstr).c_str(), 7);
                             addressAssign(totalLen, i);
 
                             totalLen += _sa._bufferLen;                     // What's been accumulated
@@ -275,7 +294,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 else if( parse.isKeyValid("sa_offtime") && parse.isKeyValid("serial") )
                 {
                     // temporary service out command!
-                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    string serialstr = CtiNumStr(parse.getiValue("serial"));
                     INT totalLen = 0;
 
                     _errorBuf[0] = '\0';
@@ -286,7 +305,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 
                     _sa._function = sac_toos;
 
-                    strncpy(_sa._serial, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.c_str(), 33);
 
                     tempOutOfService205(_sa._buffer, &_sa._bufferLen, _sa._serial, parse.getiValue("sa_offtime",0), _sa._transmitterAddress);
 
@@ -295,8 +314,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 else if( parse.isKeyValid("sa_coldload") && parse.isKeyValid("serial") )
                 {
                     // There has been an assignment request!
-                    RWCString clpstr;
-                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    string clpstr;
+                    string serialstr = CtiNumStr(parse.getiValue("serial"));
                     INT totalLen = 0;
                     // More than one config might be generated into the buffer.
                     _errorBuf[0] = '\0';
@@ -305,12 +324,12 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
-                    strncpy(_sa._serial, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.c_str(), 33);
 
                     int i, clsec, clpCount;
                     for(i = 1; i <= 4; i++)
                     {
-                        clpstr = RWCString("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
+                        clpstr = string("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
 
                         if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
                         {
@@ -319,7 +338,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                             // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
                             {
                                 CtiLockGuard<CtiLogger> slog_guard(slog);
-                                slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 slog << " Calling coldLoadPickup205(). Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
                             }
 
@@ -336,8 +355,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 else if( parse.isKeyValid("sa_tamper") && parse.isKeyValid("serial") )
                 {
                     // There has been an assignment request!
-                    RWCString tdstr;
-                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    string tdstr;
+                    string serialstr = CtiNumStr(parse.getiValue("serial"));
                     INT totalLen = 0;
                     // More than one config might be generated into the buffer.
                     _errorBuf[0] = '\0';
@@ -346,18 +365,18 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
-                    strncpy(_sa._serial, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.c_str(), 33);
 
                     int i, tdCount;
                     for(i = 1; i <= 4; i++)
                     {
-                        tdstr = RWCString("tamperdetect_f") + CtiNumStr(i);
+                        tdstr = string("tamperdetect_f") + CtiNumStr(i);
 
                         if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
                         {
                             {
                                 CtiLockGuard<CtiLogger> slog_guard(slog);
-                                slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 slog << " Calling tamperDetect205(). Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
                             }
 
@@ -379,8 +398,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
             }
 
             status = CtiInvalidRequest;
@@ -431,7 +450,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             status = NoMethod;
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -439,9 +458,9 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
         _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
 
         // Graceful sends the last control interval information
-        if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+        if(findStringIgnoreCase(parse.getCommandStr()," graceful"))
         {
-            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
+            _onePeriodTime = CtiTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
         }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
@@ -450,7 +469,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
         parse.setValue("control_reduction", 0);
         parse.setValue("control_interval", 0);
 
-        if(parse.getCommandStr().contains(" abrupt", RWCString::ignoreCase))
+        if(findStringIgnoreCase(parse.getCommandStr()," abrupt"))
         {
             _sa._sTime = 3;     // Force it to a di 7.5/7.5 control.
             _sa._cTime = 5;
@@ -460,13 +479,13 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             // Repeat the initial control intformation.  This is a terminate graceful by default.
             _sa._sTime = parse.getiValue("sa205_last_stime", 3);
             _sa._cTime = parse.getiValue("sa205_last_ctime", 5);
-            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
+            _onePeriodTime = CtiTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unsupported command.  Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported command.  Command = " << parse.getCommand() << endl;
         status = NoMethod;
     }
 
@@ -477,68 +496,92 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
-    RWCString   temp, token;
-    RWCString   str = parse.getCommandStr();
+    string   temp, token;
+    string   str = parse.getCommandStr();
 
-    if(str.contains(" assign"))
+    if(str.find(" assign")!=string::npos)
     {
-        RWCString mstr;
-        RWCString rwsslot;
-        RWCString rwsaddr;
+        string mstr;
+        string rwsslot;
+        string rwsaddr;
 
         int i;
         for(i = 1; i <= 6; i++)
         {
-            mstr = CtiNumStr(i) + RWCString(" *= *[0-9]+");
-
-            if(!(temp = str.match(mstr)).isNull())
+            mstr = CtiNumStr(i) + string(" *= *[0-9]+");
+            boost::regex e1(mstr);
+            boost::match_results<std::string::const_iterator> what;
+            if(boost::regex_search(str, what, e1, boost::match_default))
             {
-                RWCTokenizer slotok(temp);
+                temp = string(what[0]);
 
-                rwsslot = slotok("=");
-                rwsaddr = slotok("=,\r\n ");
+                boost::char_separator<char> sep("=");
+                Boost_char_tokenizer slotok(temp, sep);
+                Boost_char_tokenizer::iterator tok_iter = slotok.begin(); 
+                temp = trim_left(temp, *tok_iter);
 
-                int addr = atoi(rwsaddr.data());
+                boost::char_separator<char> sep1("=,\r\n ");
+                Boost_char_tokenizer _slotok(temp, sep1);
+                Boost_char_tokenizer::iterator _tok_iter = _slotok.begin(); 
 
-                mstr = RWCString("sa_slot") + CtiNumStr(i); // sa_slot1, sa_slot2,... sa_slot6.
+                
+                
+
+                rwsslot = *tok_iter;
+                rwsaddr = *_tok_iter;
+
+                int addr = atoi(rwsaddr.c_str());
+
+                mstr = string("sa_slot") + CtiNumStr(i); // sa_slot1, sa_slot2,... sa_slot6.
 
                 parse.setValue(mstr, rwsaddr);              // Stored as a string because the Telvent lib wants it that way!!
 
                 {
                     CtiLockGuard<CtiLogger> slog_guard(slog);
-                    slog << RWTime() << " Address config command. Serial " << parse.getiValue("serial") << " writing address " << addr << " to slot " << i << " on the receiver" << endl;
+                    slog << CtiTime() << " Address config command. Serial " << parse.getiValue("serial") << " writing address " << addr << " to slot " << i << " on the receiver" << endl;
                 }
             }
         }
     }
-    else if(str.contains(" override"))
+    else if(str.find(" override")!=string::npos)
     {
         INT offtime = 0;
 
-        if(!(token = str.match(" override +[0-9]+")).isNull())
+        boost::regex e1(" override +[0-9]+");
+        boost::match_results<std::string::const_iterator> what;
+        if(boost::regex_search(str, what, e1, boost::match_default))
         {
-            str = token.match("[0-9]+");
-            offtime = atoi(str.data());
+            token = string(what[0]);
+            e1.assign("[0-9]+");
+            boost::regex_search(str, what, e1, boost::match_default);
+            str = string(what[0]);
+            offtime = atoi(str.c_str());
             {
                 CtiLockGuard<CtiLogger> slog_guard(slog);
-                slog << RWTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
+                slog << CtiTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
             }
             parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
         }
     }
-    else if(str.contains(" service"))
+    else if(str.find(" service")!=string::npos)
     {
-        if(str.contains(" temp") && !(token = str.match("service +((in)|(out)|(enable)|(disable))")).isNull())
+        boost::regex e1("service +((in)|(out)|(enable)|(disable))");
+        boost::match_results<std::string::const_iterator> what;
+        if(str.find(" temp") !=string::npos&& boost::regex_search(str, what, e1, boost::match_default))
         {
             INT offtime = 0;
-
-            if(!(token = str.match(" offhours +[0-9]+")).isNull())
+            e1.assign(" offhours +[0-9]+");
+            
+            if(boost::regex_search(str, what, e1, boost::match_default))
             {
-                str = token.match("[0-9]+");
-                offtime = atoi(str.data());
+                token = string(what[0]);
+                e1.assign("[0-9]+");
+                boost::regex_search(token, what, e1, boost::match_default);
+                str = string(what[0]);
+                offtime = atoi(str.c_str());
                 {
                     CtiLockGuard<CtiLogger> slog_guard(slog);
-                    slog << RWTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
+                    slog << CtiTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
                 }
                 parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
             }
@@ -547,7 +590,7 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Unknown service command: \"" << str << "\"" <<endl;
             }
         }
@@ -570,6 +613,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 {
     INT status = NORMAL;
 
+    SA_CODE scode;
     INT retCode;
 
     _errorBuf[0] = '\0';
@@ -577,20 +621,20 @@ INT CtiProtocolSA3rdParty::loadControl()
 
     if(_sa._groupType == SA205 || _sa._groupType == SA105)
     {
-        RWCString strcode = CtiNumStr(_sa._code205);
-        strncpy(_sa_code.code, strcode.data(), 7);
+        string strcode = CtiNumStr(_sa._code205);
+        ::strncpy(scode.code, strcode.c_str(), 7);
 
-        _sa_code.function = _sa._function;
-        _sa_code.type = _sa._groupType;
-        _sa_code.repeats = _sa._repeats;
+        scode.function = _sa._function;
+        scode.type = _sa._groupType;
+        scode.repeats = _sa._repeats;
     }
     else
     {
-        strncpy(_sa_code.code, _sa._codeSimple, 7);
+        strncpy(scode.code, _sa._codeSimple, 7);
     }
 
-    _sa_code.swTime = _sa._swTimeout;
-    _sa_code.cycleTime = _sa._cycleTime;
+    scode.swTime = _sa._swTimeout;
+    scode.cycleTime = _sa._cycleTime;
     _sa._buffer[0] = '/0';
     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
@@ -600,12 +644,12 @@ INT CtiProtocolSA3rdParty::loadControl()
     case SA105:
     case SA205:
         {
-            retCode = control105_205(_sa._buffer, &_sa._bufferLen, &_sa_code, _sa._transmitterAddress, _sa._sTime, _sa._cTime);
+            retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress, _sa._sTime, _sa._cTime);
 
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " control105_205() complete" << endl;
+                dout << CtiTime() << " control105_205() complete" << endl;
             }
 
             break;
@@ -617,7 +661,7 @@ INT CtiProtocolSA3rdParty::loadControl()
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " controlGolay() complete" << endl;
+                dout << CtiTime() << " controlGolay() complete" << endl;
             }
 
             break;
@@ -632,7 +676,7 @@ INT CtiProtocolSA3rdParty::loadControl()
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " controlSADigital() complete" << endl;
+                dout << CtiTime() << " controlSADigital() complete" << endl;
             }
 
             break;
@@ -659,7 +703,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial, slot, _sa._codeSimple, _sa._transmitterAddress);
-                dout << RWTime() << " config205() complete" << endl;
+                dout << CtiTime() << " config205() complete" << endl;
             }
             break;
         }
@@ -670,7 +714,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Address assignment is not supported by protocol for grouptype " << _sa._groupType << endl;
+                dout << CtiTime() << " Address assignment is not supported by protocol for grouptype " << _sa._groupType << endl;
             }
             break;
         }
@@ -687,7 +731,7 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -696,12 +740,12 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 {
     INT status = NORMAL;
-    bool dlc_control = parse.getCommandStr().contains(" dlc");      // if set, we want DLC (not DI) control!
+    bool dlc_control = (parse.getCommandStr().find(" dlc")!=string::npos);      // if set, we want DLC (not DI) control!
 
     // We only try to predict it if it has not already been fully identified for us.
     if(parse.isKeyValid("sa_restore") ||
-       parse.getCommandStr().contains(" restore", RWCString::ignoreCase) ||
-       parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
+       findStringIgnoreCase(parse.getCommandStr()," restore") ||
+       findStringIgnoreCase(parse.getCommandStr()," terminate") )
     {
         _sa._repeats = 0;
         _sa._swTimeout = 450;
@@ -756,7 +800,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -815,7 +859,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -847,7 +891,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -923,7 +967,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -967,7 +1011,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -1016,7 +1060,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -1071,7 +1115,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -1209,7 +1253,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                     status = BADPARAM;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Cycle parameters are not available on this switch for selected period." << endl;
+                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
                     }
                 }
             }
@@ -1218,18 +1262,18 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 
             if(cycle_count >= 0)
             {
-                _onePeriodTime = RWTime() + (_sa._cycleTime * cycle_count);
+                _onePeriodTime = CtiTime() + (_sa._cycleTime * cycle_count);
             }
             else
             {
-                _onePeriodTime = RWTime();  // This is not a cycle we want to record.  Set to EOT.
+                _onePeriodTime = CtiTime();  // This is not a cycle we want to record.  Set to EOT.
             }
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
+                dout << CtiTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
             }
         }
     }
@@ -1238,7 +1282,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
     if(0)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << " switch timeout: " << _sa._swTimeout << endl;
         dout << " cycle time    : " << _sa._cycleTime << endl;
         dout << " period        : " << _sa._cycleTime << endl;
@@ -1285,15 +1329,15 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCode205( int val )
     return *this;
 }
 
-CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeGolay( RWCString val )
+CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeGolay( string val )
 {
-    strncpy(_sa._codeSimple, val.data(), 6);
+    strncpy(_sa._codeSimple, val.c_str(), 6);
     return *this;
 }
 
-CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeSADigital( RWCString val )
+CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeSADigital( string val )
 {
-    strncpy(_sa._codeSimple, val.data(), 6);
+    strncpy(_sa._codeSimple, val.c_str(), 6);
     return *this;
 }
 
@@ -1357,7 +1401,7 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
             // This one is not a perfect match, so we will try to see how close we can get!
             rep = shed_time / ctimes[i] > 8 ? 7 : (shed_time / ctimes[i]) - 1;
             rep = rep < 0 ? 0 : rep;
-            int delta = abs(shed_time - ((rep+1) * ctimes[i]));
+            int delta = ::abs(shed_time - ((rep+1) * ctimes[i]));
 
             if(delta < currentbestdelta)
             {
@@ -1409,11 +1453,11 @@ void CtiProtocolSA3rdParty::processResult(INT retCode)
 
 }
 
-void CtiProtocolSA3rdParty::copyMessage(RWCString &str) const
+void CtiProtocolSA3rdParty::copyMessage(string &str) const
 {
     INT i;
 
-    str = RWCString();
+    str = string();
     if(_sa._bufferLen>0)
     {
         for(i = 0; i<_sa._bufferLen; i++)
@@ -1555,15 +1599,15 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setSAData(const CtiSAData &sa)
 }
 
 
-RWCString CtiProtocolSA3rdParty::asString(const CtiSAData &sa)
+string CtiProtocolSA3rdParty::asString(const CtiSAData &sa)
 {
-    RWCString rstr;
+    string rstr;
 
     switch(sa._commandType)
     {
     case PutConfigRequest:
         {
-            rstr += "SA 205 - config. Serial " + RWCString(sa._serial) + " - " + strategyAsString(sa);
+            rstr += "SA 205 - config. Serial " + string(sa._serial) + " - " + strategyAsString(sa);
             break;
         }
     case ControlRequest:
@@ -1572,7 +1616,7 @@ RWCString CtiProtocolSA3rdParty::asString(const CtiSAData &sa)
             {
             case SA105:
                 {
-                    rstr += "SA 105 - code " + RWCString(sa._codeSimple) + " - " + strategyAsString(sa);
+                    rstr += "SA 105 - code " + string(sa._codeSimple) + " - " + strategyAsString(sa);
                     break;
                 }
             case SA205:
@@ -1587,17 +1631,17 @@ RWCString CtiProtocolSA3rdParty::asString(const CtiSAData &sa)
                 }
             case GOLAY:
                 {
-                    rstr += "GOLAY  - " + RWCString(sa._codeSimple) + " Function " + CtiNumStr(sa._function);
+                    rstr += "GOLAY  - " + string(sa._codeSimple) + " Function " + CtiNumStr(sa._function);
                     break;
                 }
             case SADIG:
                 {
-                    rstr += "SA DIG - " + RWCString(sa._codeSimple);
+                    rstr += "SA DIG - " + string(sa._codeSimple);
                     break;
                 }
             case GRP_SA_RTM:
                 {
-                    rstr += "SA RTM - command " + CtiNumStr(sa._function);
+                    rstr += string("SA RTM - command ") + CtiNumStr(sa._function);
                     break;
                 }
             }
@@ -1615,25 +1659,25 @@ RWCString CtiProtocolSA3rdParty::asString(const CtiSAData &sa)
 }
 
 
-RWCString CtiProtocolSA3rdParty::strategyAsString(const CtiSAData &sa)
+string CtiProtocolSA3rdParty::strategyAsString(const CtiSAData &sa)
 {
-    RWCString rstr;
+    string rstr;
 
     switch(sa._function)
     {
     case sac_toos:
         {
-            rstr = RWCString( " Temporary out of service " + CtiNumStr(sa._swTimeout) + " hours" );
+            rstr = string( " Temporary out of service " + CtiNumStr(sa._swTimeout) + " hours" );
             break;
         }
     case sac_address_config:
         {
-            rstr = RWCString( " Address configuration: Code " + RWCString(sa._codeSimple) );// + " assigned to position " + RWCString(sa._codeSlot));
+            rstr = string( " Address configuration: Code " + string(sa._codeSimple) );// + " assigned to position " + string(sa._codeSlot));
             break;
         }
     default:
         {
-            rstr = RWCString(functionAsString(sa) + " " + CtiNumStr(sa._swTimeout) + " of " + CtiNumStr(sa._cycleTime) + " seconds (" + CtiNumStr(sa._sTime) + "/" + CtiNumStr(sa._cTime) + "). " + CtiNumStr(sa._repeats) + " period repeats.");
+            rstr = string(functionAsString(sa) + " " + CtiNumStr(sa._swTimeout) + " of " + CtiNumStr(sa._cycleTime) + " seconds (" + CtiNumStr(sa._sTime) + "/" + CtiNumStr(sa._cTime) + "). " + CtiNumStr(sa._repeats) + " period repeats.");
             break;
         }
     }
@@ -1641,95 +1685,95 @@ RWCString CtiProtocolSA3rdParty::strategyAsString(const CtiSAData &sa)
     return rstr;
 }
 
-RWCString CtiProtocolSA3rdParty::functionAsString(const CtiSAData &sa)
+string CtiProtocolSA3rdParty::functionAsString(const CtiSAData &sa)
 {
-    RWCString rstr;
+    string rstr;
 
     switch(sa._function)
     {
     case 0:
         {
-            rstr += RWCString("Memory Reset.");
+            rstr += string("Memory Reset.");
             break;
         }
     case 1:
         {
-            rstr += RWCString("Shed: Load 3.");
+            rstr += string("Shed: Load 3.");
             break;
         }
     case 2:
         {
-            rstr += RWCString("Test Off.");
+            rstr += string("Test Off.");
             break;
         }
     case 3:
         {
-            rstr += RWCString("Shed: Load 4.");
+            rstr += string("Shed: Load 4.");
             break;
         }
     case 4:
         {
-            rstr += RWCString("Restore: Load 4.");
+            rstr += string("Restore: Load 4.");
             break;
         }
     case 5:
         {
-            rstr += RWCString("Shed: Load 1,2,3.");
+            rstr += string("Shed: Load 1,2,3.");
             break;
         }
     case 6:
         {
-            rstr += RWCString("Restore: Load 1,2,3.");
+            rstr += string("Restore: Load 1,2,3.");
             break;
         }
     case 7:
         {
-            rstr += RWCString("Test On.");
+            rstr += string("Test On.");
             break;
         }
     case 8:
         {
-            rstr += RWCString("Shed: Load 1.");
+            rstr += string("Shed: Load 1.");
             break;
         }
     case 9:
         {
-            rstr += RWCString("Restore: Load 1.");
+            rstr += string("Restore: Load 1.");
             break;
         }
     case 10:
         {
-            rstr += RWCString("Shed: Load 2.");
+            rstr += string("Shed: Load 2.");
             break;
         }
     case 11:
         {
-            rstr += RWCString("Restore: Load 2.");
+            rstr += string("Restore: Load 2.");
             break;
         }
     case 12:
         {
-            rstr += RWCString("Shed: Load 1,2,3,4.");
+            rstr += string("Shed: Load 1,2,3,4.");
             break;
         }
     case 13:
         {
-            rstr += RWCString("Restore: Load 1,2,3,4.");
+            rstr += string("Restore: Load 1,2,3,4.");
             break;
         }
     case 14:
         {
-            rstr += RWCString("Shed: Load 1,2.");
+            rstr += string("Shed: Load 1,2.");
             break;
         }
     case 15:
         {
-            rstr += RWCString("Restore: Load 1,2.");
+            rstr += string("Restore: Load 1,2.");
             break;
         }
     default:
         {
-            rstr += RWCString("Unknown Function.");
+            rstr += string("Unknown Function.");
             break;
         }
     }
@@ -1970,7 +2014,7 @@ pair< int, int > CtiProtocolSA3rdParty::computeSnCTime(const int swTimeout, cons
         }
     }
 
-    return make_pair( sTime, cTime );
+    return std::make_pair( sTime, cTime );
 }
 
 
@@ -2048,7 +2092,7 @@ int CtiProtocolSA3rdParty::getStrategyCTime() const
     return _sa._cTime;
 }
 
-RWTime CtiProtocolSA3rdParty::getStrategyOnePeriodTime() const
+CtiTime CtiProtocolSA3rdParty::getStrategyOnePeriodTime() const
 {
     return _onePeriodTime;
 }
@@ -2090,7 +2134,7 @@ string CtiProtocolSA3rdParty::asString(const SA_CODE &sa)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -2101,7 +2145,7 @@ string CtiProtocolSA3rdParty::asString(const SA_CODE &sa)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -2584,7 +2628,7 @@ pair< int, int > CtiProtocolSA3rdParty::computeSWnCTTime(const int sTime, const 
         }
     }
 
-    return make_pair( sTime, cTime );
+    return std::make_pair( sTime, cTime );
 }
 
 

@@ -20,7 +20,7 @@ private:
     int                  _updateInterval;
     long                 _pointId;
     BOOL                 _valid;
-    RWTime               _pointCalcWindowEndTime;
+    CtiTime               _pointCalcWindowEndTime;
 
     // text from the database
     static const CHAR * UpdateType_Periodic;
@@ -30,36 +30,45 @@ private:
     static const CHAR * UpdateType_PeriodicPlusUpdate;
     static const CHAR * UpdateType_Constant;
 
-    RWTime calcTimeFromComponentTime( const RWTime &minTime, const RWTime &maxTime );
-    bool calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime );
-    int calcQualityFromComponentQuality( int qualityFlag, const RWTime &minTime, const RWTime &maxTime );
+    CtiTime calcTimeFromComponentTime( const CtiTime &minTime, const CtiTime &maxTime );
+    bool calcTimeFromComponentTime( CtiTime &componentTime, int componentQuality, CtiTime &minTime, CtiTime &maxTime );
+    int calcQualityFromComponentQuality( int qualityFlag, const CtiTime &minTime, const CtiTime &maxTime );
 
 public:
 
     CtiCalc( ) :
     _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
-        _pointCalcWindowEndTime( RWTime(RWDate(1,1,1990)) )
-    {};
 
-    CtiCalc( long pointId, const RWCString &updateType, int updateInterval );
+    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) )
+    {}
 
-    ~CtiCalc( )  {  cleanup( );};
+    CtiCalc( long pointId, const string &updateType, int updateInterval );
+
+    ~CtiCalc( )  
+    {  
+        cleanup( );
+    }
 
     ULONG     getNextInterval() const;
     CtiCalc&  setNextInterval (int interval);
     int      getUpdateInterval( ) const;
-    
     long findDemandAvgComponentPointId();
 
-    long getPointId( void )  {  return _pointId;};
+    long getPointId( void )  
+    {  
+        return _pointId;
+    }
 
     CtiCalc &operator=( CtiCalc &toCopy );
-    BOOL operator==( CtiCalc &equalTest )  {  return _pointId == equalTest.getPointId( );}
+    BOOL operator==( CtiCalc &equalTest )  
+    {  
+        return _pointId == equalTest.getPointId( );
+    }
 
     void appendComponent( CtiCalcComponent *componentToAdd );
     void cleanup( void );
     PointUpdateType getUpdateType( void );
-    double calculate( int &calc_quality, RWTime &calc_time, bool &calcValid );
+    double calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid );
     double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );
     bool push( double );

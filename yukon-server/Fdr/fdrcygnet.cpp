@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/12/20 17:17:12 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,18 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.9  2005/12/20 17:17:12  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.8.2.3  2005/08/12 19:53:43  jliu
+      Date Time Replaced
+
+      Revision 1.8.2.2  2005/07/14 22:26:55  jliu
+      RWCStringRemoved
+
+      Revision 1.8.2.1  2005/07/12 21:08:36  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.8  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -84,9 +96,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 //------------------------------------
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -123,7 +134,7 @@ const CHAR * CtiFDRCygnet::KEY_DB_RELOAD_RATE = "FDR_CYGNET_DB_RELOAD_RATE";
 
 // Constructors, Destructor, and Operators
 CtiFDRCygnet::CtiFDRCygnet()
-: CtiFDRInterface(RWCString("CYGNET")),
+: CtiFDRInterface(string("CYGNET")),
 iHiReasonabilityFilter(0.0)
 {
     init();
@@ -193,12 +204,12 @@ void CtiFDRCygnet::setScanRateSeconds(const ULONG mySeconds)
     iScanRateSeconds = mySeconds;
 }
 
-RWCString CtiFDRCygnet::getAnalogServiceName() const
+string CtiFDRCygnet::getAnalogServiceName() const
 {
     return iAnalogServiceName;
 }
 
-RWCString CtiFDRCygnet::getStatusServiceName() const
+string CtiFDRCygnet::getStatusServiceName() const
 {
     return iStatusServiceName;
 }
@@ -254,7 +265,7 @@ BOOL CtiFDRCygnet::run( void )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " ----- Starting FDR Cygnet Version " << FDR_CYGNET_VERSION << endl;
+        dout << CtiTime( ) << " ----- Starting FDR Cygnet Version " << FDR_CYGNET_VERSION << endl;
     }
 
     // crank up the base class
@@ -298,13 +309,13 @@ BOOL CtiFDRCygnet::stop( void )
 int CtiFDRCygnet::readConfig( void )
 {
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
 
     tempStr = getCparmValueAsString(KEY_SCAN_RATE_SECONDS);
     if (tempStr.length() > 0)
     {
-        iScanRateSeconds = atol(tempStr);
+        iScanRateSeconds = atol(tempStr.c_str());
     }
     else if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -338,7 +349,7 @@ int CtiFDRCygnet::readConfig( void )
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -353,7 +364,7 @@ int CtiFDRCygnet::readConfig( void )
     tempStr = getCparmValueAsString(KEY_HI_REASONABILITY_FILTER);
     if (tempStr.length() > 0)
     {
-        setHiReasonabilityFilter(atof(tempStr));
+        setHiReasonabilityFilter(atof(tempStr.c_str()));
     }
 
     tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
@@ -417,7 +428,7 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime::now() << " - Getting Data from CYGNET Interface - " << endl;
+                dout << CtiTime::now() << " - Getting Data from CYGNET Interface - " << endl;
             }
 
             // this returns true if already connected
@@ -481,8 +492,8 @@ bool CtiFDRCygnet::connectToAnalogService()
 {
     int                 returnValue;
     bool                successful(FALSE);
-    RWCString           logDesc;
-    RWCString           logInfo;
+    string           logDesc;
+    string           logInfo;
 
     CtiSignalMsg  *     pEventLog    = NULL;
 
@@ -507,7 +518,7 @@ bool CtiFDRCygnet::connectToAnalogService()
             }
             else
             {
-                returnValue = DnaClientSvcDirConnect(getAnalogServiceName());
+                returnValue = DnaClientSvcDirConnect(getAnalogServiceName().c_str());
             }
 
             if (returnValue != 0 )
@@ -520,7 +531,7 @@ bool CtiFDRCygnet::connectToAnalogService()
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << logDesc << " " << logInfo;
+                    dout << CtiTime() << " " << logDesc << " " << logInfo;
                     dout << "  return code: " << returnValue << endl;
                 }
 
@@ -536,7 +547,7 @@ bool CtiFDRCygnet::connectToAnalogService()
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << logDesc << endl;
+                    dout << CtiTime() << " " << logDesc << endl;
                 }
             }
         }
@@ -547,7 +558,7 @@ bool CtiFDRCygnet::connectToAnalogService()
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << logDesc << endl;
+                dout << CtiTime() << " " << logDesc << endl;
             }
         }
 
@@ -576,8 +587,8 @@ bool CtiFDRCygnet::connectToStatusService()
 {
     int                 returnValue;
     bool                successful(FALSE);
-    RWCString           logDesc;
-    RWCString           logInfo;
+    string           logDesc;
+    string           logInfo;
 
     CtiSignalMsg  *     pEventLog    = NULL;
 
@@ -602,7 +613,7 @@ bool CtiFDRCygnet::connectToStatusService()
             }
             else
             {
-                returnValue = DnaClientSvcDirConnect( getStatusServiceName() );
+                returnValue = DnaClientSvcDirConnect( getStatusServiceName().c_str() );
             }
 
             if (returnValue != 0 )
@@ -616,7 +627,7 @@ bool CtiFDRCygnet::connectToStatusService()
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << logDesc <<  " " << logInfo;
+                    dout << CtiTime() << " " << logDesc <<  " " << logInfo;
                     dout << " return code: " << returnValue << endl;
                 }
             }
@@ -632,7 +643,7 @@ bool CtiFDRCygnet::connectToStatusService()
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << logDesc << endl;
+                    dout << CtiTime() << " " << logDesc << endl;
                 }
             }
         }
@@ -644,7 +655,7 @@ bool CtiFDRCygnet::connectToStatusService()
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << logDesc << endl;
+                dout << CtiTime() << " " << logDesc << endl;
             }
         }
 
@@ -688,9 +699,9 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
     double      myHiReasonabilityFilter;
     char        charValue[32];
 
-    RWTime      myNewTime;
+    CtiTime      myNewTime;
 
-    RWCString   desc("Cygnet Update");  // not sure if this is needed
+    string   desc("Cygnet Update");  // not sure if this is needed
 
     CtiFDRPoint *       point = NULL;
 
@@ -699,7 +710,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
     memset( &CygnetRequest, 0, sizeof(RT_GET_NAMED_REC_REQ) );
 
-    RWCString myAnalogServ(getAnalogServiceName());
+    string myAnalogServ(getAnalogServiceName());
     myHiReasonabilityFilter = getHiReasonabilityFilter();
 
     // loop through all analog points
@@ -728,14 +739,14 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
+                        dout << CtiTime() << " Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
                         dout << " Yukon Pt ID: " << point->getPointID() << endl;
                     }
                     else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                     {
                         // this limits the debug by only logging info about the first item
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " (Min Debug) Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
+                        dout << CtiTime() << " (Min Debug) Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
                         dout << " Yukon Pt ID: " << point->getPointID() << endl;
                     }
 
@@ -743,7 +754,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     CygnetRequest.header.type = RT_GET_NAMED_REC;
 
                     // copy Cynget point ID to the array (element 0 only for now)
-                    strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation());
+                    strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation().c_str());
 
                     // set the number of points (36 is max)
                     CygnetRequest.header.count = 1;
@@ -762,7 +773,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                         //returnValue = 1;  // test Nonupdated block
 
                         // fake time
-                        time(&CygnetResponse.recs[0].time);
+                        ::time(&CygnetResponse.recs[0].time);
 
                         CygnetResponse.header.err = 0;
                         CygnetResponse.header.count = 1;
@@ -773,7 +784,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     else
                     {
                         // need to get our data before continuing
-                        returnValue = DclCall(myAnalogServ,
+                        returnValue = DclCall(myAnalogServ.c_str(),
                                               &CygnetRequest,
                                               sizeof(RT_GET_NAMED_REC_REQ),
                                               &CygnetResponse,
@@ -784,7 +795,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                     if (!returnValue && CygnetResponse.header.count == 1 && !CygnetResponse.header.err )
                     {
                         // time stamp from CygNet
-                        myNewTime = RWTime((long)(((long)CygnetResponse.recs[0].time) + rwEpoch) );
+                        myNewTime = CtiTime((long)(((long)CygnetResponse.recs[0].time)) );
 
                         if (myNewTime > point->getLastTimeStamp())
                         {
@@ -896,7 +907,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
+                            dout << CtiTime() << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
                             dout << " failed and is NonUpdated" << endl;
                         }
 
@@ -926,7 +937,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Posting 500 Analog Messages to Dispatch" << endl;
+                            dout << CtiTime() << " Posting 500 Analog Messages to Dispatch" << endl;
                         }
                     }
                 }
@@ -943,7 +954,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Posting " << messCount << " Analog Messages to Dispatch" << endl;
+            dout << CtiTime() << " Posting " << messCount << " Analog Messages to Dispatch" << endl;
         }
     }
     else
@@ -976,19 +987,19 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
     USHORT      bytesReceived;
     double      myNewValue = 0;
-    RWTime      myNewTime;
+    CtiTime      myNewTime;
     CtiFDRPoint *       point = NULL;
 
     bool        sendNoneUpdate;
 
-    RWCString   desc("Cygnet Update");  // not sure if this is needed
+    string   desc("Cygnet Update");  // not sure if this is needed
 
     RT_GET_NAMED_REC_REQ    CygnetRequest;
     RT_GET_NAMED_REC_RESP   CygnetResponse;
 
     memset( &CygnetRequest, 0, sizeof(RT_GET_NAMED_REC_REQ) );
 
-    RWCString myStatusServ(getStatusServiceName());
+    string myStatusServ(getStatusServiceName());
 
     // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
@@ -1013,14 +1024,14 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
+                    dout << CtiTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
                     dout << " for Yukon Pt ID: " << point->getPointID() << endl;
                 }
                 else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                 {
                     // this limits the debug by only logging info about the first item
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
+                    dout << CtiTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
                     dout << " for Yukon Pt ID: " << point->getPointID() << endl;
                 }
 
@@ -1028,7 +1039,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 CygnetRequest.header.type = RT_GET_NAMED_REC;
 
                 // copy Cynget point ID to the array (element 0 only for now)
-                strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation());
+                strcpy(CygnetRequest.names[0], point->getDestinationList()[x].getTranslation().c_str());
 
                 // set the number of points (36 is max)
                 CygnetRequest.header.count = 1;
@@ -1049,7 +1060,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                     CygnetResponse.header.count = 1;
 
                     // fake time
-                    time(&CygnetResponse.recs[0].time);
+                    ::time(&CygnetResponse.recs[0].time);
 
                     //CygnetResponse.recs[0].time -= 300;  // test 5 minutes behind
 
@@ -1067,7 +1078,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 else
                 {
                     // need to get our data before continuing
-                    returnValue = DclCall(myStatusServ,
+                    returnValue = DclCall(myStatusServ.c_str(),
                                           &CygnetRequest,
                                           sizeof(RT_GET_NAMED_REC_REQ),
                                           &CygnetResponse,
@@ -1079,7 +1090,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 {
                     // time stamp from CygNet
 
-                    //myNewTime = RWTime((long)(((long)CygnetResponse.recs[0].time) + rwEpoch) );
+                    //myNewTime = CtiTime((long)(((long)CygnetResponse.recs[0].time) ) );
 
                     // do not check time stamp on status points - always send to Dispatch
 
@@ -1209,7 +1220,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Posting 500 Status Messages to Dispatch" << endl;
+                        dout << CtiTime() << " Posting 500 Status Messages to Dispatch" << endl;
                     }
 
                 }
@@ -1227,7 +1238,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Posting " << messCount << " Status Messages to Dispatch" << endl;
+            dout << CtiTime() << " Posting " << messCount << " Status Messages to Dispatch" << endl;
         }
     }
     else
@@ -1259,7 +1270,7 @@ bool CtiFDRCygnet::loadTranslationLists()
         if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Translation list reload for FDRCygnet failed, keeping original points " << endl;
+            dout << CtiTime() << " Translation list reload for FDRCygnet failed, keeping original points " << endl;
         }
     }
 
@@ -1281,16 +1292,16 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
     int                 statusCount = 0;
 
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           myTranslateName;
-    RWCString           tempString1;
-    RWCString           tempString2;
+    string           myTranslateName;
+    string           tempString1;
+    string           tempString2;
     bool                foundPoint = false;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
-                                                       RWCString (FDR_INTERFACE_RECEIVE));
+                                                       string (FDR_INTERFACE_RECEIVE));
 
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
@@ -1321,20 +1332,22 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
                     }
 
                     // there should only be one destination for cygnet points
-                    RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+                    boost::char_separator<char> sep1(";");
+                    Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                    Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                    if (!(tempString1 = nextTranslate(";")).isNull())
+                    if (!(tempString1 = *tok_iter).empty())
                     {
-                        // this in the from of POINTID:xxxx
-                        RWCTokenizer nextTempToken(tempString1);
+                        boost::char_separator<char> sep2(":");
+                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                        // do not care about the first part
-                        nextTempToken(":");
-
-                        tempString2 = nextTempToken(":");
+                        tok_iter1++;
+                        
+                        tempString2 = *tok_iter1;
 
                         // now we have a id with a :
-                        if ( !tempString2.isNull() )
+                        if ( !tempString2.empty() )
                         {
                             translationPoint->getDestinationList()[x].setTranslation (tempString2);
                             successful = true;
@@ -1371,7 +1384,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
                     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                        dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                     }
                 }
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_vectron.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -374,13 +374,13 @@ public:
    virtual INT allocateDataBins (OUTMESS *outMess);
 
    virtual INT decodeResultScan ( INMESS *InMessage,
-                          RWTime &TimeNow,
+                          CtiTime &TimeNow,
                           RWTPtrSlist< CtiMessage >   &vgList,
                           RWTPtrSlist< CtiMessage > &retList,
                           RWTPtrSlist< OUTMESS > &outList);
 
    virtual INT decodeResultLoadProfile ( INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS > &outList);
@@ -390,12 +390,12 @@ public:
 
    USHORT getRate (int aOffset);
    USHORT getType (int aOffset);
-   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, VectronScanData_t *aScanData);
-   BOOL getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, RWTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister1 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister2 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister3 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, VectronScanData_t *data);
-   BOOL getRateValueFromRegister4 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, VectronScanData_t *data);
+   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, VectronScanData_t *aScanData);
+   BOOL getRateValueFromRegister (DOUBLE &aValue, USHORT aType, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
+   BOOL getRateValueFromRegister1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
+   BOOL getRateValueFromRegister2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
+   BOOL getRateValueFromRegister3 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
+   BOOL getRateValueFromRegister4 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, VectronScanData_t *data);
    INT ResultDisplay (INMESS *InMessage);
 
 };

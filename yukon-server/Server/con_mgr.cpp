@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "con_mgr.h"
 
 
-CtiConnectionManager::CtiConnectionManager( const INT &Port, const RWCString &HostMachine, InQ_t *inQ) :
+CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostMachine, InQ_t *inQ) :
    ClientName("DEFAULT"),
    ClientAppId(0),
    ClientUnique(FALSE),
@@ -58,8 +58,8 @@ CtiConnectionManager::~CtiConnectionManager()
 int CtiConnectionManager::getClientAppId() const              { return ClientAppId; }
 int CtiConnectionManager::setClientAppId(int id)       { return ClientAppId = id; }
 
-RWCString   CtiConnectionManager::getClientName() const               { return ClientName; }
-void        CtiConnectionManager::setClientName(RWCString str)
+string   CtiConnectionManager::getClientName() const               { return ClientName; }
+void        CtiConnectionManager::setClientName(string str)
 {
    ClientName = str;
    Inherited::setName( str );

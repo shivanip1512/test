@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,8 @@
 #include "numstr.h"
 #include "rte_base.h"
 
+using namespace std;
+   
 CtiDeviceMacro::CtiDeviceMacro( )  {  }
 
 CtiDeviceMacro::CtiDeviceMacro( const CtiDeviceMacro &aRef )
@@ -168,7 +170,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
         if ((pPoint = (CtiPoint*)getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS)) != 0)
         {
             if(parse.getCommand() == ControlRequest)
-                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
+                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr().c_str() );
 
 
             if(newvglistsize > vglistsize)
@@ -193,7 +195,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "No devices in macro device \'" << getName( ) << "\'" << endl;
     }
 
@@ -226,7 +228,7 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
     if(bAllRipple)
     {
         bRippled = true;
-        memset(RippleMessage, 0, 7);                // Ripple messages are 7 bytes.
+        ::memset(RippleMessage, 0, 7);                // Ripple messages are 7 bytes.
 
         for( devIter = _deviceList.begin(); devIter != _deviceList.end( ); devIter++)
         {
@@ -239,7 +241,7 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
         if(getDebugLevel() & DEBUGLEVEL_RIPPLE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << "  Ripple message has been bit-packed ";
+            dout << CtiTime() << "  Ripple message has been bit-packed ";
 
             char of = dout .fill('0');
             int i, j;
@@ -301,14 +303,15 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< Ct
     {
         // We have a point match here...
         DOUBLE val = 0.0;
-        RWCString resString;
+        string resString;
 
         if (pPoint->isNumeric())
         {
             val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)0.0 );
         }
 
-        resString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(val);
+        resString = getName() + " / " + pPoint->getName();
+        resString += " = " + CtiNumStr(val);
 
         //create a CTIDBG_new data message
         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
@@ -355,7 +358,9 @@ INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
             }
 
             //create a CTIDBG_new data message
-            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString(getName() + " / " + pPoint->getName() + " = " + CtiNumStr(val)));
+            string s= getName() + " / " + pPoint->getName();
+            s += " = " + CtiNumStr(val);
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), s);
             if (pData != NULL)
             {
                 vgList.insert( pData );
@@ -388,9 +393,9 @@ INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &
 }
 
 
-RWCString CtiDeviceMacro::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceMacro::getDescription(const CtiCommandParser & parse) const
 {
-    return RWCString("Macro Group: " + getName());
+    return string("Macro Group: " + getName());
 }
 
 

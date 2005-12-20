@@ -70,7 +70,7 @@ LONG CtiLMProgramCurtailment::getMinNotifyTime() const
 
     Returns the heading of the curtailment program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getHeading() const
+const string& CtiLMProgramCurtailment::getHeading() const
 {
 
     return _heading;
@@ -81,7 +81,7 @@ const RWCString& CtiLMProgramCurtailment::getHeading() const
 
     Returns the message header of the curtailment program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getMessageHeader() const
+const string& CtiLMProgramCurtailment::getMessageHeader() const
 {
 
     return _messageheader;
@@ -92,7 +92,7 @@ const RWCString& CtiLMProgramCurtailment::getMessageHeader() const
 
     Returns the message footer of the curtailment program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getMessageFooter() const
+const string& CtiLMProgramCurtailment::getMessageFooter() const
 {
 
     return _messagefooter;
@@ -114,7 +114,7 @@ LONG CtiLMProgramCurtailment::getAckTimeLimit() const
 
     Returns the canceled msg of the curtailment program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getCanceledMsg() const
+const string& CtiLMProgramCurtailment::getCanceledMsg() const
 {
 
     return _canceledmsg;
@@ -125,7 +125,7 @@ const RWCString& CtiLMProgramCurtailment::getCanceledMsg() const
 
     Returns the stopped early msg of the curtailment program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getStoppedEarlyMsg() const
+const string& CtiLMProgramCurtailment::getStoppedEarlyMsg() const
 {
 
     return _stoppedearlymsg;
@@ -149,7 +149,7 @@ LONG CtiLMProgramCurtailment::getCurtailReferenceId() const
     Returns the action datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramCurtailment::getActionDateTime() const
+const CtiTime& CtiLMProgramCurtailment::getActionDateTime() const
 {
 
     return _actiondatetime;
@@ -161,7 +161,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getActionDateTime() const
     Returns the notification datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramCurtailment::getNotificationDateTime() const
+const CtiTime& CtiLMProgramCurtailment::getNotificationDateTime() const
 {
 
     return _notificationdatetime;
@@ -173,7 +173,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getNotificationDateTime() const
     Returns the start datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStartTime() const
+const CtiTime& CtiLMProgramCurtailment::getCurtailmentStartTime() const
 {
 
     return _curtailmentstarttime;
@@ -185,7 +185,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStartTime() const
     Returns the stop time of the current control for the curtailment
     program.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStopTime() const
+const CtiTime& CtiLMProgramCurtailment::getCurtailmentStopTime() const
 {
 
     return _curtailmentstoptime;
@@ -197,7 +197,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStopTime() const
     Returns the run status of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getRunStatus() const
+const string& CtiLMProgramCurtailment::getRunStatus() const
 {
 
     return _runstatus;
@@ -209,7 +209,7 @@ const RWCString& CtiLMProgramCurtailment::getRunStatus() const
     Returns the additional info of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramCurtailment::getAdditionalInfo() const
+const string& CtiLMProgramCurtailment::getAdditionalInfo() const
 {
 
     return _additionalinfo;
@@ -244,7 +244,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMinNotifyTime(LONG notifyti
 
     Sets the heading of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setHeading(const RWCString& head)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setHeading(const string& head)
 {
 
     _heading = head;
@@ -257,7 +257,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setHeading(const RWCString& he
 
     Sets the message header of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageHeader(const RWCString& msgheader)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageHeader(const string& msgheader)
 {
 
     _messageheader = msgheader;
@@ -270,7 +270,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageHeader(const RWCStri
 
     Sets the message footer of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageFooter(const RWCString& msgfooter)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageFooter(const string& msgfooter)
 {
 
     _messagefooter = msgfooter;
@@ -296,7 +296,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAckTimeLimit(LONG timelimit
 
     Sets the canceled msg of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCanceledMsg(const RWCString& canceled)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCanceledMsg(const string& canceled)
 {
 
     _canceledmsg = canceled;
@@ -309,7 +309,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCanceledMsg(const RWCString
 
     Sets the stopped early msg of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setStoppedEarlyMsg(const RWCString& stoppedearly)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setStoppedEarlyMsg(const string& stoppedearly)
 {
 
     _stoppedearlymsg = stoppedearly;
@@ -337,7 +337,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailReferenceId(LONG ref
     Sets the action datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setActionDateTime(const RWDBDateTime& actiontime)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setActionDateTime(const CtiTime& actiontime)
 {
 
     _actiondatetime = actiontime;
@@ -351,7 +351,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setActionDateTime(const RWDBDa
     Sets the notification datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setNotificationDateTime(const RWDBDateTime& notifytime)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setNotificationDateTime(const CtiTime& notifytime)
 {
 
     _notificationdatetime = notifytime;
@@ -365,7 +365,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setNotificationDateTime(const 
     Sets the start datetime of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStartTime(const RWDBDateTime& starttime)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStartTime(const CtiTime& starttime)
 {
 
     _curtailmentstarttime = starttime;
@@ -379,7 +379,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStartTime(const 
     Sets the stop time of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStopTime(const RWDBDateTime& stoptime)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStopTime(const CtiTime& stoptime)
 {
 
     _curtailmentstoptime = stoptime;
@@ -393,7 +393,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStopTime(const R
     Sets the run status of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setRunStatus(const RWCString& runstat)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setRunStatus(const string& runstat)
 {
 
     _runstatus = runstat;
@@ -407,7 +407,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setRunStatus(const RWCString& 
     Sets the additional info of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCString& additional)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const string& additional)
 {
 
     _additionalinfo = additional;
@@ -439,7 +439,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 {
     BOOL returnBool = TRUE;
 
-    const RWDBDateTime currentDateTime;
+    const CtiTime currentDateTime;
     if( getProgramState() == CtiLMProgramBase::StoppingState )
     {
         if( currentDateTime >= getCurtailmentStopTime() )
@@ -447,24 +447,24 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setRunStatus(CtiLMProgramCurtailment::CompletedRunStatus);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(gInvalidRWDBDateTime);
-            setNotificationDateTime(gInvalidRWDBDateTime);
-            setCurtailmentStartTime(gInvalidRWDBDateTime);
-            //setStartedControlling(gInvalidRWDBDateTime);
-            setCurtailmentStopTime(gInvalidRWDBDateTime);
+            setActionDateTime(gInvalidCtiTime);
+            setNotificationDateTime(gInvalidCtiTime);
+            setCurtailmentStartTime(gInvalidCtiTime);
+            //setStartedControlling(gInvalidCtiTime);
+            setCurtailmentStopTime(gInvalidCtiTime);
         }
         else if( currentDateTime >= getCurtailmentStartTime() && currentDateTime <= getCurtailmentStopTime() )
         {
             setRunStatus(CtiLMProgramCurtailment::StoppedEarlyRunStatus);
-            setCurtailmentStopTime(RWDBDateTime());
+            setCurtailmentStopTime(CtiTime());
             notifyCustomersOfStop(multiNotifMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(gInvalidRWDBDateTime);
-            setNotificationDateTime(gInvalidRWDBDateTime);
-            setCurtailmentStartTime(gInvalidRWDBDateTime);
-            //setStartedControlling(gInvalidRWDBDateTime);
-            setCurtailmentStopTime(gInvalidRWDBDateTime);
+            setActionDateTime(gInvalidCtiTime);
+            setNotificationDateTime(gInvalidCtiTime);
+            setCurtailmentStartTime(gInvalidCtiTime);
+            //setStartedControlling(gInvalidCtiTime);
+            setCurtailmentStopTime(gInvalidCtiTime);
             for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
@@ -476,11 +476,11 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             notifyCustomersOfStop(multiNotifMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
-            setActionDateTime(gInvalidRWDBDateTime);
-            setNotificationDateTime(gInvalidRWDBDateTime);
-            setCurtailmentStartTime(gInvalidRWDBDateTime);
-            //setStartedControlling(gInvalidRWDBDateTime);
-            setCurtailmentStopTime(gInvalidRWDBDateTime);
+            setActionDateTime(gInvalidCtiTime);
+            setNotificationDateTime(gInvalidCtiTime);
+            setCurtailmentStartTime(gInvalidCtiTime);
+            //setStartedControlling(gInvalidCtiTime);
+            setCurtailmentStopTime(gInvalidCtiTime);
             for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
@@ -497,7 +497,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
     {
         returnBool = FALSE;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Trying to stop curtailment on a program that isn't in the StoppingState state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Trying to stop curtailment on a program that isn't in the StoppingState state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return returnBool;
@@ -512,7 +512,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 {
     BOOL returnBoolean = FALSE;
 
-    const RWDBDateTime currentDateTime;
+    const CtiTime currentDateTime;
     if( getProgramState() == CtiLMProgramBase::ScheduledState )
     {
         if( currentDateTime >= getNotificationDateTime() )
@@ -525,7 +525,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Curtailment notification sent to all customers in program: " << getPAOName() << endl;
+                dout << CtiTime() << " - Curtailment notification sent to all customers in program: " << getPAOName() << endl;
             }
         }
     }
@@ -539,7 +539,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
             dumpDynamicData();
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Curtailment went active in program: " << getPAOName() << endl;
+            dout << CtiTime() << " - Curtailment went active in program: " << getPAOName() << endl;
         }
     }
     else if( getProgramState() == CtiLMProgramBase::ManualActiveState )
@@ -554,7 +554,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Curtailment ended in program: " << getPAOName() << endl;
+                dout << CtiTime() << " - Curtailment ended in program: " << getPAOName() << endl;
             }
         }
     }
@@ -567,7 +567,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid manual control state: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Invalid manual control state: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     return returnBoolean;
@@ -600,15 +600,15 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
 	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
-            RWCString emailBody = getMessageHeader();
+            string emailBody = getMessageHeader();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Facility:  ";
             emailBody += currentCustomer->getCompanyName();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Start:  ";
-            emailBody += getCurtailmentStartTime().rwtime().asString();
+            emailBody += getCurtailmentStartTime().asString();
             emailBody += " ";
-            emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+            emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
             ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
@@ -658,12 +658,12 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
 	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
-            RWCString emailBody;
-            if( !getRunStatus().compareTo(CtiLMProgramCurtailment::CanceledRunStatus,RWCString::ignoreCase) )
+            string emailBody;
+            if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::CanceledRunStatus) )
             {
                 emailBody = getCanceledMsg();
             }
-            else if( !getRunStatus().compareTo(CtiLMProgramCurtailment::StoppedEarlyRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::StoppedEarlyRunStatus) )
             {
                 emailBody = getStoppedEarlyMsg();
             }
@@ -671,7 +671,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
             {
                 emailBody = "THIS CURTAILMENT HAS BEEN CANCELED";
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += getMessageHeader();
@@ -680,9 +680,9 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
             emailBody += currentCustomer->getCompanyName();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Start:  ";
-            emailBody += getCurtailmentStartTime().rwtime().asString();
+            emailBody += getCurtailmentStartTime().asString();
             emailBody += " ";
-            emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+            emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
             ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
@@ -743,7 +743,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -761,7 +761,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
+                    dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
                 }
             }
 
@@ -780,7 +780,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << inserter.asString().data() << endl;
+                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
                 }
 
                 inserter.execute( conn );
@@ -789,7 +789,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -799,7 +799,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection& conn, CtiTime& currentDateTime)
 {
 
     {
@@ -809,9 +809,9 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
             RWDBTable lmCurtailProgramActivityTable = db.table("lmcurtailprogramactivity");
             RWDBUpdater updater = lmCurtailProgramActivityTable.updater();
 
-            updater << lmCurtailProgramActivityTable["curtailmentstoptime"].assign(getCurtailmentStopTime())
-            << lmCurtailProgramActivityTable["runstatus"].assign(getRunStatus())
-            << lmCurtailProgramActivityTable["additionalinfo"].assign(getAdditionalInfo());
+            updater << lmCurtailProgramActivityTable["curtailmentstoptime"].assign(toRWDBDT(getCurtailmentStopTime()))
+            << lmCurtailProgramActivityTable["runstatus"].assign(getRunStatus()[0])
+            << lmCurtailProgramActivityTable["additionalinfo"].assign(getAdditionalInfo()[0]);
 
             updater.where(lmCurtailProgramActivityTable["deviceid"]==getPAOId() &&//will be paobjectid
                           lmCurtailProgramActivityTable["curtailreferenceid"]==getCurtailReferenceId());
@@ -819,7 +819,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -836,7 +836,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -854,7 +854,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
 
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
+                    dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
                 }
 
                 RWDBInserter inserter = lmCurtailProgramActivityTable.inserter();
@@ -871,7 +871,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << inserter.asString().data() << endl;
+                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
                 }
 
                 inserter.execute( conn );
@@ -880,7 +880,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -909,7 +909,7 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << deleter.asString().data() << endl;
+                dout << CtiTime() << " - " << deleter.asString().c_str() << endl;
             }*/
 
             deleter.execute( conn );
@@ -917,7 +917,7 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -943,10 +943,10 @@ void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
 {
     CtiLMProgramBase::restoreGuts( istrm );
 
-    RWTime tempTime1;
-    RWTime tempTime2;
-    RWTime tempTime3;
-    RWTime tempTime4;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    CtiTime tempTime4;
 
     istrm >> _minnotifytime
     >> _heading
@@ -964,10 +964,10 @@ void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
     >> _additionalinfo
     >> _lmprogramcurtailmentcustomers;
 
-    _actiondatetime = RWDBDateTime(tempTime1);
-    _notificationdatetime = RWDBDateTime(tempTime2);
-    _curtailmentstarttime = RWDBDateTime(tempTime3);
-    _curtailmentstoptime = RWDBDateTime(tempTime4);
+    _actiondatetime = CtiTime(tempTime1);
+    _notificationdatetime = CtiTime(tempTime2);
+    _curtailmentstarttime = CtiTime(tempTime3);
+    _curtailmentstoptime = CtiTime(tempTime4);
 }
 
 /*---------------------------------------------------------------------------
@@ -990,10 +990,10 @@ void CtiLMProgramCurtailment::saveGuts(RWvostream& ostrm ) const
     << _canceledmsg
     << _stoppedearlymsg
     << _curtailreferenceid
-    << _actiondatetime.rwtime()
-    << _notificationdatetime.rwtime()
-    << _curtailmentstarttime.rwtime()
-    << _curtailmentstoptime.rwtime()
+    << _actiondatetime
+    << _notificationdatetime
+    << _curtailmentstarttime
+    << _curtailmentstoptime
     << _runstatus
     << _additionalinfo
     << _lmprogramcurtailmentcustomers;
@@ -1081,10 +1081,10 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
     rdr["canceledmsg"] >> _canceledmsg;
     rdr["stoppedearlymsg"] >> _stoppedearlymsg;
     setCurtailReferenceId(0);
-    setActionDateTime(gInvalidRWDBDateTime);
-    setNotificationDateTime(gInvalidRWDBDateTime);
-    setCurtailmentStartTime(gInvalidRWDBDateTime);
-    setCurtailmentStopTime(gInvalidRWDBDateTime);
+    setActionDateTime(gInvalidCtiTime);
+    setNotificationDateTime(gInvalidCtiTime);
+    setCurtailmentStartTime(gInvalidCtiTime);
+    setCurtailmentStopTime(gInvalidCtiTime);
     setRunStatus(CtiLMProgramCurtailment::NullRunStatus);
     setAdditionalInfo("null");
 }
@@ -1099,7 +1099,7 @@ void CtiLMProgramCurtailment::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -1107,7 +1107,7 @@ void CtiLMProgramCurtailment::dumpDynamicData()
 
     Writes out the dynamic information for this curtailment program.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     if( getManualControlReceivedFlag() )
     {
@@ -1152,7 +1152,7 @@ void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                    dout << CtiTime() << " - " << selector.asString().data() << endl;
                 }
 
                 RWDBReader rdr = selector.reader(conn);
@@ -1172,7 +1172,7 @@ void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
         }
     }
@@ -1181,11 +1181,11 @@ void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
 // Static Members
 
 // Possible run statuses
-const RWCString CtiLMProgramCurtailment::NullRunStatus = "Null";
-const RWCString CtiLMProgramCurtailment::ScheduledRunStatus = "Scheduled";
-const RWCString CtiLMProgramCurtailment::NotifiedRunStatus = "Notified";
-const RWCString CtiLMProgramCurtailment::CanceledRunStatus = "Canceled";
-const RWCString CtiLMProgramCurtailment::ActiveRunStatus = "Active";
-const RWCString CtiLMProgramCurtailment::StoppedEarlyRunStatus = "StoppedEarly";
-const RWCString CtiLMProgramCurtailment::CompletedRunStatus = "Completed";
+const string CtiLMProgramCurtailment::NullRunStatus = "Null";
+const string CtiLMProgramCurtailment::ScheduledRunStatus = "Scheduled";
+const string CtiLMProgramCurtailment::NotifiedRunStatus = "Notified";
+const string CtiLMProgramCurtailment::CanceledRunStatus = "Canceled";
+const string CtiLMProgramCurtailment::ActiveRunStatus = "Active";
+const string CtiLMProgramCurtailment::StoppedEarlyRunStatus = "StoppedEarly";
+const string CtiLMProgramCurtailment::CompletedRunStatus = "Completed";
 

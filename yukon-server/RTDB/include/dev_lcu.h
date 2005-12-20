@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 #include <windows.h>
 #include <vector>
-using namespace std;
+using std::vector;
 
 #include <rw/tpslist.h>
 #include <rw/tvordvec.h>
@@ -71,8 +71,8 @@ public:
 
 protected:
 
-    RWTime               _stageTime;
-    RWTime               _nextCommandTime;
+    CtiTime               _stageTime;
+    CtiTime               _nextCommandTime;
 
     UINT                 _lcuFlags;
     UINT                 _numberStarted;
@@ -102,7 +102,7 @@ private:
     static RWMutexLock   _staticMux;
     static RWMutexLock   _lcuExclusionMux;     // Must be acquired before examining exclusion lists
 
-    RWCString            _lastCommand;
+    string            _lastCommand;
 
     vector< pair<ULONG, double> >  _honktime;
 
@@ -119,8 +119,8 @@ public:
 
     bool           isLCULockedOut( ) const;
     bool           isLCULockedOut( INMESS *InMessage );
-    BOOL           isStagedUp(const RWTime &tRef);
-    BOOL           isBusyByCommand(const RWTime &aTime) const;
+    BOOL           isStagedUp(const CtiTime &tRef);
+    BOOL           isBusyByCommand(const CtiTime &aTime) const;
 
     UINT           getNumberStarted() const;
     CtiDeviceLCU&  setNumberStarted( const UINT ui );
@@ -130,11 +130,11 @@ public:
     UINT           getFlags();
     bool           isFlagSet(UINT flags) const;                 // More than one may be OR'd together.
 
-    RWTime         getStageTime() const;
-    CtiDeviceLCU&  setStageTime(const RWTime& aTime);
+    CtiTime         getStageTime() const;
+    CtiDeviceLCU&  setStageTime(const CtiTime& aTime);
 
-    RWTime         getNextCommandTime() const;
-    CtiDeviceLCU&  setNextCommandTime(const RWTime& aTime);
+    CtiTime         getNextCommandTime() const;
+    CtiDeviceLCU&  setNextCommandTime(const CtiTime& aTime);
 
     OUTMESS*       getLastControlMessage();      // return OUTMESS or NULL
     CtiDeviceLCU&  setLastControlMessage(const OUTMESS *pOutMessage); // delete and set to new val.
@@ -145,7 +145,7 @@ public:
 
     INT            lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, RWTPtrSlist< CtiMessage >  &vgList);
 
-    INT            lcuDecode(INMESS*,RWTime&, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT            lcuDecode(INMESS*,CtiTime&, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     CtiReturnMsg*  lcuDecodeStatus(INMESS *InMessage);
     CtiReturnMsg*  lcuDecodeAnalogs(INMESS *InMessage);
     CtiReturnMsg*  lcuDecodeDigitalInputs(INMESS *InMessage);
@@ -183,9 +183,9 @@ public:
     virtual INT    AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT    IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT    GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
-    virtual INT    ResultDecode(INMESS*,RWTime&, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    virtual INT    ResultDecode(INMESS*,CtiTime&, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     virtual INT    ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    virtual INT    ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    virtual INT    ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
 
     bool           exceedsDutyCycle(BYTE *bptr);
     bool           watchBusyBit() const;

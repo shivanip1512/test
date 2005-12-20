@@ -16,17 +16,18 @@
 ****************************************************************************/
 #include "yukon.h"
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
+#include <boost/tokenizer.hpp>
 
 
 #include "fdrpoint.h"
 #include "fdrdestination.h"
+#include "rwutil.h"
 
 
 /** local definitions **/
 
-CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, RWCString &translation, RWCString &destination)
+CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, string &translation, string &destination)
 :   iTranslation(translation),
     iDestination(destination),
     iParentPoint(parentPoint)
@@ -65,33 +66,33 @@ bool CtiFDRDestination::operator<(const CtiFDRDestination& other) const
 }
 
 
-RWCString & CtiFDRDestination::getTranslation(void)
+string & CtiFDRDestination::getTranslation(void)
 {
     return iTranslation;
 }
 
-RWCString  CtiFDRDestination::getTranslation(void) const
+string  CtiFDRDestination::getTranslation(void) const
 {
     return iTranslation;
 }
 
-CtiFDRDestination& CtiFDRDestination::setTranslation (RWCString aTranslation)
+CtiFDRDestination& CtiFDRDestination::setTranslation (string aTranslation)
 {
   iTranslation = aTranslation;
   return *this;
 }
 
-RWCString & CtiFDRDestination::getDestination(void)
+string & CtiFDRDestination::getDestination(void)
 {
     return iDestination;
 }
 
-RWCString  CtiFDRDestination::getDestination(void) const
+string  CtiFDRDestination::getDestination(void) const
 {
     return iDestination;
 }
 
-CtiFDRDestination& CtiFDRDestination::setDestination (RWCString aDestination)
+CtiFDRDestination& CtiFDRDestination::setDestination (string aDestination)
 {
   iDestination = aDestination;
   return *this;
@@ -108,20 +109,29 @@ CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
   return *this;
 }
 
-RWCString CtiFDRDestination::getTranslationValue(RWCString propertyName) const {
-  RWCString result("");
-  RWCTokenizer pairTokenizer(getTranslation());
+string CtiFDRDestination::getTranslationValue(string propertyName) const {
+  string result("");
 
-  RWCString nameValuePair;
-  while (!(nameValuePair = pairTokenizer(";")).isNull()) {
-    RWCTokenizer valueTokenizer(nameValuePair);
+  boost::char_separator<char> sep(";");
+  Boost_char_tokenizer pairTokenizer(getTranslation(), sep);
 
-    RWCString thisPropertyName = valueTokenizer(":");
+  string nameValuePair = *pairTokenizer.begin();
+  while (!nameValuePair.empty()) {
+      boost::char_separator<char> sep1(":");
+      Boost_char_tokenizer valueTokenizer(nameValuePair, sep1);
+      Boost_char_tokenizer::iterator ite = valueTokenizer.begin();
+
+    string thisPropertyName = *ite;
     if (thisPropertyName == propertyName) {
       // right now the string looks like this: ":thisvalue;nextproperty:nextvalue"
       // we're going to return up to the ';', and then trim the first character
-      RWCString valueWithColon = valueTokenizer(";");
-      result = valueWithColon(1, valueWithColon.length() - 1);
+      ite++;
+      Boost_char_tokenizer valueTokenizer_(ite.base(), ite.end(), sep);
+
+
+      string valueWithColon = *valueTokenizer_.begin();
+
+      result = valueWithColon[1, valueWithColon.length() - 1];
       break;
     }
   }

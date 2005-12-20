@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_ptalarming.h"
-
+#include "rwutil.h"
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
 #define DEFAULT_USERLENGTH          64
@@ -54,7 +54,7 @@ CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::operator=(const CtiT
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -65,9 +65,9 @@ int CtiTableDynamicPointAlarming::operator==(const CtiTableDynamicPointAlarming 
     return( getPointID() == right.getPointID() && getAlarmCondition() == right.getAlarmCondition() );
 }
 
-RWCString CtiTableDynamicPointAlarming::getTableName()
+string CtiTableDynamicPointAlarming::getTableName()
 {
-    return RWCString("DynamicPointAlarming");
+    return string("DynamicPointAlarming");
 }
 
 
@@ -89,19 +89,19 @@ RWDBStatus CtiTableDynamicPointAlarming::Update()
 
 RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
-    if(getAction().isNull())
+    if(getAction().empty())
     {
         setAction("(none)");
     }
-    if(getDescription().isNull())
+    if(getDescription().empty())
     {
         setDescription("(none)");
     }
-    if(getUser().isNull())
+    if(getUser().empty())
     {
         setUser("(none)");
     }
@@ -122,7 +122,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << inserter.asString() << endl << endl;
     }
 
@@ -146,41 +146,41 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
 
 RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
 
-    if(getAction().isNull())
+    if(getAction().empty())
     {
         setAction("(none)");
     }
-    if(getDescription().isNull())
+    if(getDescription().empty())
     {
         setDescription("(none)");
     }
-    if(getUser().isNull())
+    if(getUser().empty())
     {
         setUser("(none)");
     }
 
-    if(getAction().mbLength() > DEFAULT_ACTIONLENGTH)
+    if(::mblen(getAction().c_str(),::MB_CUR_MAX) > DEFAULT_ACTIONLENGTH)
     {
-        RWCString temp = getAction();
+        string temp = getAction();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAction(temp);
     }
 
-    if(getDescription().mbLength() > DEFAULT_DESCRIPTIONLENGTH)
+    if(::mblen(getDescription().c_str(),::MB_CUR_MAX) > DEFAULT_DESCRIPTIONLENGTH)
     {
-        RWCString temp = getDescription();
+        string temp = getDescription();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setDescription(temp);
     }
 
-    if(getUser().mbLength() > DEFAULT_USERLENGTH)
+    if(::mblen(getUser().c_str(),::MB_CUR_MAX) > DEFAULT_USERLENGTH)
     {
-        RWCString temp = getUser();
+        string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
         setUser(temp);
     }
@@ -188,14 +188,14 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
 
     updater <<
     table["categoryid"].assign(getCategoryID()) <<
-    table["alarmtime"].assign(getAlarmTime()) <<
-    table["action"].assign(getAction()) <<
-    table["description"].assign(getDescription()) <<
+    table["alarmtime"].assign(toRWDBDT(getAlarmTime())) <<
+    table["action"].assign(getAction().c_str()) <<
+    table["description"].assign(getDescription().c_str()) <<
     table["tags"].assign(getTags()) <<
     table["logid"].assign(getLogID());
     table["soe_tag"].assign(getSOE());
     table["type"].assign(getLogType());
-    table["username"].assign(getUser());
+    table["username"].assign(getUser().c_str());
 
     long rowsAffected;
     RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
@@ -203,7 +203,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << updater.asString() << endl << endl;
     }
 
@@ -231,7 +231,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -271,7 +271,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
@@ -279,7 +279,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete()
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << deleter.asString() << endl << endl;
     }
 
@@ -291,7 +291,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["pointid"] == pointid && table["alarmcondition"] == alarm_condition );
@@ -299,7 +299,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << deleter.asString() << endl << endl;
     }
 
@@ -309,7 +309,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
 
 void CtiTableDynamicPointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(CtiTableDynamicPointAlarming::getTableName());
+    keyTable = db.table(CtiTableDynamicPointAlarming::getTableName().c_str());
 
     selector <<
     keyTable["pointid"] <<
@@ -373,42 +373,42 @@ CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setCategoryID(UINT c
     return *this;
 }
 
-RWTime CtiTableDynamicPointAlarming::getAlarmTime() const
-{
-    return _alarmTime.rwtime();
-}
-
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmTime(const RWTime &rwt)
-{
-    _alarmTime = RWDBDateTime( rwt );
-    return *this;
-}
-
-RWDBDateTime CtiTableDynamicPointAlarming::getAlarmDBTime() const
+CtiTime CtiTableDynamicPointAlarming::getAlarmTime() const
 {
     return _alarmTime;
 }
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmDBTime(const RWDBDateTime &rwt)
+
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmTime(const CtiTime &rwt)
+{
+    _alarmTime = CtiTime( rwt );
+    return *this;
+}
+
+CtiTime CtiTableDynamicPointAlarming::getAlarmDBTime() const
+{
+    return _alarmTime;
+}
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmDBTime(const CtiTime &rwt)
 {
     _alarmTime = rwt;
     return *this;
 }
 
-RWCString CtiTableDynamicPointAlarming::getAction() const
+string CtiTableDynamicPointAlarming::getAction() const
 {
     return _action;
 }
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAction(const RWCString &str)
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAction(const string &str)
 {
     _action = str;
     return *this;
 }
 
-RWCString CtiTableDynamicPointAlarming::getDescription() const
+string CtiTableDynamicPointAlarming::getDescription() const
 {
     return _description;
 }
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setDescription(const RWCString &str)
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setDescription(const string &str)
 {
     _description = str;
     return *this;
@@ -461,11 +461,11 @@ CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setLogType(const INT
     return *this;
 }
 
-RWCString CtiTableDynamicPointAlarming::getUser() const
+string CtiTableDynamicPointAlarming::getUser() const
 {
     return _user;
 }
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setUser(const RWCString &str)
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setUser(const string &str)
 {
     _user = str;
     return *this;
@@ -479,10 +479,10 @@ void CtiTableDynamicPointAlarming::dump()
         dout << "getPointID()        " << getPointID() << endl;
         dout << "getAlarmCondition() " << getAlarmCondition() << endl;
         dout << "getCategoryID()     " << getCategoryID() << endl;
-        dout << "getAlarmDBTime()    " << getAlarmDBTime().rwtime() << endl;
+        dout << "getAlarmDBTime()    " << getAlarmDBTime() << endl;
         dout << "getAction()         " << getAction() << endl;
         dout << "getDescription()    " << getDescription() << endl;
-        dout << "getTags()            0x" << CtiNumStr(getTags()).xhex().zpad(8) << endl;
+        dout << "getTags()            0x" << CtiNumStr(getTags()).xhex().zpad(8).toString() << endl;
         dout << "getLogID()          " << getLogID() << endl;
         dout << "getSOE()            " << getSOE() << endl;
         dout << "getLogType()        " << getLogType() << endl;

@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-using namespace std;
+using std::iostream;
 
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "msg_pdata.h"
 
@@ -13,7 +13,7 @@ using namespace std;
 class CtiTestInterface : public CtiFDRInterface<CtiMessage>
 {
 public:
-    CtiTestInterface( RWCString destination ) : CtiFDRInterface<CtiMessage>( "TESTINTERFACE", destination )
+    CtiTestInterface( string destination ) : CtiFDRInterface<CtiMessage>( "TESTINTERFACE", destination )
         {   };
 
     void runInterface( void )

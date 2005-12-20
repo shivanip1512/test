@@ -2,6 +2,8 @@
 #include "tbl_rawpthistory.h"
 #include "dbaccess.h"
 #include "logger.h"
+#include "ctitime.h"
+#include "rwutil.h"
 
 void CtiTableRawPointHistory::Insert()
 {
@@ -13,13 +15,13 @@ void CtiTableRawPointHistory::Insert()
 
 void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = conn.database().table( getTableName() );
+    RWDBTable table = conn.database().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
     getChangeID() <<
     getPointID() <<
-    RWDBDateTime(getTime()) <<
+    getTime() <<
     getQuality() <<
     getValue() <<
     getMillis();
@@ -32,7 +34,7 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
 
         if(newcid != getChangeID())
         {
-            RWTime Now;
+            CtiTime Now;
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -46,7 +48,7 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
             if( stat.errorCode() != RWDBStatus::ok )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unable to insert point change for point id " << getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Unable to insert point change for point id " << getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "   " << inserter.asString() << endl;
             }
         }
@@ -84,9 +86,9 @@ DOUBLE CtiTableRawPointHistory::getValue() const
     return _value;
 }
 
-RWCString CtiTableRawPointHistory::getTableName() const
+string CtiTableRawPointHistory::getTableName() const
 {
-    return RWCString("rawpointhistory");
+    return string("rawpointhistory");
 }
 
 LONG CtiTableRawPointHistory::getChangeID() const
@@ -99,7 +101,7 @@ LONG CtiTableRawPointHistory::getPointID() const
     return _pointID;
 }
 
-RWTime CtiTableRawPointHistory::getTime() const
+CtiTime CtiTableRawPointHistory::getTime() const
 {
     return _time;
 }
@@ -121,7 +123,7 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::setPointID(LONG id)
     return *this;
 }
 
-CtiTableRawPointHistory& CtiTableRawPointHistory::setTime(const RWTime &rwt)
+CtiTableRawPointHistory& CtiTableRawPointHistory::setTime(const CtiTime &rwt)
 {
     _time = rwt;
     return *this;
@@ -133,7 +135,7 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::setMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis %= 1000;
@@ -142,7 +144,7 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::setMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis = 0;
@@ -170,7 +172,7 @@ void CtiTableRawPointHistory::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["changeid"]
@@ -195,7 +197,7 @@ void CtiTableRawPointHistory::RestoreMax()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     char temp[80];
@@ -221,7 +223,7 @@ void CtiTableRawPointHistory::RestoreMax()
 
 void CtiTableRawPointHistory::DecodeDatabaseReader( RWDBReader& rdr )
 {
-    RWDBDateTime dt;
+    CtiTime dt;
     INT millis;
 
     rdr["changeid"]     >> _changeID;
@@ -231,7 +233,7 @@ void CtiTableRawPointHistory::DecodeDatabaseReader( RWDBReader& rdr )
     rdr["value"]        >> _value;
     rdr["millis"]       >> millis;
 
-    setTime( dt.rwtime() );             // Convert that thing back into a time.
+    setTime( dt );             // Convert that thing back into a time.
     setMillis( millis );
 }
 

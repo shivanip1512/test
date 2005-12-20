@@ -6,7 +6,6 @@
 
 // typedef RWCollectable Object;  // Smalltalk typedef
 #include <rw/collect.h>
-#include <rw/cstring.h>
 #include <rw/hashdict.h>
 #include <rw/btrdict.h>
 

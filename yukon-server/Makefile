@@ -1,10 +1,10 @@
 
 all:
         @echo:
-        @title Building in $(COMPILEBASE)\tcl
-        @echo Building in $(COMPILEBASE)\tcl
+	@title Building in $(COMPILEBASE)\tcl
+	@echo Building in $(COMPILEBASE)\tcl
         @echo:
-        @%cd $(COMPILEBASE)\tcl
+	@%cd $(COMPILEBASE)\tcl
         @$(MAKE) -nologo
         @title Building in $(COMPILEBASE)\xerces
         @echo Building in $(COMPILEBASE)\xerces

@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-using namespace std;
+using std::iostream;
 
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "fdriosocket.h"
 

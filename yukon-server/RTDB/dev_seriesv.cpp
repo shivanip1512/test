@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/11 16:24:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &par
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -124,8 +124,8 @@ INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &par
         nRet = NoExecuteRequestMethod;
 
         retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(OutMessage->Request.CommandStr),
-                                                RWCString("System V RTUs do not support this command"),
+                                                string(OutMessage->Request.CommandStr),
+                                                string("System V RTUs do not support this command"),
                                                 nRet,
                                                 OutMessage->Request.RouteID,
                                                 OutMessage->Request.MacroOffset,
@@ -168,7 +168,7 @@ INT CtiDeviceSeriesV::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &pa
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -194,7 +194,7 @@ INT CtiDeviceSeriesV::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -219,7 +219,7 @@ INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -236,18 +236,18 @@ INT CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse
 }
 
 
-INT CtiDeviceSeriesV::ErrorDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CtiDeviceSeriesV::ErrorDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
 {
     return 0;
 }
 
 
-INT CtiDeviceSeriesV::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CtiDeviceSeriesV::ResultDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> seriesvPoints;
 
-    RWCString resultString;
+    string resultString;
     CtiReturnMsg *retMsg;
 
     if( !ErrReturn && !_seriesv.recvCommResult(InMessage, outList) )

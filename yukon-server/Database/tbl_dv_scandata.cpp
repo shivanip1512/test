@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/16 16:18:37 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,19 +19,20 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_dv_scandata.h"
+#include "rwutil.h"
 
 CtiTableDeviceScanData::CtiTableDeviceScanData(LONG did) :
 lastFreezeNumber(0),
 prevFreezeNumber(0),
-lastLPTime(RWTime( RWTime() - (30 * 24 * 3600) )),       // Thirty days ago.
+lastLPTime(CtiTime( CtiTime() - (30 * 24 * 3600) )),       // Thirty days ago.
 lastFreezeTime((unsigned)1985, (unsigned)1, (unsigned)1),
 prevFreezeTime((unsigned)1985, (unsigned)1, (unsigned)1),
 _deviceID(did)
 {
     for(int i=0; i < ScanRateInvalid; i++)
     {
-        _nextScan[i] = (RWDBDateTime)RWTime(YUKONEOT);
-        _lastCommunicationTime[i] = RWTime(YUKONEOT);
+        _nextScan[i] = (CtiTime)CtiTime(YUKONEOT);
+        _lastCommunicationTime[i] = CtiTime(YUKONEOT);
     }
 
 }
@@ -58,28 +59,28 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::setDeviceID(LONG id)
     return *this;
 }
 
-RWTime CtiTableDeviceScanData::getNextScan(INT a) const
+CtiTime CtiTableDeviceScanData::getNextScan(INT a) const
 {
-    RWTime tm = _nextScan[a].rwtime();
+    CtiTime tm = _nextScan[a];
     return tm;
 }
 
-CtiTableDeviceScanData& CtiTableDeviceScanData::setNextScan(INT a, const RWTime &b)
+CtiTableDeviceScanData& CtiTableDeviceScanData::setNextScan(INT a, const CtiTime &b)
 {
-    _nextScan[a] = RWDBDateTime(b);
+    _nextScan[a] = CtiTime(b);
     return *this;
 }
 
-RWTime CtiTableDeviceScanData::nextNearestTime(int maxrate) const
+CtiTime CtiTableDeviceScanData::nextNearestTime(int maxrate) const
 {
-    RWDBDateTime Win = RWDBDateTime( RWTime(YUKONEOT) );
+    CtiTime Win = CtiTime( CtiTime(YUKONEOT) );
 
     for(int i = 0; i < maxrate; i++)
     {
         if(_nextScan[i] < Win) Win = _nextScan[i];
     }
 
-    return Win.rwtime();
+    return Win;
 }
 
 LONG  CtiTableDeviceScanData::getLastFreezeNumber() const
@@ -112,42 +113,42 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::setPrevFreezeNumber( const LONG 
     return *this;
 }
 
-RWTime  CtiTableDeviceScanData::getLastFreezeTime() const
+CtiTime  CtiTableDeviceScanData::getLastFreezeTime() const
 {
-    return lastFreezeTime.rwtime();
+    return lastFreezeTime;
 }
-CtiTableDeviceScanData& CtiTableDeviceScanData::setLastFreezeTime( const RWTime& aLastFreezeTime )
+CtiTableDeviceScanData& CtiTableDeviceScanData::setLastFreezeTime( const CtiTime& aLastFreezeTime )
 {
     setDirty(true);
     lastFreezeTime = aLastFreezeTime;
     return *this;
 }
 
-RWTime  CtiTableDeviceScanData::getLastLPTime() const
+CtiTime  CtiTableDeviceScanData::getLastLPTime() const
 {
-    return lastLPTime.rwtime();
+    return lastLPTime;
 }
-CtiTableDeviceScanData& CtiTableDeviceScanData::setLastLPTime( const RWTime& aLastTime )
+CtiTableDeviceScanData& CtiTableDeviceScanData::setLastLPTime( const CtiTime& aLastTime )
 {
     setDirty(true);
     lastLPTime = aLastTime;
     return *this;
 }
 
-RWTime  CtiTableDeviceScanData::getPrevFreezeTime() const
+CtiTime  CtiTableDeviceScanData::getPrevFreezeTime() const
 {
-    return prevFreezeTime.rwtime();
+    return prevFreezeTime;
 }
-CtiTableDeviceScanData& CtiTableDeviceScanData::setPrevFreezeTime( const RWTime& aPrevFreezeTime )
+CtiTableDeviceScanData& CtiTableDeviceScanData::setPrevFreezeTime( const CtiTime& aPrevFreezeTime )
 {
     setDirty(true);
-    prevFreezeTime = RWDBDateTime(aPrevFreezeTime);
+    prevFreezeTime = CtiTime(aPrevFreezeTime);
     return *this;
 }
 
 
 
-RWCString CtiTableDeviceScanData::getTableName() const
+string CtiTableDeviceScanData::getTableName() const
 {
     return "DynamicDeviceScanData";
 }
@@ -159,7 +160,7 @@ RWDBStatus CtiTableDeviceScanData::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -182,7 +183,7 @@ RWDBStatus CtiTableDeviceScanData::Restore()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << selector.asString() << endl;
         }
     }
@@ -206,22 +207,22 @@ RWDBStatus CtiTableDeviceScanData::Update(RWDBConnection &conn)
 {
     char temp[32];
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["lastfreezetime"].assign(getLastFreezeTime()) <<
-    table["prevfreezetime"].assign(getPrevFreezeTime()) <<
-    table["lastlptime"].assign(getLastLPTime()) <<
+    table["lastfreezetime"].assign(toRWDBDT(getLastFreezeTime())) <<
+    table["prevfreezetime"].assign(toRWDBDT(getPrevFreezeTime())) <<
+    table["lastlptime"].assign(toRWDBDT(getLastLPTime())) <<
     table["lastfreezenumber"].assign(getLastFreezeNumber()) <<
     table["prevfreezenumber"].assign(getPrevFreezeNumber());
 
     for(int i = 0; i <= ScanRateIntegrity; i++)
     {
         sprintf(temp, "nextscan%d", i);
-        updater.set( table[ temp ].assign( getNextScan(i) ) );
+        updater.set( table[ temp ].assign( toRWDBDT(getNextScan(i)) ) );
     }
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok)
@@ -244,20 +245,20 @@ RWDBStatus CtiTableDeviceScanData::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
     getDeviceID() <<
-    (RWDBDateTime)getLastFreezeTime() <<
-    (RWDBDateTime)getPrevFreezeTime() <<
-    (RWDBDateTime)getLastLPTime() <<
+    (CtiTime)getLastFreezeTime() <<
+    (CtiTime)getPrevFreezeTime() <<
+    (CtiTime)getLastLPTime() <<
     getLastFreezeNumber() <<
     getPrevFreezeNumber();
 
     for(int i = 0; i <= ScanRateIntegrity; i++)
     {
-        inserter << (RWDBDateTime)getNextScan(i);
+        inserter << (CtiTime)getNextScan(i);
     }
 
     if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
@@ -273,7 +274,7 @@ RWDBStatus CtiTableDeviceScanData::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );
@@ -284,7 +285,7 @@ RWDBStatus CtiTableDeviceScanData::Delete()
 void CtiTableDeviceScanData::DecodeDatabaseReader(RWDBReader& rdr )
 {
     char temp[32];
-    RWDBDateTime adt;
+    CtiTime adt;
 
     rdr["deviceid"] >> _deviceID;
     rdr["lastfreezetime"] >> lastFreezeTime;
@@ -298,7 +299,7 @@ void CtiTableDeviceScanData::DecodeDatabaseReader(RWDBReader& rdr )
     {
         sprintf(temp, "nextscan%d", i);
         rdr[ temp ] >> adt;
-        setNextScan(i, adt.rwtime());
+        setNextScan(i, adt);
     }
 #endif
 
@@ -333,12 +334,12 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::operator=(const CtiTableDeviceSc
     return *this;
 }
 
-RWTime CtiTableDeviceScanData::getLastCommunicationTime(int i) const
+CtiTime CtiTableDeviceScanData::getLastCommunicationTime(int i) const
 {
     return _lastCommunicationTime[i];
 }
 
-CtiTableDeviceScanData& CtiTableDeviceScanData::setLastCommunicationTime( int i, const RWTime& tme )
+CtiTableDeviceScanData& CtiTableDeviceScanData::setLastCommunicationTime( int i, const CtiTime& tme )
 {
     _lastCommunicationTime[i] = tme;
     return *this;

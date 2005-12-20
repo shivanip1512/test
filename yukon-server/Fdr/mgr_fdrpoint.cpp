@@ -32,6 +32,7 @@
 #include "guard.h"
 #include "utility.h"
 
+#include "rwutil.h"
 
 /** local definitions **/
 const CHAR * CtiFDRManager::TBLNAME_FDRTRANSLATION =     "FDRTranslation";
@@ -51,13 +52,13 @@ const CHAR * CtiFDRManager::COLNAME_PTBASE_POINTTYPE =   "PointType";
 
 // constructors, destructors, operators first
 
-CtiFDRManager::CtiFDRManager(RWCString & aInterfaceName):
+CtiFDRManager::CtiFDRManager(string & aInterfaceName):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr()
 {
 }
 
-CtiFDRManager::CtiFDRManager(RWCString & aInterfaceName, RWCString & aWhereSelectStr):
+CtiFDRManager::CtiFDRManager(string & aInterfaceName, string & aWhereSelectStr):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr(aWhereSelectStr)
 {
@@ -70,23 +71,23 @@ CtiFDRManager::~CtiFDRManager()
 //**************************************************
 // start getters and setters
 
-RWCString CtiFDRManager::getInterfaceName()
+string CtiFDRManager::getInterfaceName()
 {
     return iInterfaceName;
 }
 
-CtiFDRManager & CtiFDRManager::setInterfaceName(RWCString & aInterfaceName)
+CtiFDRManager & CtiFDRManager::setInterfaceName(string & aInterfaceName)
 {
     iInterfaceName = aInterfaceName;
     return *this;
 }
 
-RWCString CtiFDRManager::getWhereSelectStr()
+string CtiFDRManager::getWhereSelectStr()
 {
     return iWhereSelectStr;
 }
 
-CtiFDRManager & CtiFDRManager::setWhereSelectStr(RWCString & aWhereSelectStr)
+CtiFDRManager & CtiFDRManager::setWhereSelectStr(string & aWhereSelectStr)
 {
     iWhereSelectStr = aWhereSelectStr;
     return *this;
@@ -108,12 +109,12 @@ RWDBStatus CtiFDRManager::loadPointList()
 {
     CtiFDRPoint *pTempFdrPoint = NULL;
     LONG        pointID;
-    RWCString   translation;
-    RWCString   destination;
-    RWCString   direction;
+    string   translation;
+    string   destination;
+    string   direction;
     double      multiplier=0.0;
     double      dataOffset=0;
-    RWCString tmp;
+    string tmp;
     CtiPointType_t pointType = InvalidPointType;
     RWDBStatus  retStatus = RWDBStatus::ok;
 
@@ -150,31 +151,31 @@ RWDBStatus CtiFDRManager::loadPointList()
         if(getWhereSelectStr() != "")
         {
             // we now have control options so put those into the same list as a default
-            if(getWhereSelectStr() == RWCString (FDR_INTERFACE_SEND))
+            if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
             {
                 // use a direction clause
-                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() && (
-                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
-                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) ));
+                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() && (
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str() ||
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == string(FDR_INTERFACE_SEND_FOR_CONTROL).c_str() ));
             }
-            else if(getWhereSelectStr() == RWCString (FDR_INTERFACE_RECEIVE))
+            else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
             {
                 // use a direction clause
-                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() && (
-                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr() ||
-                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL)));
+                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() && (
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str() ||
+                                                                                                 fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL).c_str()));
             }
             else
             {
                 // use a direction clause
-                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName() &&
-                               fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr());
+                selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() &&
+                               fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str());
             }
         }
         else
         {
             // at least get the distination
-            selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName());
+            selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str());
         }
 
         selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]));
@@ -182,7 +183,7 @@ RWDBStatus CtiFDRManager::loadPointList()
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << selector.asString() << endl;
+            dout << CtiTime() << " " << selector.asString() << endl;
         }
 
         // check execute status to stop the exception when database is gone
@@ -226,8 +227,8 @@ RWDBStatus CtiFDRManager::loadPointList()
                     }
 
                     // set controllable
-                    if(direction == RWCString(FDR_INTERFACE_SEND_FOR_CONTROL) ||
-                       direction == RWCString(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
+                    if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
+                       direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
                     {
                         pTempFdrPoint->setControllable (true);
                     }
@@ -273,7 +274,7 @@ RWDBStatus CtiFDRManager::loadPointList()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
         }
         Map.clearAndDestroy();
     }

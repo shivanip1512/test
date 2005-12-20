@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/12/15 22:27:51 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 
 #include <utility>
-using namespace std;
+
 
 #include <rw/tpslist.h>
 

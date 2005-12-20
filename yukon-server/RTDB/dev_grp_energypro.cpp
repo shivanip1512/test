@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/09/02 16:19:46 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,11 +75,11 @@ LONG CtiDeviceGroupEnergyPro::getRouteID()
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceGroupEnergyPro::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupEnergyPro::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
     {
         tmpStr = "Group: " + getName() + " Load:";
@@ -119,7 +119,7 @@ void CtiDeviceGroupEnergyPro::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
@@ -139,9 +139,9 @@ INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     return nRet;
 }
 
-RWCString CtiDeviceGroupEnergyPro::getPutConfigAssignment(UINT modifier)
+string CtiDeviceGroupEnergyPro::getPutConfigAssignment(UINT modifier)
 {
-    RWCString assign = RWCString("xcom assign") +
+    string assign = string("xcom assign") +
                        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
                        " G" + CtiNumStr(_expresscomGroup.getGeo()) +
                        " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
@@ -166,7 +166,7 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
 {
     bool status = false;
 
-    RWCString issue;
+    string issue;
 
     if(parse.isKeyValid("xc_serial"))
     {
@@ -223,25 +223,25 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
 
     if(status)
     {
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         pRet->setExpectMore( FALSE );
 
         retList.insert( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << issue << endl;
+            dout << CtiTime() << issue << endl;
         }
     }
 
     return status;
 }
 
-INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, RWTime& now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = 0;
 
-    retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered()));
+    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered()));
 
 
     return status;

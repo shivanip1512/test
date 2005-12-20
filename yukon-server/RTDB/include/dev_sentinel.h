@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/09/29 21:19:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -56,13 +56,13 @@ public:
 
 
    virtual INT ResultDecode(INMESS                    *InMessage,
-                            RWTime                    &TimeNow,
+                            CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
-                           RWTime                     &TimeNow,
+                           CtiTime                     &TimeNow,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
@@ -92,7 +92,7 @@ private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
 
     //UINT _parseFlags;
-    RWCString _result_string;
+    string _result_string;
 
     unsigned long _lastLPTime;
 };

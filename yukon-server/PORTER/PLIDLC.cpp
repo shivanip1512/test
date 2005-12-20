@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/16 16:20:47 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,6 @@
 #include <windows.h>
 #include <process.h>
 #include <iostream>
-using namespace std;
 
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -69,6 +68,8 @@ using namespace std;
 #include "trx_info.h"
 #include "logger.h"
 #include "guard.h"
+
+using namespace std;
 
 /* Routine to generate preamble for general IDLC message */
 PreIDLC (PBYTE   Message,        /* resulting command string */
@@ -232,7 +233,7 @@ PreVTU (PBYTE  Message,        /* resulting command string */
    Message[6] = Length + 3;
 
    /* Now move the message up a few bytes */
-   memmove (Message + 10, Message + 7, Length);
+   ::memmove (Message + 10, Message + 7, Length);
 
    /* And load the rest of the info */
    Message[7] = (UCHAR)PPUPort;

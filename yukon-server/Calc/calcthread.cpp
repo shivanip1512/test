@@ -33,7 +33,7 @@ CtiCalculateThread::~CtiCalculateThread( void )
     }
 };
 
-void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
+void CtiCalculateThread::pointChange( long changedID, double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
 {
     try
     {
@@ -46,7 +46,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
+            dout << CtiTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
 
         if(pointPtr)
@@ -76,14 +76,14 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -94,14 +94,14 @@ void CtiCalculateThread::periodicThread( void )
     {
         bool calcValid;
         float msLeftThisSecond;
-        RWTime newTime, tempTime;
+        CtiTime newTime, tempTime;
         CtiCalcPointMapIterator periodicIter( _periodicPoints );
         RWRunnableSelf _pSelf = rwRunnable( );
         BOOL interrupted = FALSE, messageInMulti;
         clock_t now;
 
-        RWTime rwnow, announceTime;
-        announceTime = nextScheduledTimeAlignedOnRate( RWTime(), 300);
+        CtiTime rwnow, announceTime;
+        announceTime = nextScheduledTimeAlignedOnRate( CtiTime(), 300);
 
         while( !interrupted )
         {
@@ -111,7 +111,7 @@ void CtiCalculateThread::periodicThread( void )
                 announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
+                    dout << CtiTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
                 }
 
                 ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::periodicComplain, 0 , 0,  0 ) );
@@ -120,7 +120,7 @@ void CtiCalculateThread::periodicThread( void )
             //  while it's still the same second /and/ i haven't been interrupted
             for( ; newTime == tempTime && !interrupted; )
             {
-                tempTime = RWTime( );
+                tempTime = CtiTime( );
                 if( _pSelf.serviceInterrupt( ) )
                     interrupted = TRUE;
                 else
@@ -143,7 +143,7 @@ void CtiCalculateThread::periodicThread( void )
             messageInMulti = FALSE;
 
             int calcQuality;
-            RWTime calcTime;
+            CtiTime calcTime;
             for( ; periodicIter( ); )
             {
                 calcPoint = (CtiCalc *)(periodicIter.value( ));
@@ -173,7 +173,7 @@ void CtiCalculateThread::periodicThread( void )
                     if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                        dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
                     }
 
                     calcQuality = NonUpdatedQuality;
@@ -190,7 +190,7 @@ void CtiCalculateThread::periodicThread( void )
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
+                    dout << CtiTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
                 }
             }
 
@@ -205,7 +205,7 @@ void CtiCalculateThread::periodicThread( void )
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << "  periodicThread posting a message - took " << (clock( ) - now) << " ticks" << endl;
+                    dout << CtiTime( ) << "  periodicThread posting a message - took " << (clock( ) - now) << " ticks" << endl;
                 }
             }
             else
@@ -218,13 +218,13 @@ void CtiCalculateThread::periodicThread( void )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " periodicThread interrupted. TID: " << rwThreadId() << endl;
+            dout << CtiTime( ) << " periodicThread interrupted. TID: " << rwThreadId() << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ) );
@@ -246,10 +246,10 @@ void CtiCalculateThread::onUpdateThread( void )
         RWRunnableSelf _auSelf = rwRunnable( );
 
         int calcQuality;
-        RWTime calcTime;
+        CtiTime calcTime;
 
-        RWTime rwnow, announceTime;
-        announceTime = nextScheduledTimeAlignedOnRate( RWTime(), 300);
+        CtiTime rwnow, announceTime;
+        announceTime = nextScheduledTimeAlignedOnRate( CtiTime(), 300);
 
         while( !interrupted )
         {
@@ -262,7 +262,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
+                        dout << CtiTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
                     }
 
                     ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::onUpdateComplain, 0 , 0, 0 ) );
@@ -313,7 +313,7 @@ void CtiCalculateThread::onUpdateThread( void )
                         if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                            dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
                         }
 
                         calcQuality = NonUpdatedQuality;
@@ -327,15 +327,15 @@ void CtiCalculateThread::onUpdateThread( void )
                         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
-                            dout << RWTime() << "   Update type may be inappropriate for the component device/points." << endl;
+                            dout << CtiTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
+                            dout << CtiTime() << "   Update type may be inappropriate for the component device/points." << endl;
                         }
-                        calcTime = RWTime().now();
+                        calcTime = CtiTime();
                     }
 
                     CtiPointDataMsg *pData = NULL;
 
-                    if( calcPointPtr->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
+                    if( calcPointPtr->getPointCalcWindowEndTime() > CtiTime(CtiDate(1,1,1991)) )
                     {// demand average point madness
 
                         long davgpid = calcPoint->findDemandAvgComponentPointId();
@@ -349,28 +349,29 @@ void CtiCalculateThread::onUpdateThread( void )
 
                             if(componentPointPtr)
                             {
-                                RWTime now;
-                                RWTime et = calcPointPtr->getPointCalcWindowEndTime();
-                                RWTime etplus = (calcPointPtr->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
+
+                                CtiTime now;
+                                CtiTime et = calcPointPtr->getPointCalcWindowEndTime();
+                                CtiTime etplus = (calcPointPtr->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
 
                                 if( et <= now &&  now < etplus )    // Are we greater than the end time, but less than the end time + "slop"
                                 {
                                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
+                                        dout << CtiTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
                                     }
                                     pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                                     pData->setTime(calcPointPtr->getPointCalcWindowEndTime());
                                 }
 
-                                calcPointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
+                                calcPointPtr->setPointValue( recalcValue, CtiTime(), NormalQuality, 0 );
                             }
                             else
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
+                                    dout << CtiTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
                                 }
                             }
                         }
@@ -378,7 +379,7 @@ void CtiCalculateThread::onUpdateThread( void )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** CONFIG ERROR **** Demand Average points require a point to be identified (no pre-push).  Point ID " << calcPoint->getPointId() << endl;
+                                dout << CtiTime() << " **** CONFIG ERROR **** Demand Average points require a point to be identified (no pre-push).  Point ID " << calcPoint->getPointId() << endl;
                             }
                         }
                     }
@@ -399,7 +400,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " onUpdateThread setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                        dout << CtiTime() << " onUpdateThread setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
                     }
                 }
             }
@@ -416,7 +417,7 @@ void CtiCalculateThread::onUpdateThread( void )
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << "  onUpdateThread posting a message" << endl;
+                    dout << CtiTime( ) << "  onUpdateThread posting a message" << endl;
                 }
             }
             else
@@ -427,13 +428,13 @@ void CtiCalculateThread::onUpdateThread( void )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " onUpdateThread interrupted. TID: " << rwThreadId() << endl;
+            dout << CtiTime( ) << " onUpdateThread interrupted. TID: " << rwThreadId() << endl;
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
 }
@@ -481,7 +482,7 @@ void CtiCalculateThread::joinThreads(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " periodicThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
+            dout << CtiTime() << " periodicThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
         }
         _periodicThreadFunc.terminate();
     }
@@ -489,7 +490,7 @@ void CtiCalculateThread::joinThreads(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " periodicThread shutdown correctly." << endl;
+            dout << CtiTime() << " periodicThread shutdown correctly." << endl;
         }
     }
 
@@ -497,7 +498,7 @@ void CtiCalculateThread::joinThreads(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " onUpdateThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
+            dout << CtiTime() << " onUpdateThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
         }
 
         _onUpdateThreadFunc.terminate();
@@ -506,7 +507,7 @@ void CtiCalculateThread::joinThreads(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " onUpdateThread shutdown correctly." << endl;
+            dout << CtiTime() << " onUpdateThread shutdown correctly." << endl;
         }
     }
 
@@ -521,7 +522,7 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Unable to interrupt the periodicThread. Calc may become unstable!" << endl;
         }
     }
@@ -530,7 +531,7 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Unable to interrupt the onUpdateThread. Calc may become unstable!" << endl;
         }
     }
@@ -547,14 +548,14 @@ void CtiCalculateThread::resumeThreads(  )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << msg.why() <<  " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " " << msg.why() <<  " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -568,7 +569,7 @@ void CtiCalculateThread::appendCalcPoint( long pointID )
     tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
 }
 
-bool CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int updateinterval )
+bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval )
 {
     bool inserted = false;
 
@@ -604,8 +605,8 @@ bool CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
 }
 
 
-void CtiCalculateThread::appendPointComponent( long pointID, RWCString &componentType, long componentPointID,
-                                               RWCString &operationType, double constantValue, RWCString &functionName )
+void CtiCalculateThread::appendPointComponent( long pointID, string &componentType, long componentPointID,
+                                               string &operationType, double constantValue, string &functionName )
 {
     CtiHashKey pointHashKey(pointID);
     CtiCalc *targetCalcPoint;
@@ -788,7 +789,7 @@ void CtiCalculateThread::sendConstants()
 
     bool calcValid;
     int calcQuality;
-    RWTime calcTime;
+    CtiTime calcTime;
 
 
     CtiCalcPointMapIterator constIter( _constantPoints );
@@ -817,7 +818,7 @@ void CtiCalculateThread::sendConstants()
                 if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                    dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
                 }
 
                 calcQuality = NonUpdatedQuality;
@@ -832,7 +833,7 @@ void CtiCalculateThread::sendConstants()
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " sendConstants() setting Calc Point ID: " << pointId << " to CONSTANT Value: " << pointValue << endl;
+                dout << CtiTime() << " sendConstants() setting Calc Point ID: " << pointId << " to CONSTANT Value: " << pointValue << endl;
             }
         }
     }
@@ -855,7 +856,7 @@ void CtiCalculateThread::onUpdateComplain( void *la )
 {
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime( ) << " CalcLogicSvc onUpdate thread is AWOL" << endl;
+       dout << CtiTime( ) << " CalcLogicSvc onUpdate thread is AWOL" << endl;
    }
 }
 
@@ -863,7 +864,7 @@ void CtiCalculateThread::periodicComplain( void *la )
 {
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime( ) << " CalcLogicSvc periodic thread is AWOL" << endl;
+       dout << CtiTime( ) << " CalcLogicSvc periodic thread is AWOL" << endl;
    }
 }
 
@@ -871,7 +872,7 @@ void CtiCalculateThread::calcComplain( void *la )
 {
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime( ) << " CalcLogicSvc calc thread thread is AWOL" << endl;
+       dout << CtiTime( ) << " CalcLogicSvc calc thread thread is AWOL" << endl;
    }
 }
 

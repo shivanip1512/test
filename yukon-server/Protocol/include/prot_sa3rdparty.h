@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/08/19 21:11:49 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.17  2005/12/20 17:19:59  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.16  2005/08/19 21:11:49  cplender
 * Altered the protocol to get restores to work correctly for GRE.  May need to remove a section of code once tested
 *
@@ -23,6 +26,15 @@
 *
 * Revision 1.14  2005/07/29 16:26:02  cplender
 * Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
+* Revision 1.12.2.3  2005/08/12 19:54:05  jliu
+* Date Time Replaced
+*
+* Revision 1.12.2.2  2005/07/27 19:28:01  alauinger
+* merged from the head 20050720
+*
+
+* Revision 1.12.2.1  2005/07/12 21:08:43  jliu
+* rpStringWithoutCmpParser
 *
 * Revision 1.13  2005/06/16 21:25:14  cplender
 * Adding the RTC scan command and decode. Must be trested with a device.
@@ -86,7 +98,7 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
-
+using std::pair;
 // CPARMS for setting "PROTOCOL_SA_TELVENT"
 #define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
@@ -103,7 +115,7 @@ protected:
 
     CtiSAData _sa;
 
-    RWTime _onePeriodTime;
+    CtiTime _onePeriodTime;
 
     bool _messageReady;
 
@@ -153,8 +165,8 @@ public:
     CtiProtocolSA3rdParty& setShed( bool val );
     CtiProtocolSA3rdParty& setFunction( int val );
     CtiProtocolSA3rdParty& setCode205( int val );
-    CtiProtocolSA3rdParty& setCodeGolay( RWCString val );
-    CtiProtocolSA3rdParty& setCodeSADigital( RWCString val );
+    CtiProtocolSA3rdParty& setCodeGolay( string val );
+    CtiProtocolSA3rdParty& setCodeSADigital( string val );
     CtiProtocolSA3rdParty& setSwitchTimeout( int val );
     CtiProtocolSA3rdParty& setCycleTime( int val );
     CtiProtocolSA3rdParty& setRepeats( int val );
@@ -162,7 +174,7 @@ public:
     CtiProtocolSA3rdParty& setDelayTxTime( int val );
     CtiProtocolSA3rdParty& setMaxTxTime( int val );
 
-    void copyMessage(RWCString &str) const;
+    void copyMessage(string &str) const;
 
     void getBuffer(BYTE *dest, ULONG &len) const;
     void appendVariableLengthTimeSlot(int transmitter,BYTE *dest,ULONG &len, BYTE dlyToTx = 0, BYTE maxTx = 0, BYTE lbtMode = 0);
@@ -174,7 +186,7 @@ public:
 
     int getStrategySTime() const;
     int getStrategyCTime() const;
-    RWTime getStrategyOnePeriodTime() const;
+    CtiTime getStrategyOnePeriodTime() const;
 
     const SA_CODE& getSACode() const { return _sa_code; };
     const X205CMD& getX205Cmd() const { return _sa_x205cfg; };
@@ -183,9 +195,9 @@ public:
     static INT TMSlen (UCHAR *abuf, INT *len);
     static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
 
-    static RWCString asString(const CtiSAData &sa);
-    static RWCString strategyAsString(const CtiSAData &sa);
-    static RWCString functionAsString(const CtiSAData &sa);
+    static string asString(const CtiSAData &sa);
+    static string strategyAsString(const CtiSAData &sa);
+    static string functionAsString(const CtiSAData &sa);
     static pair< int, int > computeSnCTime(const int swTimeout, const int cycleTime);
     static pair< int, int > computeSWnCTTime(const int sTime, const int cTime, bool gt105 = false);
 

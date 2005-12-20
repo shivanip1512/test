@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/11/11 15:22:54 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/12/20 17:19:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,10 +17,8 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
@@ -63,6 +61,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "guard.h"
 #include "utility.h"
 
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
 CtiConnection  VanGoghConnection;
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
@@ -77,10 +77,10 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     BOOL           bServerClosing = FALSE;
 
-    RWTime         TimeNow;
-    RWTime         LastThreadMonitorTime;
+    CtiTime         TimeNow;
+    CtiTime         LastThreadMonitorTime;
     CtiThreadMonitor::State previous;
-    RWTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
+    CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
     CtiMessage     *MsgPtr              = NULL;
     UINT           changeCnt = 0;
     UCHAR          checkCount = 0;
@@ -89,7 +89,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
     }
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
@@ -98,8 +98,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     LastThreadMonitorTime = LastThreadMonitorTime.now();
 
-    RWTime nowTime;
-    RWTime nextTime = nowTime + 30;
+    CtiTime nowTime;
+    CtiTime nextTime = nowTime + 30;
     ULONG omc;
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -114,7 +114,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                 nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Porter's OM Count = " << omc << endl;
+                    dout << CtiTime() << " Porter's OM Count = " << omc << endl;
                 }
 
                 PortManager.apply( applyPortQueueReport, (void*)1 );
@@ -124,7 +124,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PIL interface is indicating a failure.  Restarting the interface." << endl;
+                    dout << CtiTime() << " PIL interface is indicating a failure.  Restarting the interface." << endl;
                 }
                 KickPIL();
             }
@@ -180,12 +180,12 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                 //PorterQuit = TRUE;
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                                 Cmd->dump();
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
+                                    dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
                                 }
                                 break;
                             }
@@ -205,7 +205,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                         PorterDebugLevel = Cmd->getOpArgList().at(2);
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << "  PorterDebugLevel set to 0x" << (char*)CtiNumStr(PorterDebugLevel).hex().zpad(8) << endl;
+                                            dout << CtiTime() << "  PorterDebugLevel set to 0x" << CtiNumStr(PorterDebugLevel).hex().zpad(8).toString() << endl;
 
                                         }
                                         break;
@@ -215,7 +215,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                         DebugLevel = Cmd->getOpArgList().at(2);
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << "  DebugLevel set to 0x" << (char*)CtiNumStr(DebugLevel).hex().zpad(8) << endl;
+                                            dout << CtiTime() << "  DebugLevel set to 0x" << CtiNumStr(DebugLevel).hex().zpad(8).toString() << endl;
 
                                         }
                                         break;
@@ -254,7 +254,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " DispatchMsgHandlerThd beginning a database reload";
+                    dout << CtiTime() << " DispatchMsgHandlerThd beginning a database reload";
                     if(pChg)
                     {
                         dout << " - DBChange message." << endl;
@@ -273,7 +273,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " DispatchMsgHandlerThd done reloading" << endl;
+                    dout << CtiTime() << " DispatchMsgHandlerThd done reloading" << endl;
                 }
             }
 
@@ -298,7 +298,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     } /* End of for */

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,6 @@
 #define __MSG_PDATA_H__
 
 #include <windows.h>
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
 #include <rw/rwset.h>
 
 #include "dlldefs.h"
@@ -41,10 +39,10 @@ protected:
    unsigned       _limit;              // set iff ExceedsHigh or Low.
    double         _value;
 
-   RWTime         _time;
+   CtiTime         _time;
    unsigned       _millis;
 
-   RWCString      _str;
+   string      _str;
 
 private:
 
@@ -60,7 +58,7 @@ public:
                    double     value       = 0.0,
                    unsigned   quality     = NormalQuality,
                    int        type        = 0,
-                   RWCString  valReport   = RWCString(),
+                   string  valReport   = string(),
                    unsigned   tags        = 0,
                    unsigned   attrib      = 0,
                    unsigned   limit       = 0,
@@ -81,8 +79,8 @@ public:
    long  getId() const;
    CtiPointDataMsg& setId( const long a_id );
 
-   const RWCString& getString() const;
-   CtiPointDataMsg& setString(const RWCString& string_value);
+   const string& getString() const;
+   CtiPointDataMsg& setString(const string& string_value);
 
    int getType() const;
    CtiPointDataMsg& setType(int type);
@@ -107,9 +105,9 @@ public:
    unsigned  isExemptable() const;
    CtiPointDataMsg& setExemptionStatus( const unsigned a_ex = 1 );
 
-   const RWTime& getTime() const;
-   RWTime& getTime();
-   CtiPointDataMsg& setTime(const RWTime& aTime);
+   const CtiTime& getTime() const;
+   CtiTime& getTime();
+   CtiPointDataMsg& setTime(const CtiTime& aTime);
 
    unsigned  getMillis() const;
    CtiPointDataMsg& setMillis(unsigned millis);

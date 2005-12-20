@@ -67,7 +67,7 @@ LONG CtiLMProgramDirectGear::getPAOId() const
 
     Returns the name of the gear
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getGearName() const
+const string& CtiLMProgramDirectGear::getGearName() const
 {
 
     return _gearname;
@@ -89,7 +89,7 @@ LONG CtiLMProgramDirectGear::getGearNumber() const
 
     Returns the control method of the gear
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getControlMethod() const
+const string& CtiLMProgramDirectGear::getControlMethod() const
 {
 
     return _controlmethod;
@@ -150,7 +150,7 @@ LONG CtiLMProgramDirectGear::getCycleRefreshRate() const
 
     Returns the method stop type of the gear
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getMethodStopType() const
+const string& CtiLMProgramDirectGear::getMethodStopType() const
 {
 
     return _methodstoptype;
@@ -161,7 +161,7 @@ const RWCString& CtiLMProgramDirectGear::getMethodStopType() const
 
     Returns the change condition of the gear
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getChangeCondition() const
+const string& CtiLMProgramDirectGear::getChangeCondition() const
 {
 
     return _changecondition;
@@ -228,7 +228,7 @@ LONG CtiLMProgramDirectGear::getPercentReduction() const
 
     Returns the group selection method of the direct program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getGroupSelectionMethod() const
+const string& CtiLMProgramDirectGear::getGroupSelectionMethod() const
 {
 
     return _groupselectionmethod;
@@ -239,7 +239,7 @@ const RWCString& CtiLMProgramDirectGear::getGroupSelectionMethod() const
 
     Returns the method option type of the direct program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramDirectGear::getMethodOptionType() const
+const string& CtiLMProgramDirectGear::getMethodOptionType() const
 {
 
     return _methodoptiontype;
@@ -314,7 +314,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPAOId(LONG paoid)
     
     Sets the name of the gear
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const RWCString& name)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const string& name)
 {
 
     _gearname = name;
@@ -338,7 +338,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(LONG gearnum)
     
     Sets the control method of the gear
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const RWCString& contmeth)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const string& contmeth)
 {
 
     _controlmethod = contmeth;
@@ -404,7 +404,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setCycleRefreshRate(LONG cyclere
     
     Sets the method stop type of the gear
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const RWCString& methstoptype)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const string& methstoptype)
 {
 
     _methodstoptype = methstoptype;
@@ -416,7 +416,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const RWCStrin
     
     Sets the change condition of the gear
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const RWCString& changecond)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const string& changecond)
 {
 
     _changecondition = changecond;
@@ -489,7 +489,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(LONG percent
     
     Sets the group selection method of the direct program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const RWCString& group)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const string& group)
 {
 
     _groupselectionmethod = group;
@@ -502,7 +502,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const RW
     
     Sets the method option type of the direct program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const RWCString& optype)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const string& optype)
 {
 
     _methodoptiontype = optype;
@@ -740,38 +740,39 @@ void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
 // Static Members
 
 //Possible control methods
-const RWCString CtiLMProgramDirectGear::TimeRefreshMethod = "TimeRefresh";
-const RWCString CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
-const RWCString CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
-const RWCString CtiLMProgramDirectGear::RotationMethod = "Rotation";
-const RWCString CtiLMProgramDirectGear::LatchingMethod = "Latching";
-const RWCString CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
-const RWCString CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
-const RWCString CtiLMProgramDirectGear::NoControlMethod = "NoControl";
+const string CtiLMProgramDirectGear::TimeRefreshMethod = "TimeRefresh";
+const string CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
+const string CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
+const string CtiLMProgramDirectGear::RotationMethod = "Rotation";
+const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
+const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
+const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
+const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types
-const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
-const RWCString CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
-const RWCString CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
-const RWCString CtiLMProgramDirectGear::RampOutRandomStopType = "RampOutRandom";
-const RWCString CtiLMProgramDirectGear::RampOutFIFOStopType = "RampOutFIFO";
-const RWCString CtiLMProgramDirectGear::RampOutRandomRestoreStopType = "RampOutRandomRest";
-const RWCString CtiLMProgramDirectGear::RampOutFIFORestoreStopType = "RampOutFIFORestore";
+const string CtiLMProgramDirectGear::RestoreStopType = "Restore";
+const string CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
+const string CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
+const string CtiLMProgramDirectGear::RampOutRandomStopType = "RampOutRandom";
+const string CtiLMProgramDirectGear::RampOutFIFOStopType = "RampOutFIFO";
+const string CtiLMProgramDirectGear::RampOutRandomRestoreStopType = "RampOutRandomRest";
+const string CtiLMProgramDirectGear::RampOutFIFORestoreStopType = "RampOutFIFORestore";
 
 
 //Possible gear change condition types
-const RWCString CtiLMProgramDirectGear::NoneChangeCondition = "None";
-const RWCString CtiLMProgramDirectGear::DurationChangeCondition = "Duration";
-const RWCString CtiLMProgramDirectGear::PriorityChangeCondition = "Priority";
-const RWCString CtiLMProgramDirectGear::TriggerOffsetChangeCondition = "TriggerOffset";
+const string CtiLMProgramDirectGear::NoneChangeCondition = "None";
+const string CtiLMProgramDirectGear::DurationChangeCondition = "Duration";
+const string CtiLMProgramDirectGear::PriorityChangeCondition = "Priority";
+const string CtiLMProgramDirectGear::TriggerOffsetChangeCondition = "TriggerOffset";
 
 // Possible group selection methods
-const RWCString CtiLMProgramDirectGear::LastControlledSelectionMethod = "LastControlled";
-const RWCString CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod = "AlwaysFirstGroup";
-const RWCString CtiLMProgramDirectGear::LeastControlTimeSelectionMethod = "LeastControlTime";
+const string CtiLMProgramDirectGear::LastControlledSelectionMethod = "LastControlled";
+const string CtiLMProgramDirectGear::AlwaysFirstGroupSelectionMethod = "AlwaysFirstGroup";
+const string CtiLMProgramDirectGear::LeastControlTimeSelectionMethod = "LeastControlTime";
 
 // Possible method option types
-const RWCString CtiLMProgramDirectGear::FixedCountMethodOptionType = "FixedCount";
-const RWCString CtiLMProgramDirectGear::CountDownMethodOptionType = "CountDown";
-const RWCString CtiLMProgramDirectGear::LimitedCountDownMethodOptionType = "LimitedCountDown";
-const RWCString CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType = "DynamicShedTime";
+const string CtiLMProgramDirectGear::FixedCountMethodOptionType = "FixedCount";
+const string CtiLMProgramDirectGear::CountDownMethodOptionType = "CountDown";
+const string CtiLMProgramDirectGear::LimitedCountDownMethodOptionType = "LimitedCountDown";
+const string CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType = "DynamicShedTime";
+

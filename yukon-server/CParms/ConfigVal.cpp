@@ -1,18 +1,20 @@
 #include "yukon.h"
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <ctype.h>  
+#include "rwutil.h"
 
 #include "configval.h"
+#include "hash_functions.h"
 
 RWDEFINE_COLLECTABLE(CtiConfigValue, 0x1235)
 
 CtiConfigValue::CtiConfigValue() : Value()
 {;}
 
-CtiConfigValue::CtiConfigValue(RWCString key) : Value(key)
+CtiConfigValue::CtiConfigValue(const string& key) : Value(key)
 {
-   // Value.toLower();
+
 }
 
 
@@ -23,7 +25,7 @@ CtiConfigValue::operator=(const CtiConfigValue& val)
    Value = val.Value;
    return (*this);
 }
-
+/*
 RWspace
 CtiConfigValue::binaryStoreSize() const
 {
@@ -33,7 +35,7 @@ CtiConfigValue::binaryStoreSize() const
 int
 CtiConfigValue::compareTo(const RWCollectable *X ) const
 {
-   RWCString aStr = ((const CtiConfigValue*)X)->Value;
+   string aStr = ((const CtiConfigValue*)X)->Value;
 
    if(Value == aStr) return 0;
 
@@ -50,16 +52,16 @@ CtiConfigValue::compareTo(const RWCollectable *X ) const
 unsigned
 CtiConfigValue::hash() const
 {
-   return Value.hash();
+    return DJBHash(Value);    
 }
 
 RWBoolean
 CtiConfigValue::isEqual(const RWCollectable *c) const
 {
-   RWCString aValue = (((const CtiConfigValue*)c)->Value);
+   string aValue = (((const CtiConfigValue*)c)->Value);
    return (Value == aValue);
 }
-
+*/
 
 void
 CtiConfigValue::restoreGuts(RWFile& aFile)

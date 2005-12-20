@@ -1,12 +1,10 @@
 #include "yukon.h"
 
+#include "ctistring.h"
 #include <windows.h>
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
 
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 #include <rw\re.h>
 #undef mask_                // Stupid RogueWave re.h
 
@@ -20,28 +18,27 @@ using namespace std;
 #include "pointdefs.h"
 #include "utility.h"
 
+using namespace std;
 
-static const RWCString str_quoted_token("((\"[^\"]+\")|('[^']+'))");
+static const CtiString str_quoted_token("((\"[^\"]+\")|('[^']'))");
 
-static const RWCString str_num     ("([0-9]+)");
-static const RWCString str_floatnum("([0-9]+(\\.[0-9]*)?)");  //  this may need to allow for negatives... ?
-static const RWCString str_hexnum  ("(0x[0-9a-f]+)");
-static const RWCString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
+static const CtiString str_num     ("([0-9]+)");
+static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
+static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
+static const CtiString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
 
-static const RWCString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
-static const RWCString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
+static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
+static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 
-static RWCRExpr   re_num     (str_num);
-static RWCRExpr   re_floatnum(str_floatnum);
-static RWCRExpr   re_hexnum  (str_hexnum);
-static RWCRExpr   re_anynum  (str_anynum);
+static boost::regex   re_num     (str_num);
+static boost::regex   re_floatnum(str_floatnum);
+static boost::regex   re_hexnum  (str_hexnum);
+static boost::regex   re_anynum  (str_anynum);
 
-
-
-CtiCommandParser::CtiCommandParser(const RWCString str) :
+CtiCommandParser::CtiCommandParser(const string str) :
   _cmdString(str)
-{
-    _actionItems.clear();
+{   
+	_actionItems.clear();
     _cmd.clear();
     doParse(_cmdString);
 }
@@ -70,16 +67,16 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
 }
 
 
-void  CtiCommandParser::doParse(RWCString Cmd)
+void  CtiCommandParser::doParse(const string &_Cmd)
 {
     // This may look like replication of the assignment, but allows re-use of the object for
     // other parsing....
+    CtiString Cmd = _Cmd;
     Cmd.toLower();
-    Cmd.replace("\t", " ", RWCString::all);  //  replace all tabs with spaces
-    Cmd.replace(" +", " ", RWCString::all);  //  truncate any duplicate spaces
+    Cmd.replace("\t", " ", CtiString::all);  //  replace all tabs with spaces
+    Cmd.replace(" +", " ", CtiString::all);  //  truncate any duplicate spaces
 
-    _cmdString = Cmd;       // OK already, now we are in business.
-
+    _cmdString = Cmd.c_str();       // OK already, now we are in business.
     parse();
 
     return;
@@ -89,38 +86,37 @@ void  CtiCommandParser::doParse(RWCString Cmd)
 void  CtiCommandParser::parse()
 {
     CHAR            *p;
-    RWCString       CmdStr = _cmdString;
-    RWCString       token;
-    RWCString       cmdstr;
-    RWCString       strnum;
+    CtiString       CmdStr = _cmdString;
+    CtiString       token;
+    CtiString       cmdstr;
+    CtiString       strnum;
     INT             _num = 0;
 
     _actionItems.clear();   // 20050125 CGP.  Getting duplicate actionItems when I reparse in the groups.  This should be benign.
 
-    if(!CmdStr.match("^ *pil ").isNull() || !CmdStr.match("^ *command ").isNull())
+    if(!CmdStr.match("^ *pil ").empty() || !CmdStr.match("^ *command ").empty())
     {
         CmdStr = CmdStr.replace("^ *pil ", "");
         CmdStr = CmdStr.replace("^ *command ", "");
     }
 
-    RWCTokenizer    tok(CmdStr);
-
+    CtiTokenizer    tok(CmdStr);
 
     if(CmdStr.contains(" serial"))
     {
-        RWCRExpr regexp("serial[= ]+" + str_anynum);
+        boost::regex regexp("serial[= ]+" + str_anynum);
 
-        if(!(token = CmdStr.match(regexp)).isNull())
+        if(!(token = CmdStr.match(regexp)).empty())
         {
-            if(!(strnum = token.match(re_hexnum)).isNull())
+            if(!(strnum = token.match(re_hexnum)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                _num = strtol(strnum.data(), &p, 16);
+                _num = strtol(strnum.c_str(), &p, 16);
             }
-            else if(!(strnum = token.match(re_num)).isNull())
+            else if(!(strnum = token.match(re_num)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                _num = strtol(strnum.data(), &p, 10);
+                _num = strtol(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( _num );
             CmdStr.replace(regexp, "");
@@ -129,16 +125,16 @@ void  CtiCommandParser::parse()
 
     if(CmdStr.contains(" select"))
     {
-        RWCRExpr re_name   ("select name "        + str_quoted_token);
-        RWCRExpr re_id     ("select (device)?id " + str_num);
-        RWCRExpr re_grp    ("select group "       + str_quoted_token);
-        RWCRExpr re_altg   ("select altgroup "    + str_quoted_token);
-        RWCRExpr re_rtename("select route *name " + str_quoted_token);
-        RWCRExpr re_rteid  ("select route *id "   + str_num);
-        RWCRExpr re_ptname ("select point *name " + str_quoted_token);
-        RWCRExpr re_ptid   ("select point *id "   + str_num);
+        boost::regex re_name   ("select name "        + str_quoted_token);
+        boost::regex re_id     ("select (device)?id " + str_num);
+        boost::regex re_grp    ("select group "       + str_quoted_token);
+        boost::regex re_altg   ("select altgroup "    + str_quoted_token);
+        boost::regex re_rtename("select route *name " + str_quoted_token);
+        boost::regex re_rteid  ("select route *id "   + str_num);
+        boost::regex re_ptname ("select point *name " + str_quoted_token);
+        boost::regex re_ptid   ("select point *id "   + str_num);
 
-        if(!(token = CmdStr.match(re_name)).isNull())
+        if(!(token = CmdStr.match(re_name)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -146,26 +142,26 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the value
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
-                _cmd["device"] = CtiParseValue( token, -1 );
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
+				_cmd["device"] = CtiParseValue( token, -1 );
             }
 
             CmdStr.replace(re_name, "");
         }
-        else if(!(token = CmdStr.match(re_id)).isNull())
+        else if(!(token = CmdStr.match(re_id)).empty())
         {
-            RWCTokenizer ntok(token);
+            CtiTokenizer ntok(token);
             ntok();  // pull the select keyword
             ntok();  // pull the id keyword
-            if(!(token = ntok()).isNull())   // get the value
+            if(!(token = ntok()).empty())   // get the value
             {
-                _cmd["device"] = CtiParseValue( atoi(token.data()) );
+                _cmd["device"] = CtiParseValue( atoi(token.c_str()) );
             }
             CmdStr.replace(re_id, "");
         }
-        else if(!(token = CmdStr.match(re_grp)).isNull())
+        else if(!(token = CmdStr.match(re_grp)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -173,14 +169,15 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the value
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["group"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_grp, "");
         }
-        else if(!(token = CmdStr.match(re_altg)).isNull())
+        else if(!(token = CmdStr.match(re_altg)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -188,14 +185,15 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the value
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["altgroup"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_altg, "");
         }
-        else if(!(token = CmdStr.match(re_rtename)).isNull())
+        else if(!(token = CmdStr.match(re_rtename)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -203,24 +201,25 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the value
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["route"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_rtename, "");
         }
-        else if(!(token = CmdStr.match(re_rteid)).isNull())
+        else if(!(token = CmdStr.match(re_rteid)).empty())
         {
-            token.replace( RWCRExpr("select route *id "), "");
+            token.replace( boost::regex("select route *id "), "");
 
-            if(!token.isNull())   // get the value
+            if(!token.empty())   // get the value
             {
-                _cmd["route"] = CtiParseValue( atoi(token.data()) );
+                _cmd["route"] = CtiParseValue( atoi(token.c_str()) );
             }
             CmdStr.replace(re_rteid, "");
         }
-        else if(!(token = CmdStr.match(re_ptname)).isNull())
+        else if(!(token = CmdStr.match(re_ptname)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -228,20 +227,21 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the value
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
+                //Removes the ' " ' character from "something"
+                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
                 _cmd["point"] = CtiParseValue( token, -1 );
             }
             CmdStr.replace(re_ptname, "");
         }
-        else if( !(token = CmdStr.match(re_ptid)).isNull())
+        else if( !(token = CmdStr.match(re_ptid)).empty())
         {
-            token.replace(RWCRExpr("select point *id "),"");
+            token.replace(boost::regex("select point *id "),"");
 
-            if(!token.isNull())   // get the value
+            if(!token.empty())   // get the value
             {
-                _cmd["point"] = CtiParseValue( atoi(token.data()) );
+                _cmd["point"] = CtiParseValue( atoi(token.c_str()) );
             }
             CmdStr.replace(re_ptid, "");
         }
@@ -263,21 +263,22 @@ void  CtiCommandParser::parse()
     }
 
     resolveProtocolType(CmdStr);
-
-
+    
+    
     if(CmdStr.contains(" noqueue"))
     {
         _cmd["noqueue"] = CtiParseValue("true");
     }
-    if(!(token = CmdStr.match(" protocol_priority " + str_num)).isNull())
+    if(!(token = CmdStr.match(" protocol_priority " + str_num)).empty())
     {
-        if(!(strnum = token.match(re_num)).isNull())
+        if(!(strnum = token.match(re_num)).empty())
         {
-            _cmd["xcpriority"] = CtiParseValue( atoi(strnum.data()) );            // Expresscom only supports a 0 - 3 priority 0 highest.
+            _cmd["xcpriority"] = CtiParseValue( atoi(strnum.c_str()) );            // Expresscom only supports a 0 - 3 priority 0 highest.
         }
     }
+    
 
-    if(!(cmdstr = tok()).isNull())
+    if(!(cmdstr = tok()).empty())
     {
         cmdstr.toLower();
 
@@ -310,6 +311,7 @@ void  CtiCommandParser::parse()
         {
             _cmd["command"] = CtiParseValue( cmdstr, PutConfigRequest );
             doParsePutConfig(CmdStr);
+            
         }
         else if(cmdstr == "loop" || cmdstr == "ping")  //  so "ping" is just an alias
         {
@@ -339,38 +341,44 @@ void  CtiCommandParser::parse()
     return;
 }
 
-void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
+void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     UINT        flag = 0;
     UINT        offset = 0;
 
-    RWCString   temp2;
-    RWCString   token;
+    CtiString   temp2;
+    CtiString   token;
 
-    RWCRExpr   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
-    RWCRExpr   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
-    RWCRExpr   re_rate ("rate *[abcdt]");
+    boost::regex   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
+    boost::regex   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
+    boost::regex   re_rate ("rate *[abcdt]");
+//not in head
+    boost::regex   re_kwh  ("kwh");
+    boost::regex   re_kvah ("kvah");
+    boost::regex   re_kvarh("kvarh");
 
-    RWCRExpr   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
+
+    boost::regex   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
 
     //  getvalue lp channel 1 12/14/04 12:00
     //  getvalue lp channel 1 8-13-2005 14:45
-    RWCRExpr   re_lp("lp channel " + str_num + " " + str_date + " " + str_time);
+    boost::regex  re_lp("lp channel " + str_num + " " + str_date + " " + str_time);
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
-    RWCRExpr   re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
-    RWCRExpr   re_outage("outage " + str_num);
+    boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
+    boost::regex  re_outage("outage " + str_num);
 
-    RWCRExpr   re_offset("off(set)? *" + str_num);
+    boost::regex  re_offset("off(set)? *" + str_num);
 
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "getvalue")
+    if(!token.empty() && token == "getvalue")
     {
-        if(!(token = CmdStr.match(re_kxx)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        if(!(token = CmdStr.match(re_kxx)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             // I have a match on the kxxh regular expression....
             if(token.contains("kwh"))
@@ -386,9 +394,9 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
                 flag |= CMD_FLAG_GV_KVARH;
             }
 
-            if(!token.isNull())
+            if(!token.empty())
             {
-                if(!(temp2 = token.match(re_hrate)).isNull())
+                if(!(temp2 = token.match(re_hrate)).empty())
                 {
                     if(temp2 == "ha")
                     {
@@ -425,25 +433,25 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         }
         else if(CmdStr.contains(" lp "))
         {
-            if(!(token = CmdStr.match(re_lp)).isNull())
+            if(!(token = CmdStr.match(re_lp)).empty())
             {
                 //  getvalue lp channel 1 12/14/04 12:00
                 //  getvalue lp channel 1 8-13-2005 14:45
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();  //  move past lp
                 cmdtok();  //  move past channel
 
                 _cmd["lp_command"] = CtiParseValue("lp");
-                _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+                _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
                 _cmd["lp_date"]    = cmdtok();
                 _cmd["lp_time"]    = cmdtok();
             }
-            else if(!(token = CmdStr.match(re_lp_peak)).isNull())
+            else if(!(token = CmdStr.match(re_lp_peak)).empty())
             {
                 //  getvalue lp peak daily channel 2 9/30/04 30
                 //  getvalue lp peak hourly channel 3 10-15-2003 15
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();  //  move past lp
                 cmdtok();  //  move past peak
@@ -453,12 +461,12 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
                 cmdtok();  //  move past channel
 
                 _cmd["lp_command"] = CtiParseValue("peak");
-                _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+                _cmd["lp_channel"] = atoi(CtiString(cmdtok()).c_str());
                 _cmd["lp_date"]    = cmdtok();
-                _cmd["lp_range"]   = atoi(RWCString(cmdtok()));
+                _cmd["lp_range"]   = atoi(CtiString(cmdtok()).c_str());
             }
         }
-        else if(!(token = CmdStr.match(re_demand)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match(re_demand)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_DEMAND;
         }
@@ -474,14 +482,14 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         {
             flag |= CMD_FLAG_GV_VOLTAGE;
         }
-        else if(!(token = CmdStr.match(re_offset)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match(re_offset)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_OFFSET;
 
             // What offset is needed now...
-            if(!(temp2 = token.match(re_num)).isNull())
+            if(!(temp2 = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.data());
+                offset = atoi(temp2.c_str());
             }
             else
             {
@@ -490,14 +498,14 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         }
         else if(CmdStr.contains(" outage "))
         {
-            if(!(token = CmdStr.match(re_outage)).isNull())
+            if(!(token = CmdStr.match(re_outage)).empty())
             {
                 //  getvalue outage 1..6
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();  //  move past "outage"
 
-                _cmd["outage"] = atoi(RWCString(cmdtok()));
+                _cmd["outage"] = atoi(CtiString(cmdtok()).c_str());
             }
         }
         else if(CmdStr.contains(" codes"))
@@ -515,7 +523,7 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
 
 
 
-        if(!(temp2 = CmdStr.match(re_rate)).isNull())
+        if(!(temp2 = CmdStr.match(re_rate)).empty())
         {
             flag &= ~CMD_FLAG_GV_RATEMASK;   // This one overrides...
 
@@ -557,48 +565,49 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
 }
 
 
-void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
+void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     UINT        flag = 0;
     UINT        offset = 0;
 
-    RWCString   temp2;
-    RWCString   token;
+    CtiString   temp2;
+    CtiString   token;
 
-    RWCRExpr   re_lp("lp( channel " + str_num + ")?");
-    RWCRExpr   re_eventlog("eventlog(s)?");
+    boost::regex   re_lp("lp( channel " + str_num + ")?");
+    boost::regex   re_eventlog("eventlog(s)?");
 
-    RWCRExpr   re_offset("off(set)? *" + str_num);
+    boost::regex   re_offset("off(set)? *" + str_num);
 
-    RWCRExpr   re_sele("select");
+    boost::regex   re_sele("select");
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "getstatus")
+    if(!token.empty() && token == "getstatus")
     {
-        if(!(token = CmdStr.match(re_lp)).isNull())
+        if(!(token = CmdStr.match(re_lp)).empty())
         {
             flag |= CMD_FLAG_GS_LOADPROFILE;
 
             //  was an offset specified?
-            if(!(temp2 = token.match(re_num)).isNull())
+            if(!(temp2 = token.match(re_num)).empty())
             {
-                _cmd["loadprofile_offset"] = atoi(temp2.data());
+                _cmd["loadprofile_offset"] = atoi(temp2.c_str());
             }
         }
-        if(!(token = CmdStr.match(re_offset)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        if(!(token = CmdStr.match(re_offset)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_OFFSET;
 
             // What offset is needed now...
-            if(!(temp2 = token.match(re_num)).isNull())
+            if(!(temp2 = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.data());
+                offset = atoi(temp2.c_str());
             }
         }
-        if(!CmdStr.match(re_eventlog).isNull())
+        if(!CmdStr.match(re_eventlog).empty())
         {
             _cmd["eventlog"] = CtiParseValue(true);
         }
@@ -653,8 +662,9 @@ void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
     _cmd["offset"] = CtiParseValue(offset);
 }
 
-void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
+void  CtiCommandParser::doParseControl(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
@@ -664,46 +674,46 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
     CHAR        tbuf[80];
     CHAR        tbuf2[80];
 
-    RWCString   temp2;
-    RWCString   token;
+    CtiString   temp2;
+    CtiString   token;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "control")
+    if(!token.empty() && token == "control")
     {
         if(CmdStr.contains(" delay"))
         {
-            RWCString   valStr;
+            CtiString   valStr;
 
-            if(!(temp2 = CmdStr.match(" delay ?time " + str_num)).isNull())
+            if(!(temp2 = CmdStr.match(" delay ?time " + str_num)).empty())
             {
-                if(!(valStr = temp2.match(re_num)).isNull())
+                if(!(valStr = temp2.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["delaytime_sec"] = CtiParseValue( iValue * 60 );
                 }
             }
 
-            if(!(temp2 = CmdStr.match(" delay ?until [0-9]?[0-9]:[0-9][0-9]")).isNull())
+            if(!(temp2 = CmdStr.match(" delay ?until [0-9]?[0-9]:[0-9][0-9]")).empty())
             {
                 INT hh = 0;
                 INT mm = 0;
                 INT ofm = 0;      // Offset from Midnight in seconds.
 
-                if(!(valStr = temp2.match("[0-9]?[0-9]:")).isNull())
+                if(!(valStr = temp2.match("[0-9]?[0-9]:")).empty())
                 {
-                    hh = atoi(valStr.data());
+                    hh = atoi(valStr.c_str());
                 }
 
-                if(!(valStr = temp2.match(":[0-9][0-9]")).isNull())
+                if(!(valStr = temp2.match(":[0-9][0-9]")).empty())
                 {
-                    mm = atoi(valStr.data() + 1);
+                    mm = atoi(valStr.c_str() + 1);
                 }
 
 
-                iValue = RWTime(hh, mm).seconds() - RWTime::now().seconds();
+                iValue = CtiTime(hh, mm).seconds() - CtiTime::now().seconds();
 
                 if(iValue > 0)
                 {
@@ -712,7 +722,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -753,14 +763,14 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         {
             flag |= CMD_FLAG_CTL_SHED;
 
-            if(!(token = CmdStr.match("shed *" + str_floatnum + " *[hms]?( |$)")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+            if(!(token = CmdStr.match("shed *" + str_floatnum + " *[hms]?( |$)")).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
                 DOUBLE mult = 60.0;
 
                 // What shed time is needed now...
-                if(!(temp2 = token.match(re_floatnum)).isNull())
+                if(!(temp2 = token.match(re_floatnum)).empty())
                 {
-                    dValue = atof(temp2.data());
+                    dValue = atof(temp2.c_str());
                 }
                 else
                 {
@@ -781,7 +791,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                     _snprintf(tbuf2, sizeof(tbuf2),"SHED %d", (INT)dValue);
                 }
 
-                if(!(temp2 = token.match(str_floatnum + " *[hs]")).isNull())
+                if(!(temp2 = token.match(str_floatnum + " *[hs]")).empty())
                 {
                     /*
                      *  Minutes is the assumed entry format, but we return the number in seconds... so
@@ -810,22 +820,22 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SHED");
             }
 
-            if(!(token = CmdStr.match(" rand(om)? *" + str_num)).isNull())
+            if(!(token = CmdStr.match(" rand(om)? *" + str_num)).empty())
             {
-                if(!(temp2 = token.match(re_num)).isNull())
+                if(!(temp2 = token.match(re_num)).empty())
                 {
-                    INT _num = atoi(temp2.data());
+                    INT _num = atoi(temp2.c_str());
                     _cmd["shed_rand"] = CtiParseValue( _num );
                 }
             }
         }
-        else if(!(token = CmdStr.match(" cycle " + str_num)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match(" cycle " + str_num)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_CTL_CYCLE;
 
-            if(!(temp2 = token.match(re_num)).isNull())
+            if(!(temp2 = token.match(re_num)).empty())
             {
-                iValue = atoi(temp2.data());
+                iValue = atoi(temp2.c_str());
             }
             else
             {
@@ -837,20 +847,20 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 iValue = 50;
             }
 
-            if(!(token = CmdStr.match(" period " + str_num)).isNull())
+            if(!(token = CmdStr.match(" period " + str_num)).empty())
             {
-                if(!(temp2 = token.match(re_num)).isNull())
+                if(!(temp2 = token.match(re_num)).empty())
                 {
-                    INT _num = atoi(temp2.data());
+                    INT _num = atoi(temp2.c_str());
                     _cmd["cycle_period"] = CtiParseValue( _num );
                 }
             }
 
-            if(!(token = CmdStr.match(" count " + str_num)).isNull())
+            if(!(token = CmdStr.match(" count " + str_num)).empty())
             {
-                if(!(temp2 = token.match(re_num)).isNull())
+                if(!(temp2 = token.match(re_num)).empty())
                 {
-                    INT _num = atoi(temp2.data());
+                    INT _num = atoi(temp2.c_str());
                     _cmd["cycle_count"] = CtiParseValue( _num );
                 }
             }
@@ -860,7 +870,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         }
         else if( CmdStr.contains(" latch") )
         {
-            if(!(token = CmdStr.match(" latch relays? ([ab]+|none)")).isNull())
+            if(!(token = CmdStr.match(" latch relays? ([ab]+|none)")).empty())
             {
                 string latch_relays;
 
@@ -897,14 +907,14 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
 
         if(flag) _actionItems.insert(tbuf);                      // If anything was set, make sure someone can be informed
 
-        if(!(token = CmdStr.match("off(set)? *" + str_num)).isNull())            // Sourcing from CmdStr, which is the entire command string.
+        if(!(token = CmdStr.match("off(set)? *" + str_num)).empty())            // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_OFFSET;
 
             // What offset is needed now...
-            if(!(temp2 = token.match(re_num)).isNull())
+            if(!(temp2 = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.data());
+                offset = atoi(temp2.c_str());
             }
             else
             {
@@ -917,7 +927,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
          */
         if(CmdStr.contains(" relay") || CmdStr.contains(" load"))
         {
-            if(!(token = CmdStr.match("(( relay)|( load)) [0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("(( relay)|( load)) [0-9]+( *, *[0-9]+)*")).empty())
             {
                 INT i;
                 INT mask = 0;
@@ -925,7 +935,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                 for(i = 0; i < 10; i++)
                 {
                     _snprintf(tbuf, sizeof(tbuf), "%d", i+1);
-                    if(!(temp2 = token.match(tbuf)).isNull())
+                    if(!(temp2 = token.match(tbuf)).empty())
                     {
                         mask |= (0x01 << i);
                     }
@@ -936,7 +946,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                     _cmd["relaymask"] = CtiParseValue( mask );
                 }
             }
-            if(!(token = CmdStr.match("relay next")).isNull())
+            if(!(token = CmdStr.match("relay next")).empty())
             {
                 _cmd["relaynext"] = CtiParseValue( TRUE );
             }
@@ -1027,56 +1037,57 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
 }
 
 
-void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     UINT        flag = 0;
     UINT        offset = 0;
 
-    RWCString   temp2;
-    RWCString   token;
+    CtiString   temp2;
+    CtiString   token;
 
     char *p;
 
-    RWCRExpr   re_reading("reading " + str_floatnum);
-    RWCRExpr   re_kyzoffset("kyz *" + str_num);   //  if there's a kyz offset specified
-    RWCRExpr   re_analog("analog " + str_num + " -?" + str_num);
+    boost::regex   re_reading("reading " + str_floatnum);
+    boost::regex   re_kyzoffset("kyz *" + str_num);   //  if there's a kyz offset specified
+    boost::regex   re_analog("analog " + str_num + " -?" + str_num);
 
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putvalue")
+    if(!token.empty() && token == "putvalue")
     {
         if(CmdStr.contains(" kyz"))
         {
             flag |= CMD_FLAG_PV_DIAL;
 
             //  if a point offset has been specified
-            if(!(token = CmdStr.match(re_kyzoffset)).isNull())
+            if(!(token = CmdStr.match(re_kyzoffset)).empty())
             {
-                offset = atoi(token.match(re_num).data());
+                offset = atoi(token.match(re_num).c_str());
 
                 _cmd["kyz_offset"] = CtiParseValue(offset);
             }
 
-            if(!(token = CmdStr.match(re_reading)).isNull())
+            if(!(token = CmdStr.match(re_reading)).empty())
             {
-                _cmd["dial"]   = CtiParseValue(atof(token.match(re_floatnum).data()));
+                _cmd["dial"]   = CtiParseValue(atof(token.match(re_floatnum).c_str()));
             }
         }
         if(CmdStr.contains(" analog"))
         {
-            if(!(token = CmdStr.match(re_analog)).isNull())
+            if(!(token = CmdStr.match(re_analog)).empty())
             {
                 flag |= CMD_FLAG_PV_ANALOG;
 
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();
 
-                _cmd["analogoffset"] = CtiParseValue(atoi(cmdtok().data()));
-                _cmd["analogvalue"]  = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["analogoffset"] = CtiParseValue( atoi(cmdtok().c_str()) );
+                _cmd["analogvalue"]  = CtiParseValue( atoi(cmdtok().c_str()) );
             }
         }
         if(CmdStr.contains(" reset"))
@@ -1104,17 +1115,18 @@ void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
 }
 
 
-void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 {
-    RWCString   temp2;
-    RWCString   token;
+    CtiString CmdStr(_CmdStr);
+    CtiString   temp2;
+    CtiString   token;
     unsigned int flag = 0;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putstatus")
+    if(!token.empty() && token == "putstatus")
     {
         INT type = getiValue("type");
 
@@ -1184,27 +1196,29 @@ void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
+void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 {
-    RWCString   temp2;
-    RWCString   token;
-    RWCRExpr    re_rolenum("role *" + str_num);
-    RWCRExpr    re_rawcmd("raw (func(tion)? )?start *= *" + str_hexnum + "( " + str_num + ")?");
-    RWCRExpr    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
-    RWCRExpr    re_time("time( |$)");  //  only match "time" as a single word
-    RWCRExpr    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
-    RWCRExpr    re_address("address (group|uniq)");
-    RWCRExpr    re_lp_channel(" lp channel " + str_num);
-    RWCRExpr    re_centron("centron (ratio|parameters)");
+	CtiString CmdStr(_CmdStr);
+    CtiString   temp2;
+    CtiString   token;
+    boost::regex    re_rolenum("role *" + str_num);
+    boost::regex    re_rawcmd("raw (func(tion)? )?start *= *" + str_hexnum + "( " + str_num + ")?");
+    boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
+    boost::regex    re_time("time( |$)");  //  only match "time" as a single word
+    boost::regex    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
+    boost::regex    re_address("address (group|uniq)");
+    boost::regex    re_lp_channel(" lp channel " + str_num);
+    boost::regex    re_centron("centron (ratio|parameters)");
+
 
     char *p;
 
     int roleNum, channel;
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "getconfig")
+    if(!token.empty() && token == "getconfig")
     {
         if(CmdStr.contains(" model"))
         {
@@ -1216,7 +1230,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" address"))
         {
-            if(!(token = CmdStr.match(re_address)).isNull())
+            if(!(token = CmdStr.match(re_address)).empty())
             {
                 if(token.contains("group"))
                 {
@@ -1238,29 +1252,29 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" role"))
         {
-            if(!(token = CmdStr.match(re_rolenum)).isNull())
+            if(!(token = CmdStr.match(re_rolenum)).empty())
             {
-                _cmd["rolenum"] = CtiParseValue(atoi((token.match(re_num)).data()));
+                _cmd["rolenum"] = CtiParseValue( atoi( (token.match( re_num )).c_str() ) );
             }
         }
         if(CmdStr.contains(" mult"))
         {
             _cmd["multiplier"] = CtiParseValue(TRUE);
 
-            if(!(token = CmdStr.match(re_multiplier)).isNull())
+            if(!(token = CmdStr.match(re_multiplier)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 cmdtok();  //  multiplier
                 cmdtok();  //  kyz
-                _cmd["multchannel"] = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["multchannel"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
         if(CmdStr.contains(" raw"))
         {
-            if(!(token = CmdStr.match(re_rawcmd)).isNull())
+            if(!(token = CmdStr.match(re_rawcmd)).empty())
             {
-                RWCTokenizer cmdtok(token);
-                RWCString rawData;
+                CtiTokenizer cmdtok(token);
+                CtiString rawData;
                 char *p;
 
                 //  go past "raw"
@@ -1275,30 +1289,30 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
                 }
 
                 //  get the start address
-                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).data(), &p, 16) );
+                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).c_str(), &p, 16) );
 
                 //  get the length
                 temp2 = cmdtok();
                 //  if there's length specified
-                if( !temp2.isNull() )
+                if( !temp2.empty() )
                 {
-                    _cmd["rawlen"] = CtiParseValue( atoi( temp2.data() ) );
+                    _cmd["rawlen"] = CtiParseValue( atoi( temp2.c_str() ) );
                 }
             }
         }
         if(CmdStr.contains(" lp"))
         {
-            if(!(token = CmdStr.match(re_lp_channel)).isNull())
+            if(!(token = CmdStr.match(re_lp_channel)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 cmdtok();  //  lp
                 cmdtok();  //  channel
-                _cmd["lp_channel"] = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["lp_channel"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
         if(CmdStr.contains(" time"))
         {
-            if(!(token = CmdStr.match(re_time)).isNull())
+            if(!(token = CmdStr.match(re_time)).empty())
             {
                 _cmd["time"] = CtiParseValue("TRUE");
 
@@ -1318,9 +1332,9 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" interval"))
         {
-            if(!(token = CmdStr.match(re_interval)).isNull())
+            if(!(token = CmdStr.match(re_interval)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 //  get "interval(s?)"
                 temp2 = cmdtok();
 
@@ -1341,9 +1355,9 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" centron"))
         {
-            if(!(token = CmdStr.match(re_centron)).isNull())
+            if(!(token = CmdStr.match(re_centron)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();          //  move past "centron"
 
@@ -1371,18 +1385,18 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-    RWCRExpr  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
 
-    RWCString temp2;
-    RWCString token;
-
-    RWCTokenizer   tok(CmdStr);
-
+    boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]"); 
+    CtiString CmdStr(_CmdStr);                            
+    CtiString   temp2;
+    CtiString   token;
+    
+    CtiTokenizer   tok(CmdStr);
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putconfig")
+    if(!token.empty() && token == "putconfig")
     {
         INT type = getiValue("type");
 
@@ -1392,7 +1406,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
         }
 
         // Template should be global.
-        if(!(token = CmdStr.match("template " + str_quoted_token)).isNull())
+        if(!(token = CmdStr.match("template " + str_quoted_token)).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -1400,13 +1414,13 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).isNull())   // get the template name...
+            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the template name...
             {
-                token = token((size_t)1, (size_t)token.length() - 2);
+                token = token.substr((size_t)1, (size_t)(token.length() - 2));
                 _cmd["template"] = CtiParseValue( token );
             }
 
-            RWCString sistr;
+            CtiString sistr;
 
             if(CmdStr.contains(" service in"))
             {
@@ -1417,15 +1431,15 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 
         if(CmdStr.contains(" tou"))
         {
-            RWCString tou_schedule;
+            string tou_schedule;
 
             //  indicate that we at least tried to parse the TOU stuff
             _cmd["tou"] = CtiParseValue(true);
 
-            if(!(tou_schedule = CmdStr.match(re_tou)).isNull())
+            if(!(tou_schedule = CmdStr.match(re_tou)).empty())
             {
                 //  tou [0-9]+ (schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]
-                RWCTokenizer tok(tou_schedule);
+                CtiTokenizer tok(tou_schedule);
 
                 token = tok();  //  tou
 
@@ -1446,7 +1460,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                     token = tok();
 
                     int changenum = 0;
-                    while(!token.match("[a-z]/[0-9]+:[0-9]+").isNull())
+                    while(!token.match("[a-z]/[0-9]+:[0-9]+").empty())
                     {
                         string change_name;
                         change_name.assign(schedule_name);
@@ -1469,7 +1483,6 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                 }
             }
         }
-
 
         switch( type )
         {
@@ -1500,6 +1513,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             }
         case ProtocolExpresscomType:
             {
+                
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
@@ -1516,7 +1530,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Putconfig not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Putconfig not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -1535,6 +1549,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             }
         }
     }
+    
     else
     {
         // Something went WAY wrong....
@@ -1545,16 +1560,17 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
+void  CtiCommandParser::doParseScan(const string &_CmdStr)
 {
-    RWCString   token;
-    RWCRExpr    re_loadprofile("loadprofile( channel " + str_num + ")?( block " + str_num + ")?");
+    CtiString CmdStr(_CmdStr);
+    CtiString   token;
+    boost::regex    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[0-9]+)?");
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "scan")
+    if(!token.empty() && token == "scan")
     {
         //  this should probably just be a bunch of if statements, no else-if...
         //    the tokenizer should just tokenize, not prioritize
@@ -1575,11 +1591,11 @@ void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
         {
             _cmd["scantype"] = CtiParseValue( ScanRateStatus );
         }
-        else if(!(token = CmdStr.match(re_loadprofile)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match(re_loadprofile)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["scantype"] = CtiParseValue( ScanRateLoadProfile );
 
-            RWCTokenizer lp_tok(token);
+            CtiTokenizer lp_tok(token);
 
             lp_tok();  //  pull "loadprofile"
 
@@ -1589,7 +1605,7 @@ void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
             {
                 token = lp_tok();
 
-                _cmd["scan_loadprofile_channel"] = CtiParseValue(atoi(token.data()));
+                _cmd["scan_loadprofile_channel"] = CtiParseValue(atoi(token.c_str()));
 
                 token = lp_tok();
             }
@@ -1598,7 +1614,7 @@ void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
             {
                 token = lp_tok();
 
-                _cmd["scan_loadprofile_block"] = CtiParseValue(atoi(token.data()));
+                _cmd["scan_loadprofile_block"] = CtiParseValue(atoi(token.c_str()));
             }
         }
     }
@@ -1629,40 +1645,40 @@ UINT     CtiCommandParser::getOffset() const
     return getiValue("offset",-1);
 }
 
-bool  CtiCommandParser::isKeyValid(const RWCString key) const
+bool  CtiCommandParser::isKeyValid(const string key) const
 {
-    return _cmd.contains(key);
+    return _cmd.contains(key.c_str());
 }
 
-UINT     CtiCommandParser::getOffset(const RWCString key) const
+UINT     CtiCommandParser::getOffset(const string key) const
 {
     CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-    _cmd.findValue(key, pv);
+    _cmd.findValue(key.c_str(), pv);
 
     return pv.getInt();
 }
-INT      CtiCommandParser::getiValue(const RWCString key, INT valifnotfound) const
+INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
 {
     INT val = valifnotfound;
 
-    if(isKeyValid(key))
+    if(isKeyValid(key.c_str()))
     {
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-        _cmd.findValue(key, pv);
+        _cmd.findValue(key.c_str(), pv);
         val = pv.getInt();
     }
 
     return val;
 }
 
-DOUBLE   CtiCommandParser::getdValue(const RWCString key, DOUBLE valifnotfound) const
+DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) const
 {
     DOUBLE val = valifnotfound;
 
-    if(isKeyValid(key))
+    if(isKeyValid(key.c_str()))
     {
         CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-        _cmd.findValue(key, pv);
+        _cmd.findValue(key.c_str(), pv);
 
         val = pv.getReal();
     }
@@ -1670,79 +1686,69 @@ DOUBLE   CtiCommandParser::getdValue(const RWCString key, DOUBLE valifnotfound) 
     return val;
 }
 
-RWCString CtiCommandParser::getsValue(const RWCString key) const
+string CtiCommandParser::getsValue(const string key) const
 {
     CtiParseValue& pv = CtiParseValue();
-    _cmd.findValue(key, pv);
+    _cmd.findValue(key.c_str(), pv);
 
-    return pv.getString();
+    return pv.getString().c_str();
 }
 
-void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 {
-    RWCString temp2;
-    RWCString token;
-    RWCRExpr  re_rawcmd("raw (func(tion)? )?start=0x[0-9a-f]+( 0x[0-9a-f]+)*");
-    RWCRExpr  re_rolecmd("role [0-9]+" \
+    //convert to CtiString for parsing.
+    CtiString CmdStr(_CmdStr);
+    CtiString temp2;
+    CtiString token;
+    boost::regex  re_rawcmd("raw (func(tion)? )?start=0x[0-9a-f]+( 0x[0-9a-f]+)*");
+    boost::regex  re_rolecmd("role [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+");
-    RWCRExpr  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
-    RWCRExpr  re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
-    RWCRExpr  re_ied_class("ied class [0-9]+ [0-9]+");
-    RWCRExpr  re_ied_scan ("ied scan [0-9]+ [0-9]+");
-    RWCRExpr  re_group_address("group (enable|disable)");
-    RWCRExpr  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    RWCRExpr  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
-    RWCRExpr  re_loadlimit("load limit " + str_num + " "
+    boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
+    boost::regex  re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
+    boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
+    boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
+    boost::regex  re_group_address("group (enable|disable)");
+    boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
+    boost::regex  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
+    boost::regex  re_loadlimit("load limit " + str_num + " "
                                          + str_num);
 
     char *p;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putconfig")
+    if(!token.empty() && token == "putconfig")
     {
         if(CmdStr.contains(" install"))
         {
-            token = CmdStr.match("install +[a-z]* *[a-z]*");
-            RWCTokenizer cmdtok(token);
-            cmdtok();  //  go past "install"
-
             _cmd["install"] = CtiParseValue(TRUE);
-            _cmd["installvalue"] = CtiParseValue(cmdtok());
-
-            token = cmdtok();
-            if(!(token.match("force")).isNull())
-            {
-                _cmd["force"] = CtiParseValue(true);
-            }
-
         }
         if(CmdStr.contains(" ied"))
         {
             _cmd["ied"] = CtiParseValue(TRUE);
 
-            if(!(token = CmdStr.match(re_ied_class)).isNull())
+            if(!(token = CmdStr.match(re_ied_class)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 cmdtok();  //  go past "ied"
                 cmdtok();  //  go past "class"
 
-                _cmd["class"]       = CtiParseValue(atoi(cmdtok().data()));
-                _cmd["classoffset"] = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["class"]       = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["classoffset"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
-            if(!(token = CmdStr.match(re_ied_scan)).isNull())
+            if(!(token = CmdStr.match(re_ied_scan)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 cmdtok();  //  go past "ied"
                 cmdtok();  //  go past "scan"
 
-                _cmd["scan"]      = CtiParseValue(atoi(cmdtok().data()));
-                _cmd["scandelay"] = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["scan"]      = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["scandelay"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
         if(CmdStr.contains(" onoffpeak"))
@@ -1757,25 +1763,25 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         {
             _cmd["disconnect"] = CtiParseValue(TRUE);
 
-            if(!(token = CmdStr.match(re_loadlimit)).isNull())
+            if(!(token = CmdStr.match(re_loadlimit)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 cmdtok();  //  go past "load"
                 cmdtok();  //  go past "limit"
 
-                _cmd["disconnect demand threshold"]        = CtiParseValue(atoi(cmdtok().data()));
-                _cmd["disconnect load limit connect delay"] = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["disconnect demand threshold"]        = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["disconnect load limit connect delay"] = CtiParseValue(atoi(cmdtok().c_str()));
             }
         }
         if(CmdStr.contains(" group"))
         {
-            if(!(token = CmdStr.match(re_group_address)).isNull())
+            if(!(token = CmdStr.match(re_group_address)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 //  go past "group"
                 cmdtok();
 
-                if( strcmp( cmdtok().data(), "enable") == 0 )
+                if( std::strcmp( cmdtok().c_str(), "enable") == 0 )
                 {
                     _cmd["groupaddress_enable"] = CtiParseValue( 1 );
                 }
@@ -1787,11 +1793,11 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" address"))
         {
-            if(!(token = CmdStr.match(re_address)).isNull())
+            if(!(token = CmdStr.match(re_address)).empty())
             {
                 _cmd["address"] = CtiParseValue(TRUE);
 
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 cmdtok();  //  go past "address"
 
@@ -1799,56 +1805,56 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 
                 if( token.contains("uniq") )
                 {
-                    _cmd["uniqueaddress"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["uniqueaddress"] = CtiParseValue(atoi(cmdtok().c_str()));
                 }
                 if( token.contains("gold") )
                 {
-                    _cmd["groupaddress_gold"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["groupaddress_gold"] = CtiParseValue(atoi(cmdtok().c_str()));
 
                     cmdtok();  //  go past "silver"
 
-                    _cmd["groupaddress_silver"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["groupaddress_silver"] = CtiParseValue(atoi(cmdtok().c_str()));
                 }
                 else if( token.contains("bronze") )
                 {
-                    _cmd["groupaddress_bronze"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["groupaddress_bronze"] = CtiParseValue(atoi(cmdtok().c_str()));
                 }
                 else if( token.contains("lead") )
                 {
                     cmdtok();  //  go past "meter"
 
-                    _cmd["groupaddress_lead_meter"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["groupaddress_lead_meter"] = CtiParseValue(atoi(cmdtok().c_str()));
 
                     cmdtok();  //  go past "load"
 
-                    _cmd["groupaddress_lead_load"] = CtiParseValue(atoi(cmdtok().data()));
+                    _cmd["groupaddress_lead_load"] = CtiParseValue(atoi(cmdtok().c_str()));
                 }
             }
         }
         if(CmdStr.contains(" mult"))
         {
-            if(!(token = CmdStr.match(re_multiplier)).isNull())
+            if(!(token = CmdStr.match(re_multiplier)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 //  go past "multiplier"
                 cmdtok();
                 //  go past "kyz"
                 cmdtok();
 
                 //  kyz offset (1, 2, or 3)
-                _cmd["multoffset"] = CtiParseValue( atoi( cmdtok().data() ) );
+                _cmd["multoffset"] = CtiParseValue( atoi( cmdtok().c_str() ) );
 
                 //  multiplier
-                _cmd["multiplier"] = CtiParseValue( atof( cmdtok().data() ) );
+                _cmd["multiplier"] = CtiParseValue( atof( cmdtok().c_str() ) );
             }
         }
         if(CmdStr.contains(" interval"))
         {
-            if(!(token = CmdStr.match(re_interval)).isNull())
+            if(!(token = CmdStr.match(re_interval)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
                 //  go past "interval"
-                RWCString temp = cmdtok();
+                CtiString temp = cmdtok();
 
                 if( temp.contains("intervals") )
                 {
@@ -1863,23 +1869,23 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" centron"))
         {
-            if(!(token = CmdStr.match(re_centron)).isNull())
+            if(!(token = CmdStr.match(re_centron)).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
-                RWCString temp;
+                CtiString temp;
 
                 temp = cmdtok();
                 temp = cmdtok();  //  move past "centron"
 
                 if( !temp.compareTo("ratio") )
                 {
-                    _cmd["centron_ratio"] = CtiParseValue(atoi(RWCString(cmdtok())));
+                    _cmd["centron_ratio"] = CtiParseValue(atoi(CtiString(cmdtok()).c_str() ));
                 }
                 if( !temp.compareTo("reading") )
                 {
-                    _cmd["centron_reading_forward"] = CtiParseValue(RWCString(cmdtok()));
-                    _cmd["centron_reading_reverse"] = CtiParseValue(RWCString(cmdtok()));
+                    _cmd["centron_reading_forward"] = CtiParseValue(CtiString(cmdtok()));
+                    _cmd["centron_reading_reverse"] = CtiParseValue(CtiString(cmdtok()));
                 }
             }
         }
@@ -1897,10 +1903,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" raw"))
         {
-            if(!(token = CmdStr.match(re_rawcmd)).isNull())
+            if(!(token = CmdStr.match(re_rawcmd)).empty())
             {
-                RWCTokenizer cmdtok(token);
-                RWCString rawData;
+                CtiTokenizer cmdtok(token);
+                CtiString rawData;
                 int rawloc;
 
                 //  go past "raw"
@@ -1914,11 +1920,11 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                     temp2 = cmdtok();
                 }
 
-                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).data(), &p, 16) );
+                _cmd["rawloc"] = CtiParseValue( strtol((temp2.match(re_hexnum)).c_str(), &p, 16) );
 
-                while( !(temp2 = cmdtok()).isNull() )
+                while( !(temp2 = cmdtok()).empty() )
                 {
-                    rawData.append( (char)strtol(temp2.data(), &p, 16) );
+                    rawData.appendLong( strtol(temp2.c_str(), &p, 16) );
                 }
 
                 _cmd["rawdata"] = CtiParseValue( rawData );
@@ -1926,32 +1932,32 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         }
         if(CmdStr.contains(" role"))
         {
-            if(!(token = CmdStr.match(re_rolecmd)).isNull())
+            if(!(token = CmdStr.match(re_rolecmd)).empty())
             {
-                RWCTokenizer cmdtok(token);
-                RWCString rawData;
+                CtiTokenizer cmdtok(token);
+                CtiString rawData;
                 int rawloc;
 
                 //  go past "role"
                 cmdtok();
 
                 temp2 = cmdtok();
-                _cmd["rolenum"] = CtiParseValue( atoi(temp2.data()) );
+                _cmd["rolenum"] = CtiParseValue( atoi(temp2.c_str()) );
                 temp2 = cmdtok();
-                _cmd["rolefixed"] = CtiParseValue( atoi(temp2.data()) );
+                _cmd["rolefixed"] = CtiParseValue( atoi(temp2.c_str()) );
                 temp2 = cmdtok();
-                _cmd["roleout"] = CtiParseValue( atoi(temp2.data()) );
+                _cmd["roleout"] = CtiParseValue( atoi(temp2.c_str()) );
                 temp2 = cmdtok();
-                _cmd["rolein"] = CtiParseValue( atoi(temp2.data()) );
+                _cmd["rolein"] = CtiParseValue( atoi(temp2.c_str()) );
                 temp2 = cmdtok();
-                _cmd["rolerpt"] = CtiParseValue( atoi(temp2.data()) );
+                _cmd["rolerpt"] = CtiParseValue( atoi(temp2.c_str()) );
             }
         }
         if(CmdStr.contains(" mrole"))
         {
-            if(!(token = CmdStr.match("mrole( [0-9]+)+")).isNull())
+            if(!(token = CmdStr.match("mrole( [0-9]+)+")).empty())
             {
-                RWCTokenizer cmdtok(token);
+                CtiTokenizer cmdtok(token);
 
                 //  hop over "multi_role"
                 cmdtok();
@@ -1962,7 +1968,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 // if fewer than 6 roles are defined in the block.
 
                 temp2 = cmdtok();
-                _cmd["multi_rolenum"] = CtiParseValue( atoi(temp2.data()) );    // This is the first role written.  They must be consecutive!
+                _cmd["multi_rolenum"] = CtiParseValue( atoi(temp2.c_str()) );    // This is the first role written.  They must be consecutive!
 
                 // Now we need to pull them off one at a time until done..
                 int fixbits;
@@ -1971,20 +1977,20 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 int stagestf;
                 int rolecount = 0;
 
-                RWCString strFixed;
-                RWCString strVarOut;
-                RWCString strVarIn;
-                RWCString strStages;
+                CtiString strFixed;
+                CtiString strVarOut;
+                CtiString strVarIn;
+                CtiString strStages;
 
-                while(!(temp2 = cmdtok()).isNull())
+                while(!(temp2 = cmdtok()).empty())
                 {
-                    fixbits = !temp2.isNull() ? atoi(temp2.data()) : 31;
+                    fixbits = !temp2.empty() ? atoi(temp2.c_str()) : 31;
                     temp2 = cmdtok();
-                    varbits_out = !temp2.isNull() ? atoi(temp2.data()) : 7;
+                    varbits_out = !temp2.empty() ? atoi(temp2.c_str()) : 7;
                     temp2 = cmdtok();
-                    varbits_in = !temp2.isNull() ? atoi(temp2.data()) : 7;
+                    varbits_in = !temp2.empty() ? atoi(temp2.c_str()) : 7;
                     temp2 = cmdtok();
-                    stagestf = !temp2.isNull() ? atoi(temp2.data()) : 15;
+                    stagestf = !temp2.empty() ? atoi(temp2.c_str()) : 15;
 
                     strFixed    += CtiNumStr( fixbits ) + " " ;
                     strVarOut   += CtiNumStr( varbits_out ) + " " ;
@@ -1997,7 +2003,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Roles found " << rolecount << endl;
 
                     dout << " First role " << getiValue("multi_rolenum") << endl;
@@ -2022,51 +2028,51 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         dout << "This better not ever be seen by mortals... " << endl;
     }
 }
-
-void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     char *p;
 
     char        tbuf[60];
 
-    RWCString   token;
-    RWCString   temp, temp2;
-    RWCString   strnum;
-    RWCString   str;
+    CtiString   token;
+    CtiString   temp, temp2;
+    CtiString   strnum;
+    CtiString   str;
 
     INT         _num = 0;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putconfig")
+    if(!token.empty() && token == "putconfig")
     {
-        if(!(token = CmdStr.match("vdata( (0x)?[0-9a-f])+")).isNull())
+        if(!(token = CmdStr.match("vdata( (0x)?[0-9a-f])+")).empty())
         {
-            RWCTokenizer cmdtok(token);
-            RWCString rawData;
+            CtiTokenizer cmdtok(token);
+            CtiString rawData;
 
             //  go past "vdata"
             cmdtok();
 
-            while( !(temp2 = cmdtok()).isNull() )
+            while( !(temp2 = cmdtok()).empty() )
             {
-                rawData.append( (char)strtol(temp2.data(), &p, 16) );
+                rawData.append( 1,(char)strtol(temp2.c_str(), &p, 16) );
             }
 
             _cmd["vdata"] = CtiParseValue( rawData );
         }
 
-        if(!(token = CmdStr.match(" util(ity)?[ =]*([ =]+0x)?[0-9a-f]+")).isNull())
+        if(!(token = CmdStr.match(" util(ity)?[ =]*([ =]+0x)?[0-9a-f]+")).empty())
         {
-            if(!(temp = token.match(re_hexnum)).isNull())
+            if(!(temp = token.match(re_hexnum)).empty())
             {
-                _num = strtol(temp.data(), &p, 16);
+                _num = strtol(temp.c_str(), &p, 16);
             }
             else
             {
-                _num = strtol(token.match(re_num).data(), &p, 10);
+                _num = strtol(token.match(re_num).c_str(), &p, 10);
             }
 
             _cmd["utility"] = CtiParseValue( _num );
@@ -2075,15 +2081,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
 
-        if(!(token = CmdStr.match(" aux*[ =]*([ =]+0x)?[0-9a-f]+")).isNull())
+        if(!(token = CmdStr.match(" aux*[ =]*([ =]+0x)?[0-9a-f]+")).empty())
         {
-            if(!(temp = token.match(re_hexnum)).isNull())
+            if(!(temp = token.match(re_hexnum)).empty())
             {
-                _num = strtol(temp.data(), &p, 16);
+                _num = strtol(temp.c_str(), &p, 16);
             }
             else
             {
-                _num = strtol(token.match(re_num).data(), &p, 10);
+                _num = strtol(token.match(re_num).c_str(), &p, 10);
             }
 
             _cmd["aux"] = CtiParseValue( _num );
@@ -2092,10 +2098,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
 
-        if(!(token = CmdStr.match(" sect(ion)?[ =]*[0-9]+")).isNull())
+        if(!(token = CmdStr.match(" sect(ion)?[ =]*[0-9]+")).empty())
         {
             {
-                _num = strtol(token.match(re_num).data(), &p, 10);
+                _num = strtol(token.match(re_num).c_str(), &p, 10);
             }
 
             _cmd["section"] = CtiParseValue( _num );
@@ -2106,15 +2112,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains(" clas"))
         {
-            if(!(token = CmdStr.match(" class[ =]*([ =]+)?0x[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match(" class[ =]*([ =]+)?0x[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
@@ -2127,7 +2133,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["class"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
 
             }
@@ -2147,9 +2153,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                                             "( *, *[0-9]+)?" \
                                             "( *, *[0-9]+)?" \
                                             "( *, *[0-9]+)?" \
-                                          )).isNull())
+                                          )).empty())
             {
-                RWCTokenizer   tok( token );
+                CtiTokenizer   tok( token );
                 _num = 0;
                 int  mask = 0x0001;
                 int  val;
@@ -2158,9 +2164,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 // dout << __LINE__ << " " << token << endl;
 
-                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).isNull() ; i++)
+                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).empty() ; i++)
                 {
-                    val = atoi( temp.data() );
+                    val = atoi( temp.c_str() );
 
                     // dout << "Masking in " << temp << " " << val << endl;
                     if(val > 0)
@@ -2171,22 +2177,22 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["class"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
             }
         }
 
         if(CmdStr.contains(" divi"))
         {
-            if(!(token = CmdStr.match(" divi(sion)?[ =]*([ =]+)?0x[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match(" divi(sion)?[ =]*([ =]+)?0x[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
@@ -2201,7 +2207,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["division"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
 
             }
@@ -2221,9 +2227,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                                                   "( *, *[0-9]+)?" \
                                                   "( *, *[0-9]+)?" \
                                                   "( *, *[0-9]+)?" \
-                                                  )).isNull())
+                                                  )).empty())
             {
-                RWCTokenizer   tok( token );
+                CtiTokenizer   tok( token );
                 _num = 0;
                 int  mask = 0x0001;
                 int  val;
@@ -2232,9 +2238,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 // dout << __LINE__ << " " << token << endl;
 
-                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).isNull() ; i++)
+                for(int i = 0; i < 16 && !(temp = tok(", \n\0")).empty() ; i++)
                 {
-                    val = atoi( temp.data() );
+                    val = atoi( temp.c_str() );
 
                     // dout << "Masking in " << temp << " " << val << endl;
                     if(val > 0)
@@ -2245,7 +2251,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["division"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
             }
         }
@@ -2253,15 +2259,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains("from"))
         {
-            if(!(token = CmdStr.match("fromutil(ity)?[ =]*([ =]+0x)?[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match("fromutil(ity)?[ =]*([ =]+0x)?[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                 }
 
                 _cmd["fromutility"] = CtiParseValue( _num );
@@ -2270,15 +2276,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                 _actionItems.insert(tbuf);
             }
 
-            if(!(token = CmdStr.match("fromsect(ion)?[ =]*([ =]+(0x))?[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match("fromsect(ion)?[ =]*([ =]+(0x))?[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                 }
 
                 _cmd["fromsection"] = CtiParseValue( _num );
@@ -2287,15 +2293,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                 _actionItems.insert(tbuf);
             }
 
-            if(!(token = CmdStr.match("fromclass[ =]*([ =]+)?0x[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match("fromclass[ =]*([ =]+)?0x[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
@@ -2308,20 +2314,20 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["fromclass"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
 
             }
 
-            if(!(token = CmdStr.match("fromdivi(sion)?[ =]*([ =]+)?0x[0-9a-f]+")).isNull())
+            if(!(token = CmdStr.match("fromdivi(sion)?[ =]*([ =]+)?0x[0-9a-f]+")).empty())
             {
-                if(!(temp = token.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).empty())
                 {
-                    _num = strtol(temp.data(), &p, 16);
+                    _num = strtol(temp.c_str(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).c_str(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
@@ -2336,7 +2342,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 _cmd["fromdivision"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
                 _actionItems.insert(tbuf);
 
             }
@@ -2345,52 +2351,52 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
         if(CmdStr.contains("assign"))
         {
             if(!(token = CmdStr.match("assign"\
-                                      "(( [uascd][ =]*(0x)?[0-9a-f]+)*)+")).isNull())
+                                      "(( [uascd][ =]*(0x)?[0-9a-f]+)*)+")).empty())
             {
                 // dout << token << endl;
                 _cmd["vcassign"] = CtiParseValue( TRUE );
 
-                if(!(strnum = token.match(" u[ =]*(0x)?[0-9a-f]+")).isNull())
+                if(!(strnum = token.match(" u[ =]*(0x)?[0-9a-f]+")).empty())
                 {
-                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
 
                     _cmd["utility"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG UTILITY = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(strnum = token.match(" a[ =]*(0x)?[0-9a-f]+")).isNull())
+                if(!(strnum = token.match(" a[ =]*(0x)?[0-9a-f]+")).empty())
                 {
-                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    if(!(temp = strnum.match(re_hexnum)).empty())
                     {
-                        _num = strtol(temp.data(), &p, 16);
+                        _num = strtol(temp.c_str(), &p, 16);
                     }
                     else
                     {
-                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                        _num = strtol(strnum.match(re_num).c_str(), &p, 10);
                     }
                     _cmd["aux"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG AUX = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(strnum = token.match(" s[ =]*[0-9]+")).isNull())
+                if(!(strnum = token.match(" s[ =]*[0-9]+")).empty())
                 {
-                    _num = strtol(strnum.match(re_num).data(), &p, 10);
+                    _num = strtol(strnum.match(re_num).c_str(), &p, 10);
                     _cmd["section"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG SECTION = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(strnum = token.match(" c[ =]*(0x)?[0-9a-f]+")).isNull())
+                if(!(strnum = token.match(" c[ =]*(0x)?[0-9a-f]+")).empty())
                 {
-                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    if(!(temp = strnum.match(re_hexnum)).empty())
                     {
-                        _num = strtol(temp.data(), &p, 16);
+                        _num = strtol(temp.c_str(), &p, 16);
                     }
                     else
                     {
-                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                        _num = strtol(strnum.match(re_num).c_str(), &p, 10);
                         _num = (0x0001 << (16 - _num));
                     }
 
@@ -2404,19 +2410,19 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     _num = itemp;
 
                     _cmd["class"] = CtiParseValue( _num );
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).c_str());
                     _actionItems.insert(tbuf);
 
                 }
-                if(!(strnum = token.match(" d[ =]*(0x)?[0-9a-f]+")).isNull())
+                if(!(strnum = token.match(" d[ =]*(0x)?[0-9a-f]+")).empty())
                 {
-                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    if(!(temp = strnum.match(re_hexnum)).empty())
                     {
-                        _num = strtol(temp.data(), &p, 16);
+                        _num = strtol(temp.c_str(), &p, 16);
                     }
                     else
                     {
-                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                        _num = strtol(strnum.match(re_num).c_str(), &p, 10);
                         _num = (0x0001 << (16 - _num));
                     }
 
@@ -2431,7 +2437,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                     _cmd["division"] = CtiParseValue( _num );
 
-                    _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).c_str());
                     _actionItems.insert(tbuf);
 
                 }
@@ -2477,7 +2483,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains("serv"))
         {
-            if(!(token = CmdStr.match(" serv(ice)? (in|out|enable|disable)( temp)?")).isNull())
+            if(!(token = CmdStr.match(" serv(ice)? (in|out|enable|disable)( temp)?")).empty())
             {
                 INT   flag = 0;
 
@@ -2508,40 +2514,40 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                 if(token.contains(" temp"))
                 {
                     char t2[80];
-                    strcpy(t2, tbuf);
+                    ::strcpy(t2, tbuf);
 
                     flag >>= 2;       // Make the flag match the protocol
 
-                    _snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
+                    ::_snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
 
-                    if(!(token = CmdStr.match("offhours [0-9]+")).isNull())
+                    if(!(token = CmdStr.match("offhours [0-9]+")).empty())
                     {
                         bool offhourssupported = false;
                         int serialnumber = getiValue("serial", 0);
 
                         if( serialnumber != 0 )
                         {
-                            RWCString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES");
+                            CtiString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES").data();
 
-                            if(!vcrangestr.isNull())
+                            if(!vcrangestr.empty())
                             {
                                 int loopcnt = 0;
-                                while(!vcrangestr.isNull())
+                                while(!vcrangestr.empty())
                                 {
-                                    RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
+                                    CtiString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
 
-                                    if(!rstr.isNull())
+                                    if(!rstr.empty())
                                     {
                                         char *chptr;
-                                        RWCString startstr = rstr.match("[0-9]*");
-                                        RWCString stopstr = rstr.match(" *- *[0-9]* *,? *");
-                                        stopstr = stopstr.strip(RWCString::both, ' ');
-                                        stopstr = stopstr.strip(RWCString::leading, '-');
-                                        stopstr = stopstr.strip(RWCString::trailing, ',');
-                                        stopstr = stopstr.strip(RWCString::both, ' ');
+                                        CtiString startstr = rstr.match("[0-9]*");
+                                        CtiString stopstr = rstr.match(" *- *[0-9]* *,? *");
+                                        stopstr = stopstr.strip(CtiString::both, ' ');
+                                        stopstr = stopstr.strip(CtiString::leading, '-');
+                                        stopstr = stopstr.strip(CtiString::trailing, ',');
+                                        stopstr = stopstr.strip(CtiString::both, ' ');
 
-                                        UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
-                                        UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+                                        UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
+                                        UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
 
                                         if(startaddr <= serialnumber && serialnumber <= stopaddr)
                                         {
@@ -2562,7 +2568,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_EXTENDED_TSERVICE_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES") << "\"" << endl;
+                                            dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_EXTENDED_TSERVICE_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES") << "\"" << endl;
                                             break;
                                         }
                                     }
@@ -2573,7 +2579,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                         if(offhourssupported)
                         {
                             str = token.match(re_num);
-                            int offtimeinhours = atoi(str.data());
+                            int offtimeinhours = atoi(str.c_str());
 
                             _cmd["vctexservice"] = CtiParseValue( TRUE );
                             _cmd["vctservicetime"] = CtiParseValue( offtimeinhours > 65535 ? 65535 : offtimeinhours );  // Must be passed as half seconds for VCOM
@@ -2587,7 +2593,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             }
         }
 
-        if(!(token = CmdStr.match("led (y|n) *(y|n) *(y|n)")).isNull())
+        if(!(token = CmdStr.match("led (y|n) *(y|n) *(y|n)")).empty())
         {
             INT   flag = 0;
             int   i;
@@ -2595,7 +2601,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
             token.toLower();
 
-            if(!(strnum = token.match("(y|n) *(y|n) *(y|n)")).isNull())
+            if(!(strnum = token.match("(y|n) *(y|n) *(y|n)")).empty())
             {
                 for(i = 0, mask = 0x80 ; i < strnum.length(); i++)
                 {
@@ -2622,7 +2628,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains("reset"))
         {
-            if(!(token = CmdStr.match("reset[_a-z]*( (rtc|lf|r1|r2|r3|r4|cl|pt))+")).isNull())
+            if(!(token = CmdStr.match("reset[_a-z]*( (rtc|lf|r1|r2|r3|r4|cl|pt))+")).empty())
             {
                 INT   flag = 0;
 
@@ -2668,12 +2674,12 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains("prop"))
         {
-            if(!(token = CmdStr.match("prop[ a-z_]*[ =]*([ =]+)?[0-9]+")).isNull())
+            if(!(token = CmdStr.match("prop[ a-z_]*[ =]*([ =]+)?[0-9]+")).empty())
             {
                 // What offset is needed now...
-                if(!(strnum = token.match(re_num)).isNull())
+                if(!(strnum = token.match(re_num)).empty())
                 {
-                    _num = strtol(strnum.data(), &p, 10);
+                    _num = strtol(strnum.c_str(), &p, 10);
                     _cmd["proptime"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG PROPTIME = %d", _num);
@@ -2687,11 +2693,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             if(!(token = CmdStr.match("cold[ a-z_]*" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)?" \
-                                      "( *r[123][ =]*[0-9]+[ =]*[hms]?)?")).isNull())
+                                      "( *r[123][ =]*[0-9]+[ =]*[hms]?)?")).empty())
             {
                 // dout << token << endl;
 
-                if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
                     // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
@@ -2701,20 +2707,20 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    //_num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _num = convertTimeInputToSeconds(strnum);
                     _cmd["coldload_r2"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    //_num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _num = convertTimeInputToSeconds(strnum);
                     _cmd["coldload_r3"] = CtiParseValue( _num );
 
@@ -2729,24 +2735,24 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             if(!(token = CmdStr.match("cycle[ a-z]*" \
                                       "( *r[123][ =]*[0-9]+[ =]*)" \
                                       "( *r[123][ =]*[0-9]+[ =]*)?" \
-                                      "( *r[123][ =]*[0-9]+[ =]*)?")).isNull())
+                                      "( *r[123][ =]*[0-9]+[ =]*)?")).empty())
             {
-                if(!(strnum = token.match("r1[ =]*[0-9]+")).isNull())
+                if(!(strnum = token.match("r1[ =]*[0-9]+")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _cmd["cycle_r1"] = CtiParseValue( _num );
                 }
-                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*")).isNull())
+                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _cmd["cycle_r2"] = CtiParseValue( _num );
                 }
-                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*")).isNull())
+                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _cmd["cycle_r3"] = CtiParseValue( _num );
                 }
             }
@@ -2757,26 +2763,26 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             if(!(token = CmdStr.match("scram[ a-z]*" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)?" \
-                                      "( *r[123][ =]*[0-9]+[ =]*[hms]?)?")).isNull())
+                                      "( *r[123][ =]*[0-9]+[ =]*[hms]?)?")).empty())
             {
-                if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    //_num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _num = convertTimeInputToSeconds(strnum);
                     _cmd["scram_r1"] = CtiParseValue( _num );
                 }
-                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    //_num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _num = convertTimeInputToSeconds(strnum);
                     _cmd["scram_r2"] = CtiParseValue( _num );
                 }
-                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).isNull())
+                if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    //_num = strtol(strnum.match(re_anynum).c_str(), &p, 0);
                     _num = convertTimeInputToSeconds(strnum);
                     _cmd["scram_r3"] = CtiParseValue( _num );
                 }
@@ -2805,7 +2811,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                                       "( *([ =]+0x)?[0-9a-f]+)?" \
                                       "( *([ =]+0x)?[0-9a-f]+)?" \
                                       "( *([ =]+0x)?[0-9a-f]+)?" \
-                                      "( *([ =]+0x)?[0-9a-f]+)?")).isNull())
+                                      "( *([ =]+0x)?[0-9a-f]+)?")).empty())
             {
                 int   i;
                 int   val;
@@ -2818,18 +2824,18 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
 
 
-                RWCTokenizer   tok( token );
+                CtiTokenizer   tok( token );
 
                 tok();   // Get us past the "raw" moniker..
 
-                for(i = 0; i < 20 && !token.isNull(); i++)
+                for(i = 0; i < 20 && !token.empty(); i++)
                 {
                     _snprintf(str, sizeof(str), "raw_byte_%d", i);
                     token = tok(); // Returns each whitespace seperated token successivly.
 
-                    if(!token.isNull())
+                    if(!token.empty())
                     {
-                        val = strtol( token, &ptr, 16 );
+                        val = strtol( token.c_str(), &ptr, 16 );
                     }
                     else
                     {
@@ -2845,9 +2851,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains(" lcrmode"))
         {
-            if(!(token = CmdStr.match("lcrmode (e|v)")).isNull())
+            if(!(token = CmdStr.match("lcrmode (e|v)")).empty())
             {
-                RWCTokenizer tok( token );
+                CtiTokenizer tok( token );
 
                 tok();   // Get us past "lcrmode"
 
@@ -2858,9 +2864,9 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
         if(CmdStr.contains(" eclp"))
         {
             //  emetcon cold load pickup
-            if(!(token = CmdStr.match("eclp (en(able)?|dis(able)?)")).isNull())
+            if(!(token = CmdStr.match("eclp (en(able)?|dis(able)?)")).empty())
             {
-                RWCTokenizer tok( token );
+                CtiTokenizer tok( token );
 
                 tok();   // Get us past "eclp" moniker..
 
@@ -2870,29 +2876,29 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
         if(CmdStr.contains(" gold"))
         {
-            if(!(token = CmdStr.match("gold [0-9]")).isNull())
+            if(!(token = CmdStr.match("gold [0-9]")).empty())
             {
-                RWCTokenizer tok( token );
+                CtiTokenizer tok( token );
 
                 tok();   // Get us past "gold"
 
-                _cmd["gold"] = CtiParseValue(atoi(tok().data()));
+                _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
             }
         }
 
         if(CmdStr.contains(" silver"))
         {
-            if(!(token = CmdStr.match("silver [0-9][0-9]")).isNull())
+            if(!(token = CmdStr.match("silver [0-9][0-9]")).empty())
             {
-                RWCTokenizer tok( token );
+                CtiTokenizer tok( token );
 
                 tok();   // Get us past "silver"
 
-                _cmd["silver"] = CtiParseValue(atoi(tok().data()));
+                _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
             }
         }
 
-        if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+        if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
         {
             int   op = 0;
             CHAR  op_name[20];
@@ -2914,7 +2920,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
 
-        if(!(token = CmdStr.match(" sync|filler")).isNull())
+        if(!(token = CmdStr.match(" sync|filler")).empty())
         {
             _cmd["vcfiller"] = TRUE;
         }
@@ -2925,24 +2931,25 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
         dout << "This better not ever be seen by mortals... " << endl;
     }
 
-    if(!(CmdStr.match("test_mode_flag")).isNull())
+    if(!(CmdStr.match("test_mode_flag")).empty())
     {
         _cmd["flag"] = CtiParseValue( CMD_FLAG_TESTMODE );
     }
 }
 
-void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
 {
-    RWCString   temp2;
-    RWCString   token;
+    CtiString CmdStr(_CmdStr);
+    CtiString   temp2;
+    CtiString   token;
     unsigned int flag = 0;
     char *p;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putstatus")
+    if(!token.empty() && token == "putstatus")
     {
         if(CmdStr.contains(" rovr"))
         {
@@ -2991,40 +2998,41 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParsePutStatusVersacom(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     char *p;
 
     char        tbuf[60];
 
-    RWCString   token;
-    RWCString   temp2;
-    RWCString   strnum;
+    CtiString   token;
+    CtiString   temp2;
+    CtiString   strnum;
 
     INT         _num = 0;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putstatus")
+    if(!token.empty() && token == "putstatus")
     {
-        if(!(token = CmdStr.match("prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*))")).isNull())
+        if(!(token = CmdStr.match("prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*))")).empty())
         {
             int   op = 0;
             CHAR  op_name[20];
 
-            if(!(token.match("disp(lay)?")).isNull())                   // Turn on light & bump counter.
+            if(!(token.match("disp(lay)?")).empty())                   // Turn on light & bump counter.
             {
                 op = 0x04;
                 _snprintf(op_name, sizeof(op_name), "DISPLAY");
             }
-            else if(!(token.match("inc(rement)?")).isNull())            // bump counter.
+            else if(!(token.match("inc(rement)?")).empty())            // bump counter.
             {
                 op = 0x02;
                 _snprintf(op_name, sizeof(op_name), "INCREMENT");
             }
-            else if(!(token.match("term(inate)?")).isNull())            // Turn off light.
+            else if(!(token.match("term(inate)?")).empty())            // Turn off light.
             {
                 op = 0x01;
                 _snprintf(op_name, sizeof(op_name), "TERMINATE");
@@ -3038,7 +3046,7 @@ void  CtiCommandParser::doParsePutStatusVersacom(const RWCString &CmdStr)
                 _actionItems.insert(tbuf);
             }
         }
-        else if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+        else if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
         {
             int   op = 0;
             CHAR  op_name[20];
@@ -3070,25 +3078,26 @@ void  CtiCommandParser::doParsePutStatusVersacom(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParsePutStatusFisherP(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     char *p;
     char        tbuf[60];
 
-    RWCString   token;
-    RWCString   temp2;
-    RWCString   strnum;
+    CtiString   token;
+    CtiString   temp2;
+    CtiString   strnum;
 
     INT         _num = 0;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!token.isNull() && token == "putstatus")
+    if(!token.empty() && token == "putstatus")
     {
 
-        if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+        if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
         {
             int   op = 0;
             CHAR  op_name[20];
@@ -3120,15 +3129,16 @@ void  CtiCommandParser::doParsePutStatusFisherP(const RWCString &CmdStr)
     }
 }
 
-RWTValSlist< RWCString >& CtiCommandParser::getActionItems()
+RWTValSlist< string >& CtiCommandParser::getActionItems()
 {
     return _actionItems;
 }
 
-void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
+void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 {
+	CtiString CmdStr(_CmdStr);    
     int loopcnt;
-    RWCString         token;
+    CtiString         token;
 
     /*
      *  Type is assigned i.f.f. there is a serial number specified.  The default type is versacom.
@@ -3187,28 +3197,28 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 int serialnumber = getiValue("serial", 0);
 
-                RWCString xcrangestr = gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES");
-                RWCString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_RANGES");
+                CtiString xcrangestr = gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES").data();
+                CtiString vcrangestr = gConfigParms.getValueAsString("LCR_VERSACOM_RANGES").data();
 
-                if(!vcrangestr.isNull() || !xcrangestr.isNull())
+                if(!vcrangestr.empty() || !xcrangestr.empty())
                 {
                     loopcnt = 0;
-                    while(!vcrangestr.isNull())
+                    while(!vcrangestr.empty())
                     {
-                        RWCString str = vcrangestr.match("[0-9]*-[0-9]*,?");
+                        CtiString str = vcrangestr.match("[0-9]*-[0-9]*,?");
 
-                        if(!str.isNull())
+                        if(!str.empty())
                         {
                             char *chptr;
-                            RWCString startstr = str.match("[0-9]*");
-                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
-                            stopstr = stopstr.strip(RWCString::both, ' ');
-                            stopstr = stopstr.strip(RWCString::leading, '-');
-                            stopstr = stopstr.strip(RWCString::trailing, ',');
-                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            CtiString startstr = str.match("[0-9]*");
+                            CtiString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(CtiString::both, ' ');
+                            stopstr = stopstr.strip(CtiString::leading, '-');
+                            stopstr = stopstr.strip(CtiString::trailing, ',');
+                            stopstr = stopstr.strip(CtiString::both, ' ');
 
-                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
-                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+                            UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
 
                             if(startaddr <= serialnumber && serialnumber <= stopaddr)
                             {
@@ -3229,29 +3239,29 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_RANGES") << "\"" << endl;
+                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_RANGES") << "\"" << endl;
                                 break;
                             }
                         }
                     }
 
                     loopcnt = 0;
-                    while(!isKeyValid("type") && !xcrangestr.isNull())
+                    while(!isKeyValid("type") && !xcrangestr.empty())
                     {
-                        RWCString str = xcrangestr.match("[0-9]*-[0-9]*,?");
+                        CtiString str = xcrangestr.match("[0-9]*-[0-9]*,?");
 
-                        if(!str.isNull())
+                        if(!str.empty())
                         {
                             char *chptr;
-                            RWCString startstr = str.match("[0-9]*");
-                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
-                            stopstr = stopstr.strip(RWCString::both, ' ');
-                            stopstr = stopstr.strip(RWCString::leading, '-');
-                            stopstr = stopstr.strip(RWCString::trailing, ',');
-                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            CtiString startstr = str.match("[0-9]*");
+                            CtiString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(CtiString::both, ' ');
+                            stopstr = stopstr.strip(CtiString::leading, '-');
+                            stopstr = stopstr.strip(CtiString::trailing, ',');
+                            stopstr = stopstr.strip(CtiString::both, ' ');
 
-                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
-                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+                            UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
 
                             if(startaddr <= serialnumber && serialnumber <= stopaddr)
                             {
@@ -3272,7 +3282,7 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES") << "\"" << endl;
+                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES") << "\"" << endl;
                                 break;
                             }
                         }
@@ -3288,32 +3298,32 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             if(getiValue("type") == ProtocolExpresscomType)
             {
                 int serialnumber = getiValue("serial", 0);
-                RWCString xcprefixrange = gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES");
+                CtiString xcprefixrange = gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES").data();
                 loopcnt = 0;
-                if(!xcprefixrange.isNull())
+                if(!xcprefixrange.empty())
                 {
-                    while(!xcprefixrange.isNull())
+                    while(!xcprefixrange.empty())
                     {
-                        RWCString str = xcprefixrange.match("[0-9]*-[0-9]*,?");
+                        CtiString str = xcprefixrange.match("[0-9]*-[0-9]*,?");
 
-                        if(!str.isNull())
+                        if(!str.empty())
                         {
                             char *chptr;
-                            RWCString startstr = str.match("[0-9]*");
-                            RWCString stopstr = str.match(" *- *[0-9]* *,? *");
-                            stopstr = stopstr.strip(RWCString::both, ' ');
-                            stopstr = stopstr.strip(RWCString::leading, '-');
-                            stopstr = stopstr.strip(RWCString::trailing, ',');
-                            stopstr = stopstr.strip(RWCString::both, ' ');
+                            CtiString startstr = str.match("[0-9]*");
+                            CtiString stopstr = str.match(" *- *[0-9]* *,? *");
+                            stopstr = stopstr.strip(CtiString::both, ' ');
+                            stopstr = stopstr.strip(CtiString::leading, '-');
+                            stopstr = stopstr.strip(CtiString::trailing, ',');
+                            stopstr = stopstr.strip(CtiString::both, ' ');
 
-                            UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
-                            UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+                            UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
+                            UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
 
                             if(startaddr <= serialnumber && serialnumber <= stopaddr)
                             {
                                 // This is a prefix switch switch and we can continue!
                                 _cmd["xcprefix"] = CtiParseValue( TRUE );
-                                _cmd["xcprefixstr"] = CtiParseValue( gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_MESSAGE") );
+                                _cmd["xcprefixstr"] = CtiParseValue( gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_MESSAGE").data() );
                                 break;
                             }
                         }
@@ -3324,7 +3334,7 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES") << "\"" << endl;
+                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES") << "\"" << endl;
                                 break;
                             }
                         }
@@ -3371,31 +3381,32 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
     }
 }
 
-const RWCString& CtiCommandParser::getCommandStr() const
+const string& CtiCommandParser::getCommandStr() const
 {
-    return _cmdString;
+    return (_cmdString);
 }
 
-INT CtiCommandParser::convertTimeInputToSeconds(const RWCString& inStr) const
+INT CtiCommandParser::convertTimeInputToSeconds(const string& _inStr) const
 {
+    CtiString inStr(_inStr);
     INT val  = -1;
     INT mult = 60; //assume minutes for fun ok.
 
-    RWCRExpr   re_scale("[hms]");
-    RWCString   temp2;
+    boost::regex   re_scale("[hms]");
+    CtiString   temp2;
 
 
-    if(!inStr.match(re_num).isNull())
+    if(!inStr.match(re_num).empty())
     {
         val = atoi(inStr.match(re_num).data());
 
-        if(!(temp2 = inStr.match(re_scale)).isNull())
+        if(!(temp2 = inStr.match(re_scale)).empty())
         {
-            if(temp2.data()[0] == 'h')
+            if(temp2[0] == 'h')
             {
                 mult = 3600.0;
             }
-            else if(temp2.data()[0] == 's')
+            else if(temp2[0] == 's')
             {
                 mult = 1.0;
             }
@@ -3407,9 +3418,9 @@ INT CtiCommandParser::convertTimeInputToSeconds(const RWCString& inStr) const
     return val;
 }
 
-RWCString CtiCommandParser::asString()
+string CtiCommandParser::asString()
 {
-    RWCString rstr;
+    CtiString rstr;
 
     map_itr_type itr(_cmd);
 
@@ -3417,9 +3428,9 @@ RWCString CtiCommandParser::asString()
     {
         if(rstr.length() > 0)
         {
-            rstr += RWCString(":");
+            rstr += CtiString(":");
         }
-        rstr += RWCString(itr.key()) + RWCString("=") + ( itr.value().getString().length() ? itr.value().getString(): RWCString("(none)")) + RWCString(",") + CtiNumStr(itr.value().getInt()) + RWCString(",") + CtiNumStr(itr.value().getReal());
+        rstr += CtiString(itr.key()) + CtiString("=") + ( itr.value().getString().length() ? itr.value().getString(): CtiString("(none)")) + CtiString(",") + CtiNumStr(itr.value().getInt()) + CtiString(",") + CtiNumStr(itr.value().getReal());
     }
     return rstr;
 }
@@ -3444,7 +3455,7 @@ void CtiCommandParser::Dump()
 
         for(int i = 0; i < itr.value().getString().length(); i++ )
         {
-            dout << hex << setw(2) << (INT)(itr.value().getString()(i)) << " ";
+            dout << hex << setw(2) << (INT)(itr.value().getString()[i]) << " ";
         }
 
         dout << endl;
@@ -3528,24 +3539,25 @@ bool CtiCommandParser::isDisconnect() const
     return bret;
 }
 
-CtiCommandParser& CtiCommandParser::setValue(const RWCString key, INT val)
+CtiCommandParser& CtiCommandParser::setValue(const string key, INT val)
 {
-    _cmd[key] = CtiParseValue(val);
+    _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
-CtiCommandParser& CtiCommandParser::setValue(const RWCString key, DOUBLE val)
+CtiCommandParser& CtiCommandParser::setValue(const string key, DOUBLE val)
 {
-    _cmd[key] = CtiParseValue(val);
+    _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
-CtiCommandParser& CtiCommandParser::setValue(const RWCString key, RWCString val)
+CtiCommandParser& CtiCommandParser::setValue(const string key, string val)
 {
-    _cmd[key] = CtiParseValue(val);
+    _cmd[key.c_str()] = CtiParseValue(val.c_str());
     return *this;
 }
 
-void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
+void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
@@ -3555,17 +3567,17 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
     CHAR        tbuf[80];
     CHAR        tbuf2[80];
 
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
 
-    if(!(temp = CmdStr.match(" mode (heat)|(cool)|(both)")).isNull())
+    if(!(temp = CmdStr.match(" mode (heat)|(cool)|(both)")).empty())
     {
         if(temp.contains("cool"))
         {
@@ -3586,36 +3598,36 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
 
     if(CmdStr.contains(" rand"))
     {
-        if(!(temp = CmdStr.match(" rand(om)? ?start [0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" rand(om)? ?start [0-9]+")).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcrandstart"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" rand(om)? ?stop [0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" rand(om)? ?stop [0-9]+")).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcrandstop"] = CtiParseValue( iValue );
             }
         }
     }
 
-    if( CmdStr.contains(" flip", RWCString::ignoreCase) )
+    if( CmdStr.contains(" flip", CtiString::ignoreCase) )
     {
         _cmd["xcflip"] = CtiParseValue( TRUE );
     }
-    else if(!(token = CmdStr.match(" tcycle [0-9]+")).isNull())
+    if(!(token = CmdStr.match(" tcycle [0-9]+")).empty())
     {
         _cmd["xctcycle"] = CtiParseValue( TRUE );
 
-        if(!(temp = token.match(re_num)).isNull())
+        if(!(temp = token.match(re_num)).empty())
         {
-            iValue = atoi(temp.data());
+            iValue = atoi(temp.c_str());
         }
         else
         {
@@ -3630,66 +3642,66 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
         _cmd["cycle"] = CtiParseValue( (iValue) );
         _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
 
-        if(!(token = CmdStr.match(" period [0-9]+")).isNull())
+        if(!(token = CmdStr.match(" period [0-9]+")).empty())
         {
-            if(!(temp = token.match(re_num)).isNull())
+            if(!(temp = token.match(re_num)).empty())
             {
-                INT _num = atoi(temp.data());
+                INT _num = atoi(temp.c_str());
                 _cmd["cycle_period"] = CtiParseValue( _num );
             }
         }
 
-        if(!(token = CmdStr.match(" count [0-9]+")).isNull())
+        if(!(token = CmdStr.match(" count [0-9]+")).empty())
         {
-            if(!(temp = token.match(re_num)).isNull())
+            if(!(temp = token.match(re_num)).empty())
             {
-                INT _num = atoi(temp.data());
+                INT _num = atoi(temp.c_str());
                 _cmd["cycle_count"] = CtiParseValue( _num );
             }
         }
 
-        if(!(temp = CmdStr.match("ctrl temp " + str_num)).isNull())
+        if(!(temp = CmdStr.match("ctrl temp " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcctrltemp"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" limit " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" limit " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xclimittemp"] = CtiParseValue( iValue );
             }
 
             // We need to look for the fallback %
-            if(!(temp = CmdStr.match(" afallback " + str_num)).isNull())
+            if(!(temp = CmdStr.match(" afallback " + str_num)).empty())
             {
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["xclimitfbp"] = CtiParseValue( iValue );
                 }
             }
         }
 
-        if(!(temp = CmdStr.match(" maxrate " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" maxrate " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcmaxdperh"] = CtiParseValue( iValue );
             }
 
             // We need to look for the fallback %
-            if(!(temp = CmdStr.match(" bfallback " + str_num)).isNull())
+            if(!(temp = CmdStr.match(" bfallback " + str_num)).empty())
             {
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["xcmaxdperhfbp"] = CtiParseValue( iValue );
                 }
             }
@@ -3704,109 +3716,109 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
             _cmd["xcholdtemp"] = CtiParseValue( TRUE );
         }
 
-        if(!(temp = CmdStr.match(" min " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" min " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcmintemp"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" max " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" max " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcmaxtemp"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" tr " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" tr " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctr"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" ta " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" ta " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcta"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" tb " + str_num)).isNull() && CmdStr.contains(" dsb"))
+        if(!(temp = CmdStr.match(" tb " + str_num)).empty() && CmdStr.contains(" dsb"))
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctb"] = CtiParseValue( iValue );
             }
 
-            if(!(temp = CmdStr.match(" dsb -?[0-9]+")).isNull())
+            if(!(temp = CmdStr.match(" dsb -?[0-9]+")).empty())
             {
-                if(!(valStr = temp.match("-?[0-9]+")).isNull())
+                if(!(valStr = temp.match("-?[0-9]+")).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["xcdsb"] = CtiParseValue( iValue );
                 }
             }
         }
 
-        if(!(temp = CmdStr.match(" tc " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" tc " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctc"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" td " + str_num)).isNull() && CmdStr.contains(" dsd"))
+        if(!(temp = CmdStr.match(" td " + str_num)).empty() && CmdStr.contains(" dsd"))
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctd"] = CtiParseValue( iValue );
             }
 
-            if(!(temp = CmdStr.match(" dsd -?[0-9]+")).isNull())
+            if(!(temp = CmdStr.match(" dsd -?[0-9]+")).empty())
             {
-                if(!(valStr = temp.match("-?[0-9]+")).isNull())
+                if(!(valStr = temp.match("-?[0-9]+")).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["xcdsd"] = CtiParseValue( iValue );
                 }
             }
         }
 
-        if(!(temp = CmdStr.match(" te " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" te " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcte"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" tf " + str_num)).isNull() && CmdStr.contains(" dsf"))
+        if(!(temp = CmdStr.match(" tf " + str_num)).empty() && CmdStr.contains(" dsf"))
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctf"] = CtiParseValue( iValue );
             }
 
-            if(!(temp = CmdStr.match(" dsf -?[0-9]+")).isNull())
+            if(!(temp = CmdStr.match(" dsf -?[0-9]+")).empty())
             {
-                if(!(valStr = temp.match("-?[0-9]+")).isNull())
+                if(!(valStr = temp.match("-?[0-9]+")).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["xcdsf"] = CtiParseValue( iValue );
                 }
             }
@@ -3817,8 +3829,9 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
 }
 
 
-void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     CHAR *p;
     INT         _num;
     UINT        flag   = 0;
@@ -3827,12 +3840,12 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
     DOUBLE      dValue = 0.0;
     CHAR        tbuf[80];
 
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
@@ -3860,7 +3873,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             _cmd["xcholdprog"] = CtiParseValue( TRUE );
         }
 
-        if(!(temp = CmdStr.match(" fan (on|off|auto)")).isNull())
+        if(!(temp = CmdStr.match(" fan (on|off|auto)")).empty())
         {
             if(temp.contains("on"))
             {
@@ -3876,7 +3889,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).isNull())
+        if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).empty())
         {
             if(temp.contains(" off"))
             {
@@ -3900,20 +3913,20 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" temp " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" temp " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xcsettemp"] = CtiParseValue( iValue );
             }
         }
 
-        if(!(temp = CmdStr.match(" timeout " + str_num)).isNull())         // assume minutes input.
+        if(!(temp = CmdStr.match(" timeout " + str_num)).empty())         // assume minutes input.
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["xctimeout"] = CtiParseValue( iValue );            // In minutes
             }
         }
@@ -3929,149 +3942,149 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
         }
 
 
-        if(!(temp = CmdStr.match(" [0-9]?[0-9]:")).isNull())
+        if(!(temp = CmdStr.match(" [0-9]?[0-9]:")).empty())
         {
-            int hh = atoi(temp.data());
+            int hh = atoi(temp.c_str());
             _cmd["xctimesync_hour"] = CtiParseValue( hh );
 
-            if(!(temp = CmdStr.match(":[0-9][0-9]")).isNull())
+            if(!(temp = CmdStr.match(":[0-9][0-9]")).empty())
             {
-                int mm = atoi(temp.data() + 1);
+                int mm = atoi(temp.c_str() + 1);
                 _cmd["xctimesync_minute"] = CtiParseValue( mm );
             }
         }
 
     }
 
-    if(!(token = CmdStr.match(" raw( (0x)?[0-9a-f]+)+")).isNull())
+    if(!(token = CmdStr.match(" raw( (0x)?[0-9a-f]+)+")).empty())
     {
-        if(!(str = token.match("( (0x)?[0-9a-f]+)+")).isNull())
+        if(!(str = token.match("( (0x)?[0-9a-f]+)+")).empty())
         {
             _cmd["xcrawconfig"] = CtiParseValue( str );
         }
     }
 
-    if(!(token = CmdStr.match(" data( (0x)?[0-9a-f]+)+")).isNull())
+    if(!(token = CmdStr.match(" data( (0x)?[0-9a-f]+)+")).empty())
     {
         token.replace(" data", "");
-        if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).isNull())
+        if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
         {
             _cmd["xcdata"] = CtiParseValue( str );
         }
     }
 
-    if(!(token = CmdStr.match("main(tenance)?( (0x)?[0-9a-f]+)+")).isNull())
+    if(!(token = CmdStr.match("main(tenance)?( (0x)?[0-9a-f]+)+")).empty())
     {
         // Translates to a maintenance function
-        if(!(str = token.match("( (0x)?[0-9a-f]+)+")).isNull())
+        if(!(str = token.match("( (0x)?[0-9a-f]+)+")).empty())
         {
             _cmd["xcrawmaint"] = CtiParseValue( str );
         }
     }
 
-    if(!(token = CmdStr.match("((assign)|(address))")).isNull())
+    if(!(token = CmdStr.match("((assign)|(address))")).empty())
     {
         {
             _cmd["xcaddress"] = TRUE;
 
-            if(!(valStr = CmdStr.match(" s[ =]*(0x)?[0-9a-f]+")).isNull())
+            if(!(valStr = CmdStr.match(" s[ =]*(0x)?[0-9a-f]+")).empty())
             {
-                _num = strtol(valStr.match(re_anynum).data(), &p, 0);
+                _num = strtol(valStr.match(re_anynum).c_str(), &p, 0);
 
                 _cmd["xca_spid"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SPID = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" g[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" g[ =]*[0-9]+")).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 10);
                 _cmd["xca_geo"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GEO = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" b[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" b[ =]*[0-9]+")).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 10);
                 _cmd["xca_sub"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" f[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" f[ =]*[0-9]+")).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 10);
                 _cmd["xca_feeder"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FEEDER = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" z[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" z[ =]*[0-9]+")).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 10);
                 _cmd["xca_zip"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG ZIP = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" u[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" u[ =]*[0-9]+")).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 10);
                 _cmd["xca_uda"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG UDA = %d", _num);
                 _actionItems.insert(tbuf);
             }
 
-            RWCString programtemp;
-            RWCString splintertemp;
+            CtiString programtemp;
+            CtiString splintertemp;
 
-            if(!(valStr = CmdStr.match(" p[ =]*[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(valStr = CmdStr.match(" p[ =]*[0-9]+( *, *[0-9]+)*")).empty())
             {
-                valStr.replace(RWCRExpr(" p[ =]*"),"");
+                valStr.replace(boost::regex(" p[ =]*"),"");
                 _cmd["xca_program"] = CtiParseValue( valStr );
                 programtemp = valStr;
             }
-            if(!(valStr = CmdStr.match(" r[ =]*[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(valStr = CmdStr.match(" r[ =]*[0-9]+( *, *[0-9]+)*")).empty())
             {
-                valStr.replace(RWCRExpr(" r[ =]*"),"");
+                valStr.replace(boost::regex(" r[ =]*"),"");
                 _cmd["xca_splinter"] = CtiParseValue( valStr );
 
                 splintertemp = valStr;
             }
 
-            if(!(token = CmdStr.match("(relay|load) [0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("(relay|load) [0-9]+( *, *[0-9]+)*")).empty())
             {
                 INT i;
                 INT mask = 0;
-                RWTokenizer ptok(programtemp);
-                RWTokenizer rtok(splintertemp);
-                RWCString tempstr;
-                RWCString ptemp;
-                RWCString rtemp;
+                CtiTokenizer ptok(programtemp);
+                CtiTokenizer rtok(splintertemp);
+                CtiString tempstr;
+                CtiString ptemp;
+                CtiString rtemp;
 
                 for(i = 0; i < 15; i++)
                 {
-                    RWCString numstr = CtiNumStr(i+1);
-                    if(!(temp = token.match(numstr)).isNull())
+                    CtiString numstr = CtiNumStr(i+1).toString().c_str();
+                    if(!(temp = token.match(numstr.c_str())).empty())
                     {
                         mask |= (0x01 << i);
 
                         {
                             tempstr = ptok(",");
-                            if(!tempstr.isNull()) ptemp = tempstr;
+                            if(!tempstr.empty()) ptemp = tempstr;
 
                             tempstr = rtok(",");
-                            if(!tempstr.isNull()) rtemp = tempstr;
+                            if(!tempstr.empty()) rtemp = tempstr;
 
-                            if(!ptemp.isNull())
+                            if(!ptemp.empty())
                             {
                                 _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to PROGRAM = %s", i+1, ptemp);
                                 _actionItems.insert(tbuf);
                             }
 
-                            if(!rtemp.isNull())
+                            if(!rtemp.empty())
                             {
                                 _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to SPLINTER = %s", i+1, rtemp);
                                 _actionItems.insert(tbuf);
@@ -4091,7 +4104,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
 
     if(CmdStr.contains(" serv"))
     {
-        if(CmdStr.contains("temp") && !(token = CmdStr.match("serv(ice)? (in|out|enable|disable)")).isNull())
+        if(CmdStr.contains("temp") && !(token = CmdStr.match("serv(ice)? (in|out|enable|disable)")).empty())
         {
             CHAR tbuf[80];
             INT offtime = 0;
@@ -4118,10 +4131,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 bitL = 1;
             }
 
-            if(!(token = CmdStr.match(" offhours " + str_num)).isNull())
+            if(!(token = CmdStr.match(" offhours " + str_num)).empty())
             {
                 str = token.match(re_num);
-                offtime = atoi(str.data());
+                offtime = atoi(str.c_str());
             }
 
             _cmd["xctservicebitp"] = CtiParseValue( bitP );
@@ -4130,7 +4143,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             _cmd["xctservicecancel"] = CtiParseValue( cancel );
             _actionItems.insert(tbuf);
         }
-        else if(!(token = CmdStr.match("serv(ice)? (in|out|enable|disable)( (relay|load) [0-9]+)?")).isNull())
+        else if(!(token = CmdStr.match("serv(ice)? (in|out|enable|disable)( (relay|load) [0-9]+)?")).empty())
         {
             CHAR tbuf[80];
             INT flag = 0;
@@ -4146,12 +4159,12 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
             }
 
-            if(!(str = token.match("(relay|load) " + str_num)).isNull())
+            if(!(str = token.match("(relay|load) " + str_num)).empty())
             {
-                RWCTokenizer   tok2(str);
+                CtiTokenizer   tok2(str);
                 tok2();  // hop over relay | load.
                 str = tok2();
-                INT load = atoi(str.data());
+                INT load = atoi(str.c_str());
                 flag |= (load & 0x0f);
             }
 
@@ -4159,7 +4172,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
     }
-    else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+    else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
     {
         int   op = 0;
         CHAR  op_name[20];
@@ -4191,8 +4204,9 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
     }
 }
 
-void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     INT         _num;
     CHAR        tbuf[80];
     UINT        flag   = 0;
@@ -4200,31 +4214,31 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
     UINT        iValue = 0;
     DOUBLE      dValue = 0.0;
 
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!(token = CmdStr.match(" prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping))")).isNull())
+    if(!(token = CmdStr.match(" prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping))")).empty())
     {
         int   op = -1;
         CHAR  op_name[20];
 
-        if(!(token.match("disp(lay)?")).isNull())                   // Turn on light & bump counter.
+        if(!(token.match("disp(lay)?")).empty())                   // Turn on light & bump counter.
         {
             op = 0x002;
             _snprintf(op_name, sizeof(op_name), "DISPLAY");
         }
-        else if(!(token.match("inc(rement)?")).isNull())            // bump counter.
+        else if(!(token.match("inc(rement)?")).empty())            // bump counter.
         {
             op = 0x001;
             _snprintf(op_name, sizeof(op_name), "INCREMENT");
         }
-        else if(!(token.match("term(inate)?")).isNull())            // Turn off light.
+        else if(!(token.match("term(inate)?")).empty())            // Turn off light.
         {
             op = 0x000;
             _snprintf(op_name, sizeof(op_name), "TERMINATE");
@@ -4249,7 +4263,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
     }
-    else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+    else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).empty())
     {
         int   op = 0;
         CHAR  op_name[20];
@@ -4272,14 +4286,15 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
     }
 }
 
-void CtiCommandParser::doParsePutConfigThermostatSchedule(const RWCString &CmdStr)
+void CtiCommandParser::doParsePutConfigThermostatSchedule(const string &_CmdStr)
 {
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
+    CtiString CmdStr(_CmdStr);
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     {
         INT key;
@@ -4287,7 +4302,7 @@ void CtiCommandParser::doParsePutConfigThermostatSchedule(const RWCString &CmdSt
 
         token = tok(" ,");              // Prime it up.. Shoud be a putconfig.
 
-        while(!token.isNull())
+        while(!token.empty())
         {
             key = isTokenThermostatScheduleDOW(token);
             while(key >= 0)
@@ -4300,7 +4315,7 @@ void CtiCommandParser::doParsePutConfigThermostatSchedule(const RWCString &CmdSt
     }
 }
 
-INT CtiCommandParser::isTokenThermostatScheduleDOW(RWCString &token)
+INT CtiCommandParser::isTokenThermostatScheduleDOW(string &token)
 {
     INT dow = -1;
 
@@ -4348,9 +4363,9 @@ INT CtiCommandParser::isTokenThermostatScheduleDOW(RWCString &token)
     return dow;
 }
 
-void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, INT &key)
+void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, INT &key)
 {
-    RWCString token;
+    CtiString token;
     INT currentkey = key;   // The key which got us here.
     int pod = 0;            // Period of the day on which we begin!.
     int component = 0;
@@ -4359,7 +4374,7 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
     BYTE heat = 0xff;
     BYTE cool = 0xff;
 
-    while( !(token = tok(" :,")).isNull()  )
+    while( !(token = tok(" :,")).empty() )
     {
         if((key = isTokenThermostatScheduleDOW(token)) >= 0)
         {
@@ -4375,9 +4390,9 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
         case 0:
             {
                 // This is the hh section of the time
-                if(!token.match(re_num).isNull())
+                if(!token.match(re_num).empty())
                 {
-                    hh = atoi(token.data());
+                    hh = atoi(token.c_str());
                 }
                 else if(token.contains("hh"))
                 {
@@ -4388,28 +4403,22 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
         case 1:
             {
                 // This is the mm section of the time
-                if(!token.match(re_num).isNull())
-                {
-                    mm = atoi(token.data());
-                }
+                if(!token.match("[0-9]+").empty())
+                    mm = atoi(token.c_str());
                 break;
             }
         case 2:
             {
                 // This is the heat temperature section
-                if(!token.match(re_num).isNull())
-                {
-                    heat = atoi(token.data());
-                }
+                if(!token.match("[0-9]+").empty())
+                    heat = atoi(token.c_str());
                 break;
             }
         case 3:
             {
                 // This is the cool temperature section
-                if(!token.match(re_num).isNull())
-                {
-                    cool = atoi(token.data());
-                }
+                if(!token.match("[0-9]+").empty())
+                    cool = atoi(token.c_str());
                 break;
             }
         default:
@@ -4423,10 +4432,10 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
         {
             BYTE per = ( ((BYTE)currentkey) << 4 | ((BYTE)pod & 0x0f) );
 
-            RWCString hhstr("xctodshh_" + CtiNumStr(per));
-            RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-            RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-            RWCString coolstr("xctodscool_" + CtiNumStr(per));
+            CtiString hhstr("xctodshh_" + CtiNumStr(per));
+            CtiString mmstr("xctodsmm_" + CtiNumStr(per));
+            CtiString heatstr("xctodsheat_" + CtiNumStr(per));
+            CtiString coolstr("xctodscool_" + CtiNumStr(per));
 
             _cmd[hhstr]   = hh;
             _cmd[mmstr]   = mm;
@@ -4453,8 +4462,9 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
     }
 }
 
-void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
+void CtiCommandParser::doParseControlSA(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     INT         _num;
     UINT        flag   = 0;
     UINT        offset = 0;
@@ -4465,10 +4475,10 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     CHAR        tbuf[80];
     CHAR        tbuf2[80];
 
-    RWCString   temp;
-    RWCString   valStr;
+    CtiString   temp;
+    CtiString   valStr;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     temp = tok(); // Get the first one into the hopper....
 
@@ -4479,11 +4489,11 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     // Needed for serial commands.
     if(CmdStr.contains(" utility"))
     {
-        if(!(temp = CmdStr.match(" utility " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" utility " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_utility"] = CtiParseValue( iValue );
             }
         }
@@ -4491,11 +4501,11 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
 
     if(CmdStr.contains(" protocol_priority"))
     {
-        if(!(temp = CmdStr.match(" protocol_priority [0-3]")).isNull())
+        if(!(temp = CmdStr.match(" protocol_priority [0-3]")).empty())
         {
-            if(!(valStr = temp.match("[0-3]")).isNull())
+            if(!(valStr = temp.match("[0-3]")).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_priority"] = CtiParseValue( iValue );
             }
         }
@@ -4504,11 +4514,11 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     //  042005 CGP:  NOT TO BE USED FOR SA205.  Used for LED FLASHing on SA305
     if(CmdStr.contains(" ledrepeats"))
     {
-        if(!(temp = CmdStr.match(" ledrepeats " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" ledrepeats " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_reps"] = CtiParseValue( iValue - 1 );
             }
         }
@@ -4516,19 +4526,19 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
 
     if(CmdStr.contains(" function"))
     {
-        if(!(temp = CmdStr.match(" function [01][01][01][01]")).isNull())
+        if(!(temp = CmdStr.match(" function [01][01][01][01]")).empty())
         {
-            if(!(valStr = temp.match("[01][01][01][01]")).isNull())
+            if(!(valStr = temp.match("[01][01][01][01]")).empty())
             {
-                iValue = binaryStringToInt(valStr.data(), valStr.length());
+                iValue = binaryStringToInt(valStr.c_str(), valStr.length());
                 _cmd["sa_function"] = CtiParseValue(iValue);
             }
         }
-        else if(!(temp = CmdStr.match(" function " + str_num)).isNull())
+        else if(!(temp = CmdStr.match(" function " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_function"] = CtiParseValue(iValue);
             }
         }
@@ -4576,38 +4586,39 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
         _cmd["sa_reps"] = abrupt ? 0 : 1;
         _cmd["sa_strategy"] = CtiParseValue(61);        // This is the defined strategy.
     }
-    else if(!(temp = CmdStr.match(" strategy [01][01][01][01][01][01]")).isNull())
+    else if(!(temp = CmdStr.match(" strategy [01][01][01][01][01][01]")).empty())
     {
         // This is a binary...
-        if(!(valStr = temp.match("[01][01][01][01][01][01]")).isNull())
+        if(!(valStr = temp.match("[01][01][01][01][01][01]")).empty())
         {
-            iValue = binaryStringToInt(valStr.data(), valStr.length());
+            iValue = binaryStringToInt(valStr.c_str(), valStr.length());
             _cmd["sa_strategy"] = CtiParseValue(iValue);    // If not explicitly called out, this is inferred from the period and cycle percent.
         }
     }
 }
 
-void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
+void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     INT         _num;
     INT         iValue = 0;
 
     CHAR tbuf[80];
-    RWCString   valStr;
-    RWCString   temp, token, strnum;
+    CtiString   valStr;
+    CtiString   temp, token, strnum;
 
-    RWCTokenizer   tok(CmdStr);
+    CtiTokenizer   tok(CmdStr);
 
     temp = tok(); // Get the first one into the hopper....
 
 
     if(CmdStr.contains(" utility"))
     {
-        if(!(temp = CmdStr.match(" utility " + str_num)).isNull())
+        if(!(temp = CmdStr.match(" utility " + str_num)).empty())
         {
-            if(!(valStr = temp.match(re_num)).isNull())
+            if(!(valStr = temp.match(re_num)).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_utility"] = CtiParseValue( iValue );
             }
         }
@@ -4615,11 +4626,11 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
 
     if(CmdStr.contains(" protocol_priority"))
     {
-        if(!(temp = CmdStr.match(" protocol_priority [0-3]+")).isNull())
+        if(!(temp = CmdStr.match(" protocol_priority [0-3]+")).empty())
         {
-            if(!(valStr = temp.match("[0-3]+")).isNull())
+            if(!(valStr = temp.match("[0-3]+")).empty())
             {
-                iValue = atoi(valStr.data());
+                iValue = atoi(valStr.c_str());
                 _cmd["sa_priority"] = CtiParseValue( iValue );
             }
         }
@@ -4629,24 +4640,24 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
     {
         if(!(token = CmdStr.match("tamper[ a-z_]*" \
                                   "( *f[12][ =]*" + str_num + ")" \
-                                  "( *f[12][ =]*" + str_num + ")?")).isNull())
+                                  "( *f[12][ =]*" + str_num + ")?")).empty())
         {
             // dout << token << endl;
             _cmd["sa_tamper"] = TRUE;
 
-            if(!(strnum = token.match("f1[ =]*" + str_num)).isNull())
+            if(!(strnum = token.match("f1[ =]*" + str_num)).empty())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = atoi(strnum.match(re_num).data());
+                _num = atoi(strnum.match("[0-9]+").c_str());
                 _cmd["tamperdetect_f1"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R1 = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(strnum = token.match("f2[ =]*" + str_num)).isNull())
+            if(!(strnum = token.match("f2[ =]*" + str_num)).empty())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = atoi(strnum.match(re_num).data());
+                _num = atoi(strnum.match("[0-9]+").c_str());
                 _cmd["tamperdetect_f2"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R2 = %d", _num);
@@ -4655,38 +4666,38 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
         }
     }
 
-    if(!(temp = CmdStr.match(" override " + str_num)).isNull())
+    if(!(temp = CmdStr.match(" override " + str_num)).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 0;
 
-        if(!(valStr = temp.match(re_num)).isNull())
+        if(!(valStr = temp.match(re_num)).empty())
         {
-            iValue = atoi(valStr.data());
+            iValue = atoi(valStr.c_str());
             _cmd["sa_override"] = CtiParseValue(iValue);    // Hours switch is off.
             _cmd["sa_strategy"] = CtiParseValue(62);        // This is the defined strategy.
         }
     }
-    else if(!(temp = CmdStr.match(" setled " + str_num)).isNull())
+    else if(!(temp = CmdStr.match(" setled " + str_num)).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 1;
 
-        if(!(valStr = temp.match(re_num)).isNull())
+        if(!(valStr = temp.match(re_num)).empty())
         {
-            iValue = atoi(valStr.data());
+            iValue = atoi(valStr.c_str());
             _cmd["sa_setled"] = CtiParseValue(iValue);
             _cmd["sa_strategy"] = CtiParseValue(63);
         }
     }
-    else if(!(temp = CmdStr.match(" flashled " + str_num)).isNull())
+    else if(!(temp = CmdStr.match(" flashled " + str_num)).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 1;
 
-        if(!(valStr = temp.match(re_num)).isNull())
+        if(!(valStr = temp.match(re_num)).empty())
         {
-            iValue = atoi(valStr.data());
+            iValue = atoi(valStr.c_str());
             _cmd["sa_flashled"] = CtiParseValue(iValue);
             _cmd["sa_strategy"] = CtiParseValue(63);
         }
@@ -4699,14 +4710,14 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
         _cmd["sa_flashrate"] = CtiParseValue(TRUE);
         _cmd["sa_strategy"] = CtiParseValue(63);
     }
-    else if(!(temp = CmdStr.match(" setpriority [0-3]")).isNull())
+    else if(!(temp = CmdStr.match(" setpriority [0-3]")).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 0;
 
-        if(!(valStr = temp.match("[0-3]")).isNull())
+        if(!(valStr = temp.match("[0-3]")).empty())
         {
-            iValue = atoi(valStr.data());
+            iValue = atoi(valStr.c_str());
             _cmd["sa_setpriority"] = CtiParseValue(iValue);
             _cmd["sa_strategy"] = CtiParseValue(63);
         }
@@ -4723,38 +4734,38 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             _cmd["sa_f0bit"] = 1;
             _cmd["sa_assign"] = TRUE;
 
-            if(!isKeyValid("sa_utility") &&  !(valStr = CmdStr.match(" u[ =]*" + str_num)).isNull())  // Must be included (either way is ok)
+            if(!isKeyValid("sa_utility") &&  !(valStr = CmdStr.match(" u[ =]*" + str_num)).empty())  // Must be included (either way is ok)
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_utility"] = CtiParseValue( _num );
             }
-            if(!(valStr = CmdStr.match(" g[ =]*" + str_num)).isNull())
+            if(!(valStr = CmdStr.match(" g[ =]*" + str_num)).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_group"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GROUP = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" d[ =]*" + str_num)).isNull())
+            if(!(valStr = CmdStr.match(" d[ =]*" + str_num)).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_division"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" s[ =]*" + str_num)).isNull())
+            if(!(valStr = CmdStr.match(" s[ =]*" + str_num)).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_substation"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" [pr][ =]*" + str_num)).isNull())
+            if(!(valStr = CmdStr.match(" [pr][ =]*" + str_num)).empty())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 0);
+                _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_package"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG RATE PACKAGE = %d", _num);
@@ -4762,17 +4773,17 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             }
             else
             {
-                if(!(valStr = CmdStr.match(" f[ =]*" + str_num)).isNull())
+                if(!(valStr = CmdStr.match(" f[ =]*" + str_num)).empty())
                 {
-                    _num = strtol(valStr.match(re_num).data(), &p, 0);
+                    _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_family"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG FAMILY = %d", _num);
                     _actionItems.insert(tbuf);
                 }
-                if(!(valStr = CmdStr.match(" m[ =]*" + str_num)).isNull())
+                if(!(valStr = CmdStr.match(" m[ =]*" + str_num)).empty())
                 {
-                    _num = strtol(valStr.match(re_num).data(), &p, 0);
+                    _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_member"] = CtiParseValue( _num );
 
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG MEMBER = %d", _num);
@@ -4787,92 +4798,92 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             {
                 _cmd["sa_coldload"] = TRUE;
                 // Assume seconds is the input here!
-                if(!(temp = CmdStr.match(" f1[ =]+" + str_num)).isNull())
+                if(!(temp = CmdStr.match(" f1[ =]+" + str_num)).empty())
                 {
                     temp.replace(" f1[ =]+", "");
-                    if(!(valStr = temp.match(re_num)).isNull())
+                    if(!(valStr = temp.match(re_num)).empty())
                     {
-                        iValue = atoi(valStr.data());
+                        iValue = atoi(valStr.c_str());
                         _cmd["sa_clpf1"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f2[ =]+" + str_num)).isNull())
+                if(!(temp = CmdStr.match(" f2[ =]+" + str_num)).empty())
                 {
                     temp.replace(" f2[ =]+", "");
-                    if(!(valStr = temp.match(re_num)).isNull())
+                    if(!(valStr = temp.match(re_num)).empty())
                     {
-                        iValue = atoi(valStr.data());
+                        iValue = atoi(valStr.c_str());
                         _cmd["sa_clpf2"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f3[ =]+" + str_num)).isNull())
+                if(!(temp = CmdStr.match(" f3[ =]+" + str_num)).empty())
                 {
                     temp.replace(" f3[ =]+", "");
-                    if(!(valStr = temp.match(re_num)).isNull())
+                    if(!(valStr = temp.match(re_num)).empty())
                     {
-                        iValue = atoi(valStr.data());
+                        iValue = atoi(valStr.c_str());
                         _cmd["sa_clpf3"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f4[ =]+" + str_num)).isNull())
+                if(!(temp = CmdStr.match(" f4[ =]+" + str_num)).empty())
                 {
                     temp.replace(" f4[ =]+", "");
-                    if(!(valStr = temp.match(re_num)).isNull())
+                    if(!(valStr = temp.match(re_num)).empty())
                     {
-                        iValue = atoi(valStr.data());
+                        iValue = atoi(valStr.c_str());
                         _cmd["sa_clpf4"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" all[ =]+" + str_num)).isNull())
+                if(!(temp = CmdStr.match(" all[ =]+" + str_num)).empty())
                 {
-                    if(!(valStr = temp.match(re_num)).isNull())
+                    if(!(valStr = temp.match(re_num)).empty())
                     {
-                        iValue = atoi(valStr.data());
+                        iValue = atoi(valStr.c_str());
                         _cmd["sa_clpall"] = CtiParseValue(iValue);
                     }
                 }
             }
-            else if(!(temp = CmdStr.match(" lorm0[ =]+" + str_num)).isNull())
+            else if(!(temp = CmdStr.match(" lorm0[ =]+" + str_num)).empty())
             {
                 temp.replace(" lorm0[ =]+", "");
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["sa_lorm0"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" horm0[ =]+" + str_num)).isNull())
+            else if(!(temp = CmdStr.match(" horm0[ =]+" + str_num)).empty())
             {
                 temp.replace(" horm0[ =]+", "");
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["sa_horm0"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" lorm1[ =]+" + str_num)).isNull())
+            else if(!(temp = CmdStr.match(" lorm1[ =]+" + str_num)).empty())
             {
                 temp.replace(" lorm1[ =]+", "");
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["sa_lorm1"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" horm1[ =]+" + str_num)).isNull())
+            else if(!(temp = CmdStr.match(" horm1[ =]+" + str_num)).empty())
             {
                 temp.replace(" horm1[ =]+", "");
-                if(!(valStr = temp.match(re_num)).isNull())
+                if(!(valStr = temp.match(re_num)).empty())
                 {
-                    iValue = atoi(valStr.data());
+                    iValue = atoi(valStr.c_str());
                     _cmd["sa_horm1"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" use relay *map 0")).isNull())
+            else if(!(temp = CmdStr.match(" use relay *map 0")).empty())
             {
                 _cmd["sa_userelaymap0"] = TRUE;
             }
-            else if(!(temp = CmdStr.match(" use relay *map 1")).isNull())
+            else if(!(temp = CmdStr.match(" use relay *map 1")).empty())
             {
                 _cmd["sa_userelaymap1"] = TRUE;
             }
@@ -4892,40 +4903,40 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             {
                 _cmd["sa_freezepcd"] = TRUE;
             }
-            else if(!(temp = CmdStr.match(" rawdata " + str_num + " " + str_num)).isNull())
+            else if(!(temp = CmdStr.match(" rawdata " + str_num + " " + str_num)).empty())
             {
-                RWCTokenizer   tok2(temp);
+                CtiTokenizer   tok2(temp);
                 temp = tok2(); // Get the rawdata into the hopper....
                                //
                 temp = tok2(); // Pull in the first number
-                _cmd["sa_datatype"] = atoi(temp.data());
+                _cmd["sa_datatype"] = atoi(temp.c_str());
 
                 temp = tok2(); // Pull in the next number
-                _cmd["sa_dataval"] = atoi(temp.data());
+                _cmd["sa_dataval"] = atoi(temp.c_str());
             }
         }
     }
 }
 
-CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
+CtiCommandParser& CtiCommandParser::parseAsString(const string str)
 {
     #if 0
-    _cmdString = RWCString("built from string");
+    _cmdString = CtiString("built from string");
     _actionItems.clear();
     _cmd.clear();
 
-    RWCString key;
-    RWCString asStr;
+    CtiString key;
+    CtiString asStr;
     INT iValue;
     DOUBLE dValue;
 
-    RWCTokenizer   tok(str);
+    CtiTokenizer   tok(str.c_str());
 
-    while( !(key = tok("= \t\n\0")).isNull() )
+    while( !(key = tok("= \t\n\0")).empty() )
     {
         asStr = tok(", \t\n\0");
-        iValue = atoi( RWCString(tok(", \t\n\0")).data() );
-        dValue = atof( RWCString(tok(": \t\n\0")).data());
+        iValue = atoi( CtiString(tok(", \t\n\0")).c_str() );
+        dValue = atof( CtiString(tok(": \t\n\0")).c_str());
 
 
         {
@@ -4941,8 +4952,9 @@ CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
 }
 
 
-void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
+void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
 {
+    CtiString CmdStr(_CmdStr);
     CHAR *p;
     INT         _num;
     UINT        flag   = 0;
@@ -4951,43 +4963,43 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
     DOUBLE      dValue = 0.0;
     CHAR        tbuf[80];
 
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
-    RWCString   xcraw("0x60 ");
+    CtiString   str;
+    CtiString   temp;
+    CtiString   valStr;
+    CtiString   token;
+    CtiString   xcraw("0x60 ");
 
     if(CmdStr.contains(" emergency"))
     {
         int ov = 0, uv = 0, timer = 0;
 
-        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            uv = atoi(str.data());
+            uv = atoi(str.c_str());
             uv = limitValue(uv, 105, 122);
             _cmd["cbc_emergency_uv_close_voltage"] = CtiParseValue( uv );
-            valStr = RWCString("Emergency UV Close Voltage ") + CtiNumStr(uv);
+            valStr = CtiString("Emergency UV Close Voltage ") + CtiNumStr(uv);
             _actionItems.insert(valStr);
         }
 
-        if(!(token = CmdStr.match(" ov[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            ov = atoi(str.data());
+            ov = atoi(str.c_str());
             ov = limitValue(ov, 118, 135);
             _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( ov );
-            valStr = RWCString("Emergency OV Trip Voltage ") + CtiNumStr(ov);
+            valStr = CtiString("Emergency OV Trip Voltage ") + CtiNumStr(ov);
             _actionItems.insert(valStr);
         }
 
-        if(!(token = CmdStr.match(" timer[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" timer[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            timer = atoi(str.data());
+            timer = atoi(str.c_str());
             timer = limitValue(timer, 1, 255);
             _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( timer );
-            valStr = RWCString("Emergency OV Trip Voltage ") + CtiNumStr(timer);
+            valStr = CtiString("Emergency OV Trip Voltage ") + CtiNumStr(timer);
             _actionItems.insert(valStr);
         }
 
@@ -5000,38 +5012,38 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
-    else if(!(token = CmdStr.match(" ovuv control trigger time[ =]+" + str_num)).isNull())
+    else if(!(token = CmdStr.match(" ovuv control trigger time[ =]+" + str_num)).empty())
     {
         int random = 0;
         str = token.match(re_num);
-        iValue = atoi(str.data());
+        iValue = atoi(str.c_str());
         iValue = limitValue(iValue, 0, 0xffff);
         _cmd["cbc_ovuv_control_trigger_time"] = CtiParseValue( iValue );
 
-        if(!(token = CmdStr.match(" random[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" random[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            random = atoi(str.data());
+            random = atoi(str.c_str());
             random = limitValue(random, 0, 0xff);
         }
 
-        valStr = RWCString("OVUV Control Trigger Time ") + CtiNumStr(iValue) + " random " + CtiNumStr(random);
+        valStr = CtiString("OVUV Control Trigger Time ") + CtiNumStr(iValue) + " random " + CtiNumStr(random);
         _actionItems.insert(valStr);
 
         xcraw += "0x0b 0x" + CtiNumStr(HIBYTE(iValue)).hex() + " 0x" + CtiNumStr(LOBYTE(iValue)).hex() + " 0x" + CtiNumStr(random).hex();
         _cmd["xcrawconfig"] = xcraw;
     }
-    else if(!(token = CmdStr.match(" daily auto control limit[ =]+" + str_num)).isNull())
+    else if(!(token = CmdStr.match(" daily auto control limit[ =]+" + str_num)).empty())
     {
         str = token.match(re_num);
-        iValue = atoi(str.data());
+        iValue = atoi(str.c_str());
         iValue = limitValue(iValue, 1, 30);
         _cmd["cbc_daily_control_limit"] = CtiParseValue( iValue );
-        valStr = RWCString("OV Trip Voltage ") + CtiNumStr(iValue);
+        valStr = CtiString("OV Trip Voltage ") + CtiNumStr(iValue);
         _actionItems.insert(valStr);
 
         xcraw += "0x10 0x" + CtiNumStr(iValue).hex();
@@ -5082,31 +5094,31 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
 
         xcraw += "0x23 0x" + CtiNumStr(action).hex();
 
-        if(!(token = CmdStr.match(" time[ =]+" + str_num)).isNull())    // Ignored if the action == 0.
+        if(!(token = CmdStr.match(" time[ =]+" + str_num)).empty())    // Ignored if the action == 0.
         {
             str = token.match(re_num);
-            commlosstime = atoi(str.data());
+            commlosstime = atoi(str.c_str());
             commlosstime = limitValue(commlosstime, 0, 0xffff);
             _cmd["cbc_comms_lost_time"] = CtiParseValue( commlosstime );
         }
         xcraw += " 0x" + CtiNumStr(HIBYTE(commlosstime)).hex() + " 0x" + CtiNumStr(LOBYTE(commlosstime)).hex();
 
-        if(!(token = CmdStr.match(" (ov|uv)[ =]+" + str_num + ".*(ov|uv)[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" (ov|uv)[ =]+" + str_num + ".*(ov|uv)[ =]+" + str_num)).empty())
         {
-            if(!(token = CmdStr.match(" uv[ =]+" + str_num)).isNull())    // Ignored if the action == 0.
+            if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())    // Ignored if the action == 0.
             {
                 str = token.match(re_num);
-                uvclval = atoi(str.data());
+                uvclval = atoi(str.c_str());
                 uvclval = limitValue(uvclval, 105, 122);
                 _cmd["cbc_comms_lost_uvpt"] = CtiParseValue( uvclval );
 
                 xcraw += " 0x" + CtiNumStr(uvclval).hex();
             }
 
-            if(!(token = CmdStr.match(" ov[ =]+" + str_num)).isNull())    // Ignored if the action == 0.
+            if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())    // Ignored if the action == 0.
             {
                 str = token.match(re_num);
-                ovclval = atoi(str.data());
+                ovclval = atoi(str.c_str());
                 ovclval = limitValue(ovclval, 118, 135);
                 _cmd["cbc_comms_lost_ovpt"] = CtiParseValue( ovclval );
 
@@ -5127,7 +5139,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
             iValue = FALSE;
         }
         _cmd["cbc_tempcontrol_enable"] = CtiParseValue( iValue );
-        valStr = RWCString("Temperature control ") + (iValue ? RWCString("enable") : RWCString("disable"));
+        valStr = CtiString("Temperature control ") + (iValue ? CtiString("enable") : CtiString("disable"));
         _actionItems.insert(valStr);
 
         _cmd["xcrawconfig"] = xcraw;
@@ -5143,38 +5155,38 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
             iValue = FALSE;
         }
         _cmd["cbc_timecontrol_enable"] = iValue;
-        valStr = RWCString("Time control ") + (iValue ? RWCString("enable") : RWCString("disable"));
+        valStr = CtiString("Time control ") + (iValue ? CtiString("enable") : CtiString("disable"));
         _actionItems.insert(valStr);
 
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         xcraw += "0x22 0x" + CtiNumStr(iValue).hex();
         _cmd["xcrawconfig"] = xcraw;
     }
     else
     {
-        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).isNull())
+        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            iValue = atoi(str.data());
+            iValue = atoi(str.c_str());
             iValue = limitValue(iValue, 105, 122);
             _cmd["cbc_uv_close_voltage"] = CtiParseValue( iValue );
-            valStr = RWCString("UV Close Voltage ") + CtiNumStr(iValue);
+            valStr = CtiString("UV Close Voltage ") + CtiNumStr(iValue);
             _actionItems.insert(valStr);
 
             xcraw += "0x09 0x" + CtiNumStr(iValue).hex();
             _cmd["xcrawconfig"] = xcraw;
         }
-        else if(!(token = CmdStr.match(" ov[ =]+" + str_num)).isNull())
+        else if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())
         {
             str = token.match(re_num);
-            iValue = atoi(str.data());
+            iValue = atoi(str.c_str());
             iValue = limitValue(iValue, 118, 135);
             _cmd["cbc_ov_trip_voltage"] = CtiParseValue( iValue );
-            valStr = RWCString("OV Trip Voltage ") + CtiNumStr(iValue);
+            valStr = CtiString("OV Trip Voltage ") + CtiNumStr(iValue);
             _actionItems.insert(valStr);
 
             xcraw += "0x0a 0x" + CtiNumStr(iValue).hex();
@@ -5184,10 +5196,11 @@ void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << endl << " XCRAW: " << xcraw << endl << endl;
     }
     return;
 }
+
 
 

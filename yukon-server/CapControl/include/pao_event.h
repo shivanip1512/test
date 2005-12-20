@@ -35,19 +35,19 @@ class CtiPAOEvent  : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< R
 public:
 
     CtiPAOEvent();
-    CtiPAOEvent(long eventId, long schedId, long paoId, RWCString command);
+    CtiPAOEvent(long eventId, long schedId, long paoId, const string& command);
     CtiPAOEvent(RWDBReader& rdr);
     virtual ~CtiPAOEvent();
 
-    long getEventId();
-    long getScheduleId();
-    long getPAOId();
-    RWCString getEventCommand();
+    long getEventId()const;
+    long getScheduleId()const;
+    long getPAOId()const;
+    const string& getEventCommand() const;
 
     void setEventId(long eventId);
     void setScheduleId(long schedId);
     void setPAOId(long paoId);
-    void setEventCommand(RWCString eventCommand);
+    void setEventCommand(const string& eventCommand);
 
     CtiPAOEvent& operator=(const CtiPAOEvent& right);
     int operator==(const CtiPAOEvent& right) const;
@@ -64,7 +64,7 @@ private:
     long         _eventId;
     long         _scheduleId;
     long         _paoId;
-    RWCString    _eventCommand;
+    string    _eventCommand;
     
 };
 #endif

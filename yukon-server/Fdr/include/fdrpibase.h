@@ -14,15 +14,14 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.3 $
- *    DATE         :  $Date: 2005/08/09 22:36:02 $
+ *    REVISION     :  $Revision: 1.4 $
+ *    DATE         :  $Date: 2005/12/20 17:17:16 $
  * 
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
@@ -73,9 +72,9 @@ public:
 
 protected:
 
-  RWCString    _serverNodeName;
-  RWCString    _serverUsername;
-  RWCString    _serverPassword;
+  string    _serverNodeName;
+  string    _serverUsername;
+  string    _serverPassword;
 
   bool connect();
   void testConnection();
@@ -112,7 +111,7 @@ private:
   bool        _regFlag;
   long        _linkStatusId;
 
-  RWCString   _appName;
+  string   _appName;
 
   static const CHAR * KEY_FLAVOR;
   static const CHAR * KEY_DB_RELOAD_RATE;

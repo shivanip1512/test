@@ -29,7 +29,7 @@ CtiPAOSchedule::CtiPAOSchedule()
 
 CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
 {    
-    RWCString tempBoolString;
+    string tempBoolString;
 
     rdr["scheduleid"] >> _scheduleId;
     rdr["schedulename"] >> _scheduleName;
@@ -37,8 +37,7 @@ CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
     rdr["lastruntime"] >> _lastRunTime;
     rdr["intervalrate"] >> _intervalRate;
     rdr["disabled"] >> tempBoolString;
-    tempBoolString.toLower();
-    _disabledFlag = (tempBoolString=="y"?TRUE:FALSE);
+    _disabledFlag = (((tempBoolString=="y") || (tempBoolString=="Y"))?TRUE:FALSE);
 
 
     _dirty = false;
@@ -76,23 +75,23 @@ int CtiPAOSchedule::operator!=(const CtiPAOSchedule& right) const
 }
 
 
-long CtiPAOSchedule::getScheduleId()
+long CtiPAOSchedule::getScheduleId() const
 {
     return _scheduleId;
 }
-RWCString CtiPAOSchedule::getScheduleName()
+const string& CtiPAOSchedule::getScheduleName()  const
 {
     return _scheduleName;
 }
-RWDBDateTime CtiPAOSchedule::getNextRunTime()
+const CtiTime& CtiPAOSchedule::getNextRunTime()     const
 {
     return _nextRunTime;
 }
-RWDBDateTime CtiPAOSchedule::getLastRunTime()
+const CtiTime& CtiPAOSchedule::getLastRunTime() const
 {
     return _lastRunTime;
 }
-long CtiPAOSchedule::getIntervalRate()
+long CtiPAOSchedule::getIntervalRate()    const
 {
     return _intervalRate;
 }
@@ -102,7 +101,7 @@ bool CtiPAOSchedule::isDisabled()
     return _disabledFlag;
 }
 
-void CtiPAOSchedule::setScheduleId(long schedId)
+void CtiPAOSchedule::setScheduleId( long schedId )
 {
     if (_scheduleId != schedId)
     {                  
@@ -111,7 +110,7 @@ void CtiPAOSchedule::setScheduleId(long schedId)
     _scheduleId = schedId;
     return;
 }
-void CtiPAOSchedule::setScheduleName(RWCString schedName)
+void CtiPAOSchedule::setScheduleName(const string& schedName)
 {
     if (_scheduleName != schedName)
     {
@@ -120,7 +119,7 @@ void CtiPAOSchedule::setScheduleName(RWCString schedName)
     _scheduleName = schedName;
     return;
 }
-void CtiPAOSchedule::setNextRunTime(RWDBDateTime nextTime)
+void CtiPAOSchedule::setNextRunTime(const CtiTime& nextTime)
 {
     if (_nextRunTime != nextTime)
     {
@@ -129,7 +128,7 @@ void CtiPAOSchedule::setNextRunTime(RWDBDateTime nextTime)
     _nextRunTime = nextTime;
     return;
 }
-void CtiPAOSchedule::setLastRunTime(RWDBDateTime lastTime)
+void CtiPAOSchedule::setLastRunTime(const CtiTime& lastTime)
 {
     if (_lastRunTime != lastTime)
     {
@@ -169,5 +168,5 @@ void CtiPAOSchedule::setDirty(BOOL flag)
 void CtiPAOSchedule::printSchedule()
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " " <<_scheduleName<<" id: "<<_scheduleId<<" nextRunTime: "<<RWTime(_nextRunTime.seconds())<<" intvlRate: "<<_intervalRate<<" secs."<< endl;
+    dout << CtiTime() << " " <<_scheduleName<<" id: "<<_scheduleId<<" nextRunTime: "<<CtiTime(_nextRunTime.seconds())<<" intvlRate: "<<_intervalRate<<" secs."<< endl;
 }

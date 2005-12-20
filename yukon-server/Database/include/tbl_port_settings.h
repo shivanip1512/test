@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_settings.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/01/07 17:48:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@ protected:
 
    INT         _baudRate;           // Comm channel bps
    ULONG       _cdWait;             // CD Wait time in ms
-   RWCString   _lineSettings;       // Bits, Parity, Stop bits
+   string   _lineSettings;       // Bits, Parity, Stop bits
 
 private:
 
@@ -47,9 +47,9 @@ public:
    ULONG&                  getCDWait();
    CtiTablePortSettings&   setCDWait(const INT w);
 
-   RWCString               getLineSettings() const;
-   RWCString&              getLineSettings();
-   CtiTablePortSettings&   setLineSettings(const RWCString str);
+   string               getLineSettings() const;
+   string&              getLineSettings();
+   CtiTablePortSettings&   setLineSettings(const string str);
 
    INT getBits() const;
    INT getParity() const;

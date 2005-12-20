@@ -44,7 +44,7 @@ CtiLMServer* CtiLMServer::getInstance()
 ---------------------------------------------------------------------------*/
 void CtiLMServer::start()
 {
-    RWCString str;
+    string str;
     char var[128];
 
     strcpy(var, "LOAD_MANAGEMENT_PORT");
@@ -54,13 +54,13 @@ void CtiLMServer::start()
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     /*char temp[80];
@@ -78,7 +78,7 @@ void CtiLMServer::start()
             if( _LM_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - LOAD_MANAGEMENT_PORT:  " << temp << endl;
+                dout << CtiTime() << " - LOAD_MANAGEMENT_PORT:  " << temp << endl;
             }
 
             _defaultport = atoi(temp);
@@ -90,7 +90,7 @@ void CtiLMServer::start()
         if ( trouble == TRUE )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to find load managemet port config value in the configuration file!" << endl;
+            dout << CtiTime() << " - Unable to find load managemet port config value in the configuration file!" << endl;
         }
 
         FreeLibrary(hLib);
@@ -98,7 +98,7 @@ void CtiLMServer::start()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to load cparms.dll" << endl;
+        dout << CtiTime() << " - Unable to load cparms.dll" << endl;
     }*/
 
     if ( !_running && !_dostop )
@@ -157,7 +157,7 @@ void CtiLMServer::Broadcast(CtiMessage* message)
     if( _LM_DEBUG & LM_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
+        dout << CtiTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
     }
 
     setChanged();
@@ -202,7 +202,7 @@ void CtiLMServer::_checkstatus()
 
             /*{
                 RWMutexLock::LockGuard guard(coutMux);
-                cout << RWTime()  << " - CtiLMServer::_checkstatus - " << msg.why() << endl;
+                cout << CtiTime()  << " - CtiLMServer::_checkstatus - " << msg.why() << endl;
             }*/
         }
 

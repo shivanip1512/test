@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_fulcrum.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,18 +261,18 @@ public:
    virtual INT allocateDataBins (OUTMESS *outMess);
 
    virtual INT decodeResultScan ( INMESS *InMessage,
-                          RWTime &TimeNow,
+                          CtiTime &TimeNow,
                           RWTPtrSlist< CtiMessage >   &vgList,
                           RWTPtrSlist< CtiMessage > &retList,
                           RWTPtrSlist< OUTMESS > &outList);
 
    virtual INT decodeResultLoadProfile ( INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS > &outList);
 
-   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak,  FulcrumScanData_t *aScanData);
+   BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData);
    INT ResultDisplay (INMESS *InMessage);
 };
 

@@ -5,7 +5,6 @@
 #include <ctype.h>
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
@@ -44,7 +43,7 @@ int CtiApplList::Remove(T* ConMan)
 
    if(mHash.remove(ConMan))
    {
-      cout << RWTime() << " Removed Connection Manager " << ConMan->getClientName() <<
+      cout << CtiTime() << " Removed Connection Manager " << ConMan->getClientName() <<
          " from the List" << endl;
    }
    else

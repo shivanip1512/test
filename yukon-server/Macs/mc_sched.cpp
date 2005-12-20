@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,10 @@
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
 ---------------------------------------------------------------------------*/
 #include "mc_sched.h"
+#include "ctidate.h"
 #include <rw/collstr.h>
+#include <rwutil.h>
+
 
 RWDEFINE_COLLECTABLE( CtiMCSchedule, MSG_MC_SCHEDULE );
 
@@ -128,8 +131,8 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 
 CtiMCSchedule::CtiMCSchedule()
 :
-  _current_start_time(RWTime((unsigned long)0)),
-  _current_stop_time(RWTime((unsigned long)0))
+  _current_start_time(CtiTime((unsigned long)0)),
+  _current_stop_time(CtiTime((unsigned long)0))
 {
     _pao_table.setCategory("Schedule");
     _pao_table.setClassStr("Schedule");
@@ -141,8 +144,8 @@ CtiMCSchedule::CtiMCSchedule()
     setStartPolicy(DefaultStartPolicy);
     setStopPolicy(DefaultStopPolicy);
     setLastRunStatus(DefaultLastRunStatus);
-    setManualStartTime(RWTime((unsigned long)0));
-    setManualStopTime(RWTime((unsigned long)0));
+    setManualStartTime(CtiTime((unsigned long)0));
+    setManualStopTime(CtiTime((unsigned long)0));
 
     setValid(true);
     setUpdatedFlag(false);
@@ -440,7 +443,7 @@ const string& CtiMCSchedule::getStopPolicy() const
     return _schedule_table.getStopPolicy();
 }
 
-const RWTime& CtiMCSchedule::getLastRunTime() const
+const CtiTime& CtiMCSchedule::getLastRunTime() const
 {
     return _schedule_table.getLastRunTime();
 }
@@ -485,22 +488,22 @@ int CtiMCSchedule::getDuration() const
     return _schedule_table.getDuration();
 }
 
-const RWTime& CtiMCSchedule::getManualStartTime() const
+const CtiTime& CtiMCSchedule::getManualStartTime() const
 {
     return _schedule_table.getManualStartTime();
 }
 
-const RWTime& CtiMCSchedule::getManualStopTime() const
+const CtiTime& CtiMCSchedule::getManualStopTime() const
 {
     return _schedule_table.getManualStopTime();
 }
 
-const RWTime& CtiMCSchedule::getCurrentStartTime() const
+const CtiTime& CtiMCSchedule::getCurrentStartTime() const
 {
     return _current_start_time;
 }
 
-const RWTime& CtiMCSchedule::getCurrentStopTime() const
+const CtiTime& CtiMCSchedule::getCurrentStopTime() const
 {
     return _current_stop_time;
 }
@@ -549,7 +552,7 @@ CtiMCSchedule& CtiMCSchedule::setScheduleName(const string& schedule_name)
 {
     if( schedule_name != getScheduleName() )
     {
-        _pao_table.setName(RWCString( (char*) schedule_name.data() ));
+        _pao_table.setName(schedule_name.c_str() );
 
         setDirty(true);
     }
@@ -576,7 +579,7 @@ CtiMCSchedule& CtiMCSchedule::setScheduleType(const string& sched_type)
 
     if( sched_type != getScheduleType() )
     {
-        _pao_table.setTypeStr( RWCString( (char*) sched_type.data() ) );
+        _pao_table.setTypeStr(  sched_type.c_str() );
 
         setDirty(true);
     }
@@ -657,14 +660,14 @@ CtiMCSchedule& CtiMCSchedule::setStopPolicy(const string& stop_policy)
     return *this;
 }
 
-CtiMCSchedule& CtiMCSchedule::setLastRunTime(const RWTime& last_run_time)
+CtiMCSchedule& CtiMCSchedule::setLastRunTime(const CtiTime& last_run_time)
 {
     if( last_run_time != getLastRunTime() )
     {
         if( isValidTime(last_run_time) )
             _schedule_table.setLastRunTime(last_run_time);
         else
-            _schedule_table.setLastRunTime( RWTime( (unsigned long) 0 ));
+            _schedule_table.setLastRunTime( CtiTime( (unsigned long) 0 ));
 
         setDirty(true);
     }
@@ -773,14 +776,14 @@ CtiMCSchedule& CtiMCSchedule::setDuration(int duration)
 }
 
 CtiMCSchedule& CtiMCSchedule::setManualStartTime(
-    const RWTime& manual_start_time )
+    const CtiTime& manual_start_time )
 {
     if( manual_start_time != getManualStartTime() )
     {
         if( isValidTime(manual_start_time ) )
             _schedule_table.setManualStartTime( manual_start_time );
         else
-            _schedule_table.setManualStartTime( RWTime( (unsigned long) 0) );
+            _schedule_table.setManualStartTime( CtiTime( (unsigned long) 0) );
 
         setDirty(true);
     }
@@ -789,14 +792,14 @@ CtiMCSchedule& CtiMCSchedule::setManualStartTime(
 }
 
 CtiMCSchedule& CtiMCSchedule::setManualStopTime(
-    const RWTime& manual_stop_time )
+    const CtiTime& manual_stop_time )
 {
     if( manual_stop_time != getManualStopTime() )
     {
         if( isValidTime(manual_stop_time) )
             _schedule_table.setManualStopTime(manual_stop_time);
         else
-            _schedule_table.setManualStopTime( RWTime( (unsigned long) 0) );
+            _schedule_table.setManualStopTime( CtiTime( (unsigned long) 0) );
 
         setDirty(true);
     }
@@ -804,18 +807,18 @@ CtiMCSchedule& CtiMCSchedule::setManualStopTime(
     return *this;
 }
 
-CtiMCSchedule& CtiMCSchedule::setCurrentStartTime(const RWTime& start_time)
+CtiMCSchedule& CtiMCSchedule::setCurrentStartTime(const CtiTime& start_time)
 {
     !isValidTime(start_time) ?
-        (_current_start_time = RWTime((unsigned long)0)) :
+        (_current_start_time = CtiTime((unsigned long)0)) :
         (_current_start_time = start_time );
     return *this;
 }
 
-CtiMCSchedule& CtiMCSchedule::setCurrentStopTime(const RWTime& stop_time)
+CtiMCSchedule& CtiMCSchedule::setCurrentStopTime(const CtiTime& stop_time)
 {
     !isValidTime(stop_time) ?
-        (_current_stop_time = RWTime((unsigned long)0) ) :
+        (_current_stop_time = CtiTime((unsigned long)0) ) :
         (_current_stop_time = stop_time );
     return *this;
 }
@@ -887,31 +890,31 @@ void CtiMCSchedule::saveGuts(RWvostream &aStream) const
     // string -> RWString
     CtiMessage::saveGuts(aStream);
     aStream     <<  getScheduleID() //long
-                <<  RWCString( (char*) getScheduleName().data() )
-                <<  RWCString( (char*) getCategoryName().data() )
-                <<  RWCString( (char*) getScheduleType().data() )
+                <<  getScheduleName()
+                <<  getCategoryName()
+                <<  getScheduleType()
                 <<  getHolidayScheduleID() //long
-                <<  RWCString( (char*) getCommandFile().data() )
-                <<  RWCString( (char*) getCurrentState().data() )
-                <<  RWCString( (char*) getStartPolicy().data() )
-                <<  RWCString( (char*) getStopPolicy().data() )
-                <<  getLastRunTime() //RWTime
-                <<  RWCString( (char*) getLastRunStatus().data() )
+                <<  getCommandFile()
+                <<  getCurrentState()
+                <<  getStartPolicy()
+                <<  getStopPolicy()
+                <<  getLastRunTime() //CtiTime
+                <<  getLastRunStatus()
                 <<  getStartDay()  //int
                 <<  getStartMonth() //int
                 <<  getStartYear()  //int
-                <<  RWCString( (char*) getStartTime().data() )
-                <<  RWCString( (char*) getStopTime().data() )
-                <<  RWCString( (char*) getValidWeekDays().data() )
+                <<  getStartTime()
+                <<  getStopTime()
+                <<  getValidWeekDays()
                 <<  getDuration()   //int
-                <<  RWTime((unsigned long)0) //getManualStartTime() //RWTime
-                <<  RWTime((unsigned long)0) //getManualStopTime()  //RWTime
-                <<  RWCString( (char*) getTargetSelect().data() )
-                <<  RWCString( (char*) getStartCommand().data() )
-                <<  RWCString( (char*) getStopCommand().data() )
+                <<  CtiTime((unsigned long)0) //getManualStartTime() //CtiTime
+                <<  CtiTime((unsigned long)0) //getManualStopTime()  //CtiTime
+                <<  getTargetSelect()
+                <<  getStartCommand()
+                <<  getStopCommand()
                 <<  getRepeatInterval()  //int
-                <<  getCurrentStartTime() //RWTime
-                <<  getCurrentStopTime() //RWTime
+                <<  getCurrentStartTime() //CtiTime
+                <<  getCurrentStopTime() //CtiTime
                 <<  getTemplateType();  //int
 
     if( !checkSchedule() )
@@ -933,42 +936,42 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
     // to use the set functions
     long temp_long;
     int temp_int;
-    RWCString temp_str;
-    RWTime temp_time;
+    string temp_str;
+    CtiTime temp_time;
 
     CtiMessage::restoreGuts(aStream);
     aStream >> temp_long;
     setScheduleID(temp_long);
 
     aStream >> temp_str;
-    setScheduleName( (const char*) temp_str.data() );
+    setScheduleName( temp_str );
 
     aStream >> temp_str;
-    setCategoryName( (const char*) temp_str.data() );
+    setCategoryName(temp_str);
 
     aStream >> temp_str;
-    setScheduleType( (const char*) temp_str.data());
+    setScheduleType(temp_str);
 
     aStream >> temp_long;
     setHolidayScheduleID(temp_long);
 
     aStream >> temp_str;
-    setCommandFile( (const char*) temp_str.data() );
+    setCommandFile( temp_str );
 
     aStream >> temp_str;
-    setCurrentState( (const char*) temp_str.data() );
+    setCurrentState(  temp_str );
 
     aStream >> temp_str;
-    setStartPolicy( (const char*) temp_str.data() );
+    setStartPolicy(  temp_str );
 
     aStream >> temp_str;
-    setStopPolicy( (const char*) temp_str.data() );
+    setStopPolicy( temp_str );
 
     aStream >> temp_time;
     setLastRunTime( temp_time );
 
     aStream >> temp_str;
-    setLastRunStatus( (const char*) temp_str.data() );
+    setLastRunStatus( temp_str );
 
     aStream >> temp_int;
     setStartDay(temp_int);
@@ -980,13 +983,13 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
     setStartYear(temp_int);
 
     aStream >> temp_str;
-    setStartTime( (const char*) temp_str.data() );
+    setStartTime(temp_str );
 
     aStream >> temp_str;
-    setStopTime( (const char*) temp_str.data() );
+    setStopTime( temp_str );
 
     aStream >> temp_str;
-    setValidWeekDays( (const char*) temp_str.data() );
+    setValidWeekDays( temp_str );
 
     aStream >> temp_int;
     setDuration(temp_int);
@@ -999,13 +1002,13 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
     //setManualStopTime( temp_time );
 
     aStream >> temp_str;
-    setTargetSelect( (const char*) temp_str.data() );
+    setTargetSelect( temp_str );
 
     aStream >> temp_str;
-    setStartCommand( (const char*) temp_str.data() );
+    setStartCommand(temp_str );
 
     aStream >> temp_str;
-    setStopCommand( (const char*) temp_str.data() );
+    setStopCommand( temp_str );
 
     aStream >> temp_int;
     setRepeatInterval( temp_int);
@@ -1022,9 +1025,9 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
 
 /*== Private Functions == */
 
-bool CtiMCSchedule::isValidTime(const RWTime& t) const
+bool CtiMCSchedule::isValidTime(const CtiTime& t) const
 {
-    return ( t > RWTime( RWDate( 1, 1990 ) ));
+    return ( t > CtiTime( CtiDate( 1, 1990 ) ));
 }
 
 bool CtiMCSchedule::checkSchedule() const
@@ -1072,7 +1075,7 @@ bool CtiMCSchedule::checkField(const string& fld, const string& val) const
         if( fld[i] <= 0 || fld[i] >= 128 )
         {                       
             CtiLockGuard< CtiLogger > guard(dout); 
-            dout << RWTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;         
+            dout << CtiTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;         
             return false;
         }
     

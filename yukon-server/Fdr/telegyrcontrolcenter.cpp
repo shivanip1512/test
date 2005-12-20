@@ -52,7 +52,7 @@ CtiTelegyrControlCenter& CtiTelegyrControlCenter::setChannelID( int idIn )
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrControlCenter::getOperator( void )
+string CtiTelegyrControlCenter::getOperator( void )
 {
    return _operatorName;
 }
@@ -70,7 +70,7 @@ CtiTelegyrControlCenter & CtiTelegyrControlCenter::getOperator( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrControlCenter& CtiTelegyrControlCenter::setOperator( RWCString opIn )
+CtiTelegyrControlCenter& CtiTelegyrControlCenter::setOperator( string opIn )
 {
    _operatorName = opIn;
    return *this;
@@ -79,7 +79,7 @@ CtiTelegyrControlCenter& CtiTelegyrControlCenter::setOperator( RWCString opIn )
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrControlCenter::getPassword( void ) const
+string CtiTelegyrControlCenter::getPassword( void ) const
 {
    return _password;
 }
@@ -87,7 +87,7 @@ RWCString CtiTelegyrControlCenter::getPassword( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrControlCenter& CtiTelegyrControlCenter::setPassword( RWCString passIn )
+CtiTelegyrControlCenter& CtiTelegyrControlCenter::setPassword( string passIn )
 {
    _password = passIn;
    return *this;
@@ -96,7 +96,7 @@ CtiTelegyrControlCenter& CtiTelegyrControlCenter::setPassword( RWCString passIn 
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrControlCenter::getSysName( void ) const
+string CtiTelegyrControlCenter::getSysName( void ) const
 {
    return _systemName;
 }
@@ -104,7 +104,7 @@ RWCString CtiTelegyrControlCenter::getSysName( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrControlCenter& CtiTelegyrControlCenter::setSysName( RWCString sysIn )
+CtiTelegyrControlCenter& CtiTelegyrControlCenter::setSysName( string sysIn )
 {
    _systemName = sysIn;
    return *this;
@@ -130,7 +130,7 @@ CtiTelegyrControlCenter& CtiTelegyrControlCenter::setAccess( int accessIn )
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrControlCenter::getGroupValid( void ) const
+string CtiTelegyrControlCenter::getGroupValid( void ) const
 {
    return _groupValid;
 }
@@ -138,7 +138,7 @@ RWCString CtiTelegyrControlCenter::getGroupValid( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrControlCenter& CtiTelegyrControlCenter::setGroupValid( RWCString validIn )
+CtiTelegyrControlCenter& CtiTelegyrControlCenter::setGroupValid( string validIn )
 {
    _groupValid = validIn;
    return *this;
@@ -147,7 +147,7 @@ CtiTelegyrControlCenter& CtiTelegyrControlCenter::setGroupValid( RWCString valid
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrControlCenter::getSysType( void ) const
+string CtiTelegyrControlCenter::getSysType( void ) const
 {
    return _systemType;
 }
@@ -155,7 +155,7 @@ RWCString CtiTelegyrControlCenter::getSysType( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrControlCenter& CtiTelegyrControlCenter::setSysType( RWCString typeIn )
+CtiTelegyrControlCenter& CtiTelegyrControlCenter::setSysType( string typeIn )
 {
    _systemType = typeIn;
    return *this;

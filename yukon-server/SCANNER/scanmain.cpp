@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/04/26 22:31:17 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #include <iostream>
 using namespace std;
 
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/thrutil.h>
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[] )
    LPTSTR szDesc = "Manages the periodic - timed scanning of field devices";
 
    dout.start();     // fire up the logger thread
-   dout.setOutputPath(gLogDirectory.data());
+   dout.setOutputPath(gLogDirectory);
    dout.setOutputFile("scanner");
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[] )
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )
       {
-         dout << RWTime()  << " - Installing Yukon Real-Time Scan Service" << endl;
+         dout << CtiTime()  << " - Installing Yukon Real-Time Scan Service" << endl;
          CServiceConfig si(szName, szDisplay, szDesc);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_DEMAND_START,
@@ -58,7 +58,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
       {
-         dout << RWTime()  << " - Installing Yukon Real-Time Scan Service" << endl;
+         dout << CtiTime()  << " - Installing Yukon Real-Time Scan Service" << endl;
          CServiceConfig si(szName, szDisplay, szDesc);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_AUTO_START,
@@ -68,7 +68,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
       {
-         dout << RWTime()  << " - Removing Yukon Real-Time Scanner Service" << endl;
+         dout << CtiTime()  << " - Removing Yukon Real-Time Scanner Service" << endl;
          CServiceConfig si(szName, szDisplay);
          si.Remove();
       }

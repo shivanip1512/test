@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_pagingreceiver.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:49:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,14 +17,14 @@
 #define __TBL_DV_PAGINGRECEIVER_H__
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
+
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
+
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -79,7 +79,7 @@ public:
 
     LONG getDeviceID() const;
 
-    static RWCString getTableName();
+    static string getTableName();
     virtual RWDBStatus Restore();
     virtual RWDBStatus Update();
     virtual RWDBStatus Insert();

@@ -3,7 +3,6 @@
 #ifndef __TELEGYRCONTROLCENTER_H__
 #define __TELEGYRCONTROLCENTER_H__
 
-#include <rw/cstring.h>
 #include <vector>
 
 #include "dlldefs.h"
@@ -23,23 +22,23 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
       int getChannelID( void );
       CtiTelegyrControlCenter &setChannelID( int idIn );
 
-      RWCString getOperator( void );
-      CtiTelegyrControlCenter &setOperator( RWCString opIn );
+      string getOperator( void );
+      CtiTelegyrControlCenter &setOperator( string opIn );
 
-      RWCString getPassword( void ) const;
-      CtiTelegyrControlCenter &setPassword( RWCString passIn );
+      string getPassword( void ) const;
+      CtiTelegyrControlCenter &setPassword( string passIn );
 
-      RWCString getSysName( void ) const;
-      CtiTelegyrControlCenter &setSysName( RWCString sysIn );
+      string getSysName( void ) const;
+      CtiTelegyrControlCenter &setSysName( string sysIn );
 
       int getAccess();
       CtiTelegyrControlCenter &setAccess( int accessIn );
 
-      RWCString getGroupValid( void ) const;
-      CtiTelegyrControlCenter &setGroupValid( RWCString validIn );
+      string getGroupValid( void ) const;
+      CtiTelegyrControlCenter &setGroupValid( string validIn );
 
-      RWCString getSysType( void ) const;
-      CtiTelegyrControlCenter &setSysType( RWCString typeIn );
+      string getSysType( void ) const;
+      CtiTelegyrControlCenter &setSysType( string typeIn );
 
       vector< CtiTelegyrGroup > getTelegyrGroupList( void ) const;
       vector< CtiTelegyrGroup > &getTelegyrGroupList( void );
@@ -61,11 +60,11 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrControlCenter
       int                                 _channelID;
       int                                 _access;
 
-      RWCString                           _operatorName;
-      RWCString                           _password;
-      RWCString                           _systemName;
-      RWCString                           _groupValid;
-      RWCString                           _systemType;
+      string                           _operatorName;
+      string                           _password;
+      string                           _systemName;
+      string                           _groupValid;
+      string                           _systemType;
 
       CtiMutex                            _mux;
 };

@@ -6,13 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/08/02 22:13:28 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/20 17:18:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
+#include <boost/regex.hpp>
 
+#include <string>
 #include <stdio.h>
 
 #include <tcl.h>
@@ -22,6 +24,7 @@
 #include "dbaccess.h"
 #include "connection.h"
 #include "cparms.h"
+
 #include "configparms.h"
 #include "netports.h"
 #include "msg_pcrequest.h"
@@ -41,18 +44,23 @@
 #include "xcel.h"
 #include "decodetextcmdfile.h"
 
+
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
 #include <rw\re.h>
 #include <rw/ctoken.h>
 
+
+
+
 unsigned gMccmdDebugLevel = 0x00000000;
 
-const RWCRExpr   re_num("[0-9]+");
-const RWCRExpr   re_timeout("timeout[= ]+[0-9]+");
-const RWCRExpr   re_select("select[ ]+[^ ]+[ ]+");
-const RWCRExpr   re_select_list("select[ ]+list[ ]+");
+const boost::regex   re_num("[0-9]+");
+const boost::regex   re_timeout("timeout[= ]+[0-9]+");
+const boost::regex   re_select("select[ ]+[^ ]+[ ]+");
+const boost::regex   re_select_list("select[ ]+list[ ]+");
+
 
 char* SelectedVariable = "Selected";
 char* GoodListVariable = "SuccessList";
@@ -94,7 +102,7 @@ void _MessageThrFunc()
                     {
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " [" << rwThreadId() <<
+                            dout << CtiTime() << " [" << rwThreadId() <<
                             "] Received message for interpreter [" <<
                             GetThreadIDFromMsgID(msgid) << "]" << endl;
                             DumpReturnMessage(*in);
@@ -131,7 +139,7 @@ void _MessageThrFunc()
     }
 }
 
-void AppendToString(RWCString& str, int argc, char* argv[])
+void AppendToString(string& str, int argc, char* argv[])
 {
     str += " ";
 
@@ -144,7 +152,7 @@ void AppendToString(RWCString& str, int argc, char* argv[])
 
 void DumpReturnMessage(CtiReturnMsg& msg)
 {
-    RWCString out;
+    string out;
 
     out += "deviceid: ";
     out += CtiNumStr(msg.DeviceId());
@@ -167,12 +175,12 @@ void DumpReturnMessage(CtiReturnMsg& msg)
         out += p_data->getString();
     }
 
-    WriteOutput((char*) out.data());
+    WriteOutput((char*) out.c_str());
 }
 
 void DumpRequestMessage(CtiRequestMsg& msg)
 {
-    RWCString out;
+    string out;
 
     out += "deviceid: ";
     out += CtiNumStr(msg.DeviceId());
@@ -186,7 +194,7 @@ void DumpRequestMessage(CtiRequestMsg& msg)
 
     out += msg.CommandString();
 
-    WriteOutput(out.data());
+    WriteOutput(out.c_str());
 }
 
 void WriteOutput(const char* output)
@@ -196,7 +204,7 @@ void WriteOutput(const char* output)
     //Write the output to stdout
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " [" << thrId << "] " << output << endl;
+        dout << CtiTime() << " [" << thrId << "] " << output << endl;
     }
 
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >ptr;
@@ -222,18 +230,18 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     //Set up the defaults
     int pil_port;
-    RWCString pil_host;
+    string pil_host;
 
     int dispatch_port;
-    RWCString dispatch_host;
-    RWCString fm_config_range;
+    string dispatch_host;
+    string fm_config_range;
 
     string notification_host;
     int notification_port;
     
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " MCCMD loading cparms:" << endl;
+        dout << CtiTime() << " MCCMD loading cparms:" << endl;
     }
 
     pil_host = gConfigParms.getValueAsString("PIL_MACHINE", "127.0.0.1");
@@ -282,24 +290,29 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     if(fm_config_range != "")
     {
-        RWCTokenizer nextRange(fm_config_range);
-        RWCString range;
+        boost::char_separator<char> sep(",\r\n");
+        Boost_char_tokenizer nextRange(fm_config_range, sep);
+        string range;
 
         int index = 0;
-        while( !(range = nextRange(",\r\n")).isNull() )
+        for (Boost_char_tokenizer::iterator tok_iter = nextRange.begin(); tok_iter != nextRange.end(); ++tok_iter)
         {
-            RWCTokenizer nextSerial(range);
-            RWCString low;
-            RWCString high;
+            range = *tok_iter;
+            boost::char_separator<char> low_sep("-");
+            boost::char_separator<char> hig_sep(" \r\n");
+            Boost_char_tokenizer nextLowSerial(range, low_sep);
+            string low;
+            string high;
 
-            low = nextSerial("-");
-            high = nextSerial(" \r\n");
-            high = high.strip(RWCString::leading, '-');
+            low = *nextLowSerial.begin();
+            Boost_char_tokenizer nextHighSerial(range.erase(0,low.size()), hig_sep);
+            high = *nextHighSerial.begin();
+            trim_left(high, "-");
 
-            if( !low.isNull() && !high.isNull() )
+            if( !low.empty() && !high.empty() )
             {
-                int lowi = atoi(low.data());
-                int highi = atoi(high.data());
+                int lowi = atoi(low.c_str());
+                int highi = atoi(high.c_str());
 
                 if( lowi != 0 && highi != 0 )
                 {
@@ -318,7 +331,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " MCCMD done loading cparms" << endl;
+        dout << CtiTime() << " MCCMD done loading cparms" << endl;
     }
 
     PILConnection = new CtiConnection( pil_port, pil_host );
@@ -351,21 +364,21 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " - " << "Shutting down connection to PIL" << endl;
+        dout << CtiTime() << " - " << "Shutting down connection to PIL" << endl;
     }
 
     PILConnection->ShutdownConnection();
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " - " << "Shutting down connection to VanGogh" << endl;
+        dout << CtiTime() << " - " << "Shutting down connection to VanGogh" << endl;
     }
 
     VanGoghConnection->ShutdownConnection();
 
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " - " << "Shutting down connection to the Notification Server" << endl;
+        dout << CtiTime() << " - " << "Shutting down connection to the Notification Server" << endl;
     }
 
     NotificationConnection->ShutdownConnection();
@@ -497,7 +510,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "createprocess", CTICreateProcess, NULL, NULL);    
 
     /* Load up the initialization script */
-    RWCString init_script;
+    string init_script;
 
     init_script = gConfigParms.getValueAsString(MCCMD_CTL_SCRIPTS_DIR, "c:/yukon/server/macsscripts");
     init_script += "/";
@@ -508,7 +521,7 @@ int Mccmd_Init(Tcl_Interp* interp)
     if( gMccmdDebugLevel > 0 )
     {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
+    dout << CtiTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << std::hex <<  gMccmdDebugLevel << std::dec << endl;
     }
 
     if( gMccmdDebugLevel & MCCMD_DEBUG_INIT )
@@ -517,7 +530,7 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using MCCMD init script: " << init_script << endl;
     }
 
-    Tcl_EvalFile(interp, (char*) init_script.data() );
+    Tcl_EvalFile(interp, (char*) init_script.c_str() );
 
     /* declare that we are implementing the MCCmd package so that scripts that have
     "package require McCmd" can load McCmd automatically. */
@@ -560,7 +573,7 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
@@ -568,7 +581,7 @@ int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
 
 int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
@@ -576,35 +589,35 @@ int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoTwoWayRequest(interp, cmd);
 }
 
 int PutStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int GetConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoTwoWayRequest(interp, cmd);
 }
 
 int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
 
     return DoOneWayRequest(interp, cmd);
@@ -612,35 +625,35 @@ int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int Loop(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
     return DoOneWayRequest(interp, cmd);
 }
 
 int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    RWCString cmd;
+    string cmd;
     AppendToString(cmd, argc, argv);
 
-    RWCTokenizer optoken(cmd);
+    Boost_char_tokenizer optoken(cmd);
 
-    RWCString firsttok = optoken();
+    string firsttok = *optoken.begin();
 
-    if(!firsttok.compareTo("pil", RWCString::ignoreCase))
+    if(!stringCompareIgnoreCase(firsttok,"pil"))
     {   // Hack slash rip. CGP 11/07/2002  White rabbit entry point.
         cmd.replace((size_t)0, (size_t)4, "");    // erase the existence of "pil "
     }
@@ -661,7 +674,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodeCFDATAFile( file, &results) == false )
@@ -696,7 +709,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodeEOIFile(file, &results) == false )
@@ -727,7 +740,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodeWepcoFile( file, &results) == false )
@@ -766,7 +779,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodeWepcoFileService( file, &results) == false )
@@ -796,7 +809,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     results.clearAndDestroy();
 
     // set the number of pil requests sent to be the return val
-    Tcl_SetResult( interp, CtiNumStr(num_sent), NULL);
+    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
     return tcl_ret;
 }
 
@@ -810,7 +823,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodeWepcoFileConfig( file, &results) == false )
@@ -840,7 +853,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     results.clearAndDestroy();
 
     // set the number of pil requests sent to be the return val
-    Tcl_SetResult( interp, CtiNumStr(num_sent), NULL);
+    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
     return tcl_ret;
 }
 
@@ -850,20 +863,20 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     {
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " - Usage:  pmsi filename" << endl;
+            dout << CtiTime() << " - Usage:  pmsi filename" << endl;
         }
 
         return TCL_ERROR;
     }
 
-    RWCString file = argv[1];
+    string file = argv[1];
     RWOrdered results;
 
     if( DecodePMSIFile( file, &results) == false )
     {
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " - Error decoding file" << endl;
+            dout << CtiTime() << " - Error decoding file" << endl;
         }
         return TCL_ERROR;
     }
@@ -909,18 +922,18 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     else
     {
 
-        RWCString file = argv[1];
-        RWCString temp;
+        string file = argv[1];
+        string temp;
         RWOrdered results;
-        sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
-                 RWDate().month(),
-                 RWDate().dayOfMonth(),
-                 RWDate().year());
+        ::sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
+                 CtiDate().month(),
+                 CtiDate().dayOfMonth(),
+                 CtiDate().year());
 
         if( gMccmdDebugLevel > 0 )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " - Will export commands from " << file << " to " << RWCString (newFileName) <<endl;;
+            dout << CtiTime() << " - Will export commands from " << file << " to " << string (newFileName) <<endl;;
         }
 
 
@@ -928,12 +941,14 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
         {
             for(int i=2; i < argc; i++)
             {
+                string str = string(argv[i]);
+                std::transform(str.begin(), str.end(), str.begin(), ::tolower);
                 // left in here to support Nevada Power
-                if(RWCString(argv[i]).contains (RWCString ("/perinterval"),RWCString::ignoreCase))
+                if(str.find(string ("/perinterval"))!=string::npos)
                 {
-                    int colon = RWCString(argv[i]).first(':');
+                    int colon = str.find_first_of(':');
 
-                    if( colon !=RW_NPOS )
+                    if( colon !=string::npos )
                     {
                         commandLimit = atoi (argv[i]+colon+1);
                     }
@@ -941,82 +956,82 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - Will export " << commandLimit << " commands from " << file << " per interval " <<endl;;
+                        dout << CtiTime() << " - Will export " << commandLimit << " commands from " << file << " per interval " <<endl;;
                     }
 
                 }
 
                 // left in here to support Nevada Power
-                if(RWCString(argv[i]).contains (RWCString ("/interval"),RWCString::ignoreCase))
+                if(str.find(string ("/interval"))!=string::npos)
                 {
-                    int colon = RWCString(argv[i]).first(':');
+                    int colon = str.find_first_of(':');
 
-                    if( colon !=RW_NPOS )
+                    if( colon !=string::npos )
                     {
                         interval = atoi (argv[i]+colon+1);
                     }
                     if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - Interval: " << interval << " minutes " <<endl;;
+                        dout << CtiTime() << " - Interval: " << interval << " minutes " <<endl;;
                     }
                 }
 
-                if(RWCString(argv[i]).contains (RWCString ("/cmdsperexecution"),RWCString::ignoreCase))
+                if(str.find(string ("/cmdsperexecution"))!=string::npos)
                 {
-                    int colon = RWCString(argv[i]).first(':');
+                    int colon = str.find_first_of(':');
 
-                    if( colon !=RW_NPOS )
+                    if( colon !=string::npos )
                     {
                         commandsPerTime = atoi (argv[i]+colon+1);
                     }
                     if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
+                        dout << CtiTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
                     }
 
                 }
 
-                if(RWCString(argv[i]).contains (RWCString ("/dsm2"),RWCString::ignoreCase))
+                if(str.find(string ("/dsm2"))!=string::npos)
                 {
                     dsm2ImportFlag = true;
                     if( gMccmdDebugLevel > 0 )
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - Will import file as DSM2 vconfig.dat format " <<endl;;
+                        dout << CtiTime() << " - Will import file as DSM2 vconfig.dat format " <<endl;;
                     }
                 }
-                if(RWCString(argv[i]).contains (RWCString ("/protocol"),RWCString::ignoreCase))
+                if(str.find(string ("/protocol"))!=string::npos)
                 {
-                    if(RWCString(argv[i]).contains (RWCString ("versacom"),RWCString::ignoreCase))
+                    if(str.find(string ("versacom"))!=string::npos)
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
 
                         if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands using versacom only " <<endl;
+                            dout << CtiTime() << " - Will export commands using versacom only " <<endl;
                         }
                     }
-                    else if(RWCString(argv[i]).contains (RWCString ("expresscom"),RWCString::ignoreCase))
+                    else if(str.find(string ("expresscom"))!=string::npos)
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_EXPRESSCOM;
 
                         if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands using expresscom only " <<endl;
+                            dout << CtiTime() << " - Will export commands using expresscom only " <<endl;
                         }
                     }
-                    else if(RWCString(argv[i]).contains (RWCString ("none"),RWCString::ignoreCase))
+                    else if(str.find(string ("none"))!=string::npos)
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
 
                         if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands without specifying protocol " <<endl;
+                            dout << CtiTime() << " - Will export commands without specifying protocol " <<endl;
                         }
                     }
                     else
@@ -1026,7 +1041,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         if( gMccmdDebugLevel > 0 )
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands without specifing protocol " <<endl;
+                            dout << CtiTime() << " - Will export commands without specifing protocol " <<endl;
                         }
                     }
                 }
@@ -1040,7 +1055,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             {
                 {
                     CtiLockGuard< CtiLogger > guard(dout);
-                    dout << RWTime() << " Error importing file " << file << endl;
+                    dout << CtiTime() << " Error importing file " << file << endl;
                 }
             }
 
@@ -1051,14 +1066,14 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
             if(decodeResult == TEXT_CMD_FILE_LOG_FAIL )
             {
-                RWCString logMsg;
-                RWCString infoMsg;
-                logMsg = RWCString ("Logging commands from file ");
+                string logMsg;
+                string infoMsg;
+                logMsg = string ("Logging commands from file ");
                 logMsg += file;
-                logMsg += RWCString (" failed ");
-                infoMsg = RWCString ("Log file ");
-                infoMsg += RWCString (newFileName);
-                infoMsg += RWCString (" is locked by another process");
+                logMsg += string (" failed ");
+                infoMsg = string ("Log file ");
+                infoMsg += string (newFileName);
+                infoMsg += string (" is locked by another process");
 
                 CtiSignalMsg* msg = new CtiSignalMsg( SYS_PID_MACS,
                                                       0,
@@ -1074,14 +1089,14 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL)
             {
-                RWCString logMsg;
-                RWCString infoMsg;
-                logMsg = RWCString ("Removing sent commands from file ");
+                string logMsg;
+                string infoMsg;
+                logMsg = string ("Removing sent commands from file ");
                 logMsg += file;
-                logMsg += RWCString (" failed ");
-                infoMsg = RWCString ("Original file ");
+                logMsg += string (" failed ");
+                infoMsg = string ("Original file ");
                 infoMsg += file;
-                infoMsg += RWCString (" is locked by another process");
+                infoMsg += string (" is locked by another process");
 
                 CtiSignalMsg* msg = new CtiSignalMsg( SYS_PID_MACS,
                                                       0,
@@ -1098,7 +1113,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             {
                 {
                     CtiLockGuard< CtiLogger > guard(dout);
-                    dout << RWTime() << " Export file " << file << " does not exist or is locked " << endl;
+                    dout << CtiTime() << " Export file " << file << " does not exist or is locked " << endl;
                 }
             }
         }
@@ -1118,7 +1133,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
 int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    time_t t = time(NULL);
+    time_t t = ::time(NULL);
     int id = 0;
 
     if( argc >= 2 )
@@ -1141,7 +1156,9 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
 
     CtiHolidayManager& mgr = CtiHolidayManager::getInstance();
-    if( mgr.isHoliday(RWDate(localtime(&t)), id) )
+    struct tm *temp;
+    temp = CtiTime::localtime_r(&t);
+    if( mgr.isHoliday(CtiDate(temp), id) )
     {
         Tcl_SetResult(interp, "true", NULL );
         return TCL_OK;
@@ -1154,9 +1171,9 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
 {
-    RWCString user = "";
-    RWCString message = "";
-    RWCString info = "";
+    string user = "";
+    string message = "";
+    string info = "";
     int classification = 7;
     int index = 1;
 
@@ -1170,8 +1187,8 @@ int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
 
     if( argc == 6 )
     {
-        RWCString param(argv[index++]);
-        param.toLower();
+        string param(argv[index++]);
+        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
         if( param == "class" )
         {
             classification = atoi( argv[index++] );
@@ -1225,14 +1242,14 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         return TCL_OK;
     }
 
-    RWCString name(argv[1]);
+    string name(argv[1]);
 
     long id = GetNotificationGroupID(name);
 
     if( id == -1 )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Could not locate notification group named: " << name << endl;
+        dout << CtiTime() << " Could not locate notification group named: " << name << endl;
         return TCL_ERROR;
     }
 
@@ -1243,10 +1260,10 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << " Sending email notification to the notification server " << endl;
-        dout << RWTime() << " notification group id: " << msg->getNotifGroupId() << endl;
-        dout << RWTime() << " subject: " << msg->getSubject() << endl;
-        dout << RWTime() << " text: " << msg->getBody() << endl;
+        dout << CtiTime() << " Sending email notification to the notification server " << endl;
+        dout << CtiTime() << " notification group id: " << msg->getNotifGroupId() << endl;
+        dout << CtiTime() << " subject: " << msg->getSubject() << endl;
+        dout << CtiTime() << " text: " << msg->getBody() << endl;
     }
 
     NotificationConnection->WriteConnQue(msg);
@@ -1259,20 +1276,20 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc == 1 )
     {
-        RWCString selection = Tcl_GetVar(interp, SelectedVariable, 0 );
+        string selection = Tcl_GetVar(interp, SelectedVariable, 0 );
         //GetSelected(interp,selection);
 
-        RWCString out("current selection: ");
+        string out("current selection: ");
         out += selection;
 
-        WriteOutput( (char*) selection.data() );
+        WriteOutput( (char*) selection.c_str() );
     }
     else
     {
-        RWCString cmd;
+        string cmd;
         AppendToString(cmd, argc, argv);
 
-        Tcl_SetVar(interp, SelectedVariable, (char*) cmd.data(), 0 );
+        Tcl_SetVar(interp, SelectedVariable, (char*) cmd.c_str(), 0 );
         //SetSelected(interp,cmd);
     }
     return TCL_OK;
@@ -1282,14 +1299,14 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc < 2 )
     {
-        RWCString usage("Usage:  Wait <seconds>");
-        WriteOutput((const char*) usage );
+        string usage("Usage:  Wait <seconds>");
+        WriteOutput(usage.c_str());
     }
 
     long delay = atol(argv[1]);
-    time_t start = time(NULL);
+    time_t start = ::time(NULL);
 
-    while( start + delay > time(NULL) )
+    while( start + delay > ::time(NULL) )
     {
         //Check for cancellation
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
@@ -1315,9 +1332,9 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     }
 
   long id = atoi(argv[1]);
-  RWCString name;
+  string name;
   GetDeviceName(id,name);
-  Tcl_Obj* tcl_name = Tcl_NewStringObj((const char*)name.data(), -1);
+  Tcl_Obj* tcl_name = Tcl_NewStringObj((const char*)name.c_str(), -1);
   Tcl_SetObjResult(interp, tcl_name);
   return TCL_OK;
 }
@@ -1330,8 +1347,8 @@ int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
       return TCL_OK;
     }
 
-  long id = GetDeviceID(RWCString(argv[1]));
-  Tcl_Obj* tcl_id = Tcl_NewStringObj((const char*)CtiNumStr(id),-1);
+  long id = GetDeviceID(string(argv[1]));
+  Tcl_Obj* tcl_id = Tcl_NewStringObj(CtiNumStr(id).toString().c_str(),-1);
   Tcl_SetObjResult(interp, tcl_id);
   return TCL_OK;
 }
@@ -1345,53 +1362,56 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
     }
 
   int id = atoi(argv[1]);
-  RWCString err_str = FormatError(id);
-  Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str,-1);
+  string err_str = FormatError(id);
+  Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str.c_str(),-1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;
 }
 
 int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-  RWCString base_dir = gConfigParms.getYukonBaseDir();
-  Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir, -1);
+  string base_dir = gConfigParms.getYukonBaseDir();
+  Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir.c_str(), -1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;
 }
 
-int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
+int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line)
 {
     char* p;
     long timeout = DEFAULT_ONE_WAY_TIMEOUT;
-    RWCString timeoutStr;
 
-    if( !((timeoutStr = cmd_line.match(re_timeout)).isNull()) )
+    string timeoutStr;
+    boost::match_results<std::string::const_iterator> what;
+    if(boost::regex_search(cmd_line, what, re_timeout, boost::match_default))
     {
-        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) )
+        timeoutStr = static_cast<string>(what[0]);
+        if(boost::regex_search(timeoutStr, what, re_num, boost::match_default))
         {
-            timeout = strtol(timeoutStr.data(),&p,10);
+            timeout = strtol((static_cast<string>(what[0])).c_str(),&p,10);
         }
     }
     return DoRequest(interp,cmd_line,timeout,false);
 }
 
-int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
+int DoTwoWayRequest(Tcl_Interp* interp, string& cmd_line)
 {
     char* p;
     long timeout = DEFAULT_TWO_WAY_TIMEOUT;
-    RWCString timeoutStr;
-
-    if( !((timeoutStr = cmd_line.match(re_timeout)).isNull()) )
+    string timeoutStr;
+    boost::match_results<std::string::const_iterator> what;
+    if(boost::regex_search(cmd_line, what, re_timeout, boost::match_default))
     {
-        if( !((timeoutStr = timeoutStr.match(re_num)).isNull()) )
+        timeoutStr = static_cast<string>(what[0]);
+        if(boost::regex_search(timeoutStr, what, re_num, boost::match_default))
         {
-            timeout = strtol(timeoutStr.data(),&p,10);
+            timeout = strtol((static_cast<string>(what[0])).c_str(),&p,10);
         }
     }
     return DoRequest(interp,cmd_line,timeout,true);
 }
 
-static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way)
+static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
     bool timed_out = false;
@@ -1428,7 +1448,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )
             DumpRequestMessage(*req);
         else
-            WriteOutput( (char*) req->CommandString().data() );
+            WriteOutput( (char*) req->CommandString().c_str() );
 
         multi_req->getData().insert(req);
     }
@@ -1438,7 +1458,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
-    long start = time(NULL);
+    long start = ::time(NULL);
 
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1470,8 +1490,8 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             else
             {
           delete msg;
-              RWCString err("Received unknown message __LINE__, __FILE__");
-              WriteOutput(err.data());
+              string err("Received unknown message __LINE__, __FILE__");
+              WriteOutput(err.c_str());
             }
 
             msg = NULL;
@@ -1486,9 +1506,9 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
         if( ::time(NULL) > start + timeout )
         {
-            RWCString info("timed out: ");
+            string info("timed out: ");
             info += cmd_line;
-            WriteOutput(info);
+            WriteOutput(info.c_str());
             break;
         }
     } while(true);
@@ -1508,7 +1528,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     Tcl_SetVar2Ex(interp, BadStatusVariable, NULL, status_list, 0);
 
     PILReturnMap::iterator m_iter;
-    RWCString dev_name;
+    string dev_name;
 
     for( m_iter = good_map.begin();
          m_iter != good_map.end();
@@ -1516,7 +1536,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     {
         GetDeviceName(m_iter->first,dev_name);
     delete m_iter->second;
-        Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name, -1));
+        Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
     }
 
     for( m_iter = bad_map.begin();
@@ -1525,7 +1545,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     {
         GetDeviceName(m_iter->first,dev_name);
 
-        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
+        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
     Tcl_ListObjAppendElement(interp, status_list,
                  Tcl_NewIntObj(m_iter->second->Status()));
     delete m_iter->second;
@@ -1540,7 +1560,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         {
             GetDeviceName(m_iter->first,dev_name);
 
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
         Tcl_ListObjAppendElement(interp, status_list,
                      Tcl_NewIntObj(m_iter->second->Status()));
             delete m_iter->second;
@@ -1580,9 +1600,9 @@ void HandleMessage(RWCollectable* msg,
     }
     else
     {
-        RWCString warn("received an unkown message with class id: ");
+        string warn("received an unkown message with class id: ");
         warn += CtiNumStr(msg->isA());
-        WriteOutput(warn);
+        WriteOutput(warn.c_str());
     }
 }
 
@@ -1595,9 +1615,9 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
     if( good_map.find(dev_id) != good_map.end() )
     {
-        RWCString warn("received a message for a device already in the good list, id: ");
+        string warn("received a message for a device already in the good list, id: ");
         warn += CtiNumStr(dev_id);
-        WriteOutput(warn);
+        WriteOutput(warn.c_str());
     }
     else
     {
@@ -1613,9 +1633,9 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             pos = bad_map.find(dev_id);
                 if(pos != bad_map.end())
                 {
-                    RWCString warn("moved device from bad list to good list, id: ");
+                    string warn("moved device from bad list to good list, id: ");
                     warn += CtiNumStr(dev_id);
-                    WriteOutput(warn);
+                    WriteOutput(warn.c_str());
             delete pos->second;
             bad_map.erase(pos);
                 }
@@ -1629,9 +1649,9 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
                 if( !good_map.insert(PILReturnMap::value_type(dev_id,msg)).second )
                 {
-                    RWCString warn("device already in good list, id: ");
+                    string warn("device already in good list, id: ");
                     warn += CtiNumStr(dev_id);
-                    WriteOutput(warn);
+                    WriteOutput(warn.c_str());
                 }
             }
             else
@@ -1645,9 +1665,9 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
                 if( !bad_map.insert(PILReturnMap::value_type(dev_id,msg)).second)
                 {
-                    RWCString warn("device already in bad list, id: ");
+                    string warn("device already in bad list, id: ");
                     warn += CtiNumStr(dev_id);
-                    WriteOutput(warn);
+                    WriteOutput(warn.c_str());
                 }
             }
         }
@@ -1673,7 +1693,7 @@ unsigned int GetThreadIDFromMsgID(unsigned int msg_id)
   Retrieves the notification group ID from the database given the groups name.
   Returns -1 if no id was found.
 ----------------------------------------------------------------------------*/
-long GetNotificationGroupID( const RWCString& name)
+long GetNotificationGroupID( const string& name)
 {
     try
     {
@@ -1681,8 +1701,8 @@ long GetNotificationGroupID( const RWCString& name)
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
-            RWCString sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
-            RWDBReader rdr = ExecuteQuery( conn, sql );
+            string sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
+            RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
 
             //Assume there is only one?
             if( rdr() )
@@ -1699,25 +1719,25 @@ long GetNotificationGroupID( const RWCString& name)
     catch( RWExternalErr err )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Error retrieving notification group id." << err.why() << endl;
+        dout << CtiTime() << " Error retrieving notification group id." << err.why() << endl;
         return -1;
     }
 }
 
-static void GetDeviceName(long deviceID, RWCString& name)
+static void GetDeviceName(long deviceID, string& name)
 {
     try
     {
         char devStr[12];
-        sprintf(devStr, "%ld", deviceID);
+        ::sprintf(devStr, "%ld", deviceID);
 
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
-            RWCString sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=";
+            string sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=";
             sql += devStr;
-            RWDBReader rdr = ExecuteQuery( conn, sql );
+            RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
 
             if( rdr() )
             {
@@ -1735,7 +1755,7 @@ static void GetDeviceName(long deviceID, RWCString& name)
     }
 }
 
-static long GetDeviceID(const RWCString& name)
+static long GetDeviceID(const string& name)
 {
   long id = 0;
   try
@@ -1744,10 +1764,10 @@ static long GetDeviceID(const RWCString& name)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWCString sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
+    string sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
     sql += name;
     sql += "'";
-    RWDBReader rdr = ExecuteQuery(conn,sql);
+    RWDBReader rdr = ExecuteQuery(conn,sql.c_str());
     if(rdr())
       {
         rdr >> id;
@@ -1765,13 +1785,13 @@ static long GetDeviceID(const RWCString& name)
   return id;
 }
 
-void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
+void BuildRequestSet(Tcl_Interp* interp, string& cmd_line, RWSet& req_set)
 {
-    if( !cmd_line.contains("select") )
+    if( cmd_line.find("select")==string::npos )
     {
         // cmd_line doesn't specify a select string so lets append
         // this interpreters current select string
-        RWCString select = Tcl_GetVar(interp, SelectedVariable, 0);
+        string select = Tcl_GetVar(interp, SelectedVariable, 0);
         cmd_line += " ";
         cmd_line += select;
 
@@ -1779,7 +1799,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     }
 
     size_t index;
-    size_t end_index;
+    size_t end_index = 0;
 
     int priority = 7;
     char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, TCL_GLOBAL_ONLY);
@@ -1793,14 +1813,20 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         }
     }
 
-    if( cmd_line.index(".*select[ ]+list[ ]+", &end_index) != RW_NPOS )
+    if( cmd_line.find(".*select[ ]+list[ ]+", end_index) != string::npos )
     {
         int list_len;
-        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.data() + end_index, -1 );
+        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
-
-        cmd_line.replace("\n"," ");
-        cmd_line.replace("select.*","");
+        //rprw
+        boost::regex e1 = "\n";
+        boost::regex e2 = "select.*";
+        cmd_line = boost::regex_replace(cmd_line, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
+        cmd_line = boost::regex_replace(cmd_line, e2, "", boost::match_default | boost::format_all | boost::format_first_only);
+        
+        //cmd_line.replace("\n"," ");
+        //cmd_line.replace("select.*","");
+        //rprwend
 
         if( list_len > 0 )
         {
@@ -1813,7 +1839,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
                 Tcl_Obj* elem;
                 Tcl_ListObjIndex(interp, sel_list, i, &elem);
 
-                RWCString cmd(cmd_line.data());
+                string cmd(cmd_line.c_str());
                 cmd += "select name '";
                 cmd += Tcl_GetString(elem);
                 cmd += "'";
@@ -1830,7 +1856,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         Tcl_DecrRefCount(sel_str);
     }
     else //dont add quotes if it is an id
-        if( cmd_line.index(".*select[ ]+[^ ]+[ ]+id", &end_index) != RW_NPOS )
+        if( cmd_line.find(".*select[ ]+[^ ]+[ ]+id", end_index) != string::npos )
     {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
@@ -1839,23 +1865,23 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         req_set.insert(msg);
     }
     else
-        if( cmd_line.index(".*select[ ]+[^ ]+[ ]+", &end_index) != RW_NPOS )
+        if( cmd_line.find(".*select[ ]+[^ ]+[ ]+", end_index) != string::npos )
     {
 
         //PIL likes to see ' around any device, group, etc
         cmd_line.insert(end_index, "'");
-        cmd_line = cmd_line.strip(RWCString::both, ' ');
+        trim(cmd_line);
         cmd_line.append("'");
 
         //strip out the braces
-        while( (index = cmd_line.index("{")) != RW_NPOS )
+        while( (index = cmd_line.find("{")) != string::npos )
         {
-            cmd_line.remove(index,1);
+            cmd_line.erase(index,1);
         }
 
-        while( (index = cmd_line.index('}')) != RW_NPOS )
+        while( (index = cmd_line.find('}')) != string::npos )
         {
-            cmd_line.remove(index,1);
+            cmd_line.erase(index,1);
         }
 
         CtiRequestMsg *msg = new CtiRequestMsg();
@@ -1871,15 +1897,15 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
  */
 int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
 {
-    RWCString app = "MACS Server";
-    RWCString user = "";
-    RWCString message = "";
-    RWCString info = "";
+    string app = "MACS Server";
+    string user = "";
+    string message = "";
+    string info = "";
     int classification = 7;
     int index = 1;
 
     int paoid;
-    RWCString objtype;
+    string objtype;
 
     if( argc < 3 )
     {
@@ -1920,8 +1946,8 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     string cmdExe(getenv("SystemRoot"));
     cmdExe += "\\system32\\cmd.exe";
     char szCmd[MAX_PATH];
-    strcpy(szCmd,"/c ");
-    strcat(szCmd,cmd.c_str());
+    std::strcpy(szCmd,"/c ");
+    std::strcat(szCmd,cmd.c_str());
 
     if (!CreateProcess(cmdExe.c_str(),(char *)szCmd,
                        NULL, NULL, FALSE,

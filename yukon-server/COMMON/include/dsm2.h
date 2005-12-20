@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include <windows.h>
 
 #include <time.h>
+#include <string>
 #pragma pack(push, message_packing, 1)
 #include "mutex.h"
 #include "guard.h"
@@ -892,7 +893,7 @@ public:
 
    CtiOutMessage()
    {
-      memset(this, 0, sizeof(CtiOutMessage));
+      ::memset(this, 0, sizeof(CtiOutMessage));
       ReturnNexus = NULL;
       SaveNexus = NULL;
 
@@ -1015,7 +1016,7 @@ public:
 
     CTIINMESS()
     {
-       memset(this, 0, sizeof(CTIINMESS));
+       ::memset(this, 0, sizeof(CTIINMESS));
     }
 
 } INMESS;

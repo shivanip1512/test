@@ -535,7 +535,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixTwo::printResult( RWCString deviceName )
+void CtiAnsiTableSixTwo::printResult( const string& deviceName )
 {
     int index;
     /**************************************************************
@@ -604,56 +604,55 @@ void CtiAnsiTableSixTwo::printLPSelSet(int set, int numChans)
         break;
 
     }
-    {
+{
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "            EndRdgFlg:  ";
+        dout << "       EndRdgFlg:  ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(bool)tempSourceSelRcd[x].chnl_flag.end_rdg_flag;
+        dout << " "<<(bool)tempSourceSelRcd[x].chnl_flag.end_rdg_flag;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "            NoMultFlg: ";
+        dout <<endl<< "       NoMultFlg: ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(bool)tempSourceSelRcd[x].chnl_flag.no_multiplier_flag;
+        dout << " "<<(bool)tempSourceSelRcd[x].chnl_flag.no_multiplier_flag;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "            LPAlgorithm: ";
+        dout <<endl<< "       LPAlgorithm: ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(int)tempSourceSelRcd[x].chnl_flag.lp_algorithm;
+        dout << " "<<(int)tempSourceSelRcd[x].chnl_flag.lp_algorithm;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "            IntSrcSel: ";
+        dout <<endl<< "       IntSrcSel: ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<tempSourceSelRcd[x].lp_source_sel;
+        dout << " "<<tempSourceSelRcd[x].lp_source_sel;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "            EndBlkRdgSrcSel:";
+        dout <<endl<< "       EndBlkRdgSrcSel:";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<tempSourceSelRcd[x].end_blk_rdg_source_select;
+        dout << " "<<tempSourceSelRcd[x].end_blk_rdg_source_select;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "            IntFmtCde: "<<tempIntSel<<endl;
+        dout <<endl<< "       IntFmtCde: "<<tempIntSel<<endl;
     }
-
 }
 void CtiAnsiTableSixTwo::printScalarsDivisorSet(int set, int numChans)
 {
@@ -693,27 +692,26 @@ void CtiAnsiTableSixTwo::printScalarsDivisorSet(int set, int numChans)
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<"            Scalars Set: ";
+        dout <<"       Scalars Set: ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<tempScalarsSet[x];
+        dout << " "<<tempScalarsSet[x];
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<<"            Divisor Set: ";
+        dout <<endl<<"       Divisor Set: ";
     }
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<tempDivisorSet[x];
+        dout << " "<<tempDivisorSet[x];
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout <<endl;
     }
-
 
 }
 

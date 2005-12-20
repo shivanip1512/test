@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/UTILITY/wpsccfgparse.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:24:04 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:21:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,7 +111,7 @@ bool openfile( int op, int serial, ofstream &oFile , const string &dir)
 
    // cout << fname << endl;
 
-   oFile.open( fname.data() );
+   oFile.open( fname.c_str() );
 
    return oFile.is_open();
 }
@@ -134,7 +134,7 @@ void mergefiles(const string &dir)
    {
       findthis += "\\wcp*.cfg";
 
-      fHandle = FindFirstFile( findthis.data(), &wfd );
+      fHandle = FindFirstFile( findthis.c_str(), &wfd );
 
       if( fHandle != INVALID_HANDLE_VALUE )
       {
@@ -142,7 +142,7 @@ void mergefiles(const string &dir)
          {
             filename = dir + string("\\") + string(wfd.cFileName);
 
-            ifstream iFile(filename.data());         // open for exclusive access for input
+            ifstream iFile(filename.c_str());         // open for exclusive access for input
 
             if(iFile.is_open())
             {
@@ -152,7 +152,7 @@ void mergefiles(const string &dir)
                iFile.close();
             }
 
-            if(!DeleteFile(filename.data()))
+            if(!DeleteFile(filename.c_str()))
             {
                cout << "Could not delete file " << filename << endl;
             }

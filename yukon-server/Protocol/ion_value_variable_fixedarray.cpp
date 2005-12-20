@@ -302,7 +302,7 @@ unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             desc = ClassDescriptor_FixedArray_Char;
@@ -406,7 +406,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "arrayLength = 0xf, reserved" << endl;
             }
 
@@ -434,7 +434,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -444,7 +444,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -454,7 +454,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         //  we shouldn't do this - the stream isn't necessarily corrupt.  if the array is zero-length, we should

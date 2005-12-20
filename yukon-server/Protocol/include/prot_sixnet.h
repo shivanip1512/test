@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,12 +20,13 @@
 
 
 #include <windows.h>
-#include <rw\cstring.h>
 
 #include "cmdparse.h"
 #include "dllbase.h"
 #include "dlldefs.h"
 #include "mutex.h"
+
+using std::vector;
 
 typedef unsigned char uchar;
 typedef short int16;
@@ -239,7 +240,7 @@ private:
     }; // matches any station
 
 
-    int FsGetAliasGenerate(RWCString szName, RWCString szOptions = RWCString());
+    int FsGetAliasGenerate(string szName, string szOptions = string());
     int FsGetAliasProcess();
 
     int FsREADGenerate(uint32 nPos, int nLen);

@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.19 $
- *    DATE         :  $Date: 2005/09/13 20:43:07 $
+ *    REVISION     :  $Revision: 1.20 $
+ *    DATE         :  $Date: 2005/12/20 17:17:13 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.20  2005/12/20 17:17:13  tspar
+ *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+ *
  *     Revision 1.19  2005/09/13 20:43:07  tmack
  *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
  *
@@ -34,7 +37,6 @@
 #include <rw/db/reader.h>
 #include <rw/db/table.h>
 #include <rw/db/result.h>
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
 #include <rw/collstr.h>
 
@@ -80,12 +82,12 @@ bool isPointIdEqual(CtiFDRPoint* aPoint, void *arg)
 
 bool isTranslationNameEqual(CtiFDRPoint* aPoint, void *arg)
 {
-    RWCString name = *((RWCString*)arg);  // Wha tis the ID of the pointI care for!
+    string name = *((string*)arg);  // Wha tis the ID of the pointI care for!
     BOOL  retVal = false;
 
     for (int x=0; x < aPoint->getDestinationList().size(); x++)
     {
-        if (!(aPoint->getDestinationList()[x].getTranslation().compareTo (name,RWCString::ignoreCase)))
+        if (!stringCompareIgnoreCase(aPoint->getDestinationList()[x].getTranslation(),name))
             retVal = true;
     }
 
@@ -96,7 +98,7 @@ bool isTranslationNameEqual(CtiFDRPoint* aPoint, void *arg)
 
 // constructors, destructor, operators
 
-CtiFDRInterface::CtiFDRInterface(RWCString & interfaceType)
+CtiFDRInterface::CtiFDRInterface(string & interfaceType)
 :   iInterfaceName(interfaceType),
 iDebugLevel(0),
 iDbReloadReason(NotReloaded),
@@ -151,24 +153,24 @@ CtiFDRInterface& CtiFDRInterface::setReceiveFromList (CtiFDRPointList &aList)
     return *this;
 }
 
-long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
+long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 {
     bool                successful(false);
     CtiFDRPoint *       translationPoint = NULL;
     CtiFDRPoint *       point = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false, translatedPoint(false);
-    RWCString           controlDirection;
+    string           controlDirection;
     long                retID=0;
     RWDBStatus          listStatus;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(RWCString (FDR_SYSTEM),
-                                                       RWCString (FDR_INTERFACE_LINK_STATUS));
+        CtiFDRManager   *pointList = new CtiFDRManager(string (FDR_SYSTEM),
+                                                       string (FDR_INTERFACE_LINK_STATUS));
 
         listStatus = pointList->loadPointList();
 
@@ -184,29 +186,34 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
                 translationPoint = myIterator.value();
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
                 {
-                    RWCString tempString1,tempString2;
-                    RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
-                    if (!(tempString1 = nextTranslate(";")).isNull())
+                    string tempString1,tempString2;
+                    boost::char_separator<char> sep(";");
+                    Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep);
+                    Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                    
+                    if (!(tempString1 = *tok_iter++).empty())
                     {
                         // this contains Interface:name of the interface
-                        RWCTokenizer nextTempToken(tempString1);
+                        boost::char_separator<char> sep1(":");
+                        Boost_char_tokenizer nextTempToken(tempString1, sep1);
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
                         // do not care about the first part
-                        nextTempToken(":");
-
-                        tempString2 = nextTempToken(":");
+                        
+                        tok_iter1++;
+                        tempString2 = *tok_iter1;
 
                         // now we have a name
-                        if ( !tempString2.isNull() )
+                        if ( !tempString2.empty() )
                         {
-                            if (!tempString2.compareTo (aClientName,RWCString::ignoreCase))
+                            if (!stringCompareIgnoreCase(tempString2,aClientName))
                             {
                                 retID = translationPoint->getPointID();
 
                                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                                    dout << CtiTime() << " Point ID " << translationPoint->getPointID();
                                     dout << " defined as " << aClientName << "'s link status point" << endl;
                                 }
                             }
@@ -219,14 +226,14 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
         }
     }   // end try block
 
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID " << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID " << endl;
         RWTHROW(e);
     }
 
@@ -234,7 +241,7 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID UNKNOWN (...)" << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID UNKNOWN (...)" << endl;
     }
 
     return retID;
@@ -251,7 +258,7 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    iOutBoundPoints = new CtiFDRManager(iInterfaceName, RWCString(FDR_INTERFACE_SEND));
+    iOutBoundPoints = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
     iOutBoundPoints->loadPointList();
 
     if ( !readConfig() )
@@ -270,14 +277,14 @@ BOOL CtiFDRInterface::init( void )
 }
 
 /************************************************************************
-* Function Name: CtiFDRInterface::setInterfaceName(RWCString &)
+* Function Name: CtiFDRInterface::setInterfaceName(string &)
 *
 * Description: sets the name of the Interface.  This set by the
 *              constructor and this setter should not be needed.
 *
 *************************************************************************
 */
-CtiFDRInterface & CtiFDRInterface::setInterfaceName(RWCString & aInterfaceName)
+CtiFDRInterface & CtiFDRInterface::setInterfaceName(string & aInterfaceName)
 {
     iInterfaceName = aInterfaceName;
 
@@ -292,7 +299,7 @@ CtiFDRInterface & CtiFDRInterface::setInterfaceName(RWCString & aInterfaceName)
 *
 *************************************************************************
 */
-RWCString & CtiFDRInterface::getInterfaceName(void)
+string & CtiFDRInterface::getInterfaceName(void)
 {
     return iInterfaceName;
 }
@@ -555,7 +562,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
+                dout << CtiTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
             }
             iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
 
@@ -563,7 +570,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Attempt to reconnect to dispatch at " << iDispatchMachine;
+                    dout << CtiTime() << " Attempt to reconnect to dispatch at " << iDispatchMachine;
                     dout << " for " << getInterfaceName() << " failed.  Attempting again" << endl;
                 }
                 delete iDispatchConn;
@@ -575,7 +582,7 @@ BOOL CtiFDRInterface::connectWithDispatch()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Attempt to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << " failed by exception " << endl;
+            dout << CtiTime() << " Attempt to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << " failed by exception " << endl;
         }
         retVal = FALSE;
         if (iDispatchConn != NULL)
@@ -591,13 +598,13 @@ BOOL CtiFDRInterface::connectWithDispatch()
 BOOL CtiFDRInterface::registerWithDispatch()
 {
     CtiMessage *    pMsg;
-    RWCString       regStr("FDR" + iInterfaceName);
+    string       regStr("FDR" + iInterfaceName);
 
     // register who we are
     pMsg = new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE);
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     sendMessageToDispatch( pMsg );
     sendPointRegistration();
@@ -632,20 +639,20 @@ void CtiFDRInterface::setCurrentClientLinkStates()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Default setCurrentClientLinkStates called " << endl;
+        dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Default setCurrentClientLinkStates called " << endl;
     }
 }
 /************************************************************************
-* Function Name: CtiFDRInterface::getCparmValueAsString(RWCString key)
+* Function Name: CtiFDRInterface::getCparmValueAsString(string key)
 *
 * Description: Uses the Static CParm  object to get a parameter base on
 *              the key value.  Returns a null string if it does not exist.
 *
 *************************************************************************
 */
-RWCString CtiFDRInterface::getCparmValueAsString(RWCString key)
+string CtiFDRInterface::getCparmValueAsString(string key)
 {
-    RWCString   myTempStr("");
+    string   myTempStr("");
 
     // invokes cparm method
     if (iConfigParameters.isOpt(key))
@@ -669,7 +676,7 @@ RWCString CtiFDRInterface::getCparmValueAsString(RWCString key)
 int CtiFDRInterface::readConfig( void )
 {
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
     char        *eptr;
 
     tempStr = getCparmValueAsString(KEY_DISPATCH_NAME);
@@ -681,13 +688,13 @@ int CtiFDRInterface::readConfig( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DISPATCH_MACHINE not defined, defaulting to local 127.0.0.1 " << endl;
+            dout << CtiTime() << " DISPATCH_MACHINE not defined, defaulting to local 127.0.0.1 " << endl;
         }
-        iDispatchMachine = RWCString ("127.0.0.1");
+        iDispatchMachine = string ("127.0.0.1");
     }
 
     // make name based on interface for debug level: FDR_xxxx_DEBUG_LEVEL
-    RWCString myKeyName("FDR_" + iInterfaceName + KEY_DEBUG_LEVEL);
+    string myKeyName("FDR_" + iInterfaceName + KEY_DEBUG_LEVEL);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -702,7 +709,7 @@ int CtiFDRInterface::readConfig( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << " Loaded Debug Level Text " << tempStr << endl;
         }
-        iDebugLevel = strtoul(tempStr, &eptr, 16);
+        iDebugLevel = strtoul(tempStr.c_str(), &eptr, 16);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << " Loaded Debug Level " << myKeyName << " Value is: " << iDebugLevel << endl;
@@ -746,7 +753,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
 
                 // debug printing
                 //            regStr  = "FDR - \"" + iinterfaceType + "\" module - " + "destination \"" + idestination + "\" - ";
-                //            regStr += RWTime( ).asString( );
+                //            regStr += CtiTime( ).asString( );
                 //         CtiLockGuard<CtiLogger> doubt_guard(dout);
                 //            dout << regStr << endl;
 
@@ -759,7 +766,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error building point registration list for dispatch for " << getInterfaceName() << endl;
+                dout << CtiTime() << " Error building point registration list for dispatch for " << getInterfaceName() << endl;
             }
         }
     }
@@ -767,7 +774,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
+        dout << CtiTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
     }
 
     return TRUE;
@@ -828,7 +835,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDRInterface::threadFunctionReceiveFromDispatch"  << endl;
+            dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionReceiveFromDispatch"  << endl;
         }
 
 
@@ -855,7 +862,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
+                                dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
                             }
                             // we're assuming that the send to dispatch will catch the problem
                             {
@@ -868,7 +875,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                                 connectWithDispatch();
                             }
                             pSelf.serviceCancellation( );
-                            logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
+                            logEvent (string (getInterfaceName() + string ("'s connection to dispatch has been restarted")),string());
                             registerWithDispatch();
                         }
                     }
@@ -876,7 +883,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
+                            dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
                         }
                         {
                             CtiLockGuard<CtiMutex> guard(iDispatchMux);
@@ -897,7 +904,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch is not initialized.  Attempting to reconnect" << endl;
+                        dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch is not initialized.  Attempting to reconnect" << endl;
                     }
                     // we're assuming that the send to dispatch will catch the problem
                     {
@@ -906,7 +913,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                         connectWithDispatch();
                     }
                     pSelf.serviceCancellation( );
-                    logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
+                    logEvent (string (getInterfaceName() + string ("'s connection to dispatch has been restarted")),string());
                     registerWithDispatch();
                 }
 
@@ -937,7 +944,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             case (CtiCommandMsg::Shutdown):
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
+                                    dout << CtiTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
                                 }
                                 break;
 
@@ -948,14 +955,14 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     //                            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
+                                    dout << CtiTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
                                 }
                                 break;
 
                             default:
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " FDR received a unknown Command message- " << endl;
+                                    dout << CtiTime() << " FDR received a unknown Command message- " << endl;
                                 }
                                 break;
 
@@ -982,7 +989,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " received a single point data message type- " << endl;
+                            dout << CtiTime() << " received a single point data message type- " << endl;
                         }
                         sendMessageToForeignSys(incomingMsg);
                         break;
@@ -990,7 +997,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 default:
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " FDR received a unknown message type- " << incomingMsg->isA() << endl;
+                        dout << CtiTime() << " FDR received a unknown message type- " << incomingMsg->isA() << endl;
                     }
                     break;
 
@@ -1030,7 +1037,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     RWRunnableSelf  pSelf = rwRunnable( );
     CtiMessage      *incomingMsg=NULL;
     int cnt,entries;
-    RWTime checkTime;
+    CtiTime checkTime;
     bool hasEntries = true;
 
     try
@@ -1038,13 +1045,13 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDRInterface::threadFunctionSendToDispatch " << endl;
+            dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionSendToDispatch " << endl;
         }
 
         // create the muli
         iDispatchQueue.resize(1000);
 
-        checkTime = RWTime() + getQueueFlushRate();
+        checkTime = CtiTime() + getQueueFlushRate();
 
         for ( ; ; )
         {
@@ -1058,7 +1065,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
             ****************************
             */
             cnt=0;
-            if (( entries >= 500) || (RWTime() > checkTime))
+            if (( entries >= 500) || (CtiTime() > checkTime))
             {
 
                 // make sure we have something before trying to send
@@ -1079,7 +1086,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
 //                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
+                                dout << CtiTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
                             }
 
                             sendMessageToDispatch( pMultiData );
@@ -1092,14 +1099,14 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
 //                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
+                        dout << CtiTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
                     }
                     cnt=0;
 
                     sendMessageToDispatch( pMultiData );
                 }
 
-                checkTime = RWTime() + getQueueFlushRate();
+                checkTime = CtiTime() + getQueueFlushRate();
             }
             else
             {
@@ -1136,18 +1143,18 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
-    RWTime timeNow;
-    RWTime hourstart;
-    RWTime refreshTime;
+    CtiTime timeNow;
+    CtiTime hourstart;
+    CtiTime refreshTime;
 
     if (getReloadRate() > 3600)
     {
-        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
-        refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+        hourstart = CtiTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
+        refreshTime=CtiTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
     }
     else
     {
-        refreshTime = RWTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
+        refreshTime = CtiTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
     }
 
     try
@@ -1163,7 +1170,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
             pSelf.serviceCancellation( );
             pSelf.sleep (100);
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             if ((getDbReloadReason() != NotReloaded) || (timeNow >= refreshTime))
             {
@@ -1195,7 +1202,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " - Re-registered with dispatch - " << getInterfaceName() << endl;
+                        dout << CtiTime() << " - Re-registered with dispatch - " << getInterfaceName() << endl;
                     }
 
                     // wait until the state goes back to normal before resetting and continuing
@@ -1204,12 +1211,12 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     // reset refresh time
                     if (getReloadRate() > 3600)
                     {
-                        hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
-                        refreshTime=RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+                        hourstart = CtiTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
+                        refreshTime=CtiTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
                     }
                     else
                     {
-                        refreshTime = RWTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
+                        refreshTime = CtiTime (timeNow.seconds() - (timeNow.seconds() % getReloadRate()) + getReloadRate());
                     }
                 }
                 else
@@ -1241,7 +1248,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     }
 }
 
-bool CtiFDRInterface::logEvent( const RWCString &aDesc, const RWCString &aAction, bool aSendImmediatelyFlag )
+bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool aSendImmediatelyFlag )
 {
     CtiSignalMsg  *     eventLog    = NULL;
     eventLog = new CtiSignalMsg(0,
@@ -1277,7 +1284,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
+            dout << CtiTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
         }
         Sleep (1000);
 
@@ -1290,7 +1297,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
             {
                 // lock the semaphore out here
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
+                dout << CtiTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
             }
             retVal = false;
             delete aMessage;
@@ -1359,7 +1366,7 @@ int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in attemptSend()." << endl;
+            dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in attemptSend()." << endl;
         }
     }
 
@@ -1387,7 +1394,7 @@ bool CtiFDRInterface::queueMessageToDispatch( CtiMessage *aMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Dispatch queue is over the 10,000 point threshold for " << getInterfaceName() << ". Purging oldest 1000 entries " << endl;
+            dout << CtiTime() << " Dispatch queue is over the 10,000 point threshold for " << getInterfaceName() << ". Purging oldest 1000 entries " << endl;
         }
         CtiMessage      *oldMsg=NULL;
 
@@ -1412,7 +1419,7 @@ INT CtiFDRInterface::reRegisterWithDispatch(  )
 {
     INT retVal=NORMAL;
 
-    CtiFDRManager   *tmpList = new CtiFDRManager(iInterfaceName, RWCString(FDR_INTERFACE_SEND));
+    CtiFDRManager   *tmpList = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
 
     // try and reload the outbound list
     if (tmpList->loadPointList().errorCode() == (RWDBStatus::ok))
@@ -1508,7 +1515,7 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
 *
 *************************************************************************
 */
-bool CtiFDRInterface::findTranslationNameInList(RWCString aTranslationName,
+bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
                                                 CtiFDRPointList &aList,
                                                 CtiFDRPoint &aPoint)
 {
@@ -1538,6 +1545,6 @@ bool CtiFDRInterface::findTranslationNameInList(RWCString aTranslationName,
  * Return the 'dout' logger and prepend the current time and the interface name.
  */ 
 ostream CtiFDRInterface::logNow() {
-  return dout << RWTime::now() << " FDR-" << getInterfaceName() << ": ";
+  return dout << CtiTime::now() << " FDR-" << getInterfaceName() << ": ";
 }
 

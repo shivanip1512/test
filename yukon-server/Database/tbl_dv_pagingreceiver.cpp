@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_pagingreceiver.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ float CtiTableDevicePagingReceiver::getCapcode(int codeNumber) const
 
 void CtiTableDevicePagingReceiver::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector << devTbl ["deviceid"] << devTbl["frequency"] << devTbl["capcode1"] << devTbl["capcode2"] << devTbl["capcode3"]
         << devTbl["capcode4"] << devTbl["capcode5"] << devTbl["capcode6"]
@@ -156,7 +156,7 @@ void CtiTableDevicePagingReceiver::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["capcode16"] >> _capcode16;
 }
 
-RWCString CtiTableDevicePagingReceiver::getTableName()
+string CtiTableDevicePagingReceiver::getTableName()
 {
     return "DevicePagingReceiverSettings";
 }
@@ -175,7 +175,7 @@ RWDBStatus CtiTableDevicePagingReceiver::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 /*
     selector << devTbl["deviceid"] << devTbl["frequency"] << devTbl["capcode1"] << devTbl["capcode2"] << devTbl["capcode3"]
@@ -208,7 +208,7 @@ RWDBStatus CtiTableDevicePagingReceiver::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
   //  inserter <<
@@ -230,7 +230,7 @@ RWDBStatus CtiTableDevicePagingReceiver::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -253,7 +253,7 @@ RWDBStatus CtiTableDevicePagingReceiver::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

@@ -23,7 +23,6 @@ CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent)
 {
     iConnection = NULL;
 }
-
 CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, SOCKADDR_IN aAddr)
 :    iParent (aParent),
      iAddr (aAddr),

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/11/09 00:06:10 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,10 @@
 #include "dev_mct.h"     //  for freeze commands
 #include "dev_mct31x.h"  //  for IED scanning capability
 #include "dev_mct410.h"
+#include "ctidate.h"
+#include "ctitime.h"
+#include "rwutil.h"
+
 
 using Cti::Protocol::Emetcon;
 
@@ -80,7 +84,7 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
 
@@ -92,16 +96,16 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
 
     if( nRet != NORMAL )
     {
-        RWCString resultString;
+        string resultString;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << RWTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
-        resultString = "NoMethod or invalid command. (" + RWCString(__FILE__) + ")";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( )) );
+        resultString = "NoMethod or invalid command. (" + string(__FILE__) + ")";
+        retList.insert( CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( )) );
     }
     else
     {
@@ -129,11 +133,11 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
     INT   function = 0;
     INT   nRet = NoError;
     int   intervallength;
-    RWCString temp;
-    RWTime NowTime;
-    RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
+    string temp;
+    CtiTime NowTime;
+    CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), RWCString(OutMessage->Request.CommandStr), RWCString(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( ));
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), string(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( ));
 
     if(parse.isKeyValid("rawloc"))
     {
@@ -145,13 +149,13 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
         if( temp.length() > 15 )
         {
             //  trim string to be 15 bytes long
-            temp.remove( 15 );
+            temp.erase( 15 );
         }
 
         OutMessage->Buffer.BSt.Length = temp.length();
         for( int i = 0; i < temp.length(); i++ )
         {
-            OutMessage->Buffer.BSt.Message[i] = temp(i);
+            OutMessage->Buffer.BSt.Message[i] = temp[i];
         }
 
         if( parse.isKeyValid("rawfunc") )
@@ -182,7 +186,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
     }
 
     return nRet;
@@ -198,9 +202,9 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
     bool  found = false;
     INT   nRet = NoError;
     int   intervallength;
-    RWCString temp;
-    RWTime NowTime;
-    RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
+    string temp;
+    CtiTime NowTime;
+    CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
     INT function;
 
@@ -218,7 +222,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 
     OutMessage->Request.RouteID = getRouteID();
 
-    strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
@@ -272,7 +276,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
             //  ...  right before we stomp over the original location
             MCT400OutMessage->Buffer.BSt.Function   = CtiDeviceMCT410::MCT4XX_FuncWrite_Command;
 
-            if( parse.getCommandStr().contains(" all") )
+            if( stringContainsIgnoreCase(parse.getCommandStr()," all") )
             {
                 //  the MCT 400 message is in ADDITION to the normal command
                 outList.append(MCT400OutMessage);
@@ -313,7 +317,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
     long   rawPulses;
     double dial;
 
-    RWCString command_string(OutMessage->Request.CommandStr);
+    string command_string(OutMessage->Request.CommandStr);
 
     INT function;
 
@@ -324,7 +328,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
     {
         if(parse.getFlags() & CMD_FLAG_PV_RESET)
         {
-            if( command_string.contains(" 400") )
+            if( command_string.find(" 400")!=string::npos )
             {
                 OutMessage->Buffer.BSt.Function = CtiDeviceMCT410::MCT4XX_Command_PowerfailReset;
                 OutMessage->Buffer.BSt.Length = 0;
@@ -384,7 +388,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         break;
                     }
@@ -403,7 +407,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                 OutMessage->Retry     = 2;
 
                 OutMessage->Request.RouteID   = getRouteID();
-                strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+                strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
             }
         }
     }
@@ -482,14 +486,14 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
     return found;
 }
 
-INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;

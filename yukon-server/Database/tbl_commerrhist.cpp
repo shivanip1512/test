@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,14 +17,15 @@
 
 #include "tbl_commerrhist.h"
 #include "logger.h"
+#include "rwutil.h"
 
 //CtiTableCommErrorHistory::CtiTableCommErrorHistory() {}
 
-CtiTableCommErrorHistory::CtiTableCommErrorHistory(LONG paoid, const RWTime& datetime,
+CtiTableCommErrorHistory::CtiTableCommErrorHistory(LONG paoid, const CtiTime& datetime,
                                                    LONG soe, LONG type, LONG number,
-                                                   const RWCString& cmd,
-                                                   const RWCString& out,
-                                                   const RWCString& in, LONG ceid) :
+                                                   const string& cmd,
+                                                   const string& out,
+                                                   const string& in, LONG ceid) :
 _commErrorID(ceid), _paoID(paoid), _dateTime(datetime), _soeTag(soe), _errorType(type),
 _errorNumber(number), _command(cmd), _outMessage(out), _inMessage(in)
 {
@@ -87,13 +88,13 @@ CtiTableCommErrorHistory& CtiTableCommErrorHistory::setPAOID( const LONG pao )
     return *this;
 }
 
-const RWTime& CtiTableCommErrorHistory::getDateTime() const
+const CtiTime& CtiTableCommErrorHistory::getDateTime() const
 {
 
     return _dateTime;
 }
 
-CtiTableCommErrorHistory& CtiTableCommErrorHistory::setDateTime( const RWTime& dt )
+CtiTableCommErrorHistory& CtiTableCommErrorHistory::setDateTime( const CtiTime& dt )
 {
 
     _dateTime = dt;
@@ -139,42 +140,42 @@ CtiTableCommErrorHistory& CtiTableCommErrorHistory::setErrorNumber( const LONG e
     return *this;
 }
 
-const RWCString& CtiTableCommErrorHistory::getCommand() const
+const string& CtiTableCommErrorHistory::getCommand() const
 {
     return _command;
 }
 
-CtiTableCommErrorHistory& CtiTableCommErrorHistory::setCommand( const RWCString &str )
+CtiTableCommErrorHistory& CtiTableCommErrorHistory::setCommand( const string &str )
 {
 
     _command = str;
     return *this;
 }
 
-const RWCString& CtiTableCommErrorHistory::getOutMessage() const
+const string& CtiTableCommErrorHistory::getOutMessage() const
 {
     return _outMessage;
 }
 
-CtiTableCommErrorHistory& CtiTableCommErrorHistory::setOutMessage( const RWCString &str )
+CtiTableCommErrorHistory& CtiTableCommErrorHistory::setOutMessage( const string &str )
 {
     _outMessage = str;
     return *this;
 }
 
-const RWCString& CtiTableCommErrorHistory::getInMessage() const
+const string& CtiTableCommErrorHistory::getInMessage() const
 {
     return _inMessage;
 }
 
-CtiTableCommErrorHistory& CtiTableCommErrorHistory::setInMessage( const RWCString &str )
+CtiTableCommErrorHistory& CtiTableCommErrorHistory::setInMessage( const string &str )
 {
 
     _inMessage = str;
     return *this;
 }
 
-RWCString CtiTableCommErrorHistory::getTableName()
+string CtiTableCommErrorHistory::getTableName()
 {
     return "CommErrorHistory";
 }
@@ -182,7 +183,7 @@ RWCString CtiTableCommErrorHistory::getTableName()
 void CtiTableCommErrorHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("YukonPAObject");
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -228,7 +229,7 @@ RWDBStatus CtiTableCommErrorHistory::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -268,7 +269,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert()
 
 RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
@@ -287,14 +288,14 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
         _inMessage.resize(MAX_INMESS_LENGTH - 1);
     }
 
-    if(getCommand().isNull()) setCommand("none");
-    if(getOutMessage().isNull()) setOutMessage("none");
-    if(getInMessage().isNull()) setInMessage("none");
+    if(getCommand().empty()) setCommand("none");
+    if(getOutMessage().empty()) setOutMessage("none");
+    if(getInMessage().empty()) setInMessage("none");
 
     inserter <<
     getCommErrorID() <<
     getPAOID() <<
-    RWDBDateTime(getDateTime()) <<
+    CtiTime(getDateTime()) <<
     getSoeTag() <<
     getErrorType() <<
     getErrorNumber() <<
@@ -310,7 +311,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << inserter.asString() << endl;
     }
 #else
@@ -322,7 +323,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
 
             if(newcid > 0 && newcid != getCommErrorID())
             {
-                RWTime Now;
+                CtiTime Now;
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -335,7 +336,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
                 if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() != RWDBStatus::ok )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "   " << inserter.asString() << endl;
                 }
             }
@@ -344,7 +345,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -360,7 +361,7 @@ RWDBStatus CtiTableCommErrorHistory::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["paobjectid"] == getPAOID() );
@@ -368,13 +369,13 @@ RWDBStatus CtiTableCommErrorHistory::Update()
     updater <<
     table["paobjectid"].assign(getPAOID() ) <<
     table["commerrorid"].assign(getCommErrorID() ) <<
-    table["datetime"].assign(getDateTime() ) <<
+    table["datetime"].assign(toRWDBDT(getDateTime()) ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
     table["errortype"].assign( getErrorType() ) <<
     table["errornumber"].assign( getErrorNumber() ) <<
-    table["command"].assign( getCommand() ) <<
-    table["outmessage"].assign( getOutMessage() ) <<
-    table["inmessage"].assign( getInMessage() );
+    table["command"].assign( getCommand().c_str() ) <<
+    table["outmessage"].assign( getOutMessage().c_str() ) <<
+    table["inmessage"].assign( getInMessage().c_str() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -391,7 +392,7 @@ RWDBStatus CtiTableCommErrorHistory::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["paobjectid"] == getPAOID() );
@@ -399,15 +400,15 @@ RWDBStatus CtiTableCommErrorHistory::Delete()
     return deleter.status();
 }
 
-RWDBStatus CtiTableCommErrorHistory::Prune(RWDate &earliestDate)
+RWDBStatus CtiTableCommErrorHistory::Prune(CtiDate &earliestDate)
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["datetime"] < RWDBDateTime( earliestDate ) );
+    deleter.where( table["datetime"] < toRWDBDT(CtiTime( earliestDate )) );
     deleter.execute( conn );
     return deleter.status();
 }

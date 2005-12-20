@@ -36,9 +36,9 @@ class IM_EX_FDRDSM2IMPORT CtiFDR_Dsm2Import : public CtiFDRAsciiImportBase
 
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
         virtual int processMessageFromForeignSystem (CHAR *data);
-        virtual bool validateAndDecodeLine (RWCString &aLine, CtiMessage **retMsg);
+        virtual bool validateAndDecodeLine (string &aLine, CtiMessage **retMsg);
                                                                 
-        RWTime Dsm2ToYukonTime (RWCString aTime);
+        CtiTime Dsm2ToYukonTime (string aTime);
         USHORT Dsm2ToYukonQuality (CHAR aQuality);
 
         virtual BOOL    init( void );   

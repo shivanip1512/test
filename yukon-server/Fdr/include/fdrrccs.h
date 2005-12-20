@@ -20,7 +20,6 @@
 #define __FDRRCCS_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -42,7 +41,7 @@
 #define RCCS_PAIR_FOUR "RCCS PAIR FOUR"
 #define RCCS_STANDALONE "STANDALONE"
 
-class RWTime;
+class CtiTime;
 
 class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
 {                                    
@@ -70,7 +69,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         bool isAMaster(int aID);
         CtiFDR_Rccs& setAuthorizationFlag(int aID,bool aFlag);
         int processValueMessage(InetInterface_t *data);
-        int resolvePairNumber(RWCString &);
+        int resolvePairNumber(string &);
 
         static const CHAR * KEY_CONNECT_PORT_NUMBER;
 
@@ -84,7 +83,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
 
     private:
         int                         iAuthorizationFlags;
-        RWCString                   iBatchMarkerName;
+        string                   iBatchMarkerName;
         bool                        iStandalone;
 };                              
 

@@ -5,7 +5,6 @@
 
 using namespace std;
 
-#include <rw\cstring.h>
 
 
 #include "queue.h"
@@ -65,16 +64,16 @@ void main(int argc, char **argv)
 
 #if 0
 
-   RWCString Temp;
+   string Temp;
 
-   PCBuffer<RWCString> Buf(10);
+   PCBuffer<string> Buf(10);
 
    cout << "Trying to find instance 1" << endl;
 
-   Buf.put(RWCString("One"));
+   Buf.put(string("One"));
 
-   Buf.put(RWCString("Three"));
-   Buf.put(RWCString("Two"));
+   Buf.put(string("Three"));
+   Buf.put(string("Two"));
 
    Temp = Buf.get();
    cout << Temp << endl;

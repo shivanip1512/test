@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/07 14:17:46 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:15:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #define __MGR_PAOSCHED_H__
 
 #include <list>
+using std::list;
 
 #include "pao_schedule.h"
 #include "pao_event.h"
@@ -53,7 +54,7 @@ public:
     void mainLoop();
     void doResetThr();
     
-    bool checkSchedules(RWDBDateTime currentTime, list<CtiPAOSchedule*> &schedules);
+    bool checkSchedules(const CtiTime& currentTime, list<CtiPAOSchedule*> &schedules);
     void addSchedule(const CtiPAOSchedule &sched);
     bool updateSchedule(const CtiPAOSchedule &sched);
     bool deleteSchedule(long schedId);
@@ -75,7 +76,7 @@ public:
     void updateRunTimes(CtiPAOSchedule *schedule);
     void updateDataBaseSchedules(list<CtiPAOSchedule*> &schedules);
     void runScheduledEvent(CtiPAOEvent *event);
-    int parseEvent(RWCString command, int &strategy, long &secsSinceLastOperation);
+    int parseEvent(const string& command, int &strategy, long &secsSinceLastOperation);
 
 
 private:

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,10 +57,10 @@ public:
    CtiPortTCPIPDirect& operator=(const CtiPortTCPIPDirect& aRef);
 
    INT&                       getIPPort();
-   RWCString&                 getIPAddress();
+   string&                 getIPAddress();
 
    virtual INT                getIPPort() const;
-   virtual RWCString          getIPAddress() const;
+   virtual string          getIPAddress() const;
 
 
    CtiTablePortTCPIP          getTcpIpInfo() const;
@@ -98,7 +98,7 @@ public:
    INT queryBytesAvailable();
    INT receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength);
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
-   RWCString& traceASCII(RWCString &str, BYTE *Message, ULONG Length);
+   string& traceASCII(string &str, BYTE *Message, ULONG Length);
 
 
 };

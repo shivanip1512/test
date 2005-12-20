@@ -16,8 +16,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_eight.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/12 20:34:48 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:20:01 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ public:
                          bool timeRemainingFlag, int format1, int format2, int timefmt );
    virtual ~CtiAnsiTableTwoEight();
    CtiAnsiTableTwoEight& operator=(const CtiAnsiTableTwoEight& aRef);
-   void printResult( RWCString deviceName );
+   void printResult( const string& deviceName );
 
    double getPresentDemand(int index );
    double getPresentValue(int index );

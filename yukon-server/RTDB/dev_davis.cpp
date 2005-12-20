@@ -5,8 +5,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 #include "pt_accum.h"
 
 #include "utility.h"
+
 
 #define DEBUG_PRINT_DECODE 0
 
@@ -76,7 +77,7 @@ INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceDavis::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceDavis::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT nRet = NoError;
 
@@ -133,8 +134,8 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
         {
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("Davis Devices do not support this command (yet?)"),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),
+                                             string("Davis Devices do not support this command (yet?)"),
                                              nRet,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
@@ -190,7 +191,7 @@ INT CtiDeviceDavis::generateScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
 
 /* Routine to decode returned Davis message and update database */
-INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     /* Misc. definitions */
     ULONG i;
@@ -204,7 +205,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     DOUBLE WindChillF, DewPointC, WetBulbC;
     DOUBLE T2, T3, RH2, RH3, DPVP, Logs, VP;
 
-    RWCString tStr;
+    string tStr;
     CtiPointDataMsg      *pData = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -212,7 +213,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
         return MEMORY;
     }
@@ -428,7 +429,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
         {
             retList.append( ReturnMsg );
         }
@@ -443,9 +444,9 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
 
 
-RWCString CtiDeviceDavis::getPointOffsetName(int offset)
+string CtiDeviceDavis::getPointOffsetName(int offset)
 {
-    RWCString offsetname("Offset Unknown");
+    string offsetname("Offset Unknown");
     /* Point numbers are as follows
         1   =   "Inside Temp, F"
         2   =   "Outside Temp, F"
@@ -473,102 +474,102 @@ RWCString CtiDeviceDavis::getPointOffsetName(int offset)
     {
     case 1:
         {
-            offsetname = RWCString("Inside Temp, F");
+            offsetname = string("Inside Temp, F");
             break;
         }
     case 2:
         {
-            offsetname = RWCString("Outside Temp, F");
+            offsetname = string("Outside Temp, F");
             break;
         }
     case 3:
         {
-            offsetname = RWCString("Wind Speed, MPH");
+            offsetname = string("Wind Speed, MPH");
             break;
         }
     case 4:
         {
-            offsetname = RWCString("Wind Direction, Degrees");
+            offsetname = string("Wind Direction, Degrees");
             break;
         }
     case 5:
         {
-            offsetname = RWCString("Barometric Presure, Inches");
+            offsetname = string("Barometric Presure, Inches");
             break;
         }
     case 6:
         {
-            offsetname = RWCString("InSide Humidity, Percent");
+            offsetname = string("InSide Humidity, Percent");
             break;
         }
     case 7:
         {
-            offsetname = RWCString("OutSide Humidity, Percent");
+            offsetname = string("OutSide Humidity, Percent");
             break;
         }
     case 8:
         {
-            offsetname = RWCString("Total Rainfall, Inches");
+            offsetname = string("Total Rainfall, Inches");
             break;
         }
     case 100:
         {
-            offsetname = RWCString("Inside Temp. C");
+            offsetname = string("Inside Temp. C");
             break;
         }
     case 101:
         {
-            offsetname = RWCString("Outside Temp. C");
+            offsetname = string("Outside Temp. C");
             break;
         }
     case 102:
         {
-            offsetname = RWCString("WindSpeed Meters/Second");
+            offsetname = string("WindSpeed Meters/Second");
             break;
         }
     case 103:
         {
-            offsetname = RWCString("WindSpeed Kilometers/Hour");
+            offsetname = string("WindSpeed Kilometers/Hour");
             break;
         }
     case 104:
         {
-            offsetname = RWCString("WindSpeed Knots");
+            offsetname = string("WindSpeed Knots");
             break;
         }
     case 105:
         {
-            offsetname = RWCString("Barometer, Millibars");
+            offsetname = string("Barometer, Millibars");
             break;
         }
     case 106:
         {
-            offsetname = RWCString("WindChill, F");
+            offsetname = string("WindChill, F");
             break;
         }
     case 107:
         {
-            offsetname = RWCString("WindChill, C");
+            offsetname = string("WindChill, C");
             break;
         }
     case 108:
         {
-            offsetname = RWCString("DewPoint, C");
+            offsetname = string("DewPoint, C");
             break;
         }
     case 109:
         {
-            offsetname = RWCString("DewPoint, F");
+            offsetname = string("DewPoint, F");
             break;
         }
     case 110:
         {
-            offsetname = RWCString("Heat Index, F");
+            offsetname = string("Heat Index, F");
             break;
         }
     case 111:
         {
-            offsetname = RWCString("Heat Index, C");
+            offsetname = string("Heat Index, C");
             break;
         }
     }

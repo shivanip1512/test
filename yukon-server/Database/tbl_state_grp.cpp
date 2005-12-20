@@ -11,25 +11,27 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_state_grp.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/10/20 21:41:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include <rw/cstring.h>
 
 #include "dbaccess.h"
 #include "mutex.h"
 #include "guard.h"
 #include "tbl_state_grp.h"
 #include "logger.h"
+#include "rwutil.h"
+
+using namespace std;
 
 LONG CtiTableStateGroup::getStateGroupID() const
 {
 
     return _stateGroupID;
 }
-const RWCString& CtiTableStateGroup::getName() const
+const string& CtiTableStateGroup::getName() const
 {
 
     return _name;
@@ -46,7 +48,7 @@ CtiTableStateGroup& CtiTableStateGroup::setStateGroupID( const LONG id )
     _stateGroupID = id;
     return *this;
 }
-CtiTableStateGroup& CtiTableStateGroup::setName( const RWCString &str )
+CtiTableStateGroup& CtiTableStateGroup::setName( const string &str )
 {
 
     _name = str;
@@ -59,9 +61,9 @@ CtiTableStateGroup& CtiTableStateGroup::setStateSet( const CtiStateSet_t& aSet )
     return *this;
 }
 
-RWCString CtiTableStateGroup::getTableName()
+string CtiTableStateGroup::getTableName()
 {
-    return RWCString("StateGroup");
+    return string("StateGroup");
 }
 
 RWDBStatus CtiTableStateGroup::Insert()
@@ -69,7 +71,7 @@ RWDBStatus CtiTableStateGroup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
@@ -87,7 +89,7 @@ RWDBStatus CtiTableStateGroup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
 
@@ -110,7 +112,7 @@ RWDBStatus CtiTableStateGroup::Restore()
         RWDBConnection conn = getConnection();
 
         {
-            RWDBTable table = getDatabase().table( getTableName() );
+            RWDBTable table = getDatabase().table( getTableName().c_str() );
             RWDBSelector selector = getDatabase().selector();
 
             selector << table["stategroupid"] << table["name"];
@@ -166,7 +168,7 @@ RWDBStatus CtiTableStateGroup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["stategroupid"] == getStateGroupID() );
@@ -194,7 +196,7 @@ bool CtiTableStateGroup::operator()(const CtiTableStateGroup& aRef) const
 
 void CtiTableStateGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName().c_str() );
 
     selector <<
     keyTable["stategroupid"] <<
@@ -232,9 +234,9 @@ void CtiTableStateGroup::dump() const
     }
 }
 
-RWCString CtiTableStateGroup::getRawState(LONG rawValue)
+string CtiTableStateGroup::getRawState(LONG rawValue)
 {
-    RWCString rStr;      // NULL string
+    string rStr;      // NULL string
 
 
     CtiTableState mystate( getStateGroupID(), rawValue  );

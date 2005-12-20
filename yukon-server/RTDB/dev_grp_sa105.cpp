@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/10/25 14:36:22 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "msg_pdata.h"
 #include "numstr.h"
 #include "utility.h"
+#include "rwutil.h"
 
 //====================================================================================================================
 //====================================================================================================================
@@ -61,7 +62,7 @@ CtiDeviceGroupSA105& CtiDeviceGroupSA105::operator=(const CtiDeviceGroupSA105& a
 
        {
            CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
        }
    }
 
@@ -104,9 +105,9 @@ LONG CtiDeviceGroupSA105::getRouteID( void )
 //====================================================================================================================
 //====================================================================================================================
 
-RWCString CtiDeviceGroupSA105::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupSA105::getDescription(const CtiCommandParser & parse) const
 {
-    RWCString tmpStr;
+    string tmpStr;
 
     tmpStr = "Group: " + getName();
 
@@ -145,7 +146,7 @@ void CtiDeviceGroupSA105::DecodeDatabaseReader( RWDBReader &rdr )
 INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
 
@@ -155,10 +156,10 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     bool control = (parse.getFlags() & (CMD_FLAG_CTL_SHED | CMD_FLAG_CTL_CYCLE));
     int func = _loadGroup.getFunction(control);
 
-    parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
+    parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().c_str()));
     parse.setValue("sa_function", func);
 
-    if( !control && func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase) )
+    if( !control && func == 1 && findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123"), "true") )
     {
         // restores on Function 3 must be handled with a 7.5m shed!
         parse.setValue("sa_restore", TRUE);
@@ -194,7 +195,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
-        OutMessage->ExpirationTime = (control ? RWTime().seconds() + parse.getiValue("control_interval", 300) : 0); // Time this out in 5 minutes or the setting.
+        OutMessage->ExpirationTime = (control ? CtiTime().seconds() + parse.getiValue("control_interval", 300) : 0); // Time this out in 5 minutes or the setting.
 
         reportActionItemsToDispatch(pReq, parse, vgList);
 
@@ -202,12 +203,12 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         //  Form up the reply here since the ExecuteRequest function will consume the
         //  OutMessage.
         //
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -225,7 +226,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -236,7 +237,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 

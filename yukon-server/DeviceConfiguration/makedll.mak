@@ -101,10 +101,24 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 ######################################################################################
 
 #UPDATE#
-config_base.obj:	config_base.h config_resolvers.h
-config_device.obj:	config_device.h config_base.h config_resolvers.h
-config_parts_mct.obj:	config_parts.h config_base.h config_resolvers.h
-config_resolvers.obj:	config_resolvers.h
-config_test_a.obj:	config_test_a.h config_base.h config_resolvers.h
-id_dcdll.obj:	id_dcdll.h
+config_base.obj:	yukon.h precompiled.h ctidbgmem.h config_base.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h ctitime.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		config_resolvers.h
+config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h ctitime.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h config_base.h \
+		config_resolvers.h
+config_parts_mct.obj:	yukon.h precompiled.h ctidbgmem.h config_parts.h \
+		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		ctitime.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		config_resolvers.h rwutil.h boost_time.h
+config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h rwutil.h \
+		ctitime.h dlldefs.h boost_time.h config_resolvers.h logger.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
+		ctitime.h dlldefs.h dsm2.h mutex.h guard.h id_build.h \
+		id_vinfo.h
+precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#

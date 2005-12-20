@@ -4,6 +4,9 @@
  *
  *    History: 
  *     $Log$
+ *     Revision 1.3  2005/12/20 17:17:15  tspar
+ *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+ *
  *     Revision 1.2  2005/10/28 19:30:55  tmack
  *     Added a health thread to ensure that something is received from the remote system at least once every [link timeout] seconds.
  *
@@ -22,11 +25,13 @@
 #define __FDRCLIENTSERVERCONNECTION_H__
 
 #include <windows.h>
-#include <rw/cstring.h>
+#include "string.h"
 #include <rw/thr/thrfunc.h>
 
 #include "dlldefs.h"
 #include "queues.h"
+
+using namespace std;
 
 class CtiFDRScadaServer;
 
@@ -42,12 +47,12 @@ class CtiFDRScadaServer;
 class IM_EX_FDRBASE CtiFDRClientServerConnection
 {                                    
     public:
-        CtiFDRClientServerConnection(const RWCString& connectionName, 
+        CtiFDRClientServerConnection(const string& connectionName, 
                                      SOCKET theSocket,
                                      CtiFDRScadaServer *aParent);
         ~CtiFDRClientServerConnection();
     
-        typedef RWCString Destination;
+        typedef string Destination;
         
         Destination getName() const;
         void setName(Destination serverName);
@@ -101,7 +106,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         
         bool _connectionFailed;
         bool _isRegistered;
-        RWCString _connectionName;
+        string _connectionName;
         int _connectionNumber;
         static int _nextConnectionNumber;
         
@@ -109,7 +114,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         HANDLE _stillAliveEvent;
         
         long _linkId;
-        RWCString _linkName;
+        string _linkName;
             
     public:
         // exception class

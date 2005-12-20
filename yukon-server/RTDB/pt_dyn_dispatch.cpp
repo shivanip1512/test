@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/11/22 19:44:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,9 +64,9 @@ UINT CtiDynamicPointDispatch::getQuality() const
     return getDispatch().getQuality();
 }
 
-RWTime CtiDynamicPointDispatch::getTimeStamp() const
+CtiTime CtiDynamicPointDispatch::getTimeStamp() const
 {
-    return getDispatch().getTimeStamp().rwtime();
+    return getDispatch().getTimeStamp();
 }
 
 UINT CtiDynamicPointDispatch::getTimeStampMillis() const
@@ -90,7 +90,7 @@ CtiDynamicPointDispatch& CtiDynamicPointDispatch::setArchivePending(BOOL b)
     return *this;
 }
 
-CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const RWTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask)
+CtiDynamicPointDispatch& CtiDynamicPointDispatch::setPoint(const CtiTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask)
 {
     {
         getDispatch().resetTags( MASK_RESETTABLE_TAGS );       // Clear out any value based tags..
@@ -119,14 +119,14 @@ void CtiDynamicPointDispatch::setAttachment(VOID *aptr)
 }
 
 
-RWTime CtiDynamicPointDispatch::getNextArchiveTime() const
+CtiTime CtiDynamicPointDispatch::getNextArchiveTime() const
 {
-    return getDispatch().getNextArchiveTime().rwtime();
+    return getDispatch().getNextArchiveTime();
 }
 
-CtiDynamicPointDispatch& CtiDynamicPointDispatch::setNextArchiveTime(const RWTime &aTime)
+CtiDynamicPointDispatch& CtiDynamicPointDispatch::setNextArchiveTime(const CtiTime &aTime)
 {
-    getDispatch().setNextArchiveTime(RWDBDateTime(aTime));
+    getDispatch().setNextArchiveTime(CtiTime(aTime));
     return *this;
 }
 

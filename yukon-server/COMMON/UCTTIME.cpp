@@ -210,7 +210,7 @@ IM_EX_CTIBASE INT UCTSetFTime (struct timeb *TimeBuffer)
     DATETIME Date;
     int rc;
     FILE *fptr;
-    struct tm *Temp;
+    struct tm *Temp = NULL;
 
     /* Need to set memory for dst flag */
     if(Flags == NULL)
@@ -249,7 +249,7 @@ IM_EX_CTIBASE INT UCTSetFTime (struct timeb *TimeBuffer)
         TimeBuffer->time -= Flags->DSTFixOffset;
     }
 
-    Temp = localtime (&TimeBuffer->time);
+    Temp = CtiTime::localtime_r (&TimeBuffer->time);
     CTIGetDateTime(&Date);
     Date.year     = Temp->tm_year + 1900;
     Date.month    = Temp->tm_mon + 1;
@@ -302,10 +302,9 @@ IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)
 
 
 /* Routine to convert a UCT time into a ::localtime structure  */
-IM_EX_CTIBASE struct tm * UCTLocalTime (time_t Time, USHORT MyDSTFlag)
+IM_EX_CTIBASE struct tm* UCTLocalTime (time_t Time, USHORT MyDSTFlag)
 {
-    struct tm *TheLocalTime;
-
+    struct tm* TheLocalTime;
     /* First check if shared memory has been opened */
     if(Flags == NULL)
     {
@@ -325,13 +324,13 @@ IM_EX_CTIBASE struct tm * UCTLocalTime (time_t Time, USHORT MyDSTFlag)
         {
             /* move back an hour */
             Time += Flags->DSTFixOffset;
-            TheLocalTime = localtime (&Time);
+            TheLocalTime = CtiTime::localtime_r (&Time);
         }
         else if(!(MyDSTFlag) && TheLocalTime->tm_isdst)
         {
             /* move ahead an hour */
             Time -= Flags->DSTFixOffset;
-            TheLocalTime = localtime (&Time);
+            TheLocalTime = CtiTime::localtime_r (&Time);
         }
 
         /* restore the dst flag */
@@ -340,7 +339,9 @@ IM_EX_CTIBASE struct tm * UCTLocalTime (time_t Time, USHORT MyDSTFlag)
         return(TheLocalTime);
     }
 
-    return(NULL);
+    return (NULL);
+
+
 }
 
 
@@ -391,7 +392,7 @@ time_t IM_EX_CTIBASE UCTMakeTime (struct tm *TStruct)
             return(0L);
         }
         /* copy in the adjust structure */
-        memcpy (TStruct, MyTStruct, sizeof (*TStruct));
+        memcpy (TStruct, MyTStruct, sizeof (TStruct));
     }
 
     /* restore the dst flag (in case it changed) */
@@ -472,7 +473,7 @@ IM_EX_CTIBASE INT Holiday (struct timeb *TimeB)
     }
 
     /* Scan for today in the List of Holidays */
-    UCTLocoTime (TimeB->time, TimeB->dstflag, &Time);
+    UCTLocoTime (TimeB->time, TimeB->dstflag, Time);
     MyPtr = HolidayPtr;
     while(MyPtr < EndPtr)
     {

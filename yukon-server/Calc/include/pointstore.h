@@ -5,15 +5,15 @@
 #include <functional>
 
 #include <rw/collect.h>
-#include <rw/rwtime.h>
+
 #include <rw/tphdict.h>
 #include <rw/tvhset.h>
-//#include <rw/tvset.h>
 
 #include "hashkey.h"
 #include "rtdb.h"
 #include "pointdefs.h"
 #include "regression.h"
+#include "ctitime.h"
 
 #define CALC_DEBUG_INBOUND_POINTS                   0x00000001
 #define CALC_DEBUG_OUTBOUND_POINTS                  0x00000002
@@ -64,11 +64,11 @@ private:
     double _pointValue;
     unsigned _pointQuality;
     unsigned _pointTags;
-    RWTime _pointTime, _calcPointWindowEndTime;
+    CtiTime _pointTime, _calcPointWindowEndTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
 
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
-    RWTime _lastValueChangedTime;
+    CtiTime _lastValueChangedTime;
     CtiRegression _regress;
 
 public:
@@ -81,12 +81,12 @@ public:
     double  getPointValue( void )          {   return _pointValue; };
     unsigned  getPointQuality( void )      {   return _pointQuality; };
     unsigned  getPointTags( void )         {   return _pointTags; };
-    RWTime  getPointTime( void )           {   return _pointTime;  };
+    CtiTime  getPointTime( void )           {   return _pointTime;  };
     long    getNumUpdates( void )          {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
     RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
 
-    RWTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
+    CtiTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
     void resize_regession(int data_elements)
     {
         _regress.resize(data_elements);
@@ -100,11 +100,11 @@ public:
     void setUpdatesInCurrentAvg( long newCount )   {   _updatesInCurrentAvg = newCount;   };
     long getUpdatesInCurrentAvg( void )            {   return _updatesInCurrentAvg; };
 
-    const RWTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
-    void          setPointCalcWindowEndTime( const RWTime& endTime ) {   _calcPointWindowEndTime = endTime;  };
+    const CtiTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
+    void          setPointCalcWindowEndTime( const CtiTime& endTime ) {   _calcPointWindowEndTime = endTime;  };
 
 protected:
-    void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
+    void setPointValue( double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
     {
         /*
          *  This represents a bonofide value change.  Record the time of the change.
@@ -124,7 +124,7 @@ protected:
         _regress.append(make_pair(_pointTime.seconds(), _pointValue));
     };
 
-    void firstPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
+    void firstPointValue( double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
     {
         _pointTime = newTime;
         _pointValue = newValue;

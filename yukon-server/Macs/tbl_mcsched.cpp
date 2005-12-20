@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/17 19:02:59 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,8 @@
 
 #include "tbl_mcsched.h"
 #include "dbaccess.h"
+#include "rwutil.h"
+
 
 //Name of the database table
 const char* CtiTableMCSchedule::_table_name = "MACSchedule";
@@ -44,7 +46,7 @@ CtiTableMCSchedule::CtiTableMCSchedule(
                                       const string& state,
                                       const string& start_policy,
                                       const string& stop_policy,
-                                      const RWTime& last_run_time,
+                                      const CtiTime& last_run_time,
                                       const string& last_run_status,
                                       int start_day,
                                       int start_month,
@@ -53,8 +55,8 @@ CtiTableMCSchedule::CtiTableMCSchedule(
                                       const string& stop_time,
                                       const string& valid_week_days,
                                       int duration,
-                                      const RWTime& manual_start_time,
-                                      const RWTime& manual_stop_time,
+                                      const CtiTime& manual_start_time,
+                                      const CtiTime& manual_stop_time,
                                       int template_type )
 :
 _schedule_id(sched_id),
@@ -116,8 +118,8 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     RWDBNullIndicator isNull;
 
     // RWDBReader has no operator>>(string&) so use
-    // a temporary RWCString and then copy it
-    RWCString temp;
+    // a temporary string and then copy it
+    string temp;
 
     rdr["scheduleid"]       >> _schedule_id;
 
@@ -163,14 +165,14 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     // a null man start or stop time indicates there isn't one
     // so set them to invalid if that is what we find
     if( isNull )
-        _manual_start_time = RWTime( (unsigned long) 0 );
+        _manual_start_time = CtiTime( (unsigned long) 0 );
     else
         rdr["manualstarttime"] >> _manual_start_time;
 
     rdr["manualstoptime"] >> isNull;
 
     if( isNull )
-        _manual_stop_time = RWTime( (unsigned long) 0 );
+        _manual_stop_time = CtiTime( (unsigned long) 0 );
     else
         rdr["manualstoptime"] >> _manual_stop_time;
 
@@ -196,32 +198,32 @@ bool CtiTableMCSchedule::Update()
 
             updater.where( t["ScheduleID"] == getScheduleID() );
 
-            updater << t["CategoryName"].assign((const char*) getCategoryName().data());
+            updater << t["CategoryName"].assign((const char*) getCategoryName().c_str());
 
             updater << t["HolidayScheduleID"].assign(getHolidayScheduleID());
 
-            updater << t["CommandFile"].assign((const char*) getCommandFile().data());
+            updater << t["CommandFile"].assign((const char*) getCommandFile().c_str());
 
-            updater << t["CurrentState"].assign((const char*) getCurrentState().data());
+            updater << t["CurrentState"].assign((const char*) getCurrentState().c_str());
 
-            updater << t["StartPolicy"].assign((const char*) getStartPolicy().data());
+            updater << t["StartPolicy"].assign((const char*) getStartPolicy().c_str());
 
-            updater << t["StopPolicy"].assign((const char*) getStopPolicy().data());
+            updater << t["StopPolicy"].assign((const char*) getStopPolicy().c_str());
 
             if( getLastRunTime().isValid() )
-                updater << t["LastRunTime"].assign( getLastRunTime() );
+                updater << t["LastRunTime"].assign( toRWDBDT(getLastRunTime()) );
 
-            updater << t["LastRunStatus"].assign((const char*) getLastRunStatus().data());
+            updater << t["LastRunStatus"].assign((const char*) getLastRunStatus().c_str());
 
             updater << t["StartDay"].assign( getStartDay() );
             updater << t["StartMonth"].assign( getStartMonth() );
             updater << t["StartYear"].assign( getStartYear() );
 
-            updater << t["StartTime"].assign((const char*) getStartTime().data());
+            updater << t["StartTime"].assign((const char*) getStartTime().c_str());
 
-            updater << t["StopTime"].assign((const char*) getStopTime().data());
+            updater << t["StopTime"].assign((const char*) getStopTime().c_str());
 
-            updater << t["ValidWeekDays"].assign((const char*) getValidWeekDays().data());
+            updater << t["ValidWeekDays"].assign((const char*) getValidWeekDays().c_str());
 
             updater << t["Duration"].assign( getDuration() );
 
@@ -230,12 +232,12 @@ bool CtiTableMCSchedule::Update()
 
 
             if( getManualStartTime().isValid() )
-                updater << t["ManualStartTime"].assign( getManualStartTime() );
+                updater << t["ManualStartTime"].assign( toRWDBDT(getManualStartTime()) );
             else
                 updater << t["ManualStartTime"].assign( RWDBValue() );
 
             if( getManualStopTime().isValid() )
-                updater << t["ManualStopTime"].assign( getManualStopTime() );
+                updater << t["ManualStopTime"].assign( toRWDBDT(getManualStopTime()) );
             else
                 updater << t["ManualStopTime"].assign( RWDBValue() );
 
@@ -251,7 +253,7 @@ bool CtiTableMCSchedule::Update()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured updating table \""
         << _table_name
         << "\""
@@ -261,7 +263,7 @@ bool CtiTableMCSchedule::Update()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;
@@ -286,44 +288,44 @@ bool CtiTableMCSchedule::Insert()
 
             inserter << getScheduleID();
 
-            inserter << (const char*) getCategoryName().data();
+            inserter << (const char*) getCategoryName().c_str();
 
             inserter << getHolidayScheduleID();
 
-            inserter << (const char*) getCommandFile().data();
+            inserter << (const char*) getCommandFile().c_str();
 
-            inserter << (const char*) getCurrentState().data();
+            inserter << (const char*) getCurrentState().c_str();
 
-            inserter << (const char*) getStartPolicy().data();
+            inserter << (const char*) getStartPolicy().c_str();
 
-            inserter << (const char*) getStopPolicy().data();
+            inserter << (const char*) getStopPolicy().c_str();
 
             if( getLastRunTime().isValid() )
-                inserter << RWDBDateTime( getLastRunTime() );
+                inserter << CtiTime( getLastRunTime() );
             else
                 inserter << RWDBValue(); //null
 
-            inserter << (const char*) getLastRunStatus().data();
+            inserter << (const char*) getLastRunStatus().c_str();
 
             inserter << getStartDay();
             inserter << getStartMonth();
             inserter << getStartYear();
 
-            inserter << (const char*) getStartTime().data();
+            inserter << (const char*) getStartTime().c_str();
 
-            inserter << (const char*) getStopTime().data();
+            inserter << (const char*) getStopTime().c_str();
 
-            inserter << (const char*) getValidWeekDays().data();
+            inserter << (const char*) getValidWeekDays().c_str();
 
             inserter << getDuration();
 
             if( getManualStartTime().isValid() )
-                inserter << RWDBDateTime( getManualStartTime() );
+                inserter << CtiTime( getManualStartTime() );
             else
                 inserter << RWDBValue(); //null
 
             if( getManualStopTime().isValid() )
-                inserter << RWDBDateTime( getManualStopTime() );
+                inserter << CtiTime( getManualStopTime() );
             else
                 inserter << RWDBValue(); //null
 
@@ -340,7 +342,7 @@ bool CtiTableMCSchedule::Insert()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured inserting into table \""
         << _table_name
         << "\""
@@ -350,7 +352,7 @@ bool CtiTableMCSchedule::Insert()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;
@@ -385,7 +387,7 @@ bool CtiTableMCSchedule::Delete()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured deleting from table \""
         << _table_name
         << "\""
@@ -395,7 +397,7 @@ bool CtiTableMCSchedule::Delete()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;
@@ -441,7 +443,7 @@ const string& CtiTableMCSchedule::getStopPolicy() const
     return _stop_policy;
 }
 
-const RWTime& CtiTableMCSchedule::getLastRunTime() const
+const CtiTime& CtiTableMCSchedule::getLastRunTime() const
 {
     return _last_run_time;
 }
@@ -486,12 +488,12 @@ int CtiTableMCSchedule::getDuration() const
     return _duration;
 }
 
-const RWTime& CtiTableMCSchedule::getManualStartTime() const
+const CtiTime& CtiTableMCSchedule::getManualStartTime() const
 {
     return _manual_start_time;
 }
 
-const RWTime& CtiTableMCSchedule::getManualStopTime() const
+const CtiTime& CtiTableMCSchedule::getManualStopTime() const
 {
     return _manual_stop_time;
 }
@@ -543,7 +545,7 @@ CtiTableMCSchedule& CtiTableMCSchedule::setStopPolicy(const string& stop_policy)
     return *this;
 }
 
-CtiTableMCSchedule& CtiTableMCSchedule::setLastRunTime(const RWTime& last_run_time)
+CtiTableMCSchedule& CtiTableMCSchedule::setLastRunTime(const CtiTime& last_run_time)
 {
     _last_run_time = last_run_time;
     return *this;
@@ -600,14 +602,14 @@ CtiTableMCSchedule& CtiTableMCSchedule::setDuration(int duration)
 }
 
 CtiTableMCSchedule& CtiTableMCSchedule::setManualStartTime(
-                                                          const RWTime& manual_start_time )
+                                                          const CtiTime& manual_start_time )
 {
     _manual_start_time = manual_start_time;
     return *this;
 }
 
 CtiTableMCSchedule& CtiTableMCSchedule::setManualStopTime(
-                                                         const RWTime& manual_stop_time )
+                                                         const CtiTime& manual_stop_time )
 {
     _manual_stop_time = manual_stop_time;
     return *this;

@@ -2,17 +2,20 @@
 
 #include <string.h>
 #include <stdlib.h>
+//#include <algorithm>
 
 #include "argkey.h"
+#include "rwutil.h"
+#include "hash_functions.h"
 
 RWDEFINE_COLLECTABLE(CtiArgKey, 0x1234)
 
 CtiArgKey::CtiArgKey() : Key()
 {;}
 
-CtiArgKey::CtiArgKey(char key) : Key(key)
+CtiArgKey::CtiArgKey(char key) : Key(1,key)
 {
-   Key.toLower();
+   std::transform(Key.begin(), Key.end(), Key.begin(), tolower);
 }
 
 // Assignement operator
@@ -26,13 +29,13 @@ CtiArgKey::operator=(const CtiArgKey& key)
 RWspace
 CtiArgKey::binaryStoreSize() const
 {
-   return Key.binaryStoreSize();
+   return Key.length();
 }
 
 int
 CtiArgKey::compareTo(const RWCollectable *X ) const
 {
-   RWCString aStr = ((const CtiArgKey*)X)->Key;
+   string aStr = ((const CtiArgKey*)X)->Key;
 
    if(Key == aStr) return 0;
 
@@ -49,13 +52,13 @@ CtiArgKey::compareTo(const RWCollectable *X ) const
 unsigned
 CtiArgKey::hash() const
 {
-   return Key.hash();
+   return RSHash( Key );
 }
 
 RWBoolean
 CtiArgKey::isEqual(const RWCollectable *c) const
 {
-   RWCString aKey = (((const CtiArgKey*)c)->Key);
+   string aKey = (((const CtiArgKey*)c)->Key);
    return (Key == aKey);
 }
 

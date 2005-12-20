@@ -9,22 +9,20 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/12/16 16:24:34 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DEV_BASE_H__
 #define __DEV_BASE_H__
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 #include <rw/tpslist.h>
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
 #include <set>
-using namespace std;
 
 #include "dsm2.h"
 
@@ -80,7 +78,7 @@ private:
 
     int _currTrxID;
     int _responsesOnTrxID;
-    RWTime _lastReport;
+    CtiTime _lastReport;
     mutable CtiMutex _configMux;
     Cti::Config::CtiConfigDeviceSPtr _deviceConfig;
 
@@ -120,7 +118,7 @@ public:
 
     typedef CtiTblPAO Inherited;
     typedef vector< CtiTablePaoExclusion > exclusions;
-    typedef vector< pair< unsigned long, RWTime > > prohibitions;
+    typedef vector< pair< unsigned long, CtiTime > > prohibitions;
 
     CtiDeviceBase();
     CtiDeviceBase(const CtiDeviceBase& aRef);
@@ -142,17 +140,17 @@ public:
      *  These are basically set up to allow this to FAIL if the child class doesn't redefine them.
      */
 
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
 
     virtual LONG getPortID() const;
     virtual LONG getAddress() const;
     virtual INT  getPostDelay() const;
 
-    virtual RWCString getPassword() const;
-    virtual RWCString getMeterGroupName() const;
-    virtual RWCString getAlternateMeterGroupName() const;
-    virtual RWCString getBillingGroupName() const;
-    virtual RWCString getPhoneNumber() const;
+    virtual string getPassword() const;
+    virtual string getMeterGroupName() const;
+    virtual string getAlternateMeterGroupName() const;
+    virtual string getBillingGroupName() const;
+    virtual string getPhoneNumber() const;
     virtual LONG getMinConnectTime() const;
     virtual LONG getMaxConnectTime() const;
 
@@ -164,7 +162,7 @@ public:
 
 
     virtual ULONG getUniqueIdentifier() const;
-    virtual bool hasLongScanRate(const RWCString &cmd) const;
+    virtual bool hasLongScanRate(const string &cmd) const;
 
 
     /*
@@ -187,8 +185,8 @@ public:
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 11);
     virtual INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 12);
     virtual INT LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 6);
-    virtual INT ResultDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
-    virtual INT ProcessResult(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    virtual INT ResultDecode(INMESS*, CtiTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    virtual INT ProcessResult(INMESS*, CtiTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     // This one is a preprocessing method which calls the other ExecuteRequest method.
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, const OUTMESS *OutTemplate = NULL);
@@ -199,21 +197,21 @@ public:
     virtual INT initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList );
 
     void propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq );
-    virtual INT ErrorDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    virtual INT ErrorDecode(INMESS*, CtiTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
 
     BOOL              getLogOnNeeded() const;
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
 
 
     virtual CtiPointBase* getDevicePointEqual(INT id);
-    virtual CtiPointBase* getDevicePointEqualByName(RWCString pname);
+    virtual CtiPointBase* getDevicePointEqualByName(string pname);
     virtual CtiPointBase* getDevicePointOffsetTypeEqual(INT offset, INT type);
     virtual CtiPointBase* getDeviceControlPointOffsetEqual(INT offset);
 
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!
     virtual bool hasTrxInfo() const;
     virtual CtiTransmitterInfo* initTrxInfo(); // Porter side info to setup transmitter device bookkeeping!
-    virtual RWCString getPutConfigAssignment(UINT modifier = 0);
+    virtual string getPutConfigAssignment(UINT modifier = 0);
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 
@@ -296,17 +294,17 @@ public:
     virtual CtiDeviceExclusion& getExclusion();
     virtual CtiDeviceExclusion exclusion() const; // New copy.
     virtual exclusions getExclusions() const;
-    virtual RWTime selectCompletionTime() const;
+    virtual CtiTime selectCompletionTime() const;
     virtual bool isDeviceExcluded(long id) const;
     virtual bool isExecuting() const;
     virtual void setExecuting(bool set = true);
-    virtual bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
-    virtual size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
+    virtual bool isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
+    virtual size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     virtual bool removeInfiniteProhibit(unsigned long id);
 
     virtual bool hasQueuedWork() const;
     virtual bool hasPreloadWork() const;
-    virtual RWTime getPreloadEndTime() const;
+    virtual CtiTime getPreloadEndTime() const;
     virtual LONG getPreloadBytes() const;
     virtual LONG getCycleTime() const;
     virtual LONG getCycleOffset() const;
@@ -320,9 +318,9 @@ public:
 
     virtual void setExpectedFreeze(int freeze);  //  for frozen reads
 
-    INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-    INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
-    INT setQueueOrphans(int num, RWTime &rwt);          // Number of queue entries remaining on device following this pass.
+    INT incQueueSubmittal(int bumpcnt, CtiTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+    INT incQueueProcessed(int bumpCnt, CtiTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
+    INT setQueueOrphans(int num, CtiTime &rwt);          // Number of queue entries remaining on device following this pass.
     void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
 
     /*
@@ -341,21 +339,21 @@ public:
 typedef CtiDeviceBase CtiDevice;
 
 inline bool CtiDeviceBase::isDialup() const { return false; }
-inline RWCString CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
+inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
 inline bool CtiDeviceBase::isMeter() const               { return false;}
 inline LONG CtiDeviceBase::getPortID() const             { return -1;}
 inline LONG CtiDeviceBase::getAddress() const            { return -1;}
 inline INT  CtiDeviceBase::getPostDelay() const          { return 0;}
-inline RWCString CtiDeviceBase::getPassword() const      { return RWCString();}
-inline RWCString CtiDeviceBase::getPhoneNumber() const   { return RWCString();}
+inline string CtiDeviceBase::getPassword() const      { return string();}
+inline string CtiDeviceBase::getPhoneNumber() const   { return string();}
 inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
 inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
 inline Protocol::Interface *CtiDeviceBase::getProtocol() { return NULL;}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
-inline RWCString CtiDeviceBase::getMeterGroupName() const           { return RWCString();}
-inline RWCString CtiDeviceBase::getAlternateMeterGroupName() const  { return RWCString();}
-inline RWCString CtiDeviceBase::getBillingGroupName() const         { return RWCString();}
+inline string CtiDeviceBase::getMeterGroupName() const           { return string();}
+inline string CtiDeviceBase::getAlternateMeterGroupName() const  { return string();}
+inline string CtiDeviceBase::getBillingGroupName() const         { return string();}
 
 inline INT CtiDeviceBase::getCommFailCount() const       { LockGuard guard(monitor()); return _commFailCount;}
 inline INT CtiDeviceBase::getAttemptCount() const        { LockGuard guard(monitor()); return _attemptCount;}
@@ -379,7 +377,7 @@ inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dq
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
 inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
 inline bool CtiDeviceBase::hasPreloadWork() const { return false; }
-inline RWTime CtiDeviceBase::getPreloadEndTime() const { return RWTime(); }
+inline CtiTime CtiDeviceBase::getPreloadEndTime() const { return CtiTime(); }
 inline LONG CtiDeviceBase::getPreloadBytes() const { return 0; }
 inline LONG CtiDeviceBase::getCycleTime() const { return 0; }
 inline LONG CtiDeviceBase::getCycleOffset() const { return 0; }

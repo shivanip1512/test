@@ -24,10 +24,11 @@
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
                         //         with ctitypes.h...  i only put this in here because
                         //         the compiler was having fits with BOOL.
-
-#include <rw/cstring.h>
+#include <string>
 #include "dlldefs.h"
 #include "fdr.h"
+
+using std::string;
 
 class CtiFDRPoint;
 
@@ -35,20 +36,20 @@ class IM_EX_FDRBASE CtiFDRDestination
 {
     public:    
         CtiFDRDestination () {}; // this is only defined so this class can be used in an std::map
-        CtiFDRDestination (CtiFDRPoint* parentPoint, RWCString &translation, RWCString &destination = RWCString());
+        CtiFDRDestination (CtiFDRPoint* parentPoint, string &translation, string &destination = string());
         virtual ~CtiFDRDestination();
         CtiFDRDestination& operator=( const CtiFDRDestination &other );
 
 
-        RWCString & getTranslation(void);
-        RWCString  getTranslation(void) const;
-        CtiFDRDestination& setTranslation (RWCString aTranslation);
+        string & getTranslation(void);
+        string  getTranslation(void) const;
+        CtiFDRDestination& setTranslation (string aTranslation);
 
-        RWCString getTranslationValue(RWCString propertyName) const;
+        string getTranslationValue(string propertyName) const;
 
-        RWCString & getDestination(void);
-        RWCString  getDestination(void) const;
-        CtiFDRDestination& setDestination (RWCString aDestination);
+        string & getDestination(void);
+        string  getDestination(void) const;
+        CtiFDRDestination& setDestination (string aDestination);
 
         CtiFDRPoint* getParentPoint(void) const;
         CtiFDRDestination& setParentPoint (CtiFDRPoint* parentPoint);
@@ -57,8 +58,8 @@ class IM_EX_FDRBASE CtiFDRDestination
 
     private:
         // private data
-        RWCString           iTranslation;
-        RWCString           iDestination;
+        string           iTranslation;
+        string           iDestination;
         CtiFDRPoint*        iParentPoint;
 
 };

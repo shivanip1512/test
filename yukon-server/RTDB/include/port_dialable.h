@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ protected:
     CtiPort             *_superPort;           // This is how we know who owns us...
 
     BOOL                _shouldDisconnect;
-    RWCString           _dialedUpNumber;
+    string           _dialedUpNumber;
 
     CtiHayesModem       _modem;
 
@@ -49,9 +49,9 @@ public:
     CtiHayesModem& getModem();
     CtiPortDialable& setSuperPort(CtiPort *port);
 
-    RWCString getDialedUpNumber() const;
-    RWCString& getDialedUpNumber();
-    CtiPortDialable& setDialedUpNumber(const RWCString &str);
+    string getDialedUpNumber() const;
+    string& getDialedUpNumber();
+    CtiPortDialable& setDialedUpNumber(const string &str);
 
     virtual BOOL shouldDisconnect() const;
     virtual void setShouldDisconnect(BOOL b = TRUE);

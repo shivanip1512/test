@@ -19,7 +19,7 @@ static void DefibBlockSem(HCTIQUEUE QueueHandle)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ******  RESTART THE BLOCK SEMAPHORE ******" << endl;
+        dout << CtiTime() << " ******  RESTART THE BLOCK SEMAPHORE ******" << endl;
     }
 
     /* Close the semaphore */
@@ -29,7 +29,7 @@ static void DefibBlockSem(HCTIQUEUE QueueHandle)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ******  Unable to restart the block semaphore." << endl;
+            dout << CtiTime() << " ******  Unable to restart the block semaphore." << endl;
         }
     }
 
@@ -148,7 +148,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
+            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -354,7 +354,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
+            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -472,7 +472,7 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PU
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
+            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -558,7 +558,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
+            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -595,7 +595,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     CTIResetEventSem (QueueHandle->WaitArray[0], &i);
@@ -636,7 +636,7 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " SearchQueue function exception " << endl;
                         }
 
@@ -651,7 +651,7 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -693,7 +693,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
+            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         // autopsy(__FILE__, __LINE__);
@@ -750,7 +750,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     CTIReleaseMutexSem (QueueHandle->BlockSem);
@@ -805,7 +805,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " CleanQueue function exception " << endl;
                         }
 
@@ -881,7 +881,7 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     Entry = Entry->Next;

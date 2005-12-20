@@ -22,7 +22,4 @@ void main(int argc, char **argv)
 
    mp.replicateRequest(&Mycpy);
 
-   // cout << Mycpy.Command << endl;
-
-
 }

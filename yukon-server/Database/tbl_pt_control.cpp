@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_control.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,11 +41,11 @@ INT  CtiTablePointControl::getCloseTime2() const
 {
    return _closeTime2;
 }
-const RWCString& CtiTablePointControl::getStateZeroControl() const
+const string& CtiTablePointControl::getStateZeroControl() const
 {
    return _stateZeroControl;
 }
-const RWCString& CtiTablePointControl::getStateOneControl() const
+const string& CtiTablePointControl::getStateOneControl() const
 {
    return _stateOneControl;
 }
@@ -65,12 +65,12 @@ CtiTablePointControl& CtiTablePointControl::setCloseTime2(INT i)
    _closeTime2 = i;
    return *this;
 }
-CtiTablePointControl& CtiTablePointControl::setStateZeroControl(const RWCString& zero)
+CtiTablePointControl& CtiTablePointControl::setStateZeroControl(const string& zero)
 {
    _stateZeroControl = zero;
    return *this;
 }
-CtiTablePointControl& CtiTablePointControl::setStateOneControl(const RWCString& one)
+CtiTablePointControl& CtiTablePointControl::setStateOneControl(const string& one)
 {
    _stateOneControl = one;
    return *this;
@@ -126,8 +126,8 @@ UINT CtiTablePointControl::getStaticTags() const
 }
 
 CtiTablePointControl::CtiTablePointControl() :_controlOffset(0),_closeTime1(0),_closeTime2(0),
-                                              _stateZeroControl(RWCString("")),
-                                              _stateOneControl(RWCString("")){}
+                                              _stateZeroControl(string("")),
+                                              _stateOneControl(string("")){}
 
 CtiTablePointControl::CtiTablePointControl(const CtiTablePointControl& aRef)
 {

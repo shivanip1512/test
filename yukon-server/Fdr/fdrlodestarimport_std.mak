@@ -59,7 +59,7 @@ fdrlodestarimport_std.dll: fdrlodestarimport_std.obj fdrlodestarimport_std.mak
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) fdrlodestarimport_std.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) fdrlodestarimport_std.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

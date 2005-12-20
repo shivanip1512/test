@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/12/19 17:44:17 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 #pragma warning( disable : 4786 )
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 #include <vector>
 #include <queue>
@@ -114,7 +113,7 @@ protected:
     BOOL                       _useScanFlags;          // Do we really need to deal with the ScanData?
     CtiTableDeviceScanData     _scanData;
 
-    bool validatePendingStatus(bool status, int scantype, RWTime &now = RWTime());
+    bool validatePendingStatus(bool status, int scantype, CtiTime &now = CtiTime());
 
     virtual Protocol::Interface *getProtocol();
 
@@ -124,8 +123,8 @@ private:
     mutable ScanFlagsPending_t _pending_map;       // Scantype, bool pendingState
 
     ULONG getTardyTime(int scantype) const;
-    bool hasRateOrClockChanged(int rate, RWTime &Now);
-    BOOL isAlternateRateActive(bool &bScanIsScheduled, RWTime &aNow=RWTime(), int rate = ScanRateInvalid) const;
+    bool hasRateOrClockChanged(int rate, CtiTime &Now);
+    BOOL isAlternateRateActive(bool &bScanIsScheduled, CtiTime &aNow=CtiTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
 
     typedef map<channelWithID, int > MessageCount_t;
@@ -193,13 +192,13 @@ public:
     virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
     virtual INT  ProcessResult(INMESS*,
-                               RWTime&,
+                               CtiTime&,
                                RWTPtrSlist< CtiMessage > &vgList,
                                RWTPtrSlist< CtiMessage > &retList,
                                RWTPtrSlist< OUTMESS > &outList);
 
-    virtual RWTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
-    RWTime         firstScan( const RWTime &When, INT rate );
+    virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
+    CtiTime         firstScan( const CtiTime &When, INT rate );
     void           validateScanTimes(bool force = false);
 
     INT         doDeviceInit(void);
@@ -210,7 +209,7 @@ public:
     INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
-    BOOL isWindowOpen(RWTime &aNow=RWTime(), RWTime &opensAt = RWTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;
+    BOOL isWindowOpen(CtiTime &aNow=CtiTime(), CtiTime &opensAt = CtiTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;
     void checkSignaledAlternateRateForExpiration();
 
     INT validateScanData();
@@ -223,19 +222,19 @@ public:
     LONG& getLastFreezeNumber();
     LONG  getPrevFreezeNumber() const;
     LONG& getPrevFreezeNumber();
-    RWTime  getLastFreezeTime() const;
-    RWTime  getPrevFreezeTime() const;
-    RWTime  getLastLPTime();
+    CtiTime  getLastFreezeTime() const;
+    CtiTime  getPrevFreezeTime() const;
+    CtiTime  getLastLPTime();
 
     CtiDeviceSingle& setLastFreezeNumber( const LONG aLastFreezeNumber );
-    CtiDeviceSingle& setLastFreezeTime( const RWTime& aLastFreezeTime );
+    CtiDeviceSingle& setLastFreezeTime( const CtiTime& aLastFreezeTime );
     CtiDeviceSingle& setPrevFreezeNumber( const LONG aPrevFreezeNumber );
-    CtiDeviceSingle& setPrevFreezeTime( const RWTime& aPrevFreezeTime );
-    CtiDeviceSingle& setLastLPTime( const RWTime& aLastFreezeTime );
+    CtiDeviceSingle& setPrevFreezeTime( const CtiTime& aPrevFreezeTime );
+    CtiDeviceSingle& setLastLPTime( const CtiTime& aLastFreezeTime );
 
-    RWTime nextRemoteScan() const;
-    RWTime getNextScan(INT a);
-    CtiDeviceSingle& setNextScan(INT a, const RWTime &b);
+    CtiTime nextRemoteScan() const;
+    CtiTime getNextScan(INT a);
+    CtiDeviceSingle& setNextScan(INT a, const CtiTime &b);
 
     virtual void invalidateScanRates();
     virtual void deleteNonUpdatedScanRates();
@@ -243,12 +242,12 @@ public:
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
-    virtual bool hasLongScanRate(const RWCString &cmd) const;
+    virtual bool hasLongScanRate(const string &cmd) const;
 
-    RWTime peekDispatchTime() const;
+    CtiTime peekDispatchTime() const;
 
-    RWTime getNextWindowOpen() const;
-    static int desolveScanRateType( const RWCString &cmd );
+    CtiTime getNextWindowOpen() const;
+    static int desolveScanRateType( const string &cmd );
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
     int getGroupMessageCount(long userID, long comID);

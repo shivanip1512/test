@@ -14,21 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_lmg_ripple.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -44,8 +42,8 @@ class IM_EX_CTIYUKONDB CtiTableRippleLoadGroup : public CtiMemDBObject
 protected:
 
    LONG           _deviceID;
-   RWCString      _controlBits;     // The control command transmitted to this group.
-   RWCString      _restoreBits;     // The restore command transmitted to this group.
+   string      _controlBits;     // The control command transmitted to this group.
+   string      _restoreBits;     // The restore command transmitted to this group.
    LONG           _routeID;         // the route
    LONG           _shedTime;
 
@@ -65,16 +63,16 @@ public:
 
    CtiTableRippleLoadGroup& setRouteID( const LONG a_routeID );
 
-   RWCString getControlBits() const;
+   string getControlBits() const;
    BYTE  getControlBit(INT i);
 
-   CtiTableRippleLoadGroup& setControlBits( const RWCString str );
+   CtiTableRippleLoadGroup& setControlBits( const string str );
    CtiTableRippleLoadGroup& setControlBit( INT pos, const BYTE ch );
 
-   RWCString getRestoreBits() const;
+   string getRestoreBits() const;
    BYTE getRestoreBit(INT i);
 
-   CtiTableRippleLoadGroup& setRestoreBits( const RWCString str );
+   CtiTableRippleLoadGroup& setRestoreBits( const string str );
    CtiTableRippleLoadGroup& setRestoreBit( INT pos, const BYTE ch );
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -82,7 +80,7 @@ public:
    LONG getDeviceID() const;
    LONG getShedTime() const;
 
-   static RWCString getTableName();
+   static string getTableName();
 
    CtiTableRippleLoadGroup& setShedTime( const LONG stm);
    CtiTableRippleLoadGroup& setDeviceID( const LONG did);

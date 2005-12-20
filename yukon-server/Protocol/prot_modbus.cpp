@@ -9,13 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/11/11 20:46:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
+#include <string.h>
 
 #include "logger.h"
 #include "utility.h"
@@ -119,7 +119,7 @@ int Modbus::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - unused command " << _command << " in Modbus::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unused command " << _command << " in Modbus::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _command = Command_Error;
@@ -141,11 +141,11 @@ int Modbus::generate( CtiXfer &xfer )
             for(x=0;x<i;x++)
             {
                 //Genius!!
-                strncat((char *)xfer.getOutBuffer(),CtiNumStr(tempBuffer[x]).zpad(2).hex(),2);//create ascii from bitwise data
+                strncat((char *)xfer.getOutBuffer(),CtiNumStr(tempBuffer[x]).zpad(2).hex().toString().c_str(),2);//create ascii from bitwise data
             }
 
             //add LRC
-            strncat((char *)xfer.getOutBuffer(),CtiNumStr(calcModbusLRC((char *)xfer.getOutBuffer())).zpad(2).hex(),2);
+            strncat((char *)xfer.getOutBuffer(),CtiNumStr(calcModbusLRC((char *)xfer.getOutBuffer())).zpad(2).hex().toString().c_str(),2);
             strncat((char *)xfer.getOutBuffer(),char_CRLF,2);
             xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
 
@@ -184,7 +184,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                             if((crc>>8) != xfer.getInBuffer()[xfer.getInCountActual()-2] || (crc&0x00FF) != xfer.getInBuffer()[xfer.getInCountActual()-1])
                             {//CRC ERROR!!!!
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 retVal = UnknownError;//some error code should be set!
                                 
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
@@ -237,7 +237,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                             {
                                 //unknown data??
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - unknown data received " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - unknown data received " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 retVal = UnknownError;//some error code should be set, we can retry!
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
@@ -257,7 +257,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                         else 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             retVal = NoMethod;//some error code should be set!
                             _status = End;
                             clearPoints();
@@ -463,7 +463,7 @@ void Modbus::assemblePointData(CtiXfer &xfer)
                 {
                     //add code here someday!!!
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
@@ -499,7 +499,7 @@ void Modbus::assemblePointData(CtiXfer &xfer)
                 {
                     //add code here someday!!!
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }

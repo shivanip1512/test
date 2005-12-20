@@ -21,6 +21,8 @@
 #include "logger.h"
 #include "resolvers.h"
 
+#include "rwutil.h"
+using namespace std;
 extern ULONG _CC_DEBUG;
 extern BOOL _USE_FLIP_FLAG;
 
@@ -65,7 +67,7 @@ LONG CtiCCCapBank::getPAOId() const
 
     Returns the pao category of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getPAOCategory() const
+const string& CtiCCCapBank::getPAOCategory() const
 {
     return _paocategory;
 }
@@ -75,7 +77,7 @@ const RWCString& CtiCCCapBank::getPAOCategory() const
 
     Returns the pao class of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getPAOClass() const
+const string& CtiCCCapBank::getPAOClass() const
 {
     return _paoclass;
 }
@@ -85,7 +87,7 @@ const RWCString& CtiCCCapBank::getPAOClass() const
 
     Returns the pao name of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getPAOName() const
+const string& CtiCCCapBank::getPAOName() const
 {
     return _paoname;
 }
@@ -95,7 +97,7 @@ const RWCString& CtiCCCapBank::getPAOName() const
 
     Returns the pao type of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getPAOType() const
+const string& CtiCCCapBank::getPAOType() const
 {
     return _paotype;
 }
@@ -105,7 +107,7 @@ const RWCString& CtiCCCapBank::getPAOType() const
 
     Returns the pao description of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getPAODescription() const
+const string& CtiCCCapBank::getPAODescription() const
 {
     return _paodescription;
 }
@@ -184,7 +186,7 @@ BOOL CtiCCCapBank::getControlInhibitFlag() const
 
     Returns the operational state of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getOperationalState() const
+const string& CtiCCCapBank::getOperationalState() const
 {
     return _operationalstate;
 }
@@ -194,7 +196,7 @@ const RWCString& CtiCCCapBank::getOperationalState() const
 
     Returns the controller type of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getControllerType() const
+const string& CtiCCCapBank::getControllerType() const
 {
     return _controllertype;
 }
@@ -220,7 +222,7 @@ LONG CtiCCCapBank::getControlPointId() const
 }
 
 
-const RWCString& CtiCCCapBank::getControlDeviceType() const
+const string& CtiCCCapBank::getControlDeviceType() const
 {
     return _controlDeviceType;
 }
@@ -239,7 +241,7 @@ LONG CtiCCCapBank::getBankSize() const
 
     Returns the type of switch of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getTypeOfSwitch() const
+const string& CtiCCCapBank::getTypeOfSwitch() const
 {
     return _typeofswitch;
 }
@@ -249,7 +251,7 @@ const RWCString& CtiCCCapBank::getTypeOfSwitch() const
 
     Returns the switch manufacture of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getSwitchManufacture() const
+const string& CtiCCCapBank::getSwitchManufacture() const
 {
     return _switchmanufacture;
 }
@@ -259,7 +261,7 @@ const RWCString& CtiCCCapBank::getSwitchManufacture() const
 
     Returns the map location id of the cap bank
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCCapBank::getMapLocationId() const
+const string& CtiCCCapBank::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -419,7 +421,7 @@ LONG CtiCCCapBank::getTotalOperations() const
 
     Returns the timestamp of the last status point data msg sent by dispatch
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiCCCapBank::getLastStatusChangeTime() const
+const CtiTime& CtiCCCapBank::getLastStatusChangeTime() const
 {
     return _laststatuschangetime;
 }
@@ -471,7 +473,7 @@ CtiCCCapBank& CtiCCCapBank::setPAOId(LONG id)
 
     Sets the pao category of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOCategory(const RWCString& category)
+CtiCCCapBank& CtiCCCapBank::setPAOCategory(const string& category)
 {
     _paocategory = category;
 
@@ -483,7 +485,7 @@ CtiCCCapBank& CtiCCCapBank::setPAOCategory(const RWCString& category)
 
     Sets the pao class of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOClass(const RWCString& pclass)
+CtiCCCapBank& CtiCCCapBank::setPAOClass(const string& pclass)
 {
     _paoclass = pclass;
 
@@ -495,7 +497,7 @@ CtiCCCapBank& CtiCCCapBank::setPAOClass(const RWCString& pclass)
 
     Sets the pao name of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOName(const RWCString& name)
+CtiCCCapBank& CtiCCCapBank::setPAOName(const string& name)
 {
     _paoname = name;
 
@@ -507,9 +509,9 @@ CtiCCCapBank& CtiCCCapBank::setPAOName(const RWCString& name)
 
     Sets the pao type of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOType(const RWCString& type)
+CtiCCCapBank& CtiCCCapBank::setPAOType(const string& _type)
 {
-    _paotype = type;
+    _paotype = _type;
 
     return *this;
 }
@@ -519,7 +521,7 @@ CtiCCCapBank& CtiCCCapBank::setPAOType(const RWCString& type)
 
     Sets the pao description of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAODescription(const RWCString& description)
+CtiCCCapBank& CtiCCCapBank::setPAODescription(const string& description)
 {
     _paodescription = description;
 
@@ -599,7 +601,7 @@ CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -625,7 +627,7 @@ CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(BOOL maxopsdisable)
 
     Sets the operational state of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationalState(const RWCString& operational)
+CtiCCCapBank& CtiCCCapBank::setOperationalState(const string& operational)
 {
     _operationalstate = operational;
 
@@ -637,7 +639,7 @@ CtiCCCapBank& CtiCCCapBank::setOperationalState(const RWCString& operational)
 
     Sets the controller type of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControllerType(const RWCString& controllertype)
+CtiCCCapBank& CtiCCCapBank::setControllerType(const string& controllertype)
 {
     _controllertype = controllertype;
 
@@ -670,7 +672,7 @@ CtiCCCapBank& CtiCCCapBank::setControlPointId(LONG controlpoint)
 
 
 
-CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const RWCString& controlDeviceType)
+CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const string& controlDeviceType)
 {
     _controlDeviceType = controlDeviceType;
 
@@ -694,7 +696,7 @@ CtiCCCapBank& CtiCCCapBank::setBankSize(LONG size)
 
     Sets the type of switch of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const RWCString& switchtype)
+CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const string& switchtype)
 {
     _typeofswitch = switchtype;
 
@@ -706,7 +708,7 @@ CtiCCCapBank& CtiCCCapBank::setTypeOfSwitch(const RWCString& switchtype)
 
     Sets the switch manufacture of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
+CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const string& manufacture)
 {
     _switchmanufacture = manufacture;
 
@@ -718,7 +720,7 @@ CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
 
     Sets the map location id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMapLocationId(const RWCString& maplocation)
+CtiCCCapBank& CtiCCCapBank::setMapLocationId(const string& maplocation)
 {
     _maplocationid = maplocation;
 
@@ -804,14 +806,14 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " CB: "<<getPAOId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
+        dout << CtiTime() << " CB: "<<getPAOId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
     }
     switch (ctrlIdx)
     {
     case 1:
         {
             setPreviousVerificationControlStatus(getControlStatus());
-            if ( getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) &&
+            if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") &&
                   _USE_FLIP_FLAG == TRUE &&
                   (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
             {  
@@ -828,7 +830,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     case 2:
         {
-            if (!getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && 
+            if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") && 
                 _USE_FLIP_FLAG == TRUE)
             {
 
@@ -904,7 +906,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
             if (getControlStatus() == OpenFail ||
                 getControlStatus() == CloseFail ) 
             {
-                if (!getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && 
+                if (!stringContainsIgnoreCase(getControlDeviceType(),"CBC 70") && 
                     _USE_FLIP_FLAG == TRUE)
                 {
                     ctrlIdx = 5; 
@@ -935,7 +937,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ***WARNING*** Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " ***WARNING*** Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         break;
     }
@@ -1013,7 +1015,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
         {
             /*{
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }*/
             _dirty = TRUE;
         }
@@ -1027,7 +1029,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
         {
             /*{
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }*/
             _dirty = TRUE;
         }
@@ -1061,7 +1063,7 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1074,13 +1076,13 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
 
     Sets the timestamp of the last status point data msg sent by dispatch
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime)
+CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuschangetime)
 {
     if( _laststatuschangetime != laststatuschangetime )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1099,7 +1101,7 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1118,7 +1120,7 @@ CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(LONG origfeeder)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1137,7 +1139,7 @@ CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1152,7 +1154,7 @@ CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
 --------------------------------------------------------------------------*/
 void CtiCCCapBank::restoreGuts(RWvistream& istrm)
 {
-    RWTime tempTime1;
+    CtiTime tempTime1;
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
@@ -1185,7 +1187,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _originalfeederid
     >> _currentdailyoperations;
 
-    _laststatuschangetime = RWDBDateTime(tempTime1);
+    _laststatuschangetime = CtiTime(tempTime1);
 }
 
 /*---------------------------------------------------------------------------
@@ -1222,7 +1224,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _controlstatus
     << _operationanalogpointid
     << _totaloperations
-    << _laststatuschangetime.rwtime()
+    << _laststatuschangetime
     << _tagscontrolstatus
     << _originalfeederid
     << _currentdailyoperations;
@@ -1301,9 +1303,9 @@ int CtiCCCapBank::operator!=(const CtiCCCapBank& right) const
 void CtiCCCapBank::restore(RWDBReader& rdr)
 {
     RWDBNullIndicator isNull;
-    RWDBDateTime currentDateTime = RWDBDateTime();
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
+    CtiTime currentDateTime = CtiTime();
+    CtiTime dynamicTimeStamp;
+    string tempBoolString;
 
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
@@ -1312,7 +1314,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["type"] >> _paotype;
     rdr["description"] >> _paodescription;
     rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
     rdr["operationalstate"] >> _operationalstate;
     rdr["controllertype"] >> _controllertype;
@@ -1325,8 +1327,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["reclosedelay"] >> _reclosedelay;
     rdr["maxdailyops"] >> _maxdailyops;
     rdr["maxopdisable"] >> tempBoolString;
-    tempBoolString.toLower();
-    setMaxOpsDisableFlag(tempBoolString=='y'?TRUE:FALSE);
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    setMaxOpsDisableFlag(tempBoolString=="y"?TRUE:FALSE);
             
 
     setAlarmInhibitFlag(false);
@@ -1337,7 +1339,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
  //initialize dynamic data members
     setTotalOperations(0);
-    setLastStatusChangeTime(gInvalidRWDBDateTime);
+    setLastStatusChangeTime(gInvalidCtiTime);
     setControlStatus(CtiCCCapBank::Open);
     setTagsControlStatus(0);
     setOriginalFeederId(0);
@@ -1346,14 +1348,14 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);
     setVerificationFlag(FALSE);
-    _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+    _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
     
 
     _insertDynamicDataFlag = TRUE;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }*/
     _dirty = TRUE;
 
@@ -1362,7 +1364,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
 {
 
-    RWDBDateTime dynamicTimeStamp;
+    CtiTime dynamicTimeStamp;
     rdr["controlstatus"] >> _controlstatus;
     rdr["totaloperations"] >> _totaloperations;
     rdr["laststatuschangetime"] >> _laststatuschangetime;
@@ -1375,10 +1377,10 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["verificationcontrolindex"] >> _vCtrlIndex;
 
     rdr["additionalflags"] >> _additionalFlags;
-    _additionalFlags.toLower();
-    _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
+    _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
 
@@ -1428,7 +1430,7 @@ void CtiCCCapBank::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -1436,7 +1438,7 @@ void CtiCCCapBank::dumpDynamicData()
 
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
@@ -1447,7 +1449,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             addFlags[0] = (_verificationFlag?'Y':'N');
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
-            _additionalFlags = RWCString(RWCString(*addFlags) + RWCString(*(addFlags+1)) + RWCString(*(addFlags+2)) + RWCString(*(addFlags + 3), 17));
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + string(17, *(addFlags + 3)));
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
@@ -1455,15 +1457,15 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 
             updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
             << dynamicCCCapBankTable["totaloperations"].assign( _totaloperations )
-            << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)_laststatuschangetime )
+            << dynamicCCCapBankTable["laststatuschangetime"].assign( toRWDBDT((CtiTime)_laststatuschangetime) )
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
-            << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicCCCapBankTable["ctitimestamp"].assign(toRWDBDT((CtiTime)currentDateTime))
             << dynamicCCCapBankTable["originalfeederid"].assign( _originalfeederid )
             << dynamicCCCapBankTable["originalswitchingorder"].assign( _originalswitchingorder )
             << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
             << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
-            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags)
+            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags[0])
             << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations );
 
 
@@ -1471,7 +1473,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
             }*/
             updater.execute( conn );
 
@@ -1483,12 +1485,12 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << updater.asString() << endl;
                 }
             }
@@ -1497,7 +1499,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
             }
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
 
@@ -1514,13 +1516,13 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
-            << RWCString(*addFlags, 20)
+            << string(*addFlags, 20)
             << _currentdailyoperations;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -1534,12 +1536,12 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << inserter.asString() << endl;
                 }
             }
@@ -1548,10 +1550,10 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 }
 
 /* Public Static members */
-const RWCString CtiCCCapBank::SwitchedOperationalState = "Switched";
-const RWCString CtiCCCapBank::FixedOperationalState = "Fixed";
-const RWCString CtiCCCapBank::UninstalledState = "Uninstalled";
-const RWCString CtiCCCapBank::StandAloneState = "Standalone";
+const string CtiCCCapBank::SwitchedOperationalState = "Switched";
+const string CtiCCCapBank::FixedOperationalState = "Fixed";
+const string CtiCCCapBank::UninstalledState = "Uninstalled";
+const string CtiCCCapBank::StandAloneState = "Standalone";
 
 int CtiCCCapBank::Open = STATEZERO;
 int CtiCCCapBank::Close = STATEONE;

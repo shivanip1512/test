@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 22:25:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
 
-#include <rw\cstring.h>
 
 #include "resolvers.h"
 #include "yukon.h"
@@ -39,10 +38,10 @@ class IM_EX_CTIYUKONDB CtiTableGatewayEndDevice  : public CtiMemDBObject
 {
 protected:
 
-    RWCString _serialNumber;
+    string _serialNumber;
     UINT _hardwareType;
     UINT _dataType;
-    RWCString _dataValue;
+    string _dataValue;
 
 
 private:
@@ -60,18 +59,18 @@ public:
     CtiTableGatewayEndDevice& operator=(const CtiTableGatewayEndDevice& aRef);
 
     CtiTableGatewayEndDevice& setSerialNumber(ULONG sn);
-    CtiTableGatewayEndDevice& setSerialNumber(RWCString sn);
+    CtiTableGatewayEndDevice& setSerialNumber(string sn);
     CtiTableGatewayEndDevice& setHardwareType(UINT hwt);
     CtiTableGatewayEndDevice& setDataType(UINT dt);
-    CtiTableGatewayEndDevice& setDataValue(RWCString dv);
+    CtiTableGatewayEndDevice& setDataValue(string dv);
 
-    RWCString getSerialNumber() const;
+    string getSerialNumber() const;
     UINT  getHardwareType() const;
     UINT  getDataType() const;
-    RWCString getDataValue() const;
+    string getDataValue() const;
 
 
-    static RWCString getTableName();
+    static string getTableName();
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DumpData();
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

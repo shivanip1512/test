@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "tbl_pt_base.h"
+
+#include "rwutil.h"
 
 CtiTablePointBase& CtiTablePointBase::operator=(const CtiTablePointBase& aRef)
 {
@@ -62,7 +64,7 @@ void CtiTablePointBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   RWCString   rwsTemp;
+   string   rwsTemp;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {
@@ -82,18 +84,19 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
    rdr["pointoffset"]   >> _pointOffset;
 
    rdr["serviceflag"]   >> rwsTemp;
-   rwsTemp.toLower();
+   std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+   
    //ServiceFlag = ((rwsTemp == "y") ? TRUE : FALSE);
    setDisableTag(((rwsTemp == "y") ? TRUE : FALSE));
 
    rdr["alarminhibit"]  >> rwsTemp;
-   rwsTemp.toLower();
+   std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
    // AlarmInhibit = ((rwsTemp == "y") ? TRUE : FALSE);
    setAlarmDisableTag(((rwsTemp == "y") ? TRUE : FALSE));
 
 
    rdr["pseudoflag"]    >> rwsTemp;
-   rwsTemp.toLower();
+   std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
    // PseudoFlag = ((rwsTemp == "y") ? TRUE : FALSE);
    setPseudoTag(((rwsTemp == "p") ? TRUE : FALSE));
 
@@ -112,7 +115,7 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
 
 void CtiTablePointBase::dump()
 {
-   RWCString   rwsTemp;
+   string   rwsTemp;
 
    CtiLockGuard<CtiLogger> doubt_guard(dout);
    dout << " PointID                                  : " << _pointID << endl;
@@ -137,7 +140,7 @@ LONG CtiTablePointBase::getID() const
    return _pointID;
 }
 
-RWCString CtiTablePointBase::getName() const
+string CtiTablePointBase::getName() const
 {
    return _name;
 }
@@ -162,7 +165,7 @@ INT CtiTablePointBase::getPointOffset() const
    return _pointOffset;
 }
 
-RWCString CtiTablePointBase::getLogicalGroup() const
+string CtiTablePointBase::getLogicalGroup() const
 {
    return _logicalGroup;
 }
@@ -240,7 +243,7 @@ CtiTablePointBase& CtiTablePointBase::setID(LONG id)
    return *this;
 }
 
-CtiTablePointBase& CtiTablePointBase::setName(RWCString str)
+CtiTablePointBase& CtiTablePointBase::setName(string str)
 {
    _name = str;
    return *this;
@@ -258,7 +261,7 @@ CtiTablePointBase& CtiTablePointBase::setPAObjectID(LONG id)
    return *this;
 }
 
-CtiTablePointBase& CtiTablePointBase::setLogicalGroup(RWCString str)
+CtiTablePointBase& CtiTablePointBase::setLogicalGroup(string str)
 {
    _logicalGroup = str;
    return *this;

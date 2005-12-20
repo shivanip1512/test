@@ -63,16 +63,16 @@ class CtiLMSavedControlString
 {//equivalent to an inner class, only used for saving control strings
 
 public:
-    CtiLMSavedControlString(LONG paoId, const RWCString& controlString);
+    CtiLMSavedControlString(LONG paoId, const string& controlString);
     CtiLMSavedControlString(const CtiLMSavedControlString& savedControlString);
 
     virtual ~CtiLMSavedControlString();
 
     LONG getPAOId() const;
-    const RWCString& getControlString() const;
+    const string& getControlString() const;
 
     CtiLMSavedControlString& setPAOId(LONG paoId);
-    CtiLMSavedControlString& setControlString(const RWCString& controlstr);
+    CtiLMSavedControlString& setControlString(const string& controlstr);
 
     CtiLMSavedControlString& operator=(const CtiLMSavedControlString& right);
 
@@ -81,7 +81,7 @@ public:
 
 private:
     LONG _paoId;
-    RWCString _controlString;
+    string _controlString;
 };
 
 
@@ -89,7 +89,7 @@ class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
-    RWOrdered* getControlAreas(ULONG secondsFrom1901 = RWDBDateTime().seconds());
+    RWOrdered* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
     
     CtiLMGroupPtr findGroupByPointID(long point_id);
@@ -117,7 +117,7 @@ public:
     void saveAnyControlStringData();
     void attachControlStringData(CtiLMGroupPtr& group);
 
-    static const RWCString LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
+    static const string LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
@@ -143,7 +143,7 @@ private:
     bool _isvalid;
     bool _reregisterforpoints;
     bool _wascontrolareadeletedflag;
-    RWDBDateTime _lastdbreloadtime;
+    CtiTime _lastdbreloadtime;
     RWTValOrderedVector<CtiLMSavedProjectionQueue> _projectionQueues;
     RWTValOrderedVector<CtiLMSavedControlString> _controlStrings;
 

@@ -27,7 +27,7 @@
 #include <map>
 
 #include "boost/shared_ptr.hpp"
-using namespace std;
+
 using boost::shared_ptr;
 
 
@@ -37,16 +37,19 @@ using boost::shared_ptr;
 #include "logger.h"
 #include "mutex.h"
 
+using std::map;
+using std::pair;
+
 
 template < class T >
 class IM_EX_CTIBASE CtiSmartMap
 {
 public:
 
-    typedef map< long, shared_ptr< T > >                coll_type;              // This is the collection type!
+    typedef std::map< long, shared_ptr< T > >                coll_type;              // This is the collection type!
     typedef coll_type::value_type                       val_type;
     typedef coll_type::iterator                         spiterator;
-    typedef pair<spiterator, bool>                      insert_pair;
+    typedef std::pair<spiterator, bool>                      insert_pair;
     typedef shared_ptr< T >                             ptr_type;
 
 protected:
@@ -106,7 +109,7 @@ public:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }

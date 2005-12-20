@@ -1,11 +1,12 @@
 #include "yukon.h"
 
 #include <vector>
-using namespace std;
 
 #include "thread.h"
 #include "guard.h"
 #include "logger.h"
+
+using namespace std;
 
 // CtiLogger dout;  // Globally defined
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_ndest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:47 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,8 +20,6 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbaccess.h"
 #include "tbl_alm_ndest.h"
@@ -69,9 +67,9 @@ CtiTableNotificationDestination& CtiTableNotificationDestination::setRecipientID
    return *this;
 }
 
-RWCString CtiTableNotificationDestination::getTableName()
+string CtiTableNotificationDestination::getTableName()
 {
-   return RWCString("NotificationDestination");
+   return string("NotificationDestination");
 }
 
 RWDBStatus CtiTableNotificationDestination::Insert()
@@ -113,7 +111,7 @@ RWDBStatus CtiTableNotificationDestination::Delete()
 
 void CtiTableNotificationDestination::getSQL(RWDBDatabase &db,  RWDBTable &table, RWDBSelector &selector)
 {
-   table = db.table( getTableName() );
+   table = db.table( getTableName().c_str() );
 
    selector <<
       table["notificationgroupid"] <<

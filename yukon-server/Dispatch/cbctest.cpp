@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/cbctest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw\cstring.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>

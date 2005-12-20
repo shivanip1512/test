@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dyn_lmcontrolhist.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,15 +32,15 @@ protected:
     typedef CtiTableLMControlHistory Inherited;
 
     CtiTableDynamicLMControlHistory(LONG             paoid   = 0,
-                                    const RWTime&    start   = RWTime(),
+                                    const CtiTime&    start   = CtiTime(),
                                     LONG             soe     = 0,
                                     INT              dur     = 0,
-                                    const RWCString& type    = RWCString(),
+                                    const string& type    = string(),
                                     LONG             daily   = 0,
                                     LONG             month   = 0,
                                     LONG             season  = 0,
                                     LONG             annual  = 0,
-                                    const RWCString& restore = RWCString(),
+                                    const string& restore = string(),
                                     DOUBLE           reduce  = 0.0,
                                     LONG             lmchid  = LMControlHistoryIdGen()) :
     Inherited(paoid, start, soe, dur, type, daily, month, season, annual, restore, reduce, lmchid)
@@ -53,9 +53,9 @@ protected:
 
     virtual ~CtiTableDynamicLMControlHistory() {}
 
-    static RWCString getTableName()     // OverRide the parent call.  Our only purpose in life!
+    static string getTableName()     // OverRide the parent call.  Our only purpose in life!
     {
-        return RWCString("DynamicLMControlHistory");
+        return string("DynamicLMControlHistory");
     }
 
 };

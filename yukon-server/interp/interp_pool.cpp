@@ -9,13 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp_pool.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:24:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:17:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "interp_pool.h"
+
+using namespace std;
 
 CtiInterpreterPool::CtiInterpreterPool()
 {
@@ -127,7 +129,7 @@ void CtiInterpreterPool::dumpPool()
     // contiguous
     CtiLockGuard< CtiLogger > guard(dout);
 
-    dout << RWTime() << " Available interpreters:" << endl;
+    dout << CtiTime() << " Available interpreters:" << endl;
 
     interp_set_iter iter;
     for( iter = _available_interps.begin();
@@ -135,17 +137,17 @@ void CtiInterpreterPool::dumpPool()
          iter++ )
     {
         CtiInterpreter* interp = *iter;
-        dout << RWTime() << interp << endl;
+        dout << CtiTime() << interp << endl;
     }
 
-    dout << RWTime() << " Active Interpreters: " << endl;
+    dout << CtiTime() << " Active Interpreters: " << endl;
 
     for( iter = _active_interps.begin();
          iter != _active_interps.end();
          iter++ )
     {
         CtiInterpreter* interp = *iter;
-        dout << RWTime() << interp << endl;
+        dout << CtiTime() << interp << endl;
     }
 }
 

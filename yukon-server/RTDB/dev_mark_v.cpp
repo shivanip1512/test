@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,9 +85,9 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
 
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
-         RWTime p( getLastLPTime().seconds() );
+         CtiTime p( getLastLPTime().seconds() );
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Stored LPTime For " << getName() << "----" << p << endl;
+         dout << CtiTime() << " ----Stored LPTime For " << getName() << "----" << p << endl;
       }
 
       if( useScanFlags() )
@@ -111,7 +111,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Execution In Progress For " << getName() << "----" << endl;
+         dout << CtiTime() << " ----Execution In Progress For " << getName() << "----" << endl;
       }
       //probably can delete this here
       ptr = NULL;
@@ -170,7 +170,7 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
 //=====================================================================================================================
 
 INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
-                                  RWTime                    &TimeNow,
+                                  CtiTime                    &TimeNow,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
                                   RWTPtrSlist< OUTMESS >    &outList)
@@ -208,7 +208,7 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         //what the hell happened?
@@ -222,7 +222,7 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 //=====================================================================================================================
 
 INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
-                                 RWTime                     &TimeNow,
+                                 CtiTime                     &TimeNow,
                                  RWTPtrSlist< CtiMessage >  &vgList,
                                  RWTPtrSlist< CtiMessage >  &retList,
                                  RWTPtrSlist< OUTMESS >     &outList)
@@ -234,7 +234,7 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " ----Error Decode For " << getName() << " In Progress----" << endl;
+       dout << CtiTime() << " ----Error Decode For " << getName() << " In Progress----" << endl;
    }
 
    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
@@ -269,7 +269,7 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
 //=====================================================================================================================
 
 int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
-                                      RWTime                    &TimeNow,
+                                      CtiTime                    &TimeNow,
                                       RWTPtrSlist< CtiMessage > &vgList,
                                       RWTPtrSlist< CtiMessage > &retList,
                                       vector<CtiTransdataData *> transVector)
@@ -281,8 +281,8 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    int               time_id;
    int               date_id;
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),
-                                                       RWCString(InMessage->Return.CommandStr),
-                                                       RWCString(),
+                                                       string(InMessage->Return.CommandStr),
+                                                       string(),
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
@@ -293,7 +293,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Scanner Message Process For " << getName() << "----" << endl;
+      dout << CtiTime() << " ----Scanner Message Process For " << getName() << "----" << endl;
    }
 
    if( isScanFlagSet(ScanRateGeneral) )
@@ -709,7 +709,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Scanner Message Inserted For " << getName() << "----" << endl;
+         dout << CtiTime() << " ----Scanner Message Inserted For " << getName() << "----" << endl;
       }
    }
 
@@ -757,24 +757,23 @@ CtiPointDataMsg* CtiDeviceMarkV::fillPDMsg( vector<CtiTransdataData *> transVect
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWTime CtiDeviceMarkV::getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector )
+CtiTime CtiDeviceMarkV::getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector )
 {
-   RWTime   tTime;
+   CtiTime   tTime;
    int      index;
 
    for( index = 0; index < transVector.size() - 1; index++ )
    {
       if( transVector[index]->getID() == timeID )
       {
-         RWDate aDate( transVector[index]->getDay(),
+         CtiDate aDate( transVector[index]->getDay(),
                        transVector[index]->getMonth(),
                        transVector[index]->getYear() );
 
-         RWTime aTime( aDate,
+         CtiTime aTime( aDate,
                        transVector[index]->getHour(),
                        transVector[index]->getMinute(),
-                       transVector[index]->getSecond(),
-                       RWZone::local() );
+                       transVector[index]->getSecond() );
 
          tTime = aTime;
       }
@@ -809,7 +808,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
+      dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
    }
 
    if( _transdataProtocol.getDidProcess() )
@@ -820,7 +819,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       //move this down a layer
       lp = ( CtiTransdataTracker::mark_v_lp *)storage;
       _llp.lastLP = lp->meterTime;
-      RWTime mTime( lp->meterTime );
+      CtiTime mTime( lp->meterTime );
 
       for( index = 0; index < lp->numLpRecs; )
       {
@@ -867,7 +866,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
          }
 
          //decrement the time to the interval previous to the current one...
-         RWTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
+         CtiTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
          mTime = tempTime;
       }
 
@@ -888,7 +887,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Dispatch Message Inserted For " << getName() << "----" << endl;
+         dout << CtiTime() << " ----Dispatch Message Inserted For " << getName() << "----" << endl;
       }
    }
    else
@@ -896,7 +895,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----No Data For Dispatch Message For " << getName() << "----" << endl;
+         dout << CtiTime() << " ----No Data For Dispatch Message For " << getName() << "----" << endl;
       }
    }
 

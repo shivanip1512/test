@@ -11,10 +11,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/06/16 19:17:59 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.10  2005/12/20 17:19:56  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.8.2.2  2005/08/12 19:54:04  jliu
+      Date Time Replaced
+
+      Revision 1.8.2.1  2005/07/27 19:28:01  alauinger
+      merged from the head 20050720
+
       Revision 1.9  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -49,6 +58,7 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_base.h"
+#include "ctidate.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -489,7 +499,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
       minute = BCDtoBase10( source + offset, 1 );
       offset += 1;
-      result = RWTime( RWDate( day, month, year )).seconds();
+      result = CtiTime( CtiDate( day, month, year )).seconds();
       }
       break;
 
@@ -508,8 +518,8 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
        
        offset = 5;
        //result = 11;
-       RWTime timeResult( RWDate( day, month, year + 2000 ), hour, minute);
-       //result = RWTime( RWDate( day, month, year ), hour, minute).seconds();
+       CtiTime timeResult( CtiDate( day, month, year + 2000 ), hour, minute);
+       //result = CtiTime( CtiDate( day, month, year ), hour, minute).seconds();
        result = timeResult.seconds();
        }
       break;
@@ -523,7 +533,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
            temp = temp * 60;
 
-           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
+           result = CtiTime(temp + CtiTime(CtiDate(1,1,1970)).seconds() /*- 3600*/).seconds();
            offset = 4;
 
        }
@@ -565,7 +575,7 @@ int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
 
       second = BCDtoBase10( source + offset, 1 );
       offset += 1;
-      result = RWTime( hour, minute, second).seconds();
+      result = CtiTime( hour, minute, second).seconds();
       }
       break;
 
@@ -580,8 +590,8 @@ int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
 
        offset = 3;
        //result = 11;
-       RWTime timeResult( hour, minute, second);
-       //result = RWTime( RWDate( day, month, year ), hour, minute).seconds();
+       CtiTime timeResult( hour, minute, second);
+       //result = CtiTime( CtiDate( day, month, year ), hour, minute).seconds();
        result = timeResult.seconds();
        }
       break;
@@ -599,7 +609,7 @@ int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
            source += sizeof (BYTE)*4;
 
 
-           result = RWTime(temp /*- 3600*/).seconds();
+           result = CtiTime(temp /*- 3600*/).seconds();
            offset = 4;
 
        }
@@ -641,7 +651,7 @@ ULONG CtiAnsiTableBase::BCDtoBase10(UCHAR* buffer, ULONG len)
 int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 {
    ULONG    temp;
-   RWTime   time;
+   CtiTime   time;
    ULONG    year = 0;
    ULONG    month = 0;
    ULONG    day = 0;
@@ -672,7 +682,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
       minute = BCDtoBase10( source + offset, 1 );
       offset += 1;
 
-      result = RWTime( RWDate( day, month, year )).seconds();
+      result = CtiTime( CtiDate( day, month, year )).seconds();
        */
       break;
 
@@ -692,7 +702,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
           memcpy ((void *)second, source, sizeof (BYTE) );
           source += sizeof (BYTE);
           offset = 6;
-          result = RWTime( RWDate( day, month, year ), hour, minute, second).seconds();
+          result = CtiTime( CtiDate( day, month, year ), hour, minute, second).seconds();
        }
       break;
 
@@ -706,7 +716,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 
            offset = 5;
            
-           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
+           result = CtiTime(temp + CtiTime(CtiDate(1,1,1970)).seconds() /*- 3600*/).seconds();
            
         }
       break;

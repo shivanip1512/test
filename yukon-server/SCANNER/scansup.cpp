@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scansup.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@ using namespace std;
 #include <string.h>
 #include <float.h>
 
-#include <rw\rwtime.h>
+#include "ctitime.h"
 
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -44,12 +44,12 @@ using namespace std;
 #include "scansup.h"
 #include "dlldefs.h"
 
-IM_EX_SCANSUP RWTime FirstScan(const RWTime& TimeNow, ULONG ScanRate)
+IM_EX_SCANSUP CtiTime FirstScan(const CtiTime& TimeNow, ULONG ScanRate)
 {
    ULONG    SecsPastHour;
    ULONG    SecsPastDay;
 
-   RWTime   NextScan;
+   CtiTime   NextScan;
 
    if(!(ScanRate))
    {
@@ -69,13 +69,13 @@ IM_EX_SCANSUP RWTime FirstScan(const RWTime& TimeNow, ULONG ScanRate)
          return(TimeNow);
       }
 
-      NextScan = RWTime(TimeNow - (SecsPastHour % ScanRate) + ScanRate);
+      NextScan = CtiTime(TimeNow - (SecsPastHour % ScanRate) + ScanRate);
    }
    else
    {
       SecsPastDay = TimeNow.seconds() % 86400L;
 
-      NextScan = RWTime(TimeNow - (SecsPastDay % ScanRate) + ScanRate);
+      NextScan = CtiTime(TimeNow - (SecsPastDay % ScanRate) + ScanRate);
 
       while(NextScan <= TimeNow)
       {

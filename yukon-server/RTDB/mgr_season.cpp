@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,10 @@
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_season.h"
 #include "dbaccess.h"
+#include "ctidate.h"
+
+using std::multimap;
+using std::make_pair;
 
 const string CtiSeasonManager::_season_sql = "select seasonscheduleid, seasonstartmonth, seasonstartday, seasonendmonth, seasonendday from dateofseason";
 
@@ -29,17 +33,17 @@ CtiSeasonManager::CtiSeasonManager()
 /*
   Returns true if the given date is inside any of the seasons in the given season schedule
 */
-bool CtiSeasonManager::isInSeason(const RWDate& date, long season_sched_id)
+bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
 {
     unsigned month_of_year = date.month();
     unsigned day_of_month = date.dayOfMonth();
     
-    multimap<long, date_of_season>::iterator lower = _season_map.lower_bound(season_sched_id);
-    multimap<long, date_of_season>::iterator upper = _season_map.upper_bound(season_sched_id);
+    std::multimap<long, date_of_season>::iterator lower = _season_map.lower_bound(season_sched_id);
+    std::multimap<long, date_of_season>::iterator upper = _season_map.upper_bound(season_sched_id);
     
     if(lower != upper)
     {
-        for(multimap<long, date_of_season>::iterator iter = lower;
+        for(std::multimap<long, date_of_season>::iterator iter = lower;
             iter != upper;
             iter++)
         {
@@ -56,12 +60,12 @@ bool CtiSeasonManager::isInSeason(const RWDate& date, long season_sched_id)
     else
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " <<  " Couldn't locate season schedule id: " << season_sched_id << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " <<  " Couldn't locate season schedule id: " << season_sched_id << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return false;
 }
 
-bool CtiSeasonManager::isInSeason(long season_sched_id, const RWDate& date)
+bool CtiSeasonManager::isInSeason(long season_sched_id, const CtiDate& date)
 {
     return isInSeason(date, season_sched_id);
 }
@@ -79,7 +83,7 @@ void CtiSeasonManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, _season_sql.data());
+            RWDBReader rdr = ExecuteQuery(conn, _season_sql.c_str());
 
             while( rdr() )
             {

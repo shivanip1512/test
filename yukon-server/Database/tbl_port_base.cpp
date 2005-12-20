@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_base.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,9 @@
 
 #include "tbl_port_base.h"
 #include "logger.h"
+
+#include "rwutil.h"
+using std::transform;
 
 CtiTablePortBase::CtiTablePortBase() :
 _protocol(ProtocolWrapNone),
@@ -88,12 +91,12 @@ void CtiTablePortBase::setPerformanceAlarm(bool b)
    _performanceAlarm = b;
 }
 
-void CtiTablePortBase::setSharedPortType(RWCString str)
+void CtiTablePortBase::setSharedPortType(string str)
 {
    _sharedPortType = str;
 }
 
-RWCString CtiTablePortBase::getSharedPortType() const
+string CtiTablePortBase::getSharedPortType() const
 {
    return _sharedPortType;
 }
@@ -126,7 +129,7 @@ CtiTablePortBase& CtiTablePortBase::setPerformanceThreshold( const INT aPerforma
 
 void CtiTablePortBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable devTbl  = db.table(getTableName());
+   RWDBTable devTbl  = db.table(getTableName().c_str());
 
    selector <<
       devTbl["alarminhibit"] <<
@@ -144,7 +147,7 @@ void CtiTablePortBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelect
 void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
    INT iTemp;
-   RWCString rwsTemp;
+   string rwsTemp;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {
@@ -158,8 +161,8 @@ void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
        CtiLockGuard<CtiLogger> logger_guard(dout);
        dout << " Alarm Inhibit        ? " << rwsTemp << endl;
    }
-   rwsTemp.toLower();
-   _alarmInhibit = (rwsTemp(0) == 'y' ? true : false);
+   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
+   _alarmInhibit = (rwsTemp[0] == 'y' ? true : false);
 
    rdr["commonprotocol"] >> rwsTemp;
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -175,8 +178,8 @@ void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
        CtiLockGuard<CtiLogger> logger_guard(dout);
        dout << " Performance Alarming ? " << rwsTemp << endl;
    }
-   rwsTemp.toLower();
-   _performanceAlarm = (rwsTemp(0) == 'y' ? true : false);
+   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);   
+   _performanceAlarm = (rwsTemp[0] == 'y' ? true : false);
 
    rdr["performthreshold"] >> _performanceThreshold;
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -191,7 +194,7 @@ void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
        CtiLockGuard<CtiLogger> logger_guard(dout);
        dout << " Shared Port Type     = " << rwsTemp << endl;
    }
-   rwsTemp.toLower();
+   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);      
    _sharedPortType = rwsTemp;
 
    rdr["sharedsocketnumber"] >> iTemp;
@@ -210,7 +213,7 @@ void CtiTablePortBase::DumpData()
    dout << " Alarm Inhibit                              : " << _alarmInhibit << endl;
 }
 
-RWCString CtiTablePortBase::getTableName()
+string CtiTablePortBase::getTableName()
 {
    return "CommPort";
 }

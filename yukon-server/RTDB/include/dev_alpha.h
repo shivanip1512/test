@@ -228,12 +228,12 @@ public:
                             INT                         ScanPriority=MAXPRIORITY-4);
 
     virtual INT ResultDecode(INMESS                    *InMessage,
-                             RWTime                    &TimeNow,
+                             CtiTime                    &TimeNow,
                              RWTPtrSlist< CtiMessage > &vgList,
                              RWTPtrSlist< CtiMessage > &retList,
                              RWTPtrSlist< OUTMESS >    &outList);
     virtual INT ErrorDecode(INMESS                    *InMessage,
-                            RWTime                    &TimeNow,
+                            CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS >    &outList);
@@ -250,10 +250,10 @@ public:
     virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,
-                                               RWTime        aTime,
+                                               CtiTime        aTime,
                                                CtiReturnMsg *aReturnMsg,
                                                USHORT        aIntervalType=0,
-                                               RWCString     aValReport=RWCString());
+                                               string     aValReport=string());
 
 
     virtual BOOL insertPointIntoReturnMsg (CtiMessage   *aDataPoint,

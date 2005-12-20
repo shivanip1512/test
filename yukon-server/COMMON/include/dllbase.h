@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/10/19 02:55:00 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #include <lmcons.h>
 #include <iostream>
 #include <set>
-using namespace std;
+
 
 #include <rw\thr\mutex.h>
 
@@ -29,6 +29,9 @@ using namespace std;
 #include "cticalls.h"
 #include "dsm2.h"
 #include "dlldefs.h"
+
+using std::string;
+using std::set;
 
 #define SCANNERSEM "SCANNER.SEM"
 
@@ -78,16 +81,17 @@ using namespace std;
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
 
-IM_EX_CTIBASE extern RWCString      dbDll;
-IM_EX_CTIBASE extern RWCString      dbName;
-IM_EX_CTIBASE extern RWCString      dbUser;
-IM_EX_CTIBASE extern RWCString      dbPassword;
-IM_EX_CTIBASE extern RWCString      VanGoghMachine;
-IM_EX_CTIBASE extern RWCString      NotificationMachine;
-IM_EX_CTIBASE extern int            NotificationPort;
-IM_EX_CTIBASE extern RWCString      gSMTPServer;
-IM_EX_CTIBASE extern RWCString      gLogDirectory;
-IM_EX_CTIBASE extern RWCString      gEmailFrom;
+IM_EX_CTIBASE extern string      dbDll;
+IM_EX_CTIBASE extern string      dbName;
+IM_EX_CTIBASE extern string      dbUser;
+IM_EX_CTIBASE extern string      dbPassword;
+IM_EX_CTIBASE extern string      VanGoghMachine;
+IM_EX_CTIBASE extern string      NotificationMachine;
+IM_EX_CTIBASE extern int         NotificationPort;
+IM_EX_CTIBASE extern string      gSMTPServer;
+IM_EX_CTIBASE extern string      gLogDirectory;
+IM_EX_CTIBASE extern string      gEmailFrom;
+
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions
 IM_EX_CTIBASE extern bool           gCoalesceRippleBits;          // Ripple Groups combine bits to send on routes.

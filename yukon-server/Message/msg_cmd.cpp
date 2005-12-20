@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_cmd.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
-#include <rw/rwtime.h>
 
 #include "dllbase.h"
 #include "collectable.h"
@@ -153,17 +152,17 @@ INT CtiCommandMsg::getOpArgument(INT i) const
    return iOpArgList[i];
 }
 
-RWCString CtiCommandMsg::getOpString() const
+string CtiCommandMsg::getOpString() const
 {
    return iOpString;
 }
 
-RWCString& CtiCommandMsg::getOpString()
+string& CtiCommandMsg::getOpString()
 {
    return iOpString;
 }
 
-CtiCommandMsg&    CtiCommandMsg::setOpString(const RWCString &aRef)
+CtiCommandMsg&    CtiCommandMsg::setOpString(const string &aRef)
 {
    iOpString = aRef;
    return *this;

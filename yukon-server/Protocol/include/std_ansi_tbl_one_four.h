@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_four.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/12 20:34:47 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:20:00 $
 *    History: 
       $Log: std_ansi_tbl_one_four.h,v $
+      Revision 1.6  2005/12/20 17:20:00  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.5  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -73,7 +76,7 @@ public:
    CtiAnsiTableOneFour( BYTE *dataBlob, int dataCtrlLen, int numDataCtrlEntries );
    virtual ~CtiAnsiTableOneFour();
    CtiAnsiTableOneFour& operator=(const CtiAnsiTableOneFour& aRef);
-   void printResult( RWCString deviceName );
+   void printResult( const string& deviceName );
    
    void decodeResultPiece( BYTE **dataBlob );
    void generateResultPiece( BYTE **dataBlob );

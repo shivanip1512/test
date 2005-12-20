@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clientconn.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/05/26 20:57:43 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ void CtiMCConnection::close()
 
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " Connection closed" << endl;
+            dout << CtiTime()  << " Connection closed" << endl;
         }
 }
 
@@ -196,7 +196,7 @@ void CtiMCConnection::_sendthr()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << __FILE__ << " (" << __LINE__ << ")" << "An unknown exception was thrown. " << endl;
+            dout << CtiTime() << __FILE__ << " (" << __LINE__ << ")" << "An unknown exception was thrown. " << endl;
         }
     }
 
@@ -210,7 +210,7 @@ void CtiMCConnection::_sendthr()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()
+            dout << CtiTime()
                  <<  __FILE__ << " (" << __LINE__ << ")"
                  << " An unkown exception was thrown _sendthr(), was closing the connection"
                  << endl;
@@ -220,7 +220,7 @@ void CtiMCConnection::_sendthr()
     if( gMacsDebugLevel & MC_DEBUG_CONN )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()  << " Exiting sendthr() " << this << endl;
+        dout << CtiTime()  << " Exiting sendthr() " << this << endl;
     }
 }
 
@@ -259,7 +259,7 @@ void CtiMCConnection::_recvthr()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " An exception was thrown _recthr(): " << msg.why() << endl;
+            dout << CtiTime() << " An exception was thrown _recthr(): " << msg.why() << endl;
         }
     }
     catch(...)
@@ -267,7 +267,7 @@ void CtiMCConnection::_recvthr()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " An unkown exception was thrown _recthr()" << endl;
+            dout << CtiTime() << " An unkown exception was thrown _recthr()" << endl;
         }
     }
 
@@ -280,7 +280,7 @@ void CtiMCConnection::_recvthr()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()
+            dout << CtiTime()
                  << " An unkown exception was thrown _recvthr(), was closing the connection"
                  << endl;
         }
@@ -289,7 +289,7 @@ void CtiMCConnection::_recvthr()
     if( gMacsDebugLevel & MC_DEBUG_CONN )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()  << " Exiting recvthr()" <<  this << endl;
+        dout << CtiTime()  << " Exiting recvthr()" <<  this << endl;
     }
 }
 
@@ -354,7 +354,7 @@ void CtiMCConnection::_close()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Exception occured closing connection in buffer" << endl;
+        dout << CtiTime() << " Exception occured closing connection in buffer" << endl;
     }
 
     try
@@ -371,6 +371,6 @@ void CtiMCConnection::_close()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Exception occured closing connection out buffer" << endl;
+        dout << CtiTime() << " Exception occured closing connection out buffer" << endl;
     }
 }

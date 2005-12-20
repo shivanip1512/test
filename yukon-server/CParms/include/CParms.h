@@ -2,23 +2,24 @@
 #define __CPARMS_H__
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 #include <rw/hashdict.h>
-#include <rw/rwtime.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-
+#include <time.h>
+#include "rwutil.h"
 #include "dlldefs.h"
 
 #define MAX_CONFIG_BUFFER  1024
 #define MAX_CONFIG_KEY     256
 #define MAX_CONFIG_VALUE   ((MAX_CONFIG_BUFFER) - (MAX_CONFIG_KEY))
 
+using std::string;
+
 // Forward decls.
 class CtiConfigParameters;
 
-IM_EX_CPARM extern RWCString DefaultMasterConfigFileName;
-IM_EX_CPARM extern RWCString ConfKeyRefreshRate;
+IM_EX_CPARM extern string DefaultMasterConfigFileName;
+IM_EX_CPARM extern string ConfKeyRefreshRate;
 IM_EX_CPARM extern CtiConfigParameters gConfigParms;
 
 template<class T>
@@ -111,9 +112,9 @@ class IM_EX_CPARM CtiConfigParameters
 private:
 
    int               RefreshRate;
-   RWTime            LastRefresh;
-   RWCString         FileName;
-   RWCString         BaseDir;
+   time_t            LastRefresh;
+   string         FileName;
+   string         BaseDir;
    #ifdef USE_RECURSIVE_MUX
    RWRecursiveLock<RWMutexLock> mutex;
    #else
@@ -123,15 +124,15 @@ private:
 
 public:
 
-   CtiConfigParameters(RWCString strName = DefaultMasterConfigFileName);
+   CtiConfigParameters(const string& strName = DefaultMasterConfigFileName);
    virtual ~CtiConfigParameters();
 
-   CtiConfigParameters& setConfigFile(RWCString strName = DefaultMasterConfigFileName);
+   CtiConfigParameters& setConfigFile(const string& strName = DefaultMasterConfigFileName);
 
-   RWCString getYukonBaseDir() const;
+   string getYukonBaseDir() const;
 
-   BOOL isOpt(RWCString key);
-   bool isOpt(RWCString key, RWCString isEqualThisValue);
+   BOOL isOpt(const string& key);
+   bool isOpt(const string& key, const string& isEqualThisValue);
 
    /*
     * returns bool true i.f.f. the cparms were refreshed on this call.  Uses the built in timer to
@@ -143,10 +144,10 @@ public:
    void              Dump();
    void              HeadAndTail(char *source, char *dest, size_t len);
 
-   RWCString         getValueAsString(RWCString Key, RWCString defaultval = RWCString());
-   int               getValueAsInt(RWCString key, int defaultval = 0);
-   double            getValueAsDouble(RWCString key, double defaultval = 0.0);
-   ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L, int base = 10);
+   string            getValueAsString (const string& Key, const string& defaultval = "");
+   int               getValueAsInt    (const string& key, int defaultval = 0);
+   double            getValueAsDouble (const string& key, double defaultval = 0.0) ;
+   ULONG             getValueAsULong  (const string& key, ULONG defaultval = 0L, int base = 10);
 };
 
 

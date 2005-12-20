@@ -7,17 +7,18 @@
 #include "configparms.h"
 #include "rtdb.h"
 #include "logger.h"
-
+#include "ctidate.h"
+using std::transform;
 //Boolean if debug messages are printed
 ULONG _LM_DEBUG = 0L;
 //Boolean if point enevts messages are created and sent to Dispatch
 BOOL _LM_POINT_EVENT_LOGGING = FALSE;
 
-RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
-ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
+CtiTime gInvalidCtiTime = CtiTime(CtiDate(1,1,1990),0,0,0);
+ULONG gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
 
-RWDBDateTime gEndOfRWDBDateTime = RWDBDateTime(2035,1,1,0,0,0,0);
-ULONG gEndOfRWDBDateTimeSeconds = gEndOfRWDBDateTime.seconds();
+CtiTime gEndOfCtiTime = CtiTime(CtiDate(1,1,2035),0,0,0);
+ULONG gEndOfCtiTimeSeconds = gEndOfCtiTime.seconds();
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -82,21 +83,21 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
 
 void CtiLMService::Init()
 {
-    RWCString logFile = "loadmanagement";
+    string logFile = "loadmanagement";
     dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputPath(gLogDirectory);
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
 
-    RWCString str;
+    string str;
     char var[128];
 
     _LM_DEBUG = LM_DEBUG_NONE;//default
 
     strcpy(var, "LOAD_MANAGEMENT_DEBUG");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        str.toLower();
+        transform(str.begin(), str.end(), str.begin(), tolower);
         _LM_DEBUG = (str=="true"?(LM_DEBUG_STANDARD|LM_DEBUG_POINT_DATA):LM_DEBUG_NONE);
 
         if( !_LM_DEBUG )
@@ -108,55 +109,55 @@ void CtiLMService::Init()
             else
             {
                 char *eptr;
-                _LM_DEBUG = strtoul(str.data(), &eptr, 16);
+                _LM_DEBUG = strtoul(str.c_str(), &eptr, 16);
             }
         }
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     strcpy(var, "LOAD_MANAGEMENT_LOG_FILE");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         logFile = str;
-        dout.setOutputFile(logFile.data());
+        dout.setOutputFile(logFile);
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
-        dout.setOutputFile(logFile.data());
+        dout.setOutputFile(logFile);
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     strcpy(var, "LOAD_MANAGEMENT_POINT_EVENT_LOGGING");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        str.toLower();
+        transform(str.begin(), str.end(), str.begin(), tolower);
         _LM_POINT_EVENT_LOGGING = (str=="true"?TRUE:FALSE);
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     _quit = false;
@@ -167,7 +168,7 @@ void CtiLMService::DeInit()
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Load Management shutdown" << endl;
+        dout << CtiTime().asString() << " - Load Management shutdown" << endl;
     }
     CService::DeInit();
 }
@@ -179,7 +180,7 @@ void CtiLMService::OnStop()
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Load Management shutting down...." << endl;
+        dout << CtiTime().asString() << " - Load Management shutting down...." << endl;
     }
 
     //Time to quit - send a shutdown message through the system
@@ -196,7 +197,7 @@ void CtiLMService::OnStop()
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Load Management shut down!" << endl;
+        dout << CtiTime().asString() << " - Load Management shut down!" << endl;
     }
 
     SetStatus(SERVICE_STOP_PENDING, 75, 30000 );
@@ -221,14 +222,14 @@ void CtiLMService::Run()
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
+            RWOrdered* controlAreas = store->getControlAreas(CtiTime().seconds());
 
 
             if ( controlAreas == NULL || controlAreas->entries() == 0 )
             {
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
+                dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
             }
             else
             {
@@ -242,7 +243,7 @@ void CtiLMService::Run()
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Starting load manager thread..." << endl;
+            dout << CtiTime().asString() << " - Starting load manager thread..." << endl;
         }
         CtiLoadManager* manager = CtiLoadManager::getInstance();
         manager->start();
@@ -252,14 +253,14 @@ void CtiLMService::Run()
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Starting client listener thread..." << endl;
+            dout << CtiTime().asString() << " - Starting client listener thread..." << endl;
         }
         CtiLMClientListener* clientListener = CtiLMClientListener::getInstance();
         clientListener->start();
 
         /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Load management started." << endl;
+            dout << CtiTime().asString() << " - Load management started." << endl;
         }*/
 
         SetStatus(SERVICE_RUNNING, 0, 0,
@@ -273,7 +274,7 @@ void CtiLMService::Run()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 

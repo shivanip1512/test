@@ -2,10 +2,10 @@
 #define  __CtiARGVAL_H__
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
+#include <string>
 
 class CtiArgValue : public RWCollectable
 {
@@ -34,12 +34,12 @@ public:
    int ReturnDoubleOpt (double *opt);
    int ReturnStringOpt (char *opt, int len);
 
-   RWCString&  getValue()    { return Value; }
+   std::string&  getValue()    { return Value; }
    int         isNumeric();
 
 
 private:
-   RWCString Value;
+   std::string Value;
 };
 
 

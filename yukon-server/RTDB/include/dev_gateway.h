@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/15 20:49:09 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,9 @@
 #include <iostream>
 #include <map>
 #include <vector>
-using namespace std;
+using std::vector;
+using std::map;
+using std::iostream;
 
 #include "ctitypes.h"
 #include "cmdparse.h"
@@ -81,8 +83,8 @@ public:
 
     SOCKET getSocket() const;
 
-    RWCString getMACAddress() const;
-    RWCString getIPAddress() const;
+    string getMACAddress() const;
+    string getIPAddress() const;
 
     int processParse(CtiCommandParser &parse, CtiOutMessage *&OutMessage);
     int checkPendingOperations();

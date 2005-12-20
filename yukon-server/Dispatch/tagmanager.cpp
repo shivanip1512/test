@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,9 @@
 #include "tagmanager.h"
 #include "tbl_dyn_pttag.h"
 
-extern RWCString AlarmTagsToString(UINT tags);
+using namespace std;
+
+extern string AlarmTagsToString(UINT tags);
 
 CtiTagManager::CtiTagManager() :
 _dirty(false)
@@ -49,7 +51,7 @@ CtiTagManager::~CtiTagManager()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** CtiTagManager Destructor Attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** CtiTagManager Destructor Attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -80,7 +82,7 @@ CtiTagManager& CtiTagManager::operator=(const CtiTagManager& aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -98,7 +100,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             tlg.tryAcquire(5000);
         }
@@ -128,7 +130,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Unknown tag action " << tag.getAction() << " ACH!" << endl;
                 }
 
@@ -157,7 +159,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -171,7 +173,7 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -200,7 +202,7 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
         pTagMsg = 0;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -214,7 +216,7 @@ size_t CtiTagManager::entries() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -229,7 +231,7 @@ bool CtiTagManager::empty() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -244,7 +246,7 @@ bool CtiTagManager::dirty() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -259,7 +261,7 @@ void CtiTagManager::setDirty(bool set)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -290,7 +292,7 @@ void CtiTagManager::run()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             sleep( 5000 );
@@ -299,12 +301,12 @@ void CtiTagManager::run()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " CtiTagManager::run() is exiting." << endl;
+        dout << CtiTime() << " CtiTagManager::run() is exiting." << endl;
     }
 
     set(TM_THREAD_TERMINATED);
@@ -338,7 +340,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
         if(DebugLevel & DEBUGLEVEL_LUDICROUS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         TagMgrMap_t::iterator itr = ip.first;
@@ -352,7 +354,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
                 if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " ORIGINAL :" << endl;
 
                     pOriginalTag->dump();
@@ -364,7 +366,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
                 if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " NEW :" << endl;
 
                     pOriginalTag->dump();
@@ -425,19 +427,19 @@ bool CtiTagManager::removeInstance(int instance, CtiTagMsg &tag)
         pTag->setAction( CtiTagMsg::RemoveAction );
         pTag->setTagTime( tag.getTagTime() );
 
-        if(!tag.getUser().isNull())
+        if(!tag.getUser().empty())
         {
             pTag->setUser(tag.getUser());
         }
-        if(!tag.getDescriptionStr().isNull())
+        if(!tag.getDescriptionStr().empty())
         {
             pTag->setDescriptionStr(tag.getDescriptionStr());
         }
-        if(!tag.getReferenceStr().isNull())
+        if(!tag.getReferenceStr().empty())
         {
             pTag->setReferenceStr(tag.getReferenceStr());
         }
-        if(!tag.getTaggedForStr().isNull())
+        if(!tag.getTaggedForStr().empty())
         {
             pTag->setTaggedForStr(tag.getTaggedForStr());
         }
@@ -466,7 +468,7 @@ void CtiTagManager::queueTagLogEntry(const CtiTagMsg &Tag)
     tlog->setTagId( Tag.getTagID() );
     tlog->setUserName( Tag.getUser() );
 
-    RWCString actn;
+    string actn;
     switch(Tag.getAction())
     {
     case (CtiTagMsg::AddAction):
@@ -482,7 +484,7 @@ void CtiTagManager::queueTagLogEntry(const CtiTagMsg &Tag)
         actn = "Tag Report";
         break;
     default:
-        actn = RWCString("Unknown ") + CtiNumStr(Tag.getAction());
+        actn = string("Unknown ") + CtiNumStr(Tag.getAction());
         break;
     }
     tlog->setActionStr( actn );
@@ -504,7 +506,7 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
     tlog.setTagId( Tag.getTagID() );
     tlog.setUserName( Tag.getUser() );
 
-    RWCString actn;
+    string actn;
     switch(Tag.getAction())
     {
     case (CtiTagMsg::AddAction):
@@ -520,7 +522,7 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
         actn = "Tag Report";
         break;
     default:
-        actn = RWCString("Unknown ") + CtiNumStr(Tag.getAction());
+        actn = string("Unknown ") + CtiNumStr(Tag.getAction());
         break;
     }
     tlog.setActionStr( actn );
@@ -544,7 +546,7 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Updated the dynamic table map!  Tag intance " << oldTag.getInstanceId() << endl;
+                dout << CtiTime() << " Updated the dynamic table map!  Tag intance " << oldTag.getInstanceId() << endl;
             }
         }
     }
@@ -559,14 +561,14 @@ void CtiTagManager::processDynamicQueue()
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         if(tlg.isAcquired())
         {
-            RWCString dpa("dyn_tag");
+            string dpa("dyn_tag");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
             if(conn.isValid())
             {
                 TagTblDynamicMap_t::iterator itr;
-                conn.beginTransaction(dpa);
+                conn.beginTransaction(dpa.c_str());
 
                 for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
                 {
@@ -578,9 +580,9 @@ void CtiTagManager::processDynamicQueue()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             Tag.dump();
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Error code " << Tag.Update(conn).errorCode() << endl;
                         }
 
@@ -589,7 +591,7 @@ void CtiTagManager::processDynamicQueue()
                     }
                 }
 
-                conn.commitTransaction(dpa);
+                conn.commitTransaction(dpa.c_str());
 
                 if(!failed) _dynTagLogMap.clear();
             }
@@ -606,13 +608,13 @@ void CtiTagManager::processTagLogQueue()
         {
             CtiTableTagLog *pTag = 0;
 
-            RWCString dpa("dyn_tag");
+            string dpa("dyn_tag");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
             if(conn.isValid())
             {
-                conn.beginTransaction(dpa);
+                conn.beginTransaction(dpa.c_str());
 
                 while((pTag = _tagLogQueue.getQueue(500)) != 0)
                 {
@@ -620,7 +622,7 @@ void CtiTagManager::processTagLogQueue()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Unable to update TagLog. RWDBStatus::errorCode() = " << pTag->Update().errorCode() << endl;
                             pTag->dump();
                         }
@@ -631,7 +633,7 @@ void CtiTagManager::processTagLogQueue()
                         delete pTag;
                 }
 
-                conn.commitTransaction(dpa);
+                conn.commitTransaction(dpa.c_str());
             }
         }
     }
@@ -658,7 +660,7 @@ void CtiTagManager::processDynamicRemovals()
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Trying to remove " << removeit << endl;
                 }
 #endif
@@ -679,7 +681,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -717,7 +719,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
         pTag = 0;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -745,7 +747,7 @@ int CtiTagManager::loadDynamicTags()
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << selector.asString() << endl;
         }
 
@@ -762,7 +764,7 @@ int CtiTagManager::loadDynamicTags()
             pTag->setUser(dynTag.getUserName());
             pTag->setAction(CtiTagMsg::ReportAction);                                      //dynTag.getActionStr());
             pTag->setDescriptionStr(dynTag.getDescriptionStr());
-            pTag->setTagTime(dynTag.getTagTime().rwtime());
+            pTag->setTagTime(dynTag.getTagTime());
             pTag->setReferenceStr(dynTag.getReferenceStr());
             pTag->setTaggedForStr(dynTag.getTaggedForStr());
 
@@ -794,7 +796,7 @@ int CtiTagManager::loadStaticTags()
         if(rdr.status().errorCode() != RWDBStatus::ok)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << selector.asString() << endl;
         }
 
@@ -810,7 +812,7 @@ int CtiTagManager::loadStaticTags()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** CtiTableTag **** Insert collision. " << endl;
+                    dout << CtiTime() << " **** CtiTableTag **** Insert collision. " << endl;
                 }
             }
         }
@@ -836,7 +838,7 @@ bool CtiTagManager::verifyTagMsg(CtiTagMsg &pTag)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             tlg.tryAcquire(5000);
         }
@@ -872,7 +874,7 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** CtiTagManager isPointControlInhibited() attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** CtiTagManager isPointControlInhibited() attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -901,7 +903,7 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
                         #if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Point " << pid << " is control inhibited due to tag instance " << pTagMsg->getInstanceID() << endl;
                         }
                         #endif

@@ -3,8 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <algorithm>
 
 #include "argval.h"
+#include "hash_functions.h"
+#include "rwutil.h"
 
 RWDEFINE_COLLECTABLE(CtiArgValue, 0x1235)
 
@@ -13,7 +16,7 @@ CtiArgValue::CtiArgValue() : Value()
 
 CtiArgValue::CtiArgValue(char *key) : Value(key)
 {
-   Value.toLower();
+   std::transform(Value.begin(), Value.end(), Value.begin(), tolower);
 }
 
 
@@ -28,13 +31,13 @@ CtiArgValue::operator=(const CtiArgValue& val)
 RWspace
 CtiArgValue::binaryStoreSize() const
 {
-   return Value.binaryStoreSize();
+   return ::strlen(Value.c_str());
 }
 
 int
 CtiArgValue::compareTo(const RWCollectable *X ) const
 {
-   RWCString aStr = ((const CtiArgValue*)X)->Value;
+   string aStr = ((const CtiArgValue*)X)->Value;
 
    if(Value == aStr) return 0;
 
@@ -51,13 +54,13 @@ CtiArgValue::compareTo(const RWCollectable *X ) const
 unsigned
 CtiArgValue::hash() const
 {
-   return Value.hash();
+   return RSHash(Value);
 }
 
 RWBoolean
 CtiArgValue::isEqual(const RWCollectable *c) const
 {
-   RWCString aValue = (((const CtiArgValue*)c)->Value);
+   string aValue = (((const CtiArgValue*)c)->Value);
    return (Value == aValue);
 }
 
@@ -79,7 +82,7 @@ void
 CtiArgValue::saveGuts(RWFile &aFile) const
 {
    RWCollectable::saveGuts( aFile );
-   aFile << Value;
+   aFile << Value.c_str();
 }
 
 void
@@ -94,7 +97,7 @@ int
 CtiArgValue::ReturnIntOpt(int *opt)
 {
    int bRet = TRUE;
-   *opt = atoi(Value);
+   *opt = atoi(Value.c_str());
    return bRet;
 }
 
@@ -103,7 +106,7 @@ CtiArgValue::ReturnDoubleOpt (double *opt)
 {
    int bRet = TRUE;
 
-   *opt = atof(Value);
+   *opt = atof(Value.c_str());
    return bRet;
 }
 
@@ -112,7 +115,7 @@ CtiArgValue::ReturnStringOpt (char *opt, int len)
 {
    int bRet = TRUE;
 
-   strncpy(opt, Value, len);
+   strncpy(opt, Value.c_str(), len);
    return bRet;
 }
 
@@ -123,7 +126,7 @@ CtiArgValue::isNumeric()
    int     bRet = TRUE;
 
 
-   if(!isdigit(Value(0)))
+   if(!isdigit(Value[0]))
    {
        bRet = FALSE;
    }

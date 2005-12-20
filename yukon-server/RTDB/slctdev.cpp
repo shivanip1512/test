@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/08/23 20:12:01 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,8 +96,8 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 {
-    RWCString rwsType;
-    RWCString rwsPseudo;
+    string rwsType;
+    string rwsPseudo;
 
     INT      DevType;
 
@@ -452,8 +452,8 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
 DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
 {
-    RWCString rwsType;
-    RWCString category;
+    string rwsType;
+    string category;
 
     INT      RteType;
 
@@ -463,9 +463,10 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
     rdr["category"]  >> category;
     rdr["type"]  >> rwsType;
 
-    category.toLower();
+    std::transform(category.begin(), category.end(), category.begin(), ::tolower);
+    
 
-    if(category == RWCString("route"))
+    if(category == string("route"))
     {
         if(getDebugLevel() & DEBUGLEVEL_FACTORY)
         {

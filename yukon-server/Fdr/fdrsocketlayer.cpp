@@ -22,7 +22,7 @@
 
 
 // constructors
-CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                      FDRConnectionType aType,
                                      CtiFDRSocketInterface *aParent):    
     iName (interfaceName),
@@ -37,7 +37,7 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName,
 
 }
 
-CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                      CtiFDRServerConnection *aInBoundConnection,
                                      FDRConnectionType aType,
                                      CtiFDRSocketInterface *aParent) :
@@ -56,7 +56,7 @@ CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName,
 
 
 // constructor of a single connection using one socket
-CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                      SOCKET aInBound,
                                      SOCKET aOutBound,
                                      FDRConnectionType aType,
@@ -277,16 +277,16 @@ CtiFDRSocketLayer& CtiFDRSocketLayer::setOutBoundConnectionStatus (CtiFDRSocketC
 }
 
 
-RWCString & CtiFDRSocketLayer::getName(void)
+string & CtiFDRSocketLayer::getName(void)
 {
     return iName;
 }
-RWCString  CtiFDRSocketLayer::getName(void) const
+string  CtiFDRSocketLayer::getName(void) const
 {
     return iName;
 }
 
-CtiFDRSocketLayer& CtiFDRSocketLayer::setName (RWCString aName)
+CtiFDRSocketLayer& CtiFDRSocketLayer::setName (string aName)
 {
   iName = aName;
   return *this;
@@ -304,13 +304,13 @@ int CtiFDRSocketLayer::init ()
         SOCKADDR_IN addr;
         struct hostent *entry=NULL;
 
-        entry = gethostbyname(iName);
+        entry = gethostbyname(iName.c_str());
         if(entry == NULL)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Server " << iName << " is not defined in the hosts file " << endl;
+                dout << CtiTime() << " Server " << iName << " is not defined in the hosts file " << endl;
             }
             retVal = !NORMAL;
         }
@@ -321,7 +321,7 @@ int CtiFDRSocketLayer::init ()
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Attempting to connect to "<< iName << " at " <<  RWCString (inet_ntoa(addr.sin_addr)) << endl;
+                dout << CtiTime() << " Attempting to connect to "<< iName << " at " <<  string (inet_ntoa(addr.sin_addr)) << endl;
             }
 
             // must be in this order because we need address info from server
@@ -343,7 +343,7 @@ int CtiFDRSocketLayer::init ()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << __FILE__ << " (" << __LINE__ <<") NOT IMPLEMENTED YET "<< getName()<< endl;
+            dout << CtiTime() << __FILE__ << " (" << __LINE__ <<") NOT IMPLEMENTED YET "<< getName()<< endl;
         }
     }
    return retVal;
@@ -374,7 +374,7 @@ int CtiFDRSocketLayer::run ()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << __FILE__ << " (" << __LINE__ <<") NOT IMPLEMENTED YET "<< getName()<< endl;
+            dout << CtiTime() << __FILE__ << " (" << __LINE__ <<") NOT IMPLEMENTED YET "<< getName()<< endl;
         }
     }
     return NORMAL;
@@ -410,7 +410,7 @@ int CtiFDRSocketLayer::closeAndFailConnection()
             iInBoundConnection->closeAndFailConnection();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Closed and failed Inbound connection " << getName() << endl;
+                dout << CtiTime() << " Closed and failed Inbound connection " << getName() << endl;
             } 
         }
     }
@@ -422,7 +422,7 @@ int CtiFDRSocketLayer::closeAndFailConnection()
             iOutBoundConnection->closeAndFailConnection();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Closed and failed outbound connection " << getName() << endl;
+                dout << CtiTime() << " Closed and failed outbound connection " << getName() << endl;
             }
         }
     }
@@ -444,7 +444,7 @@ INT CtiFDRSocketLayer::write (CHAR *aBuffer, int aPriority)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error sending data to "<< getName()<< endl;
+                dout << CtiTime() << " Error sending data to "<< getName()<< endl;
             }
             delete []aBuffer;
             retVal = !NORMAL;
@@ -465,7 +465,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
     int   loopCnt=1;
     int   failedStatus = 0;
     DWORD semRet;
-    RWTime logTime;
+    CtiTime logTime;
 
 
     try
@@ -473,7 +473,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
         if (iParent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing FDRSocketLayer::threadFunctionConnectionStatus for " << getName()  << endl;
+            dout << CtiTime() << " Initializing FDRSocketLayer::threadFunctionConnectionStatus for " << getName()  << endl;
         }
 
         iSemaphore = CreateEvent ((LPSECURITY_ATTRIBUTES)NULL,TRUE,false,NULL);
@@ -508,11 +508,11 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     else
                     {
                         loopCnt = 0;
-                        logTime =RWTime().now();
+                        logTime =CtiTime().now();
 //                        if(iParent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                           dout << RWTime() << " Link to " << getName() << " timed out " << endl;
+                           dout << CtiTime() << " Link to " << getName() << " timed out " << endl;
                         }
 
                         closeAndFailConnection();
@@ -536,22 +536,22 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                         // this will do cleanup work on connections
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Failing " << getName() << endl;
+                            dout << CtiTime() << " Failing " << getName() << endl;
                         }
 
-                        logTime =RWTime().now();
+                        logTime =CtiTime().now();
                         closeAndFailConnection();
                     }
                     else
                     {
-                        if ((logTime.seconds()+120) <= RWTime::now().seconds())
+                        if ((logTime.seconds()+120) <= CtiTime::now().seconds())
                         {
                             {
                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                               dout << RWTime() << " Valid connection exists to " << getName() << " at " << RWCString (inet_ntoa(getInBoundConnection()->getAddr().sin_addr)) << endl;
+                               dout << CtiTime() << " Valid connection exists to " << getName() << " at " << string (inet_ntoa(getInBoundConnection()->getAddr().sin_addr)) << endl;
                             }
                             sendLinkState (FDR_CONNECTED);
-                            logTime =RWTime().now();
+                            logTime =CtiTime().now();
 
                         }
                     }
@@ -562,7 +562,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to create connection semaphore for " << getName() << " loading interface failed" << endl;
+            dout << CtiTime() << " Unable to create connection semaphore for " << getName() << " loading interface failed" << endl;
         }
     }
 
@@ -581,7 +581,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
         closeAndFailConnection();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Fatal Error:  FDRSocketLayer::threadFunctionConnectionStatus " << getName() << " is dead! " << endl;
+            dout << CtiTime() << " Fatal Error:  FDRSocketLayer::threadFunctionConnectionStatus " << getName() << " is dead! " << endl;
         }
     }
 }
@@ -613,8 +613,8 @@ int CtiFDRSocketLayer::initializeClientConnection ()
                 // assuming this is ok
                 if (!(retVal = iOutBoundConnection->run()))
                 {
-                    RWCString desc,action;
-                    desc = getName() + RWCString ("'s client link has been established");
+                    string desc,action;
+                    desc = getName() + string ("'s client link has been established");
                     iParent->logEvent (desc,action, true);
                     setLinkStatusID(iParent->getClientLinkStatusID(getName()));
                     sendLinkState (FDR_CONNECTED);
@@ -635,7 +635,7 @@ int CtiFDRSocketLayer::getMessageSize(CHAR *aBuffer)
     return iParent->getMessageSize (aBuffer);
 }
 
-RWCString CtiFDRSocketLayer::decodeClientName(CHAR * aBuffer)
+string CtiFDRSocketLayer::decodeClientName(CHAR * aBuffer)
 {
     return iParent->decodeClientName(aBuffer);
 }

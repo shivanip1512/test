@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_loadprofile.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
 _deviceID(-1),
@@ -88,7 +90,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setChannelValid( const INT
 
 void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["lastintervaldemandrate"] <<
@@ -105,7 +107,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
     RWDBNullIndicator isNull;
-    RWCString   rwsTemp;
+    string   rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -120,19 +122,20 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["voltagedmdrate"]         >> _voltageProfileRate;
 
     rdr["loadprofilecollection"] >> rwsTemp;
-    rwsTemp.toLower();
+    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    //rwsTemp.toLower();
 
-    if(!rwsTemp.isNull())
+    if(!rwsTemp.empty())
     {
         for(int i = 0; i < MaxCollectedChannel; i++)
         {
-            if( i < rwsTemp.mbLength() && rwsTemp.data()[i] == 'y' )
+            if( i < ::mblen(rwsTemp.c_str(),::MB_CUR_MAX) && rwsTemp[i] == 'y' )
             {
                 if( _loadProfileDemandRate == 0 )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << " **** Load Profile collection disabled for deviceID = " << _deviceID << " ****" << endl;
                         dout << " **** LOADPROFILE DEMAND RATE == 0 while attempting Load Profile collection ****" << endl;
                         dout << " **** FIX DATABASE ENTRY **** " << endl;
@@ -152,7 +155,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-RWCString CtiTableDeviceLoadProfile::getTableName()
+string CtiTableDeviceLoadProfile::getTableName()
 {
     return "DeviceLoadProfile";
 }
@@ -178,7 +181,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -209,7 +212,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -234,7 +237,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -258,7 +261,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
 unsigned int CtiSignalMsg::_instanceCount = 0;
 
-CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri, unsigned millis, CtiPointDataMsg* point_data) :
+CtiSignalMsg::CtiSignalMsg(long pid, int soe, string text, string addl, int lt, unsigned cls, string usr, unsigned tag, int pri, unsigned millis, CtiPointDataMsg* point_data) :
    Inherited(pri),
    _id(pid),
    _logType(lt),
@@ -115,11 +115,11 @@ CtiSignalMsg& CtiSignalMsg::setId( const long a_id )
    return *this;
 }
 
-const RWCString& CtiSignalMsg::getText() const
+const string& CtiSignalMsg::getText() const
 {
    return _text;
 }
-CtiSignalMsg& CtiSignalMsg::setText(const RWCString& string)
+CtiSignalMsg& CtiSignalMsg::setText(const string& string)
 {
    _text = string;
    return *this;
@@ -162,7 +162,7 @@ CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
    if( millis > 999 )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    return *this;
@@ -229,12 +229,12 @@ CtiSignalMsg& CtiSignalMsg::setLogType(const int lt)
    return *this;
 }
 
-const RWCString& CtiSignalMsg::getAdditionalInfo() const
+const string& CtiSignalMsg::getAdditionalInfo() const
 {
    return _additional;
 }
 
-CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const RWCString& string)
+CtiSignalMsg& CtiSignalMsg::setAdditionalInfo(const string& string)
 {
    _additional = string;
    return *this;

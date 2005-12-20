@@ -8,26 +8,30 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_2way.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
+
 
 #include "tbl_2way.h"
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "logger.h"
+
+#include "rwutil.h"
+
+using std::transform;
+
 
 CtiTableDevice2Way::CtiTableDevice2Way(LONG did) :
 _deviceID(did),
@@ -158,14 +162,14 @@ CtiTableDevice2Way& CtiTableDevice2Way::setPerform24Alarm( const INT aPerform24A
     return *this;
 }
 
-RWCString CtiTableDevice2Way::getTableName()
+string CtiTableDevice2Way::getTableName()
 {
     return "Device2WayFlags";
 }
 
 void CtiTableDevice2Way::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["deviceid"] <<
@@ -190,7 +194,7 @@ RWDBStatus CtiTableDevice2Way::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -237,33 +241,33 @@ void CtiTableDevice2Way::DecodeDatabaseReader(RWDBReader &rdr)
 
 
     INT iTemp;
-    RWCString   rwsTemp;
+    string   rwsTemp;
 
     rdr["deviceid"]     >> _deviceID;
 
     rdr["monthlystats"]     >> rwsTemp;
-    rwsTemp.toLower();
-    MonthlyStats = ((rwsTemp != 'y') ? FALSE : TRUE );
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    MonthlyStats = ((rwsTemp != "y") ? FALSE : TRUE );
 
     rdr["twentyfourhourstats"] >> rwsTemp;
-    rwsTemp.toLower();
-    DailyStats = ((rwsTemp == 'y') ? TRUE : FALSE);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    DailyStats = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["hourlystats"]     >> rwsTemp;
-    rwsTemp.toLower();
-    HourlyStats = ((rwsTemp == 'y') ? TRUE : FALSE);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    HourlyStats = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["failurealarm"]     >> rwsTemp;
-    rwsTemp.toLower();
-    FailureAlarm = ((rwsTemp == 'y') ? TRUE : FALSE);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    FailureAlarm = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["performancealarm"]     >> rwsTemp;
-    rwsTemp.toLower();
-    PerformAlarm = ((rwsTemp == 'y') ? TRUE : FALSE);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    PerformAlarm = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["performancetwentyfouralarm"]     >> rwsTemp;
-    rwsTemp.toLower();
-    Perform24Alarm = ((rwsTemp == 'y') ? TRUE : FALSE);
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    Perform24Alarm = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["performancethreshold"] >> PerformanceThreshold;
 }
@@ -275,7 +279,7 @@ RWDBStatus CtiTableDevice2Way::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -305,7 +309,7 @@ RWDBStatus CtiTableDevice2Way::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -334,7 +338,7 @@ RWDBStatus CtiTableDevice2Way::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 
 
 #include <rw/tpsrtvec.h>
-#include <rw\cstring.h>
 #include "pt_numeric.h"
 
 /*-----------------------------------------------------------------------------*
@@ -30,11 +29,11 @@ private:
 
    INT         Order;         // Which calculation is this??
    LONG        PointID;       // Which _other_ point does this calc operate upon?
-   RWCString   Operation;     // What is it that I am doing?
+   string   Operation;     // What is it that I am doing?
 
 public:
 
-   CtiPointCalculation(INT Ord = -1, LONG pid = -1, RWCString str = RWCString("NoOp") ) :
+   CtiPointCalculation(INT Ord = -1, LONG pid = -1, string str = string("NoOp") ) :
       Order(Ord),
       PointID(pid),
       Operation(str)
@@ -48,11 +47,11 @@ public:
 
    INT            getOrder() const                 { return Order; }
    LONG           getPointID() const               { return PointID; }
-   RWCString      getOperation() const             { return Operation; }
+   string      getOperation() const             { return Operation; }
 
    void           setOrder(INT i)                  { Order = i; }
    void           setPointID(LONG pid)             {PointID = pid; }
-   void           setOperation(const RWCString s)  { Operation = s; }
+   void           setOperation(const string s)  { Operation = s; }
 };
 
 class IM_EX_PNTDB CtiPointCalculated : public CtiPointNumeric
@@ -116,7 +115,7 @@ public:
       if(!isNull)
       {
          LONG pid;
-         RWCString Op;
+         string Op;
 
          rdr["calcpointid"]   >> pid;
          rdr["operation"]     >> Op;

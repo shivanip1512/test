@@ -79,7 +79,7 @@ LONG CtiLMEnergyExchangeCustomerReply::getOfferId() const
 
     Returns the accept status of the customer
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeCustomerReply::getAcceptStatus() const
+const string& CtiLMEnergyExchangeCustomerReply::getAcceptStatus() const
 {
 
     return _acceptstatus;
@@ -90,7 +90,7 @@ const RWCString& CtiLMEnergyExchangeCustomerReply::getAcceptStatus() const
 
     Returns the accept date time of the customer
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeCustomerReply::getAcceptDateTime() const
+const CtiTime& CtiLMEnergyExchangeCustomerReply::getAcceptDateTime() const
 {
 
     return _acceptdatetime;
@@ -113,7 +113,7 @@ LONG CtiLMEnergyExchangeCustomerReply::getRevisionNumber() const
 
     Returns the ip address of the accept user of the customer
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeCustomerReply::getIPAddressOfAcceptUser() const
+const string& CtiLMEnergyExchangeCustomerReply::getIPAddressOfAcceptUser() const
 {
 
     return _ipaddressofacceptuser;
@@ -124,7 +124,7 @@ const RWCString& CtiLMEnergyExchangeCustomerReply::getIPAddressOfAcceptUser() co
 
     Returns the user id name of the customer
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeCustomerReply::getUserIdName() const
+const string& CtiLMEnergyExchangeCustomerReply::getUserIdName() const
 {
 
     return _useridname;
@@ -135,7 +135,7 @@ const RWCString& CtiLMEnergyExchangeCustomerReply::getUserIdName() const
 
     Returns the name of accept person of the customer
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeCustomerReply::getNameOfAcceptPerson() const
+const string& CtiLMEnergyExchangeCustomerReply::getNameOfAcceptPerson() const
 {
 
     return _nameofacceptperson;
@@ -146,7 +146,7 @@ const RWCString& CtiLMEnergyExchangeCustomerReply::getNameOfAcceptPerson() const
 
     Returns the energy exchange notes of the customer
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeCustomerReply::getEnergyExchangeNotes() const
+const string& CtiLMEnergyExchangeCustomerReply::getEnergyExchangeNotes() const
 {
 
     return _energyexchangenotes;
@@ -193,7 +193,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setOfferId(L
 
     Sets the accept status of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptStatus(const RWCString& accstatus)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptStatus(const string& accstatus)
 {
 
     _acceptstatus = accstatus;
@@ -205,7 +205,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptSta
 
     Sets the accept date time of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptDateTime(const RWDBDateTime& acctime)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptDateTime(const CtiTime& acctime)
 {
 
     _acceptdatetime = acctime;
@@ -229,7 +229,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setRevisionN
 
     Sets the ip address of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setIPAddressOfAcceptUser(const RWCString& ipaddress)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setIPAddressOfAcceptUser(const string& ipaddress)
 {
 
     _ipaddressofacceptuser = ipaddress;
@@ -241,7 +241,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setIPAddress
 
     Sets the user id name of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setUserIdName(const RWCString& username)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setUserIdName(const string& username)
 {
 
     _useridname = username;
@@ -253,7 +253,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setUserIdNam
 
     Sets the name of the accept person of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setNameOfAcceptPerson(const RWCString& nameaccperson)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setNameOfAcceptPerson(const string& nameaccperson)
 {
 
     _nameofacceptperson = nameaccperson;
@@ -265,7 +265,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setNameOfAcc
 
     Sets the energy exchange notes of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setEnergyExchangeNotes(const RWCString& exchangenotes)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setEnergyExchangeNotes(const string& exchangenotes)
 {
 
     _energyexchangenotes = exchangenotes;
@@ -285,7 +285,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreGuts(RWvistream& istrm)
 
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime;
+    CtiTime tempTime;
     istrm >> _customerid
     >> _offerid
     >> _acceptstatus
@@ -297,7 +297,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreGuts(RWvistream& istrm)
     >> _energyexchangenotes
     >> _lmenergyexchangehourlycustomers;
 
-    _acceptdatetime = RWDBDateTime(tempTime);
+    _acceptdatetime = CtiTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
@@ -315,7 +315,7 @@ void CtiLMEnergyExchangeCustomerReply::saveGuts(RWvostream& ostrm ) const
     ostrm << _customerid
     << _offerid
     << _acceptstatus
-    << _acceptdatetime.rwtime()
+    << _acceptdatetime
     << _revisionnumber
     << _ipaddressofacceptuser
     << _useridname
@@ -422,7 +422,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
+                dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
             }
 
             RWDBDatabase db = getDatabase();
@@ -443,7 +443,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -451,7 +451,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -475,12 +475,12 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
             RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
             RWDBUpdater updater = lmEnergyExchangeCustomerReplyTable.updater();
 
-            updater << lmEnergyExchangeCustomerReplyTable["acceptstatus"].assign(getAcceptStatus())
-            << lmEnergyExchangeCustomerReplyTable["acceptdatetime"].assign(getAcceptDateTime())
-            << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"].assign(getIPAddressOfAcceptUser())
-            << lmEnergyExchangeCustomerReplyTable["useridname"].assign(getUserIdName())
-            << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"].assign(getNameOfAcceptPerson())
-            << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"].assign(getEnergyExchangeNotes());
+            updater << lmEnergyExchangeCustomerReplyTable["acceptstatus"].assign(getAcceptStatus()[0])
+            << lmEnergyExchangeCustomerReplyTable["acceptdatetime"].assign(toRWDBDT(getAcceptDateTime()))
+            << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"].assign(getIPAddressOfAcceptUser()[0])
+            << lmEnergyExchangeCustomerReplyTable["useridname"].assign(getUserIdName()[0])
+            << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"].assign(getNameOfAcceptPerson()[0])
+            << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"].assign(getEnergyExchangeNotes()[0]);
 
             updater.where(lmEnergyExchangeCustomerReplyTable["customerid"]==getCustomerId() &&
                           lmEnergyExchangeCustomerReplyTable["offerid"]==getOfferId() &&
@@ -489,7 +489,7 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -497,7 +497,7 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -550,7 +550,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
             if( _LM_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << selector.asString().data() << endl;
+                dout << CtiTime() << " - " << selector.asString().c_str() << endl;
             }
 
             RWDBReader rdr = selector.reader(conn);
@@ -571,7 +571,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }*/
 }
@@ -579,7 +579,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
 // Static Members
 
 // Possible accept statuses
-const RWCString CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus = "NoResponse";
-const RWCString CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus = "Accepted";
-const RWCString CtiLMEnergyExchangeCustomerReply::DeclinedAcceptStatus = "Declined";
-
+const string CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus = "NoResponse";
+const string CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus = "Accepted";
+const string CtiLMEnergyExchangeCustomerReply::DeclinedAcceptStatus = "Declined";
+                                            

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
          {
              {
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                 dout << RWTime() << " Porter GUI Connection Thread. TID:  " << rwThreadId() << endl;
+                 dout << CtiTime() << " Porter GUI Connection Thread. TID:  " << rwThreadId() << endl;
              }
    
              CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GUI Connection Thread", CtiThreadRegData::None, 400 );

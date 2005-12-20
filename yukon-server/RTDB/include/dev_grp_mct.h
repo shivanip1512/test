@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/06/27 20:53:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ public:
 
     virtual LONG getRouteID();
     virtual LONG getAddress() const;
-    virtual RWCString getDescription( const CtiCommandParser &parse ) const;
+    virtual string getDescription( const CtiCommandParser &parse ) const;
     virtual void getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector );
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );

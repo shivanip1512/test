@@ -104,7 +104,7 @@ IM_EX_TCPSUP INT TCPInit (NETCXPORTINFO *MyPortInfo, CtiPort *PortRecord, UINT I
    MyPortInfo->Server.sin_family = AF_INET;
 
    /* Check if we have a : in the destionation and dig out the address in the process */
-   MyPortInfo->Server.sin_addr.s_addr = inet_addr (PortRecord->getIPAddress());
+   MyPortInfo->Server.sin_addr.s_addr = inet_addr (PortRecord->getIPAddress().c_str());
 
    /* Check if we have a port specifier */
    if(PortRecord->getIPPort())
@@ -174,7 +174,7 @@ IM_EX_TCPSUP INT TCPInitNext (NETCXPORTINFO *MyPortInfo, CtiPort *PortRecord)
    memset (&MyPortInfo->Server, 0, sizeof (MyPortInfo->Server));
    MyPortInfo->Server.sin_family = AF_INET;
 
-   strcpy(IPAddress, PortRecord->getIPAddress());
+   strcpy(IPAddress, PortRecord->getIPAddress().c_str());
 
    MyPortInfo->Server.sin_addr.s_addr = htonl (ntohl (inet_addr (IPAddress)) + 1);
 

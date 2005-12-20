@@ -17,73 +17,75 @@
 #include <windows.h>
 #include <iomanip>
 #include <functional>
-using namespace std;
+#include <string>
 
 #include <rw/tvhdict.h>
-#include <rw/cstring.h>
 #include <rw/rwdate.h>
 #include <rw/tvslist.h>
 #include <rw\ctoken.h>
 
+#include "ctitokenizer.h"
 #include "dlldefs.h"
 #include "parsevalue.h"
 
+using std::string;
+
 struct simple_hash
 {
-   unsigned long operator()(const RWCString& x) const { return x.length() * (long)x(0); }
+   unsigned long operator()(const string& x) const { return x.length() * (long)x[0]; }
 };
 
 class IM_EX_CTIBASE CtiCommandParser
 {
 protected:
 
-   RWCString                  _cmdString;
-   RWTValSlist< RWCString >   _actionItems;
+   string                  _cmdString;
+   RWTValSlist< string >   _actionItems;
 
-   RWTValHashMap< RWCString, CtiParseValue, simple_hash, equal_to<RWCString> > _cmd;
+   RWTValHashMap< string, CtiParseValue, simple_hash, std::equal_to<string> > _cmd;
 
 
 private:
 
-    void    doParse(RWCString Cmd);
-    void    doParseGetValue(const RWCString &CmdStr);
-    void    doParsePutValue(const RWCString &CmdStr);
-    void    doParseGetStatus(const RWCString &CmdStr);
-    void    doParsePutStatus(const RWCString &CmdStr);
-    void    doParseControl(const RWCString &CmdStr);
-    void    doParseGetConfig(const RWCString &CmdStr);
-    void    doParsePutConfig(const RWCString &CmdStr);
-    void    doParseScan(const RWCString &CmdStr);
+    void    doParse(const string &Cmd);
+    void    doParseGetValue(const string &CmdStr);
+    void    doParsePutValue(const string &CmdStr);
+    void    doParseGetStatus(const string &CmdStr);
+    void    doParsePutStatus(const string &CmdStr);
+    void    doParseControl(const string &CmdStr);
+    void    doParseGetConfig(const string &CmdStr);
+    void    doParsePutConfig(const string &CmdStr);
+    void    doParseScan(const string &CmdStr);
 
-    void    doParsePutConfigVersacom(const RWCString &CmdStr);
-    void    doParsePutConfigEmetcon(const RWCString &CmdStr);
-    void    doParsePutStatusVersacom(const RWCString &CmdStr);
-    void    doParsePutStatusFisherP(const RWCString &CmdStr);
-    void    doParsePutStatusEmetcon(const RWCString &CmdStr);
-    void    resolveProtocolType(const RWCString &CmdStr);
+    void    doParsePutConfigVersacom(const string &CmdStr);
+    void    doParsePutConfigEmetcon(const string &CmdStr);
+    void    doParsePutStatusVersacom(const string &CmdStr);
+    void    doParsePutStatusFisherP(const string &CmdStr);
+    void    doParsePutStatusEmetcon(const string &CmdStr);
+    void    resolveProtocolType(const string &CmdStr);
 
-    void    doParseControlExpresscom(const RWCString &CmdStr);
-    void    doParsePutConfigExpresscom(const RWCString &CmdStr);
-    void    doParsePutStatusExpresscom(const RWCString &CmdStr);
+    void    doParseControlExpresscom(const string &CmdStr);
+    void    doParsePutConfigExpresscom(const string &CmdStr);
+    void    doParsePutStatusExpresscom(const string &CmdStr);
 
-    void    doParseControlSA(const RWCString &CmdStr);
-    void    doParsePutConfigSA(const RWCString &CmdStr);
+    void    doParseControlSA(const string &CmdStr);
+    void    doParsePutConfigSA(const string &CmdStr);
 
-    void    doParsePutConfigThermostatSchedule(const RWCString &CmdStr);
+    void    doParsePutConfigThermostatSchedule(const string &CmdStr);
 
-    INT     convertTimeInputToSeconds(const RWCString& inStr) const;
-    INT     isTokenThermostatScheduleDOW(RWCString &token);
-    void    doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, INT &key);
+    INT     convertTimeInputToSeconds(const string& inStr) const;
+    INT     isTokenThermostatScheduleDOW(string &token);
+    void    doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, INT &key);
 
-    void    doParsePutConfigCBC(const RWCString &CmdStr);
+    void    doParsePutConfigCBC(const string &CmdStr);
 
 
 public:
 
-   typedef RWTValHashMap< RWCString, CtiParseValue, simple_hash, equal_to<RWCString> > map_type;
-   typedef RWTValHashMapIterator< RWCString, CtiParseValue, simple_hash, equal_to<RWCString> > map_itr_type;
+   typedef RWTValHashMap< string, CtiParseValue, simple_hash, std::equal_to<string> > map_type;
+   typedef RWTValHashMapIterator< string, CtiParseValue, simple_hash, std::equal_to<string> > map_itr_type;
 
-   CtiCommandParser(const RWCString str);
+   CtiCommandParser(const string str);
 
    CtiCommandParser(const CtiCommandParser& aRef);
 
@@ -97,7 +99,7 @@ public:
 
    void Dump();
 
-   const RWCString& getCommandStr() const;
+   const string& getCommandStr() const;
 
    int      getControlled() const;
    bool     isControlled()  const;
@@ -108,22 +110,22 @@ public:
    UINT     getCommand() const;
    UINT     getFlags() const;
    UINT     getOffset() const;
-   bool     isKeyValid(const RWCString key) const;
-   UINT     getOffset(const RWCString key) const;
-   INT      getiValue(const RWCString key, INT valifnotfound = INT_MIN) const;
-   DOUBLE   getdValue(const RWCString key, DOUBLE valifnotfound = 0.0) const;
-   RWCString getsValue(const RWCString key) const;
-   CtiCommandParser& setValue(const RWCString key, INT val);
-   CtiCommandParser& setValue(const RWCString key, DOUBLE val);
-   CtiCommandParser& setValue(const RWCString key, RWCString val);
+   bool     isKeyValid(const string key) const;
+   UINT     getOffset(const string key) const;
+   INT      getiValue(const string key, INT valifnotfound = INT_MIN) const;
+   DOUBLE   getdValue(const string key, DOUBLE valifnotfound = 0.0) const;
+   string getsValue(const string key) const;
+   CtiCommandParser& setValue(const string key, INT val);
+   CtiCommandParser& setValue(const string key, DOUBLE val);
+   CtiCommandParser& setValue(const string key, string val);
 
 
-   RWTValSlist< RWCString >& getActionItems();
+   RWTValSlist< string >& getActionItems();
 
    void parse();
 
-   RWCString asString();
-   CtiCommandParser& parseAsString(const RWCString str);
+   string asString();
+   CtiCommandParser& parseAsString(const string str);
 
 };
 

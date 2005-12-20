@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.12  2005/12/20 17:19:57  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.11  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
@@ -626,10 +629,10 @@ void CtiAnsiTableTwoThree::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_R
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printResult( RWCString deviceName )
+void CtiAnsiTableTwoThree::printResult( const string& deviceName )
 {
     int index, cnt;
-    RWCString string1,string2;
+    string string1,string2;
     double double1;
 
     /**************************************************************
@@ -703,7 +706,7 @@ void CtiAnsiTableTwoThree::printSummations( DATA_BLK_RCD data_block )
 void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
 {
     int index, cnt;
-    RWCString timeString;
+    string timeString;
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "       ***Demands: " ;
@@ -720,10 +723,10 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
           {
               if (data_block.demands[index].event_time[cnt] != 0)
               {
-                  timeString = RWTime( data_block.demands[index].event_time[cnt]).asString();
+                  timeString = CtiTime( data_block.demands[index].event_time[cnt]).asString();
               }
               else
-                  timeString = RWTime(1,1,1990).asString();
+                  timeString = CtiTime(1,1,1990).asString();
               {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << "  "<<timeString;
@@ -882,7 +885,7 @@ double CtiAnsiTableTwoThree::getDemandEventTime( int index, int dataBlock )
 
         }
     }
-    return RWTime().seconds();
+    return CtiTime().seconds();
 }
 
 

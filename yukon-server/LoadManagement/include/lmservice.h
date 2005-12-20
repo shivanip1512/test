@@ -30,7 +30,7 @@ protected:
 
 private:
     bool _quit;
-    RWCString _config_file;
+    string _config_file;
 
     CtiLoadManager* manager;
     CtiLMClientListener* clientListener;

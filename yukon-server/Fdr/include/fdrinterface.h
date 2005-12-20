@@ -29,7 +29,6 @@
 #include <rw/tvdeque.h>
 #include <rw/ordcltn.h>
 #include <rw/collstr.h>
-#include <rw/cstring.h>
 
 #include "dlldefs.h"
 #include "message.h"
@@ -44,7 +43,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 {
     public:
         // constructors and destructors
-        CtiFDRInterface(RWCString & interfaceType); 
+        CtiFDRInterface(string & interfaceType); 
 
         virtual ~CtiFDRInterface( void );
 
@@ -52,18 +51,18 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual bool        sendMessageToForeignSys ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch   ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch   ( CtiMessage *aMessage );
-        bool                logEvent( const RWCString &logDesc, 
-                                      const RWCString &logMsg, 
+        bool                logEvent( const string &logDesc, 
+                                      const string &logMsg, 
                                       bool aSendImmediatelyFlag=false );
                 
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
 
         INT                 reRegisterWithDispatch(void);
-        RWCString           getCparmValueAsString(RWCString key);
+        string              getCparmValueAsString(string key);
 
-        CtiFDRInterface &   setInterfaceName(RWCString & aInterfaceName);
-        RWCString       &   getInterfaceName(void);
+        CtiFDRInterface &   setInterfaceName(string & aInterfaceName);
+        string       &   getInterfaceName(void);
 
         int                 getReloadRate () const;
         CtiFDRInterface&    setReloadRate (INT aRate);
@@ -108,10 +107,10 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRPointList & getReceiveFromList ();
         CtiFDRInterface& setReceiveFromList (CtiFDRPointList & aList);
 
-        bool findTranslationNameInList(RWCString aTranslationName, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
+        bool findTranslationNameInList(string aTranslationName, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool findPointIdInList(long aPointId, CtiFDRPointList &aList,CtiFDRPoint &aPoint);
         bool updatePointByIdInList(CtiFDRPointList &aList, CtiPointDataMsg *aMessage);
-        long getClientLinkStatusID(RWCString &aClientName);
+        long getClientLinkStatusID(string &aClientName);
         virtual void setCurrentClientLinkStates();
 
         BOOL connectWithDispatch(void);
@@ -143,8 +142,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         static const CHAR * KEY_DEBUG_LEVEL;
 
     private:
-        RWCString           iInterfaceName;
-        RWCString           iDispatchMachine;
+        string           iInterfaceName;
+        string           iDispatchMachine;
 
         FDRDbReloadReason   iDbReloadReason;
         ULONG               iDebugLevel;

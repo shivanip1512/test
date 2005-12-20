@@ -3,6 +3,8 @@
 #include "logger.h"
 #include "pending_info.h"
 
+using namespace std;
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   pending_info
@@ -11,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/09/01 14:42:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:16:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,11 +96,11 @@ INT CtiPendingPointOperations::getLimitBeingTimed() const
 {
     return _limitBeingTimed;
 }
-RWTime CtiPendingPointOperations::getTime() const
+CtiTime CtiPendingPointOperations::getTime() const
 {
     return _time;
 }
-RWTime& CtiPendingPointOperations::getTime()
+CtiTime& CtiPendingPointOperations::getTime()
 {
     return _time;
 }
@@ -132,7 +134,7 @@ CtiPendingPointOperations& CtiPendingPointOperations::setLimitBeingTimed( INT li
     _limitBeingTimed = lim;
     return *this;
 }
-CtiPendingPointOperations& CtiPendingPointOperations::setTime(const RWTime& rt )
+CtiPendingPointOperations& CtiPendingPointOperations::setTime(const CtiTime& rt )
 {
     _time = rt;
     return *this;
@@ -266,8 +268,8 @@ bool CtiPendingPointOperations::operator()(const CtiPendingPointOperations& y) c
 
 bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) const
 {
-    RWTime xt = getTime();
-    RWTime yt = y.getTime();
+    CtiTime xt = getTime();
+    CtiTime yt = y.getTime();
 
     bool less = false;
 
@@ -286,7 +288,7 @@ bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) co
 #else
         if(getType() == CtiPendingPointOperations::pendingLimit)
         {
-            RWTime maxTime(YUKONEOT);
+            CtiTime maxTime(YUKONEOT);
             xt = getTime() + getLimitDuration();
             yt = y.getTime() + y.getLimitDuration();
             less = xt < yt;
@@ -302,7 +304,7 @@ bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) co
 /*
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << " XPID " << getPointID() << " Type " << getType() << " Time " << xt << endl;
         dout << " YPID " << y.getPointID() << " Type " << y.getType() << " Time " << yt << endl;
     }
@@ -366,12 +368,12 @@ void CtiPendingPointOperations::addOffset(int offset, long pid)
     return;
 }
 
-void CtiPendingPointOperations::setLastHistoryPost(RWTime rwt)
+void CtiPendingPointOperations::setLastHistoryPost(CtiTime rwt)
 {
     _lastHistoryPost = rwt;
 }
 
-RWTime CtiPendingPointOperations::getLastHistoryPost() const
+CtiTime CtiPendingPointOperations::getLastHistoryPost() const
 {
     return _lastHistoryPost;
 }

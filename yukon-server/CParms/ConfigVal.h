@@ -2,29 +2,34 @@
 #define  __CONFIGVAL_H__
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
+#include <string>
+
+using namespace std;
 
 class CtiConfigValue : public RWCollectable
 {
 private:
-   RWCString Value;
+   string Value;
 public:
    RWDECLARE_COLLECTABLE(CtiConfigValue);
 
    CtiConfigValue();
-   CtiConfigValue(RWCString val);
+   CtiConfigValue(const string& val);
    ~CtiConfigValue() {}
 
 
 
    // Inherited virtuals from RWCollectable
+   /*
    RWspace     binaryStoreSize() const;
-   int         compareTo(const RWCollectable*) const;
-   RWBoolean   isEqual(const RWCollectable*) const;
-   unsigned    hash() const;
+
+   virtual int         compareTo(const RWCollectable*) const;
+   virtual RWBoolean   isEqual(const RWCollectable*) const;
+   virtual unsigned    hash() const;
+   */      
 
    CtiConfigValue& operator=(const CtiConfigValue& key);
 
@@ -35,7 +40,7 @@ public:
 
    int ReturnStringOpt (char *opt, int len);
 
-   RWCString&  getValue()    { return Value; }
+   const string&  getValue()    { return Value; }
 
 };
 

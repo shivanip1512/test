@@ -23,7 +23,7 @@
 #include <iostream>
 #include <set>
 
-using namespace std;
+
 
 #include <rw/collect.h>
 #include <rw/collstr.h>
@@ -52,13 +52,16 @@ using namespace std;
 #define MCCMD_DEBUG_INIT       0x00000001
 #define MCCMD_DEBUG_PILREQUEST 0x00000002
 
+using std::map;
+using std::string;
+
 extern unsigned gMccmdDebugLevel;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef map< long, CtiReturnMsg*, less<long> > PILReturnMap;
+typedef std::map< long, CtiReturnMsg*, std::less<long> > PILReturnMap;
 
 /* Registers MACS commands with the interpreter
    and registers MCCmd as a package */
@@ -133,10 +136,10 @@ static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc,
     
 //MORE............
 
-static int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
-static int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
+static int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line);
+static int DoTwoWayRequest(Tcl_Interp* interp, string& cmd_line);
 
-static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way);
+static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way);
 
 static void HandleReturnMessage(CtiReturnMsg* msg,
                 PILReturnMap& good_map,
@@ -149,19 +152,19 @@ static void HandleMessage(RWCollectable* msg,
               PILReturnMap& device_map);
 
 /* Retrieves the id of a notification group given its name */
-static long GetNotificationGroupID( const RWCString& name );
+static long GetNotificationGroupID( const string& name );
 
 /* Retrive the name/id of a device */
-static void GetDeviceName(long deviceID, RWCString& name);
-static long GetDeviceID(const RWCString& name);
+static void GetDeviceName(long deviceID, string& name);
+static long GetDeviceID(const string& name);
 
 /* Strips out the select list part of the command and builds up
    a set of n select name commands from it, which are returned
    in sel_set as RWCollectableStrings. The original cmd is modified
    to remove the original select statement */
-static void StripSelectListCmd(RWCString& cmd, RWSet& sel_set);
+static void StripSelectListCmd(string& cmd, RWSet& sel_set);
 
-static void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd, RWSet& req_set);
+static void BuildRequestSet(Tcl_Interp* interp, string& cmd, RWSet& req_set);
 /* Nothing below here should be called from within this dll unless you have a good
    pretty good reason */
 
@@ -182,14 +185,14 @@ struct thr_hash
 };
 
 static RWRecursiveLock<RWMutexLock> _queue_mux;
-static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, equal_to<RWThreadId>  > InQueueStore;
-static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, equal_to<RWThreadId>  > OutQueueStore;
+static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
+static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > OutQueueStore;
 
 /* This function runs in it's own thread and simple watches the connection to the
    PIL for incoming messages and places them in the appropriate queue */
 static void _MessageThrFunc();
 
-void AppendToString(RWCString& str, int argc, char* argv[]);
+void AppendToString(string& str, int argc, char* argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
 void DumpRequestMessage(CtiRequestMsg& msg);
 

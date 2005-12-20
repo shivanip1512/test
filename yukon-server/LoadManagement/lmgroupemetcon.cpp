@@ -72,13 +72,13 @@ CtiLMGroupBase& CtiLMGroupEmetcon::setGroupControlState(LONG controlstate)
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -94,7 +94,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(LONG percent, LONG 
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not smart cycle an Emetcon Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not smart cycle an Emetcon Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -107,13 +107,13 @@ CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(LONG percent, LONG 
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -126,7 +126,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG s
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     LONG shedTime = 450;
 
     //CASE LESS THAN 8.5: 7.5 min shed is ok and warning message
@@ -134,7 +134,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
     {
         DOUBLE realizedPercentage = 570.0 / (DOUBLE)period;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Master Cycle Warning: cannot send a shed of less than 9.5 minutes (including random time-in) to Emetcon groups, LM Group: " << getPAOName()
+        dout << CtiTime() << " - Master Cycle Warning: cannot send a shed of less than 9.5 minutes (including random time-in) to Emetcon groups, LM Group: " << getPAOName()
              << ", given the 9.5 minute minimum shed time and the cycle period specified the group will give a realized control percentage of:" << realizedPercentage << endl;
     }
     //CASE 8.5 TO 10.5: 7.5 min shed is ok and no over lap
@@ -163,7 +163,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -195,7 +195,7 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
             _refreshsent = TRUE;
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
+                dout << CtiTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
             }
         }
     }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/07 22:06:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,7 +166,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             status = UnknownError;
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - invalid data recived during hanshake when using " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - invalid data recived during hanshake when using " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             // perhaps we could clear out the buffer here instead of erroring, and then try again...
                             _command = Complete;
@@ -178,7 +178,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         status = ErrorPageNoResponse;
                         _command = Complete;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         break;
                     }
                 }
@@ -191,7 +191,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         _command = Complete;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - invalid state reached in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - invalid state reached in " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else
@@ -242,7 +242,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - NAK received from TNPP terminal: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - NAK received from TNPP terminal: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             _retryCount++;
                             if(_retryCount>2)
@@ -252,7 +252,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 _command = Complete; //Transaction Complete
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - NAK received 3 times, giving up " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint - NAK received 3 times, giving up " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                             }
                             else
@@ -264,7 +264,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - TNPP Device had a fatal error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             _retryCount = 0;
                             _command = Complete;
@@ -274,7 +274,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - TNPP device buffer is full: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - TNPP device buffer is full: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             _retryCount = 0;
                             _command = Complete;
@@ -285,7 +285,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             status = UnknownError;
                             _command = Complete; //Transaction Complete
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                     }
@@ -293,7 +293,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - No response from TNPP device: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - No response from TNPP device: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         status = ErrorPageNoResponse;
                         _command = Complete; //Transaction Complete
@@ -344,8 +344,8 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                 {
                     xfer.setNonBlockingReads(false);
                     strncpy((char*)xfer.getOutBuffer(),_SOH,5);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getDestinationAddress()).zpad(4).hex(),10);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getInertia()).zpad(2).hex(),10);
+                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getDestinationAddress()).zpad(4).hex().toString().c_str(),10);
+                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getInertia()).zpad(2).hex().toString().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),_zero_origin,10);
                     strncat((char*)xfer.getOutBuffer(),_zero_serial,10);
                     strncat((char*)xfer.getOutBuffer(),_STX,10);
@@ -365,9 +365,9 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                 {
                     xfer.setNonBlockingReads(false);
                     strncpy((char*)xfer.getOutBuffer(),_SOH,5);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getDestinationAddress()).zpad(4).hex(),10);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getInertia()).zpad(2).hex(),10);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getOriginAddress()).zpad(4).hex(),10);
+                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getDestinationAddress()).zpad(4).hex().toString().c_str(),10);
+                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getInertia()).zpad(2).hex().toString().c_str(),10);
+                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getOriginAddress()).zpad(4).hex().toString().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),getSerialNumber().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),_STX,10);
                     if((char)*_table.getIdentifierFormat()=='A')
@@ -395,7 +395,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                         strncat((char*)xfer.getOutBuffer(),getGolayCapcode().c_str(),6);
                     }
                     else
-                        strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
+                        strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8).toString().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,30);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 
@@ -453,7 +453,7 @@ int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceTnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceTnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -499,8 +499,8 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                 /* Set the error value in the base class. */
                 // FIX FIX FIX 092999
                 retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                        RWCString(OutMessage->Request.CommandStr),
-                                                        RWCString("SNPP Devices do not support this command (yet?)"),
+                                                        string(OutMessage->Request.CommandStr).c_str(),
+                                                        string("SNPP Devices do not support this command (yet?)").c_str(),
                                                         nRet,
                                                         OutMessage->Request.RouteID,
                                                         OutMessage->Request.MacroOffset,
@@ -526,7 +526,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 string CtiDeviceTnppPagingTerminal::getSerialNumber()
 {
-    return CtiNumStr(_serialNumber).zpad(2).hex();
+    return CtiNumStr(_serialNumber).zpad(2).hex().toString();
 }
 
 CtiDeviceTnppPagingTerminal::StateMachine CtiDeviceTnppPagingTerminal::getCurrentState()
@@ -662,7 +662,7 @@ string CtiDeviceTnppPagingTerminal::getGolayCapcode()
         }
     }
 
-    return CtiNumStr(returnValue).zpad(6);
+    return CtiNumStr(returnValue).zpad(6).toString();
 }
 
 int CtiDeviceTnppPagingTerminal::getExtendedFunctionCapcode(int a)

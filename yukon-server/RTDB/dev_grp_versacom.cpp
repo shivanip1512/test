@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/09/02 16:19:46 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:20:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            RWTPtrSlist< OUTMESS >         &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     /*
@@ -111,7 +111,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
          *  OutMessage.
          */
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(OutMessage->Request.CommandStr),
+                                              string(OutMessage->Request.CommandStr),
                                               Route->getName(),
                                               nRet,
                                               OutMessage->Request.RouteID,
@@ -125,7 +125,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -145,7 +145,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(OutMessage->Request.CommandStr),
+                                              string(OutMessage->Request.CommandStr),
                                               resultString,
                                               nRet,
                                               OutMessage->Request.RouteID,
@@ -166,7 +166,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
@@ -177,14 +177,14 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceGroupVersacom::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupVersacom::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
     INT   ser;
     INT   op;
     INT   flags = parse.getFlags();
-    RWCString tmpStr;
+    string tmpStr;
 
 
     if( INT_MIN != parse.getiValue("proptest")   ||
@@ -209,7 +209,7 @@ RWCString CtiDeviceGroupVersacom::getDescription(const CtiCommandParser & parse)
     return tmpStr;
 }
 
-RWCString CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
+string CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
 {
     char assign[128];
 
@@ -219,7 +219,7 @@ RWCString CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
             convertHumanFormAddressToVersacom(VersacomGroup.getClass()),
             convertHumanFormAddressToVersacom(VersacomGroup.getDivision()));
 
-    return  RWCString(assign);
+    return  string(assign);
 }
 
 CtiDeviceGroupVersacom::CtiDeviceGroupVersacom()   {}

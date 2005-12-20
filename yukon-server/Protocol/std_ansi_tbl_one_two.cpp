@@ -11,16 +11,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_two.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
       $Log: std_ansi_tbl_one_two.cpp,v $
+      Revision 1.9  2005/12/20 17:19:57  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_one_two.cpp
+      Revision 1.7.2.2  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
+      Revision 1.7.2.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.8  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.7.4.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.8
       Revision 1.7  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -42,6 +54,7 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_one_two.h"
+using std::endl;
 
 
 const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_WATTS = "Watts";
@@ -165,42 +178,42 @@ bool CtiAnsiTableOneTwo::isCorrectData( int aOffset, int aUOM)
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneTwo::getResolvedIDCode( int aOffset )
+string CtiAnsiTableOneTwo::getResolvedIDCode( int aOffset )
 {
-    RWCString ret=RWCString (ANSI_UOM_NOT_SUPPORTED);
+    string ret=string (ANSI_UOM_NOT_SUPPORTED);
     if (aOffset < _numUomEntries)
     {
         switch (getRawIDCode(aOffset))
         {
             case uom_watts:
-                ret=RWCString (ANSI_UOM_WATTS);
+                ret=string (ANSI_UOM_WATTS);
                 break;
             case uom_vars:
-                ret=RWCString (ANSI_UOM_VARS);
+                ret=string (ANSI_UOM_VARS);
                 break;
             case uom_va:
-                ret=RWCString (ANSI_UOM_VA);
+                ret=string (ANSI_UOM_VA);
                 break;
             case uom_rms_volts:
-                ret=RWCString (ANSI_UOM_RMS_VOLTAGE);
+                ret=string (ANSI_UOM_RMS_VOLTAGE);
                 break;
             case uom_rms_volts_squared:
-                ret=RWCString (ANSI_UOM_RMS_VOLTAGE_SQUARED);
+                ret=string (ANSI_UOM_RMS_VOLTAGE_SQUARED);
                 break;
             case uom_instantaneous_volts:
-                ret=RWCString (ANSI_UOM_INSTANTANEOUS_VOLTAGE);
+                ret=string (ANSI_UOM_INSTANTANEOUS_VOLTAGE);
                 break;
             case uom_rms_amps:
-                ret=RWCString (ANSI_UOM_RMS_CURRENT);
+                ret=string (ANSI_UOM_RMS_CURRENT);
                 break;
             case uom_rms_amps_squared:
-                ret=RWCString (ANSI_UOM_RMS_CURRENT_SQUARED);
+                ret=string (ANSI_UOM_RMS_CURRENT_SQUARED);
                 break;
             case uom_instantaneous_amps:
-                ret=RWCString (ANSI_UOM_INSTANTANEOUS_CURRENT);
+                ret=string (ANSI_UOM_INSTANTANEOUS_CURRENT);
                 break;
             default:
-                ret=RWCString (ANSI_UOM_NOT_SUPPORTED);
+                ret=string (ANSI_UOM_NOT_SUPPORTED);
                 break;
         }
     }
@@ -226,37 +239,37 @@ int CtiAnsiTableOneTwo::getRawTimeBase( int aOffset )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneTwo::getResolvedTimeBase( int aOffset )
+string CtiAnsiTableOneTwo::getResolvedTimeBase( int aOffset )
 {
-    RWCString ret=RWCString (ANSI_TIMEBASE_UNKNOWN);
+    string ret=string (ANSI_TIMEBASE_UNKNOWN);
     if (aOffset < _numUomEntries)
     {
         switch (getRawTimeBase(aOffset))
         {
             case timebase_dial_reading:
-                ret=RWCString (ANSI_TIMEBASE_DIAL_READING);
+                ret=string (ANSI_TIMEBASE_DIAL_READING);
                 break;
             case timebase_instantaneous:
-                ret=RWCString (ANSI_TIMEBASE_INSTANTANEOUS);
+                ret=string (ANSI_TIMEBASE_INSTANTANEOUS);
                 break;
             case timebase_sub_block_average:
-                ret=RWCString (ANSI_TIMEBASE_SUB_BLOCK_AVERAGE);
+                ret=string (ANSI_TIMEBASE_SUB_BLOCK_AVERAGE);
                 break;
             case timebase_block_average:
-                ret=RWCString (ANSI_TIMEBASE_BLOCK_AVERAGE);
+                ret=string (ANSI_TIMEBASE_BLOCK_AVERAGE);
                 break;
             case timebase_relative_dial_reading:
-                ret=RWCString (ANSI_TIMEBASE_RELATIVE_DIAL_READING);
+                ret=string (ANSI_TIMEBASE_RELATIVE_DIAL_READING);
                 break;
             case timebase_thermal:
-                ret=RWCString (ANSI_TIMEBASE_THERMAL);
+                ret=string (ANSI_TIMEBASE_THERMAL);
                 break;
             case timebase_event:
-                ret=RWCString (ANSI_TIMEBASE_EVENT);
+                ret=string (ANSI_TIMEBASE_EVENT);
                 break;
             case timebase_unknown:
             default:
-                ret=RWCString (ANSI_TIMEBASE_UNKNOWN);
+                ret=string (ANSI_TIMEBASE_UNKNOWN);
                 break;
         }
     }
@@ -324,10 +337,10 @@ DOUBLE CtiAnsiTableOneTwo::getResolvedMultiplier( int aOffset )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneTwo::printResult( RWCString deviceName )
+void CtiAnsiTableOneTwo::printResult( const string& deviceName )
 {
     int integer;
-    RWCString string1,string2;
+    string string1,string2;
     double double1;
 
     /**************************************************************

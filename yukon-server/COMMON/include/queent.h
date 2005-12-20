@@ -4,13 +4,14 @@
 #define __QUEENT_H__
 
 #include <windows.h>
-// #include <iostream.h>
+
 
 #include <rw\defs.h>
-#include <rw\rwtime.h>
 #include <rw/thr/threadid.h>
 
 #include "dlldefs.h"
+
+using std::cout;
 
 class CtiConnectionManager;
 class CtiServer;
@@ -19,57 +20,29 @@ class IM_EX_CTIBASE CtiQueueEnt
 {
 private:
    int                     priority_;
-   int                     tag_;
-   RWTime                  entrytime_;
+   int                     tag_;   
+   CtiTime                  entrytime_;
 
    RWThreadId              mycreator_;
 
-   RWCString               DataString;
+   string               DataString;
    CtiConnectionManager   *ReplyTo;            // Maintained only across queue calls...
 
 public:
-   CtiQueueEnt(int Priority = 0, int Tag = 0) :   // Defaults to a FIFO type queue
-      priority_(Priority),
-      tag_(Tag),
-      mycreator_(rwThreadId())
-   {}
+   CtiQueueEnt(int Priority = 0, int Tag = 0);   // Defaults to a FIFO type queue
 
    ~CtiQueueEnt()
    {
    }
 
-   virtual void PreInsert()
-   {
-      entrytime_ = RWTime();
-   }
+   virtual void PreInsert();
 
    virtual int ExecuteQueueEntry(CtiServer *Svr) = 0;     // Pure Virtual;
 
-   void setTag(int n) { tag_ = n; }
-   void setPriority(int n) { priority_ = n; }
-
+   void setTag(int n);
+   void setPriority(int n);
    RWBoolean virtual
-      operator==(const CtiQueueEnt& aRef) const
-   {
-      RWBoolean bRet(FALSE);
-
-      if(tag_ || aRef.getTag())
-      {
-         if(tag_ == aRef.getTag() && priority_ == aRef.getPriority())
-         {
-            bRet = RWBoolean(TRUE);
-         }
-      }
-      else
-      {
-         if(priority_ == aRef.getPriority())
-         {
-            bRet = RWBoolean(TRUE);
-         }
-      }
-
-      return bRet;
-   }
+      operator==(const CtiQueueEnt& aRef) const;
 
    // Returns true if self compares lexicographically less than aRef, otherwise returns false.
    /*
@@ -78,43 +51,19 @@ public:
     * An insertion sort is used. Duplicates are allowed.
     */
    RWBoolean virtual
-      operator<(const CtiQueueEnt& aRef) const
-   {
-      RWBoolean bRet(TRUE);
+      operator<(const CtiQueueEnt& aRef) const;
 
-      if(priority_ < aRef.getPriority())
-      {
-         bRet = RWBoolean(FALSE);
-      }
-      else if(priority_ == aRef.getPriority())
-      {
-         if(tag_ > aRef.getTag())
-         {
-            bRet = RWBoolean(FALSE);
-         }
-      }
-      return bRet;
-   }
+   void                    setManager( CtiConnectionManager *  RT );
+   CtiConnectionManager*   getManager( );
 
-   void                    setManager( CtiConnectionManager *  RT )  { ReplyTo = RT;}
-   CtiConnectionManager*   getManager( )                             { return ReplyTo;}
+   const string &       getString();
+   void                 setString(const string &str);
 
-   const RWCString &       getString()                   { return DataString; }
-   void                    setString(RWCString &str)     { DataString = str;  }
-
-   int      getTag() const { return tag_; }
-   int      getPriority() const { return priority_; }
-   RWTime   getTime() const { return entrytime_; }
-
-   RWThreadId  getOrigin() const { return mycreator_; }
-
-   void     Dump() const
-   {
-      cout <<
-         "Created by " << mycreator_ <<
-         " Tag " << tag_ <<
-         " Priority " << priority_ << endl;
-   }
+   int      getTag() const;
+   int      getPriority() const;   
+   CtiTime   getTime() const;
+   RWThreadId  getOrigin() const;
+   void     Dump() const;
 
    // const int MaxPriorty = 15;
 };

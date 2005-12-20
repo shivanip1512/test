@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,17 +41,17 @@ INT CtiPortDialable::disconnect(CtiDeviceSPtr Device, INT trace)
     return status;
 }
 
-RWCString CtiPortDialable::getDialedUpNumber() const
+string CtiPortDialable::getDialedUpNumber() const
 {
     return _dialedUpNumber;
 }
 
-RWCString& CtiPortDialable::getDialedUpNumber()
+string& CtiPortDialable::getDialedUpNumber()
 {
     return _dialedUpNumber;
 }
 
-CtiPortDialable& CtiPortDialable::setDialedUpNumber(const RWCString &str)
+CtiPortDialable& CtiPortDialable::setDialedUpNumber(const string &str)
 {
     _dialedUpNumber = str;
     return *this;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/07/19 20:43:36 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include <rw/rwint.h>
 #include <rw/collect.h>
-#include <rw/rwtime.h>
 #include <rw/tvordvec.h>
 
 #include "dlldefs.h"
@@ -34,7 +33,7 @@ class IM_EX_MSG CtiCommandMsg : public CtiMessage
 {
 private:
    int                              iOperation;
-   RWCString                        iOpString;
+   string                        iOpString;
    RWTValOrderedVector<RWInteger>   iOpArgList;
 
 public:
@@ -54,11 +53,11 @@ public:
    CtiOpArgList_t    getOpArgList() const;
    CtiOpArgList_t&   getOpArgList();
    INT               getOpArgument(INT i) const;
-   RWCString         getOpString() const;
-   RWCString&        getOpString();
+   string         getOpString() const;
+   string&        getOpString();
 
    CtiCommandMsg&    setOpArgList(const CtiOpArgList_t &aRef);
-   CtiCommandMsg&    setOpString(const RWCString &aRef);
+   CtiCommandMsg&    setOpString(const string &aRef);
    CtiCommandMsg&    setOperation(const INT &aInt);
 
    CtiOpArgList_t&   insert(INT i);

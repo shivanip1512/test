@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/07/11 20:08:16 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 #include <rw/toolpro/winsock.h>
 #include <rw/db/db.h>
 #include <rw\thr\mutex.h>
-#include <rw\cstring.h>
 #include <rw\ctoken.h>
 
 #include "dsm2.h"
@@ -37,6 +36,8 @@
 #include "utility.h"
 
 #include "thread_monitor.h"
+
+using namespace std;
 
 extern VOID PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);
@@ -53,16 +54,16 @@ RWDBDatabase *sqlDatabase = NULL;
  *  These are the Configuration Parameters for the Real Time Database
  */
 
-IM_EX_CTIBASE RWCString     dbDll("ora15d.dll");
-IM_EX_CTIBASE RWCString     dbName("yukon");
-IM_EX_CTIBASE RWCString     dbUser("yukon");
-IM_EX_CTIBASE RWCString     dbPassword("yukon");
-IM_EX_CTIBASE RWCString     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
-IM_EX_CTIBASE RWCString     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
-IM_EX_CTIBASE INT           NotificationPort = NOTIFICATIONNEXUS;
-IM_EX_CTIBASE RWCString     gSMTPServer("mail");
-IM_EX_CTIBASE RWCString     gEmailFrom;
-IM_EX_CTIBASE RWCString     gLogDirectory("\\yukon\\server\\log");
+IM_EX_CTIBASE string     dbDll("ora15d.dll");
+IM_EX_CTIBASE string     dbName("yukon");
+IM_EX_CTIBASE string     dbUser("yukon");
+IM_EX_CTIBASE string     dbPassword("yukon");
+IM_EX_CTIBASE string     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
+IM_EX_CTIBASE string     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
+IM_EX_CTIBASE INT        NotificationPort = NOTIFICATIONNEXUS;
+IM_EX_CTIBASE string     gSMTPServer("mail");
+IM_EX_CTIBASE string     gEmailFrom;
+IM_EX_CTIBASE string     gLogDirectory("\\yukon\\server\\log");
 IM_EX_CTIBASE bool          gLogPorts = false;
 IM_EX_CTIBASE bool          gOptimizeVersacom = false;
 IM_EX_CTIBASE bool          gDoPrefix = false;
@@ -121,13 +122,13 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 DLLEXPORT void InitYukonBaseGlobals(void)
 {
-    RWCString str;
+    string str;
     int int_val;
 
-    if( !(str = gConfigParms.getValueAsString("DB_DEBUGLEVEL")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DB_DEBUGLEVEL")).empty() )
     {
         char *eptr;
-        DebugLevel = strtoul(str.data(), &eptr, 16);
+        DebugLevel = strtoul(str.c_str(), &eptr, 16);
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL found : " << str << endl;
     }
     else
@@ -135,7 +136,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DISPATCH_MACHINE")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DISPATCH_MACHINE")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   found : " << str << endl;
         VanGoghMachine = str;
@@ -165,7 +166,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
     }
         
-    if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
         dbDll = str;
@@ -175,7 +176,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DB_SQLSERVER")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DB_SQLSERVER")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER found : " << str << endl;
         dbName = str;
@@ -185,7 +186,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DB_USERNAME")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DB_USERNAME")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME  found : " << str << endl;
         dbUser = str;
@@ -195,7 +196,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("DB_PASSWORD")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("DB_PASSWORD")).empty() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD  found : " << str << endl;
         dbPassword = str;
@@ -205,35 +206,35 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD   failed : " << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("VERSACOM_TYPE_FOUR_CONTROL")).isNull() && (!stricmp("TRUE", str.data())))
+    if( !(str = gConfigParms.getValueAsString("VERSACOM_TYPE_FOUR_CONTROL")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         useVersacomTypeFourControl = TRUE;
     }
     if(DebugLevel & 0x0001) cout << "Versacom Control Commands are " << ( useVersacomTypeFourControl ? "Type 4 : ": "Extended (NOT Type 4) : ") << endl;
 
 
-    if( !(str = gConfigParms.getValueAsString("PORTER_COALESCE_RIPPLE")).isNull() && (!stricmp("TRUE", str.data())))
+    if( !(str = gConfigParms.getValueAsString("PORTER_COALESCE_RIPPLE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gCoalesceRippleBits = true;
     }
     if(DebugLevel & 0x0001) cout << "Ripple Control Commands are " << ( gCoalesceRippleBits ? "coalesced ": "NOT coalesced ") << endl;
 
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_LOG_PORTS")).isNull() && (!stricmp("TRUE", str.data())))
+    if( !(str = gConfigParms.getValueAsString("YUKON_LOG_PORTS")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gLogPorts = true;
     }
     if(DebugLevel & 0x0001) cout << "Ports will " << ( gLogPorts ? "log to file" : "NOT log to file") << endl;
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_VERBOSE")).isNull() && (!stricmp("TRUE", str.data())))
+    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_VERBOSE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gDNPVerbose = true;
     }
     if(DebugLevel & 0x0001) cout << "DNP output is " << ( gLogPorts ? "verbose" : "quiet") << endl;
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).empty() )
     {
-        gDNPInternalRetries = abs(atoi(str.data()));
+        gDNPInternalRetries = abs(atoi(str.c_str()));
         if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to " << str << endl;
     }
     else
@@ -243,24 +244,24 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
 
     //  this is the MCT 400 SPID
-    if(!(str = gConfigParms.getValueAsString("YUKON_MCT400SERIESSPID")).isNull())
+    if(!(str = gConfigParms.getValueAsString("YUKON_MCT400SERIESSPID")).empty())
     {
-        gMCT400SeriesSPID = strtoul(str.data(), 0, 16) & 0xff;
+        gMCT400SeriesSPID = strtoul(str.c_str(), 0, 16) & 0xff;
 
         if( !gMCT400SeriesSPID )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             gMCT400SeriesSPID = 0xff;
         }
     }
 
-    if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).empty() )
     {
-        gMaxDBConnectionCount = atoi(str.data());
+        gMaxDBConnectionCount = atoi(str.c_str());
         if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
     }
     else
@@ -269,9 +270,9 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).empty() )
     {
-        ModemConnectionTimeout = atoi(str.data());
+        ModemConnectionTimeout = atoi(str.c_str());
         if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to " << str << " seconds" << endl;
     }
     else
@@ -280,9 +281,9 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_SMTP_SERVER")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_SMTP_SERVER")).empty() )
     {
-        gSMTPServer = str;
+        gSMTPServer = str.c_str();
         if(DebugLevel & 0x0001) cout << "SMTP Server set to " << gSMTPServer << endl;
     }
     else
@@ -292,7 +293,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "  Use YUKON_SMTP_SERVER to set SMTP Server" << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_EMAIL_FROM")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_EMAIL_FROM")).empty() )
     {
         gEmailFrom = str;
         if(DebugLevel & 0x0001) cout << "Sent email is from " << gEmailFrom << endl;
@@ -304,20 +305,20 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
         if(!GetUserName(buf, &len))
         {
-            gEmailFrom = RWCString("notification@yukon_master.com");
+            gEmailFrom = "notification@yukon_master.com";
         }
         else
         {
-            gEmailFrom = RWCString(buf);
+            gEmailFrom = string(buf);
         }
 
         if(DebugLevel & 0x0001) cout << "Sent email from address defaulted to current logged user" << gEmailFrom << endl;
         if(DebugLevel & 0x0001) cout << "  Use YUKON_EMAIL_FROM to set reply address" << endl;
     }
 
-    if( !(str = gConfigParms.getValueAsString("LOG_DIRECTORY")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("LOG_DIRECTORY")).empty() )
     {
-        gLogDirectory = str;
+        gLogDirectory = str.c_str();
         if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
     }
     else
@@ -331,15 +332,15 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         str = gConfigParms.getValueAsString("PORTER_ADD_TAP_PREFIX");
 
-        if(!stricmp("TRUE", str.data()))
+        if(!stricmp("TRUE", str.c_str()))
         {
             gDoPrefix = true;
         }
     }
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_COMM_FAIL_COUNT")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_COMM_FAIL_COUNT")).empty() )
     {
-        gDefaultCommFailCount = atoi(str.data());
+        gDefaultCommFailCount = atoi(str.c_str());
     }
     else
     {
@@ -347,13 +348,13 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     if(DebugLevel & 0x0001) cout << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_PORT_COMM_FAIL_COUNT")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_PORT_COMM_FAIL_COUNT")).empty() )
     {
-        gDefaultPortCommFailCount = atoi(str.data());
+        gDefaultPortCommFailCount = atoi(str.c_str());
     }
     if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).isNull() )
+    if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).empty() )
     {
         //  Examples:
         //
@@ -363,25 +364,29 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         //  YUKON_SIMULATE_PORTS    TRUE,15,78      - the listed ports are simulated    (15, 78)
         //  YUKON_SIMULATE_PORTS    TRUE,EXCLUDE,15 - all ports EXCEPT 15 are simulated (49, 78)
 
-        RWCTokenizer tok(str);
-        RWCString id_str;
+        boost::char_separator<char> sep(",");
+        Boost_char_tokenizer tok(str, sep);
+        Boost_char_tokenizer::iterator tok_iter = tok.begin(); 
+
+        
+        string id_str;
         long      id;
 
         gSimulatedPortList.clear();
 
-        while( !(id_str = tok(",")).isNull() )
+        while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
         {
             //  if it's uninitialized
-            if( gSimulatePorts == 0 && id_str.compareTo("true",   RWCString::ignoreCase) == 0 )
+            if( gSimulatePorts == 0 && stringCompareIgnoreCase(id_str,"true") == 0 )
             {
                 gSimulatePorts =  1;
             }
             //  if they want to exclude instead, make sure they already turned it on
-            else if( gSimulatePorts == 1 && id_str.compareTo("exclude",RWCString::ignoreCase) == 0 )
+            else if( gSimulatePorts == 1 && stringCompareIgnoreCase(id_str,"exclude") == 0 )
             {
                 gSimulatePorts = -1;
             }
-            else if( id = atol(id_str) )
+            else if( id = atol(id_str.c_str()) )
             {
                 gSimulatedPortList.insert(id);
             }
@@ -395,12 +400,12 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     if(DebugLevel & 0x0001)
     {
-        cout << RWTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
+        cout << CtiTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
 
         if( gSimulatePorts )
         {
-            if( gSimulatePorts > 0 )    cout << RWTime() << " Simulated portids (" << gSimulatedPortList.size() << "): " << endl;
-            else                        cout << RWTime() << " Excluded portids (" << gSimulatedPortList.size() << "): " << endl;
+            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPortList.size() << "): " << endl;
+            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPortList.size() << "): " << endl;
 
             for( set<long>::const_iterator itr = gSimulatedPortList.begin(); itr != gSimulatedPortList.end(); itr++ )
             {

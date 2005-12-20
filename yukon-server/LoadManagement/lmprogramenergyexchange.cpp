@@ -24,6 +24,7 @@
 #include "lmenergyexchangecustomer.h"
 #include "lmenergyexchangecustomerreply.h"
 #include "msg_notif_email.h"
+#include "ctidate.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -72,7 +73,7 @@ LONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
     
     Returns the heading of the energy exchange program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramEnergyExchange::getHeading() const
+const string& CtiLMProgramEnergyExchange::getHeading() const
 {
 
     return _heading;
@@ -83,7 +84,7 @@ const RWCString& CtiLMProgramEnergyExchange::getHeading() const
     
     Returns the message header of the energy exchange program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramEnergyExchange::getMessageHeader() const
+const string& CtiLMProgramEnergyExchange::getMessageHeader() const
 {
 
     return _messageheader;
@@ -94,7 +95,7 @@ const RWCString& CtiLMProgramEnergyExchange::getMessageHeader() const
     
     Returns the message footer of the energy exchange program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramEnergyExchange::getMessageFooter() const
+const string& CtiLMProgramEnergyExchange::getMessageFooter() const
 {
 
     return _messagefooter;
@@ -105,7 +106,7 @@ const RWCString& CtiLMProgramEnergyExchange::getMessageFooter() const
 
     Returns the canceled msg of the energy exchange program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramEnergyExchange::getCanceledMsg() const
+const string& CtiLMProgramEnergyExchange::getCanceledMsg() const
 {
 
     return _canceledmsg;
@@ -116,7 +117,7 @@ const RWCString& CtiLMProgramEnergyExchange::getCanceledMsg() const
 
     Returns the stopped early msg of the energy exchange program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
+const string& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
 {
 
     return _stoppedearlymsg;
@@ -162,7 +163,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(LONG no
     
     Sets the heading of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const RWCString& head)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const string& head)
 {
 
     _heading = head;
@@ -175,7 +176,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const RWCStri
     
     Sets the message header of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const RWCString& msgheader)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const string& msgheader)
 {
 
     _messageheader = msgheader;
@@ -188,7 +189,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const R
     
     Sets the message footer of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const RWCString& msgfooter)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const string& msgfooter)
 {
 
     _messagefooter = msgfooter;
@@ -201,7 +202,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const R
     
     Sets the canceled msg of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const RWCString& canceled)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const string& canceled)
 {
 
     _canceledmsg = canceled;
@@ -214,7 +215,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const RWC
     
     Sets the stopped early msg of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const RWCString& stoppedearly)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const string& stoppedearly)
 {
 
     _stoppedearlymsg = stoppedearly;
@@ -248,7 +249,7 @@ BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     
     return returnBool;
@@ -266,7 +267,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
     BOOL returnBoolean = FALSE;
 
     LONG numberOfCompletedOrCanceledOffers = 0;
-    const RWDBDateTime currentDateTime;
+    const CtiTime currentDateTime;
     for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
     {
         CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
@@ -274,7 +275,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 
         if( currentOfferRevision != NULL )
         {
-            if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::ScheduledRunStatus,RWCString::ignoreCase) )
+            if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ScheduledRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getNotificationDateTime() )
                 {
@@ -286,11 +287,11 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Energy Exchange notification sent to all customers in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                        dout << CtiTime() << " - Energy Exchange notification sent to all customers in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
                     }
                 }
             }
-            else if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::OpenRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::OpenRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
                 {
@@ -302,11 +303,11 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                        dout << CtiTime() << " - Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
                     }
                 }
             }
-            else if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::ClosingRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::ClosingRunStatus ) )
             {
                 if( currentDateTime >= currentOfferRevision->getOfferExpirationDateTime() )
                 {
@@ -318,13 +319,13 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                        dout << CtiTime() << " - Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
                     }
                 }
             }
-            else if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus ) )
             {
-                if( currentDateTime >= RWDBDateTime(currentOffer->getOfferDate().year(),currentOffer->getOfferDate().month(),currentOffer->getOfferDate().dayOfMonth(),currentOfferRevision->getFirstCurtailHour(),0,0,0)  )
+                if( currentDateTime >= CtiTime(currentOffer->getOfferDate().date(),currentOfferRevision->getFirstCurtailHour(),0,0)  )
                 {
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::ManualActiveState);
@@ -334,13 +335,13 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                        dout << CtiTime() << " - Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
                     }
                 }
             }
-            else if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus ) )
             {
-                if( currentDateTime >= RWDBDateTime(currentOffer->getOfferDate().year(),currentOffer->getOfferDate().month(),currentOffer->getOfferDate().dayOfMonth(),currentOfferRevision->getLastCurtailHour(),0,0,0)  )
+                if( currentDateTime >= CtiTime(currentOffer->getOfferDate().date(),currentOfferRevision->getLastCurtailHour(),0,0)  )
                 {
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::InactiveState);
@@ -350,25 +351,25 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate().rwtime() << endl;
+                        dout << CtiTime() << " - Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
                     }
                 }
             }
-            else if( !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::CompletedRunStatus,RWCString::ignoreCase) ||
-                     !currentOffer->getRunStatus().compareTo(CtiLMEnergyExchangeOffer::CanceledRunStatus,RWCString::ignoreCase) )
+            else if( !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CompletedRunStatus ) ||
+                     !stringCompareIgnoreCase(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::CanceledRunStatus ) )
             {
                 numberOfCompletedOrCanceledOffers++;
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Invalid manual run status: " << currentOffer->getRunStatus() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Invalid manual run status: " << currentOffer->getRunStatus() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Current offer revision = NULL in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Current offer revision = NULL in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
 
@@ -404,7 +405,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
                 newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
                 newCustomerReply->setOfferId(offer->getOfferId());
                 newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
-                newCustomerReply->setAcceptDateTime(gInvalidRWDBDateTime);
+                newCustomerReply->setAcceptDateTime(gInvalidCtiTime);
                 newCustomerReply->setRevisionNumber(currentOfferRevision->getRevisionNumber());
                 newCustomerReply->setIPAddressOfAcceptUser("(none)");
                 newCustomerReply->setUserIdName("(none)");
@@ -417,13 +418,13 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 		emailMsg->setCustomerId(currentCustomer->getCustomerId());
                 emailMsg->setSubject(getHeading());
 
-                RWCString emailBody = getMessageHeader();
+                string emailBody = getMessageHeader();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Facility:  ";
                 emailBody += currentCustomer->getCompanyName();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Offer Date:  ";
-                emailBody += offer->getOfferDate().rwdate().asString();
+                emailBody += offer->getOfferDate().date().asString();
                 emailBody += "\r\n\r\n";// 2 return lines
                 char tempchar[64];
                 emailBody += "Offer ID:  ";
@@ -436,7 +437,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
                 emailBody += "Offer Expires:  ";
                 emailBody += currentOfferRevision->getOfferExpirationDateTime().asString();
                 emailBody += " ";
-                emailBody += (currentOfferRevision->getOfferExpirationDateTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+                emailBody += (currentOfferRevision->getOfferExpirationDateTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
                 emailBody += "\r\n\r\n";// 2 return lines
 
                 emailBody += getMessageFooter();
@@ -468,7 +469,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
 		emailMsg->setCustomerId(currentCustomer->getCustomerId());
                 emailMsg->setSubject(getHeading());
 
-                RWCString emailBody = getCanceledMsg();
+                string emailBody = getCanceledMsg();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += getMessageHeader();
                 emailBody += "\r\n\r\n";// 2 return lines
@@ -476,7 +477,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
                 emailBody += currentCustomer->getCompanyName();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Offer Date:  ";
-                emailBody += offer->getOfferDate().rwdate().asString();
+                emailBody += offer->getOfferDate().date().asString();
                 emailBody += "\r\n\r\n";// 2 return lines
                 char tempchar[64];
                 emailBody += "Offer ID:  ";
@@ -638,7 +639,7 @@ BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(LONG offerID, LONG revision
 {
     BOOL returnBoolean = FALSE;
 
-    RWDBDateTime currentDateTime;
+    CtiTime currentDateTime;
     if( _lmenergyexchangeoffers.entries() > 0 )
     {
         for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
@@ -756,7 +757,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -764,7 +765,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData()
     
     Writes out the dynamic information for this energy exchange program.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     if( getManualControlReceivedFlag() )
     {

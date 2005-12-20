@@ -88,7 +88,7 @@ LONG CtiLMControlAreaTrigger::getTriggerNumber() const
 
     Returns the trigger type of the trigger
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMControlAreaTrigger::getTriggerType() const
+const string& CtiLMControlAreaTrigger::getTriggerType() const
 {
 
     return _triggertype;
@@ -121,7 +121,7 @@ DOUBLE CtiLMControlAreaTrigger::getPointValue() const
 
     Returns the timestamp of the last point value received by the trigger
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
+const CtiTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
 {
 
     return _lastpointvaluetimestamp;
@@ -154,7 +154,7 @@ DOUBLE CtiLMControlAreaTrigger::getThreshold() const
 
     Returns the projection type of the trigger
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
+const string& CtiLMControlAreaTrigger::getProjectionType() const
 {
 
     return _projectiontype;
@@ -232,7 +232,7 @@ DOUBLE CtiLMControlAreaTrigger::getPeakPointValue() const
 
     Returns the timestamp of the last peak point value received by the trigger
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMControlAreaTrigger::getLastPeakPointValueTimestamp() const
+const CtiTime& CtiLMControlAreaTrigger::getLastPeakPointValueTimestamp() const
 {
 
     return _lastpeakpointvaluetimestamp;
@@ -300,7 +300,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(LONG trignum)
 
     Sets the trigger type of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString& trigtype)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const string& trigtype)
 {
 
     _triggertype = trigtype;
@@ -336,7 +336,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointValue(DOUBLE pntval)
 
     Sets the timestamp of the last point value received by the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(const RWDBDateTime& lastvaltime)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(const CtiTime& lastvaltime)
 {
 
     _lastpointvaluetimestamp = lastvaltime;
@@ -372,7 +372,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThreshold(DOUBLE threshold)
 
     Sets the projection type of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCString& projtype)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const string& projtype)
 {
 
     _projectiontype = projtype;
@@ -456,7 +456,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointValue(DOUBLE peakp
 
     Sets the timestamp of the last peak point value received by the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp(const RWDBDateTime& lastpeakvaltime)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp(const CtiTime& lastpeakvaltime)
 {
 
     _lastpeakpointvaluetimestamp = lastpeakvaltime;
@@ -484,9 +484,9 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE 
 void CtiLMControlAreaTrigger::calculateProjectedValue()
 {
     //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-    if( getProjectionType().compareTo(CtiLMControlAreaTrigger::NoneProjectionType,RWCString::ignoreCase) )
+    if( stringCompareIgnoreCase(getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) )
     {
-        if( !getProjectionType().compareTo(CtiLMControlAreaTrigger::LSFProjectionType,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(getProjectionType(), CtiLMControlAreaTrigger::LSFProjectionType ) )
         {
             if( getProjectionPointEntriesQueue().entries() >= getProjectionPoints() )
             {
@@ -527,7 +527,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - calculateProjectedValue() debug info: " << endl;
+                        dout << CtiTime() << " - calculateProjectedValue() debug info: " << endl;
                         /*dout << " - ProjectionPointEntriesQueue entries: " << endl;
                         for(int j=0;j<getProjectionPointEntriesQueue().entries();j++)
                         {
@@ -587,13 +587,13 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().entries() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().entries() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unknown Projection Type: " << getProjectionType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Unknown Projection Type: " << getProjectionType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
 }
@@ -606,7 +606,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 -----------------------------------------------------------------------------*/  
 bool CtiLMControlAreaTrigger::hasReceivedPointData() const
 {
-    return _lastpointvaluetimestamp > gInvalidRWDBDateTime;
+    return _lastpointvaluetimestamp > gInvalidCtiTime;
 }
 
 /*-------------------------------------------------------------------------
@@ -618,8 +618,8 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 {
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime1;
-    RWTime tempTime2;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
 
     istrm >> _paoid
     >> _triggernumber
@@ -639,8 +639,8 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
     >> tempTime2
     >> _projectedpointvalue;
 
-    _lastpointvaluetimestamp = RWDBDateTime(tempTime1);
-    _lastpeakpointvaluetimestamp = RWDBDateTime(tempTime2);
+    _lastpointvaluetimestamp = CtiTime(tempTime1);
+    _lastpeakpointvaluetimestamp = CtiTime(tempTime2);
 }
 
 /*---------------------------------------------------------------------------
@@ -657,7 +657,7 @@ void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
     << _triggertype
     << _pointid
     << _pointvalue
-    << _lastpointvaluetimestamp.rwtime()
+    << _lastpointvaluetimestamp
     << _normalstate
     << _threshold
     << _projectiontype
@@ -667,7 +667,7 @@ void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
     << _minrestoreoffset
     << _peakpointid
     << _peakpointvalue
-    << _lastpeakpointvaluetimestamp.rwtime()
+    << _lastpeakpointvaluetimestamp
     << _projectedpointvalue;
 
     return;
@@ -768,9 +768,9 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
     else
     {
         setPointValue(0.0);
-        setLastPointValueTimestamp(gInvalidRWDBDateTime);
+        setLastPointValueTimestamp(gInvalidCtiTime);
         setPeakPointValue(0.0);
-        setLastPeakPointValueTimestamp(gInvalidRWDBDateTime);
+        setLastPeakPointValueTimestamp(gInvalidCtiTime);
 
         _insertDynamicDataFlag = TRUE;
     }
@@ -786,7 +786,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -794,7 +794,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
         RWDBTable dynamicLMControlAreaTriggerTable = getDatabase().table( "dynamiclmcontrolareatrigger" );
@@ -803,16 +803,16 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             RWDBUpdater updater = dynamicLMControlAreaTriggerTable.updater();
 
             updater << dynamicLMControlAreaTriggerTable["pointvalue"].assign(getPointValue())
-            << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"].assign((RWDBDateTime)getLastPointValueTimestamp())
+            << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"].assign(toRWDBDT(getLastPointValueTimestamp()))
             << dynamicLMControlAreaTriggerTable["peakpointvalue"].assign(getPeakPointValue())
-            << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign((RWDBDateTime)getLastPeakPointValueTimestamp());
+            << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign(toRWDBDT(getLastPeakPointValueTimestamp()));
 
             updater.where( dynamicLMControlAreaTriggerTable["triggerid"] == getTriggerId() );
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -821,7 +821,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
+                dout << CtiTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
             }
 
             RWDBInserter inserter = dynamicLMControlAreaTriggerTable.inserter();
@@ -837,7 +837,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -850,11 +850,11 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
 
 
 /* Public Static members */
-const RWCString CtiLMControlAreaTrigger::ThresholdTriggerType = "Threshold";
-const RWCString CtiLMControlAreaTrigger::StatusTriggerType = "Status";
+const string CtiLMControlAreaTrigger::ThresholdTriggerType = "Threshold";
+const string CtiLMControlAreaTrigger::StatusTriggerType = "Status";
 
-const RWCString CtiLMControlAreaTrigger::NoneProjectionType = "(none)";
-const RWCString CtiLMControlAreaTrigger::LSFProjectionType = "LSF";
+const string CtiLMControlAreaTrigger::NoneProjectionType = "(none)";
+const string CtiLMControlAreaTrigger::LSFProjectionType = "LSF";
 
 
 //*************************************************************
@@ -863,7 +863,7 @@ const RWCString CtiLMControlAreaTrigger::LSFProjectionType = "LSF";
 //**********  This is equivalent to an inner class,  **********
 //**********  only used for projections              **********
 //*************************************************************
-CtiLMProjectionPointEntry::CtiLMProjectionPointEntry(double val, const RWTime& time)
+CtiLMProjectionPointEntry::CtiLMProjectionPointEntry(double val, const CtiTime& time)
 {
     setValue(val);
     setTimestamp(time);
@@ -883,7 +883,7 @@ double CtiLMProjectionPointEntry::getValue() const
 
     return _value;
 }
-const RWTime& CtiLMProjectionPointEntry::getTimestamp() const
+const CtiTime& CtiLMProjectionPointEntry::getTimestamp() const
 {
 
     return _timestamp;
@@ -895,7 +895,7 @@ CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::setValue(double val)
     _value = val;
     return *this;
 }
-CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::setTimestamp(const RWTime& time)
+CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::setTimestamp(const CtiTime& time)
 {
 
     _timestamp = time;

@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.12  2005/12/20 17:20:20  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.11  2005/02/10 23:23:59  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -335,37 +338,37 @@ UCHAR CtiDeviceAlpha::decodeAckNak(UCHAR AckNak)
                 // ACK - No Error
                 break;
             case 0x01:
-                dout << RWTime() << " " << getName() << " NAK: Bad CRC"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Bad CRC"<< endl;
                 break;
             case 0x02:
-                dout << RWTime() << " " << getName() << " NAK: Communications Lockout against this function"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Communications Lockout against this function"<< endl;
                 break;
             case 0x03:
-                dout << RWTime() << " " << getName() << " NAK: Illegal command, syntax, or length"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Illegal command, syntax, or length"<< endl;
                 break;
             case 0x04:
-                dout << RWTime() << " " << getName() << " NAK: Framing Error"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Framing Error"<< endl;
                 break;
             case 0x05:
-                dout << RWTime() << " " << getName() << " NAK: Timeout Error"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Timeout Error"<< endl;
                 break;
             case 0x06:
-                dout << RWTime() << " " << getName() << " NAK: Invalid Password"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Invalid Password"<< endl;
                 break;
             case 0x07:
-                dout << RWTime() << " " << getName() << " NAK: NAK Received from computer"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: NAK Received from computer"<< endl;
                 break;
             case 0x0C:
-                dout << RWTime() << " " << getName() << " NAK: Request in progress, try again later"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Request in progress, try again later"<< endl;
                 break;
             case 0x0D:
-                dout << RWTime() << " " << getName() << " NAK: Too busy to honor request, try again later"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Too busy to honor request, try again later"<< endl;
                 break;
             case 0x0F:
-                dout << RWTime() << " " << getName() << " NAK: Rules Class NAK, Request not supported by current class 70/71 definition"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Rules Class NAK, Request not supported by current class 70/71 definition"<< endl;
                 break;
             default:
-                dout << RWTime() << " " << getName() << " NAK: Unknown NAK. Refer to ABB documentation"<< endl;
+                dout << CtiTime() << " " << getName() << " NAK: Unknown NAK. Refer to ABB documentation"<< endl;
                 break;
         }
     }
@@ -471,7 +474,7 @@ INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWT
                 setCurrentState (StateScanAbort);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
+                    dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
                 }
                 retCode = !NORMAL;
                 break;
@@ -517,7 +520,7 @@ INT CtiDeviceAlpha::freeDataBins  ()
 
 
 INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS > &outList)
@@ -543,7 +546,7 @@ INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scan decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
                 }
                 decodeResultScan(InMessage, TimeNow, vgList, retList, outList);
                 break;
@@ -552,7 +555,7 @@ INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " LP decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
                 }
                 decodeResultLoadProfile(InMessage, TimeNow, vgList, retList, outList);
                 break;
@@ -561,7 +564,7 @@ INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
                 }
             }
     }
@@ -570,21 +573,21 @@ INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
 }
 
 INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -666,7 +669,7 @@ INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
             setPreviousState (StateScanAbort);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
+                dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
             }
             retCode = !NORMAL;
             break;
@@ -767,7 +770,7 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< C
                 // retrive the password
                 char * stopper;
                 BYTEULONG flipper;
-                flipper.ul = strtoul (getIED().getPassword().data(),&stopper,0x10);
+                flipper.ul = strtoul (getIED().getPassword().c_str(),&stopper,0x10);
                 passWord.ch[0] = flipper.ch[1];
                 passWord.ch[1] = flipper.ch[0];
                 passWord.ch[2] = flipper.ch[3];
@@ -811,7 +814,7 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< C
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
+                    dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
                 }
 
                 Transfer.setOutCount( 0 );
@@ -873,7 +876,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " CRC error for " << getName() << " while handshaking" << endl;
+                            dout << CtiTime() << " CRC error for " << getName() << " while handshaking" << endl;
                         }
                     }
                     Transfer.doTrace(ERRUNKNOWN);
@@ -908,7 +911,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
                     if (ret_crc)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " CRC error for " << getName() << " while handshaking" << endl;
+                        dout << CtiTime() << " CRC error for " << getName() << " while handshaking" << endl;
                     }
 
                     setAttemptsRemaining (getAttemptsRemaining()-1);
@@ -940,7 +943,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
+                    dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
                 retCode = !NORMAL;
@@ -971,10 +974,10 @@ INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< C
 BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                    DOUBLE aValue,
                                                    USHORT aQuality,
-                                                   RWTime aTime,
+                                                   CtiTime aTime,
                                                    CtiReturnMsg *aReturnMsg,
                                                    USHORT aIntervalType,
-                                                   RWCString aValReport)
+                                                   string aValReport)
 
 {
     BOOL validPointFound = FALSE;
@@ -998,7 +1001,7 @@ BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (LONG   aPointId,
                 pData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
             }
 
-            if (aTime != rwEpoch)
+            if (aTime != PASTDATE)
             {
                 //
                 //  hack fix for non-DST compliant meters - someday to be absorbed by a big, global timekeeper

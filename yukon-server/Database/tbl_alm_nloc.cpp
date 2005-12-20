@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_nloc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,8 +21,6 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbaccess.h"
 #include "dllbase.h"
@@ -36,13 +34,13 @@ LONG CtiTableGroupRecipient::getRecipientID() const
     return _recipientID;
 }
 
-const RWCString& CtiTableGroupRecipient::getRecipientName() const
+const string& CtiTableGroupRecipient::getRecipientName() const
 {
 
     return _recipientName;
 }
 
-const RWCString& CtiTableGroupRecipient::getEmailAddress() const
+const string& CtiTableGroupRecipient::getEmailAddress() const
 {
 
     return _emailAddress;
@@ -54,13 +52,13 @@ INT CtiTableGroupRecipient::getEmailSendType() const
     return _emailSendType;
 }
 
-RWCString CtiTableGroupRecipient::getRecipientType() const
+string CtiTableGroupRecipient::getRecipientType() const
 {
 
     return _recipientType;
 }
 
-const RWCString& CtiTableGroupRecipient::getPagerNumber() const
+const string& CtiTableGroupRecipient::getPagerNumber() const
 {
 
     return _pagerNumber;
@@ -79,14 +77,14 @@ CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientID(LONG id)
     return *this;
 }
 
-CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientName(const RWCString &str)
+CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientName(const string &str)
 {
 
     _recipientName = str;
     return *this;
 }
 
-CtiTableGroupRecipient& CtiTableGroupRecipient::setEmailAddress(const RWCString &str)
+CtiTableGroupRecipient& CtiTableGroupRecipient::setEmailAddress(const string &str)
 {
 
     _emailAddress = str;
@@ -100,14 +98,14 @@ CtiTableGroupRecipient& CtiTableGroupRecipient::setEmailSendType(INT type)
     return *this;
 }
 
-CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientType(RWCString type)
+CtiTableGroupRecipient& CtiTableGroupRecipient::setRecipientType(string type)
 {
 
     _recipientType = type;
     return *this;
 }
 
-CtiTableGroupRecipient& CtiTableGroupRecipient::setPagerNumber(const RWCString &str)
+CtiTableGroupRecipient& CtiTableGroupRecipient::setPagerNumber(const string &str)
 {
 
     _pagerNumber = str;
@@ -151,7 +149,7 @@ void CtiTableGroupRecipient::dump() const
 
 void CtiTableGroupRecipient::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName().c_str() );
 
     selector <<
     keyTable["recipientid"] <<
@@ -165,16 +163,16 @@ void CtiTableGroupRecipient::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
     selector.from(keyTable);
 }
 
-RWCString CtiTableGroupRecipient::getTableName()
+string CtiTableGroupRecipient::getTableName()
 {
-    return RWCString("NotificationRecipient");
+    return string("NotificationRecipient");
 }
 RWDBStatus CtiTableGroupRecipient::Insert()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
@@ -185,7 +183,7 @@ RWDBStatus CtiTableGroupRecipient::Insert()
     getEmailAddress() <<
     getEmailSendType() <<
     getPagerNumber() <<
-    RWCString( ( isDisabled() ? 'Y': 'N' ) ) <<
+    string( ( isDisabled() ? 'Y': 'N' ) ) <<
     getRecipientType();
 
     ExecuteInserter(conn,inserter,__FILE__,__LINE__);
@@ -197,7 +195,7 @@ RWDBStatus CtiTableGroupRecipient::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
 
@@ -209,7 +207,7 @@ RWDBStatus CtiTableGroupRecipient::Update()
     table["emailaddress"].assign( getEmailAddress() ) <<
     table["emailsendtype"].assign( getEmailSendType() ) <<
     table["pagernumber"].assign( getPagerNumber() ) <<
-    table["disableflag"].assign( RWCString( ( isDisabled() ? 'Y': 'N' ) ) ) <<
+    table["disableflag"].assign( string( ( isDisabled() ? 'Y': 'N' ) ) ) <<
     table["recipienttype"].assign( getRecipientType() );
 
     ExecuteUpdater(conn,updater,__FILE__,__LINE__);
@@ -226,7 +224,7 @@ RWDBStatus CtiTableGroupRecipient::Restore()
     RWDBStatus dbstat;
 
     {
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBSelector selector = getDatabase().selector();
 
         selector <<
@@ -260,7 +258,7 @@ RWDBStatus CtiTableGroupRecipient::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["recipientid"] == getRecipientID() );
@@ -272,7 +270,7 @@ RWDBStatus CtiTableGroupRecipient::Delete()
 void CtiTableGroupRecipient::DecodeDatabaseReader(RWDBReader& rdr)
 {
 
-    RWCString rwstemp;
+    string rwstemp;
 
     rdr["recipientid"] >> _recipientID;
     rdr["recipientname"] >> _recipientName;
@@ -282,7 +280,7 @@ void CtiTableGroupRecipient::DecodeDatabaseReader(RWDBReader& rdr)
     rdr["disableflag"] >> rwstemp;
     rdr["recipienttype"] >> _recipientType;
 
-    rwstemp.toLower();
+    CtiToLower(rwstemp);
     setDisabled(rwstemp[(size_t)0] == 'y');
 
     return;

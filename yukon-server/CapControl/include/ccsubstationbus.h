@@ -15,11 +15,14 @@
 #ifndef CTICCSUBSTATIONBUSIMPL_H
 #define CTICCSUBSTATIONBUSIMPL_H
 
+#include <list>
+using std::list;
+
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
+#include <rw/thr/recursiv.h>  
 #include <list> 
 
 #include "dbaccess.h"
@@ -30,6 +33,13 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "ccstrategy.h"
+
+#define ALLBANKS 0
+#define FAILEDBANKS 1
+#define QUESTIONABLEBANKS 2
+#define FAILEDANDQUESTIONABLEBANKS 3
+#define SELECTEDFORVERIFICATIONBANKS 4
+#define BANKSINACTIVEFORXTIME 5
 
 class CtiCCSubstationBus : public RWCollectable
 {
@@ -45,16 +55,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     virtual ~CtiCCSubstationBus();
 
     LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    const RWCString& getPAOType() const;
-    const RWCString& getPAODescription() const;
+    const string& getPAOCategory() const;
+    const string& getPAOClass() const;
+    const string& getPAOName() const;
+    const string& getPAOType() const;
+    const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
     LONG getStrategyId() const;
-    const RWCString& getStrategyName() const;
-    const RWCString& getControlMethod() const;
+    const string& getControlMethod() const;
+    const string& getStrategyName() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
     DOUBLE getPeakLag() const;
@@ -73,16 +83,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
-    const RWCString& getDaysOfWeek() const;
-    const RWCString& getMapLocationId() const;
-    const RWCString& getControlUnits() const;
+    const string& getDaysOfWeek() const;
+    const string& getMapLocationId() const;
+    const string& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
     LONG getDecimalPlaces() const;
-    const RWDBDateTime& getNextCheckTime() const;
+    const CtiTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
     BOOL getBusUpdatedFlag() const;
-    const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
+    const CtiTime& getLastCurrentVarPointUpdateTime() const;
     LONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
     LONG getDailyOperationsAnalogPointId() const;
@@ -91,7 +101,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCurrentDailyOperations() const;
     BOOL getPeakTimeFlag() const;
     BOOL getRecentlyControlledFlag() const;
-    const RWDBDateTime& getLastOperationTime() const;
+    const CtiTime& getLastOperationTime() const;
     DOUBLE getVarValueBeforeControl() const;
     LONG getLastFeederControlledPAOId() const;
     LONG getLastFeederControlledPosition() const;
@@ -113,16 +123,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setPAOId(LONG id);
-    CtiCCSubstationBus& setPAOCategory(const RWCString& category);
-    CtiCCSubstationBus& setPAOClass(const RWCString& pclass);
-    CtiCCSubstationBus& setPAOName(const RWCString& name);
-    CtiCCSubstationBus& setPAOType(const RWCString& type);
-    CtiCCSubstationBus& setPAODescription(const RWCString& description);
+    CtiCCSubstationBus& setPAOCategory(const string& category);
+    CtiCCSubstationBus& setPAOClass(const string& pclass);
+    CtiCCSubstationBus& setPAOName(const string& name);
+    CtiCCSubstationBus& setPAOType(const string& type);
+    CtiCCSubstationBus& setPAODescription(const string& description);
     CtiCCSubstationBus& setDisableFlag(BOOL disable);
     CtiCCSubstationBus& setParentId(LONG parentId);
     CtiCCSubstationBus& setStrategyId(LONG strategyId);
-    CtiCCSubstationBus& setStrategyName(const RWCString& strategyName);
-    CtiCCSubstationBus& setControlMethod(const RWCString& method);
+    CtiCCSubstationBus& setStrategyName(const string& strategyName);
+    CtiCCSubstationBus& setControlMethod(const string& method);
     CtiCCSubstationBus& setMaxDailyOperation(LONG max);
     CtiCCSubstationBus& setMaxOperationDisableFlag(BOOL maxopdisable);
     CtiCCSubstationBus& setPeakLag(DOUBLE peak);
@@ -141,16 +151,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setMaxConfirmTime(LONG confirm);
     CtiCCSubstationBus& setMinConfirmPercent(LONG confirm);
     CtiCCSubstationBus& setFailurePercent(LONG failure);
-    CtiCCSubstationBus& setDaysOfWeek(const RWCString& days);
-    CtiCCSubstationBus& setMapLocationId(const RWCString& maplocation);
-    CtiCCSubstationBus& setControlUnits(const RWCString& contunit);
+    CtiCCSubstationBus& setDaysOfWeek(const string& days);
+    CtiCCSubstationBus& setMapLocationId(const string& maplocation);
+    CtiCCSubstationBus& setControlUnits(const string& contunit);
     CtiCCSubstationBus& setControlDelayTime(LONG delay);
     CtiCCSubstationBus& setControlSendRetries(LONG retries);
     CtiCCSubstationBus& setDecimalPlaces(LONG places);
     CtiCCSubstationBus& figureNextCheckTime();
     CtiCCSubstationBus& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCSubstationBus& setBusUpdatedFlag(BOOL busupdated);
-    CtiCCSubstationBus& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
+    CtiCCSubstationBus& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
     CtiCCSubstationBus& setEstimatedVarLoadPointId(LONG estimatedvarid);
     CtiCCSubstationBus& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
     CtiCCSubstationBus& setDailyOperationsAnalogPointId(LONG opanalogpointid);
@@ -159,7 +169,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentDailyOperations(LONG operations);
     CtiCCSubstationBus& setPeakTimeFlag(LONG peaktime);
     CtiCCSubstationBus& setRecentlyControlledFlag(BOOL recentlycontrolled);
-    CtiCCSubstationBus& setLastOperationTime(const RWDBDateTime& lastoperation);
+    CtiCCSubstationBus& setLastOperationTime(const CtiTime& lastoperation);
     CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval);
     CtiCCSubstationBus& setLastFeederControlledPAOId(LONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
@@ -170,38 +180,38 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setWaiveControlFlag(BOOL waive);
     CtiCCSubstationBus& setOverlappingVerificationFlag( BOOL overlapFlag);
 
-    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime);
-    BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
+    BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
+    BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges);
-    DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
+    DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakDay();
-    BOOL isPeakTime(const RWDBDateTime& currentDateTime);
+    BOOL isPeakTime(const CtiTime& currentDateTime);
     void clearOutNewPointReceivedFlags();
-    CtiCCSubstationBus& checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
-    void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
-    void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled();
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
-    static DOUBLE calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
-    BOOL checkForAndPerformSendRetry(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    static DOUBLE calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
+    BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
 
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
     BOOL isBusVerificationAlreadyStarted();
-    BOOL isVerificationPastMaxConfirmTime(const RWDBDateTime& currentDateTime);
+    BOOL isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime);
     BOOL capBankVerificationDone(RWOrdered& pointChanges);
     BOOL areThereMoreCapBanksToVerify();
     //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
-    CtiCCSubstationBus& startVerificationOnCapBank(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     BOOL isVerificationAlreadyControlled();
     CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify();
-    CtiCCSubstationBus& sendNextCapBankVerificationControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    CtiCCSubstationBus& sendNextCapBankVerificationControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCSubstationBus& setVerificationDoneFlag(BOOL verificationDoneFlag);
@@ -215,8 +225,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     list <LONG> getVerificationCapBankList();
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
-    const RWCString& getVerificationCommand();
-    CtiCCSubstationBus& setVerificationCommand(RWCString verCommand);
+    const string& getVerificationCommand();
+    CtiCCSubstationBus& setVerificationCommand(string verCommand);
     void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
     LONG getCapBankInactivityTime(void) const;
 
@@ -225,7 +235,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     BOOL isDirty() const;
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(RWDBReader& rdr);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
@@ -241,15 +251,15 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus* replicate() const;
 
     //Possible control methods
-    static const RWCString SubstationBusControlMethod;
-    static const RWCString IndividualFeederControlMethod;
-    static const RWCString BusOptimizedFeederControlMethod;
-    static const RWCString ManualOnlyControlMethod;
+    static const string SubstationBusControlMethod;
+    static const string IndividualFeederControlMethod;
+    static const string BusOptimizedFeederControlMethod;
+    static const string ManualOnlyControlMethod;
 
-    static const RWCString KVARControlUnits;
-    static const RWCString VoltControlUnits;
-    static const RWCString PF_BY_KVARControlUnits;
-    static const RWCString PF_BY_KQControlUnits;
+    static const string KVARControlUnits;
+    static const string VoltControlUnits;
+    static const string PF_BY_KVARControlUnits;
+    static const string PF_BY_KQControlUnits;
     //static int PeakState;
     //static int OffPeakState;
 
@@ -257,16 +267,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     private:
 
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
-    RWCString _paotype;
-    RWCString _paodescription;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
+    string _paotype;
+    string _paodescription;
     BOOL _disableflag;
     LONG _parentId;
       LONG _strategyId;
-      RWCString _strategyName;
-      RWCString _controlmethod;
+      string _strategyName;
+      string _controlmethod;
       LONG _maxdailyoperation;
       BOOL _maxoperationdisableflag;
       LONG _peakstarttime;
@@ -282,9 +292,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
       LONG _maxconfirmtime;
       LONG _minconfirmpercent;
       LONG _failurepercent;
-      RWCString _daysofweek;
-      RWCString _maplocationid;
-      RWCString _controlunits;
+      string _daysofweek;
+      string _maplocationid;
+      string _controlunits;
       LONG _controldelaytime;
       LONG _controlsendretries;
       DOUBLE _peaklag;
@@ -293,10 +303,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
       DOUBLE _offpklead;
 
     LONG _decimalplaces;
-    RWDBDateTime _nextchecktime;
+    CtiTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
     BOOL _busupdatedflag;
-    RWDBDateTime _lastcurrentvarpointupdatetime;
+    CtiTime _lastcurrentvarpointupdatetime;
     LONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
     LONG _dailyoperationsanalogpointid;
@@ -305,7 +315,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _currentdailyoperations;       //daily operations...
     BOOL _peaktimeflag;
     BOOL _recentlycontrolledflag;
-    RWDBDateTime _lastoperationtime;
+    CtiTime _lastoperationtime;
     DOUBLE _varvaluebeforecontrol;
     LONG _lastfeedercontrolledpaoid;
     LONG _lastfeedercontrolledposition;
@@ -315,7 +325,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _currentvarpointquality;
     BOOL _waivecontrolflag;
 
-    RWCString _additionalFlags;
+    string _additionalFlags;
     LONG _currentVerificationCapBankId;
     LONG _currentVerificationFeederId; 
     RWOrdered _ccfeeders;
@@ -335,8 +345,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     void restore(RWDBReader& rdr);
     void restoreSubstationBusTableValues(RWDBReader& rdr);
-    RWCString doubleToString(DOUBLE doubleVal);
 
+    string doubleToString(DOUBLE doubleVal);
     list <long> _pointIds;
 };
 

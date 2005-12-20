@@ -77,7 +77,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
                                           //RWCString(),
-                                          RWCString(getName() + " / scan general in progress"),
+                                          string(getName() + " / scan general in progress"),
                                           NORMAL,//EventCode & 0x7fff
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
@@ -138,16 +138,17 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         {  8,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  -1,     0,      0,     ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}};
 
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
-    pswdTemp.toUpper();
+    std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
+    
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
+        dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
     }
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     struct CHexMap
     {
         char c;
@@ -238,7 +239,7 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "outList.entries() = " <<outList.entries()<< endl;
+        dout << CtiTime() << "outList.entries() = " <<outList.entries()<< endl;
    }
    return NoError;
 }
@@ -316,7 +317,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
             }
             nRet = NoMethod;
@@ -327,17 +328,17 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
 
     if( nRet != NORMAL )
     {
-        RWCString resultString;
+        string resultString;
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << RWTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                                RWCString(OutMessage->Request.CommandStr),
+                                                string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
                                                 OutMessage->Request.RouteID,
@@ -366,24 +367,24 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
+INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
-    RWCString inMsgResultString = "";
+    string inMsgResultString = "";
 
-    //inMsgResultString = RWCString("successfully");
-    inMsgResultString = RWCString((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
+    //inMsgResultString = string("successfully");
+    inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
     if (getKV2Protocol().getScanOperation() == 2) //demand Reset
     {
         //if (InMessage->EventCode == NORMAL)
-        if (inMsgResultString.contains("successful", RWCString::ignoreCase))
+        if (findStringIgnoreCase(inMsgResultString,"successful"))
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
+                                            string(InMessage->Return.CommandStr),
                                             //RWCString(),
-                                            RWCString(getName() + " / demand reset successful"),
+                                            string(getName() + " / demand reset successful"),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -394,9 +395,9 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
         else
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
+                                            string(InMessage->Return.CommandStr),
                                             //RWCString(),
-                                            RWCString(getName() + " / demand reset failed"),
+                                            string(getName() + " / demand reset failed"),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -407,13 +408,13 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     }
     else
     {
-        if (inMsgResultString.contains("general",RWCString::ignoreCase) )
+        if (findStringIgnoreCase(inMsgResultString,"general") )
         {
-            if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
+            if (findStringIgnoreCase(inMsgResultString,"successful") )
             {
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(InMessage->Return.CommandStr),
-                                                RWCString(getName() + " / general scan successful : \n" + _result_string.data()),
+                                                string(InMessage->Return.CommandStr),
+                                                string(getName() + " / general scan successful : \n" + _result_string.data()),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -424,8 +425,8 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             else
             {
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                RWCString(InMessage->Return.CommandStr),
-                                                RWCString(getName() + " / general scan failed"),
+                                                string(InMessage->Return.CommandStr),
+                                                string(getName() + " / general scan failed"),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -447,11 +448,11 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 if (lastLpTime != NULL && *lastLpTime != 0)
                 {
-                    setLastLPTime(RWTime(*lastLpTime));
+                    setLastLPTime(CtiTime(*lastLpTime));
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                          CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                         dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
                      }
                 }
                 else
@@ -459,7 +460,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                        dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
                     }
                 }
             }
@@ -475,9 +476,9 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << RWTime::now() << " ==============================================" << endl;
-        dout << RWTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
-        dout << RWTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
+        dout << CtiTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
+        dout << CtiTime::now() << " ==============================================" << endl;
     }
 
 
@@ -489,18 +490,18 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
     {
         if (InMessage->EventCode == NORMAL)
         {
-            RWCString returnString("demand reset successful");
+            string returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
 
             InMessage->EventCode = NORMAL;
         }
         else
         {
-            RWCString returnString("demand reset failed");
+            string returnString("demand reset failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
         }
     }
@@ -520,14 +521,14 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
                 if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " sendCommResult for " << getName() <<" lastLPTime: "<<RWTime(getKV2Protocol().getlastLoadProfileTime())<< endl;
+                    dout << CtiTime() << " sendCommResult for " << getName() <<" lastLPTime: "<<CtiTime(getKV2Protocol().getlastLoadProfileTime())<< endl;
                 }
             }
             else
             {
-                RWCString returnString("general scan successful");
+                string returnString("general scan successful");
                 int sizeOfReturnString = returnString.length();
-                memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+                memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
                 InMessage->InLength = sizeOfReturnString;
 
                 InMessage->EventCode = NORMAL;
@@ -535,9 +536,9 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
         }
         else
         {
-            RWCString returnString("general scan failed");
+            string returnString("general scan failed");
             int sizeOfReturnString = returnString.length();
-            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
         }
 
@@ -550,7 +551,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
+INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
                                RWTPtrSlist< OUTMESS > &outList)
 {
 
@@ -603,16 +604,16 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 
     };
 
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
-    pswdTemp.toUpper();
+    std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
+        dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
     }
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     struct CHexMap
     {
         char c;
@@ -674,7 +675,7 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
+            dout << CtiTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
         }
     }
 
@@ -751,16 +752,16 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
 
     };
-    RWCString pswdTemp;
+    string pswdTemp;
     pswdTemp = getIED().getPassword();
-    pswdTemp.toUpper();
+    std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
+        dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
     }
     BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
+    temp = (BYTE *)pswdTemp.c_str();
     struct CHexMap
     {
         char c;
@@ -812,7 +813,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
    /* if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
+        dout << CtiTime() << "lastLPTime "<<getLastLPTime()<< endl;
     } */
 
     // lazyness so I don't have to continually remember to update this
@@ -882,14 +883,14 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
     bool gotValue = false;
     bool gotLPValues = false;
     int x, y, z;
-    RWTime lastLoadProfileTime;
-    RWCString resultString = "";
+    CtiTime lastLoadProfileTime;
+    string resultString = "";
 
     _result_string = "";
 
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
+      dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
     }
     if (getKV2Protocol().getScanOperation() == 2)
     {
@@ -901,7 +902,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
         //if (useScanFlags())
         {
             //_lastLPTime = getKV2Protocol().getlastLoadProfileTime();
-            lastLoadProfileTime = RWTime(getKV2Protocol().getlastLoadProfileTime());
+            lastLoadProfileTime = CtiTime(getKV2Protocol().getlastLoadProfileTime());
         }
 
         x =  OFFSET_TOTAL_KWH;
@@ -913,7 +914,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Point Offset ==> " <<x<< endl;
+                    dout << CtiTime() << " Point Offset ==> " <<x<< endl;
                 }
                 foundSomething = true;
                 switch (x)
@@ -1022,7 +1023,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                         if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " battery life value =  "<< value<< endl;
+                            dout << CtiTime() << " battery life value =  "<< value<< endl;
                         }
                         break;
                     }
@@ -1057,11 +1058,11 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     }
                     if (time != 0)
                     {
-                        pData->setTime(RWTime(time));
+                        pData->setTime(CtiTime(time));
                     }
                     else
                     {
-                        pData->setTime( RWTime() );
+                        pData->setTime( CtiTime() );
                     }
                     pData->setType( pPoint->getType() );
 
@@ -1072,7 +1073,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " gotValue! "<< endl;
+                        dout << CtiTime() << " gotValue! "<< endl;
                     }
 
                     pData = NULL;
@@ -1083,7 +1084,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " gotLPValues! "<< endl;
+                        dout << CtiTime() << " gotLPValues! "<< endl;
                     }
 
                     int ptMultiplier = pPoint->getMultiplier();
@@ -1111,7 +1112,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             }
                             pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
                             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                            pData->setTime( RWTime(getKV2Protocol().getLPTime(y)) );
+                            pData->setTime( CtiTime(getKV2Protocol().getLPTime(y)) );
 
                             msgPtr->insert(pData);
 
@@ -1140,13 +1141,13 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
 
 
                     }
-                    //setLastLPTime(RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
+                    //setLastLPTime(CtiTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
                     _lastLPTime = getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1);
                     getKV2Protocol().setLastLoadProfileTime(_lastLPTime);
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "lastLPTime "<<RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1))<< endl;
+                        dout << CtiTime() << "lastLPTime "<<CtiTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1))<< endl;
                     }
                     if (pData != NULL)
                     {
@@ -1163,7 +1164,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Point Offset ==> " <<x<< endl;
+                        dout << CtiTime() << " Point Offset ==> " <<x<< endl;
                     }
                     foundSomething = true;
                     if (x == OFFSET_METER_TIME_STATUS)
@@ -1181,7 +1182,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             {
                                 pData->setTags(TAG_POINT_MUST_ARCHIVE);
                             }
-                            pData->setTime( RWTime() );
+                            pData->setTime( CtiTime() );
                             pData->setType( pStatusPoint->getType() );
 
                             msgPtr = new CtiReturnMsg;
@@ -1192,7 +1193,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " gotValue! "<< endl;
+                                dout << CtiTime() << " gotValue! "<< endl;
                             }
                             resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(((CtiPointStatus *)pStatusPoint)->getStateGroupID(), value);
                             pData = NULL;

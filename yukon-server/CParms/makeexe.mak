@@ -4,6 +4,7 @@
 INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(COMMON)\include \
+-I$(BOOST) \
 -I$(RW) \
 
 
@@ -27,7 +28,7 @@ cparmtest.exe:  cparmtest.obj Makefile
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) -I$(RW) -I$(COMMINC) $(RWLINKFLAGS) -o ..\$@ \
 cparmtest.obj \
--link $(COMPILEBASE)\lib\cparms.lib $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS)
+-link $(COMPILEBASE)\lib\cparms.lib $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -41,7 +42,7 @@ conftest.exe:   $(TESTOBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(TESTOBJS) -link $(COMPILEBASE)\lib\cparms.lib $(RWLIBS)
+$(TESTOBJS) -link $(COMPILEBASE)\lib\cparms.lib $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @echo:

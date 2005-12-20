@@ -9,10 +9,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/11/09 06:12:51 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 * HISTORY      :
 * $Log: pendable.h,v $
+* Revision 1.3  2005/12/20 17:16:58  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.2.4.1  2005/08/12 19:53:42  jliu
+* Date Time Replaced
+*
 * Revision 1.2  2004/11/09 06:12:51  cplender
 * Working to calm dispatch down
 *
@@ -46,7 +52,7 @@ public:
     LONG _pointID;
     INT _action;                        // This is add, remove,...
     CtiPendingPointOperations *_ppo;
-    RWTime _time;
+    CtiTime _time;
 
     INT _limit;                         // Used only if the action is CtiPendableAction_RemoveLimit.
     DOUBLE _value;                      // Point value.
@@ -55,7 +61,7 @@ public:
 
 public:
 
-    CtiPendable(LONG pid, int action, CtiPendingPointOperations *ppo = 0, RWTime ppotm = RWTime()) :
+    CtiPendable(LONG pid, int action, CtiPendingPointOperations *ppo = 0, CtiTime ppotm = CtiTime()) :
         _pointID(pid),
         _action(action),
         _ppo(ppo),

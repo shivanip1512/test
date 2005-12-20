@@ -57,7 +57,7 @@ CErrLogFile::CErrLogFile(const char *s)
    TimeLimit        = 10;
    NextWrite = (LONG)LongTime() + (LONG)TimeLimit;
    // strcpy(FileName, s);
-   FileName = RWCString(s);
+   FileName = string(s);
    SelfImportance = 0;
 }
 
@@ -130,7 +130,7 @@ int CErrLogFile::LogDump()
 
    if(FileName.length() > 0)
    {
-      ofstream  fout(FileName  , ios_base::out | ios_base::app);     // append to end of file
+      ofstream  fout(FileName.c_str()  , ios_base::out | ios_base::app);     // append to end of file
 
       NextWrite = Now + 10L;      // 10 seconds
 
@@ -200,7 +200,7 @@ BOOL operator==(const CErrLogFile &e1, const CErrLogFile &e2)
 {
    BOOL bRet = FALSE;
 
-   if(!strcmp(e1.FileName, e2.FileName))
+   if(!strcmp(e1.FileName.c_str(), e2.FileName.c_str()))
    {
       bRet = TRUE;
    }

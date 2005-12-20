@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/04/26 22:31:17 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,9 +16,9 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
 
-#include <rw\rwtime.h>
+
+#include "ctitime.h"
 #include <rw/thr/thrutil.h>
 
 #include "portsvc.h"
@@ -30,6 +30,8 @@ using namespace std;
 
 #include "logger.h"
 #include "guard.h"
+
+using namespace std;
 
 int install(DWORD dwStart = SERVICE_DEMAND_START);
 int remove();
@@ -48,30 +50,30 @@ int main(int argc, char* argv[] )
    InitYukonBaseGlobals();
 
    dout.start();     // fire up the logger thread
-   dout.setOutputPath(gLogDirectory.data());
+   dout.setOutputPath(gLogDirectory);
    dout.setOutputFile("porter");
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
 
-   RWCString dbglogdir(gLogDirectory + "\\Debug");
+   string dbglogdir(gLogDirectory + "\\Debug");
    // Create a subdirectory called Comm beneath Log.
-   CreateDirectoryEx( gLogDirectory.data(), dbglogdir.data(), NULL);
+   CreateDirectoryEx( gLogDirectory.c_str(), dbglogdir.c_str(), NULL);
 
    slog.start();     // fire up the simulator thread
-   slog.setOutputPath(dbglogdir.data());
+   slog.setOutputPath(dbglogdir.c_str());
    slog.setOutputFile("simulate");
    slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
    slog.setWriteInterval(15000);
 
    blog.start();
-   blog.setOutputPath(dbglogdir.data());
+   blog.setOutputPath(dbglogdir.c_str());
    blog.setOutputFile("comstats");
    blog.setToStdOut( false );
    blog.setWriteInterval(15000);
 
    {
        CtiLockGuard<CtiLogger> doubt_guard(slog);
-       slog << endl << RWTime() << " **** Simulator Started **** " << endl;
+       slog << endl << CtiTime() << " **** Simulator Started **** " << endl;
    }
 
    if( SetConsoleTitle("Port Control") ) // We are a console application
@@ -123,7 +125,7 @@ int install(DWORD dwStart)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime()  << " - Installing as a service..." << endl;
+        dout << CtiTime()  << " - Installing as a service..." << endl;
     }
 
 
@@ -186,7 +188,7 @@ int remove()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime()  << " - Removing service..." << endl;
+        dout << CtiTime()  << " - Removing service..." << endl;
     }
 
     CServiceConfig si(szServiceName, szDisplayName);

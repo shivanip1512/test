@@ -28,7 +28,7 @@
     
     Returns text describing the message
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCMessage::getMessage() const
+const string& CtiCCMessage::getMessage() const
 {
     return _message;
 }
@@ -64,7 +64,7 @@ void CtiCCMessage::saveGuts(RWvostream& strm) const
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCMessage::CtiCCMessage(const RWCString& message) :  _message(message)
+CtiCCMessage::CtiCCMessage(const string& message) :  _message(message)
 {
 }
 
@@ -81,13 +81,13 @@ RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCCommand::CtiCCCommand(LONG command) : 
-    CtiCCMessage( RWCString("" + command) ),
+    CtiCCMessage( string("" + command) ),
     _command(command)
 {
 }
     
 CtiCCCommand::CtiCCCommand(LONG command, LONG id) :
-    CtiCCMessage( RWCString("CtiCCCommand" + command) ),
+    CtiCCMessage( string("CtiCCCommand" + command) ),
     _command(command),
     _id( id )
 {
@@ -479,7 +479,7 @@ CtiMessage* CtiCCCapBankStatesMsg::replicateMessage() const
 {
     return new CtiCCCapBankStatesMsg(*this);
     /*CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    dout << CtiTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
     return NULL;*/
 }
 
@@ -575,7 +575,7 @@ CtiMessage* CtiCCGeoAreasMsg::replicateMessage() const
 {
     return new CtiCCGeoAreasMsg(*this);
     /*CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
+    dout << CtiTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
     return NULL;*/
 }
 

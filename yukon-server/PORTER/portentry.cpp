@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/12/15 21:16:04 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/12/20 17:19:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,11 +48,10 @@
 #include <process.h>
 #include <iostream>
 #include <list>
-using namespace std;
 #include "os2_2w32.h"
 #include "cticalls.h"
 
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw\thr\mutex.h>
 
 #include <stdlib.h>
@@ -90,6 +89,8 @@ using namespace std;
 #include "prot_emetcon.h"
 #include "trx_711.h"
 #include "utility.h"
+
+using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
@@ -132,10 +133,10 @@ VOID PorterConnectionThread (VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PorterConnectionThread started as TID:  " << CurrentTID() << endl;
+        dout << CtiTime() << " PorterConnectionThread started as TID:  " << CurrentTID() << endl;
     }
 
-    strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
+    ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
 
     /*
      *  4/7/99 This is the server side of a CTIDBG_new Port Control Nexus
@@ -151,7 +152,7 @@ VOID PorterConnectionThread (VOID *Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** INFO **** PorterConnectionThread unable to create listener. Will attempt again." << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** INFO **** PorterConnectionThread unable to create listener. Will attempt again." << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         Sleep(2500);
@@ -168,7 +169,7 @@ VOID PorterConnectionThread (VOID *Arg)
             Sleep(1000);
             continue;
         }
-        sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
+        ::sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
 
         /*
          *  Blocking wait on the listening nexus.
@@ -225,7 +226,7 @@ VOID ConnectionThread (VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ConnectionThread started as TID:  " << CurrentTID() << endl;
+        dout << CtiTime() << " ConnectionThread started as TID:  " << CurrentTID() << endl;
     }
 
     /* Now sit and wait for something to come in on this instance */
@@ -258,9 +259,9 @@ VOID ConnectionThread (VOID *Arg)
                 if(tempDev)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Portentry built an outmessage for " << tempDev->getName();
+                    dout << CtiTime() << " Portentry built an outmessage for " << tempDev->getName();
                     dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                    if(strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
+                    if(::strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
                 }
             }
 
@@ -268,7 +269,7 @@ VOID ConnectionThread (VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -298,7 +299,7 @@ VOID ConnectionThread (VOID *Arg)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 else
@@ -316,9 +317,9 @@ VOID ConnectionThread (VOID *Arg)
             if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
+                dout << CtiTime() << " Portentry connection received an outmessage for " << tempDev->getName();
                 dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                if(strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
+                if(::strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
             }
         }
 
@@ -332,7 +333,7 @@ VOID ConnectionThread (VOID *Arg)
          */
         if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
         {
-            if(!gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT").compareTo("true", RWCString::ignoreCase))
+            if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT"),"true"))
             {
                 GatewayOutMessageQueue.putQueue( OutMessage );
             }
@@ -340,7 +341,7 @@ VOID ConnectionThread (VOID *Arg)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ***** Gateway message request, but the gateway code was not configured to operate." << endl;
+                    dout << CtiTime() << " ***** Gateway message request, but the gateway code was not configured to operate." << endl;
                 }
 
                 SendError(OutMessage, BADPARAM);
@@ -369,7 +370,7 @@ VOID ConnectionThread (VOID *Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** INVALID OUTMESS ****  Neither deviceid nor portid are defined in the OM request. Returning error to the requestor." << endl;
+                dout << CtiTime() << " **** INVALID OUTMESS ****  Neither deviceid nor portid are defined in the OM request. Returning error to the requestor." << endl;
             }
 
             SendError (OutMessage, MISPARAM);      // Message has been consumed!
@@ -396,7 +397,7 @@ VOID ConnectionThread (VOID *Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ConnectionThread  TID: " << CurrentTID() << " terminating" << endl;
+        dout << CtiTime() << " ConnectionThread  TID: " << CurrentTID() << " terminating" << endl;
     }
 
 }
@@ -777,7 +778,7 @@ VOID RouterThread (VOID *TPNumber)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 #endif
@@ -800,7 +801,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " !!!! OutMessage Misalignment !!!! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " !!!! OutMessage Misalignment !!!! " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Head bytes " << hex << (int)OutMessage->HeadFrame[0] << " " << hex << (int)OutMessage->HeadFrame[1] << dec << endl;
                 dout << " Tail bytes " << hex << (int)OutMessage->TailFrame[0] << " " << hex << (int)OutMessage->TailFrame[1] << dec << endl;
             }
@@ -813,8 +814,8 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-            dout << RWTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.TrxID << endl;
-            dout << RWTime() << "   Command " << OutMessage->Request.CommandStr << endl;
+            dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.TrxID << endl;
+            dout << CtiTime() << "   Command " << OutMessage->Request.CommandStr << endl;
 
             delete(OutMessage);
             OutMessage = NULL;
@@ -860,7 +861,7 @@ INT PorterControlCode(OUTMESS *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "Shutdown message received... Porter shutting down" << endl;
+                    dout << CtiTime() << "Shutdown message received... Porter shutting down" << endl;
                 }
                 /* put the mother of all queue flushes here */
                 CTISleep (2000L);
@@ -902,7 +903,7 @@ INT ValidateRemote(OUTMESS *&OutMessage)
         /* This is a unknown remote so shun it */
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Device ID " << OutMessage->DeviceID << " not found " << endl;
         }
         SendError (OutMessage, IDNF);
@@ -1145,7 +1146,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             // Remove any other Load Profile Queue Entries for this Queue.
@@ -1180,7 +1181,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -1257,7 +1258,7 @@ INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     /* Make sure we decode it on the return */
     SendOutMessage->EventCode |= DTRAN;
@@ -1553,7 +1554,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
             if(status != NORMAL)
             {
                 {
-                    RWTime NowTime;
+                    CtiTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << NowTime << "   Device:  " << Dev->getName() << endl;
@@ -1593,7 +1594,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
                     VanGoghConnection.WriteConnQue(pVg);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -1603,8 +1604,8 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Command " << pReq->CommandString() << endl;
-                dout << RWTime() << " Device: " << pReq->DeviceId() << endl;
+                dout << CtiTime() << " Command " << pReq->CommandString() << endl;
+                dout << CtiTime() << " Device: " << pReq->DeviceId() << endl;
             }
 
             status = IDNF;
@@ -1654,7 +1655,7 @@ INT realignNexus(OUTMESS *&OutMessage)
                     OutMessage->ReturnNexus = MyNexus;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Inbound Nexus has been successfully realigned " << endl;
+                        dout << CtiTime() << " Inbound Nexus has been successfully realigned " << endl;
                     }
 
                     break;
@@ -1667,7 +1668,7 @@ INT realignNexus(OUTMESS *&OutMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to realign inbound Nexus " << endl;
+            dout << CtiTime() << " Unable to realign inbound Nexus " << endl;
         }
     }
 

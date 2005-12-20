@@ -13,24 +13,21 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/09 22:46:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
-using namespace std;
 
 #include <rw/db/select.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -103,7 +100,7 @@ public:
     CtiTableExpresscomLoadGroup& setLoadMask(BYTE load);
     BOOL useRelay(const INT r) const;
 
-    static RWCString getTableName();
+    static string getTableName();
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

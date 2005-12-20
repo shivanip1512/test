@@ -19,7 +19,6 @@
 #define __FDRSOCKETINTERFACE_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -27,7 +26,7 @@
 #include "fdrinterface.h"
 
 class CtiFDRSocketConnection;
-class RWTime;
+class CtiTime;
 
 class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 {                                    
@@ -35,7 +34,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRSocketInterface(RWCString & interfaceType, int aPort=0, int aWindow = 120); 
+        CtiFDRSocketInterface(string & interfaceType, int aPort=0, int aWindow = 120); 
 
         virtual ~CtiFDRSocketInterface();
 
@@ -59,10 +58,10 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPointTimeVariation () const;
         CtiFDRSocketInterface& setPointTimeVariation(int aTime);
 
-		virtual bool loadList(RWCString &aDirection, CtiFDRPointList &aList) = 0;
+		virtual bool loadList(string &aDirection, CtiFDRPointList &aList) = 0;
         virtual CHAR *buildForeignSystemHeartbeatMsg (void) = 0;
         virtual INT getMessageSize(CHAR *data)=0;
-        virtual RWCString decodeClientName(CHAR *data)=0;
+        virtual string decodeClientName(CHAR *data)=0;
         virtual int  sendAllPoints(void);
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )=0;

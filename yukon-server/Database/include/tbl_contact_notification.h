@@ -15,8 +15,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_contact_notification.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/19 16:02:52 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ protected:
   LONG _contactID;
   LONG _notificationCategoryID;
   bool _disabled;
-  RWCString _notification; // email address would appear hear
+  string _notification; // email address would appear hear
   bool _dirty;
 
 private:
@@ -61,8 +61,8 @@ public:
   BOOL isDisabled() const;
   CtiTableContactNotification& setDisabled(BOOL disabled);
 
-  const RWCString& getNotification() const;
-  CtiTableContactNotification& setNotification(const RWCString& notif);
+  const string& getNotification() const;
+  CtiTableContactNotification& setNotification(const string& notif);
 
   CtiTableContactNotification& setDirty( bool dirt );
   bool isDirty() const;
@@ -70,7 +70,7 @@ public:
   void dump() const;
 
   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-  static RWCString getTableName();
+  static string getTableName();
   virtual RWDBStatus Restore();
 
   virtual void DecodeDatabaseReader(RWDBReader& rdr);

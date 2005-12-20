@@ -23,6 +23,9 @@
 #include "types.h"
 #include "std_ansi_tbl_base.h"
 
+#include <string>
+using std::string;
+
 #pragma pack( push, 1)
 
 
@@ -109,7 +112,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( RWCString deviceName );
+    void printResult( const string& deviceName );
 
     CtiAnsiTableZeroEight( );
     CtiAnsiTableZeroEight( BYTE *dataBlob );

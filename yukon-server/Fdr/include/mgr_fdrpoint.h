@@ -34,8 +34,8 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
     
     public:
         // constructors, destructor
-        CtiFDRManager(RWCString & InterfaceName);
-        CtiFDRManager(RWCString & InterfaceName, RWCString & aWhereSelectStr);
+        CtiFDRManager(string & InterfaceName);
+        CtiFDRManager(string & InterfaceName, string & aWhereSelectStr);
     
         virtual ~CtiFDRManager();
     
@@ -43,11 +43,11 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
         typedef CtiRTDBIterator CTIFdrPointIterator;
 
 
-        RWCString       getInterfaceName();
-        CtiFDRManager & setInterfaceName(RWCString &);
+        string       getInterfaceName();
+        CtiFDRManager & setInterfaceName(string &);
 
-        RWCString       getWhereSelectStr();
-        CtiFDRManager & setWhereSelectStr(RWCString &);
+        string       getWhereSelectStr();
+        CtiFDRManager & setWhereSelectStr(string &);
        
        
        //void DumpList(void);
@@ -80,8 +80,8 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
 
     private:
         // private data
-        RWCString   iInterfaceName;
-        RWCString   iWhereSelectStr;
+        string   iInterfaceName;
+        string   iWhereSelectStr;
 
     
 };

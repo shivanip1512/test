@@ -8,14 +8,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_scanrate.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "tbl_scanrate.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceScanRate::CtiTableDeviceScanRate() :
 _deviceID(-1),
@@ -108,7 +110,7 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setUpdated( const BOOL aBool )
 void CtiTableDeviceScanRate::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("Device");
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector <<
     keyTable["deviceid"] <<
@@ -131,7 +133,7 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    RWCString rwstemp;
+    string rwstemp;
 
     rdr["scantype"] >> rwstemp;
 
@@ -166,7 +168,7 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setDeviceID( const LONG deviceID
     return *this;
 }
 
-RWCString CtiTableDeviceScanRate::getTableName()
+string CtiTableDeviceScanRate::getTableName()
 {
     return "DeviceScanRate";
 }
@@ -179,7 +181,7 @@ RWDBStatus CtiTableDeviceScanRate::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -189,7 +191,7 @@ RWDBStatus CtiTableDeviceScanRate::Restore()
     table["scangroup"] <<
     table["alternaterate"];
 
-    selector.where( (table["deviceid"] == getDeviceID() ) && (table["scantype"] == desolveScanType(getScanType())) );
+    selector.where( (table["deviceid"] == getDeviceID() ) && (table["scantype"] == desolveScanType(getScanType()).c_str()) );
 
     RWDBReader reader = selector.reader( conn );
 
@@ -212,7 +214,7 @@ RWDBStatus CtiTableDeviceScanRate::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -239,13 +241,13 @@ RWDBStatus CtiTableDeviceScanRate::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["scantype"].assign(desolveScanType(getScanType() ) ) <<
+    table["scantype"].assign(desolveScanType(getScanType()).c_str() ) <<
     table["intervalrate"].assign(getScanRate() ) <<
     table["scangroup"].assign(getScanGroup() ) <<
     table["alternaterate"].assign(getAlternateRate() );
@@ -265,10 +267,10 @@ RWDBStatus CtiTableDeviceScanRate::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["deviceid"] == getDeviceID() && (table["scantype"] == desolveScanType(getScanType())));
+    deleter.where( table["deviceid"] == getDeviceID() && (table["scantype"] == desolveScanType(getScanType()).c_str()));
     deleter.execute( conn );
     return deleter.status();
 }

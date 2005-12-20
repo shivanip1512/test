@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dv_mctiedport.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceMCTIEDPort::CtiTableDeviceMCTIEDPort() :
 _deviceID(-1),
@@ -63,19 +65,19 @@ CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setDeviceID(long aLong)
     return *this;
 }
 
-RWCString CtiTableDeviceMCTIEDPort::getPassword() const
+string CtiTableDeviceMCTIEDPort::getPassword() const
 {
 
     return _password;
 }
 
-RWCString& CtiTableDeviceMCTIEDPort::getPassword()
+string& CtiTableDeviceMCTIEDPort::getPassword()
 {
 
     return _password;
 }
 
-CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setPassword(RWCString &aStr)
+CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setPassword(string &aStr)
 {
 
     _password = aStr;
@@ -180,7 +182,7 @@ CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setRealTimeScanFlag(int flag)
 
 void CtiTableDeviceMCTIEDPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector << devTbl["deviceid"]
     << devTbl["connectedied"]
@@ -198,7 +200,7 @@ void CtiTableDeviceMCTIEDPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString temp;
+    string temp;
 
 
 
@@ -209,7 +211,8 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["deviceid"]     >> _deviceID;
     rdr["connectedied"] >> temp;
-    temp.toLower();
+    std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
+    
 
     if( temp == "landis and gyr s4" )
         _connectedIED = LandisGyrS4;
@@ -221,8 +224,8 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
         _connectedIED = InvalidIEDType;
 
     rdr["password"] >> temp;
-    temp.toLower();
-    if( temp.isNull() || !temp.compareTo("none", RWCString::ignoreCase) || !temp.compareTo("(none)", RWCString::ignoreCase) )
+    std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
+    if( temp.empty() || !stringCompareIgnoreCase(temp, "none") || !stringCompareIgnoreCase(temp, "(none)") )
         _password = "0000";
     else
         _password = temp;
@@ -232,7 +235,7 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["defaultdataoffset"] >> _defaultDataOffset;
 
     rdr["realtimescan"]      >> temp;
-    temp.toLower();
+    std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
 
     if( temp == "y" )
         _realTimeScan = 1;
@@ -241,7 +244,7 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 
 }
 
-RWCString CtiTableDeviceMCTIEDPort::getTableName()
+string CtiTableDeviceMCTIEDPort::getTableName()
 {
     return "DeviceMCTIEDPort";
 }
@@ -254,7 +257,7 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable devTbl = getDatabase().table( getTableName() );
+    RWDBTable devTbl = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << devTbl["deviceid"]
@@ -285,7 +288,7 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "CtiTableDeviceMCTIEDPort::Insert() not implemented" << endl;
     }
 
@@ -296,7 +299,7 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "CtiTableDeviceMCTIEDPort::Update() not implemented" << endl;
     }
 
@@ -307,7 +310,7 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "CtiTableDeviceMCTIEDPort::Delete() not implemented" << endl;
     }
 

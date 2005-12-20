@@ -1,4 +1,4 @@
-x/*-----------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
   Filename:  loadmanager.cpp
 
   Programmer:  Josh Wolberg
@@ -40,6 +40,7 @@ x/*-----------------------------------------------------------------------------
 #include "devicetypes.h"
 #include "lmprogramdirect.h"
 #include "clistener.h"
+#include <time.h>
 
 #include <rw/thr/prodcons.h>
 
@@ -61,6 +62,7 @@ CtiLoadManager* CtiLoadManager::getInstance()
 
     return _instance;
 }
+
 
 /*---------------------------------------------------------------------------
   Constructor
@@ -115,7 +117,7 @@ void CtiLoadManager::stop()
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Forced to terminate." << endl;
+                dout << CtiTime() << " - Forced to terminate." << endl;
             }
         }
         else
@@ -127,7 +129,7 @@ void CtiLoadManager::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -142,7 +144,7 @@ void CtiLoadManager::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -157,7 +159,7 @@ void CtiLoadManager::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -185,17 +187,17 @@ void CtiLoadManager::controlLoop()
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-        registerForPoints(*store->getControlAreas(RWDBDateTime().seconds()));
+        registerForPoints(*store->getControlAreas(CtiTime().seconds()));
         store->setReregisterForPoints(false);
     }
 
 
-    RWDBDateTime currentDateTime;
+    CtiTime currentDateTime;
     RWOrdered controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
-    
+    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();    
+
     CtiMessage* msg = NULL;
     CtiLMExecutorFactory executorFactory;
 
@@ -204,8 +206,8 @@ void CtiLoadManager::controlLoop()
 
     loadControlLoopCParms();
 
-    // Fire up the notification server 
-    getNotificationConnection(); 
+    // Fire up the notification server
+    getNotificationConnection();
     
     while(TRUE)
     {
@@ -222,7 +224,7 @@ void CtiLoadManager::controlLoop()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
             }
             delete executor;
         //Shorten how long to wait in case a message was processed to improve response time
@@ -232,8 +234,8 @@ void CtiLoadManager::controlLoop()
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-        RWDBDateTime prevDateTime = currentDateTime;
-        currentDateTime.now();
+        CtiTime prevDateTime = currentDateTime;
+        currentDateTime = CtiTime();
         LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
         ULONG secondsFrom1901 = currentDateTime.seconds();
 
@@ -242,7 +244,7 @@ void CtiLoadManager::controlLoop()
             if( (secondsFrom1901%1800) == 0 )
             {//every five minutes tell the user if the manager thread is still alive
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Load Manager thread pulse" << endl;
+                dout << CtiTime() << " - Load Manager thread pulse" << endl;
             }
         }
 
@@ -261,7 +263,7 @@ void CtiLoadManager::controlLoop()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
         try
@@ -272,7 +274,7 @@ void CtiLoadManager::controlLoop()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
         BOOL examinedControlAreaForControlNeededFlag = FALSE;
@@ -310,9 +312,8 @@ void CtiLoadManager::controlLoop()
                                 {
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
+                                    dout << CtiTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
                                 }
-
                                 if( currentControlArea->getControlInterval() != 0 ||
                                     currentControlArea->isThresholdTriggerTripped() )
                                 {
@@ -339,7 +340,7 @@ void CtiLoadManager::controlLoop()
                                     //all load reducing programs are currently running
                                     //can not reduce any more demand
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
+                                    dout << CtiTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
                                 }
                             }
 
@@ -392,7 +393,7 @@ void CtiLoadManager::controlLoop()
 //                            if( currentControlArea->isControlStillNeeded() )
                         {
                             //CtiLockGuard<CtiLogger> logger_guard(dout);
-                            //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
+                            //dout << CtiTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
                             if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
                             {
                                 currentControlArea->setUpdatedFlag(TRUE);
@@ -415,7 +416,7 @@ void CtiLoadManager::controlLoop()
                         if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
+                            dout << CtiTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
                             currentControlArea->setUpdatedFlag(TRUE);
                         }
                     }
@@ -423,7 +424,7 @@ void CtiLoadManager::controlLoop()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             }
         }
@@ -440,7 +441,7 @@ void CtiLoadManager::controlLoop()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
         try
@@ -456,7 +457,7 @@ void CtiLoadManager::controlLoop()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
 	try 
@@ -472,7 +473,7 @@ void CtiLoadManager::controlLoop()
 	catch(...) 
 	{ 
 	    CtiLockGuard<CtiLogger> logger_guard(dout); 
-	    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
+	    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
 	} 
 	
         try
@@ -497,7 +498,7 @@ void CtiLoadManager::controlLoop()
                 if( _LM_DEBUG & LM_DEBUG_CLIENT )
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << RWTime() << "Found " << controlAreaChanges.entries() << " dirty control areas to send to clients" << endl;
+                    dout << CtiTime() << "Found " << controlAreaChanges.entries() << " dirty control areas to send to clients" << endl;
                 }
         
                 if(controlAreaChanges.entries() > 0)
@@ -512,7 +513,7 @@ void CtiLoadManager::controlLoop()
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     delete executor;
                 
@@ -525,7 +526,7 @@ void CtiLoadManager::controlLoop()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
 
@@ -540,7 +541,7 @@ void CtiLoadManager::controlLoop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -557,41 +558,41 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
         {
             //Set up the defaults
             INT dispatch_port = VANGOGHNEXUS;
-            RWCString dispatch_host = "127.0.0.1";
+            string dispatch_host = "127.0.0.1";
 
-            RWCString str;
+            string str;
             char var[128];
 
             strcpy(var, "DISPATCH_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
                 dispatch_host = str;
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << str << endl;
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             strcpy(var, "DISPATCH_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                dispatch_port = atoi(str);
+                dispatch_port = atoi(str.c_str());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << str << endl;
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             //throw away the old connection if there was one that couldn't be verified
@@ -617,7 +618,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
     }
@@ -636,41 +637,41 @@ CtiConnection* CtiLoadManager::getPILConnection()
         {
             //Set up the defaults
             INT pil_port = PORTERINTERFACENEXUS;
-            RWCString pil_host = "127.0.0.1";
+            string pil_host = "127.0.0.1";
 
-            RWCString str;
+            string str;
             char var[128];
 
             strcpy(var, "PIL_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
                 pil_host = str;
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << str << endl;
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             strcpy(var, "PIL_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                pil_port = atoi(str);
+                pil_port = atoi(str.c_str());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << str << endl;
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             if( _pilConnection != NULL && _pilConnection->verifyConnection() )
@@ -695,57 +696,57 @@ CtiConnection* CtiLoadManager::getPILConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
     }
 }
 
-/*--------------------------------------------------------------------------- 
-  getNotificationConnection 
-    
-  Returns a connection to the Notification Server 
-  ---------------------------------------------------------------------------*/ 
-CtiConnection* CtiLoadManager::getNotificationConnection() 
-{ 
-    try 
-    { 
-	if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) ) 
-	{ 
-	    //Set up the defaults 
-	    string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1"); 
-	    int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS); 
-    
-	    if( _LM_DEBUG & LM_DEBUG_STANDARD ) 
-	    { 
-		CtiLockGuard<CtiLogger> logger_guard(dout); 
-		dout << RWTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl; 
-		dout << RWTime() << " - NOTIFICATION_PORT: " << notification_port << endl; 
-	    } 
-    
-	    if( _notificationConnection != NULL && _notificationConnection->verifyConnection() ) 
-	    { 
-		delete _notificationConnection; 
-		_notificationConnection = NULL; 
-	    } 
-    
-	    if( _notificationConnection == NULL ) 
-	    { 
-		//Connect to Pil 
-		_notificationConnection  = new CtiConnection( notification_port, notification_host.data() ); 
-	    } 
-	} 
-    
-	return _notificationConnection; 
-    } 
-    catch(...) 
-    { 
-	CtiLockGuard<CtiLogger> logger_guard(dout); 
-	dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-    
-	return NULL; 
-    } 
-} 
+/*---------------------------------------------------------------------------
+  getNotificationConnection
+
+  Returns a connection to the Notification Server
+  ---------------------------------------------------------------------------*/
+CtiConnection* CtiLoadManager::getNotificationConnection()
+{
+    try
+    {
+        if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) )
+        {
+            //Set up the defaults
+            string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
+	    int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
+
+	    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	    {
+		CtiLockGuard<CtiLogger> logger_guard(dout);
+		dout << CtiTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl;
+		dout << CtiTime() << " - NOTIFICATION_PORT: " << notification_port << endl;
+	    }
+
+            if( _notificationConnection != NULL && _notificationConnection->verifyConnection() )
+            {
+                delete _notificationConnection;
+                _notificationConnection = NULL;
+            }
+
+            if( _notificationConnection == NULL )
+            {
+                //Connect to Pil
+                _notificationConnection  = new CtiConnection( notification_port, notification_host.c_str() );
+            }
+        } 
+
+        return _notificationConnection;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+
+        return NULL;
+    }
+}
 
 /*---------------------------------------------------------------------------
   checkDispatch
@@ -773,7 +774,7 @@ void CtiLoadManager::checkDispatch(ULONG secondsFrom1901)
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     while(!done);
@@ -805,7 +806,7 @@ void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     while(!done);
@@ -821,7 +822,7 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Registering for point changes." << endl;
+        dout << CtiTime() << " - Registering for point changes." << endl;
     }
 
     CtiPointRegistrationMsg* regMsg;
@@ -898,7 +899,7 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     regMsg = NULL;
@@ -966,7 +967,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Command Message received from Dispatch" << endl;
+            dout << CtiTime() << " - Command Message received from Dispatch" << endl;
         }
 
         cmdMsg = (CtiCommandMsg*)message;
@@ -975,7 +976,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
             if( _LM_DEBUG & LM_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Replying to Are You There message." << endl;
+                dout << CtiTime() << " - Replying to Are You There message." << endl;
             }
             try
             {
@@ -984,13 +985,13 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Command Message with type = "
+            dout << CtiTime() << " - Command Message with type = "
                  << cmdMsg->getOperation() << ") not supported from Dispatch" << endl;
         }
     }
@@ -1018,8 +1019,8 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
         char tempstr[64] = "";
         _itoa(message->isA(),tempstr,10);
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - message->isA() = " << tempstr << endl;
-        dout << RWTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
+        dout << CtiTime() << " - message->isA() = " << tempstr << endl;
+        dout << CtiTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
     }
     }
     return;
@@ -1030,12 +1031,12 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 
   Handles point data messages and updates strategy point values.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
+void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _LM_DEBUG & LM_DEBUG_POINT_DATA )
     {
         char tempchar[80];
-        RWCString outString = "Point Data, ID:";
+        string outString = "Point Data, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
         outString += " Val:";
@@ -1043,10 +1044,10 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
         _snprintf(tempchar,80,"%.*f",precision,value);
         outString += tempchar;
         outString += " Time: ";
-        outString += RWDBDateTime(timestamp).asString();
+        outString += CtiTime(timestamp).asString();
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << outString.data() << endl;
+        dout << CtiTime() << " - " << outString.c_str() << endl;
     }
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
@@ -1064,8 +1065,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
             if( currentTrigger->getPointId() == pointID )
             {
-                RWCString text = RWCString("");
-                RWCString additional = RWCString("");
+                string text = ("");
+                string additional = ("");
                 if( timestamp > currentTrigger->getLastPointValueTimestamp() )
                 {
                     currentTrigger->setLastPointValueTimestamp(timestamp);
@@ -1088,8 +1089,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 }
 
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                if( (currentTrigger->getProjectionType().compareTo(CtiLMControlAreaTrigger::NoneProjectionType,RWCString::ignoreCase) && currentTrigger->getProjectionType().compareTo("(none)",RWCString::ignoreCase))/*"(none)" is a hack*/ &&
-                    currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+                if( (stringCompareIgnoreCase(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && stringCompareIgnoreCase(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
+                    stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
                 {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                     if( quality != NonUpdatedQuality &&
                         currentControlArea->getNewPointDataReceivedFlag() )
@@ -1100,7 +1101,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             LONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
                             while( currentTrigger->getProjectionPointEntriesQueue().entries() < currentTrigger->getProjectionPoints() )
                             {
-                                RWTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
+                                CtiTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
                                 currentTrigger->getProjectionPointEntriesQueue().insert( CtiLMProjectionPointEntry(value,pluggedTimestamp) );
                                 pass++;
                             }
@@ -1122,7 +1123,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     }
                 }
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                else if( currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+                else if( stringCompareIgnoreCase(currentTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType) )
                 {//make the projected value equal to the real value
                     currentTrigger->setProjectedPointValue(value);
                 }
@@ -1135,13 +1136,13 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         getDispatchConnection()->WriteConnQue(new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                        dout << CtiTime() << " - " << text << ", " << additional << endl;
                     }
                     }
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
@@ -1167,8 +1168,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             currentControlArea->setUpdatedFlag(TRUE);
             {
             char tempchar[80] = "";
-            RWCString text = RWCString("Automatic Threshold Kick Up");
-            RWCString additional = RWCString("Threshold for Trigger: ");
+            string text = ("Automatic Threshold Kick Up");
+            string additional = ("Threshold for Trigger: ");
             _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
             additional += tempchar;
             additional += " changed in LMControlArea: ";
@@ -1188,7 +1189,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
             {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << text << ", " << additional << endl;
+            dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
             }
             }
@@ -1203,7 +1204,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             //figure out how and deal with it
             if( lm_group->getHoursDailyPointId() == pointID )
             {
-                RWTime now;
+                CtiTime now;
                 struct tm now_tm, timestamp_tm;
 
                 now.extract(&now_tm);
@@ -1242,9 +1243,9 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << RWTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
+                        dout << CtiTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
                     }
-                    lm_group->setControlCompleteTime(RWDBDateTime(RWTime(secondsFrom1901)));
+                    lm_group->setControlCompleteTime(CtiTime(secondsFrom1901));
                 }
                 lm_group->setGroupControlState(value);
             }
@@ -1263,12 +1264,12 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
   Handles porter return messages and updates the status of strategy cap
   bank controls.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
+void CtiLoadManager::porterReturnMsg( long deviceId, string commandString, int status, string resultString, ULONG secondsFrom1901 )
 {
     if( _LM_DEBUG & LM_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Porter return received." << endl;
+        dout << CtiTime() << " - Porter return received." << endl;
     }
 }
 
@@ -1277,12 +1278,12 @@ void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, in
 
   Handles signal messages and updates strategy tags.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
+void CtiLoadManager::signalMsg( long pointID, unsigned tags, string text, string additional, ULONG secondsFrom1901 )
 {
     if( _LM_DEBUG & LM_DEBUG_EXTENDED )
     {
         char tempchar[64] = "";
-        RWCString outString = "Signal Message received. Point ID:";
+        string outString = "Signal Message received. Point ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
         outString += " Tags:";
@@ -1290,7 +1291,7 @@ void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWC
         outString += tempchar;
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << outString.data() << "  Text: "
+        dout << CtiTime() << " - " << outString.c_str() << "  Text: "
              << text << " Additional Info: " << additional << endl;
     }
 }
@@ -1311,7 +1312,7 @@ void CtiLoadManager::sendMessageToDispatch( CtiMessage* message )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1332,7 +1333,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1352,9 +1353,10 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
 
 /*---------------------------------------------------------------------------
   sendMessageToClients
@@ -1371,7 +1373,7 @@ void CtiLoadManager::sendMessageToClients( CtiMessage* message )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1382,39 +1384,39 @@ void CtiLoadManager::sendMessageToClients( CtiMessage* message )
  */
 void CtiLoadManager::loadControlLoopCParms()
 {
-    RWCString str;
+    string str;
     char var[128];
 
     strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_NORMAL_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_delay = atoi(str);
+    control_loop_delay = atoi(str.c_str());
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 
     strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_INMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_inmsg_delay = atoi(str);
+    control_loop_inmsg_delay = atoi(str.c_str());
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 
     strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_OUTMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_outmsg_delay = atoi(str);
+    control_loop_outmsg_delay = atoi(str.c_str());
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 }

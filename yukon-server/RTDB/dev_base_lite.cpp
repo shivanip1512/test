@@ -8,15 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/06/24 16:13:35 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:20:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-
+#include "rwutil.h"
 #include "dev_base_lite.h"
 
 CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
@@ -46,42 +46,42 @@ LONG CtiDeviceBaseLite::getPortID() const
     return _portID;
 }
 
-RWCString CtiDeviceBaseLite::getClass() const
+string CtiDeviceBaseLite::getClass() const
 {
     return _class;
 }
-RWCString CtiDeviceBaseLite::getName() const
+string CtiDeviceBaseLite::getName() const
 {
     return _name;
 }
 
-RWCString CtiDeviceBaseLite::getDescription() const
+string CtiDeviceBaseLite::getDescription() const
 {
     return _description;
 }
 
-RWCString CtiDeviceBaseLite::getObjectType() const
+string CtiDeviceBaseLite::getObjectType() const
 {
     return _objectType;
 }
 
-RWCString CtiDeviceBaseLite::getDisableFlag() const
+string CtiDeviceBaseLite::getDisableFlag() const
 {
     return _disableFlag;
 }
 
-CtiDeviceBaseLite& CtiDeviceBaseLite::setDisableFlag( const RWCString &str )
+CtiDeviceBaseLite& CtiDeviceBaseLite::setDisableFlag( const string &str )
 {
     _disableFlag = str;
     return *this;
 }
-CtiDeviceBaseLite& CtiDeviceBaseLite::setControlInhibitFlag( const RWCString &str )
+CtiDeviceBaseLite& CtiDeviceBaseLite::setControlInhibitFlag( const string &str )
 {
     _controlInhibitFlag = str;
     return *this;
 }
 
-RWCString CtiDeviceBaseLite::getControlInhibitFlag() const
+string CtiDeviceBaseLite::getControlInhibitFlag() const
 {
     return _controlInhibitFlag;
 }
@@ -97,18 +97,19 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::setPortID( LONG id )
     _portID = id;
     return *this;
 }
-CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const RWCString &str )
+
+CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const string &str )
 {
     _name = str;
     return *this;
 }
-CtiDeviceBaseLite& CtiDeviceBaseLite::setClass( const RWCString &str )
+CtiDeviceBaseLite& CtiDeviceBaseLite::setClass( const string &str )
 {
     _class = str;
     return *this;
 }
 
-CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const RWCString &str )
+CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const string &str )
 {
     _description = str;
     return *this;
@@ -129,7 +130,7 @@ bool CtiDeviceBaseLite::operator()(const CtiDeviceBaseLite& aRef) const
 
 void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(getTableName());
+    keyTable = db.table(getTableName().c_str());
     RWDBTable devtable = getDatabase().table( "Device" );
 
     selector <<
@@ -158,9 +159,9 @@ void CtiDeviceBaseLite::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["controlinhibit"] >> _controlInhibitFlag;
 }
 
-RWCString CtiDeviceBaseLite::getTableName()
+string CtiDeviceBaseLite::getTableName()
 {
-    return RWCString("YukonPAObject");
+    return string("YukonPAObject");
 }
 
 RWDBStatus CtiDeviceBaseLite::Restore()
@@ -174,7 +175,7 @@ RWDBStatus CtiDeviceBaseLite::Restore()
         RWDBConnection conn = getConnection();
 
         {
-            RWDBTable table = getDatabase().table( getTableName() );
+            RWDBTable table = getDatabase().table( getTableName().c_str() );
             RWDBTable devtable = getDatabase().table( "Device" );
 
             selector = getDatabase().selector();
@@ -223,15 +224,15 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
 
 bool CtiDeviceBaseLite::isDisabled() const
 {
-    RWCString str(getDisableFlag());
-    str.toLower();
-    return(str == "y");
+    string str(getDisableFlag());
+    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    return (str == "y");
 }
 
 bool CtiDeviceBaseLite::isControlInhibited() const
 {
-    RWCString str(getControlInhibitFlag());
-    str.toLower();
-    return(str == "y");
+    string str(getControlInhibitFlag());
+    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    return (str == "y");
 }
 

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/12/30 21:57:25 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:16:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 #define __TBL_TAGLOG_H__
 
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
+
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -45,13 +45,13 @@ protected:
     int             _pointId;           //
     int             _tagid;             // refers to id in tag table
 
-    RWCString       _userName;          // VC(60)
-    RWCString       _actionStr;         // VC(20)
-    RWCString       _descriptionStr;    // VC(120)
+    string       _userName;          // VC(60)
+    string       _actionStr;         // VC(20)
+    string       _descriptionStr;    // VC(120)
 
-    RWDBDateTime    _tagtime;           // when was tag created
-    RWCString       _referenceStr;      // job id, etc, user field
-    RWCString       _taggedForStr;      // user field
+    CtiTime    _tagtime;           // when was tag created
+    string       _referenceStr;      // job id, etc, user field
+    string       _taggedForStr;      // user field
 
     static int _maxInstanceId;
     static int _nextLogId;
@@ -72,7 +72,7 @@ public:
     virtual int operator==(const CtiTableTagLog&) const;
     bool operator<(const CtiTableTagLog& aRef) const;
 
-    static RWCString getTableName();
+    static string getTableName();
 
     RWDBStatus Insert(RWDBConnection &conn);
     RWDBStatus Update(RWDBConnection &conn);
@@ -93,26 +93,26 @@ public:
     int getPointId() const;           //
     int getTagId() const;             // refers to id in tag table
 
-    RWCString getUserName() const;          // VC(60)  Console user name
-    RWCString getActionStr() const;         // VC(20)
-    RWCString getDescriptionStr() const;    // VC(120)
+    string getUserName() const;          // VC(60)  Console user name
+    string getActionStr() const;         // VC(20)
+    string getDescriptionStr() const;    // VC(120)
 
-    RWDBDateTime getTagTime() const;        // when was tag created
-    RWCString getReferenceStr() const;      // job id, etc, user field
-    RWCString getTaggedForStr() const;
+    CtiTime getTagTime() const;        // when was tag created
+    string getReferenceStr() const;      // job id, etc, user field
+    string getTaggedForStr() const;
 
     CtiTableTagLog& setLogId(int id);        // no two tags share the same one
     CtiTableTagLog& setInstanceId(int id);        // Matches the dynamictag entry.  Follows the life cycle of the tag.
     CtiTableTagLog& setPointId(int id);           //
     CtiTableTagLog& setTagId(int id);             // refers to id in tag table
 
-    CtiTableTagLog& setUserName(const RWCString& str);          // VC(60)  Console user name
-    CtiTableTagLog& setActionStr(const RWCString& str);         // VC(20)
-    CtiTableTagLog& setDescriptionStr(const RWCString& str);    // VC(120)
+    CtiTableTagLog& setUserName(const string& str);          // VC(60)  Console user name
+    CtiTableTagLog& setActionStr(const string& str);         // VC(20)
+    CtiTableTagLog& setDescriptionStr(const string& str);    // VC(120)
 
-    CtiTableTagLog& setTagTime(const RWDBDateTime &dbdt);        // when was tag created
-    CtiTableTagLog& setReferenceStr(const RWCString& str);      // job id, etc, user field
-    CtiTableTagLog& setTaggedForStr(const RWCString& str);
+    CtiTableTagLog& setTagTime(const CtiTime &dbdt);        // when was tag created
+    CtiTableTagLog& setReferenceStr(const string& str);      // job id, etc, user field
+    CtiTableTagLog& setTaggedForStr(const string& str);
 
     static int getNextLogId();
     static int getLastNextLogId();

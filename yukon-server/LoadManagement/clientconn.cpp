@@ -22,6 +22,7 @@
 
 extern ULONG _LM_DEBUG;
 
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -29,7 +30,7 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getpeername() << endl;
+        dout << CtiTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getpeername() << endl;
     }
 
     try
@@ -58,7 +59,7 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
     {
         _valid = FALSE;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -69,7 +70,7 @@ CtiLMConnection::~CtiLMConnection()
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection closing." << endl;
+        dout << CtiTime() << " - Client Connection closing." << endl;
     }
 
     try
@@ -79,12 +80,12 @@ CtiLMConnection::~CtiLMConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Client Connection closed." << endl;
+        dout << CtiTime() << " - Client Connection closed." << endl;
     }
 }
 
@@ -154,7 +155,7 @@ void CtiLMConnection::write(RWCollectable* msg)
 	   msg->isA() != MSG_SERVER_RESPONSE)  //never throw away server responses!!!
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
             delete msg;
         }
         else
@@ -163,7 +164,7 @@ void CtiLMConnection::write(RWCollectable* msg)
             if( _LM_DEBUG & LM_DEBUG_CLIENT )       
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
+                dout << CtiTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
             }
             _queue.write( (RWCollectable*) msg );
         }
@@ -197,7 +198,7 @@ void CtiLMConnection::_sendthr()
                         if( _LM_DEBUG & LM_DEBUG_CLIENT )           
                         {
                             CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << RWTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;       
+                            dout << CtiTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;       
                         }                       
                         *oStream << out;
                         oStream->vflush();
@@ -208,7 +209,7 @@ void CtiLMConnection::_sendthr()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         while ( isValid() && oStream->good() );
@@ -227,14 +228,14 @@ void CtiLMConnection::_sendthr()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
 
     /*{    
         RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime()  << "exiting _sendthr - conn:  " << this << endl;
+        cout << CtiTime()  << "exiting _sendthr - conn:  " << this << endl;
     }*/
 }
 
@@ -257,7 +258,7 @@ void CtiLMConnection::_recvthr()
         
         do
         {
-            //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
+            //cout << CtiTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
  
             *iStream >> current;
@@ -280,13 +281,13 @@ void CtiLMConnection::_recvthr()
             else
             {
                 /*CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
+                dout << CtiTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
 
                 //_valid = FALSE;
             }
 
-        }
-        while ( isValid()  && iStream->good() );
+        }while ( isValid()  && iStream->good() );
+        //TStest//while ( isValid()  && iStream->good() );
     }
     catch(RWCancellation& )
     {
@@ -302,13 +303,13 @@ void CtiLMConnection::_recvthr()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
 
     /*{    
         RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime()  << "exiting _recvthr - conn:  " <<  this << endl;
+        cout << CtiTime()  << "exiting _recvthr - conn:  " <<  this << endl;
     }*/
 }

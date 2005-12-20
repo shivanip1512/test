@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/10/19 02:56:43 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "guard.h"
 #include "logger.h"
 #include "transdata_datalink.h"
+#include "rwutil.h"
 
 //=====================================================================================================================
 //=====================================================================================================================
@@ -65,7 +66,7 @@ void CtiTransdataDatalink::reinitalize( void )
    _finished            = false;
    _firstTime           = true;
 
-   if( _storage )
+   if( _storage != NULL )
    {
       delete [] _storage;
    }
@@ -76,18 +77,16 @@ void CtiTransdataDatalink::reinitalize( void )
 //gotta send the commands one char at a time so the meter hears us
 //=====================================================================================================================
 
-RWCString CtiTransdataDatalink::buildMsg( RWCString command, RWCString wantToGet )
+string CtiTransdataDatalink::buildMsg( string command, string wantToGet )
 {
-   RWCString cmd;
-
-   memset( _storage, 0, Storage_size );
-
+   string cmd;
+   memset( _storage, '\0', Storage_size );
    _lookFor = wantToGet;
    _finished = false;
 
    if( _index < command.length() )
    {
-      cmd = RWCString( command.data()[_index] );
+      cmd = char2string( command[_index] );
       _index++;
    }
    else
@@ -109,14 +108,14 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
       //tack on the new byte(s) we got from the meter
       _received.insert( _offset, ( const char*)xfer.getInBuffer(), xfer.getInCountActual() );
       _offset += xfer.getInCountActual();
-
-      if( _received.contains( ( const char*)_lookFor, RWCString::exact ) )
+   
+      if( _received.find(_lookFor) )
       {
-         memcpy( _storage, _received, _received.length() );
+         memcpy( _storage, _received.c_str(), _received.length() );
          _bytesReceived += _received.length();
 
          //clear what we've got in there
-         _received.remove( 0, _received.length() );
+         _received.erase( 0, _received.length() );
          _offset = 0;
          _index = 0;
 
@@ -153,15 +152,15 @@ bool CtiTransdataDatalink::isTransactionComplete( void )
 
 void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 {
-   if( _storage )
+   if( _storage != NULL )
    {
-      if( data )
+      if( data != NULL )
       {
          memcpy( data, _storage, _bytesReceived );
          *bytes = _bytesReceived;
       }
 
-      memset( _storage, 0, Storage_size );
+      memset( _storage, '\0', Storage_size );
 
       _bytesReceived = 0;
       _finished = false;

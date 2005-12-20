@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/parsetest.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:19:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,11 +17,11 @@
 #include <crtdbg.h>
 #include <windows.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw\cstring.h>
+
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
@@ -30,34 +30,28 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "cmdparse.h"
 #include "logger.h"
 
+                       
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 BOOL  bQuit = FALSE;
 
 
 void main(int argc, char **argv)
 {
-    char cmd[100] = { "GetStatus This is the default case...."};
-
-    strcpy(cmd, argv[1]);
-
-    dout.start();     // fire up the logger thread
-    dout.setOutputPath("c:\\temp\\");
-    dout.setOutputFile("temp");
-    dout.setToStdOut(true);
-    dout.setWriteInterval(0);
-
     try
-    {
-        CtiCommandParser  parse(cmd);
-        parse.Dump();
-
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << parse.asString() << endl;
+    {   
+        string cmd;
+        for(int i=1; i<argc; i++){
+            cmd += argv[i];
+            cmd += " ";
         }
+        
+        cout << "parsing: " << cmd << endl;
 
-        parse.parseAsString(parse.asString());
+        CtiCommandParser  parse(cmd);
+        //parse.Dump();
+        cout << parse.asString() << endl;
+
 
     }
     catch(RWxmsg &msg)
@@ -66,10 +60,7 @@ void main(int argc, char **argv)
         cout << msg.why() << endl;
     }
 
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
-
     exit(0);
 
 }
+

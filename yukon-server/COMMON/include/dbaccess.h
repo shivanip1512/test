@@ -22,7 +22,6 @@
 #ifndef DBACCESS_H
 #define DBACCESS_H
 
-#include <rw/cstring.h>
 
 #include <rw/tvslist.h>
 #include <rw/tvhdict.h>
@@ -43,8 +42,8 @@ extern IM_EX_CTIBASE CtiSemaphore  gDBAccessSema;
 //various database connection options
 IM_EX_CTIBASE
 void setDatabaseParams(unsigned dbID,
-                       const RWCString& dbDll, const RWCString& dbName,
-                       const RWCString& dbUser, const RWCString& dbPassword );
+                       const string& dbDll, const string& dbName,
+                       const string& dbUser, const string& dbPassword );
 
 IM_EX_CTIBASE RWDBDatabase getDatabase();
 IM_EX_CTIBASE RWDBDatabase getDatabase(unsigned dbID);
@@ -52,8 +51,9 @@ IM_EX_CTIBASE RWDBDatabase getDatabase(unsigned dbID);
 IM_EX_CTIBASE RWDBConnection getConnection();
 IM_EX_CTIBASE RWDBConnection getConnection(unsigned dbID);
 
-IM_EX_CTIBASE RWDBReader ExecuteQuery(RWDBConnection& conn, const RWCString& query);
+IM_EX_CTIBASE RWDBReader ExecuteQuery(RWDBConnection& conn, const string& query);
 IM_EX_CTIBASE RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file = 0, int line = 0, long *rowsAffected = 0);
+
 IM_EX_CTIBASE RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const char *file = 0, int line = 0);
 
 

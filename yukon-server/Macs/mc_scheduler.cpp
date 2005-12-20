@@ -9,23 +9,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/05/05 17:07:40 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "mc_scheduler.h"
+#include "rwutil.h"
+using namespace std;
 
 static const char* AbsoluteTimeStopPolicy;
 static const char* DurationStopPolicy;
 static const char* UntilCompleteStopPolicy;
 static const char* ManualStopPolicy;
 
-// RWTime is invalid when seconds are set to 0
-RWTime CtiMCScheduler::_invalid_time((unsigned long) 0);
+// CtiTime is invalid when seconds are set to 0
+CtiTime CtiMCScheduler::_invalid_time((unsigned long) 0);
 
-void CtiMCScheduler::initEvents(const RWTime& now)
+void CtiMCScheduler::initEvents(const CtiTime& now)
 {
     RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
 
@@ -41,7 +43,7 @@ void CtiMCScheduler::initEvents(const RWTime& now)
 
 }
 
-void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
+void CtiMCScheduler::initEvents(const CtiTime& now, CtiMCSchedule& sched)
 {
     CtiLockGuard<CtiLogger> guard(dout);
 
@@ -65,7 +67,7 @@ void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
         else
         if( state == CtiMCSchedule::Pending )
         {
-            RWTime start;
+            CtiTime start;
             if( (start = scheduleManualStart(now,sched)).isValid() )
             {
                 if( !scheduleManualStop(start,sched).isValid() )
@@ -81,10 +83,10 @@ void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
     //start any schedule that _should_ have been running now
     sched.setCurrentState(CtiMCSchedule::Waiting);
 
-    RWDate yesterday(now);
-    RWTime yesterday_time(yesterday);
-    RWTime calc_start = calcPolicyStart(yesterday_time,sched);
-    RWTime calc_stop;
+    CtiDate yesterday(now);
+    CtiTime yesterday_time(yesterday);
+    CtiTime calc_start = calcPolicyStart(yesterday_time,sched);
+    CtiTime calc_stop;
 
     if( calc_start.isValid() ) {
         /* changed because duration stops were not being restarted */
@@ -95,14 +97,14 @@ void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
         calc_start <= now && now <= calc_stop    )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        RWTime start;
+        CtiTime start;
         if( (start = schedulePolicyStart(yesterday_time,sched)).isValid() )
             schedulePolicyStop(start,sched);
     }
     else //schedule a start/stop normally
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        RWTime start;
+        CtiTime start;
         if( (start = schedulePolicyStart(now, sched)).isValid() )
             schedulePolicyStop(start, sched);
 
@@ -117,10 +119,10 @@ void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
   now    - Time used to determine which events are ready to be processed.
   events - The set that getEvents inserts events to be processed into.
 ----------------------------------------------------------------------------*/
-void CtiMCScheduler::getEvents(const RWTime& now, set< ScheduledEvent >& events)
+void CtiMCScheduler::getEvents(const CtiTime& now, set< ScheduledEvent >& events)
 {  CtiLockGuard< CtiLogger > g(dout);
    {
-        deque< ScheduledEvent >::iterator iter = _event_deque.begin();
+        std::deque< ScheduledEvent >::iterator iter = _event_deque.begin();
         while( iter != _event_deque.end() )
         {
             if( iter->timestamp <= now )
@@ -144,7 +146,7 @@ void CtiMCScheduler::getEvents(const RWTime& now, set< ScheduledEvent >& events)
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
         CtiMCSchedule* schedule = NULL;
 
-        for( set< ScheduledEvent >::iterator iter = events.begin();
+        for( std::set< ScheduledEvent >::iterator iter = events.begin();
             iter != events.end();
             iter++ )
         {
@@ -157,7 +159,7 @@ void CtiMCScheduler::getEvents(const RWTime& now, set< ScheduledEvent >& events)
             else
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime() << __FILE__ << " (" << __LINE__
+                dout << CtiTime() << __FILE__ << " (" << __LINE__
                     << ") WARNING - could not find a schedule matching event schedule id: "
                     << iter->sched_id << endl;
             }
@@ -175,7 +177,7 @@ void CtiMCScheduler::getEvents(const RWTime& now, set< ScheduledEvent >& events)
 ----------------------------------------------------------------------------*/
 void CtiMCScheduler::removeEvents(long schedule_id)
 {
-    deque< ScheduledEvent >::iterator iter = _event_deque.begin();
+    std::deque< ScheduledEvent >::iterator iter = _event_deque.begin();
     while( iter != _event_deque.end() )
     {
         if( iter->sched_id == schedule_id )
@@ -183,8 +185,8 @@ void CtiMCScheduler::removeEvents(long schedule_id)
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime() << " Removing event from the event queue" << endl;
-                dout << RWTime() << " id:  " << iter->sched_id << " type: "       <<
+                dout << CtiTime() << " Removing event from the event queue" << endl;
+                dout << CtiTime() << " id:  " << iter->sched_id << " type: "       <<
                         iter->event_type     << " timestamp: " << iter->timestamp << endl;
             }
 
@@ -197,7 +199,7 @@ void CtiMCScheduler::removeEvents(long schedule_id)
     }
 }
 
-RWTime CtiMCScheduler::scheduleManualStart(const RWTime& now,
+CtiTime CtiMCScheduler::scheduleManualStart(const CtiTime& now,
                                            CtiMCSchedule& sched)
 {
     ScheduledEvent start_event;
@@ -211,7 +213,7 @@ RWTime CtiMCScheduler::scheduleManualStart(const RWTime& now,
 
 
     const string& state = sched.getCurrentState();
-    const RWTime& man_start = sched.getManualStartTime();
+    const CtiTime& man_start = sched.getManualStartTime();
 
     if( man_start.isValid() && state == CtiMCSchedule::Waiting )
     {
@@ -243,12 +245,12 @@ RWTime CtiMCScheduler::scheduleManualStart(const RWTime& now,
     }
 }
 
-RWTime CtiMCScheduler::scheduleManualStop(const RWTime& now,
+CtiTime CtiMCScheduler::scheduleManualStop(const CtiTime& now,
                           CtiMCSchedule& sched)
 {
     ScheduledEvent event;
     const string state = sched.getCurrentState();
-    const RWTime& man_stop = sched.getManualStopTime();
+    const CtiTime& man_stop = sched.getManualStopTime();
 
     event.event_type = StopSchedule;
     event.sched_id = sched.getScheduleID();
@@ -280,9 +282,9 @@ RWTime CtiMCScheduler::scheduleManualStop(const RWTime& now,
     }
 }
 
-RWTime CtiMCScheduler::schedulePolicyStart(const RWTime& now, CtiMCSchedule& sched)
+CtiTime CtiMCScheduler::schedulePolicyStart(const CtiTime& now, CtiMCSchedule& sched)
 {
-    RWTime start_time = calcPolicyStart(now,sched);
+    CtiTime start_time = calcPolicyStart(now,sched);
 
     if( start_time.isValid() )
     {
@@ -296,9 +298,9 @@ RWTime CtiMCScheduler::schedulePolicyStart(const RWTime& now, CtiMCSchedule& sch
     return start_time;
 }
 
-RWTime CtiMCScheduler::schedulePolicyStop(const RWTime& now, CtiMCSchedule& sched)
+CtiTime CtiMCScheduler::schedulePolicyStop(const CtiTime& now, CtiMCSchedule& sched)
 {
-    RWTime stop_time = calcPolicyStop(now,sched);
+    CtiTime stop_time = calcPolicyStop(now,sched);
 
     if( stop_time.isValid() )
     {
@@ -313,7 +315,7 @@ RWTime CtiMCScheduler::schedulePolicyStop(const RWTime& now, CtiMCSchedule& sche
     return stop_time;
 }
 
-RWTime CtiMCScheduler::scheduleRepeatInterval(const RWTime& now, const RWTime& start,
+CtiTime CtiMCScheduler::scheduleRepeatInterval(const CtiTime& now, const CtiTime& start,
                                   CtiMCSchedule& sched)
 {
     long interval = sched.getRepeatInterval();
@@ -350,7 +352,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
        if( schedule == NULL )
        {
            CtiLockGuard< CtiLogger > guard(dout);
-           dout << RWTime() << __FILE__ << " (" << __LINE__
+           dout << CtiTime() << __FILE__ << " (" << __LINE__
                     << ") WARNING - could not find a schedule matching event schedule id: "
                     << event.sched_id << endl;
 
@@ -382,7 +384,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
             schedule->setCurrentStartTime(event.timestamp);
             schedule->setCurrentState(CtiMCSchedule::Running);
 
-            RWTime now;
+            CtiTime now;
             now -= now.second();
             scheduleRepeatInterval( now, event.timestamp, *schedule );
 
@@ -396,7 +398,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
         case RepeatInterval:
             //assert( schedule->getCurrentState() == CtiMCSchedule::Running );
             {
-            RWTime now;
+            CtiTime now;
             now -= now.second();
 
             scheduleRepeatInterval( now, schedule->getCurrentStartTime(), *schedule );
@@ -424,7 +426,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
                 // Don't calculate any new events if we are disabled
                 if(schedule->getCurrentState() != CtiMCSchedule::Disabled)
                 {
-                    RWTime start = schedulePolicyStart(event.timestamp, *schedule );
+                    CtiTime start = schedulePolicyStart(event.timestamp, *schedule );
 
                     if( start.isValid() )
                         schedulePolicyStop( start, *schedule );
@@ -486,8 +488,8 @@ void CtiMCScheduler::removeEvents(long schedule_id, ScheduledEventType type)
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime() << " Removing event from the event queue" << endl;
-                dout << RWTime() << " id:  " << iter->sched_id << " type: "       <<
+                dout << CtiTime() << " Removing event from the event queue" << endl;
+                dout << CtiTime() << " id:  " << iter->sched_id << " type: "       <<
                         iter->event_type     << " timestamp: " << iter->timestamp << endl;
             }
 
@@ -504,9 +506,9 @@ void CtiMCScheduler::removeEvents(long schedule_id, ScheduledEventType type)
 /*
     Determine when the next policy start based on now should be
 */
-RWTime CtiMCScheduler::calcPolicyStart(const RWTime& now, CtiMCSchedule& sched)
+CtiTime CtiMCScheduler::calcPolicyStart(const CtiTime& now, CtiMCSchedule& sched)
 {
-    RWTime start_time(_invalid_time);
+    CtiTime start_time(_invalid_time);
     const string& policy = sched.getStartPolicy();
 
     if( policy == CtiMCSchedule::DateTimeStartPolicy )
@@ -535,9 +537,9 @@ RWTime CtiMCScheduler::calcPolicyStart(const RWTime& now, CtiMCSchedule& sched)
 /*
     Determine when the next policy stop based on now should be
 */
-RWTime CtiMCScheduler::calcPolicyStop(const RWTime& now, CtiMCSchedule& sched)
+CtiTime CtiMCScheduler::calcPolicyStop(const CtiTime& now, CtiMCSchedule& sched)
 {
-    RWTime stop_time(_invalid_time);
+    CtiTime stop_time(_invalid_time);
     const string& policy = sched.getStopPolicy();
 
     if( policy == CtiMCSchedule::AbsoluteTimeStopPolicy )
@@ -558,14 +560,14 @@ RWTime CtiMCScheduler::calcPolicyStop(const RWTime& now, CtiMCSchedule& sched)
     else
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << __FILE__ << " (" << __LINE__
+        dout << CtiTime() << __FILE__ << " (" << __LINE__
                    << ") WARNING - unknown stop policy: " << policy << endl;
     }
 
     return stop_time;
 }
 
-bool CtiMCScheduler::calcIntervalEvent(const RWTime& now, const CtiMCSchedule& sched,
+bool CtiMCScheduler::calcIntervalEvent(const CtiTime& now, const CtiMCSchedule& sched,
                            ScheduledEvent& event) const
 {
     long interval = sched.getRepeatInterval();
@@ -589,7 +591,7 @@ bool CtiMCScheduler::calcIntervalEvent(const RWTime& now, const CtiMCSchedule& s
     }
 }
 
-bool CtiMCScheduler::calcStopEvent(const RWTime& start, const CtiMCSchedule& sched,
+bool CtiMCScheduler::calcStopEvent(const CtiTime& start, const CtiMCSchedule& sched,
                        ScheduledEvent& event) const
 {
     ScheduledEvent next_event;
@@ -642,12 +644,12 @@ bool CtiMCScheduler::calcStopEvent(const RWTime& start, const CtiMCSchedule& sch
 }
 
 
-void CtiMCScheduler::calcDateTimeStart(const RWTime& now, const CtiMCSchedule& sched,
-                           RWTime& start_time ) const
+void CtiMCScheduler::calcDateTimeStart(const CtiTime& now, const CtiMCSchedule& sched,
+                           CtiTime& start_time ) const
 {
     struct tm start_tm;
     unsigned hour, minute, second;
-    RWTime temp;
+    CtiTime temp;
 
     parseTimeString( sched.getStartTime(), hour, minute, second );
 
@@ -662,7 +664,7 @@ void CtiMCScheduler::calcDateTimeStart(const RWTime& now, const CtiMCSchedule& s
     if( sched.getStartYear() != 0 )
     {
         start_tm.tm_year = sched.getStartYear() - 1900;
-        temp = RWTime(&start_tm);
+        temp = CtiTime(&start_tm);
 
         if( temp > now )
             start_time = temp;
@@ -673,12 +675,12 @@ void CtiMCScheduler::calcDateTimeStart(const RWTime& now, const CtiMCSchedule& s
     }
 
     // Every year, add a year on if it is in the past
-    temp = RWTime(&start_tm);
+    temp = CtiTime(&start_tm);
 
     if( temp < now )
     {
         start_tm.tm_year++;
-        start_time = RWTime(&start_tm);
+        start_time = CtiTime(&start_tm);
     }
     else
     {
@@ -688,13 +690,13 @@ void CtiMCScheduler::calcDateTimeStart(const RWTime& now, const CtiMCSchedule& s
     return;
 }
 
-void CtiMCScheduler::calcDayOfMonthStart(const RWTime& now, const CtiMCSchedule& sched,
-                             RWTime& start_time ) const
+void CtiMCScheduler::calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule& sched,
+                             CtiTime& start_time ) const
 {
     struct tm start_tm;
     unsigned hour, minute, second;
     int mday = sched.getStartDay();
-    RWTime temp;
+    CtiTime temp;
 
     parseTimeString( sched.getStartTime(), hour, minute, second );
 
@@ -703,7 +705,7 @@ void CtiMCScheduler::calcDayOfMonthStart(const RWTime& now, const CtiMCSchedule&
     start_tm.tm_min  = minute;
     start_tm.tm_sec  = second;
 
-    temp = RWTime(&start_tm);
+    temp = CtiTime(&start_tm);
 
     if( start_tm.tm_mday < mday ) {
         temp += (86400 * (mday - start_tm.tm_mday));
@@ -720,14 +722,14 @@ void CtiMCScheduler::calcDayOfMonthStart(const RWTime& now, const CtiMCSchedule&
 
             int year = start_tm.tm_year + 1900;
 
-            temp += 86400 * ((RWDate::daysInMonthYear(month,year) - start_tm.tm_mday) + mday);
+            temp += 86400 * ((CtiDate::daysInMonthYear(month,year) - start_tm.tm_mday) + mday);
             start_time = temp;
         }
     }
 }
 
-void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sched,
-                          RWTime& start_time ) const
+void CtiMCScheduler::calcWeekDayStart(const CtiTime& now, const CtiMCSchedule& sched,
+                          CtiTime& start_time ) const
 {
     CtiHolidayManager& holiday_mgr = CtiHolidayManager::getInstance();
     const string& wdays = sched.getValidWeekDays();
@@ -735,7 +737,7 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
 
     struct tm start_tm;
     unsigned hour, minute, second;
-    RWTime temp;
+    CtiTime temp;
 
     if( wdays.length() < 8 || wdays.find('Y') == string::npos) {
         return;
@@ -750,7 +752,7 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
     start_tm.tm_min  = minute;
     start_tm.tm_sec  = second;
 
-    temp = RWTime(&start_tm);
+    temp = CtiTime(&start_tm);
     temp -= 86400;
 
     int i;
@@ -758,7 +760,7 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
         temp += 86400;
         if( temp > now && wdays[i] == 'Y' &&
            (on_holidays ||
-            !holiday_mgr.isHoliday(RWDate(temp), sched.getHolidayScheduleID()))) {
+            !holiday_mgr.isHoliday( temp.date(), sched.getHolidayScheduleID() ))) {
 
             start_time = temp;
             return;
@@ -769,7 +771,7 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
         temp += 86400;
         if( wdays[i] == 'Y' &&
             (on_holidays ||
-            !holiday_mgr.isHoliday(RWDate(temp), sched.getHolidayScheduleID()))) {
+            !holiday_mgr.isHoliday( temp.date(), sched.getHolidayScheduleID()))) {
 
             start_time = temp;
             return;
@@ -777,8 +779,8 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
     }
 }
 
-void CtiMCScheduler::calcAbsoluteTimeStop(const RWTime& start, const CtiMCSchedule& sched,
-                              RWTime& stop_time ) const
+void CtiMCScheduler::calcAbsoluteTimeStop(const CtiTime& start, const CtiMCSchedule& sched,
+                              CtiTime& stop_time ) const
 {
     struct tm stop_tm;
     unsigned hour, minute, second;
@@ -792,7 +794,7 @@ void CtiMCScheduler::calcAbsoluteTimeStop(const RWTime& start, const CtiMCSchedu
     stop_tm.tm_min  = minute;
     stop_tm.tm_sec  = second;
 
-    stop_time = RWTime(&stop_tm);
+    stop_time = CtiTime(&stop_tm);
 
     // If the stop time is passed today,
     // consider it tomorrow
@@ -804,8 +806,8 @@ void CtiMCScheduler::calcAbsoluteTimeStop(const RWTime& start, const CtiMCSchedu
     return;
 }
 
-void CtiMCScheduler::calcDurationStop(const RWTime& start, const CtiMCSchedule& sched,
-                          RWTime& stop_time ) const
+void CtiMCScheduler::calcDurationStop(const CtiTime& start, const CtiMCSchedule& sched,
+                          CtiTime& stop_time ) const
 {
     long duration = sched.getDuration();
     if( duration >= 60 &&
@@ -826,9 +828,9 @@ bool CtiMCScheduler::parseTimeString(   const string& time_str,
         string m = time_str.substr( 3, 2 );
         string s = time_str.substr( 6, 2 );
 
-        hour = atoi(h.data());
-        minute = atoi(m.data());
-        second = atoi(s.data());
+        hour = atoi(h.c_str());
+        minute = atoi(m.c_str());
+        second = atoi(s.c_str());
     }
     catch(...)
     {

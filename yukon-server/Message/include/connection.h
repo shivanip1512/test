@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/06/24 16:14:12 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,20 +35,23 @@
 #include "mutex.h"
 #include "queue.h"
 
+using std::string;
+using std::less;
+
 
 class IM_EX_MSG CtiConnection
 {
 protected:
 
-   RWCString               _name;
+   string               _name;
 
    INT                     _termTime;
-   RWTime                  _lastInQueueWrite;
+   CtiTime                  _lastInQueueWrite;
 
    CtiRegistrationMsg      *_regMsg;
    CtiPointRegistrationMsg *_ptRegMsg;
 
-   RWCString               _host;
+   string               _host;
    INT                     _port;
 
    CtiExchange             *_exchange;                     // Pointer so I can kill it dead at will...
@@ -97,11 +100,11 @@ public:
 
    // Don't want anyone to use this one....
    CtiConnection( );
-   CtiConnection( const INT &Port, const RWCString &Host, InQ_t *inQ = NULL, INT tt = 3);
+   CtiConnection( const INT &Port, const string &Host, InQ_t *inQ = NULL, INT tt = 3);
    CtiConnection(CtiExchange *xchg, InQ_t *inQ = NULL, INT tt = 3);
    virtual ~CtiConnection();
 
-   virtual void doConnect( const INT &Port, const RWCString &Host, InQ_t *inQ = NULL );
+   virtual void doConnect( const INT &Port, const string &Host, InQ_t *inQ = NULL );
    virtual RWBoolean operator==(const CtiConnection& aRef) const;
    static unsigned hash(const CtiConnection& aRef);
    CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
@@ -134,16 +137,16 @@ public:
    INT   checkCancellation(INT mssleep = 0);
    INT   waitForConnect();
 
-   const RWTime& getLastReceiptTime() const;
+   const CtiTime& getLastReceiptTime() const;
 
    void  messagePeek( CtiMessage *MyMsg );
    void  recordRegistration( CtiMessage *msg );
    void  recordPointRegistration( CtiMessage *msg );
 
-   RWCString who();
+   string who();
 
-   RWCString   getName() const;
-   CtiConnection& setName(const RWCString &str);
+   string   getName() const;
+   CtiConnection& setName(const string &str);
 
    int outQueueCount() const;
    void restartConnection();

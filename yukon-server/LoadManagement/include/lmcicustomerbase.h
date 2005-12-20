@@ -35,19 +35,19 @@ public:
     virtual ~CtiLMCICustomerBase();
     
     LONG getCustomerId() const;
-    const RWCString& getCompanyName() const;
+    const string& getCompanyName() const;
     DOUBLE getCustomerDemandLevel() const;
     DOUBLE getCurtailAmount() const;
-    const RWCString& getCurtailmentAgreement() const;
-    const RWCString& getTimeZone() const;
+    const string& getCurtailmentAgreement() const;
+    const string& getTimeZone() const;
     LONG getCustomerOrder() const;
 
     CtiLMCICustomerBase& setCustomerId(LONG id);
-    CtiLMCICustomerBase& setCompanyName(const RWCString& name);
+    CtiLMCICustomerBase& setCompanyName(const string& name);
     CtiLMCICustomerBase& setCustomerDemandLevel(DOUBLE cdl);
     CtiLMCICustomerBase& setCurtailAmount(DOUBLE amount);
-    CtiLMCICustomerBase& setCurtailmentAgreement(const RWCString& agreement);
-    CtiLMCICustomerBase& setTimeZone(const RWCString& timezone);
+    CtiLMCICustomerBase& setCurtailmentAgreement(const string& agreement);
+    CtiLMCICustomerBase& setTimeZone(const string& timezone);
     CtiLMCICustomerBase& setCustomerOrder(LONG order);
 
     
@@ -71,11 +71,11 @@ protected:
 private:
 
     LONG _customerid;
-    RWCString _companyname;
+    string _companyname;
     DOUBLE _customerdemandlevel;
     DOUBLE _curtailamount;
-    RWCString _curtailmentagreement;
-    RWCString _timezone;
+    string _curtailmentagreement;
+    string _timezone;
     LONG _customerorder;
 };
 #endif

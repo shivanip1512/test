@@ -26,7 +26,7 @@ CtiPAOEvent::CtiPAOEvent()
 }
 
 
-CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, RWCString command)
+CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command)
 {
     _eventId = eventId;
     _scheduleId = schedId;
@@ -72,22 +72,22 @@ int CtiPAOEvent::operator!=(const CtiPAOEvent& right) const
     return _eventId != right._eventId;
 }
 
-long CtiPAOEvent::getEventId()
+long CtiPAOEvent::getEventId() const
 {
     return _eventId;
 }
 
-long CtiPAOEvent::getScheduleId()
+long CtiPAOEvent::getScheduleId()  const
 {
     return _scheduleId;
 }
 
-long CtiPAOEvent::getPAOId()
+long CtiPAOEvent::getPAOId() const
 {
     return _paoId;
 }
 
-RWCString CtiPAOEvent::getEventCommand()
+const string& CtiPAOEvent::getEventCommand() const
 {
     return _eventCommand;
 }
@@ -119,7 +119,7 @@ void CtiPAOEvent::setPAOId(long paoId)
     _paoId = paoId;
     return;
 }
-void CtiPAOEvent::setEventCommand(RWCString eventCommand)
+void CtiPAOEvent::setEventCommand(const string& eventCommand)
 {
     if (_eventCommand != eventCommand)
     {

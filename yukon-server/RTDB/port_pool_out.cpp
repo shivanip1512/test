@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ size_t CtiPortPoolDialout::addPort(CtiPortSPtr port)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << getName() << " adding " << port->getName() << " to child list" << endl;
+            dout << CtiTime() << " Port " << getName() << " adding " << port->getName() << " to child list" << endl;
         }
     }
 
@@ -144,7 +144,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
                         if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Child port " << curport->getName() << " has a GUID match for paoId " << Device->getID() << " / " << Device->getName() << endl;
+                            dout << CtiTime() << " Child port " << curport->getName() << " has a GUID match for paoId " << Device->getID() << " / " << Device->getName() << endl;
                         }
                         matchport = curport;
                         break;
@@ -158,20 +158,20 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
                             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Child port " << curport->getName() << " is busy/idle/pending with paoId " << curport->getConnectedDevice() << endl;
+                                dout << CtiTime() << " Child port " << curport->getName() << " is busy/idle/pending with paoId " << curport->getConnectedDevice() << endl;
                             }
                         }
                         else if((CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY) && (curport->queueCount() > 0 || curport->getConnectedDevice() || curport->getPoolAssignedGUID()))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Child port " << curport->getName() << " is busy with paoId/guid " << curport->getConnectedDevice() << " / " << curport->getPoolAssignedGUID() << endl;
+                            dout << CtiTime() << " Child port " << curport->getName() << " is busy with paoId/guid " << curport->getConnectedDevice() << " / " << curport->getPoolAssignedGUID() << endl;
                         }
                     }
                 }
                 else if( (CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY) && curport->queueCount() > 0 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Child port " << curport->getName() << " is busy with unknown paoId " << endl;
+                    dout << CtiTime() << " Child port " << curport->getName() << " is busy with unknown paoId " << endl;
                 }
                 else if( !vacantport )
                 {
@@ -180,7 +180,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
                         if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Child port " << curport->getName() << " is idle/questionable" << endl;
+                            dout << CtiTime() << " Child port " << curport->getName() << " is idle/questionable" << endl;
                         }
                         // This port is free for execution! He also represents a last resort because he is questionable!
                         vacantquestionableport = curport;
@@ -190,7 +190,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
                         if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Child port " << curport->getName() << " is idle" << endl;
+                            dout << CtiTime() << " Child port " << curport->getName() << " is idle" << endl;
                         }
                         vacantport = curport;   // This port is free for execution!  Keep looking in case we don't find a match
                     }
@@ -205,7 +205,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDSELECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << resultport->getName() << " selected due to MATCH. " << endl;
+                dout << CtiTime() << " Port " << resultport->getName() << " selected due to MATCH. " << endl;
             }
         }
         else if(vacantport)                                     // Use the vacant port first.
@@ -215,7 +215,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDSELECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << resultport->getName() << " selected due to VACANT. " << endl;
+                dout << CtiTime() << " Port " << resultport->getName() << " selected due to VACANT. " << endl;
             }
         }
         else if(idlependingport)                                // Next choose a port which would hang up if new work were allocated!.
@@ -225,7 +225,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDSELECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << resultport->getName() << " selected due to IDLEPENDING. " << endl;
+                dout << CtiTime() << " Port " << resultport->getName() << " selected due to IDLEPENDING. " << endl;
             }
         }
         else if(vacantquestionableport)                         // Last use the vacant and questionable port.
@@ -235,7 +235,7 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDSELECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << resultport->getName() << " selected due to VACANTQUESTIONABLE. " << endl;
+                dout << CtiTime() << " Port " << resultport->getName() << " selected due to VACANTQUESTIONABLE. " << endl;
             }
         }
         else
@@ -243,14 +243,14 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDSELECTION)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << getName() << " has no child port able to queue up work for " << Device->getName() << " id: " << Device->getID() << " guid: " << devguid << endl;
+                dout << CtiTime() << " Port " << getName() << " has no child port able to queue up work for " << Device->getName() << " id: " << Device->getID() << " guid: " << devguid << endl;
             }
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return resultport;
@@ -307,7 +307,7 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
                                     if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDALLOCATION)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Allocating OutMessage from pool queue to child port " << childport->getName() << ". Child has " << childport->queueCount() << " queue entries" << endl;
+                                        dout << CtiTime() << " Allocating OutMessage from pool queue to child port " << childport->getName() << ". Child has " << childport->queueCount() << " queue entries" << endl;
                                     }
                                 }
                             }
@@ -325,7 +325,7 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;

@@ -28,6 +28,8 @@
 
 extern ULONG _LM_DEBUG;
 
+using std::transform;
+
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -68,7 +70,7 @@ LONG CtiLMProgramBase::getPAOId() const
 
     Returns the pao category of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getPAOCategory() const
+const string& CtiLMProgramBase::getPAOCategory() const
 {
     return _paocategory;
 }
@@ -78,7 +80,7 @@ const RWCString& CtiLMProgramBase::getPAOCategory() const
 
     Returns the pao class of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getPAOClass() const
+const string& CtiLMProgramBase::getPAOClass() const
 {
     return _paoclass;
 }
@@ -88,7 +90,7 @@ const RWCString& CtiLMProgramBase::getPAOClass() const
 
     Returns the pao name of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getPAOName() const
+const string& CtiLMProgramBase::getPAOName() const
 {
     return _paoname;
 }
@@ -108,7 +110,7 @@ LONG CtiLMProgramBase::getPAOType() const
 
     Returns the pao description of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getPAODescription() const
+const string& CtiLMProgramBase::getPAODescription() const
 {
     return _paodescription;
 }
@@ -148,7 +150,7 @@ int CtiLMProgramBase::getStopPriority() const
 
     Returns the control type of the program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getControlType() const
+const string& CtiLMProgramBase::getControlType() const
 {
     return _controltype;
 }
@@ -168,7 +170,7 @@ LONG CtiLMProgramBase::getConstraintID() const
 
     Returns the constraint name of the program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getConstraintName() const
+const string& CtiLMProgramBase::getConstraintName() const
 {
     return _constraintname;
 }
@@ -178,7 +180,7 @@ const RWCString& CtiLMProgramBase::getConstraintName() const
 
     Returns the available week days of the program
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
+const string& CtiLMProgramBase::getAvailableWeekDays() const
 {
     return _availableweekdays;
 }
@@ -330,7 +332,7 @@ DOUBLE CtiLMProgramBase::getReductionTotal() const
 
     Returns the time that the program started controlling
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
+const CtiTime& CtiLMProgramBase::getStartedControlling() const
 {
     return _startedcontrolling;
 }
@@ -340,7 +342,7 @@ const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 
     Returns the time of the last control sent in the program
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
+const CtiTime& CtiLMProgramBase::getLastControlSent() const
 {
     return _lastcontrolsent;
 }
@@ -381,7 +383,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOId(LONG id)
 
     Sets the pao category of the substation
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
+CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const string& category)
 {
     _paocategory = category;
     return *this;
@@ -392,7 +394,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 
     Sets the pao class of the substation
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
+CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const string& pclass)
 {
     _paoclass = pclass;
     return *this;
@@ -403,7 +405,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 
     Sets the pao name of the substation
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
+CtiLMProgramBase& CtiLMProgramBase::setPAOName(const string& name)
 {
     _paoname = name;
     return *this;
@@ -425,7 +427,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOType(LONG type)
 
     Sets the pao description of the substation
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& description)
+CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const string& description)
 {
     _paodescription = description;
     return *this;
@@ -469,7 +471,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStopPriority(int stop_priority)
 
     Sets the controltype of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
+CtiLMProgramBase& CtiLMProgramBase::setControlType(const string& conttype)
 {
     _controltype = conttype;
     return *this;
@@ -491,7 +493,7 @@ CtiLMProgramBase& CtiLMProgramBase::setConstraintID(LONG constraint_id)
 
     Sets the constraint name of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const RWCString& constraint_name)
+CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const string& constraint_name)
 {
     _constraintname = constraint_name;
     return *this;
@@ -502,7 +504,7 @@ CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const RWCString& constrain
 
     Sets the available week days of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availweekdays)
+CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const string& availweekdays)
 {
     _availableweekdays = availweekdays;
     return *this;
@@ -676,7 +678,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 
     Sets the time that the program started controlling
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& startcont)
+CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const CtiTime& startcont)
 {
     if(_startedcontrolling != startcont)
     {
@@ -691,7 +693,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& st
 
     Sets the time of the last control sent in the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastcontrol)
+CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const CtiTime& lastcontrol)
 {
     if(_lastcontrolsent != lastcontrol)
     {
@@ -726,16 +728,16 @@ BOOL CtiLMProgramBase::isAvailableToday()
 {
     BOOL returnBool = TRUE;
 
-   RWTime now;
+   CtiTime now;
     struct tm start_tm;
 
     now.extract(&start_tm);
 
     bool is_holiday = CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId());
     
-    if( (is_holiday &&_availableweekdays(7) == 'E') || //exclude
-        (_availableweekdays(start_tm.tm_wday) == 'N' && !(is_holiday && _availableweekdays(7) == 'F')) ||
-        ( getSeasonScheduleId() > 0 && !CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId())) )
+    if( (is_holiday &&_availableweekdays[7] == 'E') || //exclude
+        (_availableweekdays[start_tm.tm_wday] == 'N' && !(is_holiday && _availableweekdays[7] == 'F')) ||
+        ( getSeasonScheduleId() > 0 && !CtiSeasonManager::getInstance().isInSeason(CtiDate(), getSeasonScheduleId())) )
     {
         returnBool = FALSE;
     }
@@ -771,7 +773,7 @@ BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
 {
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return FALSE;
 }
@@ -786,7 +788,7 @@ BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFro
 {
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return FALSE;
 }
@@ -811,8 +813,8 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 {
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime1;
-    RWTime tempTime2;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
     istrm >> _paoid
           >> _paocategory
           >> _paoclass
@@ -841,8 +843,8 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
           >> _manualcontrolreceivedflag
           >> _lmprogramcontrolwindows;
 
-    _startedcontrolling = RWDBDateTime(tempTime1);
-    _lastcontrolsent = RWDBDateTime(tempTime2);
+    _startedcontrolling = CtiTime(tempTime1);
+    _lastcontrolsent = CtiTime(tempTime2);
 }
 
 /*---------------------------------------------------------------------------
@@ -877,8 +879,8 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
           << _programstate
           << _reductionanalogpointid
           << _reductiontotal
-          << _startedcontrolling.rwtime()
-          << _lastcontrolsent.rwtime()
+          << _startedcontrolling
+          << _lastcontrolsent
           << _manualcontrolreceivedflag
           << _lmprogramcontrolwindows;
 
@@ -956,7 +958,7 @@ void CtiLMProgramBase::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -964,7 +966,7 @@ void CtiLMProgramBase::dumpDynamicData()
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     if(!isDirty())
     {
@@ -981,17 +983,17 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
 
                 updater << dynamicLMProgramTable["programstate"].assign( getProgramState() )
                 << dynamicLMProgramTable["reductiontotal"].assign( getReductionTotal() )
-                << dynamicLMProgramTable["startedcontrolling"].assign( getStartedControlling() )
-                << dynamicLMProgramTable["lastcontrolsent"].assign( getLastControlSent() )
-                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(RWCString( (getManualControlReceivedFlag() ? 'Y':'N') ))
-                << dynamicLMProgramTable["timestamp"].assign((RWDBDateTime)currentDateTime);
+                << dynamicLMProgramTable["startedcontrolling"].assign( toRWDBDT(getStartedControlling()) )
+                << dynamicLMProgramTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
+                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(( (getManualControlReceivedFlag() ? 'Y':'N') ))
+                << dynamicLMProgramTable["timestamp"].assign(toRWDBDT(currentDateTime));
                 
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << updater.asString().data() << endl;
+                    dout << CtiTime() << " - " << updater.asString().data() << endl;
                 }
                 updater.execute( conn );
                 setDirty(false);
@@ -1000,7 +1002,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Inserted program into DynamicLMProgram: " << getPAOName() << endl;
+                    dout << CtiTime() << " - Inserted program into DynamicLMProgram: " << getPAOName() << endl;
                 }
 
                 RWDBInserter inserter = dynamicLMProgramTable.inserter();
@@ -1010,14 +1012,14 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
                 << getReductionTotal()
                 << getStartedControlling()
                 << getLastControlSent()
-                << RWCString( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
+                << ( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
                  << currentDateTime;
 
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << inserter.asString().data() << endl;
+                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
                 }
 
                 inserter.execute( conn );
@@ -1029,7 +1031,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -1065,8 +1067,8 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
 void CtiLMProgramBase::restore(RWDBReader& rdr)
 {
     RWDBNullIndicator isNull;
-    RWCString tempBoolString;
-    RWCString tempTypeString;
+    string tempBoolString;
+    string tempTypeString;
     _insertDynamicDataFlag = FALSE;
 
     rdr["paobjectid"] >> _paoid;
@@ -1077,7 +1079,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     _paotype = resolvePAOType(_paocategory,tempTypeString);
     rdr["description"] >> _paodescription;
     rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
+    transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
 
     rdr["controltype"] >> _controltype;
@@ -1103,7 +1105,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
         rdr["startedcontrolling"] >> _startedcontrolling;
         rdr["lastcontrolsent"] >> _lastcontrolsent;
         rdr["manualcontrolreceivedflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         setManualControlReceivedFlag(tempBoolString=="y"?TRUE:FALSE);
 
         _insertDynamicDataFlag = FALSE;
@@ -1113,8 +1115,8 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     {
         setProgramState(InactiveState);
         setReductionTotal(0.0);
-        setStartedControlling(gInvalidRWDBDateTime);
-        setLastControlSent(gInvalidRWDBDateTime);
+        setStartedControlling(gInvalidCtiTime);
+        setLastControlSent(gInvalidCtiTime);
         setManualControlReceivedFlag(FALSE);
 
         _insertDynamicDataFlag = TRUE;
@@ -1127,7 +1129,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     {
         LONG tempPointId = 0;
         LONG tempPointOffset = 0;
-        RWCString tempPointType = "(none)";
+        string tempPointType = "(none)";
         rdr["pointid"] >> tempPointId;
         rdr["pointoffset"] >> tempPointOffset;
         rdr["pointtype"] >> tempPointType;
@@ -1200,9 +1202,9 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFr
       
 
 // Static Members
-const RWCString CtiLMProgramBase::AutomaticType = "Automatic";
-const RWCString CtiLMProgramBase::ManualOnlyType = "ManualOnly";
-const RWCString CtiLMProgramBase::TimedType = "Timed";
+const string CtiLMProgramBase::AutomaticType = "Automatic";
+const string CtiLMProgramBase::ManualOnlyType = "ManualOnly";
+const string CtiLMProgramBase::TimedType = "Timed";
 
 int CtiLMProgramBase::InactiveState = STATEZERO;
 int CtiLMProgramBase::ActiveState = STATEONE;

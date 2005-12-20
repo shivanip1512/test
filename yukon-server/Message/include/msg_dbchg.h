@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_dbchg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,8 @@ protected:
 
    LONG          _id;                 // ID of the entity affected i.e. pao id, point id, state group id, etc
    INT           _database;           // What area of the database?  i.e. pao, point, state group, etc
-   RWCString     _category;           // Object was what pao category?
-   RWCString     _objecttype;         // Object was what pao/point type?
+   string     _category;           // Object was what pao category?
+   string     _objecttype;         // Object was what pao/point type?
    INT           _typeofchange;       // What type of change: update, delete, etc?
 
 private:
@@ -42,15 +42,15 @@ public:
 
    RWDECLARE_COLLECTABLE( CtiDBChangeMsg );
 
-   CtiDBChangeMsg(LONG id,INT database, RWCString category, RWCString objecttype, INT typeofchange);
+   CtiDBChangeMsg(LONG id,INT database, string category, string objecttype, INT typeofchange);
    CtiDBChangeMsg(const CtiDBChangeMsg& aRef);
    virtual ~CtiDBChangeMsg();
 
    CtiDBChangeMsg& operator=(const CtiDBChangeMsg& aRef);
    LONG         getId() const;
    INT          getDatabase() const;
-   RWCString    getCategory() const;
-   RWCString    getObjectType() const;
+   string    getCategory() const;
+   string    getObjectType() const;
    INT          getTypeOfChange() const;
 
    void saveGuts(RWvostream &aStream) const;

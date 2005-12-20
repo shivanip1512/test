@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_trace.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
-#include <rw/rwtime.h>
+
 
 #include "dllbase.h"
 #include "collectable.h"
@@ -111,11 +111,11 @@ INT CtiTraceMsg::getAttributes() const
 {
     return _attributes;
 }
-RWCString CtiTraceMsg::getTrace() const
+string CtiTraceMsg::getTrace() const
 {
     return _trace;
 }
-RWCString& CtiTraceMsg::getTrace()
+string& CtiTraceMsg::getTrace()
 {
     return _trace;
 }
@@ -135,7 +135,7 @@ CtiTraceMsg& CtiTraceMsg::setAttributes(const INT& attr)
     _attributes = attr;
     return *this;
 }
-CtiTraceMsg& CtiTraceMsg::setTrace(const RWCString& str)
+CtiTraceMsg& CtiTraceMsg::setTrace(const string& str)
 {
     _trace = str;
     return *this;

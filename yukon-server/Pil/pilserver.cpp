@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2005/11/09 00:11:06 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2005/12/20 17:19:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,10 +18,8 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+#include <boost/regex.hpp>
 
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrfunc.h>
 #include <rw/toolpro/socket.h>
@@ -67,6 +65,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "rte_ccu.h"
 #include "utility.h"
 
+#include "ctistring.h"
+
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
@@ -140,17 +141,17 @@ void CtiPILServer::mainThread()
     int                        nCount = 0;
     int                        status;
 
-    RWTime                     TimeNow;
+    CtiTime                     TimeNow;
 
     // CtiConnection::InQ_t          *APQueue;
     CtiExecutor                   *pExec;
     CtiMessage                    *MsgPtr;
 
-    RWTime  starttime, finishtime;
+    CtiTime  starttime, finishtime;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PILMainThread  : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " PILMainThread  : Started as TID " << rwThreadId() << endl;
     }
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
@@ -161,7 +162,7 @@ void CtiPILServer::mainThread()
     {
         CtiServerExclusion server_guard(_server_exclusion);
 
-        NetPort  = RWInetPort(gConfigParms.getValueAsInt("PIL_PORT", PORTERINTERFACENEXUS));
+        NetPort  = RWInetPort(PORTERINTERFACENEXUS);
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
         Listener = CTIDBG_new RWSocketListener(NetAddr);
@@ -237,7 +238,7 @@ void CtiPILServer::mainThread()
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -260,7 +261,7 @@ void CtiPILServer::mainThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL mainthread took " << (finishtime.seconds() - starttime.seconds()) << " seconds to process the last message." << endl;
+                            dout << CtiTime() << " PIL mainthread took " << (finishtime.seconds() - starttime.seconds()) << " seconds to process the last message." << endl;
                         }
                     }
                 }
@@ -269,7 +270,7 @@ void CtiPILServer::mainThread()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -295,12 +296,12 @@ void CtiPILServer::mainThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the ResultThread_: TIMEOUT " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the ResultThread_: TIMEOUT " << endl;
                         }
                         if(ResultThread_.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the ResultThread_: FAILED " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the ResultThread_: FAILED " << endl;
 
                             ResultThread_.terminate();
                         }
@@ -315,12 +316,12 @@ void CtiPILServer::mainThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the _nexusWriteThread: TIMEOUT " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the _nexusWriteThread: TIMEOUT " << endl;
                         }
                         if(_nexusWriteThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the _nexusWriteThread: FAILED " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the _nexusWriteThread: FAILED " << endl;
 
                             _nexusWriteThread.terminate();
                         }
@@ -335,12 +336,12 @@ void CtiPILServer::mainThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
                         }
                         if(_nexusThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
+                            dout << CtiTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
 
                             _nexusThread.terminate();
                         }
@@ -349,7 +350,7 @@ void CtiPILServer::mainThread()
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PIL Server shut down complete " << endl;
+                    dout << CtiTime() << " PIL Server shut down complete " << endl;
                 }
             }
         }
@@ -357,7 +358,7 @@ void CtiPILServer::mainThread()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  - Will attmept to recover" << endl;
             }
 
@@ -382,7 +383,7 @@ void CtiPILServer::connectionThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ConnThread     : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " ConnThread     : Started as TID " << rwThreadId() << endl;
     }
 
     /*
@@ -441,7 +442,7 @@ void CtiPILServer::connectionThread()
                             ConMan = NULL;
 
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
+                            dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
                         }
                     }
                 }
@@ -457,7 +458,7 @@ void CtiPILServer::connectionThread()
             {
                 bQuit = TRUE;     // get out of the for loop
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Socket error RWNETENOTSOCK" << endl;
+                dout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
             }
             else
             {
@@ -468,7 +469,7 @@ void CtiPILServer::connectionThread()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << RWTime() << " ConnThread: Failed... " ;
+                dout << endl << CtiTime() << " ConnThread: Failed... " ;
                 dout << msg.why() << endl;
 
                 bQuit = TRUE;
@@ -479,7 +480,7 @@ void CtiPILServer::connectionThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ConnThread: " << rwThreadId() << " is terminating... " << endl;
+        dout << CtiTime() << " ConnThread: " << rwThreadId() << " is terminating... " << endl;
     }
 
     _broken = true;
@@ -503,7 +504,7 @@ void CtiPILServer::resultThread()
     CtiDeviceSPtr DeviceRecord;
 
     /* Time variable for decode */
-    RWTime      TimeNow;
+    CtiTime      TimeNow;
 
     ULONG       BytesRead;
     INMESS      *InMessage = 0;
@@ -514,7 +515,7 @@ void CtiPILServer::resultThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
     }
 
     /* Give us a tiny attitude */
@@ -537,7 +538,7 @@ void CtiPILServer::resultThread()
                 catch(const RWCancellation& cMsg)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+                    dout << CtiTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
                     bServerClosing = TRUE;
                     break;  // the while!
                 }
@@ -554,7 +555,7 @@ void CtiPILServer::resultThread()
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
+                    dout << CtiTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
                 }
             }
 
@@ -579,12 +580,12 @@ void CtiPILServer::resultThread()
                     if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
+                        dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
                         dout << " at priority " << InMessage->Priority << endl;
                     }
 
                     /* get the time for use in the decodes */
-                    TimeNow = RWTime();
+                    TimeNow = CtiTime();
 
                     try
                     {
@@ -595,8 +596,8 @@ void CtiPILServer::resultThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << RWTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
                         }
                     }
                 }
@@ -604,9 +605,9 @@ void CtiPILServer::resultThread()
                 {
                     // We need response strings from someone.  How can we get a list of results back?
 
-                    RWCString bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
+                    string bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
                     retList.insert( CTIDBG_new CtiReturnMsg(0,
-                                                            RWCString(InMessage->Return.CommandStr),
+                                                            string(InMessage->Return.CommandStr),
                                                             bufstr,
                                                             InMessage->EventCode,
                                                             InMessage->Return.RouteID,
@@ -645,12 +646,12 @@ void CtiPILServer::resultThread()
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
                             }
                         }
 
-                        RWCString cmdstr(InMessage->Return.CommandStr);
+                        string cmdstr(InMessage->Return.CommandStr);
                         CtiCommandParser parse( cmdstr );
                         if(parse.getFlags() & CMD_FLAG_UPDATE)
                         {
@@ -685,8 +686,8 @@ void CtiPILServer::resultThread()
                             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << RWTime() << " Response to client will be discarded." << endl;
+                                dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Response to client will be discarded." << endl;
                             }
                             delete pRet;
                         }
@@ -702,7 +703,7 @@ void CtiPILServer::resultThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -718,7 +719,7 @@ void CtiPILServer::resultThread()
             Sleep(5000);
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ****  EXCEPTION: PIL resultThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " ****  EXCEPTION: PIL resultThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  - Will attmept to recover" << endl;
         }
 
@@ -726,7 +727,7 @@ void CtiPILServer::resultThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
+        dout << CtiTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
     }
 
     _broken = true;
@@ -737,14 +738,14 @@ void CtiPILServer::nexusThread()
     INT i = 0;
     INT status = NORMAL;
     /* Time variable for decode */
-    RWTime      TimeNow;
+    CtiTime      TimeNow;
 
     ULONG       BytesRead;
     INMESS      *InMessage = 0;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
     }
 
     /* Give us a tiny attitude */
@@ -760,7 +761,7 @@ void CtiPILServer::nexusThread()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PIL connection to Port Control is inactive" << endl;
+                    dout << CtiTime() << " PIL connection to Port Control is inactive" << endl;
                 }
 
                 PortPipeInit(NOWAIT); // defibrillate
@@ -775,7 +776,7 @@ void CtiPILServer::nexusThread()
             catch(const RWCancellation& cMsg)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+                dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
                 bServerClosing = TRUE;
                 //throw;
             }
@@ -787,14 +788,14 @@ void CtiPILServer::nexusThread()
         }
 
         InMessage = CTIDBG_new INMESS;
-        memset(InMessage, 0, sizeof(*InMessage));
+        ::memset(InMessage, 0, sizeof(*InMessage));
 
         /* get a result off the port pipe */
         if(PorterNexus.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
+                dout << CtiTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
             }
 
             if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
@@ -816,7 +817,7 @@ void CtiPILServer::nexusThread()
         catch(const RWCancellation& cMsg)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
             bServerClosing = TRUE;
 
             continue;
@@ -840,7 +841,7 @@ void CtiPILServer::nexusThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " NexusThread : " << rwThreadId() << " terminating " << endl;
+        dout << CtiTime() << " NexusThread : " << rwThreadId() << " terminating " << endl;
     }
 
     _broken = true;
@@ -851,14 +852,14 @@ void CtiPILServer::nexusWriteThread()
     INT i = 0;
     INT status = NORMAL;
     /* Time variable for decode */
-    RWTime      TimeNow;
+    CtiTime      TimeNow;
     ULONG       BytesWritten;
 
     CtiOutMessage *OutMessage;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " NexusWriteThread    : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " NexusWriteThread    : Started as TID " << rwThreadId() << endl;
     }
 
     /* Give us a tiny attitude */
@@ -909,7 +910,7 @@ void CtiPILServer::nexusWriteThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     DumpOutMessage(OutMessage);
 
@@ -936,7 +937,7 @@ void CtiPILServer::nexusWriteThread()
         catch(const RWCancellation& cMsg)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
             bServerClosing = TRUE;
 
             continue;
@@ -946,7 +947,7 @@ void CtiPILServer::nexusWriteThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " NexusWriteThread : " << rwThreadId() << " terminating " << endl;
+        dout << CtiTime() << " NexusWriteThread : " << rwThreadId() << " terminating " << endl;
     }
 
 }
@@ -982,7 +983,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -998,7 +999,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             if(Dev)
             {
-                if( parse.getCommandStr().compareTo(pExecReq->CommandString(), RWCString::ignoreCase) )
+                if( stringCompareIgnoreCase(parse.getCommandStr(),pExecReq->CommandString()) )
                 {
                     // They did not match!  We MUST re-parse!
                     parse = CtiCommandParser(pExecReq->CommandString());
@@ -1029,7 +1030,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 catch(...)
                 {
                     {
-                        RWTime NowTime;
+                        CtiTime NowTime;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
@@ -1046,7 +1047,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 if(status != NORMAL &&
                    status != DEVICEINHIBITED)
                 {
-                    RWTime NowTime;
+                    CtiTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << NowTime << "   Device:  " << Dev->getName() << endl;
@@ -1061,8 +1062,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " Command " << pExecReq->CommandString() << endl;
-                    dout << RWTime() << " Device: " << pExecReq->DeviceId() << endl;
+                    dout << CtiTime() << " Command " << pExecReq->CommandString() << endl;
+                    dout << CtiTime() << " Device: " << pExecReq->DeviceId() << endl;
                 }
 
                 CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pExecReq->getConnectionHandle();
@@ -1092,7 +1093,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1100,7 +1101,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Submitting " << retList.entries() << " CtiReturnMsg objects to client" << endl;
+            dout << CtiTime() << " Submitting " << retList.entries() << " CtiReturnMsg objects to client" << endl;
         }
     }
 
@@ -1126,9 +1127,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Notice: Request Message did not indicate return path." << endl;
-                dout << RWTime() << " Response will be discarded." << endl;
-                dout << RWTime() << " Command String: " << pcRet->CommandString() << endl;
+                dout << CtiTime() << " Notice: Request Message did not indicate return path." << endl;
+                dout << CtiTime() << " Response will be discarded." << endl;
+                dout << CtiTime() << " Command String: " << pcRet->CommandString() << endl;
             }
 
             delete pcRet;
@@ -1139,7 +1140,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
+            dout << CtiTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
         }
     }
 
@@ -1154,7 +1155,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Submitting " << vgList.entries() << " CtiMessage objects to dispatch" << endl;
+            dout << CtiTime() << " Submitting " << vgList.entries() << " CtiMessage objects to dispatch" << endl;
         }
     }
 
@@ -1209,7 +1210,7 @@ void CtiPILServer::clientShutdown(CtiConnectionManager *&CM)
 //#ifdef DEBUG_SHUTDOWN
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Now shutting down (ClientAppShutdown) in PIL Server" << endl;
+        dout << CtiTime() << " Now shutting down (ClientAppShutdown) in PIL Server" << endl;
     }
 //#endif
 
@@ -1230,7 +1231,7 @@ void CtiPILServer::vgConnThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PIL vgConnThrd : Started as TID " << rwThreadId() << endl;
+        dout << CtiTime() << " PIL vgConnThrd : Started as TID " << rwThreadId() << endl;
     }
 
     /* perform the wait loop forever */
@@ -1254,7 +1255,7 @@ void CtiPILServer::vgConnThread()
                             {
                                 Cmd->dump();
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
+                                dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
                             }
                             break;
                         }
@@ -1296,7 +1297,7 @@ void CtiPILServer::vgConnThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PIL vgConnThrd : " << rwThreadId() << " terminating " << endl;
+        dout << CtiTime() << " PIL vgConnThrd : " << rwThreadId() << " terminating " << endl;
     }
 
 }
@@ -1329,7 +1330,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
         else
         {
-            RWCString dname = parse.getsValue("device");
+            string dname = parse.getsValue("device");
             Dev = DeviceManager->RemoteGetEqualbyName( dname );
             if(Dev)
             {
@@ -1347,7 +1348,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         else
         {
             //  apparently we've been sent a route name
-            RWCString routeName = parse.getsValue("route");
+            string routeName = parse.getsValue("route");
             CtiRouteSPtr tmpRoute;
 
             tmpRoute = RouteManager->getEqualByName( routeName );
@@ -1359,7 +1360,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -1372,16 +1373,16 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     if(!pReq->DeviceId() && parse.isKeyValid("group"))
     {
         // We are to do some magiks here.  Looking for names in groups
-        RWCString gname = parse.getsValue("group");
-        gname.toLower();
-
+        string gname = parse.getsValue("group");
+        std::transform(gname.begin(), gname.end(), gname.begin(), ::tolower);
+        
         {
             int groupsubmitcnt = 0;
             CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
             CtiDeviceManager::spiterator itr_dev;
 
             vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findMeterGroupName, (void*)(gname.data()), match_coll);
+            DeviceManager->select(findMeterGroupName, (void*)(gname.c_str()), match_coll);
             CtiDeviceSPtr sptr;
 
             while(!match_coll.empty())
@@ -1396,7 +1397,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 // We have a name match
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
+                    dout << CtiTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
                 }
 
                 // Create a message for this one!
@@ -1410,14 +1411,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
+                dout << CtiTime() << " Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
             }
         }
     }
     else if(!pReq->DeviceId() && parse.isKeyValid("altgroup"))
     {
         // We are to do some magiks here.  Looking for names in groups
-        RWCString gname = parse.getsValue("altgroup");
+        string gname = parse.getsValue("altgroup");
 
         {
             int groupsubmitcnt = 0;
@@ -1425,7 +1426,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             CtiDeviceManager::spiterator itr_dev;
 
             vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findAltMeterGroupName, (void*)(gname.data()), match_coll);
+            DeviceManager->select(findAltMeterGroupName, (void*)(gname.c_str()), match_coll);
             CtiDeviceSPtr sptr;
 
             while(!match_coll.empty())
@@ -1440,7 +1441,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 // We have a name match
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Adding device " << device.getName() << " for ALT group execution" << endl;
+                    dout << CtiTime() << " Adding device " << device.getName() << " for ALT group execution" << endl;
                 }
 
                 // Create a message for this one!
@@ -1453,7 +1454,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Alternate Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
+                dout << CtiTime() << " Alternate Collection Group " << gname << " found " << groupsubmitcnt << " target devices." << endl;
             }
         }
     }
@@ -1462,8 +1463,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     {
         UINT modifier = 0;
 
-        if( parse.getCommandStr().contains(" force", RWCString::ignoreCase) ) modifier |= CtiDeviceBase::PutconfigAssignForce;
-        if( gConfigParms.getValueAsString("EXPRESSCOM_FORCE_FULL_CONFIG","false").contains("true", RWCString::ignoreCase) ) modifier |= CtiDeviceBase::PutconfigAssignForce;
+        if( findStringIgnoreCase(parse.getCommandStr()," force") ) modifier |= CtiDeviceBase::PutconfigAssignForce;
+        if( findStringIgnoreCase(gConfigParms.getValueAsString("EXPRESSCOM_FORCE_FULL_CONFIG","false"),"true") ) modifier |= CtiDeviceBase::PutconfigAssignForce;
 
 
         if(parse.isKeyValid("template") && INT_MIN != parse.getiValue("serial"))
@@ -1473,19 +1474,19 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              *  addressing to the serial number specified...
              */
 
-            RWCString lmgroup = parse.getsValue("template");
-            RWCString service = parse.getsValue("templateinservice");
+            string lmgroup = parse.getsValue("template");
+            string service = parse.getsValue("templateinservice");
             char newparse[256];
 
             Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
             CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
-                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier), service.data());
+                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier), service.c_str());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
+                    dout << CtiTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
                 }
 
                 pReq->setCommandString(newparse);      // Make the request match our new choices
@@ -1508,7 +1509,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
+                    dout << CtiTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
                 }
 
                 pReq->setCommandString(newparse);       // Make the request match our new choices
@@ -1521,20 +1522,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         if(parse.isKeyValid("freeze"))
         {
-            RWCRExpr coll_grp("collection_group +((\"|')[^\"']+(\"|'))");
-            RWCString tmp, group_name;
+            boost::regex coll_grp("collection_group +((\"|')[^\"']+(\"|'))");
+            CtiString tmp, group_name;
 
-            if( !(tmp = parse.getCommandStr().match(coll_grp)).isNull() )
+            if( !(tmp = CtiString(parse.getCommandStr().c_str()).match(coll_grp)).empty() )
             {
                 //  pull out the group name
-                group_name = tmp.match("(\"|')[^\"']+(\"|')");
+                group_name = tmp.match(boost::regex("(\"|')[^\"']+(\"|')"));
                 //  trim off the quotes
-                group_name = group_name((size_t)1, (size_t)group_name.length() - 2);
+                group_name.erase(0,1);
+                group_name.erase(group_name.length() - 1,group_name.length() - 1);
+                //group_name = CtiString((size_t)1, (size_t)group_name.length() - 2);
 
                 {
                     CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
@@ -1586,14 +1589,14 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
         if(DeviceRecord)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
+            dout << CtiTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
             dout << " at priority " << MsgPtr->getMessagePriority() << endl;
 
             CtiRequestMsg *pCmd = (CtiRequestMsg*)MsgPtr;
 
-            if(!pCmd->CommandString().isNull())
+            if(!pCmd->CommandString().empty())
             {
-                dout << RWTime() << "   Command string: \"" << pCmd->CommandString() << "\"" << endl;
+                dout << CtiTime() << "   Command string: \"" << pCmd->CommandString() << "\"" << endl;
             }
         }
     }
@@ -1634,7 +1637,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
+                    dout << CtiTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
                 }
 
                 RouteManager->buildRoleVector( pRepeaterToRole->getID(), Req, retList, roleVector );
@@ -1642,13 +1645,13 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
             catch(...)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             if(roleVector.size() > 0)
             {
-                RWCString newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
-                RWCString roleStr;
+                string newReqString = string("putconfig emetcon mrole 1");       // We always write 1 through whatever.
+                string roleStr;
 
                 for(i = 0; i < roleVector.size(); i++)
                 {
@@ -1671,14 +1674,14 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
                 newReqString += roleStr;
 
-                if( parse.isKeyValid("noqueue") && newReqString.subString("noqueue").isNull() )
+                if( parse.isKeyValid("noqueue") && newReqString.find("noqueue")!=string::npos )
                 {
                     newReqString += " noqueue";
                 }
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  " << newReqString << endl;
+                    dout << CtiTime() << "  " << newReqString << endl;
                 }
 
                 Req.setCommandString( newReqString );
@@ -1701,14 +1704,14 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
     bool shed = false;
     try
     {
-        if(gConfigParms.getValueAsString("PIL_IDENTIFY_SUBGROUP_CONTROLS").contains("true", RWCString::ignoreCase) &&
+        if(findStringIgnoreCase(gConfigParms.getValueAsString("PIL_IDENTIFY_SUBGROUP_CONTROLS"), "true") &&
            parse.getCommand() == ControlRequest)
         {
             if(Dev->getType() == TYPE_MACRO)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** ACH indicateControlOnSubGroups for MACRO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** ACH indicateControlOnSubGroups for MACRO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
             else
@@ -1740,7 +1743,7 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Protocol hierarchy match on group: " << sptr->getName() << endl;
+                        dout << CtiTime() << " Protocol hierarchy match on group: " << sptr->getName() << endl;
                     }
                 }
             }
@@ -1750,7 +1753,7 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1797,11 +1800,11 @@ static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *
 
     if(otherdevice->isMeter() || isION(otherdevice->getType()))
     {
-        RWCString gname((char*)vptrGname);
-        RWCString mgname = otherdevice->getMeterGroupName();
-        mgname.toLower();
+        string gname((char*)vptrGname);
+        string mgname = otherdevice->getMeterGroupName();
+        std::transform(mgname.begin(), mgname.end(), mgname.begin(), ::tolower);
 
-        if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+        if( !mgname.empty() && !stringCompareIgnoreCase(gname,mgname) )
         {
             bstat = true;
         }
@@ -1813,11 +1816,11 @@ static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *
 static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
 {
     bool bstat = false;
-    RWCString gname((char*)vptrGname);
-    RWCString mgname = otherdevice->getAlternateMeterGroupName();
-    mgname.toLower();
+    string gname((char*)vptrGname);
+    string mgname = otherdevice->getAlternateMeterGroupName();
+    std::transform(mgname.begin(), mgname.end(), mgname.begin(), ::tolower);
 
-    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+    if( !mgname.empty() && !stringCompareIgnoreCase(gname,mgname) )
     {
         bstat = true;
     }
@@ -1828,11 +1831,11 @@ static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, voi
 static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
 {
     bool bstat = false;
-    RWCString gname((char*)vptrGname);
-    RWCString mgname = otherdevice->getBillingGroupName();
-    mgname.toLower();
+    string gname((char*)vptrGname);
+    string mgname = otherdevice->getBillingGroupName();
+    CtiToLower(mgname);
 
-    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+    if( !mgname.empty() && !findStringIgnoreCase(gname,mgname) )
     {
         bstat = true;
     }

@@ -41,11 +41,12 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
+
                        
 class CtiCapController
 {
 public:
-
+    
     static CtiCapController* getInstance();
 
     void start();
@@ -72,9 +73,9 @@ private:
     void checkPIL(ULONG secondsFrom1901);
     void registerForPoints(const RWOrdered& subBuses);
     void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
-    void pointDataMsg(long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901);
-    void porterReturnMsg(long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901);
-    void signalMsg(long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901);
+    void pointDataMsg(long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901);
+    void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString, ULONG secondsFrom1901);
+    void signalMsg(long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901);
 
     static CtiCapController* _instance;
     RWThread _substationBusThread;

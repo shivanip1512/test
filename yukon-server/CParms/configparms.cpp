@@ -3,7 +3,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/cstring.h>
 
 #include "configparms.h"
 
@@ -15,7 +14,7 @@ using namespace std;
 extern "C" {
 #endif
 
-   IM_EX_C_CPARM BOOL isConfigOpt(RWCString key)
+   IM_EX_C_CPARM BOOL isConfigOpt(const string& key)
    {
       BOOL b = FALSE;
 
@@ -24,7 +23,7 @@ extern "C" {
       return b;
    }
 
-   IM_EX_C_CPARM int RefreshConfigParameters(RWCString FileName)
+   IM_EX_C_CPARM int RefreshConfigParameters(const string& FileName)
    {
       int status = !0;
 
@@ -38,20 +37,20 @@ extern "C" {
       gConfigParms.Dump();
    }
 
-   IM_EX_C_CPARM BOOL getConfigValueAsString(RWCString Key, char *targ, int len)
+   IM_EX_C_CPARM BOOL getConfigValueAsString(const string& Key, char *targ, int len)
    {
       if(isConfigOpt(Key))
       {
-         RWCString Temp = gConfigParms.getValueAsString(Key);
+         string Temp = gConfigParms.getValueAsString(Key);
 
          if(Temp.length() > len)
          {
-            strncpy(targ, Temp, len-1);
+            strncpy(targ, Temp.c_str(), len-1);
             targ[len] = '\0';
          }
          else
          {
-            strcpy(targ, Temp);
+            strcpy(targ, Temp.c_str());
          }
 
          return TRUE;

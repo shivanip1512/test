@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/10/17 16:43:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
-using namespace std;
+
 
 #include "logger.h"
 #include "dllbase.h"
@@ -35,8 +35,8 @@ class IM_EX_CONFIG Base
 protected:
     typedef CtiLockGuard<CtiMutex> LockGuard;//This must be used in every class that sets the value with key, or returns values.
     mutable CtiMutex    _mux;
-    virtual int getProtectedResolvedKey(RWCString key);
-    virtual bool setProtectedValueWithKey(const RWCString &value, const int key);
+    virtual int getProtectedResolvedKey(string key);
+    virtual bool setProtectedValueWithKey(const string &value, const int key);
 
 private:
 
@@ -49,10 +49,10 @@ public:
     virtual CtiConfig_type getType();
 
     virtual string getOutputStrings();
-/*    virtual int getResolvedKey(RWCString key);
-    virtual RWCString getValueFromKey(const int key);
+/*    virtual int getResolvedKey(Rstring key);
+    virtual string getValueFromKey(const int key);
     virtual long getLongValueFromKey(const int key);
-    virtual bool setValueWithKey(const RWCString &value,const int key);*/
+    virtual bool setValueWithKey(const string &value,const int key);*/
 };
 
 

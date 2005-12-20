@@ -2,7 +2,10 @@ include ..\common\global.inc
 include ..\common\rwglobal.inc
 
 INCLPATHS+= \
+-I$(BOOST) \
 -I$(RW) \
+-I$(COMMON)\include \
+ 
 
 
 .PATH.cpp = .
@@ -21,6 +24,7 @@ INCLPATHS+= \
 ;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
+;$(BOOST) \
 ;$(RW)
 
 BASEOBJS=cid.obj
@@ -31,7 +35,7 @@ cid.exe:  $(BASEOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(RWLIBS)
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
                -@copy ..\$@ $(YUKONOUTPUT)\yukon
@@ -43,7 +47,7 @@ nextrev.exe:    nextrev.obj Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ nextrev.obj -link $(LIBS) $(RWLIBS)
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ nextrev.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
                -@copy ..\$@ $(YUKONOUTPUT)\yukon
@@ -55,7 +59,7 @@ wpsccfgparse.exe:  wpsccfgparse.obj Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ wpsccfgparse.obj
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ wpsccfgparse.obj -link $(LIBS) $(RWLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
                -@copy ..\$@ $(YUKONOUTPUT)\yukon

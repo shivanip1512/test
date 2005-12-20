@@ -69,16 +69,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     virtual ~CtiCCFeeder();
 
     LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    const RWCString& getPAOType() const;
-    const RWCString& getPAODescription() const;
+    const string& getPAOCategory() const;
+    const string& getPAOClass() const;
+    const string& getPAOName() const;
+    const string& getPAOType() const;
+    const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
     LONG getStrategyId() const;
-    const RWCString& getStrategyName() const;
-    const RWCString& getControlMethod() const;
+    const string& getStrategyName() const;
+    const string& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
     DOUBLE getPeakLag() const;
@@ -97,14 +97,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
-    const RWCString& getDaysOfWeek() const;
-    const RWCString& getMapLocationId() const;
-    const RWCString& getControlUnits() const;
+    const string& getDaysOfWeek() const;
+    const string& getMapLocationId() const;
+    const string& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
     LONG getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
-    const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
+    const CtiTime& getLastCurrentVarPointUpdateTime() const;
     LONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
     LONG getDailyOperationsAnalogPointId() const;
@@ -112,7 +112,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getEstimatedPowerFactorPointId() const;
     LONG getCurrentDailyOperations() const;
     BOOL getRecentlyControlledFlag() const;
-    const RWDBDateTime& getLastOperationTime() const;
+    const CtiTime& getLastOperationTime() const;
     DOUBLE getVarValueBeforeControl() const;
     LONG getLastCapBankControlledDeviceId() const;
     LONG getBusOptimizedVarCategory() const;
@@ -122,7 +122,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
     BOOL getWaiveControlFlag() const;
-    const RWCString& getParentControlUnits() const;
+    const string& getParentControlUnits() const;
     LONG getDecimalPlaces() const;
     BOOL getPeakTimeFlag() const;
     
@@ -131,16 +131,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
 
     CtiCCFeeder& setPAOId(LONG id);
-    CtiCCFeeder& setPAOCategory(const RWCString& category);
-    CtiCCFeeder& setPAOClass(const RWCString& pclass);
-    CtiCCFeeder& setPAOName(const RWCString& name);
-    CtiCCFeeder& setPAOType(const RWCString& type);
-    CtiCCFeeder& setPAODescription(const RWCString& description);
+    CtiCCFeeder& setPAOCategory(const string& category);
+    CtiCCFeeder& setPAOClass(const string& pclass);
+    CtiCCFeeder& setPAOName(const string& name);
+    CtiCCFeeder& setPAOType(const string& type);
+    CtiCCFeeder& setPAODescription(const string& description);
     CtiCCFeeder& setDisableFlag(BOOL disable);
     CtiCCFeeder& setParentId(LONG parentId);
     CtiCCFeeder& setStrategyId(LONG strategyId);
-    CtiCCFeeder& setStrategyName(const RWCString& strategyName);
-    CtiCCFeeder& setControlMethod(const RWCString& method);
+    CtiCCFeeder& setStrategyName(const string& strategyName);
+    CtiCCFeeder& setControlMethod(const string& method);
     CtiCCFeeder& setMaxDailyOperation(LONG max);
     CtiCCFeeder& setMaxOperationDisableFlag(BOOL maxopdisable);
     CtiCCFeeder& setPeakLag(DOUBLE peak);
@@ -159,14 +159,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setMaxConfirmTime(LONG confirm);
     CtiCCFeeder& setMinConfirmPercent(LONG confirm);
     CtiCCFeeder& setFailurePercent(LONG failure);
-    CtiCCFeeder& setDaysOfWeek(const RWCString& days);
-    CtiCCFeeder& setMapLocationId(const RWCString& maplocation);
-    CtiCCFeeder& setControlUnits(const RWCString& contunit);
+    CtiCCFeeder& setDaysOfWeek(const string& days);
+    CtiCCFeeder& setMapLocationId(const string& maplocation);
+    CtiCCFeeder& setControlUnits(const string& contunit);
     CtiCCFeeder& setControlDelayTime(LONG delay);
     CtiCCFeeder& setControlSendRetries(LONG retries);
     CtiCCFeeder& setDisplayOrder(LONG order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
-    CtiCCFeeder& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
+    CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
     CtiCCFeeder& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
     CtiCCFeeder& setDailyOperationsAnalogPointId(LONG opspointid);
@@ -174,7 +174,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setEstimatedPowerFactorPointId(LONG epfpointid);
     CtiCCFeeder& setCurrentDailyOperations(LONG operations);
     CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
-    CtiCCFeeder& setLastOperationTime(const RWDBDateTime& lastoperation);
+    CtiCCFeeder& setLastOperationTime(const CtiTime& lastoperation);
     CtiCCFeeder& setVarValueBeforeControl(DOUBLE oldvarval);
     CtiCCFeeder& setLastCapBankControlledDeviceId(LONG lastcapbank);
     //don't think we want public setters for these
@@ -185,7 +185,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
     CtiCCFeeder& setWaiveControlFlag(BOOL waive);
-    CtiCCFeeder& setParentControlUnits(RWCString parentControlUnits);
+    CtiCCFeeder& setParentControlUnits(const string& parentControlUnits);
     CtiCCFeeder& setDecimalPlaces(LONG decimalPlaces);
     CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
 
@@ -195,14 +195,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
-    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
-    BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits);
-    DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
-    BOOL isPeakTime(const RWDBDateTime& currentDateTime);
+    BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
+    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
+    DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
+    BOOL isPeakTime(const CtiTime& currentDateTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    BOOL attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
+    BOOL attemptToResendControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
     BOOL checkMaxDailyOpCountExceeded();
 
     CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
@@ -224,7 +224,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     
     BOOL isDirty() const;
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -242,8 +242,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     //Possible states
-    /*static const RWCString Enabled;
-    static const RWCString Disabled;*/
+    /*static const string Enabled;
+    static const string Disabled;*/
 
     //static int PeakState;
     //static int OffPeakState;
@@ -251,16 +251,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 private:
 
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
-    RWCString _paotype;
-    RWCString _paodescription;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
+    string _paotype;
+    string _paodescription;
     BOOL _disableflag;
     LONG _parentId; //subBusId
     LONG _strategyId;
-    RWCString _strategyName;
-    RWCString _controlmethod;
+    string _strategyName;
+    string _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
     LONG _peakstarttime;
@@ -275,9 +275,9 @@ private:
     LONG _maxconfirmtime;
     LONG _minconfirmpercent;
     LONG _failurepercent;
-    RWCString _daysofweek;
-    RWCString _maplocationid;
-    RWCString _controlunits;
+    string _daysofweek;
+    string _maplocationid;
+    string _controlunits;
     LONG _controldelaytime;
     LONG _controlsendretries;
     DOUBLE _peaklag;
@@ -287,7 +287,7 @@ private:
     
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;
-    RWDBDateTime _lastcurrentvarpointupdatetime;
+    CtiTime _lastcurrentvarpointupdatetime;
     LONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
     LONG _dailyoperationsanalogpointid;
@@ -295,7 +295,7 @@ private:
     LONG _estimatedpowerfactorpointid;
     LONG _currentdailyoperations;
     BOOL _recentlycontrolledflag;
-    RWDBDateTime _lastoperationtime;
+    CtiTime _lastoperationtime;
     DOUBLE _varvaluebeforecontrol;
     LONG _lastcapbankcontrolleddeviceid;
     LONG _busoptimizedvarcategory;
@@ -306,14 +306,14 @@ private:
     LONG _currentvarpointquality;
     BOOL _waivecontrolflag;
 
-    RWCString _parentControlUnits;
+    string _parentControlUnits;
     LONG _decimalPlaces;
     BOOL _peakTimeFlag;
 
     RWSortedVector _cccapbanks;
 
     //verification info
-    RWCString _additionalFlags;
+    string _additionalFlags;
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
@@ -325,7 +325,8 @@ private:
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    RWCString doubleToString(DOUBLE doubleVal);
+    void restoreFeederTableValues(RWDBReader& rdr);
+    string doubleToString(DOUBLE doubleVal);
 
     list <long> _pointIds;
 };

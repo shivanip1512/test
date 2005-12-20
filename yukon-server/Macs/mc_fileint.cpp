@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_fileint.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:52 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,19 +31,21 @@
 #include "mc_fileint.h"
 #include "mc_msg.h"
 #include "ctibase.h"
-
+#include "ctidate.h"
+#include <rwutil.h>
+                  
 #include <rw/re.h>
 
 
 /*
     Directory where processed files go
 */    
-const RWCString CtiMCFileInterface::getConsumedDirectory() const
+const string CtiMCFileInterface::getConsumedDirectory() const
 {
     return _consumed_dir;
 }
     
-CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const RWCString& dir)
+CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const string& dir)
 {
     _consumed_dir = dir;
     return *this;
@@ -53,11 +55,11 @@ CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const RWCString& di
 */        
 void CtiMCFileInterface::start()
 {   
-    if( mkdir(_consumed_dir.data()) < 0 ) {
+    if( mkdir(_consumed_dir.c_str()) < 0 ) {
         if( errno != EEXIST ) {            
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " File Interface: An error occured creating directory:  " << _consumed_dir << endl;    
-            dout << RWTime() << " File Interface: Processed/consumed files will be deleted " << endl;
+            dout << CtiTime() << " File Interface: An error occured creating directory:  " << _consumed_dir << endl;    
+            dout << CtiTime() << " File Interface: Processed/consumed files will be deleted " << endl;
         }
     }
 
@@ -69,18 +71,18 @@ void CtiMCFileInterface::start()
 
     Handles a newly found file.  Called from our super class.
 ---------------------------------------------------------------------------*/
-void CtiMCFileInterface::handleFile(const RWCString& filename )
+void CtiMCFileInterface::handleFile(const string& filename )
 {
     FILE* fptr;
     char buf[MC_FILE_BUF_SIZE];
     char* sep_ptr;
     int line = 0;
 
-    if( (fptr = fopen( filename, "r" ) ) == NULL )
+    if( (fptr = fopen( filename.c_str(), "r" ) ) == NULL )
     {
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " File Interface: An error occured opening file:  " << filename << endl;
+            dout << CtiTime() << " File Interface: An error occured opening file:  " << filename << endl;
         }
 
         return;
@@ -116,7 +118,7 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
         {
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime() << " File Interface: An error occured at line: " << line << " in file: " << filename << endl;
+                dout << CtiTime() << " File Interface: An error occured at line: " << line << " in file: " << filename << endl;
             }
             continue;
         }
@@ -124,10 +126,10 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
 
         *sep_ptr = NULL;
 
-        RWCString function(buf);
-        RWCString name(sep_ptr+1);
+        string function(buf);
+        string name(sep_ptr+1);
                
-        name = name.strip(RWCString::both);
+        name = trim(name);
 
         execute( function, name );
 
@@ -140,25 +142,22 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
     fclose( fptr );
 
     // Attempt to copy the file into the consumed directory
-    RWCString consume_file(_consumed_dir);
+    string consume_file(_consumed_dir);
     consume_file += "\\";
     consume_file += filename;
     consume_file += " ";
    
-    RWTime now_time;
-    RWDate now_date(now_time);
+    CtiTime now_time;
+    CtiDate now_date(now_time);
   
-    consume_file += RWLocale::global().asString((long) now_date.month());    
-    consume_file += RWLocale::global().asString((long) now_date.dayOfMonth());
+    consume_file += now_date.asString();
     consume_file += " ";
-    consume_file += RWLocale::global().asString((long) now_time.hour());    
-    consume_file += RWLocale::global().asString((long) now_time.minute());
-    consume_file += RWLocale::global().asString((long) now_time.second());
+    consume_file += now_time.asString();
 
-    if( CopyFile(filename.data(), consume_file.data(), FALSE) == 0 ) {
+    if( CopyFile(filename.c_str(), consume_file.c_str(), FALSE) == 0 ) {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " File Interface:  failed copying processed file " << filename << endl;
-        dout << RWTime() << " to " << consume_file << endl;        
+        dout << CtiTime() << " File Interface:  failed copying processed file " << filename << endl;
+        dout << CtiTime() << " to " << consume_file << endl;        
     }
     
     return;
@@ -178,7 +177,7 @@ void CtiMCFileInterface::setQueue(CtiQueue< CtiMessage, less<CtiMessage> >* queu
 
     Creates the appropriate executor and executes it.
 ---------------------------------------------------------------------------*/
-void CtiMCFileInterface::execute(const RWCString& function, const RWCString& name )
+void CtiMCFileInterface::execute(const string& function, const string& name )
 {
 
     //attempt to find the id of the schedule
@@ -186,13 +185,13 @@ void CtiMCFileInterface::execute(const RWCString& function, const RWCString& nam
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
 
-        id = _schedule_manager.getID( string( name.data() ));
+        id = _schedule_manager.getID( string( name.c_str() ));
 
         if( id == -1 )
         {
             CtiLockGuard< CtiLogger > guard(dout);
             dout
-            << RWTime()
+            << CtiTime()
             << " File Interface: unable to locate a schedule id for schedule named:"
             << name
             << endl;
@@ -203,15 +202,16 @@ void CtiMCFileInterface::execute(const RWCString& function, const RWCString& nam
 
     //Determine which function
     CtiMCOverrideRequest* msg = NULL;
-    RWCString lower_function = function;
-    lower_function.toLower();
+    string lower_function = function;
+    std::transform(lower_function.begin(), lower_function.end(), lower_function.begin(), tolower);
+    
 
     if( lower_function == "start" ||
         lower_function == "$start" )
     {
         msg = new CtiMCOverrideRequest();
         msg->setAction( CtiMCOverrideRequest::Start );
-        msg->setStartTime( RWTime::now() );
+        msg->setStartTime( CtiTime::now() );
     }
     else
     if( lower_function == "stop" ||
@@ -219,7 +219,7 @@ void CtiMCFileInterface::execute(const RWCString& function, const RWCString& nam
     {
         msg = new CtiMCOverrideRequest();
         msg->setAction( CtiMCOverrideRequest::Stop );
-        msg->setStopTime( RWTime::now() );
+        msg->setStopTime( CtiTime::now() );
     }
     else
     if( lower_function == "enable" ||
@@ -238,7 +238,7 @@ void CtiMCFileInterface::execute(const RWCString& function, const RWCString& nam
     else
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
              << " File Interface - Unknown function: "
              << function
              << "  for schedule name: "
@@ -259,10 +259,10 @@ void CtiMCFileInterface::execute(const RWCString& function, const RWCString& nam
             if( gMacsDebugLevel & MC_DEBUG_FILEINT )
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime()
+                dout << CtiTime()
                      << " File Interface: Placed a command on the main queue: "
                      << endl
-                     << RWTime()
+                     << CtiTime()
                      << " Function: " << lower_function
                      << " Schedule: " << name
                      << endl;

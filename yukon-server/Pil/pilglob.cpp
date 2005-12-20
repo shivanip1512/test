@@ -3,7 +3,6 @@
 
 #include <windows.h>       // These next few are required for Win32
 
-#include <rw\cstring.h>
 
 #include "os2_2w32.h"
 #include "dlldefs.h"

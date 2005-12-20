@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/12/14 16:04:18 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.cpp,v $
+      Revision 1.9  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.8  2005/12/14 16:04:18  dsutton
       Added a file format that allows us to integrate to a Survalent SCADA system.
       Format specification is triggered via a CPARM which defaults to our standard output
@@ -62,10 +65,9 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_cmd.h"
@@ -76,7 +78,7 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrtextexport.h"
-
+#include "rwutil.h"
 
 CtiFDR_TextExport * textExportInterface;
 
@@ -90,10 +92,10 @@ const CHAR * CtiFDR_TextExport::KEY_FORMAT = "FDR_TEXTEXPORT_FORMAT";
 
 // Constructors, Destructor, and Operators
 CtiFDR_TextExport::CtiFDR_TextExport()
-: CtiFDRTextFileBase(RWCString("TEXTEXPORT"))
+: CtiFDRTextFileBase(string("TEXTEXPORT"))
 {  
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_SEND)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND)); 
     getSendToList().setPointList (recList);
     recList = NULL;
     init();
@@ -165,11 +167,11 @@ BOOL CtiFDR_TextExport::stop( void )
 }
 
 
-RWCString CtiFDR_TextExport::YukonToForeignTime (RWTime aTime)
+string CtiFDR_TextExport::YukonToForeignTime (CtiTime aTime)
 {
     CHAR workBuffer[50];
-    RWDate date(aTime);
-    RWCString retVal;
+    CtiDate date(aTime);
+    string retVal;
 
     if (aTime.isValid())
     {
@@ -183,11 +185,11 @@ RWCString CtiFDR_TextExport::YukonToForeignTime (RWTime aTime)
                        aTime.minute(),
                        aTime.second());
 
-        retVal = RWCString (workBuffer);
+        retVal = string (workBuffer);
     }
     else
     {
-        retVal = RWCString ("01/01/1990 00:00:00");
+        retVal = string ("01/01/1990 00:00:00");
     }
     return retVal;
 }
@@ -220,18 +222,18 @@ CHAR CtiFDR_TextExport::YukonToForeignDST (bool aFlag)
 int CtiFDR_TextExport::readConfig( void )
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
     if (tempStr.length() > 0)
     {
-        if (atoi (tempStr) <=1)
+        if (atoi (tempStr.c_str()) <=1)
         {
             setInterval(1);
         }
         else
         {
-            setInterval(atoi(tempStr));
+            setInterval(atoi(tempStr.c_str()));
         }
     }
     else
@@ -246,7 +248,7 @@ int CtiFDR_TextExport::readConfig( void )
     }
     else
     {
-        setFileName(RWCString ("yukon.txt"));
+        setFileName(string ("yukon.txt"));
     }
 
     tempStr = getCparmValueAsString(KEY_DRIVE_AND_PATH);
@@ -256,13 +258,13 @@ int CtiFDR_TextExport::readConfig( void )
     }
     else
     {
-        setDriveAndPath(RWCString ("\\yukon\\server\\Export"));
+        setDriveAndPath(string ("\\yukon\\server\\Export"));
     }
 
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -272,7 +274,7 @@ int CtiFDR_TextExport::readConfig( void )
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -284,7 +286,7 @@ int CtiFDR_TextExport::readConfig( void )
     tempStr = getCparmValueAsString(KEY_APPEND_FILE);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("true",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr,"true"))
         {
             setAppendToFile(true);
         }
@@ -293,7 +295,7 @@ int CtiFDR_TextExport::readConfig( void )
     _format = formatOne;
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("survalent",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr,"survalent"))
         {
             _format = survalent;
         }
@@ -303,25 +305,25 @@ int CtiFDR_TextExport::readConfig( void )
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Text Export file name " << getFileName() << endl;
-        dout << RWTime() << " Text Export directory " << getDriveAndPath() << endl;
-        dout << RWTime() << " Text Export interval " << getInterval() << endl;
-        dout << RWTime() << " Text Export dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << RWTime() << " Text Export db reload rate " << getReloadRate() << endl;
+
+        dout << CtiTime() << " Text Export file name " << getFileName() << endl;
+        dout << CtiTime() << " Text Export directory " << getDriveAndPath() << endl;
+        dout << CtiTime() << " Text Export interval " << getInterval() << endl;
+        dout << CtiTime() << " Text Export dispatch queue flush rate " << getQueueFlushRate() << endl;
+        dout << CtiTime() << " Text Export db reload rate " << getReloadRate() << endl;
         if (_format == survalent)
         {
-            dout << RWTime() << " Text Export format set to Survalent" << endl;
+            dout << CtiTime() << " Text Export format set to Survalent" << endl;
         }
         else
         {
-            dout << RWTime() << " Text Export format set to default" << endl;
+            dout << CtiTime() << " Text Export format set to default" << endl;
         }
         
-
         if (shouldAppendToFile())
-            dout << RWTime() << " Export will append to existing" << endl;
+            dout << CtiTime() << " Export will append to existing" << endl;
         else
-            dout << RWTime() << " Export will overwrite existing file" << endl;
+            dout << CtiTime() << " Export will overwrite existing file" << endl;
 
     }
 
@@ -343,9 +345,9 @@ bool CtiFDR_TextExport::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -353,7 +355,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       RWCString (FDR_INTERFACE_SEND));
+                                                       string (FDR_INTERFACE_SEND));
 
         // keep the status
         listStatus = pointList->loadPointList();
@@ -390,20 +392,27 @@ bool CtiFDR_TextExport::loadTranslationLists()
                             //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                             dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
 
-                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        boost::char_separator<char> sep1(";");
+                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+                        if (!(tempString1 = *tok_iter).empty())
                         {
-                            RWCTokenizer nextTempToken(tempString1);
+                            boost::char_separator<char> sep2(":");
+                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            // do not care about the first part
-                            nextTempToken(":");
+                            tok_iter1++;
+                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
 
-                            tempString2 = nextTempToken(";");
-                            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+
+                            tempString2 = *nextTempToken_.begin();
+                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
+
 
                             // now we have a point id
-                            if ( !tempString2.isNull() )
+                            if ( !tempString2.empty() )
                             {
                                 translationPoint->getDestinationList()[x].setTranslation (tempString2);
                                 successful = true;
@@ -432,7 +441,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -441,14 +450,14 @@ bool CtiFDR_TextExport::loadTranslationLists()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 
@@ -457,7 +466,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
         RWTHROW(e);
     }
 
@@ -465,7 +474,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
     return successful;
@@ -493,39 +502,39 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0,tries=0;
-    RWTime         timeNow;
-    RWTime         refreshTime(rwEpoch);
-    RWCString action,desc;
+    CtiTime         timeNow;
+    CtiTime         refreshTime(PASTDATE);
+    string action,desc;
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
     CtiFDRPoint *       translationPoint = NULL;
-    RWTime lastWrite(rwEpoch);
+    CtiTime lastWrite(rwEpoch);
 
     try
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDR_TextExport::threadFunctionWriteToFile " << endl;
+            dout << CtiTime() << " Initializing CtiFDR_TextExport::threadFunctionWriteToFile " << endl;
         }
 
         // first output is 15 seconds after startup
-        refreshTime = RWTime() + 15;
+        refreshTime = CtiTime() + 15;
 
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
             pSelf.sleep (1000);
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             // now is the time to write the file
             if (timeNow >= refreshTime)
             {
 //                {
 //                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                    dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
+//                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
 //                }
 
                 _snprintf (fileName, 200, "%s\\%s",getDriveAndPath(),getFileName());
@@ -543,7 +552,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                 if ( fptr == NULL )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getInterfaceName() << "'s file " << RWCString (fileName) << " could not be opened" << endl;
+                    dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
                 }
                 else
                 {
@@ -615,12 +624,12 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                         else
                         {
                             // if data is older than 2001, it can't be valid
-                            if (translationPoint->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                            if (translationPoint->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                             {
                                 //if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " PointId " << translationPoint->getPointID();
+                                    dout << CtiTime() << " PointId " << translationPoint->getPointID();
                                     dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
                                 }
                             }
@@ -641,7 +650,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                            dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
                                             dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
                                         }
                                     }
@@ -657,7 +666,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                            dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
                                             dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
                                         }
                                     }
@@ -667,9 +676,9 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                         }
                     }
                     fclose(fptr);
-                    lastWrite = RWTime::now();
+                    lastWrite = CtiTime::now();
                 }
-                refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
+                refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
             }
         }
     }
@@ -684,7 +693,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRTextExportBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRTextExportBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }
 
@@ -705,7 +714,7 @@ LAU04A_KWH                          360 0
 ...
 ***************************************************************************
 */
-void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, RWTime aLastWrite)
+void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, CtiTime aLastWrite)
 {
 //    static RWTime lastWrite;
     int quality;
@@ -743,7 +752,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Exporting status pointid " << aPoint->getDestinationList()[0].getTranslation() ;
+                dout << CtiTime() << " Exporting status pointid " << aPoint->getDestinationList()[0].getTranslation() ;
                 dout << " value " << (int)aPoint->getValue() << " to Survalent file" << endl;
             }
         }
@@ -756,7 +765,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Exporting analog pointid " << aPoint->getDestinationList()[0].getTranslation() ;
+                dout << CtiTime() << " Exporting analog pointid " << aPoint->getDestinationList()[0].getTranslation() ;
                 dout << " value " << aPoint->getValue() << " to Survalent file " << endl;
             }
         }
@@ -765,7 +774,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " CtiFDRTextExport::processPointToSurvalent() function has an un-caught exception " << endl;
+        dout << CtiTime() << " CtiFDRTextExport::processPointToSurvalent() function has an un-caught exception " << endl;
     }
 
 }

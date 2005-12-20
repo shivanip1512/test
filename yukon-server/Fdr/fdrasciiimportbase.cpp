@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/12/20 17:17:12 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.8  2005/12/20 17:17:12  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.7.2.3  2005/08/12 19:53:43  jliu
+      Date Time Replaced
+
+      Revision 1.7.2.2  2005/07/14 22:26:55  jliu
+      RWCStringRemoved
+
+      Revision 1.7.2.1  2005/07/12 21:08:36  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.7  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -59,10 +71,9 @@
 #include <windows.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -73,16 +84,16 @@
 
 
 // Constructors, Destructor, and Operators
-CtiFDRAsciiImportBase::CtiFDRAsciiImportBase(RWCString &aInterface)
+CtiFDRAsciiImportBase::CtiFDRAsciiImportBase(string &aInterface)
 : CtiFDRInterface(aInterface),
-    iFileName(RWCString ("dsmdata.txt")),
-    iDriveAndPath (RWCString("\\yukon\\server\\import")),
+    iFileName(string ("dsmdata.txt")),
+    iDriveAndPath (string("\\yukon\\server\\import")),
     iImportInterval(900),
     iLinkStatusID(0),
     iDeleteFileAfterImportFlag(true)
 { 
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
@@ -127,33 +138,33 @@ CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setDeleteFileAfterImport (bool aFl
     return *this;
 }
 
-RWCString & CtiFDRAsciiImportBase::getFileName()
+string & CtiFDRAsciiImportBase::getFileName()
 {
     return iFileName;
 }
 
-RWCString  CtiFDRAsciiImportBase::getFileName() const
+string  CtiFDRAsciiImportBase::getFileName() const
 {
     return iFileName;
 }
 
-CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setFileName (RWCString aFile)
+CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setFileName (string aFile)
 {
     iFileName = aFile;
     return *this;
 }
 
-RWCString & CtiFDRAsciiImportBase::getDriveAndPath()
+string & CtiFDRAsciiImportBase::getDriveAndPath()
 {
     return iDriveAndPath;
 }
 
-RWCString  CtiFDRAsciiImportBase::getDriveAndPath() const
+string  CtiFDRAsciiImportBase::getDriveAndPath() const
 {
     return iDriveAndPath;
 }
 
-CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setDriveAndPath (RWCString aPath)
+CtiFDRAsciiImportBase &CtiFDRAsciiImportBase::setDriveAndPath (string aPath)
 {
     iDriveAndPath = aPath;
     return *this;
@@ -244,9 +255,9 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -254,7 +265,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       RWCString (FDR_INTERFACE_RECEIVE));
+                                                       string (FDR_INTERFACE_RECEIVE));
 
         // keep the status
         listStatus = pointList->loadPointList();
@@ -303,20 +314,25 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                         * and have specific names already assigned them
                         *********************
                         */
-                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+                        boost::char_separator<char> sep1(";");
+                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        if (!(tempString1 = *tok_iter).empty())
                         {
-                            RWCTokenizer nextTempToken(tempString1);
+                            boost::char_separator<char> sep2(":");
+                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            // do not care about the first part
-                            nextTempToken(":");
+                            tok_iter1++;
+                            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
 
-                            tempString2 = nextTempToken(";");
-                            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+
+                            tempString2 = *nextTempToken_.begin();
+                            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
 
                             // now we have a point id
-                            if ( !tempString2.isNull() )
+                            if ( !tempString2.empty() )
                             {
                                 translationPoint->getDestinationList()[x].setTranslation (tempString2);
                                 successful = true;
@@ -335,7 +351,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -344,14 +360,14 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 
@@ -360,7 +376,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
         RWTHROW(e);
     }
 
@@ -368,7 +384,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
     return successful;
@@ -385,9 +401,9 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0,tries=0;
-    RWTime         timeNow;
-    RWTime         refreshTime(rwEpoch);
-    RWCString action,desc;
+    CtiTime         timeNow;
+    CtiTime         refreshTime(PASTDATE);
+    string action,desc;
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -399,7 +415,7 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
             pSelf.serviceCancellation( );
             pSelf.sleep (1000);
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             // now is the time to get the file
             if (timeNow >= refreshTime)
@@ -409,17 +425,17 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << getInterfaceName() << "'s file " << RWCString (fileName) << " was either not found or could not be opened" << endl;
+                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
                     }
                 }
                 else
                 {
-                    vector<RWCString>     valueVector;
+                    vector<string>     valueVector;
 
                     // load list in the command vector
                     while ( fgets( (char*) workBuffer, 500, fptr) != NULL )
                     {
-                        RWCString entry (workBuffer);
+                        string entry (workBuffer);
                         valueVector.push_back (entry);
                     }
 
@@ -451,7 +467,7 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
                     DeleteFile (fileName);
                 }
 
-                refreshTime = RWTime() - (RWTime::now().seconds() % iImportInterval) + iImportInterval;
+                refreshTime = CtiTime() - (CtiTime::now().seconds() % iImportInterval) + iImportInterval;
             }
         }
     }
@@ -466,6 +482,6 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRAsciiImportBase::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRAsciiImportBase::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }

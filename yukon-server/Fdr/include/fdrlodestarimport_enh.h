@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2004/08/18 21:46:01 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,15 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.h,v $
+      Revision 1.5  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.4.4.2  2005/08/12 19:53:47  jliu
+      Date Time Replaced
+
+      Revision 1.4.4.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.4  2004/08/18 21:46:01  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
       2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
@@ -69,22 +78,22 @@ public:
     //virtual CtiFDR_EnhancedLodeStar& setFileInfoList  (CtiFDR_EnhancedLodeStar &aList);
     //virtual CtiFDR_EnhancedLodeStar& setFileInfoList (vector< CtiFDR_LodeStarInfoTable > &aList);
 
-    virtual RWCString getCustomerIdentifier(void);
-    virtual RWTime    getlodeStarStartTime(void);
-    virtual RWTime    getlodeStarStopTime(void);
+    virtual string getCustomerIdentifier(void);
+    virtual CtiTime    getlodeStarStartTime(void);
+    virtual CtiTime    getlodeStarStopTime(void);
     virtual long       getlodeStarSecsPerInterval(void);
     virtual long       getlodeStarPointId(void);
     virtual void       reinitialize(void);
-    virtual bool decodeFirstHeaderRecord(RWCString& aLine, int fileIndex);
-    virtual bool decodeSecondHeaderRecord(RWCString& aLine);
-    virtual bool decodeThirdHeaderRecord(RWCString& aLine);
-    virtual bool decodeFourthHeaderRecord(RWCString& aLine);
-    virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg);
+    virtual bool decodeFirstHeaderRecord(string& aLine, int fileIndex);
+    virtual bool decodeSecondHeaderRecord(string& aLine);
+    virtual bool decodeThirdHeaderRecord(string& aLine);
+    virtual bool decodeFourthHeaderRecord(string& aLine);
+    virtual bool decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg);
     virtual const CHAR * getKeyInterval();
     virtual const CHAR * getKeyFilename();
     virtual const CHAR * getKeyImportDrivePath();
-    virtual const RWCString& getFileImportBaseDrivePath();
-    virtual const RWCString& setFileImportBaseDrivePath(RWCString importBase);
+    virtual const string& getFileImportBaseDrivePath();
+    virtual const string& setFileImportBaseDrivePath(string importBase);
     virtual const CHAR * getKeyDBReloadRate();
     virtual const CHAR * getKeyQueueFlushRate();
     virtual const CHAR * getKeyDeleteFile();
@@ -92,7 +101,7 @@ public:
     virtual int getSubtractValue();
     virtual int getExpectedNumOfEntries();
 
-    RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
+    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
@@ -104,13 +113,13 @@ public:
 private:
 
     //information obtained from the first header record
-    RWCString  _lsCustomerIdentifier;
+    string  _lsCustomerIdentifier;
     long        _pointId;   //determined from the Customer Identifier
     long        _lsChannel;
-    RWTime     _lsStartTime;
-    RWTime     _lsStopTime;
-    RWCString  _lsDSTFlag;
-    RWCString  _lsInvalidRecordFlag;
+    CtiTime     _lsStartTime;
+    CtiTime     _lsStopTime;
+    string  _lsDSTFlag;
+    string  _lsInvalidRecordFlag;
     double  _lsMeterStartReading;
     double  _lsMeterStopReading;
     double  _lsMeterMultiplier;
@@ -123,11 +132,11 @@ private:
     long    _lsTimeZone;
     double  _lsPopulation;
     double  _lsWeight;
-    RWCString _lsDescriptor;
-    RWTime     _lsTimeStamp;
-    RWCString  _lsOrigin;
+    string _lsDescriptor;
+    CtiTime     _lsTimeStamp;
+    string  _lsOrigin;
 
-    RWCString _fileImportBaseDrivePath;
+    string _fileImportBaseDrivePath;
 
     int _lsExpectedNumEntries;
 

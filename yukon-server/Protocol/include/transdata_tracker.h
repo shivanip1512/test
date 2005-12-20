@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/09/27 20:43:24 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/12/20 17:20:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@
 #include "transdata_datalink.h"
 #include "prot_ymodem.h"
 #include "dllbase.h"
+#include "ctidate.h"
+#include "ctitime.h"
 
 class IM_EX_PROT CtiTransdataTracker
 {
@@ -53,7 +55,7 @@ class IM_EX_PROT CtiTransdataTracker
       CtiTransdataTracker();
       ~CtiTransdataTracker();
 
-      void setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time );
+      void setXfer( CtiXfer &xfer, string dataOut, int bytesIn, bool block, ULONG time );
       bool logOn( CtiXfer &xfer );
       bool billing( CtiXfer &xfer );
       bool loadProfile( CtiXfer &xfer );
@@ -69,7 +71,7 @@ class IM_EX_PROT CtiTransdataTracker
       bool grabChannels( BYTE *data, int bytes );
       bool grabFormat( BYTE *data, int bytes );
       bool grabTime( BYTE *data, int bytes );
-      void injectData( RWCString str );
+      void injectData( string str );
       void setNextState( void );
       void reset( void );
       void setLastLPTime( ULONG lpTime );
@@ -82,8 +84,8 @@ class IM_EX_PROT CtiTransdataTracker
       int calcLPRecs( void );
       int countChannels( void );
       int calcAcks( int recs );
-      RWCString formatRecNums( int recs );
-      RWTime timeAdjust( RWTime meter );
+      string formatRecNums( int recs );
+      CtiTime timeAdjust( CtiTime meter );
 
    protected:
 
@@ -174,8 +176,8 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _enter;
       const char *const    _ems;
 
-      RWCString            _password;
-      RWCString            _tempSent;
+      string            _password;
+      string            _tempSent;
 
       bool                 _waiting;
       bool                 _moveAlong;

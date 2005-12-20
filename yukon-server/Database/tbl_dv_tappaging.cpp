@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tappaging.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,9 @@
 #include "tbl_dv_tappaging.h"
 #include "logger.h"
 
-CtiTableDeviceTapPaging::CtiTableDeviceTapPaging(RWCString pn) :
+#include "rwutil.h"
+
+CtiTableDeviceTapPaging::CtiTableDeviceTapPaging(string pn) :
 _deviceID(-1),
 _pagerNumber(pn)
 {}
@@ -46,19 +48,19 @@ CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::operator=(const CtiTableDevice
     return *this;
 }
 
-RWCString CtiTableDeviceTapPaging::getPagerNumber() const
+string CtiTableDeviceTapPaging::getPagerNumber() const
 {
 
     return _pagerNumber;
 }
 
-RWCString& CtiTableDeviceTapPaging::getPagerNumber()
+string& CtiTableDeviceTapPaging::getPagerNumber()
 {
 
     return _pagerNumber;
 }
 
-CtiTableDeviceTapPaging&   CtiTableDeviceTapPaging::setPagerNumber(const RWCString &aStr)
+CtiTableDeviceTapPaging&   CtiTableDeviceTapPaging::setPagerNumber(const string &aStr)
 {
 
 
@@ -68,7 +70,7 @@ CtiTableDeviceTapPaging&   CtiTableDeviceTapPaging::setPagerNumber(const RWCStri
 
 void CtiTableDeviceTapPaging::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector << devTbl["pagernumber"]
         << devTbl["sender"]
@@ -94,13 +96,13 @@ void CtiTableDeviceTapPaging::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["sender"] >> _senderID;
     rdr["securitycode"] >> _securityCode;
     rdr["postpath"] >> _postPath;
-    if( _securityCode.contains("none") || !_securityCode.compareTo("0") )
+    if( _securityCode.find("none")!=string::npos || _securityCode.compare("0")==string::npos )
     {
-        _securityCode = RWCString();    // Make it NULL.
+        _securityCode = string();    // Make it NULL.
     }
 }
 
-RWCString CtiTableDeviceTapPaging::getTableName()
+string CtiTableDeviceTapPaging::getTableName()
 {
     return "DeviceTapPagingSettings";
 }
@@ -126,7 +128,7 @@ RWDBStatus CtiTableDeviceTapPaging::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -156,7 +158,7 @@ RWDBStatus CtiTableDeviceTapPaging::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -180,13 +182,13 @@ RWDBStatus CtiTableDeviceTapPaging::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["pagernumber"].assign(getPagerNumber() );
+    table["pagernumber"].assign(getPagerNumber().c_str() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -203,7 +205,7 @@ RWDBStatus CtiTableDeviceTapPaging::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );
@@ -212,16 +214,16 @@ RWDBStatus CtiTableDeviceTapPaging::Delete()
 }
 
 
-RWCString CtiTableDeviceTapPaging::getSenderID() const
+string CtiTableDeviceTapPaging::getSenderID() const
 {
     return _senderID;
 }
 
-RWCString CtiTableDeviceTapPaging::getSecurityCode() const
+string CtiTableDeviceTapPaging::getSecurityCode() const
 {
     return _securityCode;
 }
-RWCString CtiTableDeviceTapPaging::getPOSTPath() const
+string CtiTableDeviceTapPaging::getPOSTPath() const
 {
     return _postPath;
 }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
 }
 
 
-void CtiPortShare::createNexus(RWCString nexusName)
+void CtiPortShare::createNexus(string nexusName)
 {
    INT nRet;
    CTINEXUS newNexus;
@@ -126,12 +126,12 @@ void CtiPortShare::createNexus(RWCString nexusName)
     *  The socket connection created here is then used to communicate to porter
     */
 
-   strcpy(_listenNexus.Name, nexusName.data());
+   strcpy(_listenNexus.Name, nexusName.c_str());
 
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       dout << "  Presenting port " << _listenPort << " for connection " << endl;
    }
 
@@ -139,7 +139,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Could not create a NEXUS for " << nexusName << endl;
+         dout << CtiTime() << " Could not create a NEXUS for " << nexusName << endl;
       }
       return;
    }
@@ -153,7 +153,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Error establishing Nexus to InThread for " << nexusName << endl;
+         dout << CtiTime() << " Error establishing Nexus to InThread for " << nexusName << endl;
       }
       return;
    }
@@ -162,7 +162,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
+      dout << CtiTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
    }
 
    _listenNexus.CTINexusClose();  // Don't need this anymore.
@@ -170,7 +170,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " closed " << nexusName << endl;
+      dout << CtiTime() << " closed " << nexusName << endl;
    }
 
    _listenNexus = newNexus;
@@ -200,7 +200,7 @@ void CtiPortShare::connectNexus()
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       dout << "  Attempting connection on port " << _listenPort << endl;
    }
 
@@ -210,7 +210,7 @@ void CtiPortShare::connectNexus()
       if(!(++j % 15))
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port Sharing IP interface is having issues " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << CtiTime() << " Port Sharing IP interface is having issues " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
 
       CTISleep(1000L);

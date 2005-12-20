@@ -60,7 +60,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
                (ConnectionManagerCollection[i])->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " Posting point " << ChgMsg.getId() << " to local connection " << (ConnectionManagerCollection[i])->getClientName() << endl;
+                  dout << CtiTime() << " Posting point " << ChgMsg.getId() << " to local connection " << (ConnectionManagerCollection[i])->getClientName() << endl;
                }
             }
             else
@@ -81,7 +81,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Failed to post change event, the client has shutdown. " << endl;
+               dout << CtiTime() << " Failed to post change event, the client has shutdown. " << endl;
             }
             RemoveConnectionManager((ConnectionManagerCollection[i]));
          }
@@ -89,7 +89,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Connection Aborted, Removing from list." << endl;
+               dout << CtiTime() << " Connection Aborted, Removing from list." << endl;
             }
             RemoveConnectionManager((ConnectionManagerCollection[i]));
          }
@@ -103,7 +103,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
       {
           {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+              dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
           }
          break;
       }

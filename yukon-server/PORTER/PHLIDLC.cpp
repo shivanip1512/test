@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:19:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Reset Request to " << RemoteRecord->getName() << endl;
+        dout << CtiTime() << " Reset Request to " << RemoteRecord->getName() << endl;
     }
     /* build the message to send to the ccu */
     IDLCSArm (Message, RemoteRecord->getAddress());
@@ -167,7 +167,7 @@ IDLCFunction (CtiDeviceSPtr &Dev,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error writing to port queue for device " << Dev->getName() << endl;
+            dout << CtiTime() << " Error writing to port queue for device " << Dev->getName() << endl;
         }
 
         delete (OutMessage);
@@ -183,7 +183,7 @@ IDLCFunction (CtiDeviceSPtr &Dev,
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -594,7 +594,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DELAY.DAT MUST be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
+            dout << CtiTime() << " DELAY.DAT MUST be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
         }
 
         fclose (HFile);
@@ -603,7 +603,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         filefound = true;
     }
 
-    if((HFile = fopen(gDelayDatFile.data(), "r")) != NULL)
+    if((HFile = fopen(gDelayDatFile.c_str(), "r")) != NULL)
     {
         /* Walk through the file looking for the appropriate port and remote */
         for(;;)
@@ -612,7 +612,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Device not detected in delay.dat file **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Device not detected in delay.dat file **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 T_RTSOn      = 180;
                 T_CTSTo      = 168;
@@ -638,7 +638,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " No delay.dat file was found.  Port Control was looking here " << gDelayDatFile << endl;
         }
     }

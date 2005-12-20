@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/06 20:26:07 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:20:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+
 
 #include "cmdparse.h"
 #include "dev_710.h"
@@ -27,8 +27,6 @@ using namespace std;
 #include "pt_base.h"
 
 #if 0
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 #include <rw\ctoken.h>
 
 #include "porter.h"
@@ -46,6 +44,7 @@ using namespace std;
 
 #endif
 
+using namespace std;
 
 INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
@@ -55,7 +54,7 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("loop");
@@ -77,7 +76,7 @@ INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int retVal = NORMAL;
 
@@ -87,10 +86,10 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         {
             unsigned char expectedAck;
             unsigned char expectedBytes[2];
-            RWCString cmd(InMessage->Return.CommandStr);
+            string cmd(InMessage->Return.CommandStr);
             CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
-                                                    RWCString(),
+                                                    string(),
                                                     InMessage->EventCode & 0x7fff,
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.MacroOffset,
@@ -123,7 +122,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 if( retMsg != NULL )
@@ -154,7 +153,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - IM->Sequence = " << InMessage->Sequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - IM->Sequence = " << InMessage->Sequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -213,8 +212,8 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
          retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                          RWCString(OutMessage->Request.CommandStr),
-                                          RWCString("CCU Devices do not support this command (yet?)"),
+                                          string(OutMessage->Request.CommandStr),
+                                          string("CCU Devices do not support this command (yet?)"),
                                           nRet,
                                           OutMessage->Request.RouteID,
                                           OutMessage->Request.MacroOffset,

@@ -19,10 +19,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -174,7 +173,7 @@ CurrentControl CurrentControl::createCurrentControl(XA21LMMESS* lm_msg)
 {
     CurrentControl ctrl;
     ctrl._mpc_function = ntohl(lm_msg->Function);
-    ctrl._expiration_time = time(NULL) + 5*60;
+    ctrl._expiration_time = ::time(NULL) + 5*60;
     for(int i = 0; i < MPCMAXGROUPS; i++)
     {
 	string trimmed_name = string(lm_msg->Message.MPC.Group[i].GroupName);
@@ -235,7 +234,7 @@ const CHAR * CtiFDR_XA21LM::KEY_LINK_TIMEOUT = "FDR_XA21LM_LINK_TIMEOUT_SECONDS"
 
 // Constructors, Destructor, and Operators
 CtiFDR_XA21LM::CtiFDR_XA21LM()
-: CtiFDRSingleSocket(RWCString("XA21LM"))
+: CtiFDRSingleSocket(string("XA21LM"))
 {
     setRegistered (true); 
     init();
@@ -261,12 +260,12 @@ bool CtiFDR_XA21LM::isRegistrationNeeded()
 int CtiFDR_XA21LM::readConfig()
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPortNumber (atoi(tempStr));
+        setPortNumber (atoi(tempStr.c_str()));
     }
     else
     {
@@ -276,7 +275,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
     if (tempStr.length() > 0)
     {
-        setLinkTimeout (atoi(tempStr));
+        setLinkTimeout (atoi(tempStr.c_str()));
     }
     else
     {
@@ -286,7 +285,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
     {
-        setTimestampReasonabilityWindow (atoi (tempStr));
+        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
     }
     else
     {
@@ -296,7 +295,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -306,7 +305,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -324,7 +323,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
     if (tempStr.length() > 0)
     {
-        setOutboundSendRate (atoi(tempStr));
+        setOutboundSendRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -334,7 +333,7 @@ int CtiFDR_XA21LM::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_INTERVAL);
     if (tempStr.length() > 0)
     {
-        setOutboundSendInterval (atoi(tempStr));
+        setOutboundSendInterval (atoi(tempStr.c_str()));
     }
     else
     {
@@ -345,17 +344,17 @@ int CtiFDR_XA21LM::readConfig()
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " xa21lm port number " << getPortNumber() << endl;
-        dout << RWTime() << " xa21lm timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << RWTime() << " xa21lm db reload rate " << getReloadRate() << endl;
-        dout << RWTime() << " xa21lm qubeue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << RWTime() << " xa21lm send rate " << getOutboundSendRate() << endl;
-        dout << RWTime() << " xa21lm send interval " << getOutboundSendInterval() << " second(s) " << endl;
+        dout << CtiTime() << " xa21lm port number " << getPortNumber() << endl;
+        dout << CtiTime() << " xa21lm timestamp window " << getTimestampReasonabilityWindow() << endl;
+        dout << CtiTime() << " xa21lm db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " xa21lm qubeue flush rate " << getQueueFlushRate() << " second(s) " << endl;
+        dout << CtiTime() << " xa21lm send rate " << getOutboundSendRate() << endl;
+        dout << CtiTime() << " xa21lm send interval " << getOutboundSendInterval() << " second(s) " << endl;
 
         if (isInterfaceInDebugMode())
-            dout << RWTime() << " running in debug mode " << endl;
+            dout << CtiTime() << " running in debug mode " << endl;
         else
-            dout << RWTime() << " running in normal mode "<< endl;
+            dout << CtiTime() << " running in normal mode "<< endl;
     }
     return successful;
 }
@@ -367,34 +366,33 @@ int CtiFDR_XA21LM::readConfig()
 bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
 
     try
     {
-        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation());
 
-            // skip the first part entirely for now
-        if (!(tempString1 = nextTranslate(";")).isNull())
+        boost::char_separator<char> sep1(";");
+        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+        if (!(tempString1 = *tok_iter).empty())
         {
-            // this in the translation name on rdex
-            RWCTokenizer nextTempToken(tempString1);
+            boost::char_separator<char> sep2(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-            // do not care about the first part
-            nextTempToken(":");
-            tempString2 = nextTempToken(";");
-            /**************************
-            * as luck would have it, I need to allow colons in the translation names
-            * because of this, I know the first character in tempString2 is the first : 
-            * found.  I need what is left in the string after removing the colon
-            ***************************
-            */
-            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+            tok_iter1++;
+            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
+
+
+            tempString2 = *nextTempToken_.begin();
+            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
 
             // now we have a translation name
-            if ( !tempString2.isNull() )
+            if ( !tempString2.empty() )
             {
                 // put category in final name
                 translationName= tempString2;
@@ -411,7 +409,7 @@ bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
         RWTHROW(e);
     }
 
@@ -421,7 +419,7 @@ bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
     }
     return successful;
 }
@@ -439,7 +437,7 @@ CHAR *CtiFDR_XA21LM::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
     string group_name = aPoint.getTranslateName(0);
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - Rec'd point change, point id=" << aPoint.getPointID() << ", value=" << aPoint.getValue() << ", group='" << group_name << "'" << endl;
+        dout << CtiTime() << " - Rec'd point change, point id=" << aPoint.getPointID() << ", value=" << aPoint.getValue() << ", group='" << group_name << "'" << endl;
     }
 
     // See if we can find a matching group with control pending
@@ -452,7 +450,7 @@ CHAR *CtiFDR_XA21LM::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 	    
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " checking commanded state against current state: commanded=" << ctrl.getCommandedState(group_name) << " current=" << aPoint.getValue() << endl;
+	    dout << CtiTime() << " checking commanded state against current state: commanded=" << ctrl.getCommandedState(group_name) << " current=" << aPoint.getValue() << endl;
 	}
 	    //found one, is the point in the commanded state? (i.e. did the state change to what we expected as a result of control?)
 	    if(ctrl.getCommandedState(group_name) == aPoint.getValue())
@@ -491,7 +489,7 @@ CHAR *CtiFDR_XA21LM::buildForeignSystemHeartbeatMsg ()
     
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "building foreign system heartbeat!" << endl;
+        dout << CtiTime() << " - " << "building foreign system heartbeat!" << endl;
     }
 
     // Do some maintenance if necessary
@@ -549,13 +547,13 @@ int CtiFDR_XA21LM::getMessageSize(CHAR *aBuffer)
     default:
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "Received unknown function from lmsdlink = " << ntohl(xa_msg->Function) << endl;
+        dout << CtiTime() << " - " << "Received unknown function from lmsdlink = " << ntohl(xa_msg->Function) << endl;
     }
     }
     
    {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-	dout << RWTime() << " Determining message size, fn=" << ntohl(xa_msg->Function) << " size=" << msg_size << endl;
+	dout << CtiTime() << " Determining message size, fn=" << ntohl(xa_msg->Function) << " size=" << msg_size << endl;
     }
 
     return msg_size; 
@@ -564,7 +562,7 @@ int CtiFDR_XA21LM::getMessageSize(CHAR *aBuffer)
 /*
   Give this interface a name
 */
-RWCString CtiFDR_XA21LM::decodeClientName(CHAR * aBuffer)
+string CtiFDR_XA21LM::decodeClientName(CHAR * aBuffer)
 {
     return "XA21LM";
 }
@@ -579,7 +577,7 @@ int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
     
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " Processing xa21lmmess" << endl;
+        dout << CtiTime() << " Processing xa21lmmess" << endl;
     }
 
     switch(ntohl(lm_mess->Function))
@@ -588,7 +586,7 @@ int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
 	if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
 	{
 	    CtiLockGuard<CtiLogger> doubt_guard(dout);
-	    dout << RWTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << RWCString (inet_ntoa(getLayer()->getInBoundConnection()->getAddr().sin_addr)) <<  endl;;
+	    dout << CtiTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << string (inet_ntoa(getLayer()->getInBoundConnection()->getAddr().sin_addr)) <<  endl;;
 	}
 	break;
 	
@@ -606,7 +604,7 @@ int CtiFDR_XA21LM::processMessageFromForeignSystem(CHAR *aBuffer)
 	if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
 	{
 	    CtiLockGuard<CtiLogger> doubt_guard(dout);
-	    dout << RWTime() << " Unknown message type " << ntohl (lm_mess->Function) << " received from " << getInterfaceName() << endl;
+	    dout << CtiTime() << " Unknown message type " << ntohl (lm_mess->Function) << " received from " << getInterfaceName() << endl;
 	}
     }
     return retVal;
@@ -628,7 +626,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
     
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " <<  "Processing control message, area code=" << area_code << endl;
+        dout << CtiTime() << " - " <<  "Processing control message, area code=" << area_code << endl;
     }
     
     /* Loop through the xa21lm message and build a command message for each group, stuff it into a multi,
@@ -637,11 +635,11 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
     CtiMultiMsg* cmd_msg_multi = new CtiMultiMsg;
     for(int i = 0; i < MPCMAXGROUPS; i++)
     {
-	RWCString translation_name = xa21_msg->Message.MPC.Group[i].GroupName;
+	string translation_name = xa21_msg->Message.MPC.Group[i].GroupName;
 	USHORT control_state = ntohs(xa21_msg->Message.MPC.Group[i].State);
 	USHORT shed_seq = ntohs(xa21_msg->Message.MPC.Group[i].ShedSequence);
 	
-	translation_name = translation_name.strip(RWCString::both);
+	translation_name = trim(translation_name);
 	if(translation_name.length() == 0)
 	{
 	    break;
@@ -649,16 +647,16 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	
 	if(area_code != 0)
 	{
-	    translation_name = "AC" + CtiNumStr(area_code).zpad(2) + " " + translation_name;
-	    strncpy(xa21_msg->Message.MPC.Group[i].GroupName, translation_name.data(), sizeof(xa21_msg->Message.MPC.Group[MPCMAXGROUPS].GroupName));
+	    translation_name = "AC" + CtiNumStr(area_code).zpad(2) + string(" ") + translation_name;
+	    strncpy(xa21_msg->Message.MPC.Group[i].GroupName, translation_name.c_str(), sizeof(xa21_msg->Message.MPC.Group[MPCMAXGROUPS].GroupName));
 	}
 	
-	if(findTranslationNameInList(translation_name.data(), getReceiveFromList(), point))
+	if(findTranslationNameInList(translation_name.c_str(), getReceiveFromList(), point))
 	{
 	    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)	
 	    {
 		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << " - " <<  " PointID=" << point.getPointID() << " Group name='" << translation_name << "' State=" << control_state << " ShedSeq=" << xa21_msg->Message.MPC.Group[i].ShedSequence << endl;
+		dout << CtiTime() << " - " <<  " PointID=" << point.getPointID() << " Group name='" << translation_name << "' State=" << control_state << " ShedSeq=" << xa21_msg->Message.MPC.Group[i].ShedSequence << endl;
 	    }
 
 	    CtiCommandMsg *cmdMsg;
@@ -679,7 +677,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	    else
 	    {
 		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << " **Checkpoint** " << "Control state didn't specify MPCSHED or MPCRESTORE" << __FILE__ << "(" << __LINE__ << ")" << endl;
+		dout << CtiTime() << " **Checkpoint** " << "Control state didn't specify MPCSHED or MPCRESTORE" << __FILE__ << "(" << __LINE__ << ")" << endl;
 	    }
 
 	    cmdMsg->dump();
@@ -691,7 +689,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	{
 	    if(translation_name.length() > 0) {
 		CtiLockGuard<CtiLogger> dout_guard(dout);	    
-		dout << RWTime() << " Unable to find translation: " << translation_name << " len: " << translation_name.length() << endl;
+		dout << CtiTime() << " Unable to find translation: " << translation_name << " len: " << translation_name.length() << endl;
 		retVal = !NORMAL;
 	    }
 	}
@@ -705,7 +703,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " - " <<  " sending " << cmd_msg_multi->getCount() << " control messages to dispatch" << endl;
+	    dout << CtiTime() << " - " <<  " sending " << cmd_msg_multi->getCount() << " control messages to dispatch" << endl;
 	}
 	
 	sendMessageToDispatch(cmd_msg_multi);
@@ -724,7 +722,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	    
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "Sending MPCIMMEDIATE_CONTROL_ACK" << endl;
+        dout << CtiTime() << " - " << "Sending MPCIMMEDIATE_CONTROL_ACK" << endl;
     }
     
 	}
@@ -740,7 +738,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "Sending MPCCONFIRM_CONTROL_ACK" << endl;
+        dout << CtiTime() << " - " << "Sending MPCCONFIRM_CONTROL_ACK" << endl;
     }	    
 	}
 	    break;
@@ -749,13 +747,13 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	{
 	    LOADSCRAMSTAT* scram_ack_msg = (LOADSCRAMSTAT*) new CHAR[sizeof(LOADSCRAMSTAT)];
 	    scram_ack_msg->Function = htonl(LOADSCRAMSTATUS);
-	    YukonToXA21Time(time(NULL), RWTime::now().isDST(), &(scram_ack_msg->Time));
+	    YukonToXA21Time(::time(NULL), CtiTime::now().isDST(), &(scram_ack_msg->Time));
 	    scram_ack_msg->State = htons(ACKNOWLEDGE);
 	    ack_msg = (char*) scram_ack_msg;
 
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "Sending LOADSCRAMSTATUS (ack)" << endl;
+        dout << CtiTime() << " - " << "Sending LOADSCRAMSTATUS (ack)" << endl;
     }	    
 	}
 	    break;
@@ -763,20 +761,20 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
 	{
 	    NICKTESTSTAT* nick_ack_msg = (NICKTESTSTAT*) new CHAR[sizeof(NICKTESTSTAT)];
 	    nick_ack_msg->Function = htonl(NICKTESTSTATUS);
-    	    YukonToXA21Time(time(NULL), RWTime::now().isDST(), &(nick_ack_msg->Time));
+    	    YukonToXA21Time(::time(NULL), CtiTime::now().isDST(), &(nick_ack_msg->Time));
 	    nick_ack_msg->State = htons(ACKNOWLEDGE);
 	    ack_msg = (char*) nick_ack_msg;
 
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << "Sending NICKTESTSTAT (ack)" << endl;
+        dout << CtiTime() << " - " << "Sending NICKTESTSTAT (ack)" << endl;
     }	    
 	}
 	    break;
 	default:
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " **Checkpoint** " <<  " Received unknown control function of " << xa21_msg->Function << __FILE__ << "(" << __LINE__ << ")" << endl;
+	    dout << CtiTime() << " **Checkpoint** " <<  " Received unknown control function of " << xa21_msg->Function << __FILE__ << "(" << __LINE__ << ")" << endl;
 	}
 	    retVal = !NORMAL;
 	}
@@ -794,7 +792,7 @@ int CtiFDR_XA21LM::processControlMessage(CHAR *aData)
     {
         delete cmd_msg_multi;
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " << "Control request received, but no control messages generated and sent to dispatch" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " << "Control request received, but no control messages generated and sent to dispatch" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return retVal;
 }
@@ -822,12 +820,12 @@ CHAR* CtiFDR_XA21LM::buildMPCStatus(const CurrentControl& ctrl, const string& gr
 	lm_msg->Message.MPC.Group[i].GroupName[0] = '\0';
     }
     
-    YukonToXA21Time(time(NULL), RWTime::now().isDST(), &(lm_msg->Time));
+    YukonToXA21Time(::time(NULL), CtiTime::now().isDST(), &(lm_msg->Time));
     
     lm_msg->Message.MPC.AreaCode = htons(stripAreaCode(xalm_group_name));
     lm_msg->Message.MPC.IDNumber = 0;
 	
-    strcpy(lm_msg->Message.MPC.Group[0].GroupName, xalm_group_name.data());
+    strcpy(lm_msg->Message.MPC.Group[0].GroupName, xalm_group_name.c_str());
 
     lm_msg->Message.MPC.Group[0].State = htons(MPCFINISHED);//?
 
@@ -856,11 +854,11 @@ CHAR* CtiFDR_XA21LM::buildMPCUnsolicited(const string& group_name, unsigned stat
  
     lm_msg->Function = htonl(MPCUNSOLICITEDCTRLSTATUS);
 
-    YukonToXA21Time(time(NULL), RWTime::now().isDST(), &(lm_msg->Time));
+    YukonToXA21Time(::time(NULL), CtiTime::now().isDST(), &(lm_msg->Time));
     lm_msg->Message.MPC.AreaCode = htons(stripAreaCode(xalm_group_name));
     lm_msg->Message.MPC.IDNumber = 0;
 	
-    strcpy(lm_msg->Message.MPC.Group[0].GroupName, xalm_group_name.data());
+    strcpy(lm_msg->Message.MPC.Group[0].GroupName, xalm_group_name.c_str());
     for(int i = 1; i < MPCMAXGROUPS; i++)
     {
 	lm_msg->Message.MPC.Group[i].GroupName[0] = '\0';//, sizeof(xa21_msg->Message.MPC.Group[i].GroupName));
@@ -903,7 +901,7 @@ void CtiFDR_XA21LM::cleanupCurrentControls()
 {
     CtiLockGuard<CtiCriticalSection> cs_lock(_control_cs);
 
-    time_t now = time(NULL);
+    time_t now = ::time(NULL);
     vector<CurrentControl>::iterator iter = _current_controls.begin();
     while(iter != _current_controls.end())
     {
@@ -912,7 +910,7 @@ void CtiFDR_XA21LM::cleanupCurrentControls()
 	{
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " - " << "MPC Control finished, removing from future consideration, " << (_current_controls.size()-1) << " remain" << endl;
+	    dout << CtiTime() << " - " << "MPC Control finished, removing from future consideration, " << (_current_controls.size()-1) << " remain" << endl;
 	    ctrl.dump();
 	}
 	    iter = _current_controls.erase(iter);
@@ -921,7 +919,7 @@ void CtiFDR_XA21LM::cleanupCurrentControls()
 	{
 	    {
 		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << " - " << "MPC Control has timed out, removing from future consideration, " << (_current_controls.size()-1) << " remain" << endl;
+		dout << CtiTime() << " - " << "MPC Control has timed out, removing from future consideration, " << (_current_controls.size()-1) << " remain" << endl;
 		ctrl.dump();
 	    }
 	    iter = _current_controls.erase(iter);	    
@@ -957,7 +955,7 @@ void CtiFDR_XA21LM::dumpXA21LMMessage(XA21LMMESS* xa21_msg)
     CtiFDRPoint         point;
 	
     CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << RWTime() << " - " <<  "MPC Message, Fn=" << ntohl(xa21_msg->Function) << " AC=" << ntohs(xa21_msg->Message.MPC.AreaCode) << endl;
+    dout << CtiTime() << " - " <<  "MPC Message, Fn=" << ntohl(xa21_msg->Function) << " AC=" << ntohs(xa21_msg->Message.MPC.AreaCode) << endl;
  
     for(int i = 0; i < MPCMAXGROUPS; i++)
     {
@@ -971,9 +969,9 @@ void CtiFDR_XA21LM::dumpXA21LMMessage(XA21LMMESS* xa21_msg)
 	USHORT control_state = ntohs(xa21_msg->Message.MPC.Group[i].State);
 	USHORT shed_seq = ntohs(xa21_msg->Message.MPC.Group[i].ShedSequence);
   
-	if(findTranslationNameInList(translation_name.data(), getReceiveFromList(), point))
+	if(findTranslationNameInList(translation_name.c_str(), getReceiveFromList(), point))
 	{
-	    dout << RWTime() << " - " <<  " Group name='" << translation_name << "' State=" << control_state << " ShedSeq=" << shed_seq << endl;
+	    dout << CtiTime() << " - " <<  " Group name='" << translation_name << "' State=" << control_state << " ShedSeq=" << shed_seq << endl;
 	}
 
     }
@@ -992,7 +990,7 @@ int CtiFDR_XA21LM::stripAreaCode(string& group_name)
     {
 	string ac_str = group_name.substr(2,2);
 	group_name = group_name.substr(5);
-	return atoi(ac_str.data());
+	return atoi(ac_str.c_str());
     }
     return 0;
 }

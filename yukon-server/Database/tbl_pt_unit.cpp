@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,7 @@ void CtiTablePointUnit::dump() const
 
 void CtiTablePointUnit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable tbl = db.table(getTableName() );
+    RWDBTable tbl = db.table(getTableName().c_str() );
 
     selector <<
     tbl["pointid"] <<
@@ -152,7 +152,7 @@ void CtiTablePointUnit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
     CtiTableUnitMeasure::getSQL(db, tbl, selector);
 }
 
-RWCString CtiTablePointUnit::getTableName()
+string CtiTablePointUnit::getTableName()
 {
     return "PointUnit";
 }

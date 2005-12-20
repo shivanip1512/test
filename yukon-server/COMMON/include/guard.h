@@ -30,9 +30,14 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+
 
 #include "dlldefs.h"
+
+using std::cerr;
+using std::endl;
+
+
 
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard

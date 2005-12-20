@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/07/13 16:09:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,9 +17,6 @@
 
 
 #include <rw/db/reader.h>
-
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbmemobject.h"
 #include "dlldefs.h"
@@ -85,11 +82,11 @@ public:
    LONG              getPointID() const;
    LONG              getID() const;
 
-   RWCString         getName() const;
+   string         getName() const;
    LONG              getDeviceID() const;
 
 
-   RWCString         getLogicalGroup() const;
+   string         getLogicalGroup() const;
    LONG              getStateGroupID() const;
 
    BOOL              getDisableTag() const;

@@ -18,6 +18,8 @@
 #include <rw/collstr.h>
 #include <time.h>
 
+using std::vector;
+
 /*===========================================================================
     CtiLMMessage
     
@@ -31,7 +33,7 @@ RWDEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID )
     
     Returns text describing the message
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMMessage::getMessage() const
+const string& CtiLMMessage::getMessage() const
 {
     return _message;
 }
@@ -79,7 +81,7 @@ void CtiLMMessage::saveGuts(RWvostream& strm) const
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMMessage::CtiLMMessage(const RWCString& message) :  _message(message)
+CtiLMMessage::CtiLMMessage(const string& message) :  _message(message)
 {
 }
 
@@ -226,12 +228,12 @@ RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID )
 
 CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
 						     LONG pao_id,
-						     const RWDBDateTime& notify_time,
-						     const RWDBDateTime& start_time,
-						     const RWDBDateTime& stop_time,
+						     const CtiTime& notify_time,
+						     const CtiTime& start_time,
+						     const CtiTime& stop_time,
 						     LONG start_gear,
 						     LONG start_priority,
-						     const RWCString& addl_info,
+						     const string& addl_info,
 						     LONG constraint_cmd) :
     _command(cmd),
     _paoid(pao_id),
@@ -283,7 +285,7 @@ LONG CtiLMManualControlRequest::getPAOId() const
     Returns the notification time of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlRequest::getNotifyTime() const
+const CtiTime& CtiLMManualControlRequest::getNotifyTime() const
 {
     return _notifytime;
 }
@@ -293,7 +295,7 @@ const RWDBDateTime& CtiLMManualControlRequest::getNotifyTime() const
 
     Returns the start time of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlRequest::getStartTime() const
+const CtiTime& CtiLMManualControlRequest::getStartTime() const
 {
     return _starttime;
 }
@@ -303,7 +305,7 @@ const RWDBDateTime& CtiLMManualControlRequest::getStartTime() const
     
     Returns the stop time of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlRequest::getStopTime() const
+const CtiTime& CtiLMManualControlRequest::getStopTime() const
 {
     return _stoptime;
 }
@@ -334,7 +336,7 @@ LONG CtiLMManualControlRequest::getStartPriority() const
     Returns the additional info string of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMManualControlRequest::getAdditionalInfo() const
+const string& CtiLMManualControlRequest::getAdditionalInfo() const
 {
     return _additionalinfo;
 }
@@ -365,9 +367,9 @@ CtiMessage* CtiLMManualControlRequest::replicateMessage() const
 void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    RWTime tempTime1;
-    RWTime tempTime2;
-    RWTime tempTime3;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
 
     strm >> _command
          >> _paoid
@@ -379,9 +381,9 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
          >> _additionalinfo
 	 >>_constraint_cmd;
 
-    _notifytime = RWDBDateTime(tempTime1);
-    _starttime = RWDBDateTime(tempTime2);
-    _stoptime = RWDBDateTime(tempTime3);
+    _notifytime = CtiTime(tempTime1);
+    _starttime = CtiTime(tempTime2);
+    _stoptime = CtiTime(tempTime3);
     return;
 }
 
@@ -396,9 +398,9 @@ void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
     
     strm << _command
          << _paoid
-         << _notifytime.rwtime()
-         << _starttime.rwtime()
-         << _stoptime.rwtime()
+         << _notifytime
+         << _starttime
+         << _stoptime
          << _startgear
          << _startpriority
          << _additionalinfo
@@ -481,7 +483,7 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
     RWOrdered* rw_ordered = new RWOrdered();
-    for(vector< string >::const_iterator iter = _constraintViolations.begin();
+    for(std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
 	iter != _constraintViolations.end();
 	iter++)
     {
@@ -621,7 +623,7 @@ LONG CtiLMEnergyExchangeControlMsg::getOfferId() const
 
     Returns the date of the offer.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getOfferDate() const
+const CtiTime& CtiLMEnergyExchangeControlMsg::getOfferDate() const
 {
     return _offerdate;
 }
@@ -632,7 +634,7 @@ const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getOfferDate() const
     Returns the notification date time of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getNotificationDateTime() const
+const CtiTime& CtiLMEnergyExchangeControlMsg::getNotificationDateTime() const
 {
     return _notificationdatetime;
 }
@@ -642,7 +644,7 @@ const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getNotificationDateTime() con
 
     Returns the date and time when the offer will expire.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getExpirationDateTime() const
+const CtiTime& CtiLMEnergyExchangeControlMsg::getExpirationDateTime() const
 {
     return _expirationdatetime;
 }
@@ -653,7 +655,7 @@ const RWDBDateTime& CtiLMEnergyExchangeControlMsg::getExpirationDateTime() const
     Returns the additional info string of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeControlMsg::getAdditionalInfo() const
+const string& CtiLMEnergyExchangeControlMsg::getAdditionalInfo() const
 {
     return _additionalinfo;
 }
@@ -700,9 +702,9 @@ LONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
 void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    RWTime tempTime1;
-    RWTime tempTime2;
-    RWTime tempTime3;
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
 
     strm >> _command
          >> _paoid
@@ -722,9 +724,9 @@ void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
         strm >> _pricesoffered[j];
     }
 
-    _offerdate = RWDBDateTime(tempTime1);
-    _notificationdatetime = RWDBDateTime(tempTime2);
-    _expirationdatetime = RWDBDateTime(tempTime3);
+    _offerdate = CtiTime(tempTime1);
+    _notificationdatetime = CtiTime(tempTime2);
+    _expirationdatetime = CtiTime(tempTime3);
     return;
 }
 
@@ -740,9 +742,9 @@ void CtiLMEnergyExchangeControlMsg::saveGuts(RWvostream& strm) const
     strm << _command
          << _paoid
          << _offerid
-         << _offerdate.rwtime()
-         << _notificationdatetime.rwtime()
-         << _expirationdatetime.rwtime()
+         << _offerdate
+         << _notificationdatetime
+         << _expirationdatetime
          << _additionalinfo;
         
     for(LONG i=0;i<HOURS_IN_DAY;i++)
@@ -840,7 +842,7 @@ LONG CtiLMEnergyExchangeAcceptMsg::getRevisionNumber() const
     Returns the accept status string for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeAcceptMsg::getAcceptStatus() const
+const string& CtiLMEnergyExchangeAcceptMsg::getAcceptStatus() const
 {
     return _acceptstatus;
 }
@@ -851,7 +853,7 @@ const RWCString& CtiLMEnergyExchangeAcceptMsg::getAcceptStatus() const
     Returns the ip address of accept user for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeAcceptMsg::getIPAddressOfAcceptUser() const
+const string& CtiLMEnergyExchangeAcceptMsg::getIPAddressOfAcceptUser() const
 {
     return _ipaddressofacceptuser;
 }
@@ -862,7 +864,7 @@ const RWCString& CtiLMEnergyExchangeAcceptMsg::getIPAddressOfAcceptUser() const
     Returns the user id name for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeAcceptMsg::getUserIdName() const
+const string& CtiLMEnergyExchangeAcceptMsg::getUserIdName() const
 {
     return _useridname;
 }
@@ -873,7 +875,7 @@ const RWCString& CtiLMEnergyExchangeAcceptMsg::getUserIdName() const
     Returns the name of accept person for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeAcceptMsg::getNameOfAcceptPerson() const
+const string& CtiLMEnergyExchangeAcceptMsg::getNameOfAcceptPerson() const
 {
     return _nameofacceptperson;
 }
@@ -884,7 +886,7 @@ const RWCString& CtiLMEnergyExchangeAcceptMsg::getNameOfAcceptPerson() const
     Returns the energy exchange notes for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMEnergyExchangeAcceptMsg::getEnergyExchangeNotes() const
+const string& CtiLMEnergyExchangeAcceptMsg::getEnergyExchangeNotes() const
 {
     return _energyexchangenotes;
 }
@@ -914,7 +916,7 @@ DOUBLE CtiLMEnergyExchangeAcceptMsg::getAmountCommitted(int i) const
 void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    //RWTime tempTime1;
+    //CtiTime tempTime1;
 
     strm >> _paoid
          >> _offerid
@@ -930,7 +932,7 @@ void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
         strm >> _amountscommitted[i];
     }
     
-    //_offerdate = RWDBDateTime(tempTime1);
+    //_offerdate = CtiTime(tempTime1);
     return;
 }
 
@@ -1120,7 +1122,7 @@ LONG CtiLMCurtailmentAcknowledgeMsg::getCurtailReferenceId() const
     Returns the acknowledge status string for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMCurtailmentAcknowledgeMsg::getAcknowledgeStatus() const
+const string& CtiLMCurtailmentAcknowledgeMsg::getAcknowledgeStatus() const
 {
     return _acknowledgestatus;
 }
@@ -1131,7 +1133,7 @@ const RWCString& CtiLMCurtailmentAcknowledgeMsg::getAcknowledgeStatus() const
     Returns the ip address of ack user for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMCurtailmentAcknowledgeMsg::getIPAddressOfAckUser() const
+const string& CtiLMCurtailmentAcknowledgeMsg::getIPAddressOfAckUser() const
 {
     return _ipaddressofackuser;
 }
@@ -1142,7 +1144,7 @@ const RWCString& CtiLMCurtailmentAcknowledgeMsg::getIPAddressOfAckUser() const
     Returns the user id name for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMCurtailmentAcknowledgeMsg::getUserIdName() const
+const string& CtiLMCurtailmentAcknowledgeMsg::getUserIdName() const
 {
     return _useridname;
 }
@@ -1153,7 +1155,7 @@ const RWCString& CtiLMCurtailmentAcknowledgeMsg::getUserIdName() const
     Returns the name of ack person for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMCurtailmentAcknowledgeMsg::getNameOfAckPerson() const
+const string& CtiLMCurtailmentAcknowledgeMsg::getNameOfAckPerson() const
 {
     return _nameofackperson;
 }
@@ -1164,7 +1166,7 @@ const RWCString& CtiLMCurtailmentAcknowledgeMsg::getNameOfAckPerson() const
     Returns the curtailment notes for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMCurtailmentAcknowledgeMsg::getCurtailmentNotes() const
+const string& CtiLMCurtailmentAcknowledgeMsg::getCurtailmentNotes() const
 {
     return _curtailmentnotes;
 }

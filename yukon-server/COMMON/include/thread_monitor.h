@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/08/24 13:40:08 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -19,19 +19,23 @@
 #define __THREAD_MONITOR_H__
 
 #include <map>
-using namespace std;
+
 
 #include "queue.h"
 #include "thread.h"
 #include "thread_register_data.h"
+
+using std::map;
+using std::less;
+
 
 class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 {
 
 public:
 
-   typedef map < int, CtiThreadRegData > ThreadData;
-   typedef vector < int > PointIDList;
+   typedef std::map < int, CtiThreadRegData > ThreadData;
+   typedef std::vector < int > PointIDList;
 
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();

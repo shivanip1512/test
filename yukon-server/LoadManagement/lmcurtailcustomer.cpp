@@ -59,32 +59,32 @@ LONG CtiLMCurtailCustomer::getCurtailReferenceId() const
     return _curtailreferenceid;
 }
 
-const RWCString& CtiLMCurtailCustomer::getAcknowledgeStatus() const
+const string& CtiLMCurtailCustomer::getAcknowledgeStatus() const
 {
     return _acknowledgestatus;
 }
 
-const RWDBDateTime& CtiLMCurtailCustomer::getAckDateTime() const
+const CtiTime& CtiLMCurtailCustomer::getAckDateTime() const
 {
     return _ackdatetime;
 }
 
-const RWCString& CtiLMCurtailCustomer::getIPAddressOfAckUser() const
+const string& CtiLMCurtailCustomer::getIPAddressOfAckUser() const
 {
     return _ipaddressofackuser;
 }
 
-const RWCString& CtiLMCurtailCustomer::getUserIdName() const
+const string& CtiLMCurtailCustomer::getUserIdName() const
 {
     return _useridname;
 }
 
-const RWCString& CtiLMCurtailCustomer::getNameOfAckPerson() const
+const string& CtiLMCurtailCustomer::getNameOfAckPerson() const
 {
     return _nameofackperson;
 }
 
-const RWCString& CtiLMCurtailCustomer::getCurtailmentNotes() const
+const string& CtiLMCurtailCustomer::getCurtailmentNotes() const
 {
     return _curtailmentnotes;
 }
@@ -108,37 +108,37 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(LONG refid)
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const RWCString& ackstatus)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const string& ackstatus)
 {
     _acknowledgestatus = ackstatus;
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const RWDBDateTime& acktime)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const CtiTime& acktime)
 {
     _ackdatetime = acktime;
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const RWCString& ipaddress)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const string& ipaddress)
 {
     _ipaddressofackuser = ipaddress;
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const RWCString& username)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const string& username)
 {
     _useridname = username;
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const RWCString& nameackperson)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const string& nameackperson)
 {
     _nameofackperson = nameackperson;
     return *this;
 }
 
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const RWCString& curtailnotes)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const string& curtailnotes)
 {
     _curtailmentnotes = curtailnotes;
     return *this;
@@ -160,7 +160,7 @@ void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
 {
     CtiLMCICustomerBase::restoreGuts( istrm );
 
-    RWTime tempTime;
+    CtiTime tempTime;
     istrm >> _requireack
           >> _curtailreferenceid
           >> _acknowledgestatus
@@ -171,7 +171,7 @@ void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
           >> _curtailmentnotes
           >> _acklateflag;
 
-    _ackdatetime = RWDBDateTime(tempTime);
+    _ackdatetime = CtiTime(tempTime);
 }
 
 /*---------------------------------------------------------------------------
@@ -186,7 +186,7 @@ void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
     ostrm << _requireack
           << _curtailreferenceid
           << _acknowledgestatus
-          << _ackdatetime.rwtime()
+          << _ackdatetime
           << _ipaddressofackuser
           << _useridname
           << _nameofackperson
@@ -236,15 +236,16 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::operator=(const CtiLMCurtailCustomer
 void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 {
     CtiLMCICustomerBase::restore(rdr);
-    RWCString tempBoolString;
+    string tempBoolString;
 
     rdr["requireack"] >> tempBoolString;
-    tempBoolString.toLower();
-    setRequireAck(tempBoolString=="y"?TRUE:FALSE);
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    trim(tempBoolString);
 
+    setRequireAck(tempBoolString=="y"?TRUE:FALSE);
     setCurtailReferenceId(0);
     setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
-    setAckDateTime(gInvalidRWDBDateTime);
+    setAckDateTime(gInvalidCtiTime);
     setIPAddressOfAckUser("1.1.1.1");
     setUserIdName("Null");
     setNameOfAckPerson("Null");
@@ -267,7 +268,7 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted customer activity area into LMCurtailCustomerActivity: " << getCompanyName() << endl;
+                dout << CtiTime() << " - Inserted customer activity area into LMCurtailCustomerActivity: " << getCompanyName() << endl;
             }
 
             RWDBDatabase db = getDatabase();
@@ -284,12 +285,12 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
                      << getNameOfAckPerson()
                      << getCurtailmentNotes()
                      << getCustomerDemandLevel()
-                     << RWCString( ( getAckLateFlag() ? 'Y': 'N' ) );
+                     << ( ( getAckLateFlag() ? "Y": "N" ) );
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -297,7 +298,7 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -307,7 +308,7 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
         if( conn.isValid() )
@@ -316,14 +317,14 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
             RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
             RWDBUpdater updater = lmCurtailCustomerActivityTable.updater();
 
-            updater << lmCurtailCustomerActivityTable["acknowledgestatus"].assign(getAcknowledgeStatus())
-                    << lmCurtailCustomerActivityTable["ackdatetime"].assign(getAckDateTime())
-                    << lmCurtailCustomerActivityTable["ipaddressofackuser"].assign(getIPAddressOfAckUser())
-                    << lmCurtailCustomerActivityTable["useridname"].assign(getUserIdName())
-                    << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson())
-                    << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes())
+            updater << lmCurtailCustomerActivityTable["acknowledgestatus"].assign(getAcknowledgeStatus()[0])
+                    << lmCurtailCustomerActivityTable["ackdatetime"].assign(toRWDBDT(getAckDateTime()))
+                    << lmCurtailCustomerActivityTable["ipaddressofackuser"].assign(getIPAddressOfAckUser()[0])
+                    << lmCurtailCustomerActivityTable["useridname"].assign(getUserIdName()[0])
+                    << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson()[0])
+                    << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes()[0])
                     << lmCurtailCustomerActivityTable["currentpdl"].assign(getCustomerDemandLevel())
-                    << lmCurtailCustomerActivityTable["acklateflag"].assign(RWCString( (getAckLateFlag() ? 'Y':'N') ));
+                    << lmCurtailCustomerActivityTable["acklateflag"].assign(( (getAckLateFlag() ? 'Y':'N') ));
 
             updater.where(lmCurtailCustomerActivityTable["customerid"]==getCustomerId() &&
                           lmCurtailCustomerActivityTable["curtailreferenceid"]==getCurtailReferenceId());
@@ -331,7 +332,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().data() << endl;
             }
 
             updater.execute( conn );
@@ -339,7 +340,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -354,14 +355,14 @@ void CtiLMCurtailCustomer::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     updateLMCurtailCustomerActivityTable(conn, currentDateTime);
 }
@@ -400,14 +401,14 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << selector.asString().data() << endl;
+                dout << CtiTime() << " - " << selector.asString().data() << endl;
             }
 
             RWDBReader rdr = selector.reader(conn);
 
             if(rdr())
             {
-                RWCString tempBoolString;
+                string tempBoolString;
                 rdr["curtailreferenceid"] >> _curtailreferenceid;
                 rdr["acknowledgestatus"] >> _acknowledgestatus;
                 rdr["ackdatetime"] >> _ackdatetime;
@@ -416,7 +417,7 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
                 rdr["nameofackperson"] >> _nameofackperson;
                 rdr["curtailmentnotes"] >> _curtailmentnotes;
                 rdr["acklateflag"] >> tempBoolString;
-                tempBoolString.toLower();
+                std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
                 setAckLateFlag(tempBoolString=="y"?TRUE:FALSE);
             }
 
@@ -424,7 +425,7 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -432,8 +433,8 @@ void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 // Static Members
 
 // Possible acknowledge statuses
-const RWCString CtiLMCurtailCustomer::UnAcknowledgedAckStatus = "UnAcknowledged";
-const RWCString CtiLMCurtailCustomer::AcknowledgedAckStatus = "Acknowledged";
-const RWCString CtiLMCurtailCustomer::NotRequiredAckStatus = "Not Required";
-const RWCString CtiLMCurtailCustomer::VerbalAckStatus = "Verbal";
+const string CtiLMCurtailCustomer::UnAcknowledgedAckStatus = "UnAcknowledged";
+const string CtiLMCurtailCustomer::AcknowledgedAckStatus = "Acknowledged";
+const string CtiLMCurtailCustomer::NotRequiredAckStatus = "Not Required";
+const string CtiLMCurtailCustomer::VerbalAckStatus = "Verbal";
 

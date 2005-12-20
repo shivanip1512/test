@@ -7,24 +7,26 @@
 *
 * File:   thread_register_data
 *
-* Class:
+* Class:  
 * Date:   9/2/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/08/30 19:48:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-
+ 
 #include <string>
-using namespace std;
+
 
 #include "boost_time.h"
 #include "cticalls.h"
+
+using std::string;
 
 class IM_EX_CTIBASE CtiThreadRegData
 {

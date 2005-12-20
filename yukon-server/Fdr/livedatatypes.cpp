@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.1 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.2 $
+ * DATE         :  $Date: 2005/12/20 17:17:15 $
  */
 
 #include "livedatatypes.h"
@@ -115,9 +115,9 @@ void LiveDataTypes::IccpBase::setupQualityData()
   _qualityClasses.clear();
 
   // read in the strings from CPARMS
-  std::string strMasks = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_MASKS","0x00").data();
-  std::string strPatterns = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_PATTERNS","0x00").data();
-  std::string strClasses = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_CLASSES","NormalQuality").data();
+  std::string strMasks = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_MASKS","0x00").c_str();
+  std::string strPatterns = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_PATTERNS","0x00").c_str();
+  std::string strClasses = _configParameters.getValueAsString("FDR_LIVEDATA_ICCP_QUALITY_CLASSES","NormalQuality").c_str();
 
   // strings are delimited by a comma (and possibly some space)
   const std::string delimiters = ", ";
@@ -179,7 +179,7 @@ void LiveDataTypes::IccpBase::setupQualityData()
     if (qualIter == qualityLookup.end())
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " FDR_LIVEDATA_ICCP_QUALITY_CLASSES has unknown quality: " << temp_str << endl;
+      dout << CtiTime() << " FDR_LIVEDATA_ICCP_QUALITY_CLASSES has unknown quality: " << temp_str << endl;
 
       temp = UnknownQuality;
     }

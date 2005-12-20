@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pthist.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,15 +22,15 @@
 #include "yukon.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
-#include "resolvers.h"
 #include "ctibase.h"
+#include "ctitime.h"
 
 class IM_EX_CTIYUKONDB CtiTablePointHistory : public CtiMemDBObject
 {
 
 protected:
         LONG PointID;
-        RWDBDateTime TimeStamp;
+        CtiTime TimeStamp;
         INT Quality;
         FLOAT Value;
 
@@ -39,7 +39,7 @@ public:
     typedef CtiMemDBObject Inherited;
 
     CtiTablePointHistory();
-    CtiTablePointHistory( LONG pointid, const RWDBDateTime& timestamp,
+    CtiTablePointHistory( LONG pointid, const CtiTime& timestamp,
                           INT quality, FLOAT value );
     CtiTablePointHistory(const CtiTablePointHistory& );
 
@@ -48,7 +48,7 @@ public:
     virtual operator=(const CtiTablePointHistory&);
     virtual operator==(const CtiTablePointHistory&) const;
 
-    virtual RWCString getTableName() const;
+    virtual string getTableName() const;
 
     virtual void Insert();
     virtual void Update();
@@ -60,8 +60,8 @@ public:
     LONG getPointID() const;
     CtiTablePointHistory& setPointID(LONG pointID);
 
-    const RWDBDateTime& getTimeStamp() const;
-    CtiTablePointHistory& setTimeStamp(const RWDBDateTime& timestamp);
+    const CtiTime& getTimeStamp() const;
+    CtiTablePointHistory& setTimeStamp(const CtiTime& timestamp);
 
     INT getQuality() const;
     CtiTablePointHistory& setQuality(INT quality);

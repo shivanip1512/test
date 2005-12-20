@@ -24,8 +24,7 @@
 
 /** include files **/
 #include <windows.h>
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 #include "pointtypes.h"
 #include "dlldefs.h"
 
@@ -41,7 +40,7 @@ typedef enum {
 class IM_EX_FDRBASE CtiFDRPointIdMap
 {
     public:    
-        CtiFDRPointIdMap( long pointID = 0, RWCString & translateName = RWCString(), RWCString & destinationName = RWCString(), FDRDbReloadReason aReason=NotReloaded);
+        CtiFDRPointIdMap( long pointID = 0, string & translateName = string(), string & destinationName = string(), FDRDbReloadReason aReason=NotReloaded);
         ~CtiFDRPointIdMap();
 
         BOOL operator==( const CtiFDRPointIdMap &other ) const;
@@ -52,11 +51,11 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         long                getPointID( void ) const;
         CtiFDRPointIdMap &  setPointID(const long aPointID);
 
-        RWCString           getTranslateName() const;
-        CtiFDRPointIdMap &  setTranslateName(const RWCString & aName);
+        string           getTranslateName() const;
+        CtiFDRPointIdMap &  setTranslateName(const string & aName);
 
-        RWCString           getDestinationName() const;
-        CtiFDRPointIdMap &  setDestinationName(const RWCString & aName);
+        string           getDestinationName() const;
+        CtiFDRPointIdMap &  setDestinationName(const string & aName);
 
         double              getMultiplier( void ) const;
         CtiFDRPointIdMap &  setMultiplier( const double aMultiplier );
@@ -67,8 +66,8 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         bool                isControllable( void ) const;
         CtiFDRPointIdMap &  setControllable( const bool aFlag=true );
 
-        RWTime              getLastTimeStamp ( void ) const;
-        CtiFDRPointIdMap &  setLastTimeStamp ( const RWTime & aTime );
+        CtiTime              getLastTimeStamp ( void ) const;
+        CtiFDRPointIdMap &  setLastTimeStamp ( const CtiTime & aTime );
         
         FDRDbReloadReason   getReasonForReload( void ) const;
         CtiFDRPointIdMap &  setReasonForReload(FDRDbReloadReason aReason=Signaled);
@@ -81,13 +80,13 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         // private data
         long            iPointID;
         CtiPointType_t  iPointType;
-        RWCString       iTranslateName;
+        string       iTranslateName;
         double          iMultiplier;
         double          iOffset;
-        RWTime          iLastTimeStamp;
+        CtiTime          iLastTimeStamp;
 
         // this should be in class of its own but time constraints call DLS
-        RWCString       iDestinationName;
+        string       iDestinationName;
         FDRDbReloadReason  iReasonForReload;
         bool            iControllable;
 };

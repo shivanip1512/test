@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/02/09 16:51:37 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ class IM_EX_PROT CtiTransdataApplication
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
       bool isTransactionComplete( void );
-      void injectData( RWCString str );
+      void injectData( string str );
       void setNextState( void );
       void destroy( void );
       void reinitalize( void );

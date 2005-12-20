@@ -42,18 +42,18 @@ public:
     virtual ~CtiLMProgramBase();
 
     LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
+    const string& getPAOCategory() const;
+    const string& getPAOClass() const;
+    const string& getPAOName() const;
     LONG getPAOType() const;
-    const RWCString& getPAODescription() const;
+    const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     int getStartPriority() const;
     int getStopPriority() const;
-    const RWCString& getControlType() const;
+    const string& getControlType() const;
     LONG getConstraintID() const;
-    const RWCString& getConstraintName() const;
-    const RWCString& getAvailableWeekDays() const;
+    const string& getConstraintName() const;
+    const string& getAvailableWeekDays() const;
     LONG getMaxHoursDaily() const;
     LONG getMaxHoursMonthly() const;
     LONG getMaxHoursSeasonal() const;
@@ -68,24 +68,24 @@ public:
     LONG getProgramState() const; 
     LONG getReductionAnalogPointId() const;
     DOUBLE getReductionTotal() const;
-    const RWDBDateTime& getStartedControlling() const;
-    const RWDBDateTime& getLastControlSent() const;
+    const CtiTime& getStartedControlling() const;
+    const CtiTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
     RWOrdered& getLMProgramControlWindows();
     
     CtiLMProgramBase& setPAOId(LONG id);
-    CtiLMProgramBase& setPAOCategory(const RWCString& category);
-    CtiLMProgramBase& setPAOClass(const RWCString& pclass);
-    CtiLMProgramBase& setPAOName(const RWCString& name);
+    CtiLMProgramBase& setPAOCategory(const string& category);
+    CtiLMProgramBase& setPAOClass(const string& pclass);
+    CtiLMProgramBase& setPAOName(const string& name);
     CtiLMProgramBase& setPAOType(LONG type);
-    CtiLMProgramBase& setPAODescription(const RWCString& description);
+    CtiLMProgramBase& setPAODescription(const string& description);
     CtiLMProgramBase& setDisableFlag(BOOL disable);
     CtiLMProgramBase& setStartPriority(int start_priority);
     CtiLMProgramBase& setStopPriority(int stop_priority);
-    CtiLMProgramBase& setControlType(const RWCString& conttype);
+    CtiLMProgramBase& setControlType(const string& conttype);
     CtiLMProgramBase& setConstraintID(LONG constraintid);
-    CtiLMProgramBase& setConstraintName(const RWCString& constraintname);
-    CtiLMProgramBase& setAvailableWeekDays(const RWCString& availweekdays);
+    CtiLMProgramBase& setConstraintName(const string& constraintname);
+    CtiLMProgramBase& setAvailableWeekDays(const string& availweekdays);
     CtiLMProgramBase& setMaxHoursDaily(LONG daily);
     CtiLMProgramBase& setMaxHoursMonthly(LONG monthly);
     CtiLMProgramBase& setMaxHoursSeasonal(LONG seasonal);
@@ -99,8 +99,8 @@ public:
     CtiLMProgramBase& setProgramStatusPointId(LONG statuspointid);
     CtiLMProgramBase& setProgramState(LONG progstate);
     CtiLMProgramBase& setReductionAnalogPointId(LONG reductionpointid);
-    CtiLMProgramBase& setStartedControlling(const RWDBDateTime& startcont);
-    CtiLMProgramBase& setLastControlSent(const RWDBDateTime& lastcontrol);
+    CtiLMProgramBase& setStartedControlling(const CtiTime& startcont);
+    CtiLMProgramBase& setLastControlSent(const CtiTime& lastcontrol);
     CtiLMProgramBase& setReductionTotal(DOUBLE reduction);
     CtiLMProgramBase& setManualControlReceivedFlag(BOOL manualreceived);
 
@@ -108,7 +108,7 @@ public:
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
 
     virtual void dumpDynamicData();
-    virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
@@ -136,9 +136,9 @@ public:
     // Static Members
 
     // Possible control types
-    static const RWCString AutomaticType;
-    static const RWCString ManualOnlyType;
-    static const RWCString TimedType;
+    static const string AutomaticType;
+    static const string ManualOnlyType;
+    static const string TimedType;
     
     // Possible program states
     static int InactiveState;
@@ -160,18 +160,18 @@ protected:
 private:
     
     LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
+    string _paocategory;
+    string _paoclass;
+    string _paoname;
     LONG _paotype;
-    RWCString _paodescription;
+    string _paodescription;
     BOOL _disableflag;
     int _start_priority;
     int _stop_priority;
-    RWCString _controltype;
+    string _controltype;
     LONG _constraintid;
-    RWCString _constraintname;
-    RWCString _availableweekdays;
+    string _constraintname;
+    string _availableweekdays;
     LONG _maxhoursdaily;
     LONG _maxhoursmonthly;
     LONG _maxhoursseasonal;
@@ -186,8 +186,8 @@ private:
     LONG _programstate;
     LONG _reductionanalogpointid;
     DOUBLE _reductiontotal;
-    RWDBDateTime _startedcontrolling;
-    RWDBDateTime _lastcontrolsent;
+    CtiTime _startedcontrolling;
+    CtiTime _lastcontrolsent;
     BOOL _manualcontrolreceivedflag;
 
     RWOrdered _lmprogramcontrolwindows;

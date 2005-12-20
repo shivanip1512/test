@@ -3,7 +3,6 @@
 
 #include <rw/collect.h>
 #include <rw/collstr.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>

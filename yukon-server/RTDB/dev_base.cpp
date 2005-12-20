@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/12/16 16:24:34 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/20 17:20:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,8 +108,8 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                 status = ControlInhibitedOnDevice;
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                             RWCString(OutMessageTemplate->Request.CommandStr),
-                                                             getName() + RWCString(": ") + FormatError(status),
+                                                             string(OutMessageTemplate->Request.CommandStr),
+                                                             getName() + string(": ") + FormatError(status),
                                                              status,
                                                              OutMessageTemplate->Request.RouteID,
                                                              OutMessageTemplate->Request.MacroOffset,
@@ -152,7 +152,7 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
         EstablishOutMessagePriority( pOM, pReq->getMessagePriority() );
 
         /* Fill out the PIL_ECHO structure elements */
-        strncpy(pOM->Request.CommandStr, pReq->CommandString(), sizeof(pOM->Request.CommandStr) - 1);
+        strncpy(pOM->Request.CommandStr, pReq->CommandString().c_str(), sizeof(pOM->Request.CommandStr) - 1);
 
         pOM->Request.Connection    = pReq->getConnectionHandle();
         pOM->Request.RouteID       = pReq->RouteId();               // This is the current route being done.
@@ -214,7 +214,7 @@ bool CtiDeviceBase::orphanDevicePoint(LONG pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Deleting point id " << pid << " from device " << getName() << endl;
+            dout << CtiTime() << " Deleting point id " << pid << " from device " << getName() << endl;
         }
         status = _pointMgr->orphan(pid);
     }
@@ -241,7 +241,7 @@ CtiPointBase* CtiDeviceBase::getDevicePointEqual(INT id)
     return pPoint;
 }
 
-CtiPointBase* CtiDeviceBase::getDevicePointEqualByName(RWCString pname)
+CtiPointBase* CtiDeviceBase::getDevicePointEqualByName(string pname)
 {
     CtiPoint *pPoint = NULL;
 
@@ -324,19 +324,19 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
                                   RWTPtrSlist< CtiMessage >      &retList,
                                   RWTPtrSlist< OUTMESS >         &outList)
 {
-    RWCString resultString;
+    string resultString;
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "in dev_base ExecuteRequest" << endl;
     }
 
     resultString = getName() + " has no type specific ExecuteRequest Method";
 
     CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                 RWCString(tempOut->Request.CommandStr),
+                                                 string(tempOut->Request.CommandStr),
                                                  resultString,
                                                  NoExecuteRequestMethod,
                                                  tempOut->Request.RouteID,
@@ -354,7 +354,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -367,7 +367,7 @@ CtiTransmitterInfo* CtiDeviceBase::getTrxInfo()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "   ERROR!  Device type " << getType() << " " << getName() << " has no TrxInfo object" << endl;
     }
 
@@ -383,16 +383,16 @@ CtiTransmitterInfo* CtiDeviceBase::initTrxInfo() // Porter side info to setup tr
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "   ERROR!  Device type " << getType() << " " << getName() << " has no TrxInfo object" << endl;
     }
 
     return NULL;
 }
 
-RWCString CtiDeviceBase::getPutConfigAssignment(UINT modifier)
+string CtiDeviceBase::getPutConfigAssignment(UINT modifier)
 {
-    return  RWCString("config not done ") + getName();
+    return  string("config not done ") + getName();
 }
 
 INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
@@ -429,7 +429,7 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
@@ -559,18 +559,18 @@ INT CtiDeviceBase::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return NoLoadProfileScanMethod;
 }
 
-INT CtiDeviceBase::ResultDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceBase::ResultDecode(INMESS*, CtiTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     return NoResultDecodeMethod;
 }
 
-INT CtiDeviceBase::ProcessResult(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     return NoProcessResultMethod;
 }
 
 
-INT CtiDeviceBase::ErrorDecode(INMESS*, RWTime&,  RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceBase::ErrorDecode(INMESS*, CtiTime&,  RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     return NoErrorDecodeMethod;
 }
@@ -644,7 +644,7 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
     bool bStateChange = false;
     bool success = isCommFail;      // On entry, isCommFail is (CommResult == NORMAL)
 
-    RWTime now;
+    CtiTime now;
     INT lastCommCount = _commFailCount;
 
     ++_attemptCount;
@@ -708,7 +708,7 @@ int CtiDeviceBase::incResponsesOnTrxID(int trxid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Response for transmission ID " << trxid << ".  " << getName() << " is expecting " << getCurrentTrxID() << endl;
         }
     }
@@ -782,8 +782,8 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
         status = DEVICEINHIBITED;
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,          // 20050922 CGP.  TargetId should be used in case the target is an MCT, not the CCU. // getID(),
-                                                     RWCString(OutMessage->Request.CommandStr),
-                                                     getName() + RWCString(": ") + FormatError(status),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     getName() + string(": ") + FormatError(status),
                                                      status,
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.MacroOffset,
@@ -839,7 +839,7 @@ bool CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k)
 bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 {
     bool new_record = false;
-    set<CtiTableDynamicPaoInfo>::iterator itr;
+    std::set<CtiTableDynamicPaoInfo>::iterator itr;
 
     itr = _paoInfo.find(info);
 
@@ -861,7 +861,7 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 template <class T>
 bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::Keys k, const T &value)
 {
-    pair<set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
+    std::pair<std::set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
     bool record_added = false;
 
     set_result = s.insert(CtiTableDynamicPaoInfo(paoid, k));
@@ -898,7 +898,7 @@ bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPa
 {
     bool success = false;
 
-    set<CtiTableDynamicPaoInfo>::const_iterator itr;
+    std::set<CtiTableDynamicPaoInfo>::const_iterator itr;
 
     if( (itr = s.find(CtiTableDynamicPaoInfo(paoid, k))) != s.end() )
     {
@@ -931,18 +931,18 @@ bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &desti
 }
 long CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const
 {
-    long l = numeric_limits<long>::min();
+    long l = std::numeric_limits<long>::min();
 
     getInfo(_paoInfo, getID(), k, l);
 
     return l;
 }
 
-bool CtiDeviceBase::getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info)
+bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info)
 {
     bool retval = false;
 
-    set<CtiTableDynamicPaoInfo>::iterator itr;
+    std::set<CtiTableDynamicPaoInfo>::iterator itr;
 
     for( itr = _paoInfo.begin(); itr != _paoInfo.end(); itr++ )
     {
@@ -993,7 +993,7 @@ void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -1008,14 +1008,14 @@ void CtiDeviceBase::clearExclusions()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
 }
 
 
-bool CtiDeviceBase::hasLongScanRate(const RWCString &cmd) const
+bool CtiDeviceBase::hasLongScanRate(const string &cmd) const
 {
     return false;
 }
@@ -1035,7 +1035,7 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -1052,12 +1052,12 @@ void CtiDeviceBase::setExecuting(bool set)
     return;
 }
 
-bool CtiDeviceBase::isExecutionProhibited(const RWTime &now, LONG did)
+bool CtiDeviceBase::isExecutionProhibited(const CtiTime &now, LONG did)
 {
     return _exclusion.isExecutionProhibited(now, did);
 }
 
-size_t CtiDeviceBase::setExecutionProhibited(unsigned long id, RWTime& releaseTime)
+size_t CtiDeviceBase::setExecutionProhibited(unsigned long id, CtiTime& releaseTime)
 {
     return _exclusion.setExecutionProhibited(id,releaseTime);
 }
@@ -1073,7 +1073,7 @@ bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         delete OutMessage;
@@ -1091,10 +1091,10 @@ CtiMessage* CtiDeviceBase::rsvpToDispatch(bool clearMessage)
  *  This method should return the expected completion time for this device.  If the device has no special behavior this
  *  method may return YUKONEOT.  This is equivalent to saying that it is executing until we say it is not executing.
  */
-RWTime CtiDeviceBase::selectCompletionTime() const
+CtiTime CtiDeviceBase::selectCompletionTime() const
 {
-    RWTime now;
-    RWTime bestTime(YUKONEOT);
+    CtiTime now;
+    CtiTime bestTime(YUKONEOT);
 
     if( now < _exclusion.getExecutionGrantExpires() && bestTime > _exclusion.getExecutionGrantExpires() )
     {
@@ -1155,21 +1155,21 @@ inline ULONG CtiDeviceBase::getUniqueIdentifier() const
     #endif
 }
 
-INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, RWTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, CtiTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
 {
     int index = (rwt.hour()*60 + rwt.minute()) / 5;
     _submittal.inc(index,bumpCnt);
     _submittal.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
     return _submittal.get(index);
 }
-INT CtiDeviceBase::incQueueProcessed(int bumpCnt, RWTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
+INT CtiDeviceBase::incQueueProcessed(int bumpCnt, CtiTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
 {
     int index = (rwt.hour()*60 + rwt.minute()) / 5;
     _processed.inc(index,bumpCnt);
     _processed.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
     return _processed.get(index);
 }
-INT CtiDeviceBase::setQueueOrphans(int num, RWTime &rwt)          // Number of queue entries remaining on device following this pass.
+INT CtiDeviceBase::setQueueOrphans(int num, CtiTime &rwt)          // Number of queue entries remaining on device following this pass.
 {
     int index = (rwt.hour()*60 + rwt.minute()) / 5;
     _orphaned.set(index,num);

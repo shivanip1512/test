@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_stats.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_stats.h"
 #include "logger.h"
+#include "ctitime.h"
+#include "ctidate.h"
 
 CtiTableDeviceStatistics::CtiTableDeviceStatistics() :
 _deviceID(-1),
@@ -115,29 +117,29 @@ CtiTableDeviceStatistics& CtiTableDeviceStatistics::setDLCErrors( const INT aDLC
     return *this;
 }
 
-RWTime  CtiTableDeviceStatistics::getStartTime() const
+CtiTime  CtiTableDeviceStatistics::getStartTime() const
 {
     return StartTime;
 }
 
-CtiTableDeviceStatistics& CtiTableDeviceStatistics::setStartTime( const RWTime& aStartTime )
+CtiTableDeviceStatistics& CtiTableDeviceStatistics::setStartTime( const CtiTime& aStartTime )
 {
     StartTime = aStartTime;
     return *this;
 }
 
-RWTime  CtiTableDeviceStatistics::getStopTime() const
+CtiTime  CtiTableDeviceStatistics::getStopTime() const
 {
     return StopTime;
 }
 
-CtiTableDeviceStatistics& CtiTableDeviceStatistics::setStopTime( const RWTime& aStopTime )
+CtiTableDeviceStatistics& CtiTableDeviceStatistics::setStopTime( const CtiTime& aStopTime )
 {
     StopTime = aStopTime;
     return *this;
 }
 
-RWCString CtiTableDeviceStatistics::getTableName()
+string CtiTableDeviceStatistics::getTableName()
 {
     return "DeviceStatistics";
 }
@@ -146,7 +148,7 @@ RWCString CtiTableDeviceStatistics::getTableName()
 void CtiTableDeviceStatistics::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("Device");
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     keyTable["deviceid"] <<
@@ -166,7 +168,7 @@ void CtiTableDeviceStatistics::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTableDeviceStatistics::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -208,7 +210,7 @@ RWDBStatus CtiTableDeviceStatistics::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -244,7 +246,7 @@ RWDBStatus CtiTableDeviceStatistics::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -254,8 +256,8 @@ RWDBStatus CtiTableDeviceStatistics::Insert()
     getCommLineErrors() <<
     getSystemErrors() <<
     getDLCErrors() <<
-    (RWDate) getStartTime()  <<
-    (RWDate) getStopTime();
+    CtiDate(getStartTime())  <<
+    CtiDate(getStopTime());
 
     if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
@@ -274,19 +276,19 @@ RWDBStatus CtiTableDeviceStatistics::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["statistictype"].assign(desolveStatisticsType(getType() )) <<
+    table["statistictype"].assign(desolveStatisticsType(getType() ).c_str()) <<
     table["attempts"].assign(getAttempts() ) <<
     table["comlineerrors"].assign(getCommLineErrors() ) <<
     table["systemerrors"].assign(getSystemErrors() ) <<
     table["dlcerrors"].assign(getDLCErrors() )<<
-    table["startdatetime"].assign(getStartTime() ) <<
-    table["stopdatetime"].assign(getStopTime() );
+    table["startdatetime"].assign(toRWDBDT(getStartTime()) ) <<
+    table["stopdatetime"].assign(toRWDBDT(getStopTime()) );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -303,7 +305,7 @@ RWDBStatus CtiTableDeviceStatistics::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

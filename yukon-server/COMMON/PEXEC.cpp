@@ -175,7 +175,7 @@ IM_EX_CTIBASE INT PortPipeInit (USHORT Wait)
          if(!(++j % 60))
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could not connect to Port Control " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Could not connect to Port Control " << i << "   " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
 
          CTISleep(1000L);

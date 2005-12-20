@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_cicust.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,16 +23,15 @@
 #include <windows.h>
 #include <set>
 #include <vector>
-using namespace std;
-
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
 #include "dlldefs.h"
 #include "yukon.h"
 
+using std::vector;
+using std::set;
 
 class IM_EX_CTIYUKONDB CtiTableCICustomerBase : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
@@ -73,7 +72,7 @@ public:
    void dumpRecipients() const;
    void dump() const;
 
-   static RWCString getTableName();
+   static string getTableName();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();
    virtual RWDBStatus Restore();

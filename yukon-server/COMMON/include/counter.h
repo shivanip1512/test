@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.7 $
- * DATE         :  $Date: 2004/12/14 22:21:55 $
+ * REVISION     :  $Revision: 1.8 $
+ * DATE         :  $Date: 2005/12/20 17:25:49 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -20,9 +20,10 @@
 
 
 #include <map>
-using namespace std;
 #include "guard.h"
 #include "mutex.h"
+
+using std::map;
 
 class IM_EX_CTIBASE CtiCounter
 {

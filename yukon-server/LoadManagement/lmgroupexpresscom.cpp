@@ -56,13 +56,13 @@ CtiLMGroupExpresscom::~CtiLMGroupExpresscom()
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control xcom shed ");
+    string controlString("control xcom shed ");
     controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -77,7 +77,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRat
 CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
-    RWCString controlString = RWCString("control xcom cycle ");
+    string controlString("control xcom cycle ");
     _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
@@ -89,7 +89,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -103,7 +103,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
 CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
-    RWCString controlString = RWCString("control xcom cycle ");
+    string controlString("control xcom cycle ");
     _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
@@ -116,7 +116,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -129,13 +129,13 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control xcom shed ");
+    string controlString("control xcom shed ");
     controlString += buildShedString(shedTime);
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -148,13 +148,13 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 { 
-    RWCString controlString = RWCString("control xcom shed ");
+    string controlString("control xcom shed ");
     controlString += buildShedString(offTime-60);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -165,14 +165,14 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
     Creates a new CtiRequestMsg pointer for a thermostat program gear with
     all the appropriate settings.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
                                                               LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                               LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                               LONG valueTE, LONG valueTF, int priority) const
 {
-    RWCString controlString = RWCString("control xcom setpoint ");
+    string controlString("control xcom setpoint ");
 
-    settings.toUpper();
+    std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
     if( settings.length() > 0 && settings[(size_t)0]=='D' )
     {
         controlString += "delta ";
@@ -294,7 +294,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }

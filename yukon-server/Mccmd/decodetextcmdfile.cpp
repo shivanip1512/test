@@ -34,10 +34,11 @@ Function #  Comment in the file, will get moved to the exported file if needed
 */
 #include "yukon.h"
 #include <rw/ctoken.h>
-#include <rw/rwdate.h>
+#include "ctidate.h"
 
 #include <vector>
 #include "decodeTextCmdFile.h"
+#include "rwutil.h"
 
 /***************************
 *
@@ -50,9 +51,9 @@ Function #  Comment in the file, will get moved to the exported file if needed
 // we seem to go back and forth as to whether 0 is valid so this lets me make the change easily
 #define XCOM_ADDRESS_START 0
 
-bool validateAndDecodeLine( RWCString & line, int aProtocolFlag, RWCollectableString* programming, RWCString aFileName);
+bool validateAndDecodeLine( string & line, int aProtocolFlag, RWCollectableString* programming, string aFileName);
 
-int decodeTextCommandFile(const RWCString& fileName, 
+int decodeTextCommandFile(const string& fileName, 
                                 int aCommandsToPerform,
                                 int aProtocolFlag, 
                                 RWOrdered* commandList)
@@ -60,15 +61,15 @@ int decodeTextCommandFile(const RWCString& fileName,
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
 	char command;
-	RWCString serialNum;
-	RWCString programming;
+	string serialNum;
+	string programming;
     int lineCnt=0, cmdCnt=0;
     int retVal=NORMAL;
 
     if( commandList == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Invalid use of command decodeTextCommandFile"<< endl;
+        dout << CtiTime() << " Invalid use of command decodeTextCommandFile"<< endl;
         dout << "             second parameter commandList cannot be NULL " << endl;
         retVal = TEXT_CMD_FILE_COMMAND_LIST_INVALID;
     }
@@ -76,20 +77,20 @@ int decodeTextCommandFile(const RWCString& fileName,
     {
                                    
         // open file               
-        if( (fptr = fopen( fileName.data(), "r")) == NULL )
+        if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
         {
             retVal = TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE;
         }
         else
         {
             // might be overkill but I'd like to see if it works
-            vector<RWCString>     commandVector;
-            vector<RWCString>     logVector;
+            vector<string>     commandVector;
+            vector<string>     logVector;
 
             // load list in the command vector
             while ( fgets( (char*) workBuffer, 500, fptr) != NULL )
             {
-                RWCString entry (workBuffer);
+                string entry (workBuffer);
                 commandVector.push_back (entry);
             }
 
@@ -162,7 +163,7 @@ int decodeTextCommandFile(const RWCString& fileName,
     return retVal;
 }
 
-bool outputLogFile (vector<RWCString> &aLog)
+bool outputLogFile (vector<string> &aLog)
 {
     HANDLE logFileHandle,importFileHandle;
     ULONG fileSize,bytesRead,bytesWritten;
@@ -175,9 +176,9 @@ bool outputLogFile (vector<RWCString> &aLog)
     if (aLog.size())
     {
         sprintf (newFileName,"..\\export\\sent-%02d-%02d-%04d.txt",
-                 RWDate().month(),
-                 RWDate().dayOfMonth(),
-                 RWDate().year());
+                 CtiDate().month(),
+                 CtiDate().dayOfMonth(),
+                 CtiDate().year());
 
         // create or open file of the day
         logFileHandle = CreateFile (newFileName,
@@ -201,7 +202,7 @@ bool outputLogFile (vector<RWCString> &aLog)
                                              NULL);
                 {
                     CtiLockGuard< CtiLogger > guard(dout);
-                    dout << RWTime() << " - Log file " << RWCString (newFileName) << " is locked "<< endl;
+                    dout << CtiTime() << " - Log file " << string (newFileName) << " is locked "<< endl;
                 }
                 cnt++;
                 Sleep (1000);
@@ -229,7 +230,7 @@ bool outputLogFile (vector<RWCString> &aLog)
                 retCode=SetFilePointer(logFileHandle,0,NULL,FILE_END);
                 retCode=SetEndOfFile (logFileHandle);
                 memset (workString, '\0',500);
-                strcpy (workString,aLog[lineCnt].data());
+                strcpy (workString,aLog[lineCnt].c_str());
                 if (workString[aLog[lineCnt].length()-1] == '\n')
                 {
                     workString[aLog[lineCnt].length()-1] = '\r';
@@ -250,7 +251,7 @@ bool outputLogFile (vector<RWCString> &aLog)
     }
     return retVal;
 }
-bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCString> &aCmdVector)
+bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &aCmdVector)
 {
     HANDLE tmpFileHandle,importFileHandle;
     ULONG fileSize,bytesRead,bytesWritten;
@@ -263,9 +264,9 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
     if (aCmdVector.size())
     {
         sprintf (newFileName,"..\\export\\ctitmp%02d%02d%04d.txt",
-                 RWDate().month(),
-                 RWDate().dayOfMonth(),
-                 RWDate().year());
+                 CtiDate().month(),
+                 CtiDate().dayOfMonth(),
+                 CtiDate().year());
 
         // create or open file of the day
         tmpFileHandle = CreateFile (newFileName,
@@ -289,7 +290,7 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
                                              NULL);
                 {
                     CtiLockGuard< CtiLogger > guard(dout);
-                    dout << RWTime() << " - tmp file " << RWCString (newFileName) << " is locked "<< endl;
+                    dout << CtiTime() << " - tmp file " << string (newFileName) << " is locked "<< endl;
                 }
                 cnt++;
                 Sleep (1000);
@@ -318,7 +319,7 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
                 retCode=SetFilePointer(tmpFileHandle,0,NULL,FILE_END);
                 retCode=SetEndOfFile (tmpFileHandle);
                 memset (workString, '\0',500);
-                strcpy (workString,aCmdVector[lineCnt].data());
+                strcpy (workString,aCmdVector[lineCnt].c_str());
 
                 if (workString[aCmdVector[lineCnt].length()-1] == '\n')
                 {
@@ -337,14 +338,14 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
             CloseHandle (tmpFileHandle);
 
             // loop on the copy
-            CopyFile (newFileName, aFileName, false);
+            CopyFile(newFileName, aFileName.c_str(), false);
             cnt =0;
             while ( (GetLastError() == ERROR_SHARING_VIOLATION || GetLastError() == ERROR_LOCK_VIOLATION) && cnt < 30)
             {
-                CopyFile (newFileName, aFileName, false);
+                CopyFile (newFileName, aFileName.c_str(), false);
                     {
                         CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " - original file " << RWCString (aFileName) << " is locked "<< endl;
+                        dout << CtiTime() << " - original file " << string (aFileName) << " is locked "<< endl;
                     }
                     cnt++;
                     Sleep (1000);
@@ -362,30 +363,34 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
     }
     else
     {
-        DeleteFile (aFileName);
+        DeleteFile (aFileName.c_str());
     }
     return retVal;
 }
 
 
 
-bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableString* programming, RWCString aFileName)
+bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableString* programming, string aFileName)
 {
-	RWCString serialNum;
+	string serialNum;
 	bool retCode = true;
     
-    input.toLower();
+	std::transform(input.begin(), input.end(), input.begin(), tolower);
 
-    RWCTokenizer cmdLine(input);           // Tokenize the string a
-    RWCString tempString1;                // Will receive each token
+    boost::char_separator<char> sep(",\r\n");
+    Boost_char_tokenizer cmdLine(input, sep);
 
-    if (!(tempString1 = cmdLine(",\r\n")).isNull())
+    //RWCTokenizer cmdLine(input);           // Tokenize the string a
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
+    string tempString1 = *tok_iter;                // Will receive each token
+
+    if (!tempString1.empty())
     {
         // check for a comment
-        if (tempString1.data()[0] != '#')
+        if (tempString1[0] != '#')
         {
             // just a comment, don't do anything
-            switch (atoi (tempString1))
+            switch (atoi (tempString1.c_str()))
             {
                 case 1:
                     {
@@ -397,11 +402,13 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         * porter handles which is which based on the group
                         *****************************
                         */
-                        if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                        tempString1 = *(++tok_iter);
+                        if (!tempString1.empty())
                         {
                             serialNum = tempString1;
+                            tempString1 = *(++tok_iter);
 
-                            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                            if (!tempString1.empty())
                             {
                                 /*************************
                                 * output must look like this
@@ -412,11 +419,11 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                 */
 
                                 // do a select on the group before adding the serial number
-                                *programming = RWCString ("set MessagePriority 5 ; PutConfig serial ");
-                                *programming += serialNum;
-                                *programming += RWCString (" template '");
-                                *programming += RWCString (tempString1);
-                                *programming += RWCString ("'");
+                                *programming = "set MessagePriority 5 ; PutConfig serial ";
+                                *programming += serialNum.c_str();
+                                *programming += " template '";
+                                *programming += tempString1.c_str();
+                                *programming += "'";
                             }
                             else
                             {
@@ -436,37 +443,39 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         * format:  2,serial #,in|out[,hours:#][,load:]
                         *****************************
                         */
-                        if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                        tempString1 = *(++tok_iter);
+                        if (!tempString1.empty())
                         {
                             serialNum = tempString1;
+                            tempString1 = *(++tok_iter);
 
-                            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                            if (!tempString1.empty())
                             {
                                 if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL)
                                 {
-                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig serial ");
+                                    *programming = "set MessagePriority 7 ; PutConfig serial ";
                                 }
                                 else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM)
                                 {
-                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig xcom serial ");
+                                    *programming = "set MessagePriority 7 ; PutConfig xcom serial ";
                                 }
                                 else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_VERSACOM)
                                 {
-                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig versacom serial ");
+                                    *programming =  "set MessagePriority 7 ; PutConfig versacom serial ";
                                 }
                                 else
                                 {
-                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig serial ");
+                                    *programming =  ("set MessagePriority 7 ; PutConfig serial ");
                                 }
 
-                                if (tempString1.contains("in"))
+                                if (tempString1.find("in")!=string::npos)
                                 {
-                                    *programming += serialNum;
+                                    *programming += serialNum.c_str();
                                     *programming += " service in";
                                 }
-                                else if (tempString1.contains("out"))
+                                else if (tempString1.find("out")!=string::npos)
                                 {
-                                    *programming += serialNum;
+                                    *programming += serialNum.c_str();
                                     *programming += " service out";
                                 }
                                 else
@@ -475,41 +484,43 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                 }
 
                                 // everything from now on is optional
-                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                tempString1 = *(++tok_iter);
+                                if (!tempString1.empty())
                                 {
                                     // check for a timeout
-                                    if (tempString1.contains("offhours:"))
+                                    if (tempString1.find("offhours:")!=string::npos)
                                     {
-                                        int colon = tempString1.first(':');
+                                        int colon = tempString1.find_first_of(':');
 
                                         if( colon !=RW_NPOS )
                                         {
-                                            tempString1.replace(colon,1,' ');
+                                            tempString1.replace(colon,1," ");
                                             *programming += " temp ";
-                                            *programming += tempString1;
+                                            *programming += tempString1.c_str();
                                         }
                                     }
-                                    else if (tempString1.contains("temp"))
+                                    else if (tempString1.find("temp")!=string::npos)
                                     {
                                         *programming += " temp ";
 
                                         // see if offhours was after this
-                                        if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                        tempString1 = *(++tok_iter);
+                                        if (!tempString1.empty())
                                         {
-                                            if (tempString1.contains("offhours:"))
+                                            if (tempString1.find("offhours:")!=string::npos)
                                             {
-                                                int colon = tempString1.first(':');
+                                                int colon = tempString1.find_first_of(':');
 
                                                 if( colon !=RW_NPOS )
                                                 {
-                                                    tempString1.replace(colon,1,' ');
-                                                    *programming += tempString1;
+                                                    tempString1.replace(colon,1," ");
+                                                    *programming += tempString1.c_str();
                                                 }
                                             }
                                             else
                                             {
                                                 CtiLockGuard< CtiLogger > guard(dout);
-                                                dout << RWTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                                dout << CtiTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
                                                 retCode = false;
                                             }
                                         }
@@ -517,7 +528,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                     else
                                     {
                                         CtiLockGuard< CtiLogger > guard(dout);
-                                        dout << RWTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                        dout << CtiTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
                                         retCode = false;
                                     }
                                 }
@@ -546,36 +557,39 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
                             (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_VERSACOM))
                         {
-                            RWCString utilityAddr;
-                            RWCString sectionAddr;
-                            RWCString classAddr("class ");
-                            RWCString divisionAddr("division ");
+                            string utilityAddr;
+                            string sectionAddr;
+                            string classAddr("class ");
+                            string divisionAddr("division ");
                             bool haveUtility=false, haveSection=false,firstClass=true,firstDivision=true;
+
+                            tempString1 = *(++tok_iter);
     
-                            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                            if (!tempString1.empty())
                             {
                                 serialNum = tempString1;
+                                tempString1 = *(++tok_iter);
     
-                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                if (!tempString1.empty())
                                 {
                                     bool continueFlag = true;
                                     while (continueFlag)
                                     {
-                                        if (tempString1.contains("u"))
+                                        if (tempString1.find("u")!=string::npos)
                                         {
                                             haveUtility = true;
-                                            tempString1 = tempString1.strip (RWCString::leading,'u');
-                                            utilityAddr = RWCString ("utility ");
+                                            tempString1 = trim_left(tempString1,"u");
+                                            utilityAddr = string ("utility ");
                                             utilityAddr += tempString1;
                                         }
-                                        else if (tempString1.contains("s"))
+                                        else if (tempString1.find("s")!=string::npos)
                                         {
                                             haveSection = true;
-                                            tempString1 = tempString1.strip (RWCString::leading,'s');
-                                            sectionAddr = RWCString ("section ");
+                                            tempString1 = trim_left(tempString1,"s");
+                                            sectionAddr = string ("section ");
                                             sectionAddr += tempString1;
                                         }
-                                        else if (tempString1.contains ("c"))
+                                        else if (tempString1.find ("c"))
                                         {
                                             // we have a class address
                                             if (firstClass)
@@ -585,13 +599,13 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             }
                                             else
                                             {
-                                                classAddr += RWCString (",");
+                                                classAddr += string (",");
                                             }
-                                            tempString1 = tempString1.strip (RWCString::leading,'c');
+                                            tempString1 = trim_left(tempString1,"c");
                                             classAddr += tempString1;
     
                                         }
-                                        else if (tempString1.contains ("d"))
+                                        else if (tempString1.find ("d"))
                                         {
                                             // we have a division address
                                             if (firstDivision)
@@ -601,13 +615,15 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             }
                                             else
                                             {
-                                                divisionAddr += RWCString (",");
+                                                divisionAddr += string (",");
                                             }
-                                            tempString1 = tempString1.strip (RWCString::leading,'d');
+                                            tempString1 = trim_left(tempString1,"d");
                                             divisionAddr += tempString1;
                                         }
+
+                                        tempString1 = *(++tok_iter);
     
-                                        if ((tempString1 = cmdLine(",\r\n")).isNull())
+                                        if (tempString1.empty())
                                             continueFlag = false;
                                     }
     
@@ -615,30 +631,30 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                     if ((!firstDivision) || (!firstClass) || (haveSection) || (haveUtility))
                                     {
                                         *programming = "set MessagePriority 5 ; PutConfig versacom serial ";
-                                        *programming +=serialNum;
+                                        *programming +=serialNum.c_str();
     
                                         if (haveUtility)
                                         {
                                             *programming += " ";
-                                            *programming += utilityAddr;
+                                            *programming += utilityAddr.c_str();
                                         }
     
                                         if (haveSection)
                                         {
                                             *programming += " ";
-                                            *programming += sectionAddr;
+                                            *programming += sectionAddr.c_str();
                                         }
     
                                         if (!firstClass)
                                         {
                                             *programming += " ";
-                                            *programming += classAddr;
+                                            *programming += classAddr.c_str();
                                         }
     
                                         if (!firstDivision)
                                         {
                                             *programming += " ";
-                                            *programming += divisionAddr;
+                                            *programming += divisionAddr.c_str();
                                         }
                                     }
                                     else
@@ -676,13 +692,13 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         * then a load number must be included
                         *****************************
                         */
-                        RWCString currentCmd;
+                        string currentCmd;
                         USHORT feeder=0, splinterCnt=0, programCnt=0, loadCnt=0;
 
                         if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
                             (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM))
                         {
-                            currentCmd = RWCString("set MessagePriority 5 ; PutConfig xcom assign serial ");
+                            currentCmd = string("set MessagePriority 5 ; PutConfig xcom assign serial ");
                             bool haveSomething=false;
                             bool haveFeeder=false;
                             bool haveLoad=false;
@@ -690,30 +706,34 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                             bool haveSplinter=false;
                             bool invalidSPID=false, invalidGEO=false, invalidSub=false,invalidFeeder=false,invalidZip=false;
                             bool invalidUser=false, invalidProgram=false, invalidSplinter=false;
-                            RWCString load,program,splinter,serialNum;
+                            string load,program,splinter,serialNum;
                             CHAR buffer[20];
                             int lastLoad=0;
                             ULONG tmpAddress;
 
                             memset (&buffer, '\0', 20);
+
+                            tempString1 = *(++tok_iter);
                             
-                            if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                            if (!tempString1.empty())
                             {
                                 currentCmd += tempString1;
                                 serialNum = tempString1;
+
+                                tempString1 = *(++tok_iter);
     
-                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                if (!tempString1.empty())
                                 {
                                     bool continueFlag = true;
                                     while (continueFlag)
                                     {
-                                        tempString1 = tempString1.strip(RWCString::both,' ');
+                                        tempString1 = trim(tempString1);
 
-                                        if (tempString1.contains("spid"))
+                                        if (tempString1.find("spid")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,5);
-                                            tmpAddress = atoi(tempString1.data());
+                                            tempString1 = tempString1.erase (0,5);
+                                            tmpAddress = atoi(tempString1.c_str());
                                             if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
                                             {
                                                 invalidSPID = true;
@@ -723,11 +743,11 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                 currentCmd += " s " + tempString1;
                                             }
                                         }
-                                        else if (tempString1.contains("geo"))
+                                        else if (tempString1.find("geo")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,4);
-                                            tmpAddress = atoi(tempString1.data());
+                                            tempString1 = tempString1.erase (0,4);
+                                            tmpAddress = atoi(tempString1.c_str());
                                             if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
                                             {
                                                 invalidGEO = true;
@@ -738,11 +758,11 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             }
 
                                         }
-                                        else if (tempString1.contains("sub"))
+                                        else if (tempString1.find("sub")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,4);
-                                            tmpAddress = atoi(tempString1.data());
+                                            tempString1 = tempString1.erase (0,4);
+                                            tmpAddress = atoi(tempString1.c_str());
                                             if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
                                             {
                                                 invalidSub = true;
@@ -753,31 +773,31 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             }
 
                                         }
-                                        else if (tempString1.contains("feeder"))
+                                        else if (tempString1.find("feeder")!=string::npos)
                                         {
                                             haveSomething = true;
                                             haveFeeder = true;
-                                            tempString1 = tempString1.remove (0,6);
-                                            if (atoi (tempString1.data()) != 0)
+                                            tempString1 = tempString1.erase (0,6);
+                                            if (atoi (tempString1.c_str()) != 0)
                                             {
-                                                tmpAddress = atoi (tempString1.data());
+                                                tmpAddress = atoi (tempString1.c_str());
                                                 if ((tmpAddress < 1) || (tmpAddress > 16))
                                                 {
                                                     invalidFeeder = true;
                                                 }
                                                 else
                                                 {
-                                                    feeder |= (0x0001 << ((atoi (tempString1.data())-1)));
+                                                    feeder |= (0x0001 << ((atoi (tempString1.c_str())-1)));
                                                 }
                                             }
 
-                                            //feeder |= setExpresscomFeederBit (atoi (tempString1.data()));
+                                            //feeder |= setExpresscomFeederBit (atoi (tempString1.c_str()));
                                         }
-                                        else if (tempString1.contains("zip"))
+                                        else if (tempString1.find("zip")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,4);
-                                            tmpAddress = atoi(tempString1.data());
+                                            tempString1 = tempString1.erase (0,4);
+                                            tmpAddress = atoi(tempString1.c_str());
                                             if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 16777214)
                                             {
                                                 invalidZip = true;
@@ -787,11 +807,11 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                 currentCmd += " z " + tempString1;
                                             }
                                         }
-                                        else if (tempString1.contains("user"))
+                                        else if (tempString1.find("user")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,5);
-                                            tmpAddress = atoi(tempString1.data());
+                                            tempString1 = tempString1.erase (0,5);
+                                            tmpAddress = atoi(tempString1.c_str());
                                             if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
                                             {
                                                 invalidUser = true;
@@ -801,15 +821,22 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                 currentCmd += " u " + tempString1;
                                             }
                                         }
-                                        else if (tempString1.contains("load"))
+                                        else if (tempString1.find("load")!=string::npos)
                                         {
                                             haveSomething = true;
-                                            RWCString workString;
-                                            RWCTokenizer subCmd(tempString1);
+                                            string workString;
 
-                                            while(!(workString = subCmd(" ")).isNull())
+                                            //RWCTokenizer subCmd(tempString1);
+                                            boost::char_separator<char> sep(" ");
+                                            Boost_char_tokenizer subCmd(tempString1, sep);
+                                            Boost_char_tokenizer::iterator sub_tok_iter = subCmd.begin();
+
+                                            workString = *sub_tok_iter;
+
+
+                                            while(!workString.empty())
                                             {
-                                                if (workString.contains("load"))
+                                                if (workString.find("load")!=string::npos)
                                                 {
                                                     loadCnt++;
                                                     if (!haveLoad)
@@ -822,19 +849,21 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                         load += ",";
                                                     }
 
-                                                    if (!(workString = subCmd(" ")).isNull())
+                                                    workString = *(++sub_tok_iter);
+
+                                                    if (!workString.empty())
                                                     {
-                                                        if (lastLoad < atoi(workString.data()))
+                                                        if (lastLoad < atoi(workString.c_str()))
                                                         {
                                                             load += workString;
-                                                            lastLoad = atoi(workString.data());
+                                                            lastLoad = atoi(workString.c_str());
 
                                                         }
                                                         else
                                                         {
                                                             {
                                                                 CtiLockGuard< CtiLogger > guard(dout);
-                                                                dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                                                dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
                                                                 dout << " --- Loads must be addressed in numerical order " << endl;
                                                                 dout << " --- " << input << endl;
                                                                 loadCnt--;
@@ -842,7 +871,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                         }
                                                     }
                                                 }
-                                                else if (workString.contains("p"))
+                                                else if (workString.find("p")!=string::npos)
                                                 {
                                                     programCnt++;
                                                     if (!haveProgram)
@@ -857,9 +886,10 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
 
                                                     if (workString.length() < 2)
                                                     {
-                                                        if (!(workString = subCmd(" ")).isNull())
+                                                        workString = *(++sub_tok_iter);
+                                                        if (!workString.empty())
                                                         {
-                                                            tmpAddress = atoi(workString.data());
+                                                            tmpAddress = atoi(workString.c_str());
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
                                                             {
@@ -875,7 +905,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                     {
                                                         if (workString.length() > 1)
                                                         {
-                                                            memcpy (&buffer, &workString.data()[1],workString.length()-1);
+                                                            memcpy (&buffer, &workString[1],workString.length()-1);
                                                             tmpAddress = atoi(buffer);
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
@@ -884,7 +914,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                             }
                                                             else
                                                             {
-                                                                program += RWCString(buffer);
+                                                                program += string(buffer);
                                                             }
                                                         }
                                                         else
@@ -895,7 +925,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                         }
                                                     }
                                                 }
-                                                else if (workString.contains("s"))
+                                                else if (workString.find("s")!=string::npos)
                                                 {
                                                     splinterCnt++;
                                                     if (!haveSplinter)
@@ -910,9 +940,10 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
 
                                                     if (workString.length() < 2)
                                                     {
-                                                        if (!(workString = subCmd(" ")).isNull())
+                                                        workString = *(++sub_tok_iter);
+                                                        if (!workString.empty())
                                                         {
-                                                            tmpAddress = atoi(workString.data());
+                                                            tmpAddress = atoi(workString.c_str());
                                                             //check address level
                                                             if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
                                                             {
@@ -928,7 +959,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                     {
                                                         if (workString.length() > 1)
                                                         {
-                                                            memcpy (&buffer, &workString.data()[1],workString.length()-1);
+                                                            memcpy (&buffer, &workString[1],workString.length()-1);
 
                                                             tmpAddress = atoi(buffer);
                                                             //check address level
@@ -938,7 +969,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                             }
                                                             else
                                                             {
-                                                                splinter += RWCString(buffer);
+                                                                splinter += string(buffer);
                                                             }
                                                         }
                                                         else
@@ -952,7 +983,9 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             }
                                         }
 
-                                        if ((tempString1 = cmdLine(",\r\n")).isNull())
+                                        tempString1 = *(++tok_iter);
+
+                                        if (tempString1.empty())
                                             continueFlag = false;
                                     }
 
@@ -962,7 +995,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                         if (haveFeeder)
                                         {
                                             currentCmd += " f ";
-                                            currentCmd += RWCString (ltoa(feeder,buffer,10));
+                                            currentCmd += string (ltoa(feeder,buffer,10));
                                         }
                                         if (haveLoad)
                                         {
@@ -1030,13 +1063,13 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
 
                                             if  (sendCmd)
                                             {
-                                                *programming = currentCmd;
+                                                *programming = currentCmd.c_str();
                                             }
                                             else
                                             {
                                                 {
                                                     CtiLockGuard< CtiLogger > guard(dout);
-                                                    dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                                    dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
                                                     dout << " --- Number of addressed loads/splinters/programs must be equal " << endl;
                                                     dout << " --- " << input << endl;
                                                 }
@@ -1051,27 +1084,27 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                     }
                                     else
                                     {
-                                        RWCString address;
+                                        string address;
 
                                         if (invalidSPID)
-                                            address += RWCString (" Spid ");
+                                            address += string (" Spid ");
                                         if (invalidGEO)
-                                            address += RWCString (" Geo ");
+                                            address += string (" Geo ");
                                         if (invalidSub)
-                                            address += RWCString (" Substation ");
+                                            address += string (" Substation ");
                                         if (invalidFeeder)
-                                            address += RWCString (" Feeder ");
+                                            address += string (" Feeder ");
                                         if (invalidZip)
-                                            address += RWCString (" Zip ");
+                                            address += string (" Zip ");
                                         if (invalidUser)
-                                            address += RWCString (" User ");
+                                            address += string (" User ");
                                         if (invalidProgram)
-                                            address += RWCString (" Program ");
+                                            address += string (" Program ");
                                         if (invalidSplinter)
-                                            address += RWCString (" Splinter ");
+                                            address += string (" Splinter ");
                                         {
                                             CtiLockGuard< CtiLogger > guard(dout);
-                                            dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                            dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
                                             dout << " --- Address is out of range :" << address << endl;
                                             dout << " --- " << input << endl;
                                         }
@@ -1111,15 +1144,28 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
     return retCode;
 }   
 
-bool decodeDsm2Lines( RWCString &aFunction, 
-                      RWCString &aRoute,
-                      RWCString &aSerialNum,
-                      RWCString &aCmd,
+bool decodeDsm2Lines( string &aFunction, 
+                      string &aRoute,
+                      string &aSerialNum,
+                      string &aCmd,
                       RWCollectableString* programming)
 {
 	bool retCode = true;
-    RWCString route,function,serialNum,cmd;
+    string route,function,serialNum,cmd;
+
+    boost::char_separator<char> sep("\r\n");
+    Boost_char_tokenizer tFunction(aFunction, sep);
+    Boost_char_tokenizer tRoute(aRoute, sep);
+    Boost_char_tokenizer tSN(aSerialNum, sep);
+    Boost_char_tokenizer tCmd(aCmd, sep);
+
+    //RWCTokenizer cmdLine(input);           // Tokenize the string a
+    function = trim(string(*tFunction.begin()));
+    route = trim(string(*tRoute.begin()));
+    serialNum = trim(string(*tSN.begin()));
+    cmd = trim(string(*tCmd.begin()));
     
+/* rprw    
     RWCTokenizer tFunction(aFunction);           
     function = tFunction("\r\n");
     RWCTokenizer tRoute(aRoute);           
@@ -1129,13 +1175,13 @@ bool decodeDsm2Lines( RWCString &aFunction,
     RWCTokenizer tCmd(aCmd);           
     cmd = tCmd("\r\n");
 
-    route = route.strip(RWCString::both);
-    function = function.strip(RWCString::both);
-    serialNum = serialNum.strip(RWCString::both);
-    cmd = cmd.strip(RWCString::both);
-
+    route = route.strip(string::both);
+    function = function.strip(string::both);
+    serialNum = serialNum.strip(string::both);
+    cmd = cmd.strip(string::both);
+*/
     // just a comment, don't do anything
-    switch (atoi (function.data()))
+    switch (atoi (function.c_str()))
     {
         case 4:
             {
@@ -1159,18 +1205,18 @@ bool decodeDsm2Lines( RWCString &aFunction,
                 */
 
                 // do a select on the group before adding the serial number
-                *programming = RWCString ("set MessagePriority 5 ; PutConfig serial ");
-                *programming += serialNum;
-                *programming += RWCString (" template '");
-                *programming += RWCString ("config: ");
-                *programming += cmd;
-                *programming += RWCString ("'");
+                *programming = "set MessagePriority 5 ; PutConfig serial ";
+                *programming += serialNum.c_str();
+                *programming +=  (" template '");
+                *programming +=  ("config: ");
+                *programming += cmd.c_str();
+                *programming +=  ("'");
 
-                if ((!route.isNull()) && (route.data()[0] != ' '))
+                if ((!route.empty()) && (route[0] != ' '))
                 {
-                    *programming += RWCString (" select routename '");
-                    *programming += route;
-                    *programming += RWCString ("'");
+                    *programming +=  (" select routename '");
+                    *programming += route.c_str();
+                    *programming +=  ("'");
                 }
                 break;
             }
@@ -1184,9 +1230,9 @@ bool decodeDsm2Lines( RWCString &aFunction,
                 * 0 = out, 1 = in
                 *****************************
                 */
-                *programming = RWCString ("set MessagePriority 7 ; PutConfig versacom serial ");
-                *programming += serialNum;
-                if (atoi (cmd.data()) ==  0)
+                *programming =  ("set MessagePriority 7 ; PutConfig versacom serial ");
+                *programming += serialNum.c_str();
+                if (atoi (cmd.c_str()) ==  0)
                 {
                     *programming += " service out";
                 }
@@ -1195,11 +1241,11 @@ bool decodeDsm2Lines( RWCString &aFunction,
                     *programming += " service in";
                 }
 
-                if ((!route.isNull()) && (route.data()[0] != ' '))
+                if ((!route.empty()) && (route[0] != ' '))
                 {
-                    *programming += RWCString (" select route name '");
-                    *programming += route;
-                    *programming += RWCString ("'");
+                    *programming +=  (" select route name '");
+                    *programming += route.c_str();
+                    *programming +=  ("'");
                 }
 
                 break;
@@ -1229,7 +1275,7 @@ bool decodeDsm2Lines( RWCString &aFunction,
 ***********************
 */
 bool getToken (char **InBuffer,
-                 RWCString &outBuffer)
+                 string &outBuffer)
 {
     bool retVal = true;
     char *ptr;
@@ -1263,20 +1309,20 @@ bool getToken (char **InBuffer,
 }
 
 
-int decodeDSM2VconfigFile(const RWCString& fileName, RWOrdered* commandList)
+int decodeDSM2VconfigFile(const string& fileName, RWOrdered* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
 	char command;
-	RWCString serialNum;
-	RWCString programming;
+	string serialNum;
+	string programming;
     int lineCnt=0, cmdCnt=0;
     int retVal=NORMAL;
 
     if( commandList == NULL )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " Invalid use of command decodeDSM2VconfigFile"<< endl;
+        dout << CtiTime() << " Invalid use of command decodeDSM2VconfigFile"<< endl;
         dout << "             second parameter commandList cannont be NULL " << endl;
         retVal = TEXT_CMD_FILE_COMMAND_LIST_INVALID;
     }
@@ -1284,18 +1330,18 @@ int decodeDSM2VconfigFile(const RWCString& fileName, RWOrdered* commandList)
     {
                                    
         // open file               
-        if( (fptr = fopen( fileName.data(), "r")) == NULL )
+        if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
         {
             retVal = TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE;
         }
         else
         {
-            vector<RWCString>     commandVector;
+            vector<string>     commandVector;
 
             // load list in the command vector
             while ( fgets( (char*) workBuffer, 500, fptr) != NULL )
             {
-                RWCString entry (workBuffer);
+                string entry (workBuffer);
                 commandVector.push_back (entry);
             }
 
@@ -1347,7 +1393,7 @@ int decodeDSM2VconfigFile(const RWCString& fileName, RWOrdered* commandList)
     }
     if (retVal == NORMAL)
     {
-        DeleteFile (fileName);
+        DeleteFile (fileName.c_str());
     }
 
     return retVal;

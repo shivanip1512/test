@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,23 +56,23 @@ CtiReturnMsg& CtiReturnMsg::setDeviceId(long device_id)
     return *this;
 }
 
-const RWCString& CtiReturnMsg::CommandString() const
+const string& CtiReturnMsg::CommandString() const
 {
     return _command_string;
 }
 
-CtiReturnMsg& CtiReturnMsg::setCommandString(const RWCString& command_string)
+CtiReturnMsg& CtiReturnMsg::setCommandString(const string& command_string)
 {
     _command_string = command_string;
     return *this;
 }
 
-const RWCString& CtiReturnMsg::ResultString() const
+const string& CtiReturnMsg::ResultString() const
 {
     return _result_string;
 }
 
-CtiReturnMsg& CtiReturnMsg::setResultString(const RWCString& result_string)
+CtiReturnMsg& CtiReturnMsg::setResultString(const string& result_string)
 {
     _result_string = result_string;
     return *this;
@@ -219,8 +219,8 @@ CtiReturnMsg::CtiReturnMsg() :
  {};
 
 CtiReturnMsg::CtiReturnMsg(long device_id,
-                 const RWCString& command_string,
-                 const RWCString& result_string,
+                 const string& command_string,
+                 const string& result_string,
                  int status,
                  int routeid,
                  int macro_offset,

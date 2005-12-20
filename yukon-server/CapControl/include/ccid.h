@@ -12,7 +12,7 @@
         
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-
+class CtiTime;
 /* Various message classes */
 #define CTICCMESSAGE_ID             500
 #define CTICCSUBSTATIONBUS_MSG_ID   501
@@ -63,5 +63,5 @@
 #define CC_DEBUG_EXTENDED          0x10000000
 
 
-extern RWDBDateTime gInvalidRWDBDateTime;
-extern ULONG gInvalidRWDBDateTimeSeconds;
+extern CtiTime gInvalidCtiTime;
+extern ULONG gInvalidCtiTimeSeconds;

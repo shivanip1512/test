@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "numstr.h"
 #include "tbl_gateway_end_device.h"
 
+#include "rwutil.h"
 
 CtiTableGatewayEndDevice::CtiTableGatewayEndDevice()
 {
@@ -53,7 +54,7 @@ CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setSerialNumber(ULONG sn)
     _serialNumber = CtiNumStr( sn );
     return *this;
 }
-CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setSerialNumber(RWCString sn)
+CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setSerialNumber(string sn)
 {
     if(sn.length() > MAX_SERIAL_NUMBER_LENGTH)
     {
@@ -61,7 +62,7 @@ CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setSerialNumber(RWCString sn
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Serial Number resized.  The defined column may be too small." << endl;
         }
     }
@@ -79,7 +80,7 @@ CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setDataType(UINT dt)
     _dataType = dt;
     return *this;
 }
-CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setDataValue(RWCString dv)
+CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setDataValue(string dv)
 {
     if(dv.length() > MAX_DATA_VALUE_LENGTH)
     {
@@ -87,7 +88,7 @@ CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setDataValue(RWCString dv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Data value resized.  The defined column may be too small." << endl;
         }
     }
@@ -96,7 +97,7 @@ CtiTableGatewayEndDevice& CtiTableGatewayEndDevice::setDataValue(RWCString dv)
     return *this;
 }
 
-RWCString CtiTableGatewayEndDevice::getSerialNumber() const
+string CtiTableGatewayEndDevice::getSerialNumber() const
 {
     return _serialNumber;
 }
@@ -108,19 +109,19 @@ UINT  CtiTableGatewayEndDevice::getDataType() const
 {
     return _dataType;
 }
-RWCString CtiTableGatewayEndDevice::getDataValue() const
+string CtiTableGatewayEndDevice::getDataValue() const
 {
     return _dataValue;
 }
 
 
-RWCString CtiTableGatewayEndDevice::getTableName()
+string CtiTableGatewayEndDevice::getTableName()
 {
-    return RWCString("GatewayEndDevice");
+    return string("GatewayEndDevice");
 }
 void CtiTableGatewayEndDevice::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable tbl = db.table( getTableName() );
+    RWDBTable tbl = db.table( getTableName().c_str() );
 
     selector <<
         tbl["serialnumber"] <<
@@ -137,7 +138,7 @@ void CtiTableGatewayEndDevice::DumpData()
 void CtiTableGatewayEndDevice::DecodeDatabaseReader(RWDBReader &rdr)
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << RWTime() << " **** ACHACHACHACHACHACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    dout << CtiTime() << " **** ACHACHACHACHACHACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 }
 
 RWDBStatus CtiTableGatewayEndDevice::Insert()
@@ -150,7 +151,7 @@ RWDBStatus CtiTableGatewayEndDevice::Insert()
 
 RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -170,14 +171,14 @@ RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
         if( stat.errorCode() != RWDBStatus::ok )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
+            dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
             dout << "   " << inserter.asString() << endl;
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "   " << inserter.asString() << endl;
             }
             setDirty(false);
@@ -192,14 +193,14 @@ RWDBStatus CtiTableGatewayEndDevice::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
-    updater.where( table["serialnumber"] == getSerialNumber() &&
+    updater.where( table["serialnumber"] == getSerialNumber().c_str() &&
                    table["hardwaretype"] == getHardwareType() &&
                    table["datatype"] == getDataType() );
 
-    updater << table["datavalue"].assign( getDataValue() );
+    updater << table["datavalue"].assign( getDataValue().c_str() );
 
     long rowsAffected;
     RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
@@ -221,10 +222,10 @@ RWDBStatus CtiTableGatewayEndDevice::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["serialnumber"] == getSerialNumber() &&
+    deleter.where( table["serialnumber"] == getSerialNumber().c_str() &&
                    table["hardwaretype"] == getHardwareType() &&
                    table["datatype"] == getDataType() );
     deleter.execute( conn );

@@ -14,14 +14,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/09/27 20:45:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
 #include "prot_transdata.h"
 #include "dev_meter.h"
@@ -117,19 +115,19 @@ public:
                               INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
-                            RWTime                    &TimeNow,
+                            CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
-                           RWTime                     &TimeNow,
+                           CtiTime                     &TimeNow,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
 
    int decodeResultScan( INMESS                    *InMessage,
-                          RWTime                    &TimeNow,
+                          CtiTime                    &TimeNow,
                           RWTPtrSlist< CtiMessage > &vgList,
                           RWTPtrSlist< CtiMessage > &retList,
                           vector<CtiTransdataData *> transVector );
@@ -141,7 +139,7 @@ public:
    int getChannelOffset( int index );
 
    CtiProtocolTransdata & getTransdataProtocol( void );
-   RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
+   CtiTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
 
    CtiPointDataMsg* fillPDMsg( vector<CtiTransdataData *> transVector,
                                CtiPointBase *point,

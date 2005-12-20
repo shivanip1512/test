@@ -14,15 +14,15 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.2 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *    REVISION     :  $Revision: 1.3 $
+ *    DATE         :  $Date: 2005/12/20 17:17:16 $
  *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
+
 #include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>

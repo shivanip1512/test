@@ -31,7 +31,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw\cstring.h>
 #include <rw/tvsldict.h>
 
 #include "os2_2w32.h"
@@ -254,7 +253,7 @@ IM_EX_CTIBASE INT PrintError (USHORT Error)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Error in Error Message Routine with error " << Error << endl;
         }
         return(!NORMAL);
@@ -266,13 +265,13 @@ IM_EX_CTIBASE INT PrintError (USHORT Error)
     return(NORMAL);
 }
 
-IM_EX_CTIBASE RWCString FormatError(USHORT Error)
+IM_EX_CTIBASE string FormatError(USHORT Error)
 {
     char err[256];
 
     GetErrorString(Error, err);
 
-    return RWCString(err);
+    return string(err);
 }
 
 /* Routine to retrive and return an error message's text */

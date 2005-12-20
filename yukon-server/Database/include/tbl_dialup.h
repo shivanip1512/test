@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dialup.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/12/19 20:21:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,14 +20,12 @@
 #include <limits.h>
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -45,10 +43,10 @@ class IM_EX_CTIYUKONDB CtiTableDeviceDialup : public CtiMemDBObject
 protected:
 
     LONG        _deviceID;
-    RWCString   PhoneNumber;
+    string   PhoneNumber;
     INT         MinConnectTime;
     INT         MaxConnectTime;
-    RWCString   LineSettings;
+    string   LineSettings;
     INT         BaudRate;
 
 public:
@@ -68,11 +66,11 @@ public:
     INT  getBaudRate() const;
     CtiTableDeviceDialup& setBaudRate(INT i);
 
-    RWCString getPhoneNumber() const;
-    void setPhoneNumber(const RWCString &str);
+    string getPhoneNumber() const;
+    void setPhoneNumber(const string &str);
 
-    RWCString getLineSettings() const;
-    void setLineSettings(const RWCString &lstr);
+    string getLineSettings() const;
+    void setLineSettings(const string &lstr);
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
@@ -81,7 +79,7 @@ public:
     LONG getDeviceID() const;
     CtiTableDeviceDialup& setDeviceID( const LONG did);
 
-    static RWCString getTableName();
+    static string getTableName();
 
     virtual RWDBStatus Restore();
     virtual RWDBStatus Insert();

@@ -3,6 +3,7 @@
 #include "tbl_signal.h"
 #include "dbaccess.h"
 #include "logger.h"
+#include "rwutil.h"
 
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
@@ -19,14 +20,14 @@ _logPriority(0)
 }
 
 CtiTableSignal::CtiTableSignal(LONG              id,
-                               const RWTime      &tme,
+                               const CtiTime      &tme,
                                INT               millis,
-                               const RWCString   &text,
-                               const RWCString   &addl,
+                               const string   &text,
+                               const string   &addl,
                                INT               lp,
                                INT               lt,
                                INT               soe,
-                               const RWCString   &user,
+                               const string   &user,
                                const INT         lid) :
 _logID(lid),
 _pointID(id),
@@ -102,26 +103,26 @@ void CtiTableSignal::DecodeDatabaseReader( RWDBReader& rdr )
 
 void CtiTableSignal::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
-    if(getAdditionalInfo().mbLength() > DEFAULT_ACTIONLENGTH)
+    if(::mblen(getAdditionalInfo().c_str(), MB_CUR_MAX ) > DEFAULT_ACTIONLENGTH)
     {
-        RWCString temp = getAdditionalInfo();
+        string temp = getAdditionalInfo();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAdditionalInfo(temp);
     }
 
-    if(getText().mbLength() > DEFAULT_DESCRIPTIONLENGTH)
+    if(::mblen(getText().c_str(), MB_CUR_MAX ) > DEFAULT_DESCRIPTIONLENGTH)
     {
-        RWCString temp = getText();
+        string temp = getText();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setText(temp);
     }
 
-    if(getUser().mbLength() > DEFAULT_USERLENGTH)
+    if(::mblen(getUser().c_str(), MB_CUR_MAX) > DEFAULT_USERLENGTH)
     {
-        RWCString temp = getUser();
+        string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
         setUser(temp);
     }
@@ -129,7 +130,7 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     inserter <<
     getLogID() <<
     getPointID() <<
-    RWDBDateTime(getTime()) <<
+    getTime() <<
     getSOE() <<
     getLogType() <<
     getPriority() <<
@@ -168,7 +169,7 @@ void CtiTableSignal::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["logid"]
@@ -198,12 +199,12 @@ void CtiTableSignal::Restore()
 
 void CtiTableSignal::Update()
 {
-    if(getAdditionalInfo().mbLength() > DEFAULT_ACTIONLENGTH)
+    if(::mblen(getAdditionalInfo().c_str(), MB_CUR_MAX ) > DEFAULT_ACTIONLENGTH)
     {
         getAdditionalInfo().resize(DEFAULT_ACTIONLENGTH - 1);
     }
 
-    if(getText().mbLength() > DEFAULT_DESCRIPTIONLENGTH)
+    if(::mblen(getText().c_str(), MB_CUR_MAX ) > DEFAULT_DESCRIPTIONLENGTH)
     {
         getText().resize(DEFAULT_DESCRIPTIONLENGTH - 1);
     }
@@ -212,17 +213,17 @@ void CtiTableSignal::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater << table["pointid"].assign(getPointID())
-    << table["datetime"].assign( RWDBDateTime(getTime()) )
+    << table["datetime"].assign( toRWDBDT(getTime()) )
     << table["soe_tag"].assign(getSOE())
     << table["type"].assign(getLogType())
     << table["priority"].assign( getPriority() )
-    << table["action"].assign(getAdditionalInfo())
-    << table["description"].assign(getText())
-    << table["username"].assign(getUser())
+    << table["action"].assign(getAdditionalInfo().c_str())
+    << table["description"].assign(getText().c_str())
+    << table["username"].assign(getUser().c_str())
     << table["millis"].assign(getMillis());
 
     updater.where( table["logid"] == getLogID() );
@@ -235,7 +236,7 @@ void CtiTableSignal::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["logid"] == getLogID() );
@@ -245,9 +246,9 @@ void CtiTableSignal::Delete()
 
 
 
-RWCString CtiTableSignal::getTableName() const
+string CtiTableSignal::getTableName() const
 {
-    return RWCString("Systemlog");
+    return string("Systemlog");
 }
 
 LONG CtiTableSignal::getLogID() const
@@ -260,7 +261,7 @@ LONG CtiTableSignal::getPointID() const
     return _pointID;
 }
 
-RWTime CtiTableSignal::getTime() const
+CtiTime CtiTableSignal::getTime() const
 {
     return _time;
 }
@@ -275,12 +276,12 @@ INT CtiTableSignal::getPriority() const
     return _logPriority;
 }
 
-RWCString CtiTableSignal::getText() const
+string CtiTableSignal::getText() const
 {
     return _text;
 }
 
-RWCString CtiTableSignal::getUser() const
+string CtiTableSignal::getUser() const
 {
     return _user;
 }
@@ -295,7 +296,7 @@ INT CtiTableSignal::getLogType() const
     return _logType;
 }
 
-RWCString CtiTableSignal::getAdditionalInfo() const
+string CtiTableSignal::getAdditionalInfo() const
 {
     return _additional;
 }
@@ -312,7 +313,7 @@ CtiTableSignal& CtiTableSignal::setPointID(LONG id)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setTime(const RWTime rwt)
+CtiTableSignal& CtiTableSignal::setTime(const CtiTime rwt)
 {
     _time = rwt;
     return *this;
@@ -324,7 +325,7 @@ CtiTableSignal& CtiTableSignal::setMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis %= 1000;
@@ -333,7 +334,7 @@ CtiTableSignal& CtiTableSignal::setMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis = 0;
@@ -350,13 +351,13 @@ CtiTableSignal& CtiTableSignal::setPriority(INT cls)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setText(const RWCString &str)
+CtiTableSignal& CtiTableSignal::setText(const string &str)
 {
     _text = str;
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setUser(const RWCString &str)
+CtiTableSignal& CtiTableSignal::setUser(const string &str)
 {
     _user = str;
     return *this;
@@ -376,7 +377,7 @@ CtiTableSignal& CtiTableSignal::setLogType(const INT &i)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setAdditionalInfo(const RWCString &str)
+CtiTableSignal& CtiTableSignal::setAdditionalInfo(const string &str)
 {
     _additional = str;
     return *this;
@@ -417,7 +418,7 @@ void CtiTableSignal::getSQLMaxID(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 #if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << selector.asString() << endl;
     }
 #endif

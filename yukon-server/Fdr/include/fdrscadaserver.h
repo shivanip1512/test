@@ -8,7 +8,7 @@
 #define __FDRSCADASERVER_H__
 
 #include <windows.h>
-#include <rw/cstring.h>
+
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -32,7 +32,7 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
 
     public:
         // constructors and destructors
-        CtiFDRScadaServer(RWCString &); 
+        CtiFDRScadaServer(string &); 
         virtual ~CtiFDRScadaServer();
         
         virtual int processMessageFromForeignSystem(

@@ -105,7 +105,7 @@ void CtiAnsiTableNineTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineTwo::printResult( RWCString deviceName )
+void CtiAnsiTableNineTwo::printResult( const string& deviceName )
 {
     int index, i, j;
 

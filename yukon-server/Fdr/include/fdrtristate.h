@@ -45,7 +45,7 @@ class IM_EX_FDRTRISTATE CtiFDR_Tristate : public CtiFDRFtpInterface
 		virtual int fail();
         virtual int decodeFile ();
         int readConfig( void );
-        int sendToDispatch(RWTime aTime, FLOAT aSystemLoad, FLOAT aAvgLoad);
+        int sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aAvgLoad);
 
 			static const CHAR * KEY_PORT_NUMBER;
 			static const CHAR * KEY_TRIES;

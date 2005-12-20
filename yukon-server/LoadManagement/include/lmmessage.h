@@ -17,10 +17,9 @@
 
 #include <vector>
 
-#include <rw/cstring.h>
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "clientconn.h"
 #include "message.h"
@@ -35,11 +34,11 @@ RWDECLARE_COLLECTABLE( CtiLMMessage )
 
 public:
     CtiLMMessage() { };
-    CtiLMMessage(const RWCString& message);
+    CtiLMMessage(const string& message);
 
     virtual ~CtiLMMessage() { };
 
-    const RWCString& getMessage() const;
+    const string& getMessage() const;
     CtiLMConnectionPtr getConnection();
     
     void restoreGuts(RWvistream&);
@@ -48,7 +47,7 @@ public:
 private:
     // The connection that received/produced this message
     CtiLMConnectionWeakPtr _connection;
-    RWCString _message;
+    string _message;
 };
 
 
@@ -133,12 +132,12 @@ public:
     CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
     CtiLMManualControlRequest(LONG cmd,
 			      LONG pao_id,
-			      const RWDBDateTime& notify_time,
-			      const RWDBDateTime& start_time,
-			      const RWDBDateTime& stop_time,
+			      const CtiTime& notify_time,
+			      const CtiTime& start_time,
+			      const CtiTime& stop_time,
 			      LONG start_gear,
 			      LONG start_priority,
-			      const RWCString& addl_info,
+			      const string& addl_info,
 			      LONG constraint_cmd
 			      
 			      );
@@ -148,12 +147,12 @@ public:
 
     LONG getCommand() const;
     LONG getPAOId() const;
-    const RWDBDateTime& getNotifyTime() const;
-    const RWDBDateTime& getStartTime() const;
-    const RWDBDateTime& getStopTime() const;
+    const CtiTime& getNotifyTime() const;
+    const CtiTime& getStartTime() const;
+    const CtiTime& getStopTime() const;
     LONG getStartGear() const;
     LONG getStartPriority() const;
-    const RWCString& getAdditionalInfo() const;
+    const string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
     
     virtual CtiMessage* replicateMessage() const;
@@ -166,12 +165,12 @@ private:
     
     LONG _command;
     LONG _paoid;
-    RWDBDateTime _notifytime;
-    RWDBDateTime _starttime;
-    RWDBDateTime _stoptime;
+    CtiTime _notifytime;
+    CtiTime _starttime;
+    CtiTime _stoptime;
     LONG _startgear;
     LONG _startpriority;
-    RWCString _additionalinfo;
+    string _additionalinfo;
     LONG _constraint_cmd;
 };
 
@@ -230,10 +229,10 @@ public:
     LONG getCommand() const;
     LONG getPAOId() const;
     LONG getOfferId() const;
-    const RWDBDateTime& getOfferDate() const;
-    const RWDBDateTime& getNotificationDateTime() const;
-    const RWDBDateTime& getExpirationDateTime() const;
-    const RWCString& getAdditionalInfo() const;
+    const CtiTime& getOfferDate() const;
+    const CtiTime& getNotificationDateTime() const;
+    const CtiTime& getExpirationDateTime() const;
+    const string& getAdditionalInfo() const;
     DOUBLE getAmountRequested(int i) const;
     LONG getPriceOffered(int i) const;
 
@@ -246,10 +245,10 @@ private:
     LONG _command;
     LONG _paoid;
     LONG _offerid;
-    RWDBDateTime _offerdate;
-    RWDBDateTime _notificationdatetime;
-    RWDBDateTime _expirationdatetime;
-    RWCString _additionalinfo;
+    CtiTime _offerdate;
+    CtiTime _notificationdatetime;
+    CtiTime _expirationdatetime;
+    string _additionalinfo;
     DOUBLE _amountsrequested[HOURS_IN_DAY];
     LONG _pricesoffered[HOURS_IN_DAY];
 };
@@ -271,11 +270,11 @@ public:
     LONG getPAOId() const;
     LONG getOfferId() const;
     LONG getRevisionNumber() const;
-    const RWCString& getAcceptStatus() const;
-    const RWCString& getIPAddressOfAcceptUser() const;
-    const RWCString& getUserIdName() const;
-    const RWCString& getNameOfAcceptPerson() const;
-    const RWCString& getEnergyExchangeNotes() const;
+    const string& getAcceptStatus() const;
+    const string& getIPAddressOfAcceptUser() const;
+    const string& getUserIdName() const;
+    const string& getNameOfAcceptPerson() const;
+    const string& getEnergyExchangeNotes() const;
     DOUBLE getAmountCommitted(int i) const;
 
     void restoreGuts(RWvistream&);
@@ -287,11 +286,11 @@ private:
     LONG _paoid;
     LONG _offerid;
     LONG _revisionnumber;
-    RWCString _acceptstatus;
-    RWCString _ipaddressofacceptuser;
-    RWCString _useridname;
-    RWCString _nameofacceptperson;
-    RWCString _energyexchangenotes;
+    string _acceptstatus;
+    string _ipaddressofacceptuser;
+    string _useridname;
+    string _nameofacceptperson;
+    string _energyexchangenotes;
     DOUBLE _amountscommitted[HOURS_IN_DAY];
 };
 
@@ -340,11 +339,11 @@ public:
 
     LONG getPAOId() const;
     LONG getCurtailReferenceId() const;
-    const RWCString& getAcknowledgeStatus() const;
-    const RWCString& getIPAddressOfAckUser() const;
-    const RWCString& getUserIdName() const;
-    const RWCString& getNameOfAckPerson() const;
-    const RWCString& getCurtailmentNotes() const;
+    const string& getAcknowledgeStatus() const;
+    const string& getIPAddressOfAckUser() const;
+    const string& getUserIdName() const;
+    const string& getNameOfAckPerson() const;
+    const string& getCurtailmentNotes() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -354,11 +353,11 @@ private:
     
     LONG _paoid;
     LONG _curtailreferenceid;
-    RWCString _acknowledgestatus;
-    RWCString _ipaddressofackuser;
-    RWCString _useridname;
-    RWCString _nameofackperson;
-    RWCString _curtailmentnotes;
+    string _acknowledgestatus;
+    string _ipaddressofackuser;
+    string _useridname;
+    string _nameofackperson;
+    string _curtailmentnotes;
 };
 
 

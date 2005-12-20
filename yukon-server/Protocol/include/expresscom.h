@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/11/17 19:15:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,14 +17,16 @@
 #define __EXPRESSCOM_H__
 #pragma warning( disable : 4786)
 
-
-#include <windows.h>
 #include <vector>
-using namespace std;
-
-
 #include "cmdparse.h"
 #include "dllbase.h"
+#include "ctitime.h"
+
+#ifdef _WINDOWS
+    #include <windows.h>
+#endif
+
+using std::vector;
 
 class IM_EX_PROT CtiProtocolExpresscom
 {
@@ -120,10 +122,10 @@ private:
     INT assemblePutStatus(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
     INT parseSchedule(CtiCommandParser &parse);
-    INT schedulePoint(vector< BYTE > &schedule);
+    INT schedulePoint(std::vector< BYTE > &schedule);
 
     INT sync();
-    INT timeSync(RWTime &gmt, bool fullsync = true);
+    INT timeSync(CtiTime &gmt, bool fullsync = true);
 
     INT signalTest(BYTE test);
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
@@ -185,13 +187,13 @@ private:
     INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false);
     INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
-    INT rawconfiguration(RWCString str);
-    INT rawmaintenance(RWCString str);
+    INT rawconfiguration(string str);
+    INT rawmaintenance(string str);
     INT maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE opt3, BYTE opt4);
     INT service(BYTE action);
     INT service(UINT loadMask, bool activate = true);
     INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
-    INT data(RWCString str);
+    INT data(string str);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 

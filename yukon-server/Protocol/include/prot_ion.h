@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,8 +23,7 @@
 #include "pointtypes.h"
 
 #include <map>
-using namespace std;
-
+using std::map;
 #include "prot_base.h"
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
@@ -111,13 +110,13 @@ private:
     vector< ion_pointdata_struct > _collectedPointData;
     vector< CtiIONLogArray * >     _collectedEventLogs;
 
-    RWCString _infoString;
+    string _infoString;
 
     //  these are for temporary storage of data returned in an InMessage (on PIL/Scanner-side)
     vector< ion_pointdata_struct > _returnedPointData;
     vector< CtiIONLogArray * >     _returnedEventLogs;
 
-    RWCString _returnedInfoString;
+    string _returnedInfoString;
 
     struct ion_result_descriptor_struct
     {
@@ -390,7 +389,7 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnedInfo );
+    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, string &returnedInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;

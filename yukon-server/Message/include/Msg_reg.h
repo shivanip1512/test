@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/Msg_reg.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/02 19:26:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 #ifndef __MSG_REG_H__
 #define __MSG_REG_H__
 
-#include <rw\rwtime.h>
 #include <rw/thr/threadid.h>
 
 #include "message.h"       // get the base class
@@ -28,7 +27,7 @@ class IM_EX_MSG CtiRegistrationMsg : public CtiMessage
 {
 private:
 
-   RWCString      _appName;
+   string      _appName;
    int            _appId;
    int            _appIsUnique;
 
@@ -41,7 +40,7 @@ public:
    typedef CtiMessage Inherited;
 
    CtiRegistrationMsg();
-   CtiRegistrationMsg(RWCString str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
+   CtiRegistrationMsg(string str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
    CtiRegistrationMsg(const CtiRegistrationMsg &aRef);
    virtual ~CtiRegistrationMsg();
    // Assignement operator
@@ -52,9 +51,9 @@ public:
    virtual CtiMessage* replicateMessage() const;
 
 
-   RWCString   getAppName() const;
-   RWCString&  getAppName();
-   void        setAppName(RWCString str);
+   string   getAppName() const;
+   string&  getAppName();
+   void        setAppName(string str);
 
    int         getAppId() const;
    void        setAppID(int id);

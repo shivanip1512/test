@@ -53,7 +53,7 @@ CtiLMGroupSADigitalORGolay::~CtiLMGroupSADigitalORGolay()
 CtiRequestMsg* CtiLMGroupSADigitalORGolay::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTimeRefreshRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createTimeRefreshRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -67,7 +67,7 @@ CtiRequestMsg* CtiLMGroupSADigitalORGolay::createTimeRefreshRequestMsg(LONG refr
 CtiRequestMsg* CtiLMGroupSADigitalORGolay::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createSmartCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -80,7 +80,7 @@ CtiRequestMsg* CtiLMGroupSADigitalORGolay::createSmartCycleRequestMsg(LONG perce
 CtiRequestMsg* CtiLMGroupSADigitalORGolay::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTrueCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -93,7 +93,7 @@ CtiRequestMsg* CtiLMGroupSADigitalORGolay::createTrueCycleRequestMsg(LONG percen
 CtiRequestMsg* CtiLMGroupSADigitalORGolay::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createRotationRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createRotationRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -106,7 +106,7 @@ CtiRequestMsg* CtiLMGroupSADigitalORGolay::createRotationRequestMsg(LONG sendRat
 CtiRequestMsg* CtiLMGroupSADigitalORGolay::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createMasterCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createMasterCycleRequestMsg() not implemented for SA Digital or Golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 
 }

@@ -114,14 +114,16 @@ $(BIN)\*.exe
 #UPDATE#
 dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		tbl_signal.h dbmemobject.h pointdefs.h utility.h
+		tbl_signal.h ctitime.h dbmemobject.h pointdefs.h utility.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
-		tbl_rawpthistory.h dlldefs.h pointdefs.h utility.h dsm2.h \
-		mutex.h guard.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h sema.h logger.h thread.h
+		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \
+		dsm2.h mutex.h guard.h dbaccess.h dllbase.h os2_2w32.h \
+		types.h cticalls.h sema.h logger.h thread.h rwutil.h \
+		boost_time.h
 tbl_signal.obj:	yukon.h precompiled.h ctidbgmem.h tbl_signal.h \
-		dbmemobject.h dlldefs.h pointdefs.h utility.h dsm2.h mutex.h \
-		guard.h dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h \
-		sema.h logger.h thread.h
+		ctitime.h dlldefs.h dbmemobject.h pointdefs.h utility.h \
+		dsm2.h mutex.h guard.h dbaccess.h dllbase.h os2_2w32.h \
+		types.h cticalls.h sema.h logger.h thread.h rwutil.h \
+		boost_time.h
 #ENDUPDATE#

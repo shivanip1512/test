@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/10/25 14:36:22 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:20:22 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.19  2005/12/20 17:20:22  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.18  2005/10/25 14:36:22  cplender
 * Have reportControlStart use the command sent as the last command... it is for these guys.
 *
@@ -136,11 +139,11 @@ LONG CtiDeviceGroupSA305::getRouteID()
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceGroupSA305::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupSA305::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
 
     tmpStr = "Group: " + getName();
@@ -172,7 +175,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 {
     INT   nRet = NoError;
     ULONG etime = 0;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     /*
@@ -196,7 +199,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             // Add these two items to the list for control accounting!
             parse.setValue("control_interval", parse.getiValue("shed"));
             parse.setValue("control_reduction", 100 );
-            etime = RWTime().seconds() + shed_seconds;
+            etime = CtiTime().seconds() + shed_seconds;
         }
         else
             nRet = BADPARAM;
@@ -211,11 +214,11 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * (repeat+1));
 
-        etime = RWTime().seconds() + (60 * period * (repeat+1));
+        etime = CtiTime().seconds() + (60 * period * (repeat+1));
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) & (CMD_FLAG_CTL_RESTORE | CMD_FLAG_CTL_TERMINATE))
     {
-        if(!(parse.getCommandStr().contains(" dlc") || parse.getCommandStr().contains(" di")))
+        if(!(findStringIgnoreCase(parse.getCommandStr()," dlc") || findStringIgnoreCase(parse.getCommandStr()," di")))
         {
             // We were not explicitly told how to do it.  Must restore the same as was sent last.
             parse.setValue("sa_f0bit", (_lastSACommandType == SA305_DI_Control ? 1 : 0));
@@ -239,16 +242,16 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.setValue("sa_hierarchy", getLoadGroup().getHierarchy());
     parse.setValue("serial", serial);
 
-    RWCString au = getLoadGroup().getAddressUsage();
+    string au = getLoadGroup().getAddressUsage();
 
-    if(au.contains("R", RWCString::ignoreCase))     // This is a group addressed command
+    if(findStringIgnoreCase(au,"R"))     // This is a group addressed command
     {
         parse.setValue("sa_addressusage", TRUE);
     }
 
-    if(au.contains("G", RWCString::ignoreCase))          group = (int)(getLoadGroup().getGroup());
-    if(au.contains("D", RWCString::ignoreCase))          div = (int)(getLoadGroup().getDivision());
-    if(au.contains("S", RWCString::ignoreCase))          sub = (int)(getLoadGroup().getSubstation());
+    if(findStringIgnoreCase(au,"G"))          group = (int)(getLoadGroup().getGroup());
+    if(findStringIgnoreCase(au,"D"))          div = (int)(getLoadGroup().getDivision());
+    if(findStringIgnoreCase(au,"S"))          sub = (int)(getLoadGroup().getSubstation());
 
     // These elements are gravy
     parse.setValue("sa_group", group);
@@ -273,12 +276,12 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
          *  Form up the reply here since the ExecuteRequest function will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -296,7 +299,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -307,16 +310,16 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
     return nRet;
 }
 
-RWCString CtiDeviceGroupSA305::getPutConfigAssignment(UINT modifier)
+string CtiDeviceGroupSA305::getPutConfigAssignment(UINT level)
 {
-    RWCString assign = RWCString("sa305 assign") +
+    string assign = string("sa305 assign") +
                        " U" + CtiNumStr(_loadGroup.getUtility()) +
                        " G" + CtiNumStr(_loadGroup.getGroup()) +
                        " D" + CtiNumStr(_loadGroup.getDivision()) +

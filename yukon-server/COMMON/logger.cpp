@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/05 17:08:43 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 #include "logger.h"
 #include "numstr.h"
 
-
+using namespace std;
 
 IM_EX_CTIBASE CtiLogger   dout;           // Global log
 IM_EX_CTIBASE CtiLogger   slog;           // Global instance. Simulator log
@@ -148,7 +148,7 @@ CtiLogger& CtiLogger::acquire()
 
         if(!isacq)
         {
-            cerr << RWTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
+            cerr << CtiTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
             cerr << "  Thread TID=" << _log_mux.lastAcquiredByTID() << " was the last to acquire " << endl;
         }
 
@@ -267,11 +267,11 @@ string CtiLogger::getTodaysFileName() const
 {
     time_t ltime;
     // convert the day of the month into a string
-    time(&ltime);
+    ::time(&ltime);
 
     ostringstream itos_buffer;
 
-    int daynum = localtime(&ltime)->tm_mday;
+    int daynum = CtiTime::localtime_r(&ltime)->tm_mday;
 
     if( daynum < 10 )
         itos_buffer << "0" << daynum;
@@ -311,21 +311,21 @@ bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
     time_t ltime;
     struct _stat file_stat;
 
-    time( &ltime );
-    cur_month = localtime(&ltime)->tm_mon;
+    ::time( &ltime );
+    cur_month = CtiTime::localtime_r(&ltime)->tm_mon;
 
-    if( _stat(file.data(), &file_stat) != -1 &&
-        localtime(&file_stat.st_mtime)->tm_mon == cur_month )
+    if( _stat(file.c_str(), &file_stat) != -1 &&
+        CtiTime::localtime_r(&file_stat.st_mtime)->tm_mon == cur_month )
     {
         //the file exists and was last modified this month
         //open to append
-        strm.open( file.data(), ios::app );
+        strm.open( file.c_str(), ios::app );
     }
     else
     {
         //file either doesn't exist or hasn't been modified this month
         //open with default to truncate
-        strm.open( file.data() );
+        strm.open( file.c_str() );
     }
 
     return(bool) strm;
@@ -413,7 +413,7 @@ ostream& CtiLogger::operator<<(const string& s)
     return *_current_stream;
 }
 
-ostream& CtiLogger::operator<<(const RWTime &r)
+ostream& CtiLogger::operator<<(const CtiTime &r)
 {
     return operator<<(r.asString());
 }

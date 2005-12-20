@@ -9,13 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_script.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-
+#include <rwutil.h>
 RWDEFINE_COLLECTABLE( CtiMCScript, MSG_MC_SCRIPT )
 
 string CtiMCScript::_path("..\\scripts");
@@ -74,7 +74,7 @@ bool CtiMCScript::readContents()
     _contents = "";
     
     // Append each block read into _contents string
-    if( (fi = fopen( (const char*) filename.data(), "rb")) != NULL )
+    if( (fi = fopen( (const char*) filename.c_str(), "rb")) != NULL )
     {
         do
         {
@@ -109,9 +109,9 @@ bool CtiMCScript::writeContents()
             .append("\\")
             .append(getScriptName());
 
-    if( (fo = fopen( (const char*) filename.data(), "wb")) != NULL )
+    if( (fo = fopen( (const char*) filename.c_str(), "wb")) != NULL )
     {
-        num = fwrite(_contents.data(), sizeof(char), _contents.length(), fo );
+        num = fwrite(_contents.c_str(), sizeof(char), _contents.length(), fo );
         result = ( num == _contents.length() );
     }
 
@@ -130,21 +130,21 @@ CtiMessage* CtiMCScript::replicateMessage() const
 
 void CtiMCScript::restoreGuts(RWvistream &strm)
 {
-    RWCString temp_str;
+    string temp_str;
 
     CtiMessage::restoreGuts(strm);
     strm    >> temp_str;
-    _name = (const char*) temp_str.data();
+    _name = temp_str;
 
     strm    >> temp_str;
-    _contents = (const char*) temp_str.data();
+    _contents = temp_str;
 }
 
 void CtiMCScript::saveGuts(RWvostream &strm) const
 {
     CtiMessage::saveGuts(strm);
-    strm    <<  RWCString( (const char*) _name.data() )
-            <<  RWCString( (const char*) _contents.data() );
+    strm    <<  _name
+            <<  _contents;
 }
 
 const string& CtiMCScript::getScriptPath()

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/cstring.h>
 
 #include "message.h"
 #include "logger.h"
@@ -35,7 +34,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
                                  double     value       ,
                                  unsigned   quality     ,
                                  int        type        ,
-                                 RWCString  valReport   ,
+                                 string  valReport   ,
                                  unsigned   tags        ,
                                  unsigned   attrib      ,
                                  unsigned   limit       ,
@@ -46,7 +45,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    _quality(quality),
    _type(type),
    _str(valReport),
-   _time(RWTime()),
+   _time(CtiTime()),
    _tags(tags),
    _attrib(attrib),
    _limit(limit),
@@ -65,7 +64,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
         }
         _value = 0.0;
     }
@@ -120,8 +119,8 @@ void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
     unsigned    limit;              // set iff ExceedsHigh or Low.
     unsigned    force;              // set iff ExceedsHigh or Low.
     double      value;
-    RWCString   str;
-    RWTime      intime;
+    string   str;
+    CtiTime      intime;
     unsigned    millis;
 
     aStream >> id >> type >> quality >> tags >> _attrib >> limit >> value >> force >> str >> intime >> millis;
@@ -155,12 +154,12 @@ CtiPointDataMsg& CtiPointDataMsg::setId( const long a_id )
    return *this;
 }
 
-const RWCString& CtiPointDataMsg::getString() const
+const string& CtiPointDataMsg::getString() const
 {
     return _str;
 }
 
-CtiPointDataMsg& CtiPointDataMsg::setString(const RWCString& string_value)
+CtiPointDataMsg& CtiPointDataMsg::setString(const string& string_value)
 {
     _str = string_value;
     return *this;
@@ -190,7 +189,7 @@ CtiPointDataMsg& CtiPointDataMsg::setValue(double value)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
         }
         _value = 0.0;
     }
@@ -242,17 +241,17 @@ CtiPointDataMsg& CtiPointDataMsg::setLimit( const unsigned a_limit )
    return *this;
 }
 
-const RWTime& CtiPointDataMsg::getTime() const
+const CtiTime& CtiPointDataMsg::getTime() const
 {
    return _time;
 }
 
-RWTime& CtiPointDataMsg::getTime()
+CtiTime& CtiPointDataMsg::getTime()
 {
    return _time;
 }
 
-CtiPointDataMsg& CtiPointDataMsg::setTime(const RWTime& aTime)
+CtiPointDataMsg& CtiPointDataMsg::setTime(const CtiTime& aTime)
 {
    _time = aTime;
    return *this;
@@ -271,7 +270,7 @@ CtiPointDataMsg& CtiPointDataMsg::setMillis(unsigned millis)
     {
        _millis = 0;
        //CtiLockGuard<CtiLogger> doubt_guard(dout);
-       //dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       //dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;

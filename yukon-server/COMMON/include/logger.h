@@ -39,7 +39,6 @@
     #include <windows.h>
 #endif
 
-#include <rw/rwtime.h>
 #include <rw/thr/prodcons.h>
 
 #include <sys/types.h>
@@ -52,11 +51,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
+
 
 #include "dlldefs.h"
 #include "thread.h"
 #include "mutex.h"
+#include "ctitime.h"
+
+using std::string;
+using std::ostream;
+using std::ios_base;
+using std::strstream;
+using std::ofstream;
+using std::endl;
+using std::cout;
 
 class IM_EX_CTIBASE CtiLogger : public CtiThread
 {
@@ -97,7 +105,7 @@ public:
     ostream& operator<<(long double n);
     ostream& operator<<(void * n);
     ostream& operator<<(const string& s);
-    ostream& operator<<(const RWTime &r);
+    ostream& operator<<(const CtiTime &r);
 
     char fill(char cfill);
     char fill() const;

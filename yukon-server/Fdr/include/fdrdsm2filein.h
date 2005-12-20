@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2fileint.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2005/06/24 20:08:47 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2filein.h,v $
+      Revision 1.4  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.4.3  2005/08/12 19:53:47  jliu
+      Date Time Replaced
+
+      Revision 1.2.4.2  2005/07/27 19:27:58  alauinger
+      merged from the head 20050720
+
+
+      Revision 1.2.4.1  2005/07/12 21:08:38  jliu
+      rpStringWithoutCmpParser
       Revision 1.3  2005/06/24 20:08:47  dsutton
       Added support for DSM2's function 2
 
@@ -60,15 +72,15 @@ public:
     int readConfig( void );
     bool buildAndAddPoint (CtiFDRPoint &aPoint, 
                            DOUBLE aValue, 
-                           RWTime aTimestamp, 
+                           CtiTime aTimestamp, 
                            int aQuality,
-                           RWCString aTranslationName,
+                           string aTranslationName,
                            CtiMessage **aRetMsg);
-    USHORT ForeignToYukonQuality (RWCString aQuality);
-    RWTime ForeignToYukonTime (RWCString aTime);
+    USHORT ForeignToYukonQuality (string aQuality);
+    CtiTime ForeignToYukonTime (string aTime);
 
-    bool processFunctionOne (RWCString &aLine, CtiMessage **aRetMsg);
-    bool processFunctionTwo (RWCString &aLine, CtiMessage **aRetMsg);
+    bool processFunctionOne (string &aLine, CtiMessage **aRetMsg);
+    bool processFunctionTwo (string &aLine, CtiMessage **aRetMsg);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_Dsm2Filein &setDeleteFileAfterImport (bool aFlag);
@@ -76,7 +88,7 @@ public:
     bool useSystemTime() const;
     CtiFDR_Dsm2Filein &setUseSystemTime (bool aFlag);
 
-    bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg);
+    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);

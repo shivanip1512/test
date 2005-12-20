@@ -14,16 +14,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_two.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:00 $
 *    History: 
       $Log: std_ansi_tbl_five_two.h,v $
+      Revision 1.7  2005/12/20 17:20:00  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_five_two.h
+      Revision 1.4.4.1  2005/07/27 19:28:01  alauinger
+      merged from the head 20050720
+
+=======
       Revision 1.6  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5.2.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.6
       Revision 1.5  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -124,7 +133,7 @@ public:
 
    CtiAnsiTableFiveTwo& operator=(const CtiAnsiTableFiveTwo& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult(RWCString deviceName);
+   void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
    int getClkCldrYear();

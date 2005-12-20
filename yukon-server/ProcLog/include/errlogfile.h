@@ -1,6 +1,7 @@
 #include "errmsg.h"
 #include <rw/tpsrtvec.h>
 #include <rw\thr\mutex.h>
+#include <string>
 
 class CErrLogFile
 {
@@ -8,11 +9,11 @@ private:
    // RogueWave Collection Class
    // Collection of Pointers to Error Messages!
    RWMutexLock                                     ListMux;
-   RWTPtrSortedVector<CErrMsg, greater<CErrMsg> >  ErrList;
+   RWTPtrSortedVector<CErrMsg, std::greater<CErrMsg> >  ErrList;
 
    int         SelfImportance;
 
-   RWCString   FileName;
+   std::string   FileName;
 
    int         TimeLimit;                   // Max number of entries before a write is done
    int         TransactionLimit;                   // Max number of entries before a write is done

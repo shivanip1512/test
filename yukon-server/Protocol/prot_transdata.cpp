@@ -10,14 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/09/27 20:38:42 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include <rw/cstring.h>
+
 
 #include "guard.h"
 #include "logger.h"
@@ -116,7 +116,7 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " Whoa! The billing bytes are too big! # bytes = " << _numBilling << endl;
+          dout << CtiTime() << " Whoa! The billing bytes are too big! # bytes = " << _numBilling << endl;
       }
    }
    else
@@ -140,7 +140,7 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " Whoa! The lp bytes are too big! # bytes = " << _numLoadProfile << endl;
+          dout << CtiTime() << " Whoa! The lp bytes are too big! # bytes = " << _numLoadProfile << endl;
       }
    }
    else
@@ -175,7 +175,7 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWTime CtiProtocolTransdata::getLastLoadProfileTime( void )
+CtiTime CtiProtocolTransdata::getLastLoadProfileTime( void )
 {
    return( _lastLPTime );
 }
@@ -223,7 +223,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
+       dout << CtiTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
    }
 
    while( *ptr != NULL )
@@ -259,7 +259,7 @@ bool CtiProtocolTransdata::isTransactionComplete( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolTransdata::injectData( RWCString str )
+void CtiProtocolTransdata::injectData( string str )
 {
    _application.injectData( str );
 }

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/10/25 14:36:22 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.16  2005/12/20 17:20:21  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.15  2005/10/25 14:36:22  cplender
 * Have reportControlStart use the command sent as the last command... it is for these guys.
 *
@@ -147,11 +150,11 @@ LONG CtiDeviceGroupGolay::getRouteID()
 // This method determines what should be displayed in the "Description" column
 // of the systemlog table when something happens to this device
 //===================================================================================================================
-RWCString CtiDeviceGroupGolay::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupGolay::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
 
     tmpStr = "Group: " + getName();
@@ -191,7 +194,7 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
 
@@ -205,12 +208,12 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = BADPARAM;
 
         resultString = " Cannot control Golay groups except with command \"control shed\"  :" + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
     else
@@ -230,19 +233,19 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             OutMessage->TargetID = getID();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
             OutMessage->Retry = 0;
-            OutMessage->ExpirationTime = RWTime().seconds() + (_loadGroup.getNominalTimeout() >= 900 ? _loadGroup.getNominalTimeout() : 900); // Time this out in 15 minutes or the setting.
+            OutMessage->ExpirationTime = CtiTime().seconds() + (_loadGroup.getNominalTimeout() >= 900 ? _loadGroup.getNominalTimeout() : 900); // Time this out in 15 minutes or the setting.
 
             reportActionItemsToDispatch(pReq, parse, vgList);
 
             //
             //  Form up the reply here since the ExecuteRequest function might consume the OutMessage.
             //
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
             {
-                resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+                resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
                 pRet->setStatus(nRet);
                 pRet->setResultString(resultString);
                 retList.insert( pRet );
@@ -260,12 +263,12 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             nRet = NoRouteGroupDevice;
 
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
             retList.insert( pRet );
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << resultString << endl;
+                dout << CtiTime() << resultString << endl;
             }
         }
     }

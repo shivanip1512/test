@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:51 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -43,8 +43,8 @@ protected:
     LONG        _lmGroupId;
     LONG        _routeId;
 
-    RWCString   _operationalAddress;
-    RWCString   _loadNumber;
+    string   _operationalAddress;
+    string   _loadNumber;
 
 private:
 
@@ -58,15 +58,15 @@ public:
 
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
-    RWCString getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    RWCString getLoadNumber( void ) const;
+    string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    string getLoadNumber( void ) const;
     int getFunction( bool shed ) const;
 
     CtiTableSA205105Group& setLmGroupId( LONG newVal );
     CtiTableSA205105Group& setRouteId( LONG newVal );
-    CtiTableSA205105Group& setOperationalAddress( RWCString newVal );
-    CtiTableSA205105Group& setLoadNumber( RWCString newVal );
-    static RWCString getTableName( void );
+    CtiTableSA205105Group& setOperationalAddress( string newVal );
+    CtiTableSA205105Group& setLoadNumber( string newVal );
+    static string getTableName( void );
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

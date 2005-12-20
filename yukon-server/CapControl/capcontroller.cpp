@@ -120,7 +120,7 @@ void CtiCapController::stop()
 
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Forced to terminate." << endl;
+                dout << CtiTime() << " - Forced to terminate." << endl;
             }
         }
         else
@@ -132,7 +132,7 @@ void CtiCapController::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -147,7 +147,7 @@ void CtiCapController::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     try
@@ -162,7 +162,7 @@ void CtiCapController::stop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -180,7 +180,7 @@ void CtiCapController::controlLoop()
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            registerForPoints(*store->getCCSubstationBuses(RWDBDateTime().seconds()));
+            registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
         }
         store->setReregisterForPoints(FALSE);
         store->verifySubBusAndFeedersStates();
@@ -191,7 +191,7 @@ void CtiCapController::controlLoop()
         // 3 cparms, set for control loop wait scenerios - main, rcv msgs, send msgs
         loadControlLoopCParms();
 
-        RWDBDateTime currentDateTime;
+        CtiTime currentDateTime;
         RWOrdered substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
@@ -213,7 +213,7 @@ void CtiCapController::controlLoop()
                     {//every thirty minutes tell the user if the control thread is still alive
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Controller thread pulse" << endl;
+                            dout << CtiTime() << " - Controller thread pulse" << endl;
                         }
                         lastThreadPulse = secondsFrom1901;
                         store->verifySubBusAndFeedersStates();
@@ -240,7 +240,7 @@ void CtiCapController::controlLoop()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
                 try
@@ -251,7 +251,7 @@ void CtiCapController::controlLoop()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
                 RWOrdered& pointChanges = multiDispatchMsg->getData();
@@ -288,11 +288,11 @@ void CtiCapController::controlLoop()
                                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         }
                                     }
-                                    else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                                    else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                     {
                                         if( !currentSubstationBus->getDisableFlag() &&
                                             !currentSubstationBus->getWaiveControlFlag() &&
-                                            currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )//intentionally left the ! off
+                                            stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                         {
                                             currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                         }
@@ -301,7 +301,7 @@ void CtiCapController::controlLoop()
                                 catch(...)
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
                             else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
@@ -331,7 +331,7 @@ void CtiCapController::controlLoop()
                                                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                        dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                                        dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                                                 }
 
                                                 currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, pilMessages);
@@ -348,7 +348,7 @@ void CtiCapController::controlLoop()
                                                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                   dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                                   dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
                                                 } 
                                                 //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
                                             }
@@ -365,7 +365,7 @@ void CtiCapController::controlLoop()
                                     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                     {
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                       dout << RWTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                       dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
                                     }
                                     int strategy = (long)currentSubstationBus->getVerificationStrategy();
 
@@ -375,7 +375,7 @@ void CtiCapController::controlLoop()
                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                              CtiLockGuard<CtiLogger> logger_guard(dout);
-                                             dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
                                         }
                                         currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, pilMessages);
                                         //currentSubstationBus->setPerformingVerificationFlag(TRUE);
@@ -397,7 +397,7 @@ void CtiCapController::controlLoop()
                                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                           dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
                                         } 
 
                                         //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
@@ -412,7 +412,7 @@ void CtiCapController::controlLoop()
                                 {
                                     if( !currentSubstationBus->getDisableFlag() &&
                                         !currentSubstationBus->getWaiveControlFlag() &&
-                                        currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )//intentionally left the ! off
+                                        stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                     {
                                         currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                     }
@@ -420,7 +420,7 @@ void CtiCapController::controlLoop()
                                 catch(...)
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
 
@@ -437,14 +437,14 @@ void CtiCapController::controlLoop()
                             catch(...)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
                     }
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
 
                     try
@@ -459,7 +459,7 @@ void CtiCapController::controlLoop()
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
                 
@@ -476,7 +476,7 @@ void CtiCapController::controlLoop()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
                 try
@@ -492,7 +492,7 @@ void CtiCapController::controlLoop()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 /*******************************************************************/
                 try
@@ -507,7 +507,7 @@ void CtiCapController::controlLoop()
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                         /*try
                         {
@@ -516,7 +516,7 @@ void CtiCapController::controlLoop()
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         } */
                         CtiCCExecutorFactory f1;
                         CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
@@ -527,7 +527,7 @@ void CtiCapController::controlLoop()
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                         try
                         {
@@ -536,7 +536,7 @@ void CtiCapController::controlLoop()
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                         try
                         {
@@ -545,20 +545,20 @@ void CtiCapController::controlLoop()
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 
                 /** JULIE Adding _clientMsgQueue to hopefully solve deadlock issue **/
                 try
                 {
-                    RWTime tempTime;
+                    CtiTime tempTime;
                     CtiCCExecutorFactory f;
                     RWCollectable* clientMsg = NULL;
 
@@ -585,7 +585,7 @@ void CtiCapController::controlLoop()
                                             catch(...)
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                             }
                                             try
                                             {
@@ -594,18 +594,18 @@ void CtiCapController::controlLoop()
                                             catch(...)
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                             }
                                         }
                                         catch(...)
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                         }
 
                                         //delete clientMsg;
                                     }
-                                    if (RWTime::now().seconds() - tempTime.seconds() <= 1) 
+                                    if (CtiTime::now().seconds() - tempTime.seconds() <= 1) 
                                     {
                                         break;
                                     }
@@ -613,13 +613,13 @@ void CtiCapController::controlLoop()
                                 catch(...)
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
                             catch(...)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         };
                         //delete clientMsg;
@@ -628,14 +628,14 @@ void CtiCapController::controlLoop()
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
 
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             /********************************************************************/
             }
@@ -651,7 +651,7 @@ void CtiCapController::controlLoop()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
     }
@@ -662,7 +662,7 @@ void CtiCapController::controlLoop()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -677,42 +677,42 @@ CtiConnection* CtiCapController::getDispatchConnection()
     {
         if( _dispatchConnection == NULL || (_dispatchConnection != NULL && _dispatchConnection->verifyConnection()) )
         {
-            RWCString str;
+            string str;
             char var[128];
-            RWCString dispatch_host = "127.0.0.1";
+            string dispatch_host = "127.0.0.1";
 
             strcpy(var, "DISPATCH_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                dispatch_host = str.data();
+                dispatch_host = str.c_str();
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << dispatch_host << endl;
+                    dout << CtiTime() << " - " << var << ":  " << dispatch_host << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             int dispatch_port = VANGOGHNEXUS;
 
             strcpy(var, "DISPATCH_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                dispatch_port = atoi(str.data());
+                dispatch_port = atoi(str.c_str());
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << dispatch_port << endl;
+                    dout << CtiTime() << " - " << var << ":  " << dispatch_port << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             //throw away the old connection if there was one that couldn't be verified
@@ -720,7 +720,7 @@ CtiConnection* CtiCapController::getDispatchConnection()
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Dispatch Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Dispatch Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 delete _dispatchConnection;
                 _dispatchConnection = NULL;
@@ -742,7 +742,7 @@ CtiConnection* CtiCapController::getDispatchConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
     }
@@ -759,42 +759,42 @@ CtiConnection* CtiCapController::getPILConnection()
     {
         if( _pilConnection == NULL || (_pilConnection != NULL && _pilConnection->verifyConnection()) )
         {
-            RWCString str;
+            string str;
             char var[128];
-            RWCString pil_host = "127.0.0.1";
+            string pil_host = "127.0.0.1";
 
             strcpy(var, "PIL_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                pil_host = str.data();
+                pil_host = str.c_str();
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << pil_host << endl;
+                    dout << CtiTime() << " - " << var << ":  " << pil_host << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             INT pil_port = PORTERINTERFACENEXUS;
 
             strcpy(var, "PIL_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
             {
-                pil_port = atoi(str.data());
+                pil_port = atoi(str.c_str());
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << var << ":  " << pil_port << endl;
+                    dout << CtiTime() << " - " << var << ":  " << pil_port << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
             //throw away the old connection if there was one that couldn't be
@@ -802,7 +802,7 @@ CtiConnection* CtiCapController::getPILConnection()
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Porter Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Porter Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 delete _pilConnection;
                 _pilConnection = NULL;
@@ -824,7 +824,7 @@ CtiConnection* CtiCapController::getPILConnection()
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
     }
@@ -856,7 +856,7 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     while(!done);
@@ -888,7 +888,7 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     while(!done);
@@ -903,7 +903,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Registering for point changes." << endl;
+        dout << CtiTime() << " - Registering for point changes." << endl;
     }
 
     CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
@@ -1007,14 +1007,14 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
     }
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - End Registering for point changes." << endl;
+        dout << CtiTime() << " - End Registering for point changes." << endl;
     }
 
     /*for(LONG x=0;x<regMsg->getCount();x++)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         LONG pid = regMsg->operator [](x);
-        dout << RWTime() << " - Registered for Point Id: " << pid << endl;
+        dout << CtiTime() << " - Registered for Point Id: " << pid << endl;
     }*/
     try
     {
@@ -1023,7 +1023,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     regMsg = NULL;
 }
@@ -1050,9 +1050,9 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                 {
                     dbChange = (CtiDBChangeMsg *)message;
                     if( dbChange->getSource() != CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE &&
-                        ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
-                          (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
-                          dbChange->getDatabase() == ChangePointDb ||
+                        ( (dbChange->getDatabase()  == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
+                          ( dbChange->getDatabase()  == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
+                          dbChange->getDatabase()  == ChangePointDb ||
                           (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ||
                           dbChange->getDatabase() == ChangeCBCStrategyDb ||
                           dbChange->getDatabase() == ChangePAOScheduleDB ))
@@ -1060,7 +1060,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Relevant database change.  Setting reload flag." << endl;
+                            dout << CtiTime() << " - Relavant database change.  Setting reload flag." << endl;
                         }
 
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
@@ -1077,7 +1077,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             objType = CtiCCSubstationBusStore::Strategy;
                         }
-                        else if (dbChange->getDatabase() == ChangePAODb && !(dbChange->getObjectType().compareTo("cap bank", RWCString::ignoreCase)))
+                        else if (dbChange->getDatabase() == ChangePAODb && !(stringCompareIgnoreCase(dbChange->getObjectType(),"cap bank")))
                         {
                             objType = CtiCCSubstationBusStore::CapBank;
                         }
@@ -1145,7 +1145,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Command Message received from Dispatch" << endl;
+                        dout << CtiTime() << " - Command Message received from Dispatch" << endl;
                     }
 
                     cmdMsg = (CtiCommandMsg *)message;
@@ -1157,19 +1157,19 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             if( _CC_DEBUG & CC_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Replied to Are You There message." << endl;
+                                dout << CtiTime() << " - Replied to Are You There message." << endl;
                             }
                         }
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Received not supported Command Message from Dispatch with Operation: "
+                        dout << CtiTime() << " - Received not supported Command Message from Dispatch with Operation: "
                              << cmdMsg->getOperation() << ", and Op String: " << cmdMsg->getOpString() << endl;
                     }
                 }
@@ -1195,15 +1195,15 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     char tempstr[64] = "";
                     _itoa(message->isA(),tempstr,10);
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - message->isA() = " << tempstr << endl;
-                    dout << RWTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
+                    dout << CtiTime() << " - message->isA() = " << tempstr << endl;
+                    dout << CtiTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
                 }
         }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return;
 }
@@ -1227,12 +1227,12 @@ DOUBLE convertPowerFactorToSend(DOUBLE powerFactor)
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
     {
         char tempchar[80];
-        RWCString outString = "Point Data, ID:";
+        string outString = "Point Data, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
         outString += " Val:";
@@ -1240,10 +1240,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
         _snprintf(tempchar,80,"%.*f",precision,value);
         outString += tempchar;
         outString += " Time: ";
-        outString += RWDBDateTime(timestamp).asString();
+        outString += CtiTime(timestamp).asString();
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << outString.data() << endl;
+        dout << CtiTime() << " - " << outString.c_str() << endl;
     }
 
     BOOL found = FALSE;
@@ -1264,7 +1264,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
             {
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Last Point Update: " << currentSubstationBus->LastCurrentVarPointUpdateTime().asString() << endl;
+                    dout << CtiTime() << " - Last Point Update: " << currentSubstationBus->LastCurrentVarPointUpdateTime().asString() << endl;
                 }*/
                 currentSubstationBus->setLastCurrentVarPointUpdateTime(timestamp);
                 currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
@@ -1280,7 +1280,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
             if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
             {
-                if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                 {
                     currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()));
                 }
@@ -1296,18 +1296,19 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 }
             }
             //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-            else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-                        !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )) 
+
+            else if( !( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                        !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )) 
             {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             found = TRUE;
             //break;
         }
         else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
         {
-            if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+            if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits) )
             {
                 DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
@@ -1330,10 +1331,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 }
             }
             //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-            else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+            else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
             {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             found = TRUE;
            // break;
@@ -1363,7 +1364,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         /*{
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
+                            dout << CtiTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
                         }*/
                         currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
                         currentFeeder->setNewPointDataReceivedFlag(TRUE);
@@ -1379,7 +1380,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                     if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                     {
-                        if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                        if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits) )
                         {
                             currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()));
                         }
@@ -1395,18 +1396,19 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                     }
                     //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-                                !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) ) )
+                    else if( !( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ) )
+
                     {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     found = TRUE;
                    // break;
                 }
                 else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                 {
-                    if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                    if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
                     {
                         DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
                         currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
@@ -1429,10 +1431,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                     }
                     //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                    else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
                     {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     found = TRUE;
                    // break;
@@ -1471,7 +1473,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
-                                if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                 {
                                     for(LONG x=0;x<ccFeeders.entries();x++)
                                     {
@@ -1563,7 +1565,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 {
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
+                        dout << CtiTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
                     }*/
                     currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
                     currentFeeder->setNewPointDataReceivedFlag(TRUE);
@@ -1579,7 +1581,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                 if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                 {
-                    if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                    if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits) )
                     {
                         currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()));
                     }
@@ -1595,18 +1597,19 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     }
                 }
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-                            !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )) 
+                else if( !( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) ||
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )) 
+
                 {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 found = TRUE;
                // break;
             }
             else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
             {
-                if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits) )
                 {
                     DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
                     currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
@@ -1629,10 +1632,10 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     }
                 }
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
                 {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 found = TRUE;
                // break;
@@ -1691,7 +1694,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         currentSubstationBus->setRecentlyControlledFlag(FALSE);
                         currentFeeder->setRecentlyControlledFlag(FALSE);
-                        if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
                             for(LONG x=0;x<ccFeeders.entries();x++)
                             {
@@ -1752,12 +1755,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
+void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString, ULONG secondsFrom1901 )
 {
+    string commandString = _commandString;
+
+//This Variable is passed in but is not ever called on.   -TS
+    string resultString  = _resultString;//Not used as far as I can see
+
+
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Porter return received." << endl;
+        dout << CtiTime() << " - Porter return received." << endl;
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -1787,7 +1796,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
                     {
                         if( status == 0 )
                         {
-                            commandString.toLower();
+                            std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
                             if( commandString == "control open" )
                             {
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -1799,7 +1808,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
                         }
                         else
                         {
-                            commandString.toLower();
+                            std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
                             if( commandString == "control open" )
                             {
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
@@ -1811,7 +1820,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Porter Return caused a Cap Bank to go into Failed State!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
+                                dout << CtiTime() << " - Porter Return caused a Cap Bank to go into Failed State!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
                             }
 
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
@@ -1835,12 +1844,12 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
+void CtiCapController::signalMsg( long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         char tempchar[64] = "";
-        RWCString outString = "Signal Message received. Point ID:";
+        string outString = "Signal Message received. Point ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
         outString += " Tags:";
@@ -1848,7 +1857,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
         outString += tempchar;
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << outString.data() << "  Text: "
+        dout << CtiTime() << " - " << outString << "  Text: "
                       << text << " Additional Info: " << additional << endl;
     }
 
@@ -1910,7 +1919,7 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
     {
         /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Sending following message to Dispatch:" << endl;
+            dout << CtiTime() << " - Sending following message to Dispatch:" << endl;
             message->dump();
         }*/
         getDispatchConnection()->WriteConnQue(message);
@@ -1918,7 +1927,7 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1939,7 +1948,7 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1960,7 +1969,7 @@ void CtiCapController::confirmCapBankControl( CtiRequestMsg* pilRequest )
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -1980,39 +1989,39 @@ RWPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
  */
 void CtiCapController::loadControlLoopCParms()
 {
-    RWCString str;
+    string str;
     char var[128];
 
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_NORMAL_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_delay = atoi(str);
+    control_loop_delay = atoi(str.c_str());
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_INMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_inmsg_delay = atoi(str);
+    control_loop_inmsg_delay = atoi(str.c_str());
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 
     strcpy(var, "CAP_CONTROL_CONTROL_LOOP_OUTMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-    control_loop_outmsg_delay = atoi(str);
+    control_loop_outmsg_delay = atoi(str.c_str());
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - " << var << ":  " << str << endl;
+        dout << CtiTime() << " - " << var << ":  " << str << endl;
     }
     }
 }

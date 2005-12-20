@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/09/29 21:19:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.12  2005/12/20 17:20:29  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.11  2005/09/29 21:19:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -42,6 +45,7 @@
 #ifndef __DEV_KV2_H__
 #define __DEV_KV2_H__
 
+#include <string>
 
 #include "dev_meter.h"
 #include "dlldefs.h"
@@ -52,6 +56,8 @@
 #include "mgr_point.h"
 #include "device.h"
 #include "dllyukon.h"
+
+using std::string;
 
 class IM_EX_DEVDB CtiDeviceKV2 : public CtiDeviceMeter
 {
@@ -78,13 +84,13 @@ public:
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
-                            RWTime                    &TimeNow,
+                            CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist< OUTMESS >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
-                           RWTime                     &TimeNow,
+                           CtiTime                     &TimeNow,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
@@ -114,7 +120,7 @@ private:
     CtiProtocolANSI_kv2   _ansiProtocol;
 
     UINT _parseFlags;
-    RWCString _result_string;
+    string _result_string;
     unsigned long _lastLPTime;
 
 };

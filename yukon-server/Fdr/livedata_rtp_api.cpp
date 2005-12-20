@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.1 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.2 $
+ * DATE         :  $Date: 2005/12/20 17:17:15 $
  */
 
 #include "livedata_rtp_api.h"
@@ -199,7 +199,7 @@ void LiveDataApi::defaultMessageHandler(const char *pzText,
   short upperCode = lCode >> 16;
   short lowerCode = lCode & 0xffff;
   CtiLockGuard<CtiLogger> doubt_guard(dout);
-  dout << RWTime() << " LiveData: " << pzText << " (" << upperCode << "," << lowerCode << ")" << endl;
+  dout << CtiTime() << " LiveData: " << pzText << " (" << upperCode << "," << lowerCode << ")" << endl;
 
 }
 

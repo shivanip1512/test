@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcrequest.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 #ifndef __MSG_PCREQUEST_H__
 #define __MSG_PCREQUEST_H__
 
-#include <rw/cstring.h>
 
 #include "dlldefs.h"
 #include "message.h"
@@ -27,7 +26,7 @@ class IM_EX_MSG CtiRequestMsg : public CtiMessage
 private:
 
     long        _device_id;
-    RWCString   _command_string;
+    string   _command_string;
     long        _route_id;             // What route is to be used to address this device..
     int         _macro_offset;         // Which offset into a macro route should be attempted if the routeid is a macro.
     int         _attempt_num;          // Number of tries on this particular route. A zero or one have the same effect.
@@ -43,7 +42,7 @@ public:
     CtiRequestMsg();
 
     CtiRequestMsg(long device_id,
-                     const RWCString& command_string = RWCString(),
+                     const string& command_string,
                      long user_message_id = 0L,
                      long transmission_id = 0L,
                      long route_id        = 0L,
@@ -62,8 +61,8 @@ public:
     long DeviceId() const;
     CtiRequestMsg& setDeviceId( long device_id );
 
-    const RWCString& CommandString() const;
-    CtiRequestMsg& setCommandString(const RWCString& command_string);
+    const string& CommandString() const;
+    CtiRequestMsg& setCommandString(const string& command_string);
 
     long RouteId() const;
     CtiRequestMsg& setRouteId(long route_id);

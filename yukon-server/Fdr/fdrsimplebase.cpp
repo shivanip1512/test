@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2005/10/27 23:24:27 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2005/12/20 17:17:14 $
  */
 
 #include <windows.h>
@@ -23,10 +23,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>
@@ -59,9 +58,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 /** 
  * Constructor
  */ 
-CtiFDRSimple::CtiFDRSimple(string interfaceName) : CtiFDRInterface( RWCString(interfaceName.c_str()) )
+CtiFDRSimple::CtiFDRSimple(string interfaceName) : CtiFDRInterface( string(interfaceName.c_str()) )
 {
-   CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+   CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
    getReceiveFromList().setPointList( recList );
 
    recList = NULL;
@@ -221,7 +220,7 @@ bool CtiFDRSimple::loadTranslationLists()
   {
     // make a list with all received points
     CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                   RWCString (FDR_INTERFACE_RECEIVE));
+                                                   string (FDR_INTERFACE_RECEIVE));
 
 
     RWDBStatus dbStatus = pointList->loadPointList();
@@ -291,7 +290,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
                     const PointQuality_t quality)
 {
 
-  RWTime rwTime(rwEpoch + timestamp);
+  CtiTime rwTime(timestamp);
   double valueConverted = 0;
 
   if (ctiPoint->getLastTimeStamp() < rwTime)
@@ -374,12 +373,12 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
  */ 
 void CtiFDRSimple::readThisConfig()
 {
-  RWCString  keyDbReloadRate = "FDR_" + getInterfaceName() + "_DB_RELOAD_RATE";
-  RWCString  keyDebugMode = "FDR_" + getInterfaceName() + "_DB_DEBUG_MODE";
+  string  keyDbReloadRate = "FDR_" + getInterfaceName() + "_DB_RELOAD_RATE";
+  string  keyDebugMode = "FDR_" + getInterfaceName() + "_DB_DEBUG_MODE";
 
   setReloadRate( iConfigParameters.getValueAsInt( keyDbReloadRate, 86400 ) );
 
-  RWCString   tempStr = iConfigParameters.getValueAsString( keyDebugMode );
+  string   tempStr = iConfigParameters.getValueAsString( keyDebugMode );
 
   setInterfaceDebugMode( tempStr.length() > 0 );
 

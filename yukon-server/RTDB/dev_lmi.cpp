@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/12/20 17:20:23 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,8 +67,8 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
     CtiPointDataMsg             *pt_msg;
     CtiPointBase                *point;
     CtiPointNumeric             *pNumeric;
-    RWCString                    resultString;
-    RWTime                       Now;
+    string                      resultString;
+    CtiTime                       Now;
 
     Protocol::Interface::pointlist_t points;
     Protocol::Interface::pointlist_t::iterator itr;
@@ -140,7 +140,7 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -189,8 +189,8 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             nRet = NoExecuteRequestMethod;
 
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("LMI RTUs do not support this command"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("LMI RTUs do not support this command"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -234,7 +234,7 @@ INT CtiDeviceLMI::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -260,7 +260,7 @@ INT CtiDeviceLMI::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -285,7 +285,7 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -302,18 +302,18 @@ INT CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceLMI::ErrorDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CtiDeviceLMI::ErrorDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
 {
     return 0;
 }
 
 
-INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> points;
 
-    RWCString resultString, info;
+    string resultString, info;
     CtiReturnMsg *retMsg;
 
     if( !ErrReturn && !_lmi.recvCommResult(InMessage, outList) )
@@ -331,15 +331,15 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< Cti
     return 0;
 }
 
-void CtiDeviceLMI::processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, RWCString &info )
+void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, string &info )
 {
     CtiReturnMsg    *retMsg,
                     *vgMsg;
     CtiPointDataMsg *tmpMsg;
     CtiPointBase    *point;
     CtiPointNumeric *pNumeric;
-    RWCString        resultString;
-    RWTime           Now;
+    string        resultString;
+    CtiTime           Now;
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
     vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
@@ -401,7 +401,7 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtr
         }
     }
 
-    if( !info.isNull() )
+    if( !info.empty() )
     {
         retMsg->setResultString(retMsg->ResultString() + info);
     }
@@ -455,9 +455,9 @@ bool CtiDeviceLMI::hasPreloadWork() const
                   //  and also, maybe all of this could be merged with Scanner when the Grand Unification takes place
 }
 
-RWTime CtiDeviceLMI::getPreloadEndTime() const
+CtiTime CtiDeviceLMI::getPreloadEndTime() const
 {
-    RWTime preload_end, now, next_preload;
+    CtiTime preload_end, now, next_preload;
 
     //  make sure at least half of the period has passed before we allow another download - this should protect us against transmitting too soon
     next_preload = _lastPreload + ((_seriesv.getTickTime() * 60) / 2);
@@ -516,7 +516,7 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << OutMessage->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << OutMessage->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _lmi.queueCode(OutMessage);
@@ -547,7 +547,7 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool retval = false;
-    RWTime now;
+    CtiTime now;
 
     if( !isInhibited() )
     {
@@ -629,14 +629,14 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 
     if(OutMessage)
     {
-        incQueueProcessed(1, RWTime());
+        incQueueProcessed(1, CtiTime());
     }
 
     return retval;
 }
 
 
-RWTime CtiDeviceLMI::selectCompletionTime() const
+CtiTime CtiDeviceLMI::selectCompletionTime() const
 {
     return getPreloadEndTime();
 }
@@ -644,7 +644,7 @@ RWTime CtiDeviceLMI::selectCompletionTime() const
 
 LONG CtiDeviceLMI::deviceQueueCommunicationTime() const
 {
-    RWTime Now;
+    CtiTime Now;
 
     long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250),
          fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
@@ -708,7 +708,7 @@ void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
                 paox_lmi.setTransmitTime(paox.getCycleTime() - paox.getTransmitTime());
 
                 _lmi_exclusion.addExclusion(paox_lmi);
-                _lmi_exclusion.setEvaluateNextAt(RWTime::now());
+                _lmi_exclusion.setEvaluateNextAt(CtiTime::now());
             }
 
             _exclusion.addExclusion(paox);
@@ -717,8 +717,8 @@ void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
                 _exclusion.getCycleTimeExclusion().getCycleOffset() != _seriesv.getTimeOffset() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Exclusion and Series 5 cycle time and/or offset do not match for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " **** (" << _exclusion.getCycleTimeExclusion().getCycleTime()   << ") (" << (_seriesv.getTickTime() * 60) << "), ("
+                dout << CtiTime() << " **** Exclusion and Series 5 cycle time and/or offset do not match for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** (" << _exclusion.getCycleTimeExclusion().getCycleTime()   << ") (" << (_seriesv.getTickTime() * 60) << "), ("
                                               << _exclusion.getCycleTimeExclusion().getCycleOffset() << ") (" <<  _seriesv.getTimeOffset()     << ")" << endl;
             }
 
@@ -734,7 +734,7 @@ void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -749,7 +749,7 @@ void CtiDeviceLMI::clearExclusions()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -770,7 +770,7 @@ bool CtiDeviceLMI::isDeviceExcluded(long id) const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bstatus;
@@ -787,12 +787,12 @@ void CtiDeviceLMI::setExecuting(bool set)
     return;
 }
 
-bool CtiDeviceLMI::isExecutionProhibited(const RWTime &now, LONG did)
+bool CtiDeviceLMI::isExecutionProhibited(const CtiTime &now, LONG did)
 {
     return _lmi_exclusion.isExecutionProhibited(now, did);
 }
 
-size_t CtiDeviceLMI::setExecutionProhibited(unsigned long id, RWTime& releaseTime)
+size_t CtiDeviceLMI::setExecutionProhibited(unsigned long id, CtiTime& releaseTime)
 {
     return _lmi_exclusion.setExecutionProhibited(id,releaseTime);
 }

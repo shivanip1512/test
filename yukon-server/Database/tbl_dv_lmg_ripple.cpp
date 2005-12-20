@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmg_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,8 @@
 #include <assert.h>
 #include "logger.h"
 #include "tbl_dv_lmg_ripple.h"
+
+#include "rwutil.h"
 
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup() :
 _controlBits((char)0, (size_t)7),      // 7 zeros
@@ -56,7 +58,7 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setRouteID( const LONG a_route
     return *this;
 }
 
-RWCString CtiTableRippleLoadGroup::getControlBits() const
+string CtiTableRippleLoadGroup::getControlBits() const
 {
     return _controlBits;
 }
@@ -67,7 +69,7 @@ BYTE  CtiTableRippleLoadGroup::getControlBit(INT i)
     return _controlBits[(size_t)i];
 }
 
-CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setControlBits( const RWCString str )
+CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setControlBits( const string str )
 {
     _controlBits = str;
     return *this;
@@ -79,7 +81,7 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setControlBit( INT pos, const 
     return *this;
 }
 
-RWCString  CtiTableRippleLoadGroup::getRestoreBits() const
+string  CtiTableRippleLoadGroup::getRestoreBits() const
 {
     return _restoreBits;
 }
@@ -90,7 +92,7 @@ BYTE  CtiTableRippleLoadGroup::getRestoreBit(INT i)
     return _restoreBits[(size_t)i];
 }
 
-CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setRestoreBits( const RWCString str )
+CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setRestoreBits( const string str )
 {
     _restoreBits = str;
     return *this;
@@ -104,7 +106,7 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setRestoreBit( INT pos, const 
 
 void CtiTableRippleLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["shedtime"] <<
@@ -118,9 +120,9 @@ void CtiTableRippleLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
     // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
-RWCString CtiTableRippleLoadGroup::getTableName()
+string CtiTableRippleLoadGroup::getTableName()
 {
-    return RWCString("LMGroupRipple");
+    return string("LMGroupRipple");
 }
 
 LONG CtiTableRippleLoadGroup::getDeviceID() const
@@ -174,7 +176,7 @@ RWDBStatus CtiTableRippleLoadGroup::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -208,7 +210,7 @@ RWDBStatus CtiTableRippleLoadGroup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -235,14 +237,14 @@ RWDBStatus CtiTableRippleLoadGroup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["controlvalue"].assign(getControlBits() ) <<
-    table["restorevalue"].assign(getRestoreBits() ) <<
+    table["controlvalue"].assign(getControlBits().c_str() ) <<
+    table["restorevalue"].assign(getRestoreBits().c_str() ) <<
     table["shedtime"].assign(getShedTime() ) <<
     table["routeid"].assign(getRouteID() );
 
@@ -261,7 +263,7 @@ RWDBStatus CtiTableRippleLoadGroup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );
@@ -306,7 +308,7 @@ bool CtiTableRippleLoadGroup::copyMessage(BYTE *bptr, bool shed) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return false;

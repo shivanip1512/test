@@ -7,11 +7,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_golay.cpp,v $
+* Revision 1.4  2005/12/20 17:16:06  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.3.2.1  2005/07/12 21:08:32  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.3  2005/02/17 19:02:57  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -55,7 +61,7 @@ LONG CtiTableGolayGroup::getRouteId()
     return ;
 }
 
-RWCString CtiTableGolayGroup::getOperationalAddress()
+string CtiTableGolayGroup::getOperationalAddress()
 {
     return ;
 }
@@ -85,7 +91,7 @@ CtiTableGolayGroup& CtiTableGolayGroup::setRouteId(LONG newVal)
     return ;
 }
 
-CtiTableGolayGroup& CtiTableGolayGroup::setOperationalAddress(RWCString newVal)
+CtiTableGolayGroup& CtiTableGolayGroup::setOperationalAddress(string newVal)
 {
     return ;
 }
@@ -105,9 +111,9 @@ CtiTableGolayGroup& CtiTableGolayGroup::setVirtualTimeout(int newVal)
     return ;
 }
 
-RWCString CtiTableGolayGroup::getTableName()
+string CtiTableGolayGroup::getTableName()
 {
-    return RWCString("LMGroupSA205Or105");
+    return string("LMGroupSA205Or105");
 }
 
 void CtiTableGolayGroup::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)

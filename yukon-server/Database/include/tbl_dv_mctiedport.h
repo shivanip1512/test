@@ -10,21 +10,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/08/11 20:12:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -40,7 +38,7 @@ class IM_EX_CTIYUKONDB CtiTableDeviceMCTIEDPort : public CtiMemDBObject
 protected:
 
     LONG      _deviceID;
-    RWCString _password;
+    string _password;
     INT       _connectedIED,
               _iedScanRate,
               _defaultDataClass,
@@ -74,9 +72,9 @@ public:
     int                      &getIEDType();
     CtiTableDeviceMCTIEDPort  setIEDType(IEDTypes type);
 
-    RWCString                 getPassword() const;
-    RWCString                &getPassword();
-    CtiTableDeviceMCTIEDPort  setPassword(RWCString &password);
+    string                 getPassword() const;
+    string                &getPassword();
+    CtiTableDeviceMCTIEDPort  setPassword(string &password);
 
     int                       getIEDScanRate() const;
     int                      &getIEDScanRate();
@@ -98,7 +96,7 @@ public:
 
     void DecodeDatabaseReader(RWDBReader &rdr);
 
-    static RWCString getTableName();
+    static string getTableName();
 
     virtual RWDBStatus Restore();
     virtual RWDBStatus Insert();

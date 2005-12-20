@@ -1,7 +1,6 @@
 #ifndef __CONFIGPARMS_H__
 #define __CONFIGPARMS_H__
 
-#include <rw\cstring.h>
 #include "dlldefs.h"
 #include "cparms.h"
 
@@ -9,15 +8,15 @@
 extern "C" {
 #endif
 
-IM_EX_C_CPARM BOOL            isConfigOpt(RWCString key);
-IM_EX_C_CPARM int             RefreshConfigParameters(RWCString FileName = DefaultMasterConfigFileName);
+IM_EX_C_CPARM BOOL            isConfigOpt(const string& key);
+IM_EX_C_CPARM int             RefreshConfigParameters(const string& FileName = DefaultMasterConfigFileName);
 IM_EX_C_CPARM void            DumpConfigParms();
-IM_EX_C_CPARM BOOL            getConfigValueAsString(RWCString Key, char *targ, int len);
+IM_EX_C_CPARM BOOL            getConfigValueAsString(const string& Key, char *targ, int len);
 
-typedef BOOL (*CPARM_ISCONFIG)(RWCString);
-typedef int  (*CPARM_REFRESH)(RWCString);
+typedef BOOL (*CPARM_ISCONFIG)(string);
+typedef int  (*CPARM_REFRESH)(string);
 typedef void (*CPARM_DUMPCONFIG)(void);
-typedef BOOL (*CPARM_GETCONFIGSTRING)(RWCString, char*, int);
+typedef BOOL (*CPARM_GETCONFIGSTRING)(string, char*, int);
 
 #ifdef __cplusplus
 }

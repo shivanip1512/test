@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/06/15 19:17:48 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <iomanip>
-using namespace std;
+
 
 #include "cmdparse.h"
 #include "dsm2.h"
@@ -101,7 +101,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     INT       status = NORMAL;
     bool      xmore = true;
-    RWCString resultString;
+    string resultString;
     BYTE      ABuf[ABUFSIZE];
     ULONG     BytesWritten;
 
@@ -146,7 +146,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                         OutMessage->Buffer.ASt.DlcRoute.Feeder    = Versacom.getBus();
 
                         /* build preamble message */
-                        memset(&ABuf, 0, ABUFSIZE * sizeof(BYTE));
+                        ::memset(&ABuf, 0, ABUFSIZE * sizeof(BYTE));
                         APreamble (ABuf, OutMessage->Buffer.ASt);
                         A_Word(ABuf + 3, OutMessage->Buffer.ASt, TRUE);  // Duke needs/wants double a word
 
@@ -154,7 +154,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                          *  I now have the ABuf I need to stuff in a versacom word.
                          *  AWord is safely in the ABuf, blank the VSt!
                          */
-                        memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
+                        ::memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
 
                         OutMessage->Buffer.VSt.DlcRoute.Amp      = Versacom.getAmp();
                         OutMessage->Buffer.VSt.DlcRoute.Feeder   = Versacom.getBus();
@@ -180,7 +180,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                         OutMessage->Buffer.VSt.VData.DataLength  = 7;
 
                         // Copy in the AWord from the buffer!
-                        memcpy(OutMessage->Buffer.VSt.VData.Data, ABuf, OutMessage->Buffer.VSt.VData.DataLength);
+                        ::memcpy(OutMessage->Buffer.VSt.VData.Data, ABuf, OutMessage->Buffer.VSt.VData.DataLength);
 
                         /*
                          * Use this method to manipulate the Versacom protocol
@@ -198,7 +198,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                             resultString = "Unsupported command on AWord/Versacom route: " + getName();
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << resultString << endl;
+                                dout << CtiTime() << " " << resultString << endl;
                             }
                         }
                         break;
@@ -210,7 +210,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                 resultString = "Versacom routes do not support non-AWord commands (yet) Rte: " + getName();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << resultString << endl;
+                    dout << CtiTime() << " " << resultString << endl;
                 }
             }
         }
@@ -220,7 +220,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route " + getName() + " has no associated transmitter device";
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << resultString << endl;
+            dout << CtiTime() << " " << resultString << endl;
         }
         status = -1;
     }
@@ -230,7 +230,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";
 
-        RWCString   desc, actn;
+        string   desc, actn;
 
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
@@ -239,7 +239,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     }
 
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -271,7 +271,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     bool           xmore = true;
     ULONG          i, j;
     USHORT         Length;
-    RWCString      resultString;
+    string      resultString;
 
     VSTRUCT        VSt;
 
@@ -320,13 +320,13 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                 /* Build MasterComm header */
                 if((status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length)) != NORMAL)
                 {
-                    cout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
+                    cout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
                     delete NewOutMessage;
                 }
                 else
                 {
                     /* Copy message into buffer */
-                    memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
+                    ::memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
                     outList.insert( NewOutMessage );
                 }
             }
@@ -347,7 +347,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
         resultString = "Route " + getName() + " did not transmit Versacom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {

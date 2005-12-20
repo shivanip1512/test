@@ -5,6 +5,7 @@ all:
          @$(MAKE) -nologo -f makepch.mak	
          @$(MAKE) -nologo -f makebase.mak
          @$(MAKE) -nologo -f makecmdline.mak
+	 @$(MAKE) -nologo -f maketest.mak
 
 
 clean:
@@ -25,6 +26,7 @@ copy:
         @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makebase.mak $@
         @$(MAKE) -nologo -f makecmdline.mak $@
+	@$(MAKE) -nologo -f maketest.mak $@
 
 
 deps:

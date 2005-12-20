@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/10/19 16:53:22 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.10  2005/12/20 17:17:14  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.9  2005/10/19 16:53:22  dsutton
       Added the ability to set the connection timeout using a cparm.  Interfaces will
       kill the connection if they haven't heard anything from the other system after
@@ -90,10 +93,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -134,7 +136,7 @@ const CHAR * CtiFDR_Rdex::KEY_OUTBOUND_SEND_INTERVAL = "FDR_RDEX_SEND_INTERVAL";
 const CHAR * CtiFDR_Rdex::KEY_LINK_TIMEOUT = "FDR_RDEX_LINK_TIMEOUT_SECONDS";
 // Constructors, Destructor, and Operators
 CtiFDR_Rdex::CtiFDR_Rdex()
-: CtiFDRSingleSocket(RWCString("RDEX"))
+: CtiFDRSingleSocket(string("RDEX"))
 {   
     setRegistered (false);
     init();
@@ -160,12 +162,12 @@ bool CtiFDR_Rdex::isRegistrationNeeded()
 int CtiFDR_Rdex::readConfig()
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPortNumber (atoi(tempStr));
+        setPortNumber (atoi(tempStr.c_str()));
     }
     else
     {
@@ -175,7 +177,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
     if (tempStr.length() > 0)
     {
-        setLinkTimeout (atoi(tempStr));
+        setLinkTimeout (atoi(tempStr.c_str()));
     }
     else
     {
@@ -185,7 +187,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
     {
-        setTimestampReasonabilityWindow (atoi (tempStr));
+        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
     }
     else
     {
@@ -195,7 +197,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -205,7 +207,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -223,7 +225,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
     if (tempStr.length() > 0)
     {
-        setOutboundSendRate (atoi(tempStr));
+        setOutboundSendRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -233,7 +235,7 @@ int CtiFDR_Rdex::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_INTERVAL);
     if (tempStr.length() > 0)
     {
-        setOutboundSendInterval (atoi(tempStr));
+        setOutboundSendInterval (atoi(tempStr.c_str()));
     }
     else
     {
@@ -244,17 +246,17 @@ int CtiFDR_Rdex::readConfig()
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Rdex port number " << getPortNumber() << endl;
-        dout << RWTime() << " Rdex timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << RWTime() << " Rdex db reload rate " << getReloadRate() << endl;
-        dout << RWTime() << " Rdex queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << RWTime() << " Rdex send rate " << getOutboundSendRate() << endl;
-        dout << RWTime() << " Rdex send interval " << getOutboundSendInterval() << " second(s) " << endl;
+        dout << CtiTime() << " Rdex port number " << getPortNumber() << endl;
+        dout << CtiTime() << " Rdex timestamp window " << getTimestampReasonabilityWindow() << endl;
+        dout << CtiTime() << " Rdex db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " Rdex queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
+        dout << CtiTime() << " Rdex send rate " << getOutboundSendRate() << endl;
+        dout << CtiTime() << " Rdex send interval " << getOutboundSendInterval() << " second(s) " << endl;
 
         if (isInterfaceInDebugMode())
-            dout << RWTime() << " Rdex running in debug mode " << endl;
+            dout << CtiTime() << " Rdex running in debug mode " << endl;
         else
-            dout << RWTime() << " Rdex running in normal mode "<< endl;
+            dout << CtiTime() << " Rdex running in normal mode "<< endl;
     }
     return successful;
 }
@@ -263,34 +265,41 @@ int CtiFDR_Rdex::readConfig()
 bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
 
     try
     {
-        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation());
+       
+        boost::char_separator<char> sep1(";");
+        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+        if (!(tempString1 = *tok_iter).empty())
+        {
+            boost::char_separator<char> sep2(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+            tok_iter1++;
+            Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
+
+
+            tempString2 = *nextTempToken_.begin();
+            tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
 
             // skip the first part entirely for now
-        if (!(tempString1 = nextTranslate(";")).isNull())
-        {
-            // this in the translation name on rdex
-            RWCTokenizer nextTempToken(tempString1);
-
-            // do not care about the first part
-            nextTempToken(":");
-            tempString2 = nextTempToken(";");
             /**************************
             * as luck would have it, I need to allow colons in the translation names
             * because of this, I know the first character in tempString2 is the first : 
             * found.  I need what is left in the string after removing the colon
             ***************************
             */
-            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
 
             // now we have a translation name
-            if ( !tempString2.isNull() )
+            if ( !tempString2.empty() )
             {
                 // put category in final name
                 translationName= tempString2;
@@ -307,7 +316,7 @@ bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDe
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
         RWTHROW(e);
     }
 
@@ -317,7 +326,7 @@ bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDe
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
     }
     return successful;
 }
@@ -339,7 +348,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
     if (buffer != NULL)
     {
         // set the timestamp, everything else is based on type of message
-        strcpy (ptr->timestamp,  YukonToForeignTime (aPoint.getLastTimeStamp()));
+        strcpy (ptr->timestamp,  YukonToForeignTime (aPoint.getLastTimeStamp()).c_str());
 
         switch (aPoint.getPointType())
         {
@@ -349,14 +358,14 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
             case DemandAccumulatorPointType:
                 {
                     ptr->function = htonl (SINGLE_SOCKET_VALUE);
-                    strcpy (ptr->value.translation,aPoint.getTranslateName(getLayer()->getName()));
+                    strcpy (ptr->value.translation,aPoint.getTranslateName(getLayer()->getName()).c_str());
                     ptr->value.quality = YukonToForeignQuality (aPoint.getQuality());
                     ptr->value.longValue = htonieeef (aPoint.getValue());
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Analog/Calculated point " << aPoint.getPointID();
+                        dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
                         dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
                         dout << " value " << aPoint.getValue() << " to " << getLayer()->getName() << endl;;
                     }
@@ -368,7 +377,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     if (aPoint.isControllable())
                     {
                         ptr->function = htonl (SINGLE_SOCKET_CONTROL);
-                        strcpy (ptr->control.translation,aPoint.getTranslateName(getLayer()->getName()));
+                        strcpy (ptr->control.translation,aPoint.getTranslateName(getLayer()->getName()).c_str());
 
                         // check for validity of the status, we only have open or closed for rdex
                         if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
@@ -379,7 +388,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
+                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
                             }
                         }
                         else
@@ -389,7 +398,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << RWTime() << " Control point " << aPoint.getPointID();
+                                 dout << CtiTime() << " Control point " << aPoint.getPointID();
                                  dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
                                  if (aPoint.getValue() == OPENED)
                                  {
@@ -407,7 +416,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     {
                         ptr->function = htonl (SINGLE_SOCKET_STATUS);
 
-                        strcpy (ptr->status.translation,aPoint.getTranslateName(getLayer()->getName()));
+                        strcpy (ptr->status.translation,aPoint.getTranslateName(getLayer()->getName()).c_str());
                         ptr->status.quality = YukonToForeignQuality (aPoint.getQuality());
 
                         // check for validity of the status, we only have open or closed for rdex
@@ -419,7 +428,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
+                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
                             }
                         }
                         else
@@ -429,7 +438,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << RWTime() << " Status point " << aPoint.getPointID();
+                                 dout << CtiTime() << " Status point " << aPoint.getPointID();
                                  dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
                                  if (aPoint.getValue() == OPENED)
                                  {
@@ -474,13 +483,13 @@ CHAR *CtiFDR_Rdex::buildForeignSystemHeartbeatMsg ()
         if (buffer != NULL)
         {
             ptr->function = htonl (SINGLE_SOCKET_NULL);
-            strcpy (ptr->timestamp, YukonToForeignTime (RWTime()));
+            strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Not building heartbeat message, not registered " << endl;
+        dout << CtiTime() << " Not building heartbeat message, not registered " << endl;
     }
     return buffer;
 }
@@ -491,17 +500,17 @@ int CtiFDR_Rdex::getMessageSize(CHAR *aBuffer)
 }
 
 
-RWCString CtiFDR_Rdex::decodeClientName(CHAR * aBuffer)
+string CtiFDR_Rdex::decodeClientName(CHAR * aBuffer)
 {
     RdexInterface_t *ptr = (RdexInterface_t *)aBuffer;
 
     if (ptr == NULL)
     {
-        return RWCString("RDEX");
+        return string("RDEX");
     }
     else
     {
-        return RWCString(ptr->registration.clientName);
+        return string(ptr->registration.clientName);
     }
 
 }
@@ -539,7 +548,7 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Time sync message received from " << getLayer()->getName() << endl;
+                    dout << CtiTime() << " Time sync message received from " << getLayer()->getName() << endl;
                 }
                 break;
             }
@@ -548,7 +557,7 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << RWCString (inet_ntoa(getLayer()->getInBoundConnection()->getAddr().sin_addr)) <<  endl;;
+                    dout << CtiTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << string (inet_ntoa(getLayer()->getInBoundConnection()->getAddr().sin_addr)) <<  endl;;
                 }
                 break;
             }
@@ -556,7 +565,7 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unknown message type " << ntohl (rdex->function) <<  " received from " << getInterfaceName() << endl;
+                dout << CtiTime() << " Unknown message type " << ntohl (rdex->function) <<  " received from " << getInterfaceName() << endl;
             }
     }
 
@@ -568,11 +577,11 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
 {
     int retVal = !NORMAL;
     Rdex_Registration *data = (Rdex_Registration*)aData;
-    RWCString           desc;
-    RWCString           action;
+    string           desc;
+    string           action;
 
 
-    getLayer()->setName (RWCString (data->clientName));
+    getLayer()->setName (string (data->clientName));
     CHAR *buffer=NULL;
     /**************************
     * we allocate a rdex message here and it will be deleted
@@ -585,14 +594,14 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
     if (buffer != NULL)
     {
         ptr->function = htonl (SINGLE_SOCKET_ACKNOWLEDGEMENT);
-        strcpy (ptr->timestamp, YukonToForeignTime (RWTime()));
+        strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
         strcpy (ptr->serverName, "YUKON_RDEX");
         Sleep (500);  // this a dangerous way to do this
         if (getLayer()->write (buffer))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Registration acknowledgement to " << getLayer()->getName() << " failed " << endl;
+                dout << CtiTime() << " Registration acknowledgement to " << getLayer()->getName() << " failed " << endl;
             }
 
             action = getLayer()->getName() + ": Acknowledgment";
@@ -605,7 +614,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
             setRegistered (true);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getLayer()->getName() << " has registered with Yukon" << endl;
+                dout << CtiTime() << " " << getLayer()->getName() << " has registered with Yukon" << endl;
             }
 
             action = getLayer()->getName() + ": Registration";
@@ -625,20 +634,20 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
     int retVal = !NORMAL;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality;
     FLOAT               value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool               flag = true;
     CHAR               action[60];
-    RWCString          desc;
+    string          desc;
 
     // accept nothing until we are registered
     if (isRegistered())
     {
         // convert to our name
-        translationName = RWCString (data->value.translation);
+        translationName = string (data->value.translation);
 
         // see if the point exists
          flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -657,13 +666,13 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
             value += point.getOffset();
 
             timestamp = ForeignToYukonTime (data->timestamp);
-            if (timestamp == rwEpoch)
+            if (timestamp == PASTDATE)
             {
-                desc = getInterfaceName() + RWCString (" analog point received with an invalid timestamp ") + RWCString (data->timestamp);
+                desc = getInterfaceName() + string (" analog point received with an invalid timestamp ") + string (data->timestamp);
                 _snprintf(action,60,"%s for pointID %d", 
                           translationName,
                           point.getPointID());
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
                 retVal = !NORMAL;
             }
             else
@@ -681,7 +690,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Analog point " << translationName;
+                    dout << CtiTime() << " Analog point " << translationName;
                     dout << " value " << value << " from " << getLayer()->getName() << " assigned to point " << point.getPointID() << endl;;
                 }
                 retVal = NORMAL;
@@ -695,12 +704,12 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Translation for analog point " << translationName;
+                        dout << CtiTime() << " Translation for analog point " << translationName;
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
-                    desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
+                    desc = getInterfaceName() + string (" analog point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             else
@@ -709,13 +718,13 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Analog point " << translationName;
+                        dout << CtiTime() << " Analog point " << translationName;
                         dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
                     }
                     CHAR pointID[20];
-                    desc = getInterfaceName() + RWCString (" analog point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             retVal = !NORMAL;
@@ -729,19 +738,19 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
     int retVal = !NORMAL;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality;
     FLOAT               value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool                 flag = true;
     CHAR                action[60];
-    RWCString           desc;
+    string           desc;
 
     // accept nothing until we are registered
     if (isRegistered())
     {
-        translationName = RWCString (data->status.translation);
+        translationName = string (data->status.translation);
     
         // see if the point exists
         flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -753,29 +762,29 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
             value = ForeignToYukonStatus (data->status.value);
             timestamp = ForeignToYukonTime (data->timestamp);
     
-            if ((timestamp == rwEpoch) || (value == Rdex_Invalid))
+            if ((timestamp == PASTDATE) || (value == Rdex_Invalid))
             {
-                if (timestamp == rwEpoch)
+                if (timestamp == PASTDATE)
                 {
-                    desc = getInterfaceName() + RWCString (" status point received with an invalid timestamp ") + RWCString (data->timestamp);
+                    desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->timestamp);
                     _snprintf(action,60,"%s for pointID %d", 
                               translationName,
                               point.getPointID());
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Status point " << translationName;
+                        dout << CtiTime() << " Status point " << translationName;
                         dout << " from " << getLayer()->getName()<< " has an invalid state " <<ntohl(data->status.value) << endl;
                     }
                     CHAR state[20];
-                    desc = getInterfaceName() + RWCString (" status point received with an invalid state ") + RWCString (itoa (ntohl(data->status.value),state,10));
+                    desc = getInterfaceName() + string (" status point received with an invalid state ") + string (itoa (ntohl(data->status.value),state,10));
                     _snprintf(action,60,"%s for pointID %d", 
                               translationName,
                               point.getPointID());
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
                 retVal = !NORMAL;                                                                                                          
             }
@@ -794,7 +803,7 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Status point " << translationName;
+                    dout << CtiTime() << " Status point " << translationName;
                     if (value == OPENED)
                     {
                         dout << " new state: Open " ;
@@ -816,12 +825,12 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Translation for status point " <<  translationName;
+                        dout << CtiTime() << " Translation for status point " <<  translationName;
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
-                    desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
+                    desc = getInterfaceName() + string (" status point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             else
@@ -830,13 +839,13 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Status point " << translationName;
+                        dout << CtiTime() << " Status point " << translationName;
                         dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
                     }
                     CHAR pointID[20];
-                    desc = getInterfaceName() + RWCString (" status point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             retVal = !NORMAL;
@@ -850,20 +859,20 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
     int retVal = !NORMAL;
     CtiPointDataMsg     *pData;
     RdexInterface_t  *data = (RdexInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality =NormalQuality;
     FLOAT               value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool                 flag = true;
     CHAR           action[60];
-    RWCString      desc;
+    string      desc;
     
     // accept nothing until we are registered
     if (isRegistered())
     {
         // convert to our name
-        translationName = RWCString (data->control.translation);
+        translationName = string (data->control.translation);
     
         // see if the point exists
         flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -877,15 +886,15 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
+                    dout << CtiTime() << " Control point " << translationName;
                     dout << " from " << getLayer()->getName()<< " has an invalid control state " <<ntohl(data->control.value) << endl;
                 }
                 CHAR state[20];
-                desc = getInterfaceName() + RWCString (" control point received with an invalid state ") + RWCString (itoa (ntohl(data->control.value),state,10));
+                desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohl(data->control.value),state,10));
                 _snprintf(action,60,"%s for pointID %d", 
                           translationName,
                           point.getPointID());
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
                 retVal = !NORMAL;
             }
             else if ((controlState == OPENED || controlState == CLOSED))
@@ -903,7 +912,7 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
+                    dout << CtiTime() << " Control point " << translationName;
                     if (controlState == OPENED)
                     {
                         dout << " control: Open " ;
@@ -926,12 +935,12 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Translation for control point " <<  translationName;
+                        dout << CtiTime() << " Translation for control point " <<  translationName;
                         dout << " from " << getLayer()->getName() << " was not found" << endl;
                     }
-                    desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
+                    desc = getInterfaceName() + string (" control point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
 
             }
@@ -941,15 +950,15 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << translationName;
+                        dout << CtiTime() << " Control point " << translationName;
                         dout << " received from " << getLayer()->getName();
                         dout << " was not configured receive for control for point " << point.getPointID() << endl;
                     }
-                    desc = getInterfaceName() + RWCString (" control point is not configured to receive controls");
+                    desc = getInterfaceName() + string (" control point is not configured to receive controls");
                     _snprintf(action,60,"%s for pointID %d", 
                               translationName,
                               point.getPointID());
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             else
@@ -958,14 +967,14 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << translationName;
+                        dout << CtiTime() << " Control point " << translationName;
                         dout << " received from " << getLayer()->getName();
                         dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
                     }
                     CHAR pointID[20];
-                    desc = getInterfaceName() + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
+                    logEvent (desc,string (action));
                 }
             }
             retVal = !NORMAL;
@@ -1041,7 +1050,7 @@ ULONG CtiFDR_Rdex::YukonToForeignStatus (ULONG aStatus)
 }
 
 
-RWTime CtiFDR_Rdex::ForeignToYukonTime (PCHAR aTime)
+CtiTime CtiFDR_Rdex::ForeignToYukonTime (PCHAR aTime)
 {
     struct tm ts;
 
@@ -1054,7 +1063,7 @@ RWTime CtiFDR_Rdex::ForeignToYukonTime (PCHAR aTime)
                 &ts.tm_min,
                 &ts.tm_sec) != 6)
     {
-        return(RWTime(rwEpoch));
+        return(CtiTime(PASTDATE));
     }
 
     ts.tm_year -= 1900;
@@ -1070,19 +1079,19 @@ RWTime CtiFDR_Rdex::ForeignToYukonTime (PCHAR aTime)
         ts.tm_isdst = FALSE;
     }
 
-    RWTime returnTime(&ts);
+    CtiTime returnTime(&ts);
 
-    // if RWTime can't make a time ???
-    if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
+    // if CtiTime can't make a time ???
+    if ((returnTime.seconds() > (CtiTime::now().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
     {
-        return(RWTime(rwEpoch));
+        return(CtiTime(PASTDATE));
     }
 
 
     return returnTime;
 }
 
-RWCString CtiFDR_Rdex::YukonToForeignTime (RWTime aTimeStamp)
+string CtiFDR_Rdex::YukonToForeignTime (CtiTime aTimeStamp)
 {
     CHAR      tmp[30];
 
@@ -1092,12 +1101,12 @@ RWCString CtiFDR_Rdex::YukonToForeignTime (RWTime aTimeStamp)
     * note: uninitialized points come across as 11-10-1990 
     ********************************
     */
-    if (aTimeStamp < RWTime(RWDate(1,1,2001)))
+    if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
     {
-        aTimeStamp = RWTime();
+        aTimeStamp = CtiTime();
     }
 
-    RWDate tmpDate (aTimeStamp);
+    CtiDate tmpDate (aTimeStamp);
 
    // Place it into the Valmet structure */
    _snprintf (tmp,
@@ -1115,7 +1124,7 @@ RWCString CtiFDR_Rdex::YukonToForeignTime (RWTime aTimeStamp)
       tmp[14] = 'D';
    }
 
-   return(RWCString (tmp));
+   return(string (tmp));
 }
 
 /****************************************************************************************

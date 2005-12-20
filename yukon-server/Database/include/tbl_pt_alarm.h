@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/01/27 17:47:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,13 +23,10 @@
 #include <limits.h>
 
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
 
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/datetime.h>
@@ -110,11 +107,11 @@ protected:
 
 private:
 
-   RWCString statesAsString( );
-   RWCString excludeAsString( );
+   string statesAsString( );
+   string excludeAsString( );
 
-   static UINT resolveExcludeStates( RWCString &str );
-   static UINT resolveAutoAcknowledgeStates( RWCString &str );
+   static UINT resolveExcludeStates( string &str );
+   static UINT resolveAutoAcknowledgeStates( string &str );
 
 public:
 
@@ -137,7 +134,7 @@ public:
    CtiTablePointAlarming& setPointID( const LONG &aLong );
    CtiTablePointAlarming& setRecipientID( const LONG &aLong );
    CtiTablePointAlarming& setAlarmCategory( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmCategory( const RWCString str );
+   CtiTablePointAlarming& setAlarmCategory( const string str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
    CtiTablePointAlarming& setAutoAckStates( const UINT &aInt );
    CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
@@ -146,7 +143,7 @@ public:
 
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static RWCString getTableName();
+   static string getTableName();
 
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();

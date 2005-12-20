@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/02/16 21:03:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -65,7 +65,7 @@ public:
     CtiPoint* getControlOffsetEqual(LONG pao, INT Offset);
     CtiPoint* getOffsetTypeEqual(LONG pao, INT Offset, INT Type);
     CtiPoint* getEqual(LONG Pt);
-    CtiPoint* getEqualByName(LONG pao, RWCString pname);
+    CtiPoint* getEqualByName(LONG pao, string pname);
     bool isIdValid(LONG Pt);
 
 };

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/11/17 19:15:56 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
 #include "dsm2.h"
 #include "rte_xcu.h"
@@ -40,7 +39,6 @@ using namespace std;
 #include "cparms.h"
 
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
-
 static INT NoQueingVersacom = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE", FALSE);
 static INT NoQueingExpresscom = gConfigParms.getValueAsInt("EXPRESSCOM_CCU_NOQUEUE", FALSE);
 static INT NoQueingDLC;
@@ -86,7 +84,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ERROR: Route " << getName() << " has no  associated transmitter device" << endl;
+        dout << CtiTime() << " ERROR: Route " << getName() << " has no  associated transmitter device" << endl;
         status = -1;
     }
 
@@ -103,8 +101,8 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
 {
     INT            i, j;
     INT            status = NORMAL;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     BSTRUCT        BSt;
     VSTRUCT        VSt;
 
@@ -134,7 +132,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     /* the transmitter is an EMETCON device so load up the Preamble, B, and C words */
     /* Versacom wrapped into Emetcon requires faking the word build routines into supporting the structure */
 
-    memset(&BSt, 0, sizeof(BSTRUCT));
+    ::memset(&BSt, 0, sizeof(BSTRUCT));
 
     /* Load up the hunks of the B structure that we need */
     BSt.Port                = _transmitterDevice->getPortID();
@@ -197,9 +195,9 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                 BSt.Length = ((VSt.Nibbles - 6) + 1) / 2;
 
                 /* clear the memory buffer */
-                memset (BSt.Message, 0, sizeof (BSt.Message));
+                ::memset (BSt.Message, 0, sizeof (BSt.Message));
                 /* copy it into a cleared out message buffer */
-                memcpy (BSt.Message, VSt.Message + 3, BSt.Length);
+                ::memcpy (BSt.Message, VSt.Message + 3, BSt.Length);
             }
             else
             {
@@ -281,7 +279,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
         resultString = "Route " + getName() + " did not transmit Versacom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -306,7 +304,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     INT            i, j;
     INT            status = NORMAL;
     bool           xmore = true;
-    RWCString      resultString;
+    string      resultString;
     CtiDeviceCCU  *trxDev;
 
 
@@ -353,7 +351,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     else
     {
         xmore = false;
-        resultString = "Emetcon DLC commands failed with error " + CtiNumStr(status) + " on route " + getName();
+        resultString = "Emetcon DLC commands failed with error " + CtiNumStr(status) + string(" on route ") + getName();
     }
 
     while( prot.entries() > 0 )
@@ -397,7 +395,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << " 062101 CGP CHECK CHECK CHECK " << endl;
                                 }
 
@@ -420,7 +418,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         }
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -446,8 +444,8 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
 {
     INT            i, j;
     INT            status = NORMAL;
-    RWCString      resultString;
-    RWCString      byteString;
+    string      resultString;
+    string      byteString;
     BSTRUCT        BSt;
     VSTRUCT        VSt;
 
@@ -736,7 +734,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
             //really not sure what to do here
             status = BADRANGE;
             resultString = "Message length was too large for expresscom in emetcon message. Length: " + CtiNumStr(size) + " Maximum: " + CtiNumStr(MAX_EXPRESSCOM_IN_EMETCON_LENGTH);
-            CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
             if(retReturn)
             {
@@ -763,7 +761,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
         resultString = "Route " + getName() + " did not transmit Expresscom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
     if(retReturn)
     {
@@ -866,7 +864,7 @@ void CtiRouteCCU::DecodeDatabaseReader(RWDBReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     Carrier.DecodeDatabaseReader(rdr);
 }
@@ -880,7 +878,7 @@ void CtiRouteCCU::DecodeRepeaterDatabaseReader(RWDBReader &rdr)
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         Rpt.DecodeDatabaseReader(rdr);
         RepeaterList.insert(Rpt);

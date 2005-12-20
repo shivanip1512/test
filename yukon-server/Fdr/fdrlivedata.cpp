@@ -11,8 +11,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.2 $
- * DATE         :  $Date: 2005/04/15 16:55:33 $
+ * REVISION     :  $Revision: 1.3 $
+ * DATE         :  $Date: 2005/12/20 17:17:13 $
  */
 
 #include <windows.h>
@@ -26,10 +26,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>
@@ -160,14 +159,14 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPoint *ctiPoint)
 
 
   // we're interested in the first (and only) destination
-  RWCString address = ctiPoint->getDestinationList()[0].getTranslationValue("Address");
-  info.pointAddress = atoi(address);
+  string address = ctiPoint->getDestinationList()[0].getTranslationValue("Address");
+  info.pointAddress = atoi(address.c_str());
 
-  RWCString dataTypeStr = info.ctiPoint->getDestinationList()[0].getTranslationValue("Data Type");
+  string dataTypeStr = info.ctiPoint->getDestinationList()[0].getTranslationValue("Data Type");
 
   try
   {
-    info.liveDataType = typeFactory->getDataType(dataTypeStr.data());
+    info.liveDataType = typeFactory->getDataType(dataTypeStr.c_str());
   
   
     _pointMap.insert(PointMap::value_type(info.pointAddress, info));
@@ -238,7 +237,7 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
   if (fdrInterface->_okayToWrite)
   {
     time_t updateTime;
-    time(&updateTime);
+    ::time(&updateTime);
   
     
   
@@ -307,8 +306,8 @@ void CtiFDRLiveData::readThisConfig()
   CtiFDRSimple::readThisConfig();
 
 
-  _serverIpAddress = (const char*)iConfigParameters.getValueAsString( KEY_SERVER_IP_ADDRESS, "127.0.0.1" );
-  _serverPort = atoi( iConfigParameters.getValueAsString( KEY_SERVER_PORT, "2000" ) );
+  _serverIpAddress = iConfigParameters.getValueAsString( KEY_SERVER_IP_ADDRESS, "127.0.0.1" );
+  _serverPort = atoi( iConfigParameters.getValueAsString( KEY_SERVER_PORT, "2000" ).c_str() );
 
 
   if( isDebugLevel( STARTUP_FDR_DEBUGLEVEL ) )

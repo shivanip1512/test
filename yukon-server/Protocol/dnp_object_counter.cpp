@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:19:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ int Counter::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -123,7 +123,7 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _valid = false;
@@ -141,7 +141,7 @@ int Counter::serializeVariation(unsigned char *buf, int variation) const
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return 0;
@@ -200,7 +200,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Counter object, value " << val << endl;
     }
 
@@ -275,7 +275,7 @@ int CounterEvent::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -306,7 +306,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
         case Delta32BitWithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_toc.getSeconds() + rwEpoch);
+            tmpMsg->setTime(_toc.getSeconds());
             tmpMsg->setMillis(_toc.getMilliseconds());
 
             break;
@@ -316,7 +316,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Counter Event object, value " << val << endl;
     }
 
@@ -372,7 +372,7 @@ int CounterFrozen::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - in CounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - in CounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -415,7 +415,7 @@ CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -449,7 +449,7 @@ CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Counter object, value " << val << endl;
     }
 

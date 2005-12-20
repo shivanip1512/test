@@ -8,14 +8,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "tbl_base.h"
+#include "resolvers.h"
+
+#include "rwutil.h"
+
+using std::transform;
 
 CtiTableDeviceBase::CtiTableDeviceBase() :
     _alarmInhibit(false),
@@ -86,11 +91,11 @@ bool  CtiTableDeviceBase::useRadioDelays() const
     return _useRadioDelay;
 }
 
-RWCString CtiTableDeviceBase::getTableName() { return RWCString("Device"); }
+string CtiTableDeviceBase::getTableName() { return string("Device"); }
 
 void CtiTableDeviceBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table( getTableName() );
+    RWDBTable devTbl = db.table( getTableName().c_str() );
 
     selector <<
         devTbl["deviceid"] <<
@@ -112,7 +117,7 @@ void CtiTableDeviceBase::DumpData()
 void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
     INT iTemp;
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -120,14 +125,14 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     }
 
     rdr["alarminhibit"] >> rwsTemp;
-    rwsTemp.toLower();
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
     if(rwsTemp.length() > 0)
     {
         _alarmInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);
     }
 
     rdr["controlinhibit"] >> rwsTemp;
-    rwsTemp.toLower();
+    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
     if(rwsTemp.length() > 0)
     {
         _controlInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);

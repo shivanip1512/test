@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -283,7 +283,7 @@ public:
          if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Port has indicated a connected device swap. " << endl;
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
          }
@@ -368,7 +368,7 @@ public:
       return retVal;
    }
 
-   virtual RWCString getPassword() const       { return getIED().getPassword(); }
+   virtual string getPassword() const       { return getIED().getPassword(); }
 
 };
 #endif // #ifndef __DEV_IED_H__

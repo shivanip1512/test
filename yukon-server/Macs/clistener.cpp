@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/05/26 20:57:43 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,8 @@
 
 #include "clistener.h"
 #include "dllbase.h"
+
+using std::vector;
 
 #include <rw/toolpro/inetaddr.h>
 
@@ -79,7 +81,7 @@ void CtiMCClientListener::interrupt(int id)
        if( gMacsDebugLevel & MC_DEBUG_CONN )
        {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " Unknown exception in CtiMCClientListener::interrupt()" << endl;
+            dout << CtiTime() << " Unknown exception in CtiMCClientListener::interrupt()" << endl;
        }
    }
 }
@@ -108,7 +110,7 @@ void CtiMCClientListener::BroadcastMessage(CtiMessage* msg)
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                    dout << CtiTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
                 }
                 _connections[i]->write(replicated_msg);
             }
@@ -117,7 +119,7 @@ void CtiMCClientListener::BroadcastMessage(CtiMessage* msg)
     catch(...)
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << __FILE__ << " (" << __LINE__ <<
+        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
     delete msg;
@@ -149,7 +151,7 @@ void CtiMCClientListener::checkConnections()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " Removing invalid connection." << endl;
+            dout << CtiTime() << " Removing invalid connection." << endl;
         }
     }
 }
@@ -175,7 +177,7 @@ void CtiMCClientListener::update(CtiObservable& observable)
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > dout_guard(dout);
-            dout << RWTime() << " CtiMCClientListener attempted to remove an unknown connection" << endl;
+            dout << CtiTime() << " CtiMCClientListener attempted to remove an unknown connection" << endl;
         }
     }
     else
@@ -208,7 +210,7 @@ void CtiMCClientListener::run()
 
         {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime()  << " Waiting for client connections." << endl;
+                dout << CtiTime()  << " Waiting for client connections." << endl;
         }
         for ( ; ; )
         {
@@ -217,7 +219,7 @@ void CtiMCClientListener::run()
 
             {
                 CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime()  << " Accepted a client connection." << endl;
+                dout << CtiTime()  << " Accepted a client connection." << endl;
             }
 
             CtiMCConnection* conn = new CtiMCConnection();
@@ -236,7 +238,7 @@ void CtiMCClientListener::run()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime() << " An exception occurred in CtiMCClientListener::run() - " << msg.why() << endl;
+            dout << CtiTime() << " An exception occurred in CtiMCClientListener::run() - " << msg.why() << endl;
         }
     }
 
@@ -245,7 +247,7 @@ void CtiMCClientListener::run()
 
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " Closing all client connections."  << endl;
+            dout << CtiTime()  << " Closing all client connections."  << endl;
         }
 
         for ( int i = 0; i < _connections.entries(); i++ )
@@ -261,7 +263,7 @@ void CtiMCClientListener::run()
     if( gMacsDebugLevel & MC_DEBUG_CONN )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()  << " Exiting CtiMCClientListener::run()" << endl;
+        dout << CtiTime()  << " Exiting CtiMCClientListener::run()" << endl;
     }
 }
 
@@ -290,7 +292,7 @@ void CtiMCClientListener::_check()
                     {
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime()  << " Connection closed, removing it." << _connections[i] << endl;
+                            dout << CtiTime()  << " Connection closed, removing it." << _connections[i] << endl;
                         }
 
                         delete _connections[i];
@@ -331,7 +333,7 @@ void CtiMCClientListener::_check()
 
             {
                 CtiLockGuard< CtiLogger > g(dout);
-                dout << RWTime()  << " Client listener shutting down all connections." << _connections.entries() << " connections..." << endl;
+                dout << CtiTime()  << " Client listener shutting down all connections." << _connections.entries() << " connections..." << endl;
             }
 
             //Before we exit try to close all the connections
@@ -347,14 +349,14 @@ void CtiMCClientListener::_check()
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << RWTime()  << " - CtiMCClientListener::check - " << msg.why() << endl;
+            cout << CtiTime()  << " - CtiMCClientListener::check - " << msg.why() << endl;
         }
     }
 
     if( gMacsDebugLevel & MC_DEBUG_CONN )
     {
         RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime()  << " - CtiClientListener::_check - exiting" << endl;
+        cout << CtiTime()  << " - CtiClientListener::_check - exiting" << endl;
     }
 }
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,12 +28,12 @@ class IM_EX_CTIYUKONDB CtiTableGroupRecipient : public RWMonitor< RWRecursiveLoc
 protected:
 
    LONG           _recipientID;
-   RWCString      _recipientName;
-   RWCString      _emailAddress;
+   string      _recipientName;
+   string      _emailAddress;
    INT            _emailSendType;            // 1 is a To: address, 2 is a CC: address
-   RWCString      _pagerNumber;
+   string      _pagerNumber;
    BOOL           _disabled;                 // This destination is currently disabled
-   RWCString      _recipientType;
+   string      _recipientType;
    BOOL           _isDirty;
 
 
@@ -54,20 +54,20 @@ public:
    LONG getRecipientID() const;
    CtiTableGroupRecipient& setRecipientID(LONG id);
 
-   const RWCString& getRecipientName() const;
-   CtiTableGroupRecipient& setRecipientName(const RWCString &str);
+   const string& getRecipientName() const;
+   CtiTableGroupRecipient& setRecipientName(const string &str);
 
-   const RWCString& getEmailAddress() const;
-   CtiTableGroupRecipient& setEmailAddress(const RWCString &str);
+   const string& getEmailAddress() const;
+   CtiTableGroupRecipient& setEmailAddress(const string &str);
 
    INT getEmailSendType() const;
    CtiTableGroupRecipient& setEmailSendType(INT type);
 
-   RWCString getRecipientType() const;
-   CtiTableGroupRecipient& setRecipientType(RWCString type);
+   string getRecipientType() const;
+   CtiTableGroupRecipient& setRecipientType(string type);
 
-   const RWCString& getPagerNumber() const;
-   CtiTableGroupRecipient& setPagerNumber(const RWCString &str);
+   const string& getPagerNumber() const;
+   CtiTableGroupRecipient& setPagerNumber(const string &str);
 
    bool isDisabled() const;
    CtiTableGroupRecipient& setDisabled(bool b = true);
@@ -79,7 +79,7 @@ public:
    void dump() const;
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static RWCString getTableName();
+   static string getTableName();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();
    virtual RWDBStatus Restore();

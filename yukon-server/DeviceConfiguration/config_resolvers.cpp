@@ -6,29 +6,30 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/11/03 17:50:27 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw\cstring.h>
-
+#include "rwutil.h"
 
 #include "config_resolvers.h"
 #include "logger.h"
+
+
 namespace Cti    {
 namespace Config {
 
 
-CtiConfig_type resolveConfigType(RWCString rwsTemp)
+CtiConfig_type resolveConfigType(string rwsTemp)
 {
     CtiConfig_type Ret = ConfigTypeInvalid;
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    CtiToLower(rwsTemp);
+    rwsTemp = trim(rwsTemp);
 
-    if(rwsTemp.contains("mct "))//note, if even a word ends in "...mct " it will go into this path. use caution
+    if(rwsTemp.find("mct ")!= string::npos)//note, if even a word ends in "...mct " it will go into this path. use caution
     {
         if(rwsTemp == "mct tou")
         {
@@ -84,17 +85,6 @@ CtiConfig_type resolveConfigType(RWCString rwsTemp)
         }
 
     }
-/*  else
-    {
-            if(rwsTemp == "config type general")
-            {
-                Ret = ConfigTypeGeneral;
-            }
-                else 
-            {
-                Ret = ConfigTypeInvalid;
-            }
-    }*/
 
     return Ret;
 }

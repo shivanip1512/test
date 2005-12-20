@@ -130,7 +130,7 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload, bool timeSync
     }
     else
     {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << payloadSize << " bytes in CtiIONNetworkLayer ctor;"
+        dout << CtiTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << payloadSize << " bytes in CtiIONNetworkLayer ctor;"
                                                                  << "  setting zero-length data payload, _ioState = Failed" << endl;
         netSize = sizeof( _netOut.header );
 
@@ -171,7 +171,7 @@ int CtiIONNetworkLayer::generate( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _ioState = Failed;
@@ -199,7 +199,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint -- _datalinkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint -- _datalinkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         //  error conditions propagate back up to the protocol object
@@ -245,7 +245,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") < _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") < _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             //  try to read/catch up until we get the one we expected
@@ -257,7 +257,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") > _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+                                dout << CtiTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") > _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
 
                             _ioState = Failed;
                         }
@@ -267,7 +267,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
                         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint -- network layer packet contains incorrect address **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint -- network layer packet contains incorrect address **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         _ioState = Failed;
@@ -293,7 +293,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ioState = Failed;

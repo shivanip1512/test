@@ -9,12 +9,20 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/07/25 16:40:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.7  2005/12/20 17:16:58  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.6  2005/07/25 16:40:53  cplender
 * Working on lmcontrolhistory for Minnkota.
+* Revision 1.5.4.2  2005/08/12 19:53:43  jliu
+* Date Time Replaced
+*
+* Revision 1.5.4.1  2005/07/14 22:26:55  jliu
+* RWCStringRemoved
 *
 * Revision 1.5  2004/12/01 20:15:04  cplender
 * LMControlHistory.
@@ -41,7 +49,8 @@
 
 #include <set>
 #include <map>
-using namespace std;
+using std::map;
+using std::set;
 
 #include "connection.h"
 #include "pendable.h"
@@ -108,7 +117,7 @@ public:
     void doPendingControls(bool bShutdown = false);
     void doPendingLimits(bool bShutdown = false);
     void doPendingPointData(bool bShutdown = false);
-    void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime(), int line = 0);
+    void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const CtiTime &thetime = CtiTime(), CtiTime &now = CtiTime(), int line = 0);
     // void dumpPendingOps( bool force = false  );
     void postControlStopPoint( CtiPendingPointOperations &ppc, bool doit = false);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );

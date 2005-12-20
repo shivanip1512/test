@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/25 14:36:22 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:22 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.14  2005/12/20 17:20:22  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.13  2005/10/25 14:36:22  cplender
 * Have reportControlStart use the command sent as the last command... it is for these guys.
 *
@@ -141,11 +144,11 @@ LONG CtiDeviceGroupSADigital::getRouteID()
 // This method determines what should be displayed in the "Description" column
 // of the systemlog table when something happens to this device
 //===================================================================================================================
-RWCString CtiDeviceGroupSADigital::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupSADigital::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
 
     tmpStr = "Group: " + getName();
@@ -185,7 +188,7 @@ void CtiDeviceGroupSADigital::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
 
@@ -201,7 +204,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         nRet = BADPARAM;
 
         resultString = " Cannot control SA Digital groups except with command \"control shed\"  :" + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -212,7 +215,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
     else
@@ -229,7 +232,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         {
             OutMessage->TargetID = getID();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
-            OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
+            OutMessage->ExpirationTime = CtiTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
             reportActionItemsToDispatch(pReq, parse, vgList);
 
@@ -237,12 +240,12 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             //  Form up the reply here since the ExecuteRequest function will consume the
             //  OutMessage.
             //
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
             {
-                resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+                resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
                 pRet->setStatus(nRet);
                 pRet->setResultString(resultString);
                 retList.insert( pRet );
@@ -260,7 +263,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             nRet = NoRouteGroupDevice;
 
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
             retList.insert( pRet );
 
             if(OutMessage)
@@ -271,7 +274,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << resultString << endl;
+                dout << CtiTime() << resultString << endl;
             }
         }
     }

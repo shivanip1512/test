@@ -3,12 +3,13 @@
 #include <winreg.h>
 
 #include <iostream>
+
 using namespace std;
 
 #include "cparms.h"
 
-IM_EX_CPARM RWCString DefaultMasterConfigFileName("..\\config\\master.cfg");
-IM_EX_CPARM RWCString ConfKeyRefreshRate("CONFIG_REFRESHRATE");
+IM_EX_CPARM string DefaultMasterConfigFileName("..\\config\\master.cfg");
+IM_EX_CPARM string ConfKeyRefreshRate("CONFIG_REFRESHRATE");
 
 //The location and name of the configuration file is
 //determined by a value in the registry
@@ -16,7 +17,7 @@ IM_EX_CPARM RWCString ConfKeyRefreshRate("CONFIG_REFRESHRATE");
 LPTSTR lpSubKey = "SOFTWARE\\Cannon Technologies\\CParms";
 LPTSTR lpValueName = "Config";
 
-IM_EX_CPARM CtiConfigParameters gConfigParms( RWCString() );   // Make the filename bool true on isNull()
+IM_EX_CPARM CtiConfigParameters gConfigParms( string() );   // Make the filename bool true on isNull()
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {

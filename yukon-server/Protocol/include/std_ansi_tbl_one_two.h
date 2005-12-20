@@ -14,16 +14,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_two.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:00 $
 *    History: 
       $Log: std_ansi_tbl_one_two.h,v $
+      Revision 1.7  2005/12/20 17:20:00  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_one_two.h
+      Revision 1.5.4.1  2005/07/12 21:08:43  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.6  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5.6.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.6
       Revision 1.5  2004/09/30 21:37:20  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -135,9 +144,9 @@ public:
 
     bool isCorrectData( int aOffset,int aUOM);
     int getRawIDCode( int aOffset );
-    RWCString getResolvedIDCode( int aOffset );
+    string getResolvedIDCode( int aOffset );
     int getRawTimeBase( int aOffset );
-    RWCString getResolvedTimeBase( int aOffset );
+    string getResolvedTimeBase( int aOffset );
     int getRawMultiplier( int aOffset );
     DOUBLE getResolvedMultiplier( int aOffset );
 
@@ -148,7 +157,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult(RWCString deviceName);
+    void printResult(const string& deviceName);
 
 
 private:

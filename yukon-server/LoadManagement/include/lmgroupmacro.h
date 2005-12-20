@@ -22,7 +22,7 @@
 
 #include "lmgroupbase.h"
 
-using namespace std;
+using std::vector;
 
 class CtiLMGroupMacro : public CtiLMGroupBase
 {

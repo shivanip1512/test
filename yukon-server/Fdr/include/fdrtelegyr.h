@@ -5,7 +5,6 @@
 
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
@@ -53,11 +52,11 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       int         _dbReloadInterval;
       int         _panicNumber;
 
-      RWCString   _path;
-      RWCString   _appName;
-      RWCString   _apiVersion;
+      string   _path;
+      string   _appName;
+      string   _apiVersion;
 
-      RWTime      _reloadTimer;
+      CtiTime      _reloadTimer;
 
       typedef CtiFDRInterface Inherited;
 
@@ -81,8 +80,8 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       bool isConnected( void );
       CtiFDRTelegyr & setConnected( bool conn );
    
-      RWCString getPath( void );
-      CtiFDRTelegyr & setPath( RWCString inPath );
+      string getPath( void );
+      CtiFDRTelegyr & setPath( string inPath );
    
       static const CHAR * TBLNAME_TELEGYR_GROUPS;
       static const CHAR * KEY_HI_REASONABILITY_FILTER;
@@ -128,7 +127,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       bool processCounter( APICLI_GET_CNT aPoint, int groupid, int group_type, int index );
       bool timeToReload( void );
       bool isReloadTime( void );
-      RWCString decipherReason( int transmissionReason );
+      string decipherReason( int transmissionReason );
       void buildAndRegisterGroups( void );
       bool connect( int controlCenterNumber, int &status );
       bool contact( int &status );

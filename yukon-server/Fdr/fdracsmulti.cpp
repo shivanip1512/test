@@ -23,6 +23,9 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.6  2005/12/20 17:17:12  tspar
+ *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+ *
  *      Revision 1.5  2005/10/28 19:27:01  tmack
  *      Added a configuration parameter to set the link timeout value.
  *
@@ -53,10 +56,10 @@
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
+
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
 #include <boost/tokenizer.hpp>
 
 #include "cparms.h"
@@ -101,7 +104,7 @@ const CHAR * CtiFDRAcsMulti::KEY_LINK_TIMEOUT = "FDR_ACSMULTI_LINK_TIMEOUT_SECON
                                     
 // Constructors, Destructor, and Operators
 CtiFDRAcsMulti::CtiFDRAcsMulti()
-: CtiFDRScadaServer(RWCString("ACSMULTI"))
+: CtiFDRScadaServer(string("ACSMULTI"))
 {   
     init();
     _helper = new CtiFDRScadaHelper<CtiAcsId>(this);
@@ -122,7 +125,7 @@ CtiFDRAcsMulti::~CtiFDRAcsMulti()
 int CtiFDRAcsMulti::readConfig()
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
     
     setPortNumber(iConfigParameters.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
 
@@ -157,7 +160,7 @@ int CtiFDRAcsMulti::readConfig()
     // default to true
     setUpdatePCTimeFlag (true);
     tempStr = iConfigParameters.getValueAsString(KEY_TIMESYNC_UPDATE, "true");
-    if (!tempStr.compareTo ("false",RWCString::ignoreCase))
+    if (!stringCompareIgnoreCase (tempStr,"false"))
     {
         setUpdatePCTimeFlag (false);
     }
@@ -285,11 +288,11 @@ bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, 
 
     try
     {
-        RWCString remoteNumber = pointDestination.getTranslationValue("Remote");
-        RWCString pointNumber = pointDestination.getTranslationValue("Point");
-        RWCString categoryCode = pointDestination.getTranslationValue("Category");
+        string remoteNumber = pointDestination.getTranslationValue("Remote");
+        string pointNumber = pointDestination.getTranslationValue("Point");
+        string categoryCode = pointDestination.getTranslationValue("Category");
         
-        if (remoteNumber.isNull() || pointNumber.isNull() || categoryCode.isNull())
+        if (remoteNumber.empty() || pointNumber.empty() || categoryCode.empty())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Unable to add destination " << pointDestination 
@@ -298,9 +301,9 @@ bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, 
         }
         
         CtiAcsId acsId;
-        acsId.RemoteNumber = atoi(remoteNumber);
-        acsId.PointNumber = atoi(pointNumber);
-        const char* temp = categoryCode; // should be: acsId.CategoryCode = categoryCode[0]
+        acsId.RemoteNumber = atoi(remoteNumber.c_str());
+        acsId.PointNumber = atoi(pointNumber.c_str());
+        const char* temp = categoryCode.c_str(); // should be: acsId.CategoryCode = categoryCode[0]
         acsId.CategoryCode = temp[0];
         acsId.ServerName = pointDestination.getDestination();
         
@@ -358,7 +361,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
         return false;
     }
     // set the timestamp, everything else is based on type of message
-    strcpy (ptr->TimeStamp,  YukonToForeignTime (point.getLastTimeStamp()));
+    strcpy (ptr->TimeStamp,  YukonToForeignTime (point.getLastTimeStamp()).c_str());
 
     ptr->Value.RemoteNumber = htons(acsId.RemoteNumber);
     ptr->Value.PointNumber = htons(acsId.PointNumber);
@@ -484,7 +487,7 @@ bool CtiFDRAcsMulti::buildForeignSystemHeartbeatMsg(char** buffer,
     if (acs != NULL)
     {
         ptr->Function = htons (SINGLE_SOCKET_NULL);
-        strcpy (ptr->TimeStamp, YukonToForeignTime (RWTime()));
+        strcpy (ptr->TimeStamp, YukonToForeignTime (CtiTime()).c_str());
     }
     *buffer = acs;
     bufferSize = sizeof (ACSInterface_t);
@@ -502,7 +505,7 @@ bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connectio
     ACSInterface_t     *acsData = (ACSInterface_t*)data;
     int                 quality;
     double              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Value.RemoteNumber,
                                     acsData->Value.CategoryCode,
@@ -522,7 +525,7 @@ bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connecti
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
     int                 quality;
     DOUBLE              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Status.RemoteNumber,
                                     acsData->Status.CategoryCode,
@@ -543,8 +546,8 @@ bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection& connect
     CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
     int                 quality =NormalQuality;
-    RWTime              timestamp;
-    RWCString           desc;
+    CtiTime             timestamp;
+    string              desc;
     CHAR                action[60];
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Control.RemoteNumber,
@@ -563,10 +566,10 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
-    RWTime              timestamp;
+    CtiTime              timestamp;
 
     timestamp = ForeignToYukonTime (acsData->TimeStamp,true);
-    if (timestamp == rwEpoch)
+    if (timestamp == PASTDATE)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -576,7 +579,7 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
         return false;
     }
 
-    RWTime now;
+    CtiTime now;
     // check if the stamp is inside the window
     if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
         timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
@@ -631,8 +634,8 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
                     std::ostringstream msg;
                     msg << getInterfaceName() << ": Request from " << connection
                         << " to change PC time has been processed.";
-                    RWCString desc(msg.str().c_str());
-                    RWCString action("New time = ");
+                    string desc(msg.str().c_str());
+                    string action("New time = ");
                     action += timestamp.asString();
                     logEvent (desc,action,true);
 
@@ -761,10 +764,10 @@ USHORT CtiFDRAcsMulti::YukonToForeignStatus (int aStatus)
 }
 
 
-RWTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
+CtiTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
 {
     struct tm ts;
-    RWTime retVal;
+    CtiTime retVal;
 
     if (sscanf (aTime,
                 "%4ld%2ld%2ld%2ld%2ld%2ld",
@@ -775,7 +778,7 @@ RWTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
                 &ts.tm_min,
                 &ts.tm_sec) != 6)
     {
-        retVal = rwEpoch;
+        retVal = PASTDATE;
     }
     else
     {
@@ -792,14 +795,14 @@ RWTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
             ts.tm_isdst = FALSE;
         }
 
-        RWTime returnTime(&ts);
+        CtiTime returnTime(&ts);
 
         if (aTimeSyncFlag)
         {
             // just check for validy
             if (!returnTime.isValid())
             {
-                retVal = rwEpoch;
+                retVal = PASTDATE;
             }
             else
             {
@@ -809,12 +812,12 @@ RWTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
         else
         {
             // if RWTime can't make a time or we are outside the window
-            if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) ||
-                (returnTime.seconds() < (RWTime::now().seconds() - getTimestampReasonabilityWindow())) ||
+            if ((returnTime.seconds() > (CtiTime::now().seconds() + getTimestampReasonabilityWindow())) ||
+                (returnTime.seconds() < (CtiTime::now().seconds() - getTimestampReasonabilityWindow())) ||
                 (!returnTime.isValid()))
-        //    if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
+        //    if ((returnTime.seconds() > (CtiTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
             {
-                retVal = rwEpoch;
+                retVal = PASTDATE;
             }
             else
             {
@@ -826,7 +829,7 @@ RWTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     return retVal;
 }
 
-RWCString CtiFDRAcsMulti::YukonToForeignTime (RWTime aTimeStamp)
+string CtiFDRAcsMulti::YukonToForeignTime (CtiTime aTimeStamp)
 {
     CHAR      tmp[30];
 
@@ -836,12 +839,12 @@ RWCString CtiFDRAcsMulti::YukonToForeignTime (RWTime aTimeStamp)
     * note: uninitialized points come across as 11-10-1990 
     ********************************
     */
-    if (aTimeStamp < RWTime(RWDate(1,1,2001)))
+    if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
     {
-        aTimeStamp = RWTime();
+        aTimeStamp = CtiTime();
     }
 
-    RWDate tmpDate (aTimeStamp);
+    CtiDate tmpDate (aTimeStamp);
 
 	// Place it into the ACS structure */
 	_snprintf (tmp,26,
@@ -858,7 +861,7 @@ RWCString CtiFDRAcsMulti::YukonToForeignTime (RWTime aTimeStamp)
 		tmp[14] = 'D';
 	}
 
-	return(RWCString (tmp));
+	return(string (tmp));
 }
 
 /****************************************************************************************

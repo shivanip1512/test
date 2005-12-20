@@ -43,7 +43,7 @@ CtiTelegyrGroup& CtiTelegyrGroup::operator=( const CtiTelegyrGroup &other )
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrGroup::getGroupName( void ) const
+string CtiTelegyrGroup::getGroupName( void ) const
 {
    return _groupName;
 }
@@ -51,7 +51,7 @@ RWCString CtiTelegyrGroup::getGroupName( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrGroup& CtiTelegyrGroup::setGroupName( RWCString grpName )
+CtiTelegyrGroup& CtiTelegyrGroup::setGroupName( string grpName )
 {
    _groupName = grpName;
    return *this;
@@ -60,7 +60,7 @@ CtiTelegyrGroup& CtiTelegyrGroup::setGroupName( RWCString grpName )
 //=================================================================================================================================
 //=================================================================================================================================
 
-RWCString CtiTelegyrGroup::getGroupType( void ) const
+string CtiTelegyrGroup::getGroupType( void ) const
 {
    return _groupType;
 }
@@ -68,7 +68,7 @@ RWCString CtiTelegyrGroup::getGroupType( void ) const
 //=================================================================================================================================
 //=================================================================================================================================
 
-CtiTelegyrGroup& CtiTelegyrGroup::setGroupType( RWCString grpType )
+CtiTelegyrGroup& CtiTelegyrGroup::setGroupType( string grpType )
 {
    _groupType = grpType;
    return *this;

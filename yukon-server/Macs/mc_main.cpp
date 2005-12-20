@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/04/26 22:31:17 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@
 
 #include <windows.h>
 
-#include <rw/rwtime.h>
+#include "ctitime.h"
 #include <rw/toolpro/winsock.h>
 
 #include "CServiceConfig.h"
@@ -78,7 +78,7 @@ int main(int argc, char* argv[] )
             //Process command line
             if (strcmp(argv[1], "-install") == 0)
             {
-                cout << RWTime()  << " - Installing as a service..." << endl;
+                cout << CtiTime()  << " - Installing as a service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_DEMAND_START,
@@ -89,7 +89,7 @@ int main(int argc, char* argv[] )
             }
             else if (strcmp(argv[1], "-auto") == 0)
             {
-                cout << RWTime()  << " - Installing as a service..." << endl;
+                cout << CtiTime()  << " - Installing as a service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_AUTO_START,
@@ -101,7 +101,7 @@ int main(int argc, char* argv[] )
             else
             if ( strcmp(argv[1], "-remove" ) == 0 )
             {
-                cout << RWTime()  << " - Removing service..." << endl;
+                cout << CtiTime()  << " - Removing service..." << endl;
                 CServiceConfig si(szName, szDisplay);
                 si.Remove();
                 return 0;

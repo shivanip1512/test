@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dv_ied.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceIED::CtiTableDeviceIED() :
 _deviceID(-1),
@@ -62,19 +64,19 @@ CtiTableDeviceIED CtiTableDeviceIED::setSlaveAddress(INT &aInt)
     return *this;
 }
 
-RWCString CtiTableDeviceIED::getPassword() const
+string CtiTableDeviceIED::getPassword() const
 {
 
     return _password;
 }
 
-RWCString& CtiTableDeviceIED::getPassword()
+string& CtiTableDeviceIED::getPassword()
 {
 
     return _password;
 }
 
-CtiTableDeviceIED CtiTableDeviceIED::setPassword(RWCString &aStr)
+CtiTableDeviceIED CtiTableDeviceIED::setPassword(string &aStr)
 {
 
     _password = aStr;
@@ -83,7 +85,7 @@ CtiTableDeviceIED CtiTableDeviceIED::setPassword(RWCString &aStr)
 
 void CtiTableDeviceIED::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["password"] <<
@@ -97,7 +99,7 @@ void CtiTableDeviceIED::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &rdr)
 {
-    RWCString temp;
+    string temp;
 
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -108,12 +110,12 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &r
 
     rdr["password"]         >> temp;
 
-    if(temp.isNull() ||
-       !temp.compareTo("0") ||
-       !temp.compareTo("none", RWCString::ignoreCase) ||
-       !temp.compareTo("(none)", RWCString::ignoreCase))
+    if(temp.empty() ||
+       !temp.compare("0") ||
+       !stringCompareIgnoreCase(temp, "none") ||
+       !stringCompareIgnoreCase(temp, "(none)"))
     {
-        _password = RWCString();
+        _password = string();
     }
     else
     {
@@ -124,7 +126,7 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &r
     _slaveAddress = resolveSlaveAddress(DeviceType, temp);
 }
 
-RWCString CtiTableDeviceIED::getTableName()
+string CtiTableDeviceIED::getTableName()
 {
     return "DeviceIED";
 }
@@ -150,7 +152,7 @@ RWDBStatus CtiTableDeviceIED::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -181,7 +183,7 @@ RWDBStatus CtiTableDeviceIED::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -206,13 +208,13 @@ RWDBStatus CtiTableDeviceIED::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["password"].assign(getPassword() ) <<
+    table["password"].assign(getPassword().c_str() ) <<
     table["slaveaddress"].assign(getSlaveAddress() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
@@ -230,7 +232,7 @@ RWDBStatus CtiTableDeviceIED::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

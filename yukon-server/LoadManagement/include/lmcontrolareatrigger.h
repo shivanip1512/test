@@ -21,6 +21,7 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <rw/tvdlist.h> 
+#include "ctitime.h"
 
 #include "observe.h"
                 
@@ -28,16 +29,16 @@ class CtiLMProjectionPointEntry
 {//equivalent to an inner class, only used for projections
 
 public:
-    CtiLMProjectionPointEntry(double val, const RWTime& time);
+    CtiLMProjectionPointEntry(double val, const CtiTime& time);
     CtiLMProjectionPointEntry(const CtiLMProjectionPointEntry& pointEntry);
 
     virtual ~CtiLMProjectionPointEntry();
 
     double getValue() const;
-    const RWTime& getTimestamp() const;
+    const CtiTime& getTimestamp() const;
 
     CtiLMProjectionPointEntry& setValue(double val);
-    CtiLMProjectionPointEntry& setTimestamp(const RWTime& time);
+    CtiLMProjectionPointEntry& setTimestamp(const CtiTime& time);
 
     CtiLMProjectionPointEntry& operator=(const CtiLMProjectionPointEntry& right);
 
@@ -46,7 +47,7 @@ public:
 
 private:
     DOUBLE _value;
-    RWTime _timestamp;
+    CtiTime _timestamp;
 };
 
 
@@ -66,46 +67,46 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     LONG getTriggerId() const;
     LONG getPAOId() const;
     LONG getTriggerNumber() const;
-    const RWCString& getTriggerType() const;
+    const string& getTriggerType() const;
     LONG getPointId() const;
     DOUBLE getPointValue() const;
-    const RWDBDateTime& getLastPointValueTimestamp() const;
+    const CtiTime& getLastPointValueTimestamp() const;
     LONG getNormalState() const;
     DOUBLE getThreshold() const;
-    const RWCString& getProjectionType() const;
+    const string& getProjectionType() const;
     LONG getProjectionPoints() const;
     LONG getProjectAheadDuration() const;
     LONG getThresholdKickPercent() const;
     DOUBLE getMinRestoreOffset() const;
     LONG getPeakPointId() const;
     DOUBLE getPeakPointValue() const;
-    const RWDBDateTime& getLastPeakPointValueTimestamp() const;
+    const CtiTime& getLastPeakPointValueTimestamp() const;
     DOUBLE getProjectedPointValue() const;
     RWTValDlist<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
 
     CtiLMControlAreaTrigger& setTriggerId(LONG trigger_id);
     CtiLMControlAreaTrigger& setPAOId(LONG paoid);
     CtiLMControlAreaTrigger& setTriggerNumber(LONG trignum);
-    CtiLMControlAreaTrigger& setTriggerType(const RWCString& trigtype);
+    CtiLMControlAreaTrigger& setTriggerType(const string& trigtype);
     CtiLMControlAreaTrigger& setPointId(LONG pntid);
     CtiLMControlAreaTrigger& setPointValue(DOUBLE pntval);
-    CtiLMControlAreaTrigger& setLastPointValueTimestamp(const RWDBDateTime& lastvaltime);
+    CtiLMControlAreaTrigger& setLastPointValueTimestamp(const CtiTime& lastvaltime);
     CtiLMControlAreaTrigger& setNormalState(LONG normalst);
     CtiLMControlAreaTrigger& setThreshold(DOUBLE threshold);
-    CtiLMControlAreaTrigger& setProjectionType(const RWCString& projtype);
+    CtiLMControlAreaTrigger& setProjectionType(const string& projtype);
     CtiLMControlAreaTrigger& setProjectionPoints(LONG projpoints);
     CtiLMControlAreaTrigger& setProjectAheadDuration(LONG projaheaddur);
     CtiLMControlAreaTrigger& setThresholdKickPercent(LONG threskickpercent);
     CtiLMControlAreaTrigger& setMinRestoreOffset(DOUBLE minrestoffset);
     CtiLMControlAreaTrigger& setPeakPointId(LONG peakptid);
     CtiLMControlAreaTrigger& setPeakPointValue(DOUBLE peakptval);
-    CtiLMControlAreaTrigger& setLastPeakPointValueTimestamp(const RWDBDateTime& lastpeakvaltime);
+    CtiLMControlAreaTrigger& setLastPeakPointValueTimestamp(const CtiTime& lastpeakvaltime);
     CtiLMControlAreaTrigger& setProjectedPointValue(DOUBLE pntval);
 
     CtiLMControlAreaTrigger* replicate() const;
 
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     void calculateProjectedValue();
     
     bool hasReceivedPointData() const;
@@ -122,31 +123,31 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     /* Static Members */
 
     //Possible trigger types
-    static const RWCString ThresholdTriggerType;
-    static const RWCString StatusTriggerType;
+    static const string ThresholdTriggerType;
+    static const string StatusTriggerType;
 
-    static const RWCString NoneProjectionType;
-    static const RWCString LSFProjectionType;
+    static const string NoneProjectionType;
+    static const string LSFProjectionType;
 
 private:
 
     LONG _trigger_id;
     LONG _paoid;
     LONG _triggernumber;
-    RWCString _triggertype;
+    string _triggertype;
     LONG _pointid;
     DOUBLE _pointvalue;
-    RWDBDateTime _lastpointvaluetimestamp;
+    CtiTime _lastpointvaluetimestamp;
     LONG _normalstate;
     DOUBLE _threshold;
-    RWCString _projectiontype;
+    string _projectiontype;
     LONG _projectionpoints;
     LONG _projectaheadduration;
     LONG _thresholdkickpercent;
     DOUBLE _minrestoreoffset;
     LONG _peakpointid;
     DOUBLE _peakpointvalue;
-    RWDBDateTime _lastpeakpointvaluetimestamp;
+    CtiTime _lastpeakpointvaluetimestamp;
     DOUBLE _projectedpointvalue;
 
     RWTValDlist<CtiLMProjectionPointEntry> _projectionpointentriesqueue;

@@ -15,8 +15,6 @@
 * Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/cstring.h>
-#include <rw/rwtime.h>
 
 #include "dllbase.h"
 #include "message.h"
@@ -39,11 +37,11 @@ protected:
    int _instanceid;        // no two tags share the same one
    int _pointid;
    int _tagid;             // refers to id in tag table
-   RWCString _descriptionStr;
+   string _descriptionStr;
    int _action;    // one of CtiTagAction
-   RWTime _tagtime;         // when was tag created
-   RWCString _referenceStr; // job id, etc, user field
-   RWCString _taggedForStr; // user field
+   CtiTime _tagtime;         // when was tag created
+   string _referenceStr; // job id, etc, user field
+   string _taggedForStr; // user field
 
 
    int _clientMsgId;        // id sourced and returned to clients.  Untouched and unused by dispatch.
@@ -71,20 +69,20 @@ public:
    int getTagID() const;
    CtiTagMsg& setTagID(int id);
 
-   const RWCString& getDescriptionStr() const;
-   CtiTagMsg& setDescriptionStr(const RWCString& desc);
+   const string& getDescriptionStr() const;
+   CtiTagMsg& setDescriptionStr(const string& desc);
 
    int getAction() const;
    CtiTagMsg& setAction(int action);
 
-   const RWTime& getTagTime() const;
-   CtiTagMsg& setTagTime(const RWTime& tagtime);
+   const CtiTime& getTagTime() const;
+   CtiTagMsg& setTagTime(const CtiTime& tagtime);
 
-   const RWCString& getReferenceStr() const;
-   CtiTagMsg& setReferenceStr(const RWCString& refStr);
+   const string& getReferenceStr() const;
+   CtiTagMsg& setReferenceStr(const string& refStr);
 
-   const RWCString& getTaggedForStr() const;
-   CtiTagMsg& setTaggedForStr(const RWCString& forStr);
+   const string& getTaggedForStr() const;
+   CtiTagMsg& setTaggedForStr(const string& forStr);
 
    int getClientMsgId() const;
    CtiTagMsg& setClientMsgId(int id);

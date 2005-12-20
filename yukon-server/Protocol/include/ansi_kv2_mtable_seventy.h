@@ -13,10 +13,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_seventy.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
     History         
       $Log: ansi_kv2_mtable_seventy.h,v $
+      Revision 1.3  2005/12/20 17:19:58  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.4.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.2  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -94,13 +100,13 @@ public:
     void printResult(  );
 
     int getRawDateFormat( void );
-    RWCString getResolvedDateFormat( void );
+    string getResolvedDateFormat( void );
 
     int getRawSuppressLeadingZeros( void );
     int getRawDemandDispUnits( void );
-    RWCString getResolvedDemandDispUnits( void );
+    string getResolvedDemandDispUnits( void );
     int getRawDisplayScalar( void );
-    RWCString getResolvedDisplayScalar( void );
+    string getResolvedDisplayScalar( void );
     int getRawPrimaryDisplay( void );
     int getNbrRightDigits( Digits_Bfld_t bitfield );
     int getNbrLeftDigits( Digits_Bfld_t bitfield );

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ LONG CtiDeviceGroupMCT::getRouteID( void )
 }
 
 
-RWCString CtiDeviceGroupMCT::getDescription( const CtiCommandParser &parse ) const
+string CtiDeviceGroupMCT::getDescription( const CtiCommandParser &parse ) const
 {
     //  ACH:  fix this up with tasty relay and address descriptions sometime
     return getName();
@@ -116,7 +116,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "MCT Load Group \"" << getName() << "\" has unique address 0, aborting command" << endl;
                 }
 
@@ -130,7 +130,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown/bad address level specifier in calcMCTLMGroupAddress() for MCT loadgroup \"" << getName() << "\"" << endl;
             }
 
@@ -146,7 +146,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
 {
     INT        nRet  = NoError;
     CtiRouteSPtr Route;
-    RWCString  resultString;
+    string  resultString;
     long routeID;
     char Temp[80];
 
@@ -165,7 +165,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command to MCT loadgroup \"" << getName( ) << "\". Command = " << parse.getCommand( ) << endl;
             }
             nRet = NoMethod;
@@ -178,13 +178,13 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " Couldn't come up with an operation for MCT loadgroup \"" << getName( ) << "\"" << endl;
-            dout << RWTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+            dout << CtiTime( ) << " Couldn't come up with an operation for MCT loadgroup \"" << getName( ) << "\"" << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                         RWCString(OutMessage->Request.CommandStr),
+                                         string(OutMessage->Request.CommandStr),
                                          resultString,
                                          nRet,
                                          OutMessage->Request.RouteID,
@@ -246,8 +246,8 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
                     {
-                        RWCString actn = parse.getActionItems()[offset];
-                        RWCString desc = getDescription(parse);
+                        string actn = parse.getActionItems()[offset];
+                        string desc = getDescription(parse);
 
                         vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }
@@ -257,11 +257,13 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
-                    resultString = "ERROR " + CtiNumStr(nRet) + " performing command on route " + Route->getName().data() + "\n" + FormatError(nRet);
+                    resultString = "ERROR " + CtiNumStr(nRet) + string(" performing command on route ");
+                    resultString += Route->getName();
+                    resultString += "\n" + FormatError(nRet);
                     pRet->setResultString(resultString);
                     pRet->setStatus( nRet );
                 }
@@ -275,7 +277,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
             {
                 // Tell the porter side to complete the assembly of the message.
                 pOut->Request.BuildIt = TRUE;
-                strncpy(pOut->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+                ::strncpy(pOut->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
                 outList.insert( pOut );       // May porter have mercy.
                 pOut = 0;
@@ -287,7 +289,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
 
                 pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(pOut->Request.CommandStr),
+                                                      string(pOut->Request.CommandStr),
                                                       resultString,
                                                       nRet,
                                                       pOut->Request.RouteID,
@@ -370,7 +372,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "No relays selected for control in MCT load group \"" << getName() << "\", cannot shed" << endl;
                     }
                 }
@@ -416,7 +418,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
         OutMessage->Retry     = 2;
 
         OutMessage->Request.RouteID = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.append( OutMessage );
         OutMessage = NULL;

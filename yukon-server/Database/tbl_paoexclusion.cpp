@@ -7,13 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/10/04 19:06:27 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
+#include <boost\regex.hpp>
 #include <rw\re.h>
 #undef mask_
 
@@ -21,6 +21,8 @@
 #include "logger.h"
 #include "tbl_paoexclusion.h"
 #include "utility.h"
+#include "rwutil.h"
+
 
 CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
                                            long paoid,
@@ -28,7 +30,7 @@ CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
                                            long pointid,
                                            double value,
                                            long function,
-                                           RWCString str,
+                                           string str,
                                            long funcrequeue) :
 _exclusionId(xid),
 _paoId(paoid),
@@ -117,21 +119,21 @@ CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionId(long val)
     return *this;
 }
 
-RWCString CtiTablePaoExclusion::getFunctionName() const
+string CtiTablePaoExclusion::getFunctionName() const
 {
     return _funcName;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionName(RWCString val)
+CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionName(string val)
 {
     _funcName = val;
     return *this;
 }
 
-RWCString CtiTablePaoExclusion::getFunctionParams() const
+string CtiTablePaoExclusion::getFunctionParams() const
 {
     return _funcParams;
 }
-CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionParams(RWCString val)
+CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionParams(string val)
 {
     _funcParams = val;
     return *this;
@@ -147,14 +149,14 @@ CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionRequeue(long val)
     return *this;
 }
 
-RWCString CtiTablePaoExclusion::getTableName()
+string CtiTablePaoExclusion::getTableName()
 {
     return "PaoExclusion";
 }
 
 void CtiTablePaoExclusion::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(getTableName());
+    keyTable = db.table(getTableName().c_str());
 
     selector <<
     keyTable["exclusionid"] <<
@@ -172,7 +174,7 @@ void CtiTablePaoExclusion::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 
 void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -188,23 +190,42 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["funcrequeue"]      >> _funcRequeue;
     rdr["funcparams"]       >> _funcParams;
 
-    _funcParams.toLower();
+    std::transform(_funcParams.begin(), _funcParams.end(), _funcParams.begin(), ::tolower);
 
     if(_funcParams[(size_t)0] != '#')
     {
-        RWCString temp;
-        temp = _funcParams.match(RWCRExpr("cycletime:[0-9]+"));
-        temp = temp.match("[0-9]+");
-        _cycleTime = atoi(temp.data());
-        temp = _funcParams.match(RWCRExpr("offset:[0-9]+"));
-        temp = temp.match("[0-9]+");
-        _cycleOffset = atoi(temp.data());
-        temp = _funcParams.match(RWCRExpr("transmittime:[0-9]+"));
-        temp = temp.match("[0-9]+");
-        _transmitTime = atoi(temp.data());
-        temp = _funcParams.match(RWCRExpr("maxtime:[0-9]+"));
-        temp = temp.match("[0-9]+");
-        _maxTransmitTime = atoi(temp.data());
+        string temp;
+        boost::regex e1("cycletime:[0-9]+");
+        boost::match_results<std::string::const_iterator> what;
+        boost::regex_search(_funcParams, what, e1, boost::match_default);
+        temp = what[0].matched;
+        e1.assign("[0-9]+");
+        boost::regex_search(temp, what, e1, boost::match_default);
+        _cycleTime = atoi(temp.c_str());
+
+        e1.assign("offset:[0-9]+");
+        boost::regex_search(_funcParams, what, e1, boost::match_default);
+        temp = what[0].matched;
+        e1.assign("[0-9]+");
+        boost::regex_search(temp, what, e1, boost::match_default);
+        _cycleOffset = atoi(temp.c_str());
+
+
+        e1.assign("transmittime:[0-9]+");
+        boost::regex_search(_funcParams, what, e1, boost::match_default);
+        temp = what[0].matched;
+        e1.assign("[0-9]+");
+        boost::regex_search(temp, what, e1, boost::match_default);
+        _transmitTime = atoi(temp.c_str());
+
+
+        e1.assign("maxtime:[0-9]+");
+        boost::regex_search(_funcParams, what, e1, boost::match_default);
+        temp = what[0].matched;
+        e1.assign("[0-9]+");
+        boost::regex_search(temp, what, e1, boost::match_default);
+        _maxTransmitTime = atoi(temp.c_str());
+
     }
 
 }
@@ -217,7 +238,7 @@ RWDBStatus CtiTablePaoExclusion::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -253,13 +274,13 @@ RWDBStatus CtiTablePaoExclusion::Insert()
 
 RWDBStatus CtiTablePaoExclusion::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return inserter.status();
 }
@@ -270,12 +291,12 @@ RWDBStatus CtiTablePaoExclusion::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return updater.status();
@@ -286,13 +307,13 @@ RWDBStatus CtiTablePaoExclusion::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return deleter.status();
@@ -303,7 +324,7 @@ void CtiTablePaoExclusion::dump() const
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         dout << "exclusionid    " <<  _exclusionId << endl;
         dout << "paoid          " <<  _paoId << endl;
@@ -348,7 +369,7 @@ CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleTime(int cycletime)
     if( _cycleTime < _cycleOffset )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;
@@ -361,7 +382,7 @@ CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleOffset(int cycleoffset)
     if( _cycleTime < _cycleOffset )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;

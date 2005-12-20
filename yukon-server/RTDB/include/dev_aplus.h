@@ -399,12 +399,12 @@ public:
     virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
 
     virtual INT decodeResultLoadProfile (INMESS *InMessage,
-                                           RWTime &TimeNow,
+                                           CtiTime &TimeNow,
                                            RWTPtrSlist< CtiMessage >   &vgList,
                                            RWTPtrSlist< CtiMessage > &retList,
                                            RWTPtrSlist< OUTMESS > &outList);
     virtual INT decodeResultScan (INMESS *InMessage,
-                                    RWTime &TimeNow,
+                                    CtiTime &TimeNow,
                                     RWTPtrSlist< CtiMessage >   &vgList,
                                     RWTPtrSlist< CtiMessage > &retList,
                                     RWTPtrSlist< OUTMESS > &outList);
@@ -420,13 +420,13 @@ public:
 
     LONG findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaPPlusClass2Real_t class2);
 
-    BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, AlphaPPlusScanData_t *aScanData);
+    BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, AlphaPPlusScanData_t *aScanData);
 
-    BOOL getRateValueFromBlock (DOUBLE &aValue, USHORT aValueType,USHORT aBlockMapping, USHORT aRate, RWTime &aPeak,  AlphaPPlusScanData_t *data);
-    BOOL getDemandValueFromBlock1 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, AlphaPPlusScanData_t *aScanData);
-    BOOL getDemandValueFromBlock2 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, AlphaPPlusScanData_t *aScanData);
-    BOOL getEnergyValueFromBlock1 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, AlphaPPlusScanData_t *aScanData);
-    BOOL getEnergyValueFromBlock2 (DOUBLE &aValue, USHORT aRate, RWTime &aPeak, AlphaPPlusScanData_t *aScanData);
+    BOOL getRateValueFromBlock (DOUBLE &aValue, USHORT aValueType,USHORT aBlockMapping, USHORT aRate, CtiTime &aPeak,  AlphaPPlusScanData_t *data);
+    BOOL getDemandValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaPPlusScanData_t *aScanData);
+    BOOL getDemandValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaPPlusScanData_t *aScanData);
+    BOOL getEnergyValueFromBlock1 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaPPlusScanData_t *aScanData);
+    BOOL getEnergyValueFromBlock2 (DOUBLE &aValue, USHORT aRate, CtiTime &aPeak, AlphaPPlusScanData_t *aScanData);
     USHORT getOffsetMapping (int aOffset);
     USHORT getRate (int aOffset);
     USHORT primaryFunction (UCHAR function);

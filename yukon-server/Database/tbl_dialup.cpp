@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dialup.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceDialup::CtiTableDeviceDialup() :
 _deviceID(-1),
@@ -83,25 +85,25 @@ CtiTableDeviceDialup& CtiTableDeviceDialup::setBaudRate(INT baud)
     return *this;
 }
 
-RWCString CtiTableDeviceDialup::getPhoneNumber() const
+string CtiTableDeviceDialup::getPhoneNumber() const
 {
 
     return PhoneNumber;
 }
 
-void CtiTableDeviceDialup::setPhoneNumber(const RWCString &str)
+void CtiTableDeviceDialup::setPhoneNumber(const string &str)
 {
 
     PhoneNumber = str;
 }
 
-RWCString CtiTableDeviceDialup::getLineSettings() const
+string CtiTableDeviceDialup::getLineSettings() const
 {
 
     return LineSettings;
 }
 
-void CtiTableDeviceDialup::setLineSettings(const RWCString &lstr)
+void CtiTableDeviceDialup::setLineSettings(const string &lstr)
 {
 
     LineSettings = lstr;
@@ -109,7 +111,7 @@ void CtiTableDeviceDialup::setLineSettings(const RWCString &lstr)
 
 void CtiTableDeviceDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table( getTableName() );
+    RWDBTable devTbl = db.table( getTableName().c_str() );
 
     selector <<
     devTbl["phonenumber"] <<
@@ -141,7 +143,7 @@ void CtiTableDeviceDialup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["baudrate"] >> BaudRate;
 }
 
-RWCString CtiTableDeviceDialup::getTableName()
+string CtiTableDeviceDialup::getTableName()
 {
     return "DeviceDialupSettings";
 }
@@ -167,7 +169,7 @@ RWDBStatus CtiTableDeviceDialup::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -201,7 +203,7 @@ RWDBStatus CtiTableDeviceDialup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -229,16 +231,16 @@ RWDBStatus CtiTableDeviceDialup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
 
     updater <<
-    table["phonenumber"].assign(getPhoneNumber() ) <<
+    table["phonenumber"].assign(getPhoneNumber().c_str() ) <<
     table["minconnecttime"].assign(getMinConnectTime() ) <<
     table["maxconnecttime"].assign(getMaxConnectTime() ) <<
-    table["linesettings"].assign(getLineSettings() ) <<
+    table["linesettings"].assign(getLineSettings().c_str() ) <<
     table["baudrate"].assign(getBaudRate() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
@@ -256,7 +258,7 @@ RWDBStatus CtiTableDeviceDialup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );
@@ -269,14 +271,14 @@ INT CtiTableDeviceDialup::getBits() const
 {
    char temp[8];
    memset(temp, '\0', 8);
-   temp[0] = getLineSettings().data()[0];
+   temp[0] = getLineSettings()[0];
 
    return atoi(temp);
 }
 
 INT CtiTableDeviceDialup::getParity() const
 {
-   char paritychar = getLineSettings().data()[1];
+   char paritychar = getLineSettings()[1];
    int  parity = NOPARITY;
 
    switch(paritychar)
@@ -303,7 +305,7 @@ INT CtiTableDeviceDialup::getParity() const
 
 INT CtiTableDeviceDialup::getStopBits() const
 {
-   char stopchar = getLineSettings().data()[2];
+   char stopchar = getLineSettings()[2];
    int  stop = ONESTOPBIT;
 
    switch(stopchar)

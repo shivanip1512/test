@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,8 @@
 #include "yukon.h"
 #include "db_entry_defines.h"
 
-class RWCString;
+using std::string;
+
 
 typedef enum
 {
@@ -35,35 +36,45 @@ typedef enum
 } CtiAddressUsage_t;
 
 
-IM_EX_CTIBASE INT resolvePointType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolvePointArchiveType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveDeviceType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveCapControlType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveLoadManagementType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolvePAOType(RWCString category, RWCString rwsTemp);
-IM_EX_CTIBASE INT resolvePAOClass(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolvePAOCategory(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveDeviceState(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveScanType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveStatisticsType(RWCString rwsTemp);
-IM_EX_CTIBASE CtiFilter_t resolveFilterType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveProtocol(RWCString str);
-IM_EX_CTIBASE INT resolvePortType(RWCString str);
-IM_EX_CTIBASE INT resolvePortState(RWCString str);
-IM_EX_CTIBASE INT resolveAmpUseType(RWCString rwsTemp);
-IM_EX_CTIBASE INT resolveRouteType(RWCString rwsTemp);
+IM_EX_CTIBASE INT resolvePointType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePointArchiveType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveDeviceType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveCapControlType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveLoadManagementType(const string& rwsTemp);
+
+IM_EX_CTIBASE INT resolvePAOType(const string& category, const string& rwsTemp);
+
+IM_EX_CTIBASE INT resolveDeviceType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePortType(const string& str);
+IM_EX_CTIBASE INT resolveLoadManagementType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveCapControlType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveRouteType(const string& rwsTemp);
+
+IM_EX_CTIBASE INT resolvePAOType(const string& category, const string& rwsTemp);
+
+IM_EX_CTIBASE INT resolvePAOClass(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePAOCategory(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveDeviceState(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveScanType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveStatisticsType(const string& rwsTemp);
+IM_EX_CTIBASE CtiFilter_t resolveFilterType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveProtocol(const string& str);
+IM_EX_CTIBASE INT resolvePortType(const string& str);
+IM_EX_CTIBASE INT resolvePortState(const string& str);
+IM_EX_CTIBASE INT resolveAmpUseType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveRouteType(const string& rwsTemp);
 IM_EX_CTIBASE bool resolveIsDeviceTypeSingle(INT Type);
-IM_EX_CTIBASE INT resolveRelayUsage(RWCString rwsTemp);
+IM_EX_CTIBASE INT resolveRelayUsage(const string& rwsTemp);
 IM_EX_CTIBASE INT resolveAWordTime(INT Seconds);
-IM_EX_CTIBASE INT resolveAddressUsage(RWCString str, int type);
-IM_EX_CTIBASE RWCString   resolveDBChanged(INT dbnum);
-IM_EX_CTIBASE RWCString   resolveDBChangeType(INT type);
-IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, RWCString str);
-IM_EX_CTIBASE CtiControlType_t  resolveControlType(RWCString& str);
-IM_EX_CTIBASE LONG resolveDeviceWindowType(RWCString rwsTemp);
+IM_EX_CTIBASE INT resolveAddressUsage(const string& str, int type);
+IM_EX_CTIBASE string   resolveDBChanged(INT dbnum);
+IM_EX_CTIBASE string   resolveDBChangeType(INT type);
+IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const string& str);
+IM_EX_CTIBASE CtiControlType_t  resolveControlType(const string& str);
+IM_EX_CTIBASE LONG resolveDeviceWindowType(const string& rwsTemp);
 
 
-IM_EX_CTIBASE INT resolveUomToCalcType(RWCString str);
+IM_EX_CTIBASE INT resolveUomToCalcType(const string& str);
 
 
 

@@ -19,7 +19,6 @@
 #include <windows.h>
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
 #include "cparms.h"
 #include "dllbase.h"
@@ -61,7 +60,7 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         {
             try
             {
-                if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
+                if(CTIOpen ((char*)(_localSerial.getPhysicalPort().c_str()),
                             &getHandle(),
                             &Result,
                             0L,
@@ -74,7 +73,7 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
+                        dout << CtiTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
                     }
 
                     return(BADPORT);
@@ -82,7 +81,7 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
+                    dout << CtiTime() << " Port " << getName() << " acquiring port handle" << endl;
                 }
 
 
@@ -128,13 +127,13 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 if((status = reset(true)) != NORMAL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error resetting port on " << getName() << endl;
+                    dout << CtiTime() << " Error resetting port on " << getName() << endl;
                 }
                 /* set the modem parameters */
                 if((status = setup(true)) != NORMAL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error setting port on " << getName() << endl;
+                    dout << CtiTime() << " Error setting port on " << getName() << endl;
                 }
             }
             catch(...)
@@ -297,7 +296,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
                 if(0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/20 seconds " << endl;
                 }
 
@@ -333,14 +332,14 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
                 if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  Flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "  Flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
 
                 if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  Done flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "  Done flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 inClear();
             }
@@ -510,7 +509,7 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
             //  if it's an echo
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - discarding IDLC echo message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - discarding IDLC echo message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  start all over, but don't check for an echo - it's already been caught
@@ -572,7 +571,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " *** ERROR *** to attempt an OutMess of " << Xfer.getOutCount() << " bytes" << endl;
+                dout << CtiTime() << " *** ERROR *** to attempt an OutMess of " << Xfer.getOutCount() << " bytes" << endl;
             }
 
             Xfer.setOutCount(100);     // Only allow 100 or so...
@@ -624,7 +623,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << " CTS has not come high." << endl;
+                    dout << CtiTime() << " " << getName() << " CTS has not come high." << endl;
                     dout << "  CTS has not come high.  Check your communications channel timings" << endl;
                 }
     #if 0
@@ -639,7 +638,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
                 if(cnt <= 0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  CTS never came high.  Check your communications channel timings" << endl;
                 }
     #endif
@@ -705,7 +704,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
     return status;
 }
 
-RWCString CtiPortDirect::getPhysicalPort() const
+string CtiPortDirect::getPhysicalPort() const
 {
     return _localSerial.getPhysicalPort();
 }
@@ -724,7 +723,7 @@ INT CtiPortDirect::close(INT trace)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " releasing port handle" << endl;
+            dout << CtiTime() << " " << getName() << " releasing port handle" << endl;
         }
         status = CTIClose(getHandle());
     }
@@ -776,7 +775,7 @@ CtiPortDirect& CtiPortDirect::operator=(const CtiPortDirect& aRef)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -832,7 +831,7 @@ INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULO
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;

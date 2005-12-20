@@ -21,13 +21,13 @@
 #include <limits.h>
 
 #include <rw/db/db.h>
-#include <rw/rwtime.h>
 
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "pointdefs.h"
 #include "yukon.h"
+#include "ctitime.h"
 
 
 class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject
@@ -36,12 +36,12 @@ protected:
 
     LONG           _pointID;
 
-    RWDBDateTime   _timeStamp;
+    CtiTime   _timeStamp;
     INT            _timeStampMillis;
     DOUBLE         _value;
     UINT           _quality;
 
-    RWDBDateTime   _nextArchiveTime;
+    CtiTime   _nextArchiveTime;
     UINT           _tags;
     UINT           _staleCount;
 
@@ -58,7 +58,7 @@ private:
     CtiTablePointDispatch(LONG pointid,
                           DOUBLE value = 0,
                           UINT quality = UnintializedQuality,
-                          const RWDBDateTime& timestamp = RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1 ),
+                          const CtiTime& timestamp = CtiTime(),
                           UINT millis = 0 );
 
     CtiTablePointDispatch(const CtiTablePointDispatch& aRef);
@@ -68,7 +68,7 @@ private:
     virtual CtiTablePointDispatch& operator=(const CtiTablePointDispatch&);
     virtual operator==(const CtiTablePointDispatch&) const;
 
-    static RWCString getTableName();
+    static string getTableName();
 
     RWDBStatus Insert(RWDBConnection &conn);
     RWDBStatus Update(RWDBConnection &conn);
@@ -84,10 +84,10 @@ private:
     LONG getPointID() const;
     CtiTablePointDispatch& setPointID(LONG pointID);
 
-    const RWDBDateTime& getTimeStamp() const;
-    CtiTablePointDispatch& setTimeStamp(const RWDBDateTime& timestamp);
+    const CtiTime& getTimeStamp() const;
+    CtiTablePointDispatch& setTimeStamp(const CtiTime& timestamp);
 
-    UINT getTimeStampMillis() const;
+    INT getTimeStampMillis() const;
     CtiTablePointDispatch& setTimeStampMillis(INT millis);
 
     UINT getQuality() const;
@@ -97,8 +97,8 @@ private:
     CtiTablePointDispatch& setValue(DOUBLE value);
 
 
-    const RWDBDateTime& getNextArchiveTime() const;
-    CtiTablePointDispatch& setNextArchiveTime(const RWDBDateTime& timestamp);
+    const CtiTime& getNextArchiveTime() const;
+    CtiTablePointDispatch& setNextArchiveTime(const CtiTime& timestamp);
 
     ULONG getLastAlarmLogID() const;
     CtiTablePointDispatch& setLastAlarmLogID(ULONG logID);
@@ -112,12 +112,12 @@ private:
 
     virtual void dump();
 
-    CtiTablePointDispatch&  applyNewReading(const RWDBDateTime& timestamp,
+    CtiTablePointDispatch&  applyNewReading(const CtiTime& timestamp,
                                             UINT millis,
                                             UINT quality,
                                             DOUBLE value,
                                             UINT tags,
-                                            const RWDBDateTime& archivetime,
+                                            const CtiTime& archivetime,
                                             UINT count );
 };
 #endif // #ifndef __TBL_PTPERSISTENCE_H__

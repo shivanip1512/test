@@ -18,6 +18,7 @@
 #include "rtdb.h"
 #include "ccsubstationbus.h"
 #include "logger.h"
+#include "ctitime.h"
 
 //Boolean if debug messages are printed
 ULONG _CC_DEBUG;
@@ -26,8 +27,9 @@ BOOL _IGNORE_NOT_NORMAL_FLAG;
 ULONG _SEND_TRIES;
 BOOL _USE_FLIP_FLAG;
 
-RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
-ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
+CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
+CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
+ULONG gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
 
 
 //Use this to indicate globally when ctrl-c was pressed
@@ -96,21 +98,21 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
 void CtiCCService::Init()
 {
-    RWCString logFile = "capcontrol";
+    string logFile = "capcontrol";
     dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputPath(gLogDirectory);
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
 
-    RWCString str;
+    string str;
     char var[128];
 
     _CC_DEBUG = CC_DEBUG_NONE;
 
     strcpy(var, "CAP_CONTROL_DEBUG");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        str.toLower();
+        std::transform(str.begin(), str.end(), str.begin(), tolower);
         _CC_DEBUG = (str=="true"?(CC_DEBUG_STANDARD|CC_DEBUG_POINT_DATA):CC_DEBUG_NONE);
 
         if( !_CC_DEBUG )
@@ -122,94 +124,95 @@ void CtiCCService::Init()
             else
             {
                 char *eptr;
-                _CC_DEBUG = strtoul(str.data(), &eptr, 16);
+                _CC_DEBUG = strtoul(str.c_str(), &eptr, 16);
             }
         }
 
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     dout.setOutputFile("capcontrol");
 
     strcpy(var, "CAP_CONTROL_LOG_FILE");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        dout.setOutputFile(str.data());
+        dout.setOutputFile(str.c_str());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     _IGNORE_NOT_NORMAL_FLAG = FALSE;
     
     strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        str.toLower();
+        std::transform(str.begin(), str.end(), str.begin(), tolower);
         _IGNORE_NOT_NORMAL_FLAG = (str=="true"?TRUE:FALSE);
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     _SEND_TRIES = 1;
 
     strcpy(var, "CAP_CONTROL_SEND_RETRIES");
-    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _SEND_TRIES = atoi(str.data())+1;
+        _SEND_TRIES = atoi(str.c_str())+1;
+        
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     _USE_FLIP_FLAG = FALSE;
 
     strcpy(var, "CAP_CONTROL_USE_FLIP");
-    if ( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        str.toLower();
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - " << var << ":  " << str << endl;
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
     _quit = false;
@@ -220,7 +223,7 @@ void CtiCCService::DeInit()
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Control shutdown" << endl;
+        dout << CtiTime() << " - Cap Control shutdown" << endl;
     }
     CService::DeInit();
 }
@@ -232,7 +235,7 @@ void CtiCCService::OnStop()
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Control shutting down...." << endl;
+        dout << CtiTime() << " - Cap Control shutting down...." << endl;
     }
 
     //Time to quit - send a shutdown message through the system
@@ -247,7 +250,7 @@ void CtiCCService::OnStop()
     /*if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Control shut down!" << endl;
+        dout << CtiTime() << " - Cap Control shut down!" << endl;
     }*/
 
     SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
@@ -273,12 +276,12 @@ void CtiCCService::Run()
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
             if ( !store->isValid() )
             {
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Unable to obtain connection to database...will keep trying." << endl;
+                dout << CtiTime() << " - Unable to obtain connection to database...will keep trying." << endl;
             }
             else
             {
@@ -293,7 +296,7 @@ void CtiCCService::Run()
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Starting cap controller thread..." << endl;
+        dout << CtiTime() << " - Starting cap controller thread..." << endl;
     }
     CtiCapController* controller = CtiCapController::getInstance();
     controller->start();
@@ -303,14 +306,14 @@ void CtiCCService::Run()
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Starting client listener thread..." << endl;
+        dout << CtiTime() << " - Starting client listener thread..." << endl;
     }
     CtiCCClientListener* clientListener = CtiCCClientListener::getInstance();
     clientListener->start();
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Control started." << endl;
+        dout << CtiTime() << " - Cap Control started." << endl;
     }*/
 
     SetStatus(SERVICE_RUNNING, 0, 0,

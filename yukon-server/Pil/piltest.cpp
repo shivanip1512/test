@@ -2,11 +2,9 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw\cstring.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
@@ -24,6 +22,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "connection.h"
 #include "cmdparse.h"
 
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 BOOL  bQuit = FALSE;
 
@@ -82,7 +81,7 @@ void main(int argc, char **argv)
 
     CtiConnection * _pilConnection = CTIDBG_new CtiConnection( PORTERINTERFACENEXUS, argv[1] );
     _pilConnection->WriteConnQue( CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
-    _pilConnection->WriteConnQue( CTIDBG_new CtiRequestMsg( atoi(argv[3]), RWCString(argv[4])) );
+    _pilConnection->WriteConnQue( CTIDBG_new CtiRequestMsg( atoi(argv[3]), string(argv[4])) );
 
     CtiMessage *pMsg;
     int count = 0;
@@ -97,7 +96,7 @@ void main(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Got a message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Got a message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 count++;
             }
@@ -106,7 +105,7 @@ void main(int argc, char **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Expect More Count = " << count << endl;
             }
         }
@@ -134,7 +133,7 @@ void main(int argc, char **argv)
         CtiMessage                 *IGMsg;
         CtiCommandMsg              NoOpMsg;     // Defaults to a NoOp request.
         CtiRegistrationMsg         RegMsg(argv[2], rwThreadId(), TRUE);
-        CtiRequestMsg              request( atoi(argv[3]), RWCString(argv[4]) );
+        CtiRequestMsg              request( atoi(argv[3]), string(argv[4]) );
 
         Op = CtiCommandMsg::ClientAppShutdown;
 
@@ -153,7 +152,7 @@ void main(int argc, char **argv)
         Sleep(5000);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         request.dump();

@@ -39,7 +39,7 @@ class ROUTE;
 /* Port and Remote Btrieve create structures */
 #define PORTNUMKEYS 3
 #define REMOTENUMKEYS 6
-
+ 
 #define SANITY_RATE              300    //Number from van goh that slows down reporting rate for threads, note this can be tweaked or used differently
 #define SANITY_RATE_MED_SLEEPERS  75    //for medium rate sleepers!
 #define SANITY_RATE_LONG_SLEEPERS 10    //this is for objects that can sleep for a very long time

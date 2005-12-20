@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include "prot_seriesv.h"
 #include "logger.h"
 #include "porter.h"
+using namespace std;
 
 CtiProtocolSeriesV::CtiProtocolSeriesV() :
     _deadbandsSent(false),
@@ -54,7 +55,7 @@ CtiProtocolSeriesV &CtiProtocolSeriesV::operator=(const CtiProtocolSeriesV &aRef
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if( this != &aRef )
@@ -422,7 +423,7 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -453,7 +454,7 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - opcode not assigned in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - opcode not assigned in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         xfer.setOutBuffer(NULL);
@@ -571,7 +572,7 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
 {
     int retval = NoError;
     seriesv_pointdata pd;
-    RWTime Now;
+    CtiTime Now;
     unsigned long in_actual = xfer.getInCountActual();
     unsigned long in_body   = in_actual - 3;
 
@@ -592,7 +593,7 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - incoming address (" << (int)packet.station_id << ") doesn't match (" << (int)_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - incoming address (" << (int)packet.station_id << ") doesn't match (" << (int)_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 retval = ADDRESSERROR;
@@ -611,7 +612,7 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     retval = NOTNORMAL;
@@ -763,7 +764,7 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -864,7 +865,7 @@ int CtiProtocolSeriesV::expectedResponseSize( unsigned char opcode, int points_r
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - invalid opcode \"" << opcode << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - invalid opcode \"" << opcode << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             response_size = 0;

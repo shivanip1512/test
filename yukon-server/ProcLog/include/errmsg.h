@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+using std::ostream;
 
 #include "proclog.h"
 

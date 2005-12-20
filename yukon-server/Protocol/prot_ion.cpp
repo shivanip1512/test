@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,7 @@ CtiProtocolION &CtiProtocolION::operator=(const CtiProtocolION &aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if( this != &aRef )
@@ -254,7 +254,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Unknown command " << _executingCommand.command << " in CtiProtocolION::generate" << endl;
                     }
 
@@ -292,7 +292,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint -- _appLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint -- _appLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         _protocolErrors++;
@@ -352,7 +352,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Unknown state " << _ionState << " in CtiProtocolION::decode" << endl;
                     }
 
@@ -368,7 +368,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 //            dout << "_protocolErrors = " << _protocolErrors << endl;
         }
 
@@ -533,7 +533,7 @@ void CtiProtocolION::generateConfigRead( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -578,7 +578,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "No manager handles returned, aborting" << endl;
                     }
 
@@ -590,7 +590,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -668,7 +668,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Not all manager handles found, aborting" << endl;
                     }
 
@@ -680,7 +680,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -724,7 +724,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Power meter handles not returned, aborting" << endl;
                     }
 
@@ -736,7 +736,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ionState   = State_Abort;
@@ -783,7 +783,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Digital input handles not returned, aborting" << endl;
                     }
 
@@ -795,7 +795,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -845,7 +845,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - Digital output handles not returned ****" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - Digital output handles not returned ****" << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     _ionState   = State_Init;
@@ -857,7 +857,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -871,7 +871,7 @@ void CtiProtocolION::decodeConfigRead( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeConfigRead" << endl;
             }
 
@@ -973,7 +973,7 @@ void CtiProtocolION::generateExceptionScan( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
             }
 
@@ -1005,7 +1005,7 @@ void CtiProtocolION::decodeExceptionScan( void )
             {
                 CtiIONBoolean        *tmpBoolean;
                 ion_pointdata_struct  pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 if( _dsIn.size() == _digitalInModules.size() &&
                     _dsIn.itemsAreType(CtiIONValueVariable::Variable_Boolean) )
@@ -1042,7 +1042,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Invalid digital inputs return" << endl;
                     }
 
@@ -1056,7 +1056,7 @@ void CtiProtocolION::decodeExceptionScan( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -1079,7 +1079,7 @@ void CtiProtocolION::decodeExceptionScan( void )
             {
                 CtiIONBoolean        *tmpBoolean;
                 ion_pointdata_struct  pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 if( _dsIn.size() == _digitalOutModules.size() &&
                     _dsIn.itemsAreType(CtiIONValueVariable::Variable_Boolean) )
@@ -1108,7 +1108,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Invalid digital outputs return" << endl;
                     }
 
@@ -1121,7 +1121,7 @@ void CtiProtocolION::decodeExceptionScan( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -1135,7 +1135,7 @@ void CtiProtocolION::decodeExceptionScan( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
             }
 
@@ -1215,7 +1215,7 @@ void CtiProtocolION::generateIntegrityScan( void )
 
             tmpProgram->addStatement(tmpStatement);
 
-            if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
+            if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"), "true") == 0 )
             {
                 ion_value_register_map::iterator itr;
 
@@ -1289,7 +1289,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 int i = 0;
                 CtiIONBoolean *tmpBoolean;
                 ion_pointdata_struct pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 _collectedPointData.clear();
 
@@ -1383,7 +1383,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
 
                 _collectedPointData.push_back(pdata);
 
-                if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
+                if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"),"true") == 0 )
                 {
                     pdata.offset = 257;
                     pdata.time   = Now.seconds();
@@ -1441,7 +1441,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ionState   = State_Abort;
@@ -1455,7 +1455,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeIntegrityScan" << endl;
             }
 
@@ -1595,7 +1595,7 @@ void CtiProtocolION::generateEventLogRead( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
             }
 
@@ -1626,7 +1626,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             if( inputIsValid(_appLayer, _dsIn) )
             {
                 ion_pointdata_struct  pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 if( _dsIn.size() >= 2 && _dsIn.at(0)->isNumeric() && _dsIn.at(1)->isNumeric() )
                 {
@@ -1677,7 +1677,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "Event log position/depth return < 0, aborting" << endl;
                         }
 
@@ -1689,7 +1689,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Invalid event log position/depth return, aborting" << endl;
                     }
 
@@ -1701,7 +1701,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -1723,7 +1723,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             if( inputIsValid(_appLayer, _dsIn) )
             {
                 ion_pointdata_struct  pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 if( _dsIn.at(0)->isStruct() )
                 {
@@ -1758,7 +1758,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Breaking out of possible eventlog search infinite loop.  _eventLogSearchCounter > 20, setting _eventLogLastPosition = " << _eventLogSearchSuccessPoint << endl;
                     }
 
@@ -1779,7 +1779,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -1801,7 +1801,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             if( inputIsValid(_appLayer, _dsIn) )
             {
                 ion_pointdata_struct  pdata;
-                RWTime Now;
+                CtiTime Now;
 
                 _ionState = State_Complete;
                 _retryState = _ionState;
@@ -1839,7 +1839,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << "Log Position: " << record->getLogPosition()->getValue() << endl;
                                 dout << "Timestamp (seconds)     : " << record->getTimestamp()->getSeconds() << endl;
                                 dout << "Timestamp (milliseconds): " << record->getTimestamp()->getMilliseconds() << endl;
@@ -1921,7 +1921,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Invalid event log record return, aborting" << endl;
                     }
 
@@ -1933,7 +1933,7 @@ void CtiProtocolION::decodeEventLogRead( void )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocolErrors++;
@@ -1947,7 +1947,7 @@ void CtiProtocolION::decodeEventLogRead( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeEventLogRead" << endl;
             }
 
@@ -2000,7 +2000,7 @@ void CtiProtocolION::generateTimeSync( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
             }
 
@@ -2031,7 +2031,7 @@ void CtiProtocolION::decodeTimeSync( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
             }
 
@@ -2087,7 +2087,7 @@ void CtiProtocolION::generateExternalPulseTrigger( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
             }
 
@@ -2118,7 +2118,7 @@ void CtiProtocolION::decodeExternalPulseTrigger( void )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
             }
 
@@ -2158,7 +2158,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "Invalid datastream" << endl;
                 }
             }
@@ -2169,7 +2169,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unable to allocate memory for ION datastream decode" << endl;
             }
         }
@@ -2178,7 +2178,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Zero-length application layer return" << endl;
         }
     }
@@ -2311,7 +2311,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 }
 
 
-void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnedInfo )
+void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, string &returnedInfo )
 {
     vector< ion_pointdata_struct >::const_iterator p_itr;
     vector< CtiIONLogArray * >::const_iterator       e_itr;
@@ -2328,7 +2328,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         //  NOTE:  offsets must be 1-based to work with Yukon
         pointdata = CTIDBG_new CtiPointDataMsg((*p_itr).offset, (*p_itr).value, NormalQuality, (*p_itr).type);
         pointdata->setString((*p_itr).name);
-        pointdata->setTime(RWTime((*p_itr).time));
+        pointdata->setTime(CtiTime((*p_itr).time));
         pointdata->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
         pointList.append(pointdata);
@@ -2340,7 +2340,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         CtiIONLogArray  *tmpArray;
         CtiIONLogRecord *tmpRecord;
         CtiIONEvent     *tmpEvent;
-        RWCString desc, action;
+        string desc, action;
 
         if( *e_itr != NULL )
         {
@@ -2360,15 +2360,15 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
                     //  ACTION (Additional Info) :
                     //  c_h=xxx, e_h=xxx, state=x, record=xxxxx
 
-                    desc  = RWCString("pri=")      + tmpEvent->getPriority()->toString();
-                    desc += RWCString(", cause=")  + tmpEvent->getCauseValue()->toString();
-                    desc += RWCString(", effect=") + tmpEvent->getEffectValue()->toString();
-                    desc += RWCString(", nlog=")   + "EventLogCtl 1";
+                    desc  = string("pri=")      + tmpEvent->getPriority()->toString();
+                    desc += string(", cause=")  + tmpEvent->getCauseValue()->toString();
+                    desc += string(", effect=") + tmpEvent->getEffectValue()->toString();
+                    desc += string(", nlog=")   + "EventLogCtl 1";
 
-                    action  = RWCString("c_h=")      + tmpEvent->getCauseHandle()->toString();
-                    action += RWCString(", e_h=")    + tmpEvent->getEffectHandle()->toString();
-                    action += RWCString(", state=")  + tmpEvent->getEventState()->toString();
-                    action += RWCString(", record=") + tmpRecord->getLogPosition()->toString();
+                    action  = string("c_h=")      + tmpEvent->getCauseHandle()->toString();
+                    action += string(", e_h=")    + tmpEvent->getEffectHandle()->toString();
+                    action += string(", state=")  + tmpEvent->getEventState()->toString();
+                    action += string(", record=") + tmpRecord->getLogPosition()->toString();
 
                     if( maxEventRecord < tmpRecord->getLogPosition()->getValue() )
                     {
@@ -2376,7 +2376,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
                     }
 
                     signal = CTIDBG_new CtiSignalMsg(EventLogPointOffset, 0, desc, action, GeneralLogType);
-                    signal->setMessageTime(RWTime(tmpRecord->getTimestamp()->getSeconds() + rwEpoch));
+                    signal->setMessageTime(CtiTime(tmpRecord->getTimestamp()->getSeconds() ));
 
                     signalList.append(signal);
                 }
@@ -2395,7 +2395,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
             setEventLogLastPosition(maxEventRecord);
         //}
 
-        RWCString msg("Event log position: " + CtiNumStr(maxEventRecord));
+        string msg("Event log position: " + CtiNumStr(maxEventRecord));
 
         pointdata = new CtiPointDataMsg(EventLogPointOffset, maxEventRecord, NormalQuality, AnalogPointType, msg, TAG_POINT_MUST_ARCHIVE);
 
@@ -2480,7 +2480,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "tmpOM.client_eventLogLastPosition = " << tmpOM.client_eventLogLastPosition << endl;
     }
 
@@ -2512,7 +2512,7 @@ int CtiProtocolION::sendCommResult( INMESS *InMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "!!!  results > 4k!  !!!" << endl;
             dout << "Not sending!!" << endl;
         }
@@ -2589,7 +2589,7 @@ void CtiProtocolION::putResult( unsigned char *buf )
     memcpy(buf + offset, &header, sizeof(header));
     offset += sizeof(header);
 
-    memcpy(buf + offset, _infoString.data(), _infoString.length() + 1);
+    memcpy(buf + offset, _infoString.c_str(), _infoString.length() + 1);
     offset += _infoString.length() + 1;
 
     for( p_itr = _collectedPointData.begin(); p_itr != _collectedPointData.end(); p_itr++ )

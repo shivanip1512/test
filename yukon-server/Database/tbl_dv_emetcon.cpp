@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_dv_emetcon.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTableEmetconLoadGroup::CtiTableEmetconLoadGroup() :
 _deviceID(-1),
@@ -144,14 +146,14 @@ CtiTableEmetconLoadGroup& CtiTableEmetconLoadGroup::setDeviceID( const LONG devi
 }
 
 
-RWCString CtiTableEmetconLoadGroup::getTableName()
+string CtiTableEmetconLoadGroup::getTableName()
 {
     return "LMGroupEmetcon";
 }
 
 void CtiTableEmetconLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["goldaddress"] <<
@@ -168,7 +170,7 @@ void CtiTableEmetconLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTableEmetconLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -183,11 +185,11 @@ void CtiTableEmetconLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["routeid"]       >> _routeID;
 
     rdr["addressusage"] >> rwsTemp;
-    rwsTemp.toLower();
-    _addressUsage = ((rwsTemp == 'g') ? GOLDADDRESS : SILVERADDRESS);
+    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    _addressUsage = ((rwsTemp == "g") ? GOLDADDRESS : SILVERADDRESS);
 
     rdr["relayusage"] >> rwsTemp;
-    _relay = resolveRelayUsage(rwsTemp);
+    _relay = resolveRelayUsage(rwsTemp.c_str());
 
     // Make these guys right with a binary world;
     _silver -= 1;     // Silver is 0 through 59
@@ -202,7 +204,7 @@ RWDBStatus CtiTableEmetconLoadGroup::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -234,7 +236,7 @@ RWDBStatus CtiTableEmetconLoadGroup::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -260,7 +262,7 @@ RWDBStatus CtiTableEmetconLoadGroup::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -285,7 +287,7 @@ RWDBStatus CtiTableEmetconLoadGroup::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

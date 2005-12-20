@@ -57,13 +57,13 @@ CtiLMGroupVersacom::~CtiLMGroupVersacom()
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -78,7 +78,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate,
 CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
-    RWCString controlString = RWCString("control cycle ");
+    string controlString("control cycle ");
     _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
@@ -90,7 +90,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -103,13 +103,13 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -122,13 +122,13 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    string controlString("control shed ");
     controlString += buildShedString(offTime-60);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }

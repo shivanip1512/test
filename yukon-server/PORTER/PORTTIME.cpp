@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/12/16 16:21:57 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/12/20 17:19:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@
 #include <windows.h>
 #include <process.h>
 #include <iostream>
-using namespace std;
+
 
 #include <rw\thr\mutex.h>
 
@@ -93,6 +93,7 @@ using namespace std;
 
 #include "prot_welco.h"
 #include "prot_lmi.h"
+using namespace std;
 
 extern ULONG TimeSyncRate;
 
@@ -130,7 +131,7 @@ static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             return;
@@ -236,7 +237,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
@@ -245,7 +246,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         break;
 
@@ -298,11 +299,11 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
                 for(i = 0; i < STANDNAMLEN; i++)
                 {
-                    if(RemoteRecord->getPassword()(i) == ' ')
+                    if(RemoteRecord->getPassword()[i] == ' ')
                     {
                         break;
                     }
-                    OutMessage->Buffer.OutMessage[Index++] = RemoteRecord->getPassword()(i);
+                    OutMessage->Buffer.OutMessage[Index++] = RemoteRecord->getPassword()[i];
                 }
 #endif
 
@@ -392,7 +393,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Sending ILEX time sync to remote:" << endl;
                 dout << "device: " << OutMessage->DeviceID << endl;
                 dout << "port:   " << OutMessage->Port << endl;
@@ -545,7 +546,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -553,7 +554,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION while sending MCT 400 series timesyncs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION while sending MCT 400 series timesyncs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 }
@@ -568,7 +569,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 
     {
         /* check for a remote port */
-        if(PortRecord->getName()(0) == '@') return;
+        if(PortRecord->getName()[0] == '@') return;
         if(PortRecord->isInhibited()) return;
 
         if(PortRecord->getProtocolWrap() == ProtocolWrapIDLC)
@@ -646,8 +647,8 @@ VOID TimeSyncThread (PVOID Arg)
     struct timeb TimeB;
     ULONG EventWait;
     DWORD dwWait = 0;
-    RWTime nowTime;
-    RWTime nextTime;
+    CtiTime nowTime;
+    CtiTime nextTime;
     UINT sanity = 0;
 
     /* See if we should even be running */
@@ -659,7 +660,7 @@ VOID TimeSyncThread (PVOID Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " TimeSyncThread started as TID:  " << CurrentTID() << " Sync every " << TimeSyncRate << " seconds" << endl;
+        dout << CtiTime() << " TimeSyncThread started as TID:  " << CurrentTID() << " Sync every " << TimeSyncRate << " seconds" << endl;
     }
 
 
@@ -701,7 +702,7 @@ VOID TimeSyncThread (PVOID Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
 
             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, 400 );
@@ -815,8 +816,8 @@ LoadMCT400BTimeMessage (OUTMESS *OutMessage)
     OUTMESS MyOutMessage = *OutMessage;
 
     /* get the time from the system */
-    unsigned long time   = RWTime::now().seconds() - rwEpoch;
-    bool          is_dst = RWTime::now().isDST();
+    unsigned long time   = CtiTime::now().seconds();
+    bool          is_dst = CtiTime::now().isDST();
 
 
     /* Load the time sync parts of the message into the local B word structure */

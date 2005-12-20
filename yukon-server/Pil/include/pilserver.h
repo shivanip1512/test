@@ -3,10 +3,8 @@
 
 #include <functional>
 #include <iostream>
-using namespace std;
+using std::iostream;
 
-
-#include <rw\cstring.h>
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>

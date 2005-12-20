@@ -8,6 +8,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(TCLINC) \
 -I$(RW) \
+-I$(BOOST) \
 
 OBJS=\
 ctish.obj
@@ -29,7 +30,7 @@ ctish.exe:     $(OBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(OBJS) -link $(LIBS) $(RWLIBS) 
+$(OBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/08/15 15:15:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,12 +18,12 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw/rwtime.h>
 #include <rw/db/status.h>
 
 #include "counter.h"
 #include "yukon.h"
 
+using std::pair;
 // Uncomment this to execute the code with the old CtiCounters instead of arrays.
 // #define CTISTATUSECOUNTERS FALSE
 
@@ -90,10 +90,10 @@ public:
 
     bool isDirty() const;
     CtiStatistics& resetDirty();
-    void incrementRequest(const RWTime &stattime);
-    void decrementRequest(const RWTime &stattime);
-    void incrementAttempts(const RWTime &stattime, int CompletionStatus);        // This is a retry scenario
-    void incrementCompletion(const RWTime &stattime, int CompletionStatus);
+    void incrementRequest(const CtiTime &stattime);
+    void decrementRequest(const CtiTime &stattime);
+    void incrementAttempts(const CtiTime &stattime, int CompletionStatus);        // This is a retry scenario
+    void incrementCompletion(const CtiTime &stattime, int CompletionStatus);
     long getID() const;
     CtiStatistics& setID(long id);
 
@@ -105,26 +105,26 @@ public:
     CtiStatistics& setThreshold(int Counter, double thresh);
 
     int get(int counter, int index ) const;
-    static RWCString getTableName();
+    static string getTableName();
 
     RWDBStatus::ErrorCode Update(RWDBConnection &conn);
     RWDBStatus::ErrorCode Update();
     RWDBStatus::ErrorCode Insert(RWDBConnection &conn);
     RWDBStatus::ErrorCode Insert();
     RWDBStatus::ErrorCode Restore();
-    int resolveStatisticsType(RWCString rwsTemp) const;
-    void computeHourInterval(int hournumber, pair<RWTime, RWTime> &myinterval);
-    void computeDailyInterval(pair<RWTime, RWTime> &myinterval);
-    void computeYesterdayInterval(pair<RWTime, RWTime> &myinterval);
-    void computeMonthInterval(pair<RWTime, RWTime> &myinterval);
-    void computeLastMonthInterval(pair<RWTime, RWTime> &myinterval);
+    int resolveStatisticsType(const string& rwsTemp) const;
+    void computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval);
+    void computeDailyInterval(pair<CtiTime, CtiTime> &myinterval);
+    void computeYesterdayInterval(pair<CtiTime, CtiTime> &myinterval);
+    void computeMonthInterval(pair<CtiTime, CtiTime> &myinterval);
+    void computeLastMonthInterval(pair<CtiTime, CtiTime> &myinterval);
     CtiStatisticsCounters_t resolveFailType( int CompletionStatus ) const;
 
 
 protected:
 
     long _pid;                   // paoid.
-    static RWCString _counterName[FinalCounterBin];
+    static string _counterName[FinalCounterBin];
 
     bool        _dirtyCounter[FinalCounterBin];
     #ifdef CTISTATUSECOUNTERS
@@ -134,11 +134,11 @@ protected:
     #endif
     int         _threshold[FinalCounterBin];
     bool        _thresholdAlarm[FinalCounterBin];
-    pair<RWTime, RWTime> _startStopTimePairs[FinalCounterBin];
+    pair<CtiTime, CtiTime> _startStopTimePairs[FinalCounterBin];
 
     void        verifyThresholds();
 
-    static RWCString getCounterName( int Counter )
+    static string getCounterName( int Counter )
     {
         return _counterName[Counter];
     }
@@ -151,11 +151,11 @@ private:
     bool _updateOnNextCompletion;     // If set, the next completion causes an update
     bool _dirty;
 
-    RWTime _previoustime;
+    CtiTime _previoustime;
 
-    int newHour(const RWTime &newtime, CtiStatisticsCounters_t countertoclean);
-    void incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype);
-    void incrementSuccess(const RWTime &stattime);
+    int newHour(const CtiTime &newtime, CtiStatisticsCounters_t countertoclean);
+    void incrementFail(const CtiTime &stattime, CtiStatisticsCounters_t failtype);
+    void incrementSuccess(const CtiTime &stattime);
 
     inline void incrementCounter( int statTypeIndex, int statBinIndex, int bump = 1 )      // Bump MAY be negative for a decrement!
     {

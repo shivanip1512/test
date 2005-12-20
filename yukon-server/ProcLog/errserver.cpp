@@ -12,8 +12,8 @@ using namespace std;
 #include <process.h>
 
 #include <rw\tvdlist.h>
-#include <rw\rwtime.h>
-#include <rw\rwDate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cticalls.h"
 #include "ctinexus.h"
@@ -363,14 +363,14 @@ INT   ShortenLogFile(WIN32_FIND_DATA *Data, INT Days)
 
    streampos   posTemp, inWhere;
 
-   RWDate   TempNew, TempOld;
-   RWDate   Today;                           // Todays Date
-   RWDate   FileStart;                       // When we want file to start.. Initializes to today.
+   CtiDate   TempNew, TempOld;
+   CtiDate   Today;                           // Todays Date
+   CtiDate   FileStart;                       // When we want file to start.. Initializes to today.
 
-   TempOld  -= 100;     // Point at 100 days ago to start.
-   Today    -= Days;    // How long ago till we care
+   TempOld  = TempOld - 100;     // Point at 100 days ago to start.
+   Today    = Today - Days;    // How long ago till we care
 
-   /* First we sweep to the end getting the largest RWDate we can find */
+   /* First we sweep to the end getting the largest CtiDate we can find */
    if(iFile.is_open())
    {
       inWhere = iFile.tellg();
@@ -384,7 +384,7 @@ INT   ShortenLogFile(WIN32_FIND_DATA *Data, INT Days)
          iFile >> ch;
          iFile >> Year;
 
-         TempNew = RWDate(Day, Month, Year);
+         TempNew = CtiDate(Day, Month, Year);
 
          if( TempNew > TempOld)
          {

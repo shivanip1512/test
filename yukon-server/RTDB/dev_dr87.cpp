@@ -1,11 +1,10 @@
 #include "yukon.h"
 #include <iostream>
 #include <vector>
-using namespace std ;
 
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "porter.h"
 #include "dev_ied.h"
@@ -31,6 +30,7 @@ using namespace std ;
 #include "guard.h"
 #include "utility.h"
 
+using namespace std ;
 //#define PRINT_DEBUG
 INT             DR87Retries = 7;
 
@@ -304,7 +304,7 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
                 *  Send the login command
                 ***************************
                 */
-                sprintf((CHAR *)Transfer.getOutBuffer(),
+                ::sprintf((CHAR *)Transfer.getOutBuffer(),
                         "%c%c%c%c%c%c",
                         DR87_SYNC,
                         DR87_LOGIN,
@@ -346,7 +346,7 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -384,7 +384,7 @@ INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -456,7 +456,7 @@ INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMess
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
@@ -479,7 +479,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< Ct
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to generate a terminate, letting " << getName() << " hang up on its own " << endl;
+            dout << CtiTime() << " Unable to generate a terminate, letting " << getName() << " hang up on its own " << endl;
         }
 
         Transfer.setOutCount (0);
@@ -490,7 +490,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< Ct
     }
     else
     {
-        sprintf((CHAR *)Transfer.getOutBuffer(),
+        ::sprintf((CHAR *)Transfer.getOutBuffer(),
                 "%c%c%c%c%c%c",
                 DR87_SYNC,
                 DR87_EXECUTE_FUNCTION,
@@ -648,8 +648,8 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
                     * Check the validity of the time received
                     **************************
                     */
-                    if ((RWTime(LPTime+rwEpoch) < (RWTime()-(2*86400))) ||
-                        (RWTime(LPTime+rwEpoch) > (RWTime()+(2*86400))))
+                    if ((CtiTime(LPTime) < (CtiTime()-(2*86400))) ||
+                        (CtiTime(LPTime) > (CtiTime()+(2*86400))))
                     {
                         /***********************
                         * if meter time is not within a 2 day window, its
@@ -677,7 +677,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error calculating intervals to collect for " << getName() << " no data will be collected this scan" << endl;
+                        dout << CtiTime() << " Error calculating intervals to collect for " << getName() << " no data will be collected this scan" << endl;
                     }
                     setRequestedState (StateScanAbort);
                     generateCommandTerminate(Transfer, traceList);
@@ -687,7 +687,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
+                    dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
                 }
                 setRequestedState (StateScanComplete);
                 generateCommandTerminate(Transfer, traceList);
@@ -715,7 +715,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error calculating bytes to collect for " << getName() << " no data will be collected this scan" << endl;
+                    dout << CtiTime() << " Error calculating bytes to collect for " << getName() << " no data will be collected this scan" << endl;
                 }
                 setRequestedState (StateScanAbort);
                 generateCommandTerminate(Transfer, traceList);
@@ -753,7 +753,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
@@ -826,7 +826,7 @@ INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnVa
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
                 break;
@@ -868,7 +868,7 @@ INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTP
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -974,7 +974,7 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
                         if( DebugLevel & 0x0001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() <<"  ----- DR-87 Configuration ------ " << endl;
+                            dout << CtiTime() <<"  ----- DR-87 Configuration ------ " << endl;
                             dout << "Channels " << localData->numberOfChannels << endl;
                             dout << "Channel    scale factor  kvalue (w/p)    usage" << endl;
                             for (x=0; x < localData->numberOfChannels; x++)
@@ -1006,7 +1006,7 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
                         retCode = StateScanAbort;
@@ -1109,7 +1109,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                         if( DebugLevel & 0x0001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "  ----- DR-87 Configuration ------ " << endl;
+                            dout << CtiTime() << "  ----- DR-87 Configuration ------ " << endl;
                             dout << "Mass Memory Range" << endl;
                             dout << "Start   : " << getMassMemoryStart() << endl;
                             dout << "Stop    : " << getMassMemoryStop() << endl;
@@ -1131,7 +1131,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                         localLP->config.intervalLength =
                         (USHORT)getWorkBuffer()[222-getByteNumber()+3];
 
-                        localLP->config.lastIntervalTime = RWTime(RWDate(getWorkBuffer()[311-getByteNumber()+3],
+                        localLP->config.lastIntervalTime = CtiTime(CtiDate(getWorkBuffer()[311-getByteNumber()+3],
                                                                          getWorkBuffer()[310-getByteNumber()+3],
                                                                          getWorkBuffer()[312-getByteNumber()+3]+2000),
                                                                   getWorkBuffer()[307-getByteNumber()+3],
@@ -1183,7 +1183,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                             dout << "  ----- DR-87 Configuration ------ " << endl;
                             dout << "Channels " << localLP->config.numberOfChannels << endl;
                             dout << "Interval " << localLP->config.intervalLength << endl;
-                            dout << "Last Interval " << RWTime(localLP->config.lastIntervalTime).asString() << endl;
+                            dout << "Last Interval " << CtiTime(localLP->config.lastIntervalTime).asString() << endl;
                             dout << "Old Mem Ptr " << getOldestIntervalByteOffset() << endl;
 
                             dout << "Channel    scale factor  kvalue (w/p)    usage" << endl;
@@ -1200,7 +1200,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                     case StateScanDecode3:
                         {
                             // return the load profile data
-                            memcpy (&localLP->loadProfileData, &getWorkBuffer()[3], localLP->config.blockSize);
+                            ::memcpy (&localLP->loadProfileData, &getWorkBuffer()[3], localLP->config.blockSize);
 
                             // see if we are done
                             if ((getCurrentByteOffset() + localLP->config.blockSize) >= (getOldestIntervalByteOffset()-0x1ff))
@@ -1275,7 +1275,7 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
                         retCode = StateScanAbort;
@@ -1351,7 +1351,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     ULONG BytesWritten;
@@ -1476,7 +1476,7 @@ INT CtiDeviceDR87::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes)
     *  except copying it into the return buffer
     *****************************
     */
-    memcpy (aInMessBuffer, iDataBuffer, sizeof (DR87ScanData_t));
+    ::memcpy (aInMessBuffer, iDataBuffer, sizeof (DR87ScanData_t));
     aTotalBytes = sizeof (DR87ScanData_t);
     return NORMAL;
 }
@@ -1485,14 +1485,14 @@ INT CtiDeviceDR87::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 {
 
-    memcpy(aInMessBuffer, iLoadProfileBuffer, sizeof (DR87LoadProfile_t));
+    ::memcpy(aInMessBuffer, iLoadProfileBuffer, sizeof (DR87LoadProfile_t));
     aTotalBytes = sizeof (DR87LoadProfile_t);
     return NORMAL;
 }
 
 
 INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
-                                 RWTime &TimeNow,
+                                 CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
                                  RWTPtrSlist< OUTMESS > &outList)
@@ -1519,7 +1519,7 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scan decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
                 }
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
@@ -1529,7 +1529,7 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " LP decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
                 }
 
 
@@ -1542,7 +1542,7 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
+                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
                     }
                 }
 
@@ -1552,7 +1552,7 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
+                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
                 }
             }
     }
@@ -1560,21 +1560,21 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
 }
 
 INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
-                                RWTime &TimeNow,
+                                CtiTime &TimeNow,
                                 RWTPtrSlist< CtiMessage >   &vgList,
                                 RWTPtrSlist< CtiMessage > &retList,
                                 RWTPtrSlist< OUTMESS > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1610,7 +1610,7 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
 
 
 INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
-                                     RWTime &TimeNow,
+                                     CtiTime &TimeNow,
                                      RWTPtrSlist< CtiMessage >   &vgList,
                                      RWTPtrSlist< CtiMessage > &retList,
                                      RWTPtrSlist< OUTMESS > &outList)
@@ -1632,7 +1632,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     USHORT   UValue;
     FLOAT    PartHour;
     DOUBLE   PValue;
-    RWTime    peakTime;
+    CtiTime    peakTime;
 
     DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
     DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
@@ -1642,8 +1642,8 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1701,7 +1701,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                         if( DebugLevel & 0x0001 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() <<" " << __LINE__ << " Point " << pNumericPoint->getPointID();
+                            dout << CtiTime() <<" " << __LINE__ << " Point " << pNumericPoint->getPointID();
                             dout << " Value " << PValue << " mulitplier " << PValue * pNumericPoint->getMultiplier() << endl;
                         }
 
@@ -1737,7 +1737,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 
 
 INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
-                                            RWTime &TimeNow,
+                                            CtiTime &TimeNow,
                                             RWTPtrSlist< CtiMessage >   &vgList,
                                             RWTPtrSlist< CtiMessage > &retList,
                                             RWTPtrSlist< OUTMESS > &outList)
@@ -1758,8 +1758,8 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
     int               dataQuality = NormalQuality;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1794,8 +1794,8 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
         * Check the validity of the time received
         **************************
         */
-        if (RWTime (ptr->config.lastIntervalTime) < (RWTime()-(2*86400)) ||
-            (RWTime (ptr->config.lastIntervalTime) > (RWTime()+(2*86400))))
+        if (CtiTime (ptr->config.lastIntervalTime) < (CtiTime()-(2*86400)) ||
+            (CtiTime (ptr->config.lastIntervalTime) > (CtiTime()+(2*86400))))
         {
             /***********************
             * if meter time is not within a 2 day window, its
@@ -1804,7 +1804,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
             */
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << RWTime (ptr->config.lastIntervalTime).asString() << endl;
+                dout << CtiTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << CtiTime (ptr->config.lastIntervalTime).asString() << endl;
             }
         }
         else
@@ -1869,7 +1869,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Parity calculation failed " << getName() << endl;
+                                dout << CtiTime() << " Parity calculation failed " << getName() << endl;
                             }
                         }
 
@@ -1986,13 +1986,13 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
     return retCode;
 }
 
-BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, DR87ScanData_t *aScanData)
+BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, DR87ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
     int channel=-1;
 
     // this is initial value
-    peak = rwEpoch;
+    peak = PASTDATE;
 
     // assuming all values are in w hours, so we divide by 1000
     switch (aOffset)
@@ -2004,7 +2004,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWT
                 if( DebugLevel & 0x0001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() <<" ----- Channel 1 ------ " << endl;
+                    dout << CtiTime() <<" ----- Channel 1 ------ " << endl;
                     dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
                 }
 
@@ -2027,7 +2027,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWT
                 if( DebugLevel & 0x0001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() <<" ----- Channel 2 ------ " << endl;
+                    dout << CtiTime() <<" ----- Channel 2 ------ " << endl;
                     dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
                 }
 
@@ -2050,7 +2050,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWT
                 if( DebugLevel & 0x0001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() <<" ----- Channel 3 ------ " << endl;
+                    dout << CtiTime() <<" ----- Channel 3 ------ " << endl;
                     dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
                 }
 
@@ -2072,7 +2072,7 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWT
                 if( DebugLevel & 0x0001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() <<" ----- Channel 4 ------ " << endl;
+                    dout << CtiTime() <<" ----- Channel 4 ------ " << endl;
                     dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
                 }
 
@@ -2104,10 +2104,10 @@ INT CtiDeviceDR87::ResultDisplay (INMESS *InMessage)
 BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                   DOUBLE aValue,
                                                   USHORT aQuality,
-                                                  RWTime aTime,
+                                                  CtiTime aTime,
                                                   CtiReturnMsg *aReturnMsg,
                                                   USHORT aIntervalType,
-                                                  RWCString aValReport)
+                                                  string aValReport)
 
 {
     BOOL validPointFound = FALSE;
@@ -2132,7 +2132,7 @@ BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
                 pData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
             }
 
-            if (aTime != rwEpoch)
+            if (aTime != PASTDATE)
             {
                 //
                 //  hack fix for non-DST compliant meters - someday to be absorbed by a big, global timekeeper
@@ -2396,7 +2396,7 @@ INT CtiDeviceDR87::fillUploadTransferObject (CtiXfer  &aTransfer, USHORT aCmd, U
         startAddress.sh += aByteNumber - 1;
     }
 
-    sprintf((CHAR *)aTransfer.getOutBuffer(),
+    ::sprintf((CHAR *)aTransfer.getOutBuffer(),
             "%c%c%c%c%c%c",
             DR87_SYNC,
             aCmd,

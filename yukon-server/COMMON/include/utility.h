@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/10/04 19:03:16 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/12/20 17:25:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,11 +17,15 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include <string>
+using std::string;
+
+#include "ctitime.h"
 
 #include "dsm2.h"
 #include "dlldefs.h"
+
+
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 IM_EX_CTIBASE LONG LMControlHistoryIdGen(bool force = false);
@@ -31,15 +35,15 @@ IM_EX_CTIBASE INT ChangeIdGen(bool force = false);
 IM_EX_CTIBASE INT SystemLogIdGen();
 IM_EX_CTIBASE INT PAOIdGen();
 IM_EX_CTIBASE INT VCUTime (CtiOutMessage *, PULONG);
-IM_EX_CTIBASE BOOL isFileTooBig(RWCString fileName, DWORD thisBig = 0x00500000);
+IM_EX_CTIBASE BOOL isFileTooBig(const string& fileName, DWORD thisBig = 0x00500000);
 IM_EX_CTIBASE BOOL InEchoToOut(const INMESS *In, CtiOutMessage *Out);
 IM_EX_CTIBASE BOOL OutEchoToIN(const CtiOutMessage *Out, INMESS *In);
-IM_EX_CTIBASE RWCString convertVersacomAddressToHumanForm(INT address);
+IM_EX_CTIBASE string convertVersacomAddressToHumanForm(INT address);
 IM_EX_CTIBASE INT convertHumanFormAddressToVersacom(INT address);
 
 IM_EX_CTIBASE bool pokeDigiPortserver(CHAR *server, INT port = 23);
-IM_EX_CTIBASE RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length);
-IM_EX_CTIBASE RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate );
+IM_EX_CTIBASE string& traceBuffer(string &str, BYTE *Message, ULONG Length);
+IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
 IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
 IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
@@ -91,7 +95,7 @@ typedef struct {
 } CtiQueueAnalysis_t;
 
 
-IM_EX_CTIBASE RWCString identifyProjectVersion(const CTICOMPILEINFO &Info);
+IM_EX_CTIBASE string identifyProjectVersion(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProject(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProjectComponents(const CTICOMPONENTINFO *pInfo);
 
@@ -128,7 +132,7 @@ IM_EX_CTIBASE LONG     ResetBreakAlloc();
 
 IM_EX_CTIBASE bool findLPRequestEntries(void *om, void* d);
 IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
-IM_EX_CTIBASE RWCString explainTags(const unsigned tags);
+IM_EX_CTIBASE string explainTags(const unsigned tags);
 
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length);
 

@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_pttag.h"
+#include "rwutil.h"
 
 CtiTableDynamicTag::CtiTableDynamicTag() :
 _instanceId(0),               // no two tags share the same one
@@ -81,9 +82,9 @@ bool CtiTableDynamicTag::operator<(const CtiTableDynamicTag& aRef) const
 }
 
 
-RWCString CtiTableDynamicTag::getTableName()
+string CtiTableDynamicTag::getTableName()
 {
-    return RWCString("DynamicTags");
+    return string("DynamicTags");
 }
 
 
@@ -105,26 +106,26 @@ RWDBStatus CtiTableDynamicTag::Update()
 
 RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
-    if(getUserName().isNull())
+    if(getUserName().empty())
     {
         setUserName("(none)");
     }
-    if(getActionStr().isNull())
+    if(getActionStr().empty())
     {
         setActionStr("(none)");
     }
-    if(getDescriptionStr().isNull())
+    if(getDescriptionStr().empty())
     {
         setDescriptionStr("(none)");
     }
-    if(getReferenceStr().isNull())
+    if(getReferenceStr().empty())
     {
         setReferenceStr("(none)");
     }
-    if(getTaggedForStr().isNull())
+    if(getTaggedForStr().empty())
     {
         setTaggedForStr("(none)");
     }
@@ -142,7 +143,7 @@ RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << inserter.asString() << endl << endl;
     }
 
@@ -166,28 +167,28 @@ RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
 
 RWDBStatus CtiTableDynamicTag::Update(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["instanceid"] == getInstanceId() );
 
-    if(getUserName().isNull())
+    if(getUserName().empty())
     {
         setUserName("(none)");
     }
-    if(getActionStr().isNull())
+    if(getActionStr().empty())
     {
         setActionStr("(none)");
     }
-    if(getDescriptionStr().isNull())
+    if(getDescriptionStr().empty())
     {
         setDescriptionStr("(none)");
     }
-    if(getReferenceStr().isNull())
+    if(getReferenceStr().empty())
     {
         setReferenceStr("(none)");
     }
-    if(getTaggedForStr().isNull())
+    if(getTaggedForStr().empty())
     {
         setTaggedForStr("(none)");
     }
@@ -196,12 +197,12 @@ RWDBStatus CtiTableDynamicTag::Update(RWDBConnection &conn)
     table["instanceid"].assign(getInstanceId()) <<
     table["pointid"].assign(getPointId()) <<
     table["tagid"].assign(getTagId()) <<
-    table["username"].assign(getUserName()) <<
-    table["action"].assign(getActionStr()) <<
-    table["description"].assign(getDescriptionStr()) <<
-    table["tagtime"].assign(getTagTime()) <<
-    table["refstr"].assign(getReferenceStr()) <<
-    table["forstr"].assign(getTaggedForStr());
+    table["username"].assign(getUserName().c_str()) <<
+    table["action"].assign(getActionStr().c_str()) <<
+    table["description"].assign(getDescriptionStr().c_str()) <<
+    table["tagtime"].assign(toRWDBDT(getTagTime())) <<
+    table["refstr"].assign(getReferenceStr().c_str()) <<
+    table["forstr"].assign(getTaggedForStr().c_str());
 
     long rowsAffected;
     RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__&rowsAffected);
@@ -223,7 +224,7 @@ RWDBStatus CtiTableDynamicTag::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -261,7 +262,7 @@ RWDBStatus CtiTableDynamicTag::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["instanceid"] == getInstanceId() );
@@ -269,7 +270,7 @@ RWDBStatus CtiTableDynamicTag::Delete()
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << deleter.asString() << endl << endl;
     }
 
@@ -281,20 +282,20 @@ RWDBStatus CtiTableDynamicTag::Delete(int instance)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["instanceid"] == instance );
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << deleter.asString() << endl << endl;
     }
 
@@ -304,7 +305,7 @@ RWDBStatus CtiTableDynamicTag::Delete(int instance)
 
 void CtiTableDynamicTag::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(CtiTableDynamicTag::getTableName());
+    keyTable = db.table(CtiTableDynamicTag::getTableName().c_str());
 
     selector <<
     keyTable["instanceid"] <<
@@ -348,28 +349,28 @@ int CtiTableDynamicTag::getTagId() const             // refers to id in tag tabl
     return _tagid;
 }
 
-RWCString CtiTableDynamicTag::getUserName() const          // VC(60)  Console user name
+string CtiTableDynamicTag::getUserName() const          // VC(60)  Console user name
 {
     return _userName;
 }
-RWCString CtiTableDynamicTag::getActionStr() const         // VC(20)
+string CtiTableDynamicTag::getActionStr() const         // VC(20)
 {
     return _actionStr;
 }
-RWCString CtiTableDynamicTag::getDescriptionStr() const    // VC(120)
+string CtiTableDynamicTag::getDescriptionStr() const    // VC(120)
 {
     return _descriptionStr;
 }
 
-RWDBDateTime CtiTableDynamicTag::getTagTime() const        // when was tag created
+CtiTime CtiTableDynamicTag::getTagTime() const        // when was tag created
 {
     return _tagtime;
 }
-RWCString CtiTableDynamicTag::getReferenceStr() const      // job id, etc, user field
+string CtiTableDynamicTag::getReferenceStr() const      // job id, etc, user field
 {
     return _referenceStr;
 }
-RWCString CtiTableDynamicTag::getTaggedForStr() const
+string CtiTableDynamicTag::getTaggedForStr() const
 {
     return _taggedForStr;
 }
@@ -390,33 +391,33 @@ CtiTableDynamicTag& CtiTableDynamicTag::setTagId(int id)             // refers t
     return *this;
 }
 
-CtiTableDynamicTag& CtiTableDynamicTag::setUserName(const RWCString& str)          // VC(60)  Console user name
+CtiTableDynamicTag& CtiTableDynamicTag::setUserName(const string& str)          // VC(60)  Console user name
 {
     _userName = str;
     return *this;
 }
-CtiTableDynamicTag& CtiTableDynamicTag::setActionStr(const RWCString& str)         // VC(20)
+CtiTableDynamicTag& CtiTableDynamicTag::setActionStr(const string& str)         // VC(20)
 {
     _actionStr = str;
     return *this;
 }
-CtiTableDynamicTag& CtiTableDynamicTag::setDescriptionStr(const RWCString& str)    // VC(120)
+CtiTableDynamicTag& CtiTableDynamicTag::setDescriptionStr(const string& str)    // VC(120)
 {
     _descriptionStr = str;
     return *this;
 }
 
-CtiTableDynamicTag& CtiTableDynamicTag::setTagTime(const RWDBDateTime &dbdt)        // when was tag created
+CtiTableDynamicTag& CtiTableDynamicTag::setTagTime(const CtiTime &dbdt)        // when was tag created
 {
     _tagtime = dbdt;
     return *this;
 }
-CtiTableDynamicTag& CtiTableDynamicTag::setReferenceStr(const RWCString& str)      // job id, etc, user field
+CtiTableDynamicTag& CtiTableDynamicTag::setReferenceStr(const string& str)      // job id, etc, user field
 {
     _referenceStr = str;
     return *this;
 }
-CtiTableDynamicTag& CtiTableDynamicTag::setTaggedForStr(const RWCString& str)
+CtiTableDynamicTag& CtiTableDynamicTag::setTaggedForStr(const string& str)
 {
     _taggedForStr = str;
     return *this;
@@ -435,7 +436,7 @@ void CtiTableDynamicTag::dump()
         dout << "getActionStr()       "  << getActionStr() << endl;
         dout << "getDescriptionStr()  "  << getDescriptionStr() << endl;
 
-        dout << "getTagTime()         "  << getTagTime().rwtime() << endl;
+        dout << "getTagTime()         "  << getTagTime() << endl;
         dout << "getReferenceStr()    "  << getReferenceStr() << endl;
         dout << "getTaggedForStr()    "  << getTaggedForStr() << endl;
     }

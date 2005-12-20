@@ -66,7 +66,7 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
     catch (...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
    // _ccfeeders.clearAndDestroy();
 }
@@ -86,7 +86,7 @@ LONG CtiCCSubstationBus::getPAOId() const
 
     Returns the pao category of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getPAOCategory() const
+const string& CtiCCSubstationBus::getPAOCategory() const
 {
     return _paocategory;
 }
@@ -96,7 +96,7 @@ const RWCString& CtiCCSubstationBus::getPAOCategory() const
 
     Returns the pao class of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getPAOClass() const
+const string& CtiCCSubstationBus::getPAOClass() const
 {
     return _paoclass;
 }
@@ -106,7 +106,7 @@ const RWCString& CtiCCSubstationBus::getPAOClass() const
 
     Returns the pao name of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getPAOName() const
+const string& CtiCCSubstationBus::getPAOName() const
 {
     return _paoname;
 }
@@ -116,7 +116,7 @@ const RWCString& CtiCCSubstationBus::getPAOName() const
 
     Returns the pao type of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getPAOType() const
+const string& CtiCCSubstationBus::getPAOType() const
 {
     return _paotype;
 }
@@ -126,7 +126,7 @@ const RWCString& CtiCCSubstationBus::getPAOType() const
 
     Returns the pao description of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getPAODescription() const
+const string& CtiCCSubstationBus::getPAODescription() const
 {
     return _paodescription;
 }
@@ -166,7 +166,7 @@ LONG CtiCCSubstationBus::getStrategyId() const
 
     Returns the StrategyName of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getStrategyName() const
+const string& CtiCCSubstationBus::getStrategyName() const
 {
     return _strategyName;
 }
@@ -175,7 +175,7 @@ const RWCString& CtiCCSubstationBus::getStrategyName() const
 
     Returns the control method of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getControlMethod() const
+const string& CtiCCSubstationBus::getControlMethod() const
 {
     return _controlmethod;
 }
@@ -367,7 +367,7 @@ LONG CtiCCSubstationBus::getFailurePercent() const
 
     Returns the days of the week of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getDaysOfWeek() const
+const string& CtiCCSubstationBus::getDaysOfWeek() const
 {
     return _daysofweek;
 }
@@ -377,7 +377,7 @@ const RWCString& CtiCCSubstationBus::getDaysOfWeek() const
 
     Returns the map location id of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getMapLocationId() const
+const string& CtiCCSubstationBus::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -387,7 +387,7 @@ const RWCString& CtiCCSubstationBus::getMapLocationId() const
 
     Returns the control unit of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiCCSubstationBus::getControlUnits() const
+const string& CtiCCSubstationBus::getControlUnits() const
 {
     return _controlunits;
 }
@@ -427,7 +427,7 @@ LONG CtiCCSubstationBus::getDecimalPlaces() const
 
     Returns the next check time of the substation
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiCCSubstationBus::getNextCheckTime() const
+const CtiTime& CtiCCSubstationBus::getNextCheckTime() const
 {
     return _nextchecktime;
 }
@@ -457,7 +457,7 @@ BOOL CtiCCSubstationBus::getBusUpdatedFlag() const
 
     Returns the last current var point update time of the substation
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiCCSubstationBus::getLastCurrentVarPointUpdateTime() const
+const CtiTime& CtiCCSubstationBus::getLastCurrentVarPointUpdateTime() const
 {
     return _lastcurrentvarpointupdatetime;
 }
@@ -547,7 +547,7 @@ BOOL CtiCCSubstationBus::getRecentlyControlledFlag() const
 
     Returns the last operation time of the substation
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiCCSubstationBus::getLastOperationTime() const
+const CtiTime& CtiCCSubstationBus::getLastOperationTime() const
 {
     return _lastoperationtime;
 }
@@ -700,7 +700,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOId(LONG id)
 
     Sets the pao category of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAOCategory(const RWCString& category)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAOCategory(const string& category)
 {
     _paocategory = category;
     return *this;
@@ -711,7 +711,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOCategory(const RWCString& category
 
     Sets the pao class of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAOClass(const RWCString& pclass)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAOClass(const string& pclass)
 {
     _paoclass = pclass;
     return *this;
@@ -722,7 +722,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOClass(const RWCString& pclass)
 
     Sets the pao name of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAOName(const RWCString& name)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAOName(const string& name)
 {
     _paoname = name;
     return *this;
@@ -733,9 +733,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOName(const RWCString& name)
 
     Sets the pao type of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAOType(const RWCString& type)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAOType(const string& _type)
 {
-    _paotype = type;
+    _paotype = _type;
     return *this;
 }
 
@@ -744,7 +744,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAOType(const RWCString& type)
 
     Sets the pao description of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAODescription(const RWCString& description)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAODescription(const string& description)
 {
     _paodescription = description;
     return *this;
@@ -789,7 +789,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setStrategyId(LONG strategyId)
 
     Sets the strategy name of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setStrategyName(const RWCString& strategyName)
+CtiCCSubstationBus& CtiCCSubstationBus::setStrategyName(const string& strategyName)
 {
     _strategyName = strategyName;
     return *this;
@@ -800,7 +800,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setStrategyName(const RWCString& strateg
 
     Sets the control method of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setControlMethod(const RWCString& method)
+CtiCCSubstationBus& CtiCCSubstationBus::setControlMethod(const string& method)
 {
     _controlmethod = method;
     return *this;
@@ -915,7 +915,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE curre
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -945,7 +945,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(DOUBLE curr
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -974,7 +974,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointValue(DOUBLE curr
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1031,7 +1031,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setFailurePercent(LONG failure)
 
     Sets the days of the week of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
+CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const string& days)
 {
     _daysofweek = days;
     return *this;
@@ -1042,7 +1042,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
 
     Sets the map location id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const RWCString& maplocation)
+CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const string& maplocation)
 {
     _maplocationid = maplocation;
     return *this;
@@ -1053,7 +1053,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const RWCString& maploc
 
     Sets the ControlUnits of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setControlUnits(const RWCString& units)
+CtiCCSubstationBus& CtiCCSubstationBus::setControlUnits(const string& units)
 {
     _controlunits = units;
     return *this;
@@ -1100,21 +1100,21 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
 {
-    RWDBDateTime currenttime = RWDBDateTime();
+    CtiTime currenttime = CtiTime();
     if( _controlinterval != 0 )
     {
         LONG tempsum = (currenttime.seconds()-(currenttime.seconds()%_controlinterval))+_controlinterval;
-        _nextchecktime = RWDBDateTime(RWTime(tempsum));
+        _nextchecktime = CtiTime(tempsum);
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
     else
     {
         _nextchecktime = currenttime;
-        if (!_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod))
         {
             for (LONG i = 0; i < _ccfeeders.entries(); i++)
             {
@@ -1122,7 +1122,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
                 if (currentFeeder->getStrategyId() > 0)
                 {
                     LONG tempsum1 = (currenttime.seconds() - ( currenttime.seconds()%currentFeeder->getControlInterval() ) + currentFeeder->getControlInterval() );
-                    _nextchecktime = RWDBDateTime(RWTime(tempsum1));
+                    _nextchecktime = CtiTime(CtiTime(tempsum1));
                     break;
                 }
             }
@@ -1143,7 +1143,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(BOOL newpoin
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1162,7 +1162,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(BOOL busupdated)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         _dirty = TRUE;
     }*/
@@ -1175,13 +1175,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(BOOL busupdated)
 
     Sets the last current var point update time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate)
+CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
     if( _lastcurrentvarpointupdatetime != lastpointupdate )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1211,7 +1211,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1263,7 +1263,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(LONG operation
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1282,7 +1282,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(LONG peaktime)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1301,7 +1301,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(BOOL recentlyc
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1314,13 +1314,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(BOOL recentlyc
 
     Sets the last operation time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const RWDBDateTime& lastoperation)
+CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
 {
     if( _lastoperationtime != lastoperation )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1339,7 +1339,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1358,7 +1358,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(LONG lastfe
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1377,7 +1377,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(LONG las
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1396,7 +1396,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(DOUBLE pfval)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1415,7 +1415,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(DOUBLE solution)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1434,7 +1434,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(DOUBLE epfv
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1453,7 +1453,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(LONG cvpq)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1472,7 +1472,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setWaiveControlFlag(BOOL waive)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -1532,7 +1532,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 
 
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     BOOL keepGoing = TRUE;
 
@@ -1540,8 +1540,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
     if( getMaxDailyOperation() > 0 &&
         _currentdailyoperations == getMaxDailyOperation() )//only send once
     {
-        RWCString text = RWCString("Substation Bus Exceeded Max Daily Operations");
-        RWCString additional = RWCString("Substation Bus: ");
+        string text = string("Substation Bus Exceeded Max Daily Operations");
+        string additional = string("Substation Bus: ");
         additional += getPAOName();
         //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalEvent));
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
@@ -1553,8 +1553,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
             setDisableFlag(TRUE);
             setBusUpdatedFlag(TRUE);
             //store->UpdateSubstation(currentSubstationBus);
-            RWCString text = RWCString("Substation Bus Disabled");
-            RWCString additional = RWCString("Bus: ");
+            string text = string("Substation Bus Disabled");
+            string additional = string("Bus: ");
             additional += getPAOName();
             //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
@@ -1568,7 +1568,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
     {
         if( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() )
         {
-            if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+            if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
             {
                 for(LONG i=0;i<_ccfeeders.entries();i++)
                 {
@@ -1591,7 +1591,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                 }
                 //setNewPointDataReceivedFlag(FALSE);
             }
-            else if( _controlmethod.compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )//intentionally left the ! off
+            else if( stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
             {
                 DOUBLE lagLevel = (isPeakTime(currentDateTime)?_peaklag:_offpklag);
                 DOUBLE leadLevel = (getPeakTimeFlag()?_peaklead:_offpklead);
@@ -1600,73 +1600,73 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
                     getCurrentVarPointQuality() == NormalQuality )
                 {
-                    if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                    if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                     {
                         if( getCurrentVarLoadPointValue() > lagLevel ||
                             getCurrentVarLoadPointValue() < leadLevel )
                         {
-                            if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+                            if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
                             {
                                 regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                             }
-                            else if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                            else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                             }
                             else
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
+                                dout << CtiTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
                             }
                         }
                     }
-                    else if( !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )
+                    else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
                     {
                         if( getCurrentVoltLoadPointValue() < lagLevel ||
                             getCurrentVoltLoadPointValue() > leadLevel )
                         {
-                            if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+                            if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
                             {
                                 if (getCurrentVarLoadPointId() > 0)
                                     regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                                 else
                                 { 
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Substation Volt Control requires Var PointID.  Var PointID not found in sub bus: " << getPAOName() << endl;
+                                    dout << CtiTime() << " - Substation Volt Control requires Var PointID.  Var PointID not found in sub bus: " << getPAOName() << endl;
                                 }
                             }
-                            else if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                            else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                             {
                                 optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                             }
                             else
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
+                                dout << CtiTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
                             }
                         }
                     }
-                    else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
-                             !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                    else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                             !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
                     {
-                        if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+                        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
                         {
                             regularSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                         }
-                        else if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+                        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
                             optimizedSubstationBusControl(lagLevel, leadLevel, currentDateTime, pointChanges, pilMessages);
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
+                            dout << CtiTime() << " - Invalid control method: " << _controlmethod << ", in sub bus: " << getPAOName() << endl;
                         }
                     }
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Invalid control units: " << _controlunits << ", in sub bus: " << getPAOName() << endl;
+                        dout << CtiTime() << " - Invalid control untis: " << _controlunits << ", in sub bus: " << getPAOName() << endl;
                     }
                 }
                 clearOutNewPointReceivedFlags();
@@ -1675,7 +1675,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
         else if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Cannot control an additional bank because not past control delay time, in sub bus: " << getPAOName() << endl;
+            dout << CtiTime() << " - Cannot control an additional bank because not past control delay time, in sub bus: " << getPAOName() << endl;
         }
     }
 
@@ -1687,16 +1687,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
 
 
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue)
+DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue)
 {
     DOUBLE returnKVARSolution = 0.0;
-    if( !controlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-        !controlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+    if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) ||
+        !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::KVARControlUnits) )
     {
         returnKVARSolution = setPoint - varValue;
     }
-    else if( !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
-             !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase))
+    else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+             !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
         setPoint = 100;
         DOUBLE targetKVA = wattValue / (setPoint/100.0);
@@ -1709,14 +1709,14 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, 
 
         returnKVARSolution = targetKVAR - varValue;
     }
-    else if( !controlUnits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::VoltControlUnits) )
     {
         returnKVARSolution = 0;
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid control units: " << controlUnits << ", in: " __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Invalid control untis: " << controlUnits << ", in: " __FILE__ << " at: " << __LINE__ << endl;
     }
 
     return returnKVARSolution;
@@ -1727,7 +1727,7 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, 
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     try
@@ -1735,26 +1735,26 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         CtiCCFeeder* currentFeeder = NULL;
         LONG currentPosition = getLastFeederControlledPosition();
         LONG iterations = 0;
-        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-            !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
+            !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( ( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
+            if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel < getCurrentVarLoadPointValue() ) ||
-                ( !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&
+                ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) &&
                 lagLevel > getCurrentVoltLoadPointValue() ) )
             {
                 //if( _CC_DEBUG )
-                if(  !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                if(  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName() << endl;
                 }
                 else
                 {
                     setKVARSolution(-1);
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Attempting to Increase Volt level in substation bus: " << getPAOName().data() << endl;
+                        dout << CtiTime() << " - Attempting to Increase Volt level in substation bus: " << getPAOName() << endl;
                     }
                 }
 
@@ -1786,12 +1786,12 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                        dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                            dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                            dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
                             dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                            dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                            dout << " Current Date Time:       " << currentDateTime << endl;
                         }
                     }
                     else
@@ -1803,7 +1803,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1822,23 +1822,23 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
             else  // lead Level is greater than currentVarPointValue
             {
-                if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
                 else
                 {
                     setKVARSolution(1);
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Attempting to Decrease Volt level in substation bus: " << getPAOName().data() << endl;
+                        dout << CtiTime() << " - Attempting to Decrease Volt level in substation bus: " << getPAOName().c_str() << endl;
                     }
                 }
 
@@ -1872,7 +1872,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1891,20 +1891,20 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
         }
-        else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
-                 !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
-        {   
+        else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        {
             if( getKVARSolution() < 0 )
             {
                 //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
     
                 CtiCCCapBank* capBank = NULL;
@@ -1939,12 +1939,12 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                             currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                            dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {
-                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
                                 dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                                dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                                dout << " Current Date Time:       " << currentDateTime << endl;
                             }
                         }
                         else
@@ -1955,14 +1955,14 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     else
                     {//cap bank too big
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
                     }
                 }
     
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -1981,7 +1981,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
@@ -1990,7 +1990,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                 //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
     
                 CtiCCCapBank* capBank = NULL;
@@ -2025,14 +2025,14 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     else
                     {//cap bank too big
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
                     }
                 }
     
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2051,7 +2051,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
@@ -2080,7 +2080,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -2089,7 +2089,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     CtiCCFeeder* lastFeederControlled = NULL;
@@ -2106,24 +2106,24 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             varSortedFeeders.insert(currentFeeder);
         }
 
-        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-            !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
+            !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( ( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
+            if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel < getCurrentVarLoadPointValue() ) ||
-                ( !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&
+                ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) &&
                 lagLevel > getCurrentVoltLoadPointValue() ) )
             {
                 //if( _CC_DEBUG )
-                if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Increase Volt level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Increase Volt level in substation bus: " << getPAOName().c_str() << endl;
                 }
     
                 CtiCCCapBank* capBank = NULL;
@@ -2136,7 +2136,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     {
                         if (currentFeeder->getCurrentVarLoadPointId() > 0)
                         {    
-                            if (!_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase))
+                            if (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits))
                             {
                                 setKVARSolution(-1);
                             }
@@ -2145,7 +2145,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPAOName() << endl;
+                            dout << CtiTime() << " - Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPAOName() << endl;
                         }    
                     }
                     if( capBank != NULL )
@@ -2155,12 +2155,12 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                            dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {
-                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
                                 dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                                dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                                dout << " Current Date Time:       " << currentDateTime << endl;
                             }
                         }
                         else
@@ -2175,7 +2175,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2194,22 +2194,22 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
             else //leadLevel greater than currentVarPointValue
             {
                 //if( _CC_DEBUG )
-                if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Decrease Volt level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Decrease Volt level in substation bus: " << getPAOName().c_str() << endl;
                 }
 
                 CtiCCCapBank* capBank = NULL;
@@ -2222,7 +2222,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     {
                         if (currentFeeder->getCurrentVarLoadPointId() > 0)
                         {                                       
-                            if (!_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase))
+                            if (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits))
                             {
                                 setKVARSolution(1);
                             }
@@ -2231,7 +2231,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPAOName() << endl;
+                            dout << CtiTime() << " - Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPAOName() << endl;
                         }
                     }
                     if( capBank != NULL )
@@ -2246,7 +2246,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2265,20 +2265,20 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
         }
-        else if( !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
-                 !_controlunits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
             if( getKVARSolution() < 0 )
             {
                 //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Decrease Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
     
                 CtiCCCapBank* capBank = NULL;
@@ -2303,12 +2303,12 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                                 currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
+                                dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPAOName() << " because it has not passed its reclose delay." << endl;
                                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                                 {
-                                    dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime().rwtime() << endl;
+                                    dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
                                     dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                                    dout << " Current Date Time:       " << currentDateTime.rwtime() << endl;
+                                    dout << " Current Date Time:       " << currentDateTime << endl;
                                 }
                             }
                             else
@@ -2319,7 +2319,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         else
                         {//cap bank too big
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
                         }
                         break;
                     }
@@ -2328,7 +2328,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Decrease Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Close stateor Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2347,7 +2347,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
@@ -2356,7 +2356,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 //if( _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().data() << endl;
+                    dout << CtiTime() << " - Attempting to Increase Var level in substation bus: " << getPAOName().c_str() << endl;
                 }
     
                 CtiCCCapBank* capBank = NULL;
@@ -2381,7 +2381,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         else
                         {//cap bank too big
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
+                            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName() << ", KVAR size too large to switch" << endl;
                         }
                         break;
                     }
@@ -2390,7 +2390,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
+                    dout << CtiTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
                     << " any further.  All cap banks are already in the Open state or Feeders Disabled in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                     try
@@ -2409,7 +2409,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
@@ -2417,7 +2417,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid control units: " << _controlunits << " in sub bus: " << getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid control units: " << _controlunits << " in sub bus: " << getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
         if( request != NULL )
@@ -2447,7 +2447,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -2459,7 +2459,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
     Returns the current set point depending on if it is peak or off peak
     time and sets the set point status
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDateTime)
+DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const CtiTime& currentDateTime)
 {
     DOUBLE lagLevel = (isPeakTime(currentDateTime)?_peaklag:_offpklag);
     DOUBLE leadLevel = (getPeakTimeFlag()?_peaklead:_offpklead);
@@ -2472,7 +2472,7 @@ DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDate
 
     Returns a boolean if it is peak time it also sets the peak time flag.
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::isPeakTime(const RWDBDateTime& currentDateTime)
+BOOL CtiCCSubstationBus::isPeakTime(const CtiTime& currentDateTime)
 {
     unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
     if( isPeakDay() && getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getPeakStopTime() )
@@ -2496,11 +2496,11 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
     BOOL returnBoolean = TRUE;
     BOOL found = FALSE;
     char tempchar[64] = "";
-    RWCString text = "";
-    RWCString additional = "";
+    string text = "";
+    string additional = "";
 
-    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
-        !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+    if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
+        !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
     {
         LONG recentlyControlledFeeders = 0;
         for(LONG i=0;i<_ccfeeders.entries();i++)
@@ -2522,7 +2522,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
                     failPercent = currentFeeder->getFailurePercent();
                 }
                 if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
-                    currentFeeder->isPastMaxConfirmTime(RWDBDateTime(),maxConfirmTime,sendRetries) )
+                    currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) )
                 {
                     currentFeeder->capBankControlStatusUpdate(pointChanges,minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
                     //currentFeeder->setNewPointDataReceivedFlag(FALSE);
@@ -2539,7 +2539,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
         }
         figureEstimatedVarLoadPointValue();
     }
-    else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
 
@@ -2568,12 +2568,12 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
             if (found == FALSE)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
                 returnBoolean = TRUE;
             }
         }
     }
-    else if( !_controlmethod.compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
     {
         LONG recentlyControlledFeeders = 0;
         for(LONG i=0;i<_ccfeeders.entries();i++)
@@ -2585,7 +2585,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
                 if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                 {
                     if( currentFeeder->isAlreadyControlled(getMinConfirmPercent()) ||
-                        currentFeeder->isPastMaxConfirmTime(RWDBDateTime(),getMaxConfirmTime(),getControlSendRetries()) )
+                        currentFeeder->isPastMaxConfirmTime(CtiTime(),getMaxConfirmTime(),getControlSendRetries()) )
                     {
                         currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
                     }
@@ -2607,7 +2607,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
                     figureEstimatedVarLoadPointValue();
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Manual Only Sub Bus: " << getPAOName() << " does not have Var points to perform confirmation logic." << endl;
+                        dout << CtiTime() << " - Manual Only Sub Bus: " << getPAOName() << " does not have Var points to perform confirmation logic." << endl;
                     }
                 }
             }
@@ -2621,7 +2621,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
     //setNewPointDataReceivedFlag(FALSE);
@@ -2636,8 +2636,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
     BOOL foundCap = FALSE;
     BOOL foundFeeder = FALSE;
     char tempchar[64] = "";
-    RWCString text = "";
-    RWCString additional = "";
+    string text = "";
+    string additional = "";
 
     BOOL vResult = FALSE; //fail
 
@@ -2661,7 +2661,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                            getCurrentVarPointQuality() == NormalQuality )
                        {    
                            DOUBLE change;
-                           if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                           if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) )
                            {
                                change = currentFeeder->getCurrentVarLoadPointValue() - currentFeeder->getVarValueBeforeControl();
                            }
@@ -2673,9 +2673,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                            {
                                {
                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                   dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                   dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                }
-                               if (currentCapBank->getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && _USE_FLIP_FLAG == TRUE &&
+                               if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE &&
                                    currentCapBank->getVCtrlIndex() == 1)            
                                {
                                    currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -2691,19 +2691,19 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-                                   text = RWCString("Var Change = ");
+                                   text = string("Var Change = ");
                                    text += doubleToString(ratio*100.0);
                                    text += "%, OpenFail";
-                                   additional = RWCString("Feeder: ");
+                                   additional = string("Feeder: ");
                                    additional = getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                                   text = RWCString("Var Change = ");
+                                   text = string("Var Change = ");
                                    text += doubleToString(ratio*100.0);
                                    text += "%, OpenQuestionable";
-                                   additional = RWCString("Feeder: ");
+                                   additional = string("Feeder: ");
                                    additional = getPAOName();
                                }
                                else
@@ -2711,7 +2711,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                    vResult = TRUE;
                                }
-                           }        
+                           }
                            else
                            {
                                currentCapBank->setControlStatus(CtiCCCapBank::Open);
@@ -2722,11 +2722,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        {
                            char tempchar[80];
                            currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                           text = RWCString("Non Normal Var Quality = ");
+                           text = string("Non Normal Var Quality = ");
                            _ltoa(getCurrentVarPointQuality(),tempchar,10);
                            text += tempchar;
                            text += "%, OpenQuestionable";
-                           additional = RWCString("Feeder: ");
+                           additional = string("Feeder: ");
                            additional = getPAOName();
                        }
                    }
@@ -2736,7 +2736,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                            getCurrentVarPointQuality() == NormalQuality )
                        {
                            DOUBLE change;
-                           if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                           if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) )
                            {
                                change = currentFeeder->getVarValueBeforeControl() - currentFeeder->getCurrentVarLoadPointValue();
                            }
@@ -2748,9 +2748,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                            {
                                {
                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                   dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                   dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                }
-                               if (currentCapBank->getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && _USE_FLIP_FLAG == TRUE &&
+                               if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 70") && _USE_FLIP_FLAG == TRUE &&
                                    currentCapBank->getVCtrlIndex() == 1)            
                                {
                                    currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -2766,19 +2766,19 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                                if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
-                                   text = RWCString("Var Change = ");
+                                   text = string("Var Change = ");
                                    text += doubleToString(ratio*100.0);
                                    text += "%, CloseFail";
-                                   additional = RWCString("Feeder: ");
+                                   additional = string("Feeder: ");
                                    additional = getPAOName();
                                }
                                else if( getMinConfirmPercent() != 0 )
                                {
                                    currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                                   text = RWCString("Var Change = ");
+                                   text = string("Var Change = ");
                                    text += doubleToString(ratio*100.0);
                                    text += "%, CloseQuestionable";
-                                   additional = RWCString("Feeder: ");
+                                   additional = string("Feeder: ");
                                    additional = getPAOName();
                                }
                                else
@@ -2797,18 +2797,18 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        {
                            char tempchar[80];
                            currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                           text = RWCString("Non Normal Var Quality = ");
+                           text = string("Non Normal Var Quality = ");
                            _ltoa(getCurrentVarPointQuality(),tempchar,10);
                            text += tempchar;
                            text += "%, CloseQuestionable";
-                           additional = RWCString("Feeder: ");
+                           additional = string("Feeder: ");
                            additional = getPAOName();
                        }
                    }
                    else
                    {
                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                       dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                        returnBoolean = FALSE;
                       // break;
                    }
@@ -2823,12 +2823,12 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        }
                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                        ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
-                       currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                       currentCapBank->setLastStatusChangeTime(CtiTime());
                    }
                    else
                    {
                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                       dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                        << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                    }
 
@@ -2852,13 +2852,13 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
     if (foundCap == FALSE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
         returnBoolean = TRUE;
     }
     if (foundFeeder == FALSE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
         returnBoolean = TRUE;
     }
     return returnBoolean;
@@ -2870,7 +2870,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
     Returns a boolean if the control interval is up or if new point data has
     been received for all the points associated with the bus.
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
+BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
 {
     BOOL returnBoolean = FALSE;
 
@@ -2880,7 +2880,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
     }
     else
     {
-        if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -2918,7 +2918,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
 
                     if( !returnBoolean )
@@ -2966,7 +2966,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -2987,14 +2987,14 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
                 returnBoolean = _newpointdatareceivedflag;
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
         {
             if( _newpointdatareceivedflag )
             {
@@ -3015,7 +3015,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid Control Method in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid Control Method in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 
@@ -3034,7 +3034,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
 
     if( getRecentlyControlledFlag() )
     {
-        if( !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -3070,7 +3070,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
     
                 if( !returnBoolean )
@@ -3103,7 +3103,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -3117,14 +3117,14 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
                 returnBoolean = _newpointdatareceivedflag;
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
         {
             if( _ccfeeders.entries() > 0 )
             {
@@ -3145,7 +3145,7 @@ BOOL CtiCCSubstationBus::isConfirmCheckNeeded()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid Control Method in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid Control Method in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 
@@ -3164,13 +3164,13 @@ BOOL CtiCCSubstationBus::isPeakDay()
     //also, but we must wait until there is
     //a dll with a function to do this
     //-------------------------------------
-    RWTime now;
+    CtiTime now;
     struct tm start_tm;
 
     now.extract(&start_tm);
 
-    if( _daysofweek(start_tm.tm_wday) == 'Y' &&
-        ( _daysofweek(7) == 'Y' ||
+    if( _daysofweek[start_tm.tm_wday] == 'Y' &&
+        ( _daysofweek[7] == 'Y' ||
           !CtiHolidayManager::getInstance().isHoliday() ) )
         return TRUE;
     else
@@ -3205,8 +3205,8 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
     {
-        if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
-            !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -3224,7 +3224,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -3263,7 +3263,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                     returnBoolean = FALSE;
                                 }
                                 found = TRUE;
@@ -3275,7 +3275,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -3328,7 +3328,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                             else
                                             {
                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                                dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                                 returnBoolean = FALSE;
                                             }
                                             found = TRUE;
@@ -3337,7 +3337,6 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                     }
                                     break;
                                 }
-
                             }
                         }
                     }
@@ -3345,7 +3344,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                 if (found == FALSE)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
                     returnBoolean = TRUE;
                 }
             }
@@ -3353,7 +3352,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 
@@ -3408,7 +3407,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(BOOL verificationFla
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3422,7 +3421,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPerformingVerificationFlag(BOOL perfo
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3437,7 +3436,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVerificationDoneFlag(BOOL verificatio
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3454,7 +3453,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOverlappingVerificationFlag(BOOL over
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3471,7 +3470,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feed
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3488,7 +3487,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankId(LONG cap
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3503,7 +3502,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(LONG 
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -3516,7 +3515,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(LONG 
 
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     for (LONG i = 0; i < _ccfeeders.entries(); i++)
@@ -3534,7 +3533,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ***WARNING*** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " ***WARNING*** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else if (currentCapBank->getVCtrlIndex() == 2)
@@ -3595,7 +3594,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
@@ -3677,8 +3676,8 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
     {
-        if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
-            !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
+            !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
         {
             if( getMinConfirmPercent() > 0 )
             {                   
@@ -3698,12 +3697,12 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                 if (foundFeeder == FALSE)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    dout << CtiTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
                     returnBoolean = TRUE;
                 }
             }
         }
-        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        else if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::SubstationBusControlMethod) )
         {
             if( getMinConfirmPercent() > 0 )
             {
@@ -3751,7 +3750,8 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+                                    dout << CtiTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                     returnBoolean = FALSE;
                                 }
                                 foundCap = TRUE;
@@ -3764,7 +3764,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                 if (foundCap == FALSE)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
                     returnBoolean = TRUE;
                 }
             }
@@ -3781,11 +3781,11 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
 
     Returns a boolean if the last control is past the maximum confirm time.
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const RWDBDateTime& currentDateTime)
+BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
 {
     BOOL returnBoolean = FALSE;
 
-    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+    if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) )
     {
         for(LONG i=0;i<_ccfeeders.entries();i++)
         {
@@ -3819,11 +3819,11 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const RWDBDateTime& currentDateTim
 
     Returns boolean if .
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
 {
     BOOL returnBoolean = FALSE;
 
-    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+    if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) )
     {
         for(LONG i=0;i<_ccfeeders.entries();i++)
         {
@@ -3897,7 +3897,7 @@ void CtiCCSubstationBus::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -3905,7 +3905,7 @@ void CtiCCSubstationBus::dumpDynamicData()
 
     Writes out the dynamic information for this substation bus.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
         RWDBTable dynamicCCSubstationBusTable = getDatabase().table( "dynamicccsubstationbus" );
@@ -3918,13 +3918,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
 
             updater << dynamicCCSubstationBusTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
             << dynamicCCSubstationBusTable["currentwattpointvalue"].assign( _currentwattloadpointvalue )
-            << dynamicCCSubstationBusTable["nextchecktime"].assign( (RWDBDateTime)_nextchecktime )
-            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( RWCString((_newpointdatareceivedflag?'Y':'N')) )
-            << dynamicCCSubstationBusTable["busupdatedflag"].assign( RWCString((_busupdatedflag?'Y':'N')) );
+            << dynamicCCSubstationBusTable["nextchecktime"].assign( toRWDBDT(_nextchecktime) )
+            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( ((_newpointdatareceivedflag?'Y':'N')) )
+            << dynamicCCSubstationBusTable["busupdatedflag"].assign( ((_busupdatedflag?'Y':'N')) );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
             }*/
             updater.execute( conn );
 
@@ -3936,12 +3936,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << updater.asString() << endl;
                 }
             }
@@ -3950,14 +3950,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
 
-            updater << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( (RWDBDateTime)_lastcurrentvarpointupdatetime )
+            updater << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( toRWDBDT(_lastcurrentvarpointupdatetime) )
             << dynamicCCSubstationBusTable["estimatedvarpointvalue"].assign( _estimatedvarloadpointvalue )
             << dynamicCCSubstationBusTable["currentdailyoperations"].assign( _currentdailyoperations )
-            << dynamicCCSubstationBusTable["peaktimeflag"].assign( RWCString((_peaktimeflag?'Y':'N')) );
+            << dynamicCCSubstationBusTable["peaktimeflag"].assign( ((_peaktimeflag?'Y':'N')) );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
             }*/
             updater.execute( conn );
 
@@ -3969,12 +3969,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << updater.asString() << endl;
                 }
             }
@@ -3983,14 +3983,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
 
-            updater << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( RWCString((_recentlycontrolledflag?'Y':'N')) )
-            << dynamicCCSubstationBusTable["lastoperationtime"].assign( (RWDBDateTime)_lastoperationtime )
+            updater << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( ((_recentlycontrolledflag?'Y':'N')) )
+            << dynamicCCSubstationBusTable["lastoperationtime"].assign( toRWDBDT(_lastoperationtime ))
             << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( _varvaluebeforecontrol )
             << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( _lastfeedercontrolledpaoid );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
             }*/
             updater.execute( conn );
 
@@ -4002,12 +4002,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << updater.asString() << endl;
                 }
             }
@@ -4016,20 +4016,19 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
             addFlags[3] = (_overlappingSchedulesVerificationFlag?'Y':'N');
-            _additionalFlags = RWCString(RWCString(*addFlags) + RWCString(*(addFlags+1)) + RWCString(*(addFlags+2)) +  RWCString(*(addFlags+3)) + RWCString(*(addFlags + 4), 16));
-
+			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ char2string(*(addFlags+3)) + string(17, *(addFlags + 4)));
             updater.clear();
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
 
             updater << dynamicCCSubstationBusTable["lastfeederposition"].assign( _lastfeedercontrolledposition )
-            << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicCCSubstationBusTable["ctitimestamp"].assign(toRWDBDT(currentDateTime))
             << dynamicCCSubstationBusTable["powerfactorvalue"].assign( _powerfactorvalue )
             << dynamicCCSubstationBusTable["kvarsolution"].assign( _kvarsolution )
             << dynamicCCSubstationBusTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCSubstationBusTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCSubstationBusTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) )
-            << dynamicCCSubstationBusTable["additionalflags"].assign( _additionalFlags )
+            << dynamicCCSubstationBusTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N"))
+            << dynamicCCSubstationBusTable["additionalflags"].assign( _additionalFlags[0] )
             << dynamicCCSubstationBusTable["currverifycbid"].assign( _currentVerificationCapBankId )
             << dynamicCCSubstationBusTable["currverifyfeederid"].assign( _currentVerificationFeederId )
             << dynamicCCSubstationBusTable["currverifycborigstate"].assign( _currentCapBankToVerifyAssumedOrigState )
@@ -4040,7 +4039,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
              
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << updater.asString().data() << endl;
+                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
             }*/
             updater.execute( conn );
 
@@ -4052,12 +4051,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << updater.asString() << endl;
                 }
             }
@@ -4066,7 +4065,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Inserted substation bus into DynamicCCSubstationBus: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted substation bus into DynamicCCSubstationBus: " << getPAOName() << endl;
             }
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
 
@@ -4076,13 +4075,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << _currentvarloadpointvalue
             << _currentwattloadpointvalue
             << _nextchecktime
-            << RWCString((_newpointdatareceivedflag?'Y':'N'))
-            << RWCString((_busupdatedflag?'Y':'N'))
+            << ((_newpointdatareceivedflag?'Y':'N'))
+            << ((_busupdatedflag?'Y':'N'))
             << _lastcurrentvarpointupdatetime
             << _estimatedvarloadpointvalue
             << _currentdailyoperations
-            << RWCString((_peaktimeflag?'Y':'N'))
-            << RWCString((_recentlycontrolledflag?'Y':'N'))
+            << ((_peaktimeflag?'Y':'N'))
+            << ((_recentlycontrolledflag?'Y':'N'))
             << _lastoperationtime
             << _varvaluebeforecontrol
             << _lastfeedercontrolledpaoid
@@ -4092,8 +4091,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << _kvarsolution
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
-            << RWCString((_waivecontrolflag?'Y':'N'))
-            << RWCString(*addFlags, 20)
+            << string((_waivecontrolflag?"Y":"N"))
+            << string(*addFlags, 20)
             << _currentVerificationCapBankId
             << _currentVerificationFeederId 
             << _currentCapBankToVerifyAssumedOrigState
@@ -4104,7 +4103,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << inserter.asString().data() << endl;
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
             }
 
             inserter.execute( conn );
@@ -4118,12 +4117,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             {
                 /*{
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << inserter.asString() << endl;
                 }
             }
@@ -4196,7 +4195,7 @@ BOOL CtiCCSubstationBus::isBusPerformingVerification()
     return _performingVerificationFlag;
 
 }
-BOOL CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const RWDBDateTime& currentDateTime)
+BOOL CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime)
 {
     if (getLastOperationTime().seconds() + getMaxConfirmTime() <= currentDateTime.seconds() )
         return TRUE;
@@ -4262,7 +4261,7 @@ void CtiCCSubstationBus::setVerificationStrategy(int verificationStrategy)
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -4281,7 +4280,7 @@ void CtiCCSubstationBus::setCapBankInactivityTime(LONG capBankToVerifyInactivity
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
         _dirty = TRUE;
     }
@@ -4317,7 +4316,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase))
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState))
                     {
 
                         if (!getOverlappingVerificationFlag())
@@ -4361,7 +4360,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                         (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
                          currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
                          currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
@@ -4409,7 +4408,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                         ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
                           currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) )
                     {
@@ -4454,7 +4453,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                         (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
                          currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                     {
@@ -4490,8 +4489,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
         }
         case CtiPAOScheduleManager::BanksInactiveForXTime:
         {
-            RWDBDateTime currentTime = RWTime();
-            currentTime.now();
+            CtiTime currentTime = CtiTime();
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
@@ -4505,7 +4503,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                         ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) )
                     {
                         if (!getOverlappingVerificationFlag())
@@ -4550,7 +4548,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
                 for(j=0;j<ccCapBanks.entries();j++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::StandAloneState,RWCString::ignoreCase))
+                    if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState))
                     {
 
                         if (!getOverlappingVerificationFlag())
@@ -4624,9 +4622,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
 --------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
 {
-    RWTime tempTime2;
-    RWTime tempTime3;
-    RWCString tempString;
+
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    string tempString;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -4673,8 +4672,8 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _verificationFlag
     >> _ccfeeders;
 
-    _lastcurrentvarpointupdatetime = RWDBDateTime(tempTime2);
-    _lastoperationtime = RWDBDateTime(tempTime3);
+    _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
+    _lastoperationtime = CtiTime(tempTime3);
 }
 
 /*---------------------------------------------------------------------------
@@ -4716,7 +4715,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _decimalplaces
     << _newpointdatareceivedflag
     << _busupdatedflag
-    << _lastcurrentvarpointupdatetime.rwtime()
+    << _lastcurrentvarpointupdatetime
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
     << _dailyoperationsanalogpointid
@@ -4725,7 +4724,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _currentdailyoperations
     << _peaktimeflag
     << _recentlycontrolledflag
-    << _lastoperationtime.rwtime()
+    << _lastoperationtime
     << _varvaluebeforecontrol
     << temppowerfactorvalue
     << tempestimatedpowerfactorvalue
@@ -4853,7 +4852,7 @@ CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restore(RWDBReader& rdr)
 {
-    RWCString tempBoolString;
+    string tempBoolString;
 
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
@@ -4862,7 +4861,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["type"] >> _paotype;
     rdr["description"] >> _paodescription;
     rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     rdr["currentvarloadpointid"] >> _currentvarloadpointid;
     rdr["currentwattloadpointid"] >> _currentwattloadpointid;
@@ -4902,12 +4901,12 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);
-    setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
+    setLastCurrentVarPointUpdateTime(gInvalidCtiTime);
     setEstimatedVarLoadPointValue(0.0);
     setCurrentDailyOperations(0);
     setPeakTimeFlag(TRUE);
     setRecentlyControlledFlag(FALSE);
-    setLastOperationTime(gInvalidRWDBDateTime);
+    setLastOperationTime(gInvalidCtiTime);
     setVarValueBeforeControl(0.0);
     setLastFeederControlledPAOId(0);
     setLastFeederControlledPosition(-1);
@@ -4917,7 +4916,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setCurrentVarPointQuality(NormalQuality);
     setWaiveControlFlag(FALSE);
 
-    _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+    _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setVerificationFlag(FALSE);
     setPerformingVerificationFlag(FALSE);
     setVerificationDoneFlag(FALSE);
@@ -4947,7 +4946,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
 {
-    RWCString tempBoolString;
+    string tempBoolString;
 
     _strategyName = strategy->getStrategyName();                      
     _controlmethod = strategy->getControlMethod();                    
@@ -4973,8 +4972,8 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
 void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
 {   
     RWDBNullIndicator isNull;
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
+    CtiTime dynamicTimeStamp;
+    string tempBoolString;
 
 
     /*rdr["currentvarpointvalue"] >> isNull;
@@ -4984,19 +4983,19 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
         rdr["nextchecktime"] >> _nextchecktime;
         rdr["newpointdatareceivedflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
         rdr["busupdatedflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         _busupdatedflag = (tempBoolString=="y"?TRUE:FALSE);
         rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
         rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
         rdr["currentdailyoperations"] >> _currentdailyoperations;
         rdr["peaktimeflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         _peaktimeflag = (tempBoolString=="y"?TRUE:FALSE);
         rdr["recentlycontrolledflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
         rdr["lastoperationtime"] >> _lastoperationtime;
         rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
@@ -5008,15 +5007,15 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
         rdr["currentvarpointquality"] >> _currentvarpointquality;
         rdr["waivecontrolflag"] >> tempBoolString;
-        tempBoolString.toLower();
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
         _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
 
         rdr["additionalflags"] >> _additionalFlags;
-        _additionalFlags.toLower();
-        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
-        _overlappingSchedulesVerificationFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+        std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
+        _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+        _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+        _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+        _overlappingSchedulesVerificationFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;
@@ -5034,12 +5033,12 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
 /*---------------------------------------------------------------------------
     doubleToString
 
-    Returns the RWCString representation of a double
+    Returns the string representation of a double
 ---------------------------------------------------------------------------*/
-RWCString CtiCCSubstationBus::doubleToString(DOUBLE doubleVal)
+string CtiCCSubstationBus::doubleToString(DOUBLE doubleVal)
 {
     char tempchar[80] = "";
-    RWCString retString = RWCString("");
+    string retString = string("");
     _snprintf(tempchar,80,"%d",(int)(doubleVal+0.5));
     retString += tempchar;
 
@@ -5063,13 +5062,13 @@ void CtiCCSubstationBus::deleteCCFeeder(long feederId)
 }
 
 /* Public Static members */
-const RWCString CtiCCSubstationBus::IndividualFeederControlMethod   = "IndividualFeeder";
-const RWCString CtiCCSubstationBus::SubstationBusControlMethod      = "SubstationBus";
-const RWCString CtiCCSubstationBus::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
-const RWCString CtiCCSubstationBus::ManualOnlyControlMethod         = "ManualOnly";
+const string CtiCCSubstationBus::IndividualFeederControlMethod   = "IndividualFeeder";
+const string CtiCCSubstationBus::SubstationBusControlMethod      = "SubstationBus";
+const string CtiCCSubstationBus::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
+const string CtiCCSubstationBus::ManualOnlyControlMethod         = "ManualOnly";
 
-const RWCString CtiCCSubstationBus::KVARControlUnits         = "KVAR";
-const RWCString CtiCCSubstationBus::VoltControlUnits         = "Volts";
-const RWCString CtiCCSubstationBus::PF_BY_KVARControlUnits   = "P-Factor KW/KVar";
-const RWCString CtiCCSubstationBus::PF_BY_KQControlUnits     = "P-Factor KW/KQ";
+const string CtiCCSubstationBus::KVARControlUnits         = "KVAR";
+const string CtiCCSubstationBus::VoltControlUnits         = "Volts";
+const string CtiCCSubstationBus::PF_BY_KVARControlUnits   = "P-Factor KW/KVar";
+const string CtiCCSubstationBus::PF_BY_KQControlUnits     = "P-Factor KW/KQ";
                                                 

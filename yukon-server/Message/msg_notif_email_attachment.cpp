@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,12 +20,14 @@
 #include <fstream>
 #include "msg_notif_email_attachment.h"
 
+using namespace std;
+
 RWDEFINE_COLLECTABLE( CtiNotifEmailAttachmentMsg, NOTIF_EMAIL_ATTCH_MSG_ID );
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiNotifEmailAttachmentMsg::CtiNotifEmailAttachmentMsg( RWCString fileName )
+CtiNotifEmailAttachmentMsg::CtiNotifEmailAttachmentMsg( string fileName )
 {
    setFileName( fileName );
 }
@@ -59,7 +61,7 @@ void CtiNotifEmailAttachmentMsg::saveGuts( RWvostream &aStream ) const
    aStream << getFileName()
             << len;
 
-   std::ifstream fileAttachment( getFileName().data() );
+   std::ifstream fileAttachment( getFileName().c_str() );
 
    fileAttachment.seekg( 0, ios::end );
    len = fileAttachment.tellg();
@@ -99,7 +101,7 @@ void CtiNotifEmailAttachmentMsg::restoreGuts( RWvistream& aStream )
       aStream >> data[index];
    }
       
-   std::ofstream fileAttachment( _fileName );
+   std::ofstream fileAttachment( _fileName.c_str() );
 
    fileAttachment.write( data, len );
    
@@ -122,7 +124,7 @@ void CtiNotifEmailAttachmentMsg::dump() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-const RWCString &CtiNotifEmailAttachmentMsg::getFileName( void ) const
+const string &CtiNotifEmailAttachmentMsg::getFileName( void ) const
 {
    return( _fileName );
 }
@@ -130,7 +132,7 @@ const RWCString &CtiNotifEmailAttachmentMsg::getFileName( void ) const
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailAttachmentMsg::setFileName( RWCString name )
+void CtiNotifEmailAttachmentMsg::setFileName( string name )
 {
    _fileName = name;
 }

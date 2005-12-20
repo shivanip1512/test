@@ -14,13 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_state_grp.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include <set>
-using namespace std;
+using std::set;
 
 #include <rw/thr/monitor.h>
 #include <rw/thr/recursiv.h>
@@ -30,8 +30,7 @@ using namespace std;
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
+
 
 #include "dlldefs.h"
 #include "mutex.h"
@@ -47,7 +46,7 @@ public:
 protected:
 
    LONG           _stateGroupID;
-   RWCString      _name;
+   string      _name;
 
    CtiMutex       _stateMux;
    CtiStateSet_t  _stateSet;
@@ -62,17 +61,17 @@ public:
 
    CtiTableStateGroup& operator=(const CtiTableStateGroup& aRef);
    LONG getStateGroupID() const;
-   const RWCString& getName() const;
+   const string& getName() const;
    const CtiStateSet_t& getStateSet() const;
 
    CtiTableStateGroup& setStateGroupID( const LONG id );
-   CtiTableStateGroup& setName( const RWCString &str );
+   CtiTableStateGroup& setName( const string &str );
    CtiTableStateGroup& setStateSet( const CtiStateSet_t& aSet );
 
-   RWCString getRawState(LONG rawValue);
+   string getRawState(LONG rawValue);
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static RWCString getTableName();
+   static string getTableName();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();
    virtual RWDBStatus Restore();

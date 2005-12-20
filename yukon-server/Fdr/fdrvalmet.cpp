@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/10/19 16:53:22 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.9  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.8  2005/10/19 16:53:22  dsutton
       Added the ability to set the connection timeout using a cparm.  Interfaces will
       kill the connection if they haven't heard anything from the other system after
@@ -97,15 +100,14 @@
 #include <windows.h>
 #include <iostream>
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -147,7 +149,7 @@ const CHAR * CtiFDR_Valmet::KEY_LINK_TIMEOUT = "FDR_VALMET_LINK_TIMEOUT_SECONDS"
 
 // Constructors, Destructor, and Operators
 CtiFDR_Valmet::CtiFDR_Valmet()
-: CtiFDRSingleSocket(RWCString(FDR_VALMET))
+: CtiFDRSingleSocket(string(FDR_VALMET))
 {   
     init();
 }
@@ -167,12 +169,12 @@ CtiFDR_Valmet::~CtiFDR_Valmet()
 int CtiFDR_Valmet::readConfig()
 {    
     int         successful = TRUE;
-    RWCString   tempStr;
+    string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
     if (tempStr.length() > 0)
     {
-        setPortNumber (atoi(tempStr));
+        setPortNumber (atoi(tempStr.c_str()));
     }
     else
     {
@@ -182,7 +184,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
     if (tempStr.length() > 0)
     {
-        setLinkTimeout (atoi(tempStr));
+        setLinkTimeout (atoi(tempStr.c_str()));
     }
     else
     {
@@ -192,7 +194,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
     {
-        setTimestampReasonabilityWindow (atoi (tempStr));
+        setTimestampReasonabilityWindow (atoi (tempStr.c_str()));
     }
     else
     {
@@ -202,7 +204,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
     if (tempStr.length() > 0)
     {
-        setReloadRate (atoi(tempStr));
+        setReloadRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -212,7 +214,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
     if (tempStr.length() > 0)
     {
-        setQueueFlushRate (atoi(tempStr));
+        setQueueFlushRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -223,7 +225,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
     if (tempStr.length() > 0)
     {
-        setOutboundSendRate (atoi(tempStr));
+        setOutboundSendRate (atoi(tempStr.c_str()));
     }
     else
     {
@@ -234,7 +236,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_INTERVAL);
     if (tempStr.length() > 0)
     {
-        setOutboundSendInterval (atoi(tempStr));
+        setOutboundSendInterval (atoi(tempStr.c_str()));
     }
     else
     {
@@ -245,12 +247,12 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESYNC_VARIATION);
     if (tempStr.length() > 0)
     {
-        setTimeSyncVariation (atoi(tempStr));
+        setTimeSyncVariation (atoi(tempStr.c_str()));
         if (getTimeSyncVariation() < 5)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
+                dout << CtiTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
             }
             // default to 5 seconds
             setTimeSyncVariation(5);
@@ -267,7 +269,7 @@ int CtiFDR_Valmet::readConfig()
     tempStr = getCparmValueAsString(KEY_TIMESYNC_UPDATE);
     if (tempStr.length() > 0)
     {
-        if (!tempStr.compareTo ("false",RWCString::ignoreCase))
+        if (!stringCompareIgnoreCase(tempStr,"false"))
         {
             setUpdatePCTimeFlag (false);
         }
@@ -284,25 +286,25 @@ int CtiFDR_Valmet::readConfig()
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Valmet port number " << getPortNumber() << endl;
-        dout << RWTime() << " Valmet timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << RWTime() << " Valmet db reload rate " << getReloadRate() << endl;
-        dout << RWTime() << " Valmet queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << RWTime() << " Valmet send rate " << getOutboundSendRate() << endl;
-        dout << RWTime() << " Valmet send interval " << getOutboundSendInterval() << " second(s) " << endl;
-        dout << RWTime() << " Valmet max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << RWTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;
+        dout << CtiTime() << " Valmet port number " << getPortNumber() << endl;
+        dout << CtiTime() << " Valmet timestamp window " << getTimestampReasonabilityWindow() << endl;
+        dout << CtiTime() << " Valmet db reload rate " << getReloadRate() << endl;
+        dout << CtiTime() << " Valmet queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
+        dout << CtiTime() << " Valmet send rate " << getOutboundSendRate() << endl;
+        dout << CtiTime() << " Valmet send interval " << getOutboundSendInterval() << " second(s) " << endl;
+        dout << CtiTime() << " Valmet max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
+        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;
 
 
         if (shouldUpdatePCTime())
-            dout << RWTime() << " Valmet time sync will reset PC clock" << endl;
+            dout << CtiTime() << " Valmet time sync will reset PC clock" << endl;
         else
-            dout << RWTime() << " Valmet time sync will not reset PC clock" << endl;
+            dout << CtiTime() << " Valmet time sync will not reset PC clock" << endl;
 
         if (isInterfaceInDebugMode())
-            dout << RWTime() << " Valmet running in debug mode " << endl;
+            dout << CtiTime() << " Valmet running in debug mode " << endl;
         else
-            dout << RWTime() << " Valmet running in normal mode "<< endl;
+            dout << CtiTime() << " Valmet running in normal mode "<< endl;
     }
 
 
@@ -313,28 +315,28 @@ int CtiFDR_Valmet::readConfig()
 bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
 
     try
     {
-        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation());
+        boost::char_separator<char> sep1(";");
+        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[aDestinationIndex].getTranslation(), sep1);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-            // skip the first part entirely for now
-        if (!(tempString1 = nextTranslate(";")).isNull())
+        if (!(tempString1 = *tok_iter).empty())
         {
-            // this in the point name on valmet
-            RWCTokenizer nextTempToken(tempString1);
+            boost::char_separator<char> sep2(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-            // do not care about the first part
-            nextTempToken(":");
-
-            tempString2 = nextTempToken(":");
+            tok_iter1++;
+            tempString2 = *tok_iter1;
 
             // now we have a category with a :
-            if ( !tempString2.isNull() )
+            if ( !tempString2.empty() )
             {
                 // put category in final name
                 translationName= tempString2;
@@ -351,7 +353,7 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
         RWTHROW(e);
     }
 
@@ -361,7 +363,7 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int a
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
     }
     return successful;
 }
@@ -383,7 +385,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
     if (valmet != NULL)
     {
         // set the timestamp, everything else is based on type of message
-        strcpy (ptr->TimeStamp,  YukonToForeignTime (aPoint.getLastTimeStamp()));
+        strcpy (ptr->TimeStamp,  YukonToForeignTime (aPoint.getLastTimeStamp()).c_str());
 
         switch (aPoint.getPointType())
         {
@@ -393,15 +395,15 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
             case DemandAccumulatorPointType:
                 {
                     ptr->Function = htons (SINGLE_SOCKET_VALUE);
-                            strcpy (ptr->Value.Name,aPoint.getTranslateName(RWCString (FDR_VALMET)));
+                            strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
                     ptr->Value.Quality = YukonToForeignQuality (aPoint.getQuality());
                     ptr->Value.LongValue = htonieeef (aPoint.getValue());
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Analog/Calculated point " << aPoint.getPointID();
-                        dout << " queued as " << aPoint.getTranslateName(RWCString (FDR_VALMET));
+                        dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
+                        dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
                         dout << " value " << aPoint.getValue() << " to " << getInterfaceName() << endl;;
                     }
                     break;
@@ -412,7 +414,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     if (aPoint.isControllable())
                     {
                         ptr->Function = htons (SINGLE_SOCKET_CONTROL);
-                        strcpy (ptr->Control.Name,aPoint.getTranslateName(RWCString (FDR_VALMET)));
+                        strcpy (ptr->Control.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
 
                         // check for validity of the status, we only have open or closed in controls
                         if ((aPoint.getValue() != OPENED) && (aPoint.getValue() != CLOSED))
@@ -423,7 +425,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
                             }
                         }
                         else
@@ -433,8 +435,8 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << RWTime() << " Control point " << aPoint.getPointID();
-                                 dout << " queued as " << aPoint.getTranslateName(RWCString (FDR_VALMET));
+                                 dout << CtiTime() << " Control point " << aPoint.getPointID();
+                                 dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
                                  if (aPoint.getValue() == OPENED)
                                  {
                                      dout << " state of Open ";
@@ -450,7 +452,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     else
                     {
                         ptr->Function = htons (SINGLE_SOCKET_STATUS);
-                        strcpy (ptr->Value.Name,aPoint.getTranslateName(RWCString (FDR_VALMET)));
+                        strcpy (ptr->Value.Name,aPoint.getTranslateName(string (FDR_VALMET)).c_str());
                         ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality());
 
                         // check for validity of the status, we only have open or closed for Valmet
@@ -462,7 +464,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
                             }
                         }
                         else
@@ -472,8 +474,8 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << RWTime() << " Status point " << aPoint.getPointID();
-                                 dout << " queued as " << aPoint.getTranslateName(RWCString (FDR_VALMET));
+                                 dout << CtiTime() << " Status point " << aPoint.getPointID();
+                                 dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
                                  if (aPoint.getValue() == OPENED)
                                  {
                                      dout << " state of Open ";
@@ -514,7 +516,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemHeartbeatMsg ()
     if (valmet != NULL)
     {
         ptr->Function = htons (SINGLE_SOCKET_NULL);
-        strcpy (ptr->TimeStamp, YukonToForeignTime (RWTime()));
+        strcpy (ptr->TimeStamp, YukonToForeignTime (CtiTime()).c_str());
     }
     return valmet;
 }
@@ -524,7 +526,7 @@ int CtiFDR_Valmet::getMessageSize(CHAR *aBuffer)
     return sizeof (ValmetInterface_t);
 }
 
-RWCString CtiFDR_Valmet::decodeClientName(CHAR * aBuffer)
+string CtiFDR_Valmet::decodeClientName(CHAR * aBuffer)
 {
     return getInterfaceName();
 }
@@ -535,25 +537,25 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    RWTime              timestamp;
-    RWCString           desc;
-    RWCString               action;
+    CtiTime              timestamp;
+    string           desc;
+    string               action;
 
     timestamp = ForeignToYukonTime (data->TimeStamp,true);
-    if (timestamp == rwEpoch)
+    if (timestamp == PASTDATE)
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getInterfaceName() << "time sync request was invalid " <<  RWCString (data->TimeStamp) << endl;
+            dout << CtiTime() << " " << getInterfaceName() << "time sync request was invalid " <<  string (data->TimeStamp) << endl;
         }
-        desc = getInterfaceName() + RWCString (" time sync request was invalid ") + RWCString (data->TimeStamp);
+        desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
         retVal = !NORMAL;
     }
     else
     {
-        RWTime now;
+        CtiTime now;
         // check if the stamp is inside the window
         if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
             timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
@@ -599,24 +601,26 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                     if (FileTimeToSystemTime (&fileTime, &sysTime))
                     {
                         SetSystemTime (&sysTime);
-                        desc = getInterfaceName() + RWCString ("'s request to change PC time to ") + timestamp.asString() + RWCString (" was processed");
-                        action = RWCString ("PC time reset to") + timestamp.asString();
+                        desc = getInterfaceName() + "'s request to change PC time to ";
+                        desc += timestamp.asString() + " was processed";
+                        action += "PC time reset to" + timestamp.asString();
                         logEvent (desc,action,true);
 
 //                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getInterfaceName() << "'s request to change PC time to " << timestamp.asString() << " was processed" << endl;
+                            dout << CtiTime() << " " << getInterfaceName() << "'s request to change PC time to " << timestamp.asString() << " was processed" << endl;
                         }
                     }
                     else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Unable to process time change from " << getInterfaceName();
+                            dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
                         }
-                        desc = getInterfaceName() + RWCString ("'s request to change PC time to ") + timestamp.asString() + RWCString (" failed");
-                        action = RWCString ("System time update API failed");
+                        desc = getInterfaceName() + "'s request to change PC time to ";
+                        desc += timestamp.asString() + " failed";
+                        action = string ("System time update API failed");
                         logEvent (desc,action,true);
                         retVal = !NORMAL;
                     }
@@ -625,10 +629,11 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Unable to process time change from " << getInterfaceName();
+                        dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
                     }
-                    desc = getInterfaceName() + RWCString ("'s request to change PC time to ") + timestamp.asString() + RWCString (" failed");
-                    action = RWCString ("System time update API failed");
+                    desc = getInterfaceName() + "'s request to change PC time to ";
+                    desc += timestamp.asString() + " failed";
+                    action = string ("System time update API failed");
                     logEvent (desc,action,true);
                     retVal = !NORMAL;
                 }
@@ -637,13 +642,14 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Time change requested from " << getInterfaceName();
+                    dout << CtiTime() << " Time change requested from " << getInterfaceName();
                     dout << " of " << timestamp.asString() << " is outside standard +-30 minutes " << endl;
                 }
 
                 //log we're way out of whack now
-                desc = getInterfaceName() + RWCString ("'s request to change PC time to ") + timestamp.asString() + RWCString (" was denied");
-                action = RWCString ("Requested time is greater that +-30 minutes");
+                desc = getInterfaceName() + "'s request to change PC time to ";
+                desc += timestamp.asString() + " was denied";
+                action = string ("Requested time is greater that +-30 minutes");
                 logEvent (desc,action,true);
             }
         }
@@ -657,17 +663,17 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality;
     DOUBLE              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool   flag = true;
-    RWCString           desc;
+    string           desc;
     CHAR               action[60];
 
     // convert to our name
-    translationName = RWCString (data->Value.Name);
+    translationName = string (data->Value.Name);
 
     // see if the point exists
      flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -686,19 +692,20 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         value += point.getOffset();
 
         timestamp = ForeignToYukonTime (data->TimeStamp);
-        if (timestamp == rwEpoch)
+        if (timestamp == PASTDATE)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  RWCString (data->TimeStamp) << endl;
+                dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
             }
 
-            desc = getInterfaceName() + RWCString (" analog point received with an invalid timestamp ") + RWCString (data->TimeStamp);
+            desc = getInterfaceName() + " analog point received with an invalid timestamp ";
+            desc += string (data->TimeStamp);
             _snprintf(action,60,"%s for pointID %d", 
                       translationName,
                       point.getPointID());
-            logEvent (desc,RWCString (action));
+            logEvent (desc,string (action));
             retVal = !NORMAL;
         }
         else
@@ -716,7 +723,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Analog point " << translationName;
+                dout << CtiTime() << " Analog point " << translationName;
                 dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
             }
 
@@ -730,12 +737,12 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for analog point " << translationName;
+                    dout << CtiTime() << " Translation for analog point " << translationName;
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
-                desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
+                desc = getInterfaceName() + string (" analog point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         else
@@ -744,13 +751,13 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Analog point " << translationName;
+                    dout << CtiTime() << " Analog point " << translationName;
                     dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
                 }
                 CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" analog point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
 
         }
@@ -766,17 +773,17 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality;
     DOUBLE              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool                 flag = true;
 
-    RWCString           desc;
+    string           desc;
     CHAR           action[60];
 
-    translationName = RWCString (data->Status.Name);
+    translationName = string (data->Status.Name);
 
     // see if the point exists
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -788,19 +795,19 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 
         value = ForeignToYukonStatus (data->Status.Value);
         timestamp = ForeignToYukonTime (data->TimeStamp);
-        if (timestamp == rwEpoch)
+        if (timestamp == PASTDATE)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  RWCString (data->TimeStamp) << endl;
+                dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
             }
 
-            desc = getInterfaceName() + RWCString (" status point received with an invalid timestamp ") + RWCString (data->TimeStamp);
+            desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
             _snprintf(action,60,"%s for pointID %d", 
                       translationName,
                       point.getPointID());
-            logEvent (desc,RWCString (action));
+            logEvent (desc,string (action));
             retVal = !NORMAL;
         }
         else
@@ -818,7 +825,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Status point " << translationName;
+                dout << CtiTime() << " Status point " << translationName;
                 if (value == OPENED)
                 {
                     dout << " new state: Open " ;
@@ -848,12 +855,12 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for status point " <<  translationName;
+                    dout << CtiTime() << " Translation for status point " <<  translationName;
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
-                desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
+                desc = getInterfaceName() + string (" status point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         else
@@ -862,13 +869,13 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Status point " << translationName;
+                    dout << CtiTime() << " Status point " << translationName;
                     dout << " from " << getInterfaceName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
                 }
                 CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" status point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         retVal = !NORMAL;
@@ -882,18 +889,18 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
     ValmetInterface_t  *data = (ValmetInterface_t*)aData;
-    RWCString           translationName;
+    string           translationName;
     int                 quality =NormalQuality;
     DOUBLE              value;
-    RWTime              timestamp;
+    CtiTime              timestamp;
     CtiFDRPoint         point;
     bool                 flag = true;
 
-    RWCString           desc;
+    string           desc;
     CHAR          action[60];
 
     // convert to our name
-    translationName = RWCString (data->Control.Name);
+    translationName = string (data->Control.Name);
 
     // see if the point exists
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
@@ -907,15 +914,15 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Control point " << translationName;
+                dout << CtiTime() << " Control point " << translationName;
                 dout << " from " << getInterfaceName() << " has an invalid control state " << ntohs(data->Control.Value) << endl;
             }
             CHAR state[20];
-            desc = getInterfaceName() + RWCString (" control point received with an invalid state ") + RWCString (itoa (ntohs(data->Control.Value),state,10));
+            desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
             _snprintf(action,60,"%s for pointID %d", 
                       translationName,
                       point.getPointID());
-            logEvent (desc,RWCString (action));
+            logEvent (desc,string (action));
             retVal = !NORMAL;
         }
         else 
@@ -933,7 +940,7 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Control point " << translationName;
+                dout << CtiTime() << " Control point " << translationName;
                 if (controlState == OPENED)
                 {
                     dout << " control: Open " ;
@@ -956,12 +963,12 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for control point " <<  translationName;
+                    dout << CtiTime() << " Translation for control point " <<  translationName;
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
-                desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
+                desc = getInterfaceName() + string (" control point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         else if (!point.isControllable())
@@ -970,15 +977,15 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
+                    dout << CtiTime() << " Control point " << translationName;
                     dout << " received from " << getInterfaceName();
                     dout << " was not configured receive for control for point " << point.getPointID() << endl;
                 }
-                desc = getInterfaceName() + RWCString (" control point is not configured to receive controls");
+                desc = getInterfaceName() + string (" control point is not configured to receive controls");
                 _snprintf(action,60,"%s for pointID %d", 
                           translationName,
                           point.getPointID());
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         else
@@ -987,14 +994,14 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
+                    dout << CtiTime() << " Control point " << translationName;
                     dout << " received from " << getInterfaceName();
                     dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
                 }
                 CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
+                logEvent (desc,string (action));
             }
         }
         retVal = !NORMAL;
@@ -1087,10 +1094,10 @@ USHORT CtiFDR_Valmet::YukonToForeignStatus (int aStatus)
 }
 
 
-RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
+CtiTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
 {
     struct tm ts;
-    RWTime retVal;
+    CtiTime retVal;
 
     if (sscanf (aTime,
                 "%4ld%2ld%2ld%2ld%2ld%2ld",
@@ -1101,7 +1108,7 @@ RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
                 &ts.tm_min,
                 &ts.tm_sec) != 6)
     {
-        retVal = rwEpoch;
+        retVal = PASTDATE;
     }
 
     ts.tm_year -= 1900;
@@ -1112,16 +1119,16 @@ RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     * use whatever we think daylight savings is 
     *********************
     */
-    ts.tm_isdst = RWTime().isDST();
+    ts.tm_isdst = CtiTime().isDST();
 
-    RWTime returnTime(&ts);
+    CtiTime returnTime(&ts);
 
     if (aTimeSyncFlag)
     {
         // just check for validy
         if (!returnTime.isValid())
         {
-            retVal = rwEpoch;
+            retVal = PASTDATE;
         }
         else
         {
@@ -1130,13 +1137,13 @@ RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     }
     else
     {
-        // if RWTime can't make a time or we are outside the window
-        if ((returnTime.seconds() > (RWTime::now().seconds() + getTimestampReasonabilityWindow())) ||
-            (returnTime.seconds() < (RWTime::now().seconds() - getTimestampReasonabilityWindow())) ||
+        // if CtiTime can't make a time or we are outside the window
+        if ((returnTime.seconds() > (CtiTime::now().seconds() + getTimestampReasonabilityWindow())) ||
+            (returnTime.seconds() < (CtiTime::now().seconds() - getTimestampReasonabilityWindow())) ||
             (!returnTime.isValid()))
-    //    if ((returnTime.seconds() > (RWTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
+    //    if ((returnTime.seconds() > (CtiTime().seconds() + getTimestampReasonabilityWindow())) || (!returnTime.isValid()))
         {
-            retVal = rwEpoch;
+            retVal = PASTDATE;
         }
         else
         {
@@ -1147,7 +1154,7 @@ RWTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     return retVal;
 }
 
-RWCString CtiFDR_Valmet::YukonToForeignTime (RWTime aTimeStamp)
+string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
 {
     CHAR      tmp[30];
 
@@ -1157,12 +1164,12 @@ RWCString CtiFDR_Valmet::YukonToForeignTime (RWTime aTimeStamp)
     * note: uninitialized points come across as 11-10-1990 
     ********************************
     */
-    if (aTimeStamp < RWTime(RWDate(1,1,2001)))
+    if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
     {
-        aTimeStamp = RWTime();
+        aTimeStamp = CtiTime();
     }
 
-    RWDate tmpDate (aTimeStamp);
+    CtiDate tmpDate (aTimeStamp);
 
 	// Place it into the Valmet structure */
 	_snprintf (tmp,
@@ -1180,7 +1187,7 @@ RWCString CtiFDR_Valmet::YukonToForeignTime (RWTime aTimeStamp)
 		tmp[15] = 'D';
 	}
 
-	return(RWCString (tmp));
+	return(string (tmp));
 }
 
 /****************************************************************************************

@@ -21,9 +21,15 @@
 #include "device.h"
 #include "resolvers.h"
 #include "numstr.h"
+#include "ctidate.h"
+
+#include <algorithm>
+
 
 #define GROUP_RAMPING_IN 0x00000001
 #define GROUP_RAMPING_OUT 0x00000002
+
+using std::transform;
 
 extern ULONG _LM_DEBUG;
 
@@ -31,19 +37,19 @@ extern ULONG _LM_DEBUG;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::CtiLMGroupBase()
-    : _next_control_time(gInvalidRWDBDateTime),
-      _controlstarttime(gInvalidRWDBDateTime),
-      _controlcompletetime(gInvalidRWDBDateTime),
-      _daily_ops(0),
+    : _next_control_time(gInvalidCtiTime),
+      _controlstarttime(gInvalidCtiTime),
+      _controlcompletetime(gInvalidCtiTime),
+      _daily_ops(0),      
       _insertDynamicDataFlag(TRUE)
 {
     resetInternalState();
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
-    : _next_control_time(gInvalidRWDBDateTime),
-      _controlstarttime(gInvalidRWDBDateTime),
-      _controlcompletetime(gInvalidRWDBDateTime),
+    : _next_control_time(gInvalidCtiTime),
+      _controlstarttime(gInvalidCtiTime),
+      _controlcompletetime(gInvalidCtiTime),
       _daily_ops(0),
       _insertDynamicDataFlag(TRUE)
 {
@@ -79,7 +85,7 @@ LONG CtiLMGroupBase::getPAOId() const
 
     Returns the pao category of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupBase::getPAOCategory() const
+const string& CtiLMGroupBase::getPAOCategory() const
 {
 
     return _paocategory;
@@ -90,7 +96,7 @@ const RWCString& CtiLMGroupBase::getPAOCategory() const
 
     Returns the pao class of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupBase::getPAOClass() const
+const string& CtiLMGroupBase::getPAOClass() const
 {
     return _paoclass;
 }
@@ -100,7 +106,7 @@ const RWCString& CtiLMGroupBase::getPAOClass() const
 
     Returns the pao name of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupBase::getPAOName() const
+const string& CtiLMGroupBase::getPAOName() const
 {
 
     return _paoname;
@@ -122,7 +128,7 @@ LONG CtiLMGroupBase::getPAOType() const
 
     Returns the pao description of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupBase::getPAODescription() const
+const string& CtiLMGroupBase::getPAODescription() const
 {
 
     return _paodescription;
@@ -254,7 +260,7 @@ LONG CtiLMGroupBase::getCurrentHoursAnnually() const
 
     Returns the time of the last control sent for the group
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
+const CtiTime& CtiLMGroupBase::getLastControlSent() const
 {
 
     return _lastcontrolsent;
@@ -265,7 +271,7 @@ const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
 
     Returns the time when the current group control started
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMGroupBase::getControlStartTime() const
+const CtiTime& CtiLMGroupBase::getControlStartTime() const
 {
     return _controlstarttime;
 }
@@ -275,7 +281,7 @@ const RWDBDateTime& CtiLMGroupBase::getControlStartTime() const
 
     Returns the time when the current group control is scheduled to complete
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMGroupBase::getControlCompleteTime() const
+const CtiTime& CtiLMGroupBase::getControlCompleteTime() const
 {
     return _controlcompletetime;
 }
@@ -285,7 +291,7 @@ const RWDBDateTime& CtiLMGroupBase::getControlCompleteTime() const
 
   Returns the time this group will be controlled next
 ----------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMGroupBase::getNextControlTime() const
+const CtiTime& CtiLMGroupBase::getNextControlTime() const
 {
     return _next_control_time;
 }
@@ -295,7 +301,7 @@ const RWDBDateTime& CtiLMGroupBase::getNextControlTime() const
 
   Returns the dynamic info timestamp
 -----------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMGroupBase::getDynamicTimestamp() const
+const CtiTime& CtiLMGroupBase::getDynamicTimestamp() const
 {
     return _dynamic_timestamp;
 }
@@ -305,7 +311,7 @@ const RWDBDateTime& CtiLMGroupBase::getDynamicTimestamp() const
 
     Returns the number of times this program has operated today
  ---------------------------------------------------------------------------*/
-LONG CtiLMGroupBase::getDailyOps()
+LONG CtiLMGroupBase::getDailyOps() 
 {
     updateDailyOps();
     return _daily_ops; //TODO: check if this is the value for today!
@@ -336,11 +342,11 @@ bool CtiLMGroupBase::getIsRampingOut() const
 
   Returns the amount of time in seconds that we have been controlling.
   If the group is inactive this will be zero.
------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/  
 ULONG CtiLMGroupBase::getCurrentControlDuration() const
 {
     return (getGroupControlState() == ActiveState ?
-            RWTime::now().seconds() - getControlStartTime().seconds() : 0);
+	    CtiTime::now().seconds() - getControlStartTime().seconds() : 0);
 }
 
 /*---------------------------------------------------------------------------
@@ -402,7 +408,7 @@ LONG CtiLMGroupBase::getControlStatusPointId() const
 
     Returns the last control string of the substation
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupBase::getLastControlString() const
+const string& CtiLMGroupBase::getLastControlString() const
 {
 
     return _lastcontrolstring;
@@ -426,7 +432,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOId(LONG id)
 
     Sets the pao category of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOCategory(const RWCString& category)
+CtiLMGroupBase& CtiLMGroupBase::setPAOCategory(const string& category)
 {
 
     _paocategory = category;
@@ -438,7 +444,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOCategory(const RWCString& category)
 
     Sets the pao class of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOClass(const RWCString& pclass)
+CtiLMGroupBase& CtiLMGroupBase::setPAOClass(const string& pclass)
 {
 
     _paoclass = pclass;
@@ -450,7 +456,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOClass(const RWCString& pclass)
 
     Sets the pao name of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOName(const RWCString& name)
+CtiLMGroupBase& CtiLMGroupBase::setPAOName(const string& name)
 {
 
     _paoname = name;
@@ -474,7 +480,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOType(LONG type)
 
     Sets the pao description of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAODescription(const RWCString& description)
+CtiLMGroupBase& CtiLMGroupBase::setPAODescription(const string& description)
 {
 
     _paodescription = description;
@@ -633,7 +639,7 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursAnnually(LONG annually)
 
     Sets the time of the last control sent for the program
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlsent)
+CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const CtiTime& controlsent)
 {
     if(_lastcontrolsent != controlsent)
     {
@@ -648,7 +654,7 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 
     Sets the time when the current group control started
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const RWDBDateTime& start)
+CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const CtiTime& start)
 {
     if(_controlstarttime != start)
     {
@@ -663,7 +669,7 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const RWDBDateTime& start)
 
     Sets the time when the current group control is scheduled to complete
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const RWDBDateTime& complete)
+CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const CtiTime& complete)
 {
     _controlcompletetime = complete;
     return *this;
@@ -675,7 +681,7 @@ CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const RWDBDateTime& compl
 
     Sets the time when the current group will be controlled next
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controltime)
+CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const CtiTime& controltime)
 {
     if(_next_control_time != controltime)
     {
@@ -690,7 +696,7 @@ CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controlti
 
   Sets the dynamic info timestamp
 -----------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const RWDBDateTime& timestamp)
+CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const CtiTime& timestamp)
 {
     if(_dynamic_timestamp != timestamp)
     {
@@ -702,7 +708,7 @@ CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const RWDBDateTime& timestam
 
 /*-----------------------------------------------------------------------------
   incrementDailyOps
------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/  
 CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 {
     updateDailyOps();
@@ -714,7 +720,7 @@ CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 /*-----------------------------------------------------------------------------
   resetDailyOps
   This only exists so the controlareastore can set the dailyops when
-  it reads it from the database.  usually you won't call this directly.
+  it reads it from the database.  usually you won't call this directly. 
 -----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::resetDailyOps(int ops)
 {
@@ -792,7 +798,7 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStatusPointId(LONG cntid)
 
     Sets the last control string of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setLastControlString(const RWCString& controlstr)
+CtiLMGroupBase& CtiLMGroupBase::setLastControlString(const string& controlstr)
 {
 
     _lastcontrolstring = controlstr;
@@ -823,7 +829,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int prior
     if( _LM_DEBUG & LM_DEBUG_STANDARD)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
     }
     return returnCommandMsg;
 }
@@ -837,7 +843,7 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not True Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not True Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -847,14 +853,14 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
 
     .
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(string settings, LONG minValue, LONG maxValue,
                                                         LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                         LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                         LONG valueTE, LONG valueTF, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
 }
@@ -868,11 +874,11 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
 {
     RWCollectable::restoreGuts( istrm );
 
-    RWTime tempTime1;
-    RWTime tempTime2;
-    RWTime tempTime3;
-    RWTime tempTime4;
-
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    CtiTime tempTime4;
+    
     istrm >> _paoid
           >> _paocategory
           >> _paoclass
@@ -897,10 +903,10 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
           >> _internalState
           >> _daily_ops;
 
-    _lastcontrolsent = RWDBDateTime(tempTime1);
-    _controlstarttime = RWDBDateTime(tempTime2);
-    _controlcompletetime = RWDBDateTime(tempTime3);
-    _next_control_time = RWDBDateTime(tempTime4);
+    _lastcontrolsent = CtiTime(tempTime1);
+    _controlstarttime = CtiTime(tempTime2);
+    _controlcompletetime = CtiTime(tempTime3);
+    _next_control_time = CtiTime(tempTime4);
 }
 
 /*---------------------------------------------------------------------------
@@ -929,10 +935,10 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
           << _currenthoursmonthly
           << _currenthoursseasonal
           << _currenthoursannually
-          << _lastcontrolsent.rwtime()
-          << _controlstarttime.rwtime()
-          << _controlcompletetime.rwtime()
-          << _next_control_time.rwtime()
+          << _lastcontrolsent
+          << _controlstarttime
+          << _controlcompletetime
+          << _next_control_time
           << _internalState
           << _daily_ops;
 
@@ -1015,10 +1021,10 @@ bool CtiLMGroupBase::operator<(const CtiLMGroupBase& right) const
 
     Builds a shed time string given a period of time in seconds.
 ---------------------------------------------------------------------------*/
-RWCString CtiLMGroupBase::buildShedString(LONG shedTime) const
+string CtiLMGroupBase::buildShedString(LONG shedTime) const
 {
     char tempchar[64];
-    RWCString retStr;
+    string retStr;
 
     if( (shedTime % 3600) == 0 )
     {
@@ -1051,7 +1057,7 @@ RWCString CtiLMGroupBase::buildShedString(LONG shedTime) const
     Period strings are always in terms of minutes!
     i.e. 61 seconds is 1m
 ---------------------------------------------------------------------------*/
-RWCString CtiLMGroupBase::buildPeriodString(LONG periodTime) const
+string CtiLMGroupBase::buildPeriodString(LONG periodTime) const
 {
     return CtiNumStr(periodTime/(LONG)60);
 }
@@ -1065,7 +1071,7 @@ BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG
 {
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - PAOId: " << getPAOId() << " Group Type: " << getPAOType() << " does not need to be Master Cycle refreshed." << endl;
+        dout << CtiTime() << " - PAOId: " << getPAOId() << " Group Type: " << getPAOType() << " does not need to be Master Cycle refreshed." << endl;
     }*/
     return FALSE;
 }
@@ -1078,9 +1084,9 @@ BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG
 void CtiLMGroupBase::restore(RWDBReader& rdr)
 {
     RWDBNullIndicator isNull;
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
-    RWCString tempTypeString;
+    CtiTime dynamicTimeStamp;
+    string tempBoolString;
+    string tempTypeString;
     _insertDynamicDataFlag = FALSE;
 
     rdr["groupid"] >> _paoid;
@@ -1088,16 +1094,27 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     rdr["paoclass"] >> _paoclass;
     rdr["paoname"] >> _paoname;
     rdr["type"] >> tempTypeString;
+
     _paotype = resolvePAOType(_paocategory,tempTypeString);
+
     rdr["description"] >> _paodescription;
+
     rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
+
+    transform (tempBoolString.begin(),tempBoolString.end(), tempBoolString.begin(), tolower);
+
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
+
     rdr["alarminhibit"] >> tempBoolString;
-    tempBoolString.toLower();
+
+    transform (tempBoolString.begin(),tempBoolString.end(), tempBoolString.begin(), tolower);
+
     setAlarmInhibit(tempBoolString=="y"?TRUE:FALSE);
+
     rdr["controlinhibit"] >> tempBoolString;
-    tempBoolString.toLower();
+
+    transform (tempBoolString.begin(),tempBoolString.end(), tempBoolString.begin(), tolower);
+
     setControlInhibit(tempBoolString=="y"?TRUE:FALSE);
 //    rdr["grouporder"] >> _grouporder;
     rdr["kwcapacity"] >> _kwcapacity;
@@ -1140,11 +1157,11 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setCurrentHoursMonthly(0);
         setCurrentHoursSeasonal(0);
         setCurrentHoursAnnually(0);
-        setLastControlSent(gInvalidRWDBDateTime);
-        setControlStartTime(gInvalidRWDBDateTime);
-        setControlCompleteTime(gInvalidRWDBDateTime);
-        setNextControlTime(gInvalidRWDBDateTime);
-        resetDailyOps(0);
+        setLastControlSent(gInvalidCtiTime);
+        setControlStartTime(gInvalidCtiTime);
+        setControlCompleteTime(gInvalidCtiTime);
+        setNextControlTime(gInvalidCtiTime);
+		resetDailyOps(0);
         _internalState = 0;
 
         _insertDynamicDataFlag = TRUE;
@@ -1162,7 +1179,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     {
         LONG tempPointId = -1000;
         LONG tempPointOffset = -1000;
-        RWCString tempPointType = "(none)";
+        string tempPointType = "(none)";
         rdr["pointid"] >> tempPointId;
         rdr["pointoffset"] >> tempPointOffset;
         rdr["pointtype"] >> tempPointType;
@@ -1200,7 +1217,7 @@ void CtiLMGroupBase::dumpDynamicData()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    dumpDynamicData(conn,RWDBDateTime());
+    dumpDynamicData(conn,CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -1208,7 +1225,7 @@ void CtiLMGroupBase::dumpDynamicData()
 
     Writes out the dynamic information for this group.
 ---------------------------------------------------------------------------*/
-void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     if(!isDirty())
     {
@@ -1229,11 +1246,11 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                         << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
                         << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
                         << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
-                        << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
-                        << dynamicLMGroupTable["timestamp"].assign( currentDateTime )
-                        << dynamicLMGroupTable["controlstarttime"].assign( getControlStartTime() )
-                        << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() )
-                        << dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
+                        << dynamicLMGroupTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
+                        << dynamicLMGroupTable["timestamp"].assign( toRWDBDT(currentDateTime) )
+                        << dynamicLMGroupTable["controlstarttime"].assign( toRWDBDT(getControlStartTime()) )
+                        << dynamicLMGroupTable["controlcompletetime"].assign( toRWDBDT(getControlCompleteTime()) )
+                        << dynamicLMGroupTable["nextcontroltime"].assign( toRWDBDT(getNextControlTime()) )
                         << dynamicLMGroupTable["internalstate"].assign( _internalState )
                         << dynamicLMGroupTable["dailyops"].assign( getDailyOps() );
 
@@ -1243,7 +1260,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << updater.asString().data() << endl;
+                    dout << CtiTime() << " - " << updater.asString().data() << endl;
                 }
 
                 updater.execute( conn );
@@ -1254,7 +1271,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Inserted group into DynamicLMGroup: " << getPAOName() << endl;
+                    dout << CtiTime() << " - Inserted group into DynamicLMGroup: " << getPAOName() << endl;
                 }
 
                 RWDBInserter inserter = dynamicLMGroupTable.inserter();
@@ -1276,7 +1293,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - " << inserter.asString().data() << endl;
+                    dout << CtiTime() << " - " << inserter.asString().data() << endl;
                 }
 
                 _insertDynamicDataFlag = FALSE;
@@ -1289,7 +1306,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -1336,7 +1353,7 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingIn(bool in)
             if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingOut())
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime() << " Load Group: " << getPAOName() << " was ramping out and is now ramping in." <<  endl;
+                dout << CtiTime() << " Load Group: " << getPAOName() << " was ramping out and is now ramping in." <<  endl;
             }
             setIsRampingOut(false);
 
@@ -1364,7 +1381,7 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
             if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingIn())
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime() << " Load Group: " << getPAOName() << " was ramping in and is now ramping out." <<  endl;
+                dout << CtiTime() << " Load Group: " << getPAOName() << " was ramping in and is now ramping out." <<  endl;
             }
             setIsRampingIn(false);
 
@@ -1388,8 +1405,8 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
 void CtiLMGroupBase::updateDailyOps()
 {
     // If we haven't written out dynamic data today
-    RWDate today;
-    if(today > _dynamic_timestamp.rwdate())
+    CtiTime today;
+    if( today.day() > _dynamic_timestamp.day())
     {
         resetDailyOps();
     }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accum.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ CtiTablePointAccumulator& CtiTablePointAccumulator::operator=(const CtiTablePoin
 
 void CtiTablePointAccumulator::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable tbl = db.table(getTableName() );
+   RWDBTable tbl = db.table(getTableName().c_str() );
 
    selector <<
       tbl["multiplier"] <<
@@ -102,7 +102,7 @@ LONG CtiTablePointAccumulator::getPointID() const
    return _pointID;
 }
 
-RWCString CtiTablePointAccumulator::getTableName()
+string CtiTablePointAccumulator::getTableName()
 {
    return "PointAccumulator";
 }

@@ -9,14 +9,14 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2005/08/15 19:04:08 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2005/12/20 17:17:14 $
  */
 
 #include <windows.h>
 #include <math.h>
 #include <stdlib.h>
-#include <iostream>
+//#include <iostream>
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -24,10 +24,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>
@@ -203,7 +202,9 @@ void CtiFDRPiNotify::doUpdates()
           const PiPointInfo &info = (*myIter).second;
   
           // remove local offset (might not be thread-safe)
-          time_t timeStamp = mktime(gmtime(&timeArray[i]));
+          struct tm *temp = NULL;
+          temp = CtiTime::gmtime_r(&timeArray[i]);
+          time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
           handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
   
@@ -267,7 +268,7 @@ void CtiFDRPiNotify::forceUpdate()
     for (int i = 0; i < pointCount; ++i)
     {
       // remove local offset (might not be thread-safe)
-      time_t timeToSend = mktime(gmtime(&timeArray[i]));
+      time_t timeToSend = mktime(std::gmtime(&timeArray[i]));
 
       PiPointId thisPoint = piIdArray[i];
 

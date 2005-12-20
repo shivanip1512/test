@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/12/16 16:18:59 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,13 +19,16 @@
 #include "logger.h"
 #include "numstr.h"
 #include "utility.h"
+#include "rwutil.h"
+#include "ctidate.h"
+using namespace std;
 
 //CtiTableLMControlHistory::CtiTableLMControlHistory() {}
 
-CtiTableLMControlHistory::CtiTableLMControlHistory(LONG paoid, const RWTime& start, LONG soe,
-                                                   INT dur, const RWCString& type, LONG daily,
+CtiTableLMControlHistory::CtiTableLMControlHistory(LONG paoid, const CtiTime& start, LONG soe,
+                                                   INT dur, const string& type, LONG daily,
                                                    LONG month, LONG season, LONG annual,
-                                                   const RWCString& restore, DOUBLE reduce,
+                                                   const string& restore, DOUBLE reduce,
                                                    LONG lmchid) :
 _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
@@ -105,57 +108,57 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setPAOID( const LONG pao )
     return *this;
 }
 
-const RWTime& CtiTableLMControlHistory::getControlCompleteTime() const
+const CtiTime& CtiTableLMControlHistory::getControlCompleteTime() const
 {
     return _controlCompleteTime;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setControlCompleteTime( const RWTime& cst )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setControlCompleteTime( const CtiTime& cst )
 {
     _controlCompleteTime = cst;
     return *this;
 }
 
-const RWTime& CtiTableLMControlHistory::getStartTime() const
+const CtiTime& CtiTableLMControlHistory::getStartTime() const
 {
     return _startDateTime;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setStartTime( const RWTime& start )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setStartTime( const CtiTime& start )
 {
     setDirty();
     _startDateTime = start;
     return *this;
 }
 
-const RWTime& CtiTableLMControlHistory::getStopTime() const
+const CtiTime& CtiTableLMControlHistory::getStopTime() const
 {
     return _stopDateTime;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setStopTime( const RWTime& stop )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setStopTime( const CtiTime& stop )
 {
     setDirty();
     _stopDateTime = stop;
     return *this;
 }
 
-const RWTime& CtiTableLMControlHistory::getPreviousLogTime() const
+const CtiTime& CtiTableLMControlHistory::getPreviousLogTime() const
 {
     return _prevLogTime;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setPreviousLogTime( const RWTime& start )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setPreviousLogTime( const CtiTime& start )
 {
     _prevLogTime = start;
     return *this;
 }
 
-const RWTime& CtiTableLMControlHistory::getPreviousStopReportTime() const
+const CtiTime& CtiTableLMControlHistory::getPreviousStopReportTime() const
 {
     return _prevStopReportTime;
 }
-CtiTableLMControlHistory& CtiTableLMControlHistory::setPreviousStopReportTime( const RWTime& start )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setPreviousStopReportTime( const CtiTime& start )
 {
     _prevStopReportTime = start;
     return *this;
@@ -185,13 +188,13 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setControlDuration( const IN
     return *this;
 }
 
-const RWCString& CtiTableLMControlHistory::getControlType() const
+const string& CtiTableLMControlHistory::getControlType() const
 {
 
     return _controlType;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setControlType( const RWCString& ct )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setControlType( const string& ct )
 {
     setDirty();
     _controlType = ct;
@@ -249,34 +252,34 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentAnnualTime( const 
     return *this;
 }
 
-const RWCString& CtiTableLMControlHistory::getActiveRestore() const
+const string& CtiTableLMControlHistory::getActiveRestore() const
 {
-    if(_isNewControl && _activeRestore == RWCString(LMAR_LOGTIMER) )
+    if(_isNewControl && _activeRestore == string(LMAR_LOGTIMER) )
     {
-        _activeRestore = RWCString( LMAR_NEWCONTROL );
+        _activeRestore = string( LMAR_NEWCONTROL );
     }
 
     return _activeRestore;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setActiveRestore( const RWCString& ar )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setActiveRestore( const string& ar )
 {
     setDirty();
     _activeRestore = ar;
     return *this;
 }
 
-const RWCString& CtiTableLMControlHistory::getDefaultActiveRestore() const
+const string& CtiTableLMControlHistory::getDefaultActiveRestore() const
 {
     return _defaultActiveRestore;
 }
 
-const RWCString& CtiTableLMControlHistory::getLoadedActiveRestore() const
+const string& CtiTableLMControlHistory::getLoadedActiveRestore() const
 {
     return _loadedActiveRestore;
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::setDefaultActiveRestore( const RWCString& ar )
+CtiTableLMControlHistory& CtiTableLMControlHistory::setDefaultActiveRestore( const string& ar )
 {
     _defaultActiveRestore = ar;
     return *this;
@@ -294,12 +297,12 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setReductionValue( const DOU
     return *this;
 }
 
-RWCString CtiTableLMControlHistory::getTableName()
+string CtiTableLMControlHistory::getTableName()
 {
     return "LMControlHistory";
 }
 
-RWCString CtiTableLMControlHistory::getDynamicTableName()
+string CtiTableLMControlHistory::getDynamicTableName()
 {
     return "DynamicLMControlHistory";
 }
@@ -307,7 +310,7 @@ RWCString CtiTableLMControlHistory::getDynamicTableName()
 void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("YukonPAObject");                  //yes or no?
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -333,7 +336,7 @@ void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("YukonPAObject");                  //yes or no?
-    RWDBTable devTbl = db.table(getDynamicTableName());
+    RWDBTable devTbl = db.table(getDynamicTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -358,7 +361,7 @@ void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTa
 
 void CtiTableLMControlHistory::getSQLForOutstandingControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(getDynamicTableName());
+    keyTable = db.table(getDynamicTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -385,7 +388,7 @@ RWDBStatus CtiTableLMControlHistory::deleteOutstandingControls()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN );
@@ -401,16 +404,16 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
-    updater.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN && table["stopdatetime"] <= RWDBDateTime() );
+    updater.where( table["activerestore"] == LMAR_DISPATCH_SHUTDOWN && table["stopdatetime"] <= toRWDBDT(CtiTime()) );
     updater << table["activerestore"].assign( LMAR_DISPATCH_MISSED_COMPLETION );
 
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << updater.asString() << endl;
     }
 
@@ -418,7 +421,7 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** CtiTableLMControlHistory::updateCompletedOutstandingControls update not ok **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** CtiTableLMControlHistory::updateCompletedOutstandingControls update not ok **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -485,7 +488,7 @@ RWDBStatus CtiTableLMControlHistory::RestoreControlTimes()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -515,7 +518,7 @@ RWDBStatus CtiTableLMControlHistory::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -563,23 +566,23 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     setLMControlHistoryID( LMControlHistoryIdGen() );
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
     getLMControlHistoryID() <<
     getPAOID() <<
-    RWDBDateTime(getStartTime()) <<
+    CtiTime(getStartTime()) <<
     getSoeTag() <<
     (getStopTime().seconds() - getStartTime().seconds()) <<     // getControlDuration() <<
-    (getControlType().isNull() ? "(none)" : getControlType()) <<
+    (getControlType().empty() ? "(none)" : getControlType()) <<
     getCurrentDailyTime() <<
     getCurrentMonthlyTime() <<
     getCurrentSeasonalTime() <<
     getCurrentAnnualTime() <<
-    (getActiveRestore().isNull() ? "U" : getActiveRestore()) <<
+    (getActiveRestore().empty() ? "U" : getActiveRestore()) <<
     getReductionValue() <<
-    RWDBDateTime(getStopTime());
+    CtiTime(getStopTime());
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
@@ -590,7 +593,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "   " << inserter.asString() << endl;
         }
 
@@ -600,7 +603,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << inserter.asString() << endl;
             dump();
         }
@@ -615,7 +618,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["paobjectid"] == getPAOID() );
@@ -623,16 +626,16 @@ RWDBStatus CtiTableLMControlHistory::Update()
     updater <<
     table["paobjectid"].assign(getPAOID() ) <<
     table["lmctrlhistid"].assign(getLMControlHistoryID() ) <<
-    table["startdatetime"].assign(getStartTime() ) <<
-    table["stopdatetime"].assign(getStopTime() ) <<
+    table["startdatetime"].assign(toRWDBDT(getStartTime()) ) <<
+    table["stopdatetime"].assign(toRWDBDT(getStopTime()) ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
     table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
-    table["controltype"].assign( getControlType() ) <<
+    table["controltype"].assign( getControlType().c_str() ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
     table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
-    table["activerestore"].assign( getActiveRestore() ) <<
+    table["activerestore"].assign( getActiveRestore().c_str() ) <<
     table["reductionvalue"].assign( getReductionValue() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
@@ -648,7 +651,7 @@ RWDBStatus CtiTableLMControlHistory::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["lmctrlhistid"] == getLMControlHistoryID() );
@@ -656,10 +659,10 @@ RWDBStatus CtiTableLMControlHistory::Delete()
     return deleter.status();
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime &logTime, const LONG increment, bool season_reset )
+CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const CtiTime &logTime, const LONG increment, bool season_reset )
 {
-    RWDate prevdate(getPreviousLogTime());
-    RWDate today(logTime);
+    CtiDate prevdate(getPreviousLogTime());
+    CtiDate today(logTime);
 
     bool newday = false;
     bool newmonth = false;
@@ -686,7 +689,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
             else
             {
                 // we must evaluate the day crossing.
-                RWTime lastTimePrevious(prevdate, 23,59,59);
+                CtiTime lastTimePrevious(prevdate, 23,59,59);
                 ULONG todaysSeconds = logTime.seconds() - lastTimePrevious.seconds() - 1;
                 partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
 
@@ -769,7 +772,7 @@ LONG CtiTableLMControlHistory::getNextSOE()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
         }
     }
@@ -825,7 +828,7 @@ void CtiTableLMControlHistory::dump() const
 
 void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
 {
-    RWTime now;
+    CtiTime now;
 
     setUpdatedFlag();
     _isNewControl        = false;
@@ -855,8 +858,8 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
     }
 
     _controlCompleteTime    = _stopDateTime;
-    _activeRestore          = RWCString(LMAR_LOGTIMER);
-    _defaultActiveRestore   = RWCString(LMAR_TIMED_RESTORE);        // Assume this is a timed in control since it had a stop time in the log???
+    _activeRestore          = string(LMAR_LOGTIMER);
+    _defaultActiveRestore   = string(LMAR_TIMED_RESTORE);        // Assume this is a timed in control since it had a stop time in the log???
     _prevLogTime            = _stopDateTime < now ? _stopDateTime : now;
     _prevStopReportTime     = _stopDateTime < now ? _stopDateTime : now;
 
@@ -865,10 +868,10 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
 
 void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBDateTime todaynow;
-    RWDBDateTime thepast = todaynow.addDays( -5 );      // Go back this many days?
+    CtiTime todaynow;
+    CtiTime thepast = todaynow.addDays( -5 );      // Go back this many days?
 
-    keyTable = db.table(getTableName());
+    keyTable = db.table(getTableName().c_str());
 
     selector <<
     keyTable["paobjectid"] <<
@@ -897,7 +900,7 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
                     keyTable["activerestore"] == LMAR_MANUAL_RESTORE ||
                     keyTable["activerestore"] == LMAR_CONT_CONTROL ||
                     keyTable["activerestore"] == LMAR_DISPATCH_SHUTDOWN) &&
-                    keyTable["startdatetime"] > thepast);
+                    keyTable["startdatetime"] > toRWDBDT(thepast));
 }
 
 
@@ -910,7 +913,7 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic()
 
 RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["paobjectid"] == getPAOID() );
@@ -918,16 +921,16 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     updater <<
     table["paobjectid"].assign(getPAOID() ) <<
     table["lmctrlhistid"].assign(getLMControlHistoryID()) <<
-    table["startdatetime"].assign(getStartTime() ) <<
-    table["stopdatetime"].assign(getStopTime() ) <<
+    table["startdatetime"].assign(toRWDBDT(getStartTime()) ) <<
+    table["stopdatetime"].assign(toRWDBDT(getStopTime()) ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
     table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
-    table["controltype"].assign( (getControlType().isNull() ? "(none)" : getControlType()) ) <<
+    table["controltype"].assign( (getControlType().empty() ? "(none)" : string2RWCString(getControlType())) ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
     table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
-    table["activerestore"].assign( getActiveRestore() ) <<
+    table["activerestore"].assign( getActiveRestore().c_str() ) <<
     table["reductionvalue"].assign( getReductionValue() );
 
     long rowsAffected;
@@ -947,30 +950,30 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
 {
     RWDBStatus dbstat( RWDBStatus::ok );
 
-    RWDBTable table = getDatabase().table( getDynamicTableName() );
+    RWDBTable table = getDatabase().table( getDynamicTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
     getPAOID() <<
     getLMControlHistoryID() <<
-    RWDBDateTime(getStartTime()) <<
+    CtiTime(getStartTime()) <<
     getSoeTag() <<
     (getStopTime().seconds() - getStartTime().seconds()) <<
-    (getControlType().isNull() ? "(none)" : getControlType()) <<
+    (getControlType().empty() ? "(none)" : getControlType()) <<
     getCurrentDailyTime() <<
     getCurrentMonthlyTime() <<
     getCurrentSeasonalTime() <<
     getCurrentAnnualTime() <<
     getActiveRestore() <<
     getReductionValue() <<
-    RWDBDateTime(getStopTime());
+    CtiTime(getStopTime());
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
         if( (dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__)).errorCode() != RWDBStatus::ok)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "   " << inserter.asString() << endl;
         }
     }
@@ -978,7 +981,7 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << inserter.asString() << endl;
             dump();
         }

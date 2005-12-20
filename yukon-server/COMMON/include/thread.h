@@ -26,11 +26,13 @@
 #endif
 
 #include <map>
-using namespace std;
+
 
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
+
+using std::map;
 
 class IM_EX_CTIBASE CtiThread
 {

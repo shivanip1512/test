@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/17 23:30:17 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:19:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,9 @@
 #include "port_base.h"
 #include "port_pool_out.h"
 #include "portdecl.h"
-#include "portglob.h"
+#include "portglob.h"    
+
+using namespace std;
 
 extern CtiDeviceManager DeviceManager;
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
@@ -45,7 +47,7 @@ VOID PortPoolDialoutThread(void *pid)
     BYTE           ReadPriority;
     ULONG          MSecs, QueEntries, ReadLength;
 
-    RWTime         lastQueueReportTime;
+    CtiTime         lastQueueReportTime;
     CtiDeviceSPtr  Device;
 
     /* make it clear who is the boss */
@@ -55,7 +57,7 @@ VOID PortPoolDialoutThread(void *pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << " UNABLE TO START!" << endl;
+            dout << CtiTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << " UNABLE TO START!" << endl;
         }
 
         return;
@@ -64,7 +66,7 @@ VOID PortPoolDialoutThread(void *pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << " NOT POOLABLE." << endl;
+            dout << CtiTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << " NOT POOLABLE." << endl;
         }
 
         return;
@@ -72,7 +74,7 @@ VOID PortPoolDialoutThread(void *pid)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << endl;
+        dout << CtiTime() << " PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << endl;
     }
 
     sgPoolDebugLevel = gConfigParms.getValueAsULong("PORTPOOL_DEBUGLEVEL", 0, 16);
@@ -108,13 +110,13 @@ VOID PortPoolDialoutThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error Reading ParentPort Queue" << endl;
+                    dout << CtiTime() << " Error Reading ParentPort Queue" << endl;
                 }
             }
             continue;
         }
 
-        RWTime starttime;
+        CtiTime starttime;
 
         if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
         {
@@ -129,20 +131,20 @@ VOID PortPoolDialoutThread(void *pid)
             if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << ParentPort->getName() << " read an outmessage for " << tempDev->getName();
+                dout << CtiTime() << " Port " << ParentPort->getName() << " read an outmessage for " << tempDev->getName();
                 dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                dout << CtiTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
         }
 
 
-        if(QueEntries > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
+        if(QueEntries > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ParentPort " << ParentPort->getName() << " has " << QueEntries << " pending OUTMESS requests " << endl;
+                dout << CtiTime() << " ParentPort " << ParentPort->getName() << " has " << QueEntries << " pending OUTMESS requests " << endl;
             }
-            lastQueueReportTime = RWTime() + 300;
+            lastQueueReportTime = CtiTime() + 300;
         }
 
         statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
@@ -150,7 +152,7 @@ VOID PortPoolDialoutThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << ParentPort->getName() << " Portpool read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
+            dout << CtiTime() << " " << ParentPort->getName() << " Portpool read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
@@ -158,7 +160,7 @@ VOID PortPoolDialoutThread(void *pid)
             if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " looking for new deviceID..." << endl;
+                dout << CtiTime() << " looking for new deviceID..." << endl;
             }
 
             Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
@@ -170,7 +172,7 @@ VOID PortPoolDialoutThread(void *pid)
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " assigned new deviceID = " << Device->getID() << endl;
+                    dout << CtiTime() << " assigned new deviceID = " << Device->getID() << endl;
                 }
             }
             else
@@ -178,7 +180,7 @@ VOID PortPoolDialoutThread(void *pid)
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " did not assign new deviceID" << endl;
+                    dout << CtiTime() << " did not assign new deviceID" << endl;
                 }
 
                 SendError(OutMessage, status);
@@ -194,7 +196,7 @@ VOID PortPoolDialoutThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ParentPort " << ParentPort->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
+                    dout << CtiTime() << " ParentPort " << ParentPort->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
                     " Porter does not seem to know about him and is throwing away the message!" << endl;
                 }
 
@@ -205,7 +207,7 @@ VOID PortPoolDialoutThread(void *pid)
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 continue;
@@ -215,18 +217,18 @@ VOID PortPoolDialoutThread(void *pid)
             if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Device->getName() << " has been submitted on the pool port.  Priority " << OutMessage->Priority << endl;
+                dout << CtiTime() << " " << Device->getName() << " has been submitted on the pool port.  Priority " << OutMessage->Priority << endl;
             }
         }
 
         CtiPortManager::ptr_type childport = ((CtiPortPoolDialout*)ParentPort.get())->getAvailableChildPort(Device);
-        RWTime stoptime;
+        CtiTime stoptime;
 
         if(stoptime.seconds() - starttime.seconds() > 2)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << ParentPort->getName() << " Way too slow!" << endl;
             }
         }
@@ -252,7 +254,7 @@ VOID PortPoolDialoutThread(void *pid)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << ParentPort->getName() << " Way too slow!" << endl;
             }
         }
@@ -262,7 +264,7 @@ VOID PortPoolDialoutThread(void *pid)
             if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << ParentPort->getName() << " **** ALL CHILDREN BUSY **** " << endl;
+                dout << CtiTime() << " Port " << ParentPort->getName() << " **** ALL CHILDREN BUSY **** " << endl;
             }
 
             if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_QUEUEDUMPS)
@@ -270,7 +272,7 @@ VOID PortPoolDialoutThread(void *pid)
                 PortManager.apply( applyPortQueueReport, NULL );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << RWTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
+                    dout << endl << CtiTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
                 }
             }
 
@@ -278,7 +280,7 @@ VOID PortPoolDialoutThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << ParentPort->getName() << " awakened by a postParent() " << endl;
+                    dout << CtiTime() << " " << ParentPort->getName() << " awakened by a postParent() " << endl;
                 }
 
             }
@@ -288,7 +290,7 @@ VOID PortPoolDialoutThread(void *pid)
             if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << ParentPort->getName() << " **** Child Ports available **** " << endl;
+                dout << CtiTime() << " Port " << ParentPort->getName() << " **** Child Ports available **** " << endl;
             }
         }
         else if(status == CtiPortPoolDialout::PPSC_ParentQueueEmpty)
@@ -296,14 +298,14 @@ VOID PortPoolDialoutThread(void *pid)
             if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << ParentPort->getName() << " **** QUEUE EMPTY **** " << endl;
+                dout << CtiTime() << " Port " << ParentPort->getName() << " **** QUEUE EMPTY **** " << endl;
             }
         }
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Shutdown PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << endl;
+        dout << CtiTime() << " Shutdown PortPoolDialoutThread TID: " << CurrentTID () << " for port: " << setw(4) << ParentPort->getPortID() << " / " << ParentPort->getName() << endl;
     }
 
 
@@ -322,7 +324,7 @@ INT AllocateOutMessagesToChildPorts(CtiPortSPtr &ParentPort)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;

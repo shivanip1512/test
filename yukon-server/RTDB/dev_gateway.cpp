@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,12 +19,14 @@
 #include <rw/re.h>
 #undef mask_                // Stupid RogueWave!
 
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
+#include <boost/regex.hpp>
 
+#include "ctidate.h"
 #include "dev_gateway.h"
 #include "logger.h"
 #include "numstr.h"
+
+using namespace std;
 
 HANDLE CtiDeviceGateway::hPostPorter = INVALID_HANDLE_VALUE;
 
@@ -62,7 +64,7 @@ _ipaddr(0)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     *this = aRef;
 }
@@ -93,7 +95,7 @@ CtiDeviceGateway& CtiDeviceGateway::operator=(const CtiDeviceGateway& aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -108,11 +110,11 @@ void CtiDeviceGateway::sendtm_Clock (BYTE hour, BYTE minute)
 {
     TM_CLOCK tm_Clock;
     struct tm *newtime;
-    RWTime now;
-    RWDate today( now );
+    CtiTime now;
+    CtiDate today( now );
 
 
-    RWCString gmt_str = today.asString("%Y/%m/%d ") + CtiNumStr(now.hour()).zpad(2) + ":" + CtiNumStr(now.minute()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+    string gmt_str = today.asString() + CtiNumStr(now.hour()).zpad(2) + ":" + CtiNumStr(now.minute()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
     tm_Clock.Type = htons (TYPE_TM_CLOCK);
     tm_Clock.tm_sec = now.second();
@@ -139,11 +141,11 @@ void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
 {
     TM_CLOCK tm_Clock;
     struct tm *newtime;
-    RWTime now;
-    RWDate today( now, RWZone::utc() );
-
-
-    RWCString gmt_str = today.asString("%Y/%m/%d ") + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+    CtiTime now;
+    CtiTime _now = now;
+    CtiDate today( _now.toUTCtime() );
+    
+    string gmt_str = today.asString() + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
     tm_Clock.Type = htons (TYPE_GMTTM_CLOCK);
     tm_Clock.tm_sec = now.second();
@@ -176,35 +178,50 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
     {
         if( (parse.getCommand() == PutConfigRequest) )
         {
-            if(parse.getCommandStr().contains("timezone") &&
+            if(parse.getCommandStr().find("timezone")!=string::npos &&
                (( serialnumber == 0 || _statMap.find( serialnumber ) != _statMap.end() )) )
             {
-                RWCString CmdStr = parse.getCommandStr().match(" timezone [0-9]+[, ]+[yn]?[, ]+([0-9]+)?[, ]+[yn]?");
-                RWCString tstr;
-                RWCTokenizer tokens(CmdStr);
+                string CmdStr = "";
+                boost::regex e1(" timezone [0-9]+[, ]+[yn]?[, ]+([0-9]+)?[, ]+[yn]?");
+                boost::match_results<std::string::const_iterator> what;
+                if(boost::regex_search(parse.getCommandStr(), what, e1, boost::match_default))
+                {
+                    CmdStr = what[0].matched;
+                }
+
+                //string CmdStr = parse.getCommandStr().match(" timezone [0-9]+[, ]+[yn]?[, ]+([0-9]+)?[, ]+[yn]?");
+                string tstr;
+                boost::char_separator<char> sep(" \t\n\0");
+                Boost_char_tokenizer tokens(CmdStr, sep);
+
+                Boost_char_tokenizer::iterator tok_iter = tokens.begin(); 
+                
+                //RWCTokenizer tokens(CmdStr);
 
                 USHORT zone = 0;    // Default to GMT
                 USHORT minoffset = 0;    // Default to GMT
                 BOOL dodst = FALSE;
                 BOOL syncstats = TRUE;
 
-                tokens(" \t\n\0");  // Hop the timezone string.
+                //tokens(" \t\n\0");  // Hop the timezone string.
+                tok_iter ++;
+                tstr = *tok_iter;
 
-                if(!(tstr = tokens(", \t\n\0")).isNull())
+                if(!tstr.empty())
                 {
-                    zone = atoi(tstr.data());
+                    zone = atoi(tstr.c_str());
                 }
-                if(!(tstr = tokens(", \t\n\0")).isNull())
+                if(!tstr.empty())
                 {
-                    dodst = (tstr.contains("y") ? TRUE : FALSE);
+                    dodst = (tstr.find("y")!=string::npos ? TRUE : FALSE);
                 }
-                if(!(tstr = tokens(", \t\n\0")).isNull())
+                if(!tstr.empty())
                 {
-                    minoffset = atoi(tstr.data());
+                    minoffset = atoi(tstr.c_str());
                 }
-                if(!(tstr = tokens(", \t\n\0")).isNull())
+                if(!tstr.empty())
                 {
-                    syncstats = (tstr.contains("y") ? TRUE : FALSE);
+                    syncstats = (tstr.find("y")!=string::npos ? TRUE : FALSE);
                 }
 
                 sendSetTimezone( zone, dodst, minoffset, syncstats );
@@ -214,45 +231,45 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
             }
             else if( serialnumber == 0 || _statMap.find( serialnumber ) != _statMap.end() )
             {
-                if(parse.getCommandStr().contains("timesync"))
+                if(parse.getCommandStr().find("timesync")!=string::npos)
                 {
                     processed++;
                     sendtm_Clock(parse.getiValue("xctimesync_hour", -1), parse.getiValue("xctimesync_minute", -1));
 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Timesync sent to gateway hosting thermostat " << serialnumber << endl;
+                    dout << CtiTime() << " Timesync sent to gateway hosting thermostat " << serialnumber << endl;
                 }
             }
             if(parse.getiValue("timesync", 0))
             {
                 if( serialnumber == 0 || _statMap.find( serialnumber ) != _statMap.end() )
                 {
-                    if(parse.getCommandStr().contains(" local") )
+                    if(parse.getCommandStr().find(" local")!=string::npos )
                     sendtm_Clock();
                     else
                         sendGMTClock();
 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Timesync sent to gateway hosting thermostat " << serialnumber << endl;
+                    dout << CtiTime() << " Timesync sent to gateway hosting thermostat " << serialnumber << endl;
                 }
             }
-            else if(parse.getCommandStr().contains(" set bind on"))
+            else if(parse.getCommandStr().find(" set bind on")!=string::npos)
             {
                 sendSetBindMode(TRUE);
             }
-            else if(parse.getCommandStr().contains(" set bind off"))
+            else if(parse.getCommandStr().find(" set bind off")!=string::npos)
             {
                 sendSetBindMode(FALSE);
             }
-            else if(parse.getCommandStr().contains(" set ping on"))
+            else if(parse.getCommandStr().find(" set ping on")!=string::npos)
             {
                 sendSetPingMode(TRUE);
             }
-            else if(parse.getCommandStr().contains(" set ping off"))
+            else if(parse.getCommandStr().find(" set ping off")!=string::npos)
             {
                 sendSetPingMode(FALSE);
             }
-            else if(parse.getCommandStr().contains(" clear"))
+            else if(parse.getCommandStr().find(" clear")!=string::npos)
             {
                 sendSetBindMode(FALSE);
                 sendSetPingMode(FALSE);
@@ -291,7 +308,7 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Socket is broken" << endl;
     }
 
@@ -590,7 +607,7 @@ int CtiDeviceGateway::getMessageLength(GATEWAYRXSTRUCT *GatewayRX)
     if(0)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "   " << ntohs (GatewayRX->Type) << ": " << Length << " and " << sizeof(GWCOMMAND) << " and " << sizeof(RETURNCODEREPORT) << endl;
     }
 
@@ -626,7 +643,7 @@ void CtiDeviceGateway::run()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " recv() failed with error " << WSAGetLastError() << endl;
+                    dout << CtiTime() << " recv() failed with error " << WSAGetLastError() << endl;
                 }
                 closesocket (_msgsock);
                 _msgsock = INVALID_SOCKET;
@@ -637,7 +654,7 @@ void CtiDeviceGateway::run()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Connection closed by client " << endl;
+                    dout << CtiTime() << " Connection closed by client " << endl;
                 }
                 closesocket (_msgsock);
                 _msgsock = INVALID_SOCKET;
@@ -662,7 +679,7 @@ void CtiDeviceGateway::run()
                     if(!(++loops % 10))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  There are " << bytesavail << " bytes there " << endl;
                     }
                 } while(bytesavail < Length && !isSet(SHUTDOWN) && loops < 30);
@@ -689,7 +706,7 @@ void CtiDeviceGateway::run()
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 while( rc != SOCKET_ERROR && getlen > 0 );
@@ -698,7 +715,7 @@ void CtiDeviceGateway::run()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "  Only read " << rc << " Length " << Length << " bytes available " << bytesavail << endl;
                     }
 
@@ -709,7 +726,7 @@ void CtiDeviceGateway::run()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() <<  " recv() failed with error " << WSAGetLastError() << endl;
+                        dout << CtiTime() <<  " recv() failed with error " << WSAGetLastError() << endl;
                     }
                     closesocket (_msgsock);
                     _msgsock = INVALID_SOCKET;
@@ -719,7 +736,7 @@ void CtiDeviceGateway::run()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() <<  " Connection closed by client" << endl;
+                        dout << CtiTime() <<  " Connection closed by client" << endl;
                     }
                     closesocket (_msgsock);
                     _msgsock = INVALID_SOCKET;
@@ -751,7 +768,7 @@ void CtiDeviceGateway::run()
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Stat " << pGW->getDeviceSerialNumber() << " New EnergyPro Stat Connected." << endl;
+                                dout << CtiTime() << " Stat " << pGW->getDeviceSerialNumber() << " New EnergyPro Stat Connected." << endl;
                             }
 
                             pGW->sendGet( _msgsock, TYPE_GETALL );  // Update the works!
@@ -761,7 +778,7 @@ void CtiDeviceGateway::run()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Gateway " << getMACAddress() << " / " << getIPAddress() <<" Message Type " << (int)ntohs(GatewayRX.Type) << endl;
                         }
                     }
@@ -771,7 +788,7 @@ void CtiDeviceGateway::run()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() <<  " recv() failed with error " << WSAGetLastError() << endl;
+                        dout << CtiTime() <<  " recv() failed with error " << WSAGetLastError() << endl;
                     }
                     shutdown(_msgsock, 0x02);
                     closesocket (_msgsock);
@@ -781,7 +798,7 @@ void CtiDeviceGateway::run()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() <<  " Connection closed by client" << endl;
+                        dout << CtiTime() <<  " Connection closed by client" << endl;
                     }
                     shutdown(_msgsock, 0x02);
                     closesocket (_msgsock);
@@ -809,12 +826,12 @@ void CtiDeviceGateway::run()
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " CtiDeviceGateway::run() is exiting." << endl;
+        dout << CtiTime() << " CtiDeviceGateway::run() is exiting." << endl;
     }
 
     set(GW_THREAD_TERMINATED);
@@ -879,7 +896,7 @@ const CtiDeviceGateway::SNVECT_t& CtiDeviceGateway::getThermostatSerialNumbers()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -900,7 +917,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Comm Status: " << (GatewayRX.U.CommFaultStatus.CommFaultStatus ? "FAILED" : "OK") << endl;
+                dout << CtiTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Comm Status: " << (GatewayRX.U.CommFaultStatus.CommFaultStatus ? "FAILED" : "OK") << endl;
             }
 
             break;
@@ -909,7 +926,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Bind Mode: " << (GatewayRX.U.BindMode.BindMode ? "ACTIVE" : "INACTIVE") << endl;
+                dout << CtiTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Bind Mode: " << (GatewayRX.U.BindMode.BindMode ? "ACTIVE" : "INACTIVE") << endl;
             }
 
             break;
@@ -918,7 +935,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Ping Mode: " << (GatewayRX.U.PingMode.PingMode ? "ACTIVE" : "INACTIVE") << endl;
+                dout << CtiTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Ping Mode: " << (GatewayRX.U.PingMode.PingMode ? "ACTIVE" : "INACTIVE") << endl;
             }
 
             break;
@@ -927,7 +944,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Reset: " << (GatewayRX.Reset.Address) << endl;
+                dout << CtiTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Reset: " << (GatewayRX.Reset.Address) << endl;
             }
 
             break;
@@ -936,7 +953,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Error: " << ntohs(GatewayRX.U.ErrorReport.Error) << endl;
+                dout << CtiTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Error: " << ntohs(GatewayRX.U.ErrorReport.Error) << endl;
             }
 
             break;
@@ -946,7 +963,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 char of = dout.fill('0');
-                dout << RWTime() << " Gateway ReturnCode : 0x" << hex << setw(4) << ntohs(GatewayRX.Return.ReturnCode) << dec << endl;
+                dout << CtiTime() << " Gateway ReturnCode : 0x" << hex << setw(4) << ntohs(GatewayRX.Return.ReturnCode) << dec << endl;
                 dout.fill(of);
             }
 
@@ -956,7 +973,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             IN_ADDR ipaddr;
 
-            memcpy(_mac, GatewayRX.Addressing.Mac, 6);
+            ::memcpy(_mac, GatewayRX.Addressing.Mac, 6);
             _ipaddr = ntohl(GatewayRX.Addressing.IPAddress);
             _spid = ntohs(GatewayRX.Addressing.Spid);
             _geo = ntohs(GatewayRX.Addressing.Geo);
@@ -1015,11 +1032,11 @@ bool CtiDeviceGateway::getCompletedOperation( CtiPendingStatOperation &op )
     return gotone;
 }
 
-RWCString CtiDeviceGateway::getMACAddress() const
+string CtiDeviceGateway::getMACAddress() const
 {
     bool ismaced = false;
     int i;
-    RWCString maddr;
+    string maddr;
 
     for(i = 0; i < 6; i++)
     {
@@ -1042,15 +1059,17 @@ RWCString CtiDeviceGateway::getMACAddress() const
     return maddr;
 }
 
-RWCString CtiDeviceGateway::getIPAddress() const
+string CtiDeviceGateway::getIPAddress() const
 {
-    RWCString ipstr;
+    string ipstr;
     IN_ADDR ipaddr;
 
     if(_ipaddr != 0)
     {
         ipaddr.S_un.S_addr = (ULONG)_ipaddr;
-        ipstr = CtiNumStr(ipaddr.S_un.S_un_b.s_b4) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b3) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b2) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b1);
+        ipstr = CtiNumStr(ipaddr.S_un.S_un_b.s_b4) + ".";
+        ipstr += CtiNumStr(ipaddr.S_un.S_un_b.s_b3);
+        ipstr += "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b2) + string(".") + CtiNumStr(ipaddr.S_un.S_un_b.s_b1);
     }
 
     return ipstr;

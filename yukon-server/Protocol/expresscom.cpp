@@ -7,22 +7,29 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/11/17 19:15:06 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/12/20 17:19:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "expresscom.h"
+#include "logger.h"    
+#include <boost/tokenizer.hpp>
+#include "numstr.h"
+#include "cparms.h"
+#include "cmdparse.h"
+#include "ctidate.h"
+
 
 #include <rw\ctoken.h>
 #include <rw\re.h>
-#include <rw/rwtime.h>
 
-#include "cparms.h"
-#include "expresscom.h"
-#include "logger.h"
-#include "numstr.h"
+
+
+using namespace std;                          
+
 
 CtiProtocolExpresscom::CtiProtocolExpresscom() :
 _useProtocolCRC(false),
@@ -59,7 +66,7 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -181,16 +188,16 @@ INT CtiProtocolExpresscom::sync()
     return status;
 }
 
-INT CtiProtocolExpresscom::timeSync(RWTime &local, bool fullsync)
+INT CtiProtocolExpresscom::timeSync(CtiTime &local, bool fullsync)
 {
     INT status = NoError;
 
-    RWTime gmt( local.hourGMT(), local.minuteGMT(), local.second(), RWZone::utc() );
-    RWDate date( gmt, RWZone::utc() );
+    CtiTime gmt = local.toUTCtime();
+    CtiDate date( gmt );
 
-    BYTE dayOfWeek = date.weekDay() % 7;    // RWDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
+    BYTE dayOfWeek = date.weekDay() % 7;    // CtiDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
 
-    gmt += ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
+    gmt = gmt + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
 
     _message.push_back( mtTimeSync );
     _message.push_back( (fullsync ? 0x80 : 0x00) | (gmt.isDST() ? 0x40 : 0x00) | (dayOfWeek & 0x07) );
@@ -230,7 +237,7 @@ INT CtiProtocolExpresscom::signalTest(BYTE test)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
@@ -596,47 +603,49 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
     return status;
 }
 
-INT CtiProtocolExpresscom::rawconfiguration(RWCString str)
+INT CtiProtocolExpresscom::rawconfiguration(string str)
 {
     int i = 0;
     BYTE configNumber;
     BYTE raw[256];
 
     CHAR *p;
-    RWCTokenizer cmdtok(str);
-    RWCString tempStr;
+    boost::tokenizer<> cmdtok(str);
+    boost::tokenizer<>::iterator beg=cmdtok.begin();
+    string tempStr;
 
-    if(!(tempStr = cmdtok()).isNull())
+    if(!(tempStr = *beg).empty())
     {
-        configNumber = (BYTE)strtol(tempStr.data(), &p, 16);
+        configNumber = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
-    while( !(tempStr = cmdtok()).isNull() && i < 256 )
+    while( !(tempStr = *(++beg)).empty() && i < 256 )
     {
-        raw[i++] = (BYTE)strtol(tempStr.data(), &p, 16);
+        raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
     return configuration(configNumber, i, raw);
 }
 
-INT CtiProtocolExpresscom::rawmaintenance(RWCString str)
+INT CtiProtocolExpresscom::rawmaintenance(string str)
 {
     int i = 0;
     BYTE function;
     BYTE raw[5] = { 0, 0, 0, 0, 0};
 
     CHAR *p;
-    RWCTokenizer cmdtok(str);
-    RWCString tempStr;
+    boost::tokenizer<> cmdtok(str);
+    boost::tokenizer<>::iterator beg=cmdtok.begin();
+    string tempStr;
 
-    if(!(tempStr = cmdtok()).isNull())
+    if(!(tempStr = *beg).empty())
     {
-        function = (BYTE)strtol(tempStr.data(), &p, 16);
+        function = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
-    while( !(tempStr = cmdtok()).isNull() && i < 4 )
+    while( !(tempStr = *(++beg)).empty() && i < 4 )
     {
-        raw[i++] = (BYTE)strtol(tempStr.data(), &p, 16);
+        raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
     return maintenance(function, raw[0], raw[1], raw[2], raw[3]);
@@ -713,18 +722,19 @@ INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool d
 }
 
 
-INT CtiProtocolExpresscom::data(RWCString str)
+INT CtiProtocolExpresscom::data(string str)
 {
     int i = 0;
     BYTE raw[256];
 
     CHAR *p;
-    RWCTokenizer cmdtok(str);
-    RWCString tempStr;
+    boost::tokenizer<> cmdtok(str);
+    boost::tokenizer<>::iterator beg=cmdtok.begin();
+    string tempStr;
 
-    while( !(tempStr = cmdtok()).isNull() && i < 256 )
+    while( !(tempStr = *(++beg)).empty() && i < 256 )
     {
-        raw[i++] = (BYTE)strtol(tempStr.data(), &p, 16);
+        raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
     return data(raw, i);
@@ -775,7 +785,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -796,7 +806,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
                 }
@@ -874,7 +884,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unsupported command on expresscom route Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " Unsupported command on expresscom route Command = " << parse.getCommand() << endl;
             }
 
             status = CtiInvalidRequest;
@@ -1045,7 +1055,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
     }
 
     return status;
@@ -1095,14 +1105,14 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         bool dsync = parse.getiValue("xcdatesync", 0) ? true : false;
 
-        RWTime now;
+        CtiTime now;
 
         if(parse.isKeyValid("xctimesync_hour"))
         {
             unsigned uhour = parse.getiValue("xctimesync_hour", 0);
             unsigned uminute = parse.getiValue("xctimesync_minute", 0);
             unsigned usecond = parse.getiValue("xctimesync_second", 0);
-            now = RWTime(uhour, uminute, usecond);
+            now = CtiTime(uhour, uminute, usecond);
         }
 
         status = timeSync( now, dsync );
@@ -1197,10 +1207,10 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
         for(pod = 0; pod < 16; pod ++)
         {
             BYTE per = ( (dow) << 4 | (pod & 0x0f) );
-            RWCString hhstr("xctodshh_" + CtiNumStr(per));
-            RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-            RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-            RWCString coolstr("xctodscool_" + CtiNumStr(per));
+            string hhstr("xctodshh_" + CtiNumStr(per));
+            string mmstr("xctodsmm_" + CtiNumStr(per));
+            string heatstr("xctodsheat_" + CtiNumStr(per));
+            string coolstr("xctodscool_" + CtiNumStr(per));
 
             BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
             BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
@@ -1323,24 +1333,31 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     BYTE length = 1;
     BYTE raw[8];
 
-    RWCString progStr       = parse.getsValue("xca_program");
-    RWCString splinterStr   = parse.getsValue("xca_splinter");
-    RWCString tStr;
+    string progStr       = parse.getsValue("xca_program");
+    string splinterStr   = parse.getsValue("xca_splinter");
+    string tStr;
 
     int prog       = -1;
     int splinter   = -1;
     BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
     BYTE load;
 
-    RWTokenizer ptok(progStr);
-    RWTokenizer rtok(splinterStr);
+
+    boost::char_separator<char> sep(",");
+    Boost_char_tokenizer ptok(progStr, sep);
+    Boost_char_tokenizer::iterator pbeg=ptok.begin();
+
+
+    Boost_char_tokenizer rtok(splinterStr, sep);
+    Boost_char_tokenizer::iterator rbeg=rtok.begin();
+
 
     for(load = 0; load < 15; load++)
     {
         if(loadmask & (0x01 << load))
         {
-            prog        = ( !(tStr = ptok(",")).isNull() ? atoi(tStr.data()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
-            splinter    = ( !(tStr = rtok(",")).isNull() ? atoi(tStr.data()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+            prog        = ( !(tStr = *pbeg).empty() ? atoi(tStr.c_str()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+            splinter    = ( !(tStr = *rbeg).empty() ? atoi(tStr.c_str()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
 
             length = 1;
             raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
@@ -1475,7 +1492,7 @@ BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)//1 based number
     catch(...)//_lengths.at() can throw
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         return 0;
     }
 }
@@ -1501,7 +1518,7 @@ int CtiProtocolExpresscom::messageSize(int messageNum)
     catch(...)//_lengths.at() can throw
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         return 0;
     }
 }

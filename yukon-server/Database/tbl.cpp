@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ RWDBTable CtiDBTable::RWDBTable()
 
     Returns the name of the corresponding databas table
 -----------------------------------------------------------------------------*/
-const RWCString& CtiDBTable::TableName() const
+const string& CtiDBTable::TableName() const
 {
     return _tablename;
 }

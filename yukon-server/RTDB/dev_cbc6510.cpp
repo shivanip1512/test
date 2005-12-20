@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/03/17 05:14:14 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,9 +75,9 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
             offset = 1;
         }
 
-        pReq->setCommandString("control close offset " + CtiNumStr(offset));
+        pReq->setCommandString(string("control close offset " + CtiNumStr(offset)));
 
-        CtiCommandParser new_parse(pReq->CommandString());
+        CtiCommandParser new_parse(pReq->CommandString().c_str());
 
         //  NOTE the new parser I'm passing in - i've already mangled the pReq string, so
         //    i need to seal the deal with a new parse
@@ -175,9 +175,9 @@ void CtiDeviceCBC6510::processPoints( Cti::Protocol::Interface::pointlist_t &poi
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceCBC6510::getDescription(const CtiCommandParser &parse) const
+string CtiDeviceCBC6510::getDescription(const CtiCommandParser &parse) const
 {
-   RWCString tmp;
+   string tmp;
 
    tmp = "CBC Device: " + getName();
 

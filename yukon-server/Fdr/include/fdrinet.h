@@ -21,7 +21,6 @@
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 #include <vector>
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -102,12 +101,12 @@ typedef struct _InetInterface_t {
 
 #pragma pack(pop, inet_packing)     // Restore the prior packing alignment..
 
-class RWTime;
+class CtiTime;
 
 
 // forward class declarations
 //typedef RWTPtrSlist<CtiFDRSocketLayer>  InetConnectionList;
-//typedef RWTPtrSlist<RWCString>  InetClientList;
+//typedef RWTPtrSlist<string>  InetClientList;
 
 class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 {                                    
@@ -115,23 +114,23 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
     public:
         // constructors and destructors
-        CtiFDR_Inet(RWCString aName=RWCString ("INET")); 
+        CtiFDR_Inet(string aName=string ("INET")); 
 
         virtual ~CtiFDR_Inet();
 
         virtual int processMessageFromForeignSystem (CHAR *data);
         virtual CHAR *buildForeignSystemHeartbeatMsg (void);
         virtual int getMessageSize(CHAR *data);
-        virtual RWCString decodeClientName(CHAR *data);
+        virtual string decodeClientName(CHAR *data);
         virtual bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
 
         virtual BOOL    init( void );   
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
-        RWCString & getSourceName();
-        RWCString  getSourceName() const;
-        CtiFDR_Inet &setSourceName (RWCString &aName);
+        string & getSourceName();
+        string  getSourceName() const;
+        CtiFDR_Inet &setSourceName (string &aName);
 
         // end getters and setters
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
@@ -166,11 +165,11 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
         virtual bool loadTranslationLists(void);
         virtual bool loadClientList(void);
-		bool loadList(RWCString &aDirection, CtiFDRPointList &aList);
+		bool loadList(string &aDirection, CtiFDRPointList &aList);
 
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
-        int   findConnectionByNameInList(RWCString aName);
+        int   findConnectionByNameInList(string aName);
         int   findClientInList(SOCKADDR_IN aAddr);
         virtual bool  findAndInitializeClients( void );
 
@@ -185,13 +184,13 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         vector< CtiFDRSocketLayer *> getConnectionList () const;
         CtiMutex & getConnectionMux ();
 
-        vector< RWCString >& getClientList ();
-        vector< RWCString > getClientList () const;
+        vector< string >& getClientList ();
+        vector< string > getClientList () const;
         CtiMutex & getClientListMux ();
 
     private:
 
-        RWCString                   iSourceName;
+        string                   iSourceName;
 
         HEV                         iClientConnectionSemaphore;
 
@@ -199,7 +198,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         vector< CtiFDRSocketLayer * > iConnectionList;
         CtiMutex                    iConnectionListMux;
 
-        vector< RWCString > iClientList;
+        vector< string > iClientList;
         CtiMutex                    iClientListMux;
 
 

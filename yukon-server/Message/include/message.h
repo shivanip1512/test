@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/19 14:48:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,10 +20,14 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+#include <string>
+
+using std::iostream;
+using std::string;
+
 
 #include <rw/collect.h>
-#include <rw/rwtime.h>
+
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 
@@ -31,6 +35,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw\thr\mutex.h>
 #include "dlldefs.h"
+
+//rprw
+#include "rwutil.h"
 
 class CtiMessage;    // Forward reference...
 
@@ -45,13 +52,13 @@ class IM_EX_MSG CtiMessage : public RWCollectable
 {
 protected:
 
-   RWTime      MessageTime;         // set to current during construction.
+   CtiTime      MessageTime;         // set to current during construction.
    INT         MessagePriority;
    int         _soe;             // An ID to group events.. Default to zero if not used
-   RWCString   _usr;
-   RWCString   _pwd;
+   string   _usr;
+   string   _pwd;
    int         _token;
-   RWCString   _src;
+   string   _src;
 
    /*
     *  Allows a message to mark its return path.. This is a bread crumb.
@@ -82,19 +89,19 @@ public:
    CtiMessage& setSOE( const INT & soe );
 
 
-   RWTime getMessageTime() const;
-   CtiMessage&   setMessageTime(const RWTime &mTime);
-   const RWCString& getUser() const;
-   CtiMessage& setUser(const RWCString& usr);
+   CtiTime getMessageTime() const;
+   CtiMessage&   setMessageTime(const CtiTime &mTime);
+   const string& getUser() const;
+   CtiMessage& setUser(const string& usr);
 
-   const RWCString& getPassword() const;
-   CtiMessage& setPassword(const RWCString& pwd);
+   const string& getPassword() const;
+   CtiMessage& setPassword(const string& pwd);
 
    int getToken() const;
    CtiMessage& setToken(const int& tok);
 
-   const RWCString& getSource() const;
-   CtiMessage& setSource(const RWCString& src);
+   const string& getSource() const;
+   CtiMessage& setSource(const string& src);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
@@ -109,7 +116,7 @@ public:
    virtual void PreInsert();
 
    virtual void dump() const;
-   RWCString typeString() const;
+   string typeString() const;
 
    virtual bool isValid();
 };

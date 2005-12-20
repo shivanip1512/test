@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctprt.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/16 16:24:46 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,8 +29,8 @@
 
 DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
 {
-   RWCString rwsType;
-   RWCString rwsPseudo;
+   string rwsType;
+   string rwsPseudo;
 
    INT      Type;
 
@@ -38,7 +38,7 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
 
    rdr["type"]  >> rwsType;
 
-   if(getDebugLevel() & DEBUGLEVEL_FACTORY) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Creating a Port of type " << rwsType << endl; }
+   if(getDebugLevel() & DEBUGLEVEL_FACTORY) { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Creating a Port of type " << rwsType << endl; }
 
    Type = resolvePortType(rwsType);
 
@@ -81,7 +81,7 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
       }
    default:
       {
-         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Port Factory has failed to produce for type " << rwsType << "!" << endl; }
+         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Port Factory has failed to produce for type " << rwsType << "!" << endl; }
          break;
       }
    }

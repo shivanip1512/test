@@ -15,9 +15,8 @@
 #define WPSC_H
 
 #include <iostream>
-using namespace std;
+using std::iostream;
 
-#include <rw/cstring.h>
 #include <rw/collstr.h>
 
 #include <rw/ordcltn.h>
@@ -33,20 +32,20 @@ extern int gFMConfigRouteID;
 extern int gFMConfigSerialLow[10];
 extern int gFMConfigSerialHigh[10];
 
-bool DecodeCFDATAFile(const RWCString& file, RWOrdered* results);
-bool DecodeEOIFile(const RWCString& file, RWOrdered* results);
-bool DecodeWepcoFile(const RWCString& file, RWOrdered* results);
+bool DecodeCFDATAFile(const string& file, RWOrdered* results);
+bool DecodeEOIFile(const string& file, RWOrdered* results);
+bool DecodeWepcoFile(const string& file, RWOrdered* results);
 
 // These two functions are DecodeWepcoFile split into two
-bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results);                                  
-bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results);
+bool DecodeWepcoFileService(const string& file, RWOrdered* results);                                  
+bool DecodeWepcoFileConfig(const string& file, RWOrdered* results);
 
-static bool DecodeCFDATALine( char* line, RWCString* decoded );
+static bool DecodeCFDATALine( char* line, string& decoded );
 static bool DecodeEOILine(char* line, RWOrdered* results );
 static bool DecodeWepcoLine( char* line, RWOrdered* results );
 
 static bool DecodeWepcoServiceLine( char* line, RWOrdered* results );
 static bool DecodeWepcoConfigLine( char* line, RWOrdered* results );
 
-static RWCString GetSelectCustomRouteID(long serial_num);
+static string GetSelectCustomRouteID(long serial_num);
 #endif

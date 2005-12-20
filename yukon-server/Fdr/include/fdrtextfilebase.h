@@ -8,8 +8,8 @@
 *    AUTHOR: David Sutton
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextfilebase.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:47 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextfilebase.h,v $
+      Revision 1.3  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.18.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.2  2003/04/22 20:44:47  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -42,7 +48,7 @@ class IM_EX_FDRBASE CtiFDRTextFileBase : public CtiFDRInterface
 
 public:
     // constructors and destructors
-    CtiFDRTextFileBase(RWCString &interfaceType); 
+    CtiFDRTextFileBase(string &interfaceType); 
 
     virtual ~CtiFDRTextFileBase();
 
@@ -53,13 +59,13 @@ public:
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
-    RWCString & getFileName();
-    RWCString  getFileName() const;
-    CtiFDRTextFileBase &setFileName (RWCString aName);
+    string & getFileName();
+    string  getFileName() const;
+    CtiFDRTextFileBase &setFileName (string aName);
 
-    RWCString & getDriveAndPath();
-    RWCString  getDriveAndPath() const;
-    CtiFDRTextFileBase &setDriveAndPath (RWCString aDriveAndPath);
+    string & getDriveAndPath();
+    string  getDriveAndPath() const;
+    CtiFDRTextFileBase &setDriveAndPath (string aDriveAndPath);
 
     int getInterval() const;
     CtiFDRTextFileBase &setInterval (int aInterval);

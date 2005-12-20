@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,8 @@
 
 #include "logger.h"
 #include "tbl_lmg_sasimple.h"
+
+#include "rwutil.h"
 
 //=====================================================================================================================
 //=====================================================================================================================
@@ -70,7 +72,7 @@ LONG CtiTableSASimpleGroup::getRouteId() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiTableSASimpleGroup::getOperationalAddress() const
+string CtiTableSASimpleGroup::getOperationalAddress() const
 {
     return _operationalAddress;
 }
@@ -130,7 +132,7 @@ CtiTableSASimpleGroup& CtiTableSASimpleGroup::setRouteId( LONG newVal )
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTableSASimpleGroup& CtiTableSASimpleGroup::setOperationalAddress( RWCString newVal )
+CtiTableSASimpleGroup& CtiTableSASimpleGroup::setOperationalAddress( string newVal )
 {
     _operationalAddress = newVal;
     return *this;
@@ -166,9 +168,9 @@ CtiTableSASimpleGroup& CtiTableSASimpleGroup::setVirtualTimeout( int newVal )
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWCString CtiTableSASimpleGroup::getTableName( void )
+string CtiTableSASimpleGroup::getTableName( void )
 {
-    return RWCString( "LMGroupSASimple" );
+    return string( "LMGroupSASimple" );
 }
 
 //=====================================================================================================================
@@ -176,7 +178,7 @@ RWCString CtiTableSASimpleGroup::getTableName( void )
 
 void CtiTableSASimpleGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector )
 {
-    RWDBTable devTbl = db.table( getTableName() );
+    RWDBTable devTbl = db.table( getTableName().c_str() );
 
     selector <<
         devTbl["groupid"] <<        //are these supposed to be case sensitive? the table scripts are caps!

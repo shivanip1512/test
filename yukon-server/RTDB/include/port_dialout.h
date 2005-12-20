@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,9 +20,8 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+using std::iostream;
 
-#include <rw\cstring.h>
 
 #include "dsm2.h"
 #include "port_base.h"

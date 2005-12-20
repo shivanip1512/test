@@ -4,7 +4,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/cstring.h>
 
 #include "dlldefs.h"
 #include "cparms.h"
@@ -17,7 +16,7 @@ void main(int argc, char **argv)
       return;
    }
    #if 1
-   RWCString base_dir = gConfigParms.getYukonBaseDir();
+   string base_dir = gConfigParms.getYukonBaseDir();
    cout << "Yukon base dir: " << base_dir << endl;
 
    for(int i = 0; i < atoi(argv[1]); i++)

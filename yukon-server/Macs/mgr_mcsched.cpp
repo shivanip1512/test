@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/05/05 17:07:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include "mgr_mcsched.h"
 #include "dbaccess.h"
 #include "utility.h"
+using namespace std;
 
 ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
 {
@@ -36,14 +37,14 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
 
             {
                 RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
-                ostrm << RWTime() << endl << *sched << endl;
+                ostrm << CtiTime() << endl << *sched << endl;
             }
         }
     }
     catch(RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        ostrm <<      RWTime()
+        ostrm <<      CtiTime()
         <<      " operator<<(ostream&,const CtiMCScheduleManager mgr) - "
         <<      e.why()
         <<      endl;
@@ -75,7 +76,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
         success = false;
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " Exception:  " << e.why() << endl;
+            dout << CtiTime() << " Exception:  " << e.why() << endl;
         }
     }
     catch(...)
@@ -84,7 +85,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
         {
             CtiLockGuard<CtiLogger> guard(dout);
             dout
-            << RWTime()
+            << CtiTime()
             << " Unknown exception occured in CtiMCScheduleManager::refreshAllSchedules()"
             << endl;
         }
@@ -109,7 +110,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An error occured retrieving schedules from the database" << endl;
+            dout << CtiTime() << " An error occured retrieving schedules from the database" << endl;
         }
     }
 
@@ -147,7 +148,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << RWTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
+                    dout << CtiTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
                 }
 
                 sched->Insert();
@@ -159,7 +160,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << RWTime() << " Update schedule in the database:  " << sched->getScheduleID() << endl;
+                    dout << CtiTime() << " Update schedule in the database:  " << sched->getScheduleID() << endl;
                 }
 
                 sched->Update();
@@ -175,7 +176,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
         if( gMacsDebugLevel & MC_DEBUG_DB )
         {
             CtiLockGuard< CtiLogger > g(dout);
-            dout << RWTime() << " Deleteing schedule from the database:  " << (*iter)->getScheduleID() << endl;
+            dout << CtiTime() << " Deleteing schedule from the database:  " << (*iter)->getScheduleID() << endl;
         }
 
         delete *iter;
@@ -281,13 +282,13 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
                     CtiLockGuard< CtiLogger > g(dout);
-                    dout << RWTime() << " Successfully added:  " << to_delete << " to the delete set" << endl;
+                    dout << CtiTime() << " Successfully added:  " << to_delete << " to the delete set" << endl;
                 }
             }
             else
             {
                 CtiLockGuard< CtiLogger > g(dout);
-                dout << RWTime() << " Failed to add:  " << to_delete << " it was already in the set" << endl;
+                dout << CtiTime() << " Failed to add:  " << to_delete << " it was already in the set" << endl;
             }
 
             ret_val = true;
@@ -322,7 +323,7 @@ long CtiMCScheduleManager::getID(const string& name)
     {
         sched = itr.value();
 
-        if( sched != NULL && string( sched->getScheduleName().data()) == name )
+        if( sched != NULL && string( sched->getScheduleName().c_str()) == name )
             return sched->getScheduleID();
     }
 
@@ -404,7 +405,7 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " Exception:  " << e.why() << endl;
+            dout << CtiTime() << " Exception:  " << e.why() << endl;
         }
     }
     catch(...)
@@ -413,7 +414,7 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An unkown exception occured"  << endl;
+            dout << CtiTime() << " An unkown exception occured"  << endl;
         }
     }
 
@@ -421,8 +422,8 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
     {
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An error occured executing the following sql:"  << endl;
-            dout << RWTime() << " " << sql << endl;
+            dout << CtiTime() << " An error occured executing the following sql:"  << endl;
+            dout << CtiTime() << " " << sql << endl;
         }
     }
 
@@ -500,7 +501,7 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " Exception:  " << e.why() << endl;
+            dout << CtiTime() << " Exception:  " << e.why() << endl;
         }
     }
     catch(...)
@@ -509,7 +510,7 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
 
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An unkown exception occured"  << endl;
+            dout << CtiTime() << " An unkown exception occured"  << endl;
         }
     }
 
@@ -517,8 +518,8 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
     {
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << RWTime() << " An error occured executing the following sql:"  << endl;
-            dout << RWTime() << " " << sql << endl;
+            dout << CtiTime() << " An error occured executing the following sql:"  << endl;
+            dout << CtiTime() << " " << sql << endl;
         }
     }
 

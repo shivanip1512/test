@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsimpsched.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/17 19:02:59 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 
 #include "tbl_mcsimpsched.h"
 #include "dbaccess.h"
+#include "rwutil.h"
 
 //Name of the database table
 const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
@@ -132,7 +133,7 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 
     // RWDBReader has no operator>>(string&) so use
     // a temporary RWCString and then copy it
-    RWCString temp;
+    string temp;
 
     rdr["scheduleid"]       >> _schedule_id;
 
@@ -170,11 +171,11 @@ bool CtiTableMCSimpleSchedule::Update()
 
             updater.where( t["ScheduleID"] == getScheduleID() );
 
-            updater << t["TargetSelect"].assign((const char*) getTargetSelect().data());
+            updater << t["TargetSelect"].assign((const char*) getTargetSelect().c_str());
 
-            updater << t["StartCommand"].assign((const char*) getStartCommand().data());
+            updater << t["StartCommand"].assign((const char*) getStartCommand().c_str());
 
-            updater << t["StopCommand"].assign((const char*) getStopCommand().data());
+            updater << t["StopCommand"].assign((const char*) getStopCommand().c_str());
 
             updater << t["RepeatInterval"].assign(getRepeatInterval());
 
@@ -188,7 +189,7 @@ bool CtiTableMCSimpleSchedule::Update()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured updating table \""
         << _table_name
         << "\""
@@ -198,7 +199,7 @@ bool CtiTableMCSimpleSchedule::Update()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;
@@ -223,11 +224,11 @@ bool CtiTableMCSimpleSchedule::Insert()
 
             inserter << getScheduleID();
 
-            inserter << (const char*) getTargetSelect().data();
+            inserter << (const char*) getTargetSelect().c_str();
 
-            inserter << (const char*) getStartCommand().data();
+            inserter << (const char*) getStartCommand().c_str();
 
-            inserter << (const char*) getStopCommand().data();
+            inserter << (const char*) getStopCommand().c_str();
 
             inserter << getRepeatInterval();
 
@@ -241,7 +242,7 @@ bool CtiTableMCSimpleSchedule::Insert()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured inserting to table \""
         << _table_name
         << "\""
@@ -251,7 +252,7 @@ bool CtiTableMCSimpleSchedule::Insert()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;
@@ -285,7 +286,7 @@ bool CtiTableMCSimpleSchedule::Delete()
     catch(...)
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " An exception occured deleting from table \""
         << _table_name
         << "\""
@@ -295,7 +296,7 @@ bool CtiTableMCSimpleSchedule::Delete()
     if( !ret_val )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime()
+        dout << CtiTime()
         << " "
         << sql
         << endl;

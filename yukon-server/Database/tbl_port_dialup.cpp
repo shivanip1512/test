@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 #include "tbl_port_dialup.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTablePortDialup::CtiTablePortDialup() :
 _portID(0),
@@ -46,17 +48,17 @@ CtiTablePortDialup& CtiTablePortDialup::operator=(const CtiTablePortDialup& aRef
    return *this;
 }
 
-RWCString CtiTablePortDialup::getModemType() const
+string CtiTablePortDialup::getModemType() const
 {
    return _modemType;
 }
 
-RWCString& CtiTablePortDialup::getModemType()
+string& CtiTablePortDialup::getModemType()
 {
    return _modemType;
 }
 
-CtiTablePortDialup& CtiTablePortDialup::setModemType(const RWCString& str)
+CtiTablePortDialup& CtiTablePortDialup::setModemType(const string& str)
 {
    _modemType = str;
    return *this;
@@ -73,54 +75,54 @@ CtiTablePortDialup& CtiTablePortDialup::setPortID( const LONG portID )
    return *this;
 }
 
-RWCString CtiTablePortDialup::getTableName()
+string CtiTablePortDialup::getTableName()
 {
    return "PortDialupModem";
 }
 
-RWCString CtiTablePortDialup::getModemInitString() const
+string CtiTablePortDialup::getModemInitString() const
 {
    return _modemInitString;
 }
 
-RWCString& CtiTablePortDialup::getModemInitString()
+string& CtiTablePortDialup::getModemInitString()
 {
    return _modemInitString;
 }
 
-CtiTablePortDialup& CtiTablePortDialup::setModemInitString(const RWCString& str)
+CtiTablePortDialup& CtiTablePortDialup::setModemInitString(const string& str)
 {
    _modemInitString = str;
    return *this;
 }
 
-RWCString CtiTablePortDialup::getPrefixString() const
+string CtiTablePortDialup::getPrefixString() const
 {
    return _prefixString;
 }
 
-RWCString& CtiTablePortDialup::getPrefixString()
+string& CtiTablePortDialup::getPrefixString()
 {
    return _prefixString;
 }
 
-CtiTablePortDialup& CtiTablePortDialup::setPrefixString(const RWCString& str)
+CtiTablePortDialup& CtiTablePortDialup::setPrefixString(const string& str)
 {
    _prefixString = str;
    return *this;
 }
 
-RWCString CtiTablePortDialup::getSuffixString() const
+string CtiTablePortDialup::getSuffixString() const
 {
    return _suffixString;
 }
 
-RWCString& CtiTablePortDialup::getSuffixString()
+string& CtiTablePortDialup::getSuffixString()
 {
    return _suffixString;
 }
 
-CtiTablePortDialup& CtiTablePortDialup::setSuffixString(const RWCString& str)
+CtiTablePortDialup& CtiTablePortDialup::setSuffixString(const string& str)
 {
    _suffixString = str;
    return *this;
@@ -129,7 +131,7 @@ CtiTablePortDialup& CtiTablePortDialup::setSuffixString(const RWCString& str)
 void CtiTablePortDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    keyTable = db.table( "YukonPAObject" );
-   RWDBTable portDialup = db.table(getTableName() );
+   RWDBTable portDialup = db.table(getTableName().c_str() );
 
    selector <<
       keyTable["paobjectid"] <<

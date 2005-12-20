@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2005/11/23 15:27:43 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,11 +19,22 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.14  2005/12/20 17:16:06  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.13  2005/11/23 15:27:43  cplender
       Altered ExecuteUpdater to not cause a false error case.
 
       Revision 1.12  2005/10/20 21:41:27  cplender
       Added ExecuteUpdater ad ExecuteInserter to wrap the updater.execute and insert.execute and print on error.
+      Revision 1.11.2.3  2005/08/12 19:53:39  jliu
+      Date Time Replaced
+
+      Revision 1.11.2.2  2005/07/14 22:26:53  jliu
+      RWCStringRemoved
+
+      Revision 1.11.2.1  2005/07/12 21:08:32  jliu
+      rpStringWithoutCmpParser
 
       Revision 1.11  2005/04/15 18:28:40  mfisher
       got rid of magic number debuglevel checks
@@ -73,6 +84,10 @@
 #include "yukon.h"
 
 #include "tbl_dv_wnd.h"
+
+#include "rwutil.h"
+
+using namespace std;
 
 CtiTableDeviceWindow::CtiTableDeviceWindow() :
 _ID(-1),
@@ -202,7 +217,7 @@ CtiTableDeviceWindow& CtiTableDeviceWindow::setID( const LONG aID )
 }
 
 
-RWCString CtiTableDeviceWindow::getTableName()
+string CtiTableDeviceWindow::getTableName()
 {
     return "DeviceWindow";
 }
@@ -223,7 +238,7 @@ LONG CtiTableDeviceWindow::calculateClose(LONG aOpen, LONG aDuration) const
 void CtiTableDeviceWindow::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table("Device");
-    RWDBTable devTbl = db.table(getTableName());
+    RWDBTable devTbl = db.table(getTableName().c_str());
 
     selector <<
     keyTable["deviceid"] <<
@@ -248,10 +263,10 @@ void CtiTableDeviceWindow::DecodeDatabaseReader(RWDBReader &aRdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    RWCString rwstemp;
+    string rwstemp;
 
     aRdr["type"]  >> rwstemp;
 
@@ -307,7 +322,7 @@ RWDBStatus CtiTableDeviceWindow::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -319,7 +334,7 @@ RWDBStatus CtiTableDeviceWindow::Restore()
     table["alternateclose"];
 
 //   selector.where( (table["deviceid"] == getDeviceID())) ;
-    selector.where( (table["deviceid"] == getID() ) && (rwdbLower(table["type"]) == desolveDeviceWindowType (getType())));
+    selector.where( (table["deviceid"] == getID() ) && (rwdbLower(table["type"]) == desolveDeviceWindowType (getType()).c_str()));
 
     RWDBReader reader = selector.reader( conn );
 
@@ -340,7 +355,7 @@ RWDBStatus CtiTableDeviceWindow::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -366,13 +381,13 @@ RWDBStatus CtiTableDeviceWindow::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getID() );
 
     updater <<
-    table["type"].assign(desolveDeviceWindowType(getType() ) ) <<
+    table["type"].assign(desolveDeviceWindowType(getType() ).c_str() ) <<
     table["winopen"].assign(getOpen() ) <<
     table["winclose"].assign(calculateClose (getOpen(),getDuration())) <<
     table["alternateopen"].assign(getAlternateOpen() ) <<
@@ -390,10 +405,10 @@ RWDBStatus CtiTableDeviceWindow::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["deviceid"] == getID() && (rwdbLower(table["type"]) == desolveDeviceWindowType(getType())));
+    deleter.where( table["deviceid"] == getID() && (rwdbLower(table["type"]) == desolveDeviceWindowType(getType()).c_str()));
     deleter.execute( conn );
     return deleter.status();
 }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/09 16:41:05 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #include "verification_objects.h"
 #include "ctidbgmem.h"
 
-#include <rw/rwtime.h>  //  ONLY for rwEpoch, use ptime/date for everything else
+
 
 const string CtiVerificationBase::String_CodeStatus_Sent       = "sent";
 const string CtiVerificationBase::String_CodeStatus_Success    = "success";
@@ -97,8 +97,8 @@ CtiOutMessage *CtiVerificationWork::getRetryOM() const
     if( _retry_om.ExpirationTime )
     {
         ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
-
-        retval->ExpirationTime = expiration.total_seconds() + rwEpoch;  //  ExpirationTime is an RWTime.seconds()
+                                                         
+        retval->ExpirationTime = expiration.total_seconds();  //  ExpirationTime is an CtiTime.seconds()
     }
 
     retval->Retry = 0;

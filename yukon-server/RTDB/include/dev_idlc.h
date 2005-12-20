@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ private:
 
          {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
 
          if(_trxInfo != NULL)
@@ -151,7 +151,7 @@ private:
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** UNEXPECTED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
 
          delete _trxInfo;
@@ -193,12 +193,12 @@ private:
       if(getAddress() > 0)
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << endl;
+          dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << endl;
       }
       else
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << endl;
+          dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << endl;
       }
 
 

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "tbl_dv_expresscom.h"
+
+#include "rwutil.h"
 
 CtiTableExpresscomLoadGroup::CtiTableExpresscomLoadGroup() :
 _lmGroupId(-1),
@@ -188,14 +190,14 @@ CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setLoadMask(BYTE load)
     return *this;
 }
 
-RWCString CtiTableExpresscomLoadGroup::getTableName()
+string CtiTableExpresscomLoadGroup::getTableName()
 {
-    return RWCString("ExpressComAddress_View");
+    return string("ExpressComAddress_View");
 }
 
 void CtiTableExpresscomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["routeid"           ] <<
@@ -219,7 +221,7 @@ void CtiTableExpresscomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable,
 
 void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -247,7 +249,7 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["routeid"           ] >> _routeId;
     rdr["serialnumber"      ] >> rwsTemp;
 
-    _serial = atoi(rwsTemp.data());
+    _serial = atoi(rwsTemp.c_str());
 
     rdr["serviceaddress"    ] >> _serviceProvider;
     rdr["geoaddress"        ] >> _geo;
@@ -259,18 +261,18 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["splinteraddress"   ] >> _splinter;
 
     rdr["addressusage"      ] >> rwsTemp;
-    _addressUsage = resolveAddressUsage( rwsTemp, expresscomAddressUsage );
+    _addressUsage = resolveAddressUsage( rwsTemp.c_str(), expresscomAddressUsage );
 
     rdr["relayusage"        ] >> rwsTemp;
 
-    _loads = resolveRelayUsage(rwsTemp);
+    _loads = resolveRelayUsage(rwsTemp.c_str());
 }
 
 RWDBStatus CtiTableExpresscomLoadGroup::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -280,7 +282,7 @@ RWDBStatus CtiTableExpresscomLoadGroup::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -290,7 +292,7 @@ RWDBStatus CtiTableExpresscomLoadGroup::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }
@@ -299,7 +301,7 @@ RWDBStatus CtiTableExpresscomLoadGroup::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }

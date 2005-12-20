@@ -34,24 +34,24 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
 {
     if ( _instance == NULL )
     {
-        RWCString str;
+        string str;
         char var[128];
         LONG loadmanagementclientsport = LOADMANAGEMENTNEXUS;
 
         strcpy(var, "LOAD_MANAGEMENT_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            LONG loadmanagementclientsport = atoi(str.data());
+            LONG loadmanagementclientsport = atoi(str.c_str());
             if( _LM_DEBUG & LM_DEBUG_CLIENT )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << loadmanagementclientsport << endl;
+                dout << CtiTime() << " - " << var << ":  " << loadmanagementclientsport << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
         _instance = new CtiLMClientListener(loadmanagementclientsport);
@@ -132,7 +132,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
         if( _LM_DEBUG & LM_DEBUG_CLIENT )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " Broadcasting message to " << _connections.size() << " clients" << endl;
+            dout << CtiTime() << " Broadcasting message to " << _connections.size() << " clients" << endl;
         }
         
         for( int i = 1; i < _connections.size(); i++ )
@@ -157,7 +157,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
     catch(...)
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << __FILE__ << " (" << __LINE__ <<
+        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
     delete msg;
@@ -178,7 +178,7 @@ void CtiLMClientListener::_listen()
         _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
         /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime()  << " - Listening for clients..." << endl;
+            dout << CtiTime()  << " - Listening for clients..." << endl;
         }*/
     
         do
@@ -224,20 +224,20 @@ void CtiLMClientListener::_listen()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             rwSleep(500);
         } while ( !_doquit );
     
         /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
+            dout << CtiTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
         }*/
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
@@ -271,7 +271,7 @@ void CtiLMClientListener::_check()
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             rwSleep(500);
         } while ( !_doquit );
@@ -281,7 +281,7 @@ void CtiLMClientListener::_check()
     
             /*{    
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime()  << " - CtiLMClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
+                dout << CtiTime()  << " - CtiLMClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
             }*/
     
             //Before we exit try to close all the connections
@@ -291,13 +291,13 @@ void CtiLMClientListener::_check()
     
         /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime()  << " - CtiLMClientListener::_check - exiting" << endl;
+            dout << CtiTime()  << " - CtiLMClientListener::_check - exiting" << endl;
         }*/
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 

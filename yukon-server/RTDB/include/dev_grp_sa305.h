@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/09/02 16:19:47 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 * HISTORY      :
 * $Log: dev_grp_sa305.h,v $
+* Revision 1.4  2005/12/20 17:20:29  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 * Revision 1.3  2005/09/02 16:19:47  cplender
 * Modified the getPutConfigAssignment() method to allow modifier parameters.
 *
@@ -73,11 +76,11 @@ public:
     CtiSACommand_t getLastSACommandType() const { return _lastSACommandType; }
 
     virtual LONG getRouteID();
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    virtual RWCString getPutConfigAssignment(UINT modifier = 0);
+    virtual string getPutConfigAssignment(UINT modifier = 0);
 
 };
 #endif // #ifndef __DEV_GRP_SA305_H__

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:47 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,15 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.3  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.18.2  2005/08/12 19:53:48  jliu
+      Date Time Replaced
+
+      Revision 1.2.18.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.2  2003/04/22 20:44:47  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -52,19 +61,19 @@ public:
     int readConfig( void );
     bool buildAndAddPoint (CtiFDRPoint &aPoint, 
                            DOUBLE aValue, 
-                           RWTime aTimestamp, 
+                           CtiTime aTimestamp, 
                            int aQuality,
-                           RWCString aTranslationName,
+                           string aTranslationName,
                            CtiMessage **aRetMsg);
-    USHORT ForeignToYukonQuality (RWCString aQuality);
-    RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
+    USHORT ForeignToYukonQuality (string aQuality);
+    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
-    bool processFunctionOne (RWCString &aLine, CtiMessage **aRetMsg);
+    bool processFunctionOne (string &aLine, CtiMessage **aRetMsg);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_TextImport &setDeleteFileAfterImport (bool aFlag);
 
-    bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg);
+    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);

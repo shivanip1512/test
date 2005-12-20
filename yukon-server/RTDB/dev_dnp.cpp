@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/12/15 22:11:20 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 
 #include <map>
 #include <string>
-using namespace std;
+
 
 #include <windows.h>
 
@@ -46,7 +46,7 @@ using namespace std;
 #include "numstr.h"
 #include "cparms.h"
 
-
+using namespace std;
 namespace Cti       {
 namespace Device    {
 
@@ -137,7 +137,7 @@ INT DNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&Out
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan general");
@@ -165,7 +165,7 @@ INT DNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&O
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan integrity");
@@ -239,17 +239,17 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     //  ugh - does this need to be sent from Porter as well?  do we send it if the control fails?
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, RWTime(), 86400, 100);
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, CtiTime(), 86400, 100);
 
                     //  if the control is latched
                     if( control->getPointStatus().getControlType() == LatchControlType ||
                         control->getPointStatus().getControlType() == SBOLatchControlType )
                     {
-                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )
+                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateZeroControl()) )
                         {
                             hist->setRawState(STATEZERO);
                         }
-                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )
+                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateOneControl()) )
                         {
                             hist->setRawState(STATEONE);
                         }
@@ -267,13 +267,13 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                     }
                     else  //  assume pulsed
                     {
-                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )      //  CMD_FLAG_CTL_OPEN
+                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateZeroControl()) )      //  CMD_FLAG_CTL_OPEN
                         {
                             on_time     = control->getPointStatus().getCloseTime1();
 
                             hist->setRawState(STATEZERO);
                         }
-                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  //  CMD_FLAG_CTL_CLOSE
+                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateOneControl()) )  //  CMD_FLAG_CTL_CLOSE
                         {
                             on_time     = control->getPointStatus().getCloseTime2();
 
@@ -306,7 +306,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - invalid control type \"" << control->getPointStatus().getControlType() << "\" specified in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - invalid control type \"" << control->getPointStatus().getControlType() << "\" specified in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     //  i don't like this, but i don't see a better way yet
@@ -341,14 +341,14 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
             if( control )
             {
-                OutMessage->ExpirationTime = RWTime().seconds() + control->getControlExpirationTime();
+                OutMessage->ExpirationTime = CtiTime().seconds() + control->getControlExpirationTime();
             }
 
             if( control && control->getPointStatus().getControlInhibit() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
             else if( valid_control )
@@ -394,7 +394,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - Accumulator scanrates not defined for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - Accumulator scanrates not defined for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -455,7 +455,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -529,13 +529,13 @@ int DNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList 
     om_buf->pseudo_info = _pil_info.pseudo_info;
 
     char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
-    strncpy(buf, _pil_info.user.data(), 127);
+    ::strncpy(buf, _pil_info.user.c_str(), 127);
     buf[127] = 0;  //  max of 128, just because i feel like it
 
     if( OutMessage )
     {
         //  assign all of the standard OM bits
-        OutMessage->OutLength    = sizeof(om_buf) + strlen(buf) + 1;  //  plus null
+        OutMessage->OutLength    = sizeof(om_buf) + ::strlen(buf) + 1;  //  plus null
         OutMessage->Source       = _dnp_address.getMasterAddress();
         OutMessage->Destination  = _dnp_address.getSlaveAddress();
         OutMessage->EventCode    = RESULT;
@@ -564,7 +564,7 @@ int DNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -597,7 +597,7 @@ int DNP::recvCommRequest( OUTMESS *OutMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -631,7 +631,7 @@ int DNP::sendCommResult(INMESS *InMessage)
     //  this needs to be smarter and send the device name and point data elements seperately...
     for( itr = strings.begin(); itr != strings.end(); itr++ )
     {
-        result_string += getName().data();
+        result_string += getName().c_str();
         result_string += " / ";
         result_string += *(*itr);
         result_string += "\n";
@@ -665,7 +665,7 @@ int DNP::sendCommResult(INMESS *InMessage)
         //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         string cropped("\n---cropped---");
@@ -692,8 +692,8 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
     CtiPointDataMsg             *pt_msg;
     CtiPointBase                *point;
     CtiPointNumeric             *pNumeric;
-    RWCString                    resultString;
-    RWTime                       Now;
+    string                    resultString;
+    CtiTime                       Now;
 
     Protocol::Interface::pointlist_t points;
     Protocol::Interface::pointlist_t::iterator itr;
@@ -738,7 +738,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
                                                                   NormalQuality,
                                                                   StatusPointType,
                                                                   "This point has been controlled");
-                msg->setUser(_porter_info.user.data());
+                msg->setUser(_porter_info.user.c_str());
                 vgMsg->PointData().append(msg);
             }
 
@@ -755,7 +755,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
     CtiPoint *point;
-    RWCString resultString;
+    string resultString;
 
     Protocol::Interface::pointlist_t demand_points;
 
@@ -779,7 +779,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                     //  get the raw pulses from the pulse accumulator
                     current.point_value = msg->getValue();
-                    current.point_time  = RWTime::now().seconds();
+                    current.point_time  = CtiTime::now().seconds();
 
                     pd_itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
 
@@ -790,7 +790,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "current.point_value  = " << current.point_value << endl;
                             dout << "current.point_time   = " << current.point_time << endl;
                             dout << "previous.point_value = " << previous.point_value << endl;
@@ -823,7 +823,8 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                             demandValue = demandPoint->computeValueForUOM(demandValue);
 
-                            resultString = getName() + " / " + demandPoint->getName() + ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
+                            resultString = getName() + " / " + demandPoint->getName(); 
+                            resultString += ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
 
@@ -831,7 +832,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << "current.point_value  = " << current.point_value << endl;
                                 dout << "current.point_time   = " << current.point_time << endl;
                             }
@@ -842,7 +843,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - demand not calculated; interval < 60 sec **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - demand not calculated; interval < 60 sec **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -850,7 +851,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - inserting demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - inserting demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "current.point_value  = " << current.point_value << endl;
                             dout << "current.point_time   = " << current.point_time << endl;
                         }
@@ -869,7 +870,8 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                 msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
 
-                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(msg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString  = getName() + " / " + point->getName();
+                resultString += ": " + CtiNumStr(msg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
                 resultString += " @ " + msg->getTime().asString();
             }
             else if( point->isStatus() )
@@ -898,7 +900,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
@@ -914,7 +916,7 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             InMessage->InLength = sizeof(InMessage->Buffer.InMessage);
@@ -942,8 +944,8 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
         }
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         RWCString(InMessage->Return.CommandStr),
-                                         result_string.data(),
+                                         string(InMessage->Return.CommandStr),
+                                         result_string.c_str(),
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
@@ -956,14 +958,14 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
     else
     {
         char error_str[80];
-        RWCString resultString;
+        string resultString;
 
         GetErrorString(ErrReturn, error_str);
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         RWCString(InMessage->Return.CommandStr),
+                                         string(InMessage->Return.CommandStr),
                                          resultString,
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
@@ -979,14 +981,14 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
 }
 
 
-INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(InMessage->Return.CommandStr),
-                                              RWCString(),
+                                              string(InMessage->Return.CommandStr),
+                                              string(),
                                               InMessage->EventCode & 0x7fff,
                                               InMessage->Return.RouteID,
                                               InMessage->Return.MacroOffset,
@@ -998,7 +1000,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     switch( _pil_info.protocol_command )
@@ -1045,7 +1047,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -1057,7 +1059,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString DNP::getDescription(const CtiCommandParser &parse) const
+string DNP::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }

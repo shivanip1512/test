@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,10 +19,12 @@
 #include <limits.h>
 #include <float.h>
 
-#include <rw\cstring.h>
 #include "dlldefs.h"
 #include "pt_numeric.h"
 #include "tbl_pt_analog.h"
+
+using std::cout;
+using std::endl;
 
 class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 {

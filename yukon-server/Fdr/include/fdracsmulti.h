@@ -14,6 +14,9 @@
  *                 design document for more information
  *    History: 
  *      $Log$
+ *      Revision 1.3  2005/12/20 17:17:15  tspar
+ *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+ *
  *      Revision 1.2  2005/10/28 19:27:01  tmack
  *      Added a configuration parameter to set the link timeout value.
  *
@@ -29,7 +32,7 @@
 #define __FDRACS_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/cstring.h>
+
 #include <rw/tpslist.h>
 #include <map>
 
@@ -186,7 +189,7 @@ typedef struct {
 
 #pragma pack(pop, acs_packing)     // Restore the prior packing alignment..
 
-class RWTime;
+class CtiTime;
 
 class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 {                                    
@@ -232,10 +235,10 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
                                      CtiFDRClientServerConnection::Destination serverName);
         USHORT      ForeignToYukonQuality (USHORT aQuality);
         int         ForeignToYukonStatus (USHORT aStatus);
-        RWTime      ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
+        CtiTime     ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag = false);
 
-        RWCString   YukonToForeignTime (RWTime aTimeStamp);
-        int         YukonToForeignId (RWCString aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
+        string      YukonToForeignTime (CtiTime aTimeStamp);
+        int         YukonToForeignId (string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
         

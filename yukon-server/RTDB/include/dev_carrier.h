@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/08/12 14:08:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #define __DEV_CARRIER_H__
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
 #include "dev_dlcbase.h"
@@ -63,9 +62,9 @@ public:
    virtual LONG getLastIntervalDemandRate() const;
 
    virtual bool isMeter() const;
-   virtual RWCString getMeterGroupName() const;
-   virtual RWCString getAlternateMeterGroupName() const;
-   virtual RWCString getBillingGroupName() const;
+   virtual string getMeterGroupName() const;
+   virtual string getAlternateMeterGroupName() const;
+   virtual string getBillingGroupName() const;
 };
 
 

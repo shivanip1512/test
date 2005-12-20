@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,8 +15,8 @@
 
 
 
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctidate.h"
+#include "ctitime.h"
 
 #include "porter.h"
 #include "dev_schlum.h"
@@ -54,7 +54,7 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     if (OutMessage != NULL)
@@ -164,9 +164,9 @@ INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
                     {
                         if (passwordLength == 1)
                         {
-                            if ((getIED().getPassword()(z) != ' ') && (getIED().getPassword()(z) != '0'))
+                            if ((getIED().getPassword()[z] != ' ') && (getIED().getPassword()[z] != '0'))
                             {
-                                Transfer.getOutBuffer()[z+1] = getIED().getPassword()(z);
+                                Transfer.getOutBuffer()[z+1] = getIED().getPassword()[z];
                             }
                             else
                             {
@@ -175,7 +175,7 @@ INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
                         }
                         else
                         {
-                            Transfer.getOutBuffer()[z+1] = getIED().getPassword()(z);
+                            Transfer.getOutBuffer()[z+1] = getIED().getPassword()[z];
                         }
                     }
                     else
@@ -194,7 +194,7 @@ INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -299,7 +299,7 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , RWTPtrSlist< CtiMess
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         Transfer.setOutCount( 0 );
                         Transfer.setInCountExpected( 0 );
@@ -315,7 +315,7 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , RWTPtrSlist< CtiMess
                 setCurrentState (StateScanAbort);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 retCode = StateScanAbort;
                 break;
@@ -456,7 +456,7 @@ INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlis
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -594,7 +594,7 @@ INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiM
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -650,7 +650,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
             {
                 // State = SCHL_SCAN_STATE_SETUP_MM_CONFIG;
                 // grabbing the mass memory configuration
-                if ((localLProfile->porterLPTime - rwEpoch) > 0)
+                if ((localLProfile->porterLPTime) > 0)
                 //            if (ScannerRequestTime > 0)
                 {
                     fillUploadTransferObject (Transfer, 0x32C9, 0x335F);
@@ -758,21 +758,20 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                      *  Schlumberger keeps modulo 100 years.. bad bad bad and I must fixee here
                                      ******************************
                                      */
-                                    if (RWDate().year() > 1999)
+                                    if (CtiDate().year() > 1999)
                                     {
                                         /*
                                          *  Now build a unix time out of the prior settings.
                                          *  NOTE:  This is a UNIX time of RECORD START!
                                          */
 
-                                        RWTime t(RWDate((INT)localRTReg->DayOfMonth,
+                                        CtiTime t(CtiDate((INT)localRTReg->DayOfMonth,
                                                         (INT)localRTReg->Month,
                                                         (INT)localRTReg->Year+2000),
                                                  (INT)localRTReg->Hours, 0, 0);
                                         LPTime = t.seconds() +
                                                  (((INT)localRTReg->Minutes - ((INT)localRTReg->Minutes % (INT)localMMConfig->IntervalLength)
-                                                   - ((INT)localMMConfig->CurrentInterval * (INT)localMMConfig->IntervalLength)) * 60) -
-                                                 rwEpoch;
+                                                   - ((INT)localMMConfig->CurrentInterval * (INT)localMMConfig->IntervalLength)) * 60);
                                     }
                                     else
                                     {
@@ -781,21 +780,20 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                          *  NOTE:  This is a UNIX time of RECORD START!
                                          */
 
-                                        LPTime = RWTime (RWDate ((INT)localRTReg->DayOfMonth,
+                                        LPTime = CtiTime (CtiDate ((INT)localRTReg->DayOfMonth,
                                                                  (INT)localRTReg->Month,
                                                                  (INT)localRTReg->Year + 1900),
                                                          (INT)localRTReg->Hours, 0, 0).seconds()
                                                  + (((INT)localRTReg->Minutes - ((INT)localRTReg->Minutes % (INT)localMMConfig->IntervalLength)
-                                                     - ((INT)localMMConfig->CurrentInterval * (INT)localMMConfig->IntervalLength)) * 60)
-                                                 - rwEpoch;
+                                                     - ((INT)localMMConfig->CurrentInterval * (INT)localMMConfig->IntervalLength)) * 60);
                                     }
 
                                     /*************************
                                     * Check the validity of the time received
                                     **************************
                                     */
-                                    if ((RWTime(LPTime+rwEpoch) < (RWTime()-(2*86400))) ||
-                                        (RWTime(LPTime+rwEpoch) > (RWTime()+(2*86400))))
+                                    if ((CtiTime(LPTime) < (CtiTime()-(2*86400))) ||
+                                        (CtiTime(LPTime) > (CtiTime()+(2*86400))))
                                     {
                                         /***********************
                                         * if meter time is not within a 2 day window, its
@@ -834,10 +832,10 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                     */
 
                                     LPTime = LPTime - ((INT)localMMConfig->IntervalLength * 3600 );
-                                    LPTime = RWTime (RWDate (RWTime(LPTime + rwEpoch)),
-                                                     RWTime (LPTime + rwEpoch).hour(),
+                                    LPTime = CtiTime (CtiDate (CtiTime(LPTime)),
+                                                     CtiTime (LPTime).hour(),
                                                      0,
-                                                     0).seconds() - rwEpoch;
+                                                     0).seconds();
 
                                     localMMLoadProfile[localMMInputs->MMIndex].RecordTime    = LPTime;       // UNIX time of record start!
                                     localMMInputs->MMIndex += 1;
@@ -862,7 +860,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                                  *  looking at the Current Address
                                  */
 
-                            } while (localMMInputs->MMScanStartAddress != MMCurrent && ((localLProfile->porterLPTime - rwEpoch) < LPTime) &&
+                            } while (localMMInputs->MMScanStartAddress != MMCurrent && ((localLProfile->porterLPTime) < LPTime) &&
                                      validMeterClock);
 
                             // if the meter's time was valid
@@ -903,7 +901,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << RWTime(LPTime+rwEpoch).asString()<< endl;
+                                    dout << CtiTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << CtiTime(LPTime).asString()<< endl;
                                 }
                                 Transfer.setOutCount( 0 );
                                 Transfer.setInCountExpected( 0 );
@@ -926,7 +924,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
+                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
                         }
                         Transfer.setOutCount( 0 );
                         Transfer.setInCountExpected( 0 );
@@ -937,7 +935,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
+                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
                     }
                     Transfer.setOutCount( 0 );
                     Transfer.setInCountExpected( 0 );
@@ -1055,7 +1053,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -1083,7 +1081,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: Fulcrum " << getName() << " already online"<< endl;
+                        dout << CtiTime() << " NAK: Fulcrum " << getName() << " already online"<< endl;
                     }
                     break;
                 }
@@ -1094,7 +1092,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ACK: Fulcrum " << getName() << " already online"<< endl;
+                        dout << CtiTime() << " ACK: Fulcrum " << getName() << " already online"<< endl;
                     }
                     break;
                 }
@@ -1181,14 +1179,14 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Data failed CRC " << getName() << endl;
+                            dout << CtiTime() << " Data failed CRC " << getName() << endl;
                         }
                     }
                     else if ( Transfer.doTrace (READTIMEOUT))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No Reply from meter " << getName() << endl;
+                            dout << CtiTime() << " No Reply from meter " << getName() << endl;
                         }
                     }
                     CTISleep(2000);
@@ -1216,7 +1214,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
                 retCode = StateHandshakeAbort;
@@ -1281,7 +1279,7 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
                     default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                         }
                         setCurrentState (StateScanAbort);
                         retCode = StateScanAbort;
@@ -1296,7 +1294,7 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
                 setCurrentState (StateScanAbort);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 retCode = StateScanAbort;
                 break;
@@ -1448,7 +1446,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Successfully switched to master " << getName() << endl;
+                                        dout << CtiTime() << " Successfully switched to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanComplete);
 
@@ -1457,7 +1455,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to master " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to master " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1476,7 +1474,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 1 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1486,7 +1484,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 1 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 1 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1495,7 +1493,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 1 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1515,7 +1513,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 2 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1525,7 +1523,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 2 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 2 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1534,7 +1532,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 2 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1552,7 +1550,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 3 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1562,7 +1560,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 3 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 3 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1571,7 +1569,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 3 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1590,7 +1588,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Failed switching to slave 4 " << getName() << endl;
+                                            dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanAbort);
                                         retCode = StateScanAbort;
@@ -1600,7 +1598,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                         // correct slave, move on
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Successfully switched to slave 4 " << getName() << endl;
+                                            dout << CtiTime() << " Successfully switched to slave 4 " << getName() << endl;
                                         }
                                         setCurrentState (StateScanComplete);
                                     }
@@ -1609,7 +1607,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Failed switching to slave 4 " << getName() << endl;
+                                        dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
                                     }
                                     setCurrentState (StateScanAbort);
                                     retCode = StateScanAbort;
@@ -1630,7 +1628,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
             retCode = StateScanAbort;
@@ -1738,7 +1736,7 @@ INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
                 retCode = StateScanAbort;
@@ -1827,7 +1825,7 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateScanAbort);
                 retCode = StateScanAbort;
@@ -1843,7 +1841,7 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
 
 INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList)
@@ -1872,8 +1870,8 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1882,7 +1880,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.UserID);
 
     FulcrumScanData_t  *Fsd = (FulcrumScanData_t*) DUPRep->Message;
-    RWTime peakTime;
+    CtiTime peakTime;
 
 
     if (isScanFlagSet(ScanRateGeneral))
@@ -1964,7 +1962,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
 
 
 INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
-                                               RWTime &TimeNow,
+                                               CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
                                                RWTPtrSlist< OUTMESS > &outList)
@@ -1991,8 +1989,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
 
     ULONG          goodPoint = !NORMAL;
     ULONG          lastLPTime;
-    ULONG          startingLPTime = getLastLPTime().seconds() - rwEpoch;
-    RWTime         intervalTime;
+    ULONG          startingLPTime = getLastLPTime().seconds();
+    CtiTime         intervalTime;
 
     BOOL           regTypeSupported = FALSE;
 
@@ -2005,8 +2003,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -2092,7 +2090,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                 if (lastLPTime < currentIntervalTime)
                 {
                     pulseCount = (INT)nibblesAndBits(pulseTemp, numActiveChannels, programNumber, i);
-                    intervalTime = RWTime(currentIntervalTime + rwEpoch);
+                    intervalTime = CtiTime(currentIntervalTime);
 
                     pValue = ((60.0 / (DOUBLE)intervalLength) * (DOUBLE)pulseWeight * (DOUBLE)pulseCount) / 1000.0;
                     pValue = pNumericPoint->computeValueForUOM(pValue);
@@ -2107,9 +2105,9 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                         lastLPTime = currentIntervalTime;
 
                         // save the last profile interval
-                        if ((lastLPTime + rwEpoch) > getLastLPTime())
+                        if ((lastLPTime) > getLastLPTime())
                         {
-                            setLastLPTime (RWTime(lastLPTime + rwEpoch));
+                            setLastLPTime (CtiTime(lastLPTime ));
                         }
                     }
                 }
@@ -2119,7 +2117,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
+                dout << CtiTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
             }
         }
     }
@@ -2154,7 +2152,7 @@ INT CtiDeviceFulcrum::ResultDisplay (INMESS *InMessage)
      */
      {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Result display for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
         sprintf(buffer,"Meter ID          :   %.9s ",Fsd->MeterId);
         dout << endl << buffer << endl;
         sprintf(buffer,"Unit Type         :   %.3s ",Fsd->UnitType);
@@ -2445,12 +2443,12 @@ INT CtiDeviceFulcrum::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
     return NORMAL;
 }
 
-BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak,  FulcrumScanData_t *aScanData)
+BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
     // this is initial value
-    peak = rwEpoch;
+    peak = PASTDATE;
 
     /* Get the value from InMessage */
     switch (aOffset)
@@ -2468,7 +2466,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->WattsDemand.A_Maximum.Month > 0 &&
                     aScanData->WattsDemand.A_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->WattsDemand.A_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->WattsDemand.A_Maximum.Day,
                                            aScanData->WattsDemand.A_Maximum.Month,
                                            aScanData->WattsDemand.A_Maximum.Year+2000),
                                    aScanData->WattsDemand.A_Maximum.Hour,
@@ -2491,7 +2489,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->WattsDemand.B_Maximum.Month > 0 &&
                     aScanData->WattsDemand.B_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->WattsDemand.B_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->WattsDemand.B_Maximum.Day,
                                            aScanData->WattsDemand.B_Maximum.Month,
                                            aScanData->WattsDemand.B_Maximum.Year+2000),
                                    aScanData->WattsDemand.B_Maximum.Hour,
@@ -2514,7 +2512,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->WattsDemand.C_Maximum.Month > 0 &&
                     aScanData->WattsDemand.C_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->WattsDemand.C_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->WattsDemand.C_Maximum.Day,
                                            aScanData->WattsDemand.C_Maximum.Month,
                                            aScanData->WattsDemand.C_Maximum.Year+2000),
                                    aScanData->WattsDemand.C_Maximum.Hour,
@@ -2537,7 +2535,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->WattsDemand.D_Maximum.Month > 0 &&
                     aScanData->WattsDemand.D_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->WattsDemand.D_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->WattsDemand.D_Maximum.Day,
                                            aScanData->WattsDemand.D_Maximum.Month,
                                            aScanData->WattsDemand.D_Maximum.Year+2000),
                                    aScanData->WattsDemand.D_Maximum.Hour,
@@ -2561,7 +2559,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->WattsDemand.Peak1.Month > 0 &&
                     aScanData->WattsDemand.Peak1.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->WattsDemand.Peak1.Day,
+                    peak = CtiTime (CtiDate (aScanData->WattsDemand.Peak1.Day,
                                            aScanData->WattsDemand.Peak1.Month,
                                            aScanData->WattsDemand.Peak1.Year+2000),
                                    aScanData->WattsDemand.Peak1.Hour,
@@ -2591,7 +2589,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VARLagDemand.A_Maximum.Month > 0 &&
                     aScanData->VARLagDemand.A_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VARLagDemand.A_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VARLagDemand.A_Maximum.Day,
                                            aScanData->VARLagDemand.A_Maximum.Month,
                                            aScanData->VARLagDemand.A_Maximum.Year+2000),
                                    aScanData->VARLagDemand.A_Maximum.Hour,
@@ -2616,7 +2614,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VARLagDemand.B_Maximum.Month > 0 &&
                     aScanData->VARLagDemand.B_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VARLagDemand.B_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VARLagDemand.B_Maximum.Day,
                                            aScanData->VARLagDemand.B_Maximum.Month,
                                            aScanData->VARLagDemand.B_Maximum.Year+2000),
                                    aScanData->VARLagDemand.B_Maximum.Hour,
@@ -2639,7 +2637,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VARLagDemand.C_Maximum.Month > 0 &&
                     aScanData->VARLagDemand.C_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VARLagDemand.C_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VARLagDemand.C_Maximum.Day,
                                            aScanData->VARLagDemand.C_Maximum.Month,
                                            aScanData->VARLagDemand.C_Maximum.Year+2000),
                                    aScanData->VARLagDemand.C_Maximum.Hour,
@@ -2663,7 +2661,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VARLagDemand.D_Maximum.Month > 0 &&
                     aScanData->VARLagDemand.D_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VARLagDemand.D_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VARLagDemand.D_Maximum.Day,
                                            aScanData->VARLagDemand.D_Maximum.Month,
                                            aScanData->VARLagDemand.D_Maximum.Year+2000),
                                    aScanData->VARLagDemand.D_Maximum.Hour,
@@ -2686,7 +2684,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VARLagDemand.Peak1.Month > 0 &&
                     aScanData->VARLagDemand.Peak1.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VARLagDemand.Peak1.Day,
+                    peak = CtiTime (CtiDate (aScanData->VARLagDemand.Peak1.Day,
                                            aScanData->VARLagDemand.Peak1.Month,
                                            aScanData->VARLagDemand.Peak1.Year+2000),
                                    aScanData->VARLagDemand.Peak1.Hour,
@@ -2716,7 +2714,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VADemand.A_Maximum.Month > 0 &&
                     aScanData->VADemand.A_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VADemand.A_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VADemand.A_Maximum.Day,
                                            aScanData->VADemand.A_Maximum.Month,
                                            aScanData->VADemand.A_Maximum.Year+2000),
                                    aScanData->VADemand.A_Maximum.Hour,
@@ -2739,7 +2737,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VADemand.B_Maximum.Month > 0 &&
                     aScanData->VADemand.B_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VADemand.B_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VADemand.B_Maximum.Day,
                                            aScanData->VADemand.B_Maximum.Month,
                                            aScanData->VADemand.B_Maximum.Year+2000),
                                    aScanData->VADemand.B_Maximum.Hour,
@@ -2762,7 +2760,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VADemand.C_Maximum.Month > 0 &&
                     aScanData->VADemand.C_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VADemand.C_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VADemand.C_Maximum.Day,
                                            aScanData->VADemand.C_Maximum.Month,
                                            aScanData->VADemand.C_Maximum.Year+2000),
                                    aScanData->VADemand.C_Maximum.Hour,
@@ -2785,7 +2783,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VADemand.D_Maximum.Month > 0 &&
                     aScanData->VADemand.D_Maximum.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VADemand.D_Maximum.Day,
+                    peak = CtiTime (CtiDate (aScanData->VADemand.D_Maximum.Day,
                                            aScanData->VADemand.D_Maximum.Month,
                                            aScanData->VADemand.D_Maximum.Year+2000),
                                    aScanData->VADemand.D_Maximum.Hour,
@@ -2808,7 +2806,7 @@ BOOL CtiDeviceFulcrum::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, 
                 if (aScanData->VADemand.Peak1.Month > 0 &&
                     aScanData->VADemand.Peak1.Month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->VADemand.Peak1.Day,
+                    peak = CtiTime (CtiDate (aScanData->VADemand.Peak1.Day,
                                            aScanData->VADemand.Peak1.Month,
                                            aScanData->VADemand.Peak1.Year+2000),
                                    aScanData->VADemand.Peak1.Hour,

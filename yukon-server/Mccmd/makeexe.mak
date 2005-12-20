@@ -11,6 +11,7 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(TCLINC) \
+-I$<BOOST> \
 -I$(RW) \
 
 .PATH.cpp = .;$(R_MCCMD)
@@ -30,12 +31,14 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
+;$<BOOST> \
 ;$(RW)
 
 
 
 
 BASEOBJS=\
+regx.obj \
 mcsh.obj \
 mccmd.obj \
 wpsc.obj  \
@@ -56,6 +59,8 @@ mcsh.exe \
 mcs8100test.exe
 
 ALL:            $(EXECS)
+
+regx.exe:	regx.obj -link $(LIBS)
 
 mcsh.exe:     $(BASEOBJS) Makefile
                 @echo:

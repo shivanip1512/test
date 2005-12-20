@@ -14,13 +14,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/03/04 16:02:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
-#include <rw/cstring.h>
 #include <rw/ordcltn.h>
 #include <rw/collstr.h>
 
@@ -33,20 +32,20 @@ class IM_EX_MSG CtiNotifEmailAttachmentMsg : public CtiMessage
 {
 private:
 
-   RWCString   _fileName;
+   string   _fileName;
 
 public:
 
    RWDECLARE_COLLECTABLE( CtiNotifEmailAttachmentMsg );
 
-   CtiNotifEmailAttachmentMsg( RWCString fileName );
+   CtiNotifEmailAttachmentMsg( string fileName );
    CtiNotifEmailAttachmentMsg();
    virtual ~CtiNotifEmailAttachmentMsg();
    virtual void dump() const;
    void saveGuts( RWvostream &aStream ) const;
    void restoreGuts( RWvistream& aStream );
-   const RWCString &getFileName( void ) const;
-   void setFileName( RWCString name );
+   const string &getFileName( void ) const;
+   void setFileName( string name );
    int getLength( void );
    void setLength( int len );
    CtiMessage* replicateMessage() const;

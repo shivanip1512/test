@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_settings.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 #include "tbl_port_settings.h"
 #include "logger.h"
+#include "rwutil.h"
 
 CtiTablePortSettings::CtiTablePortSettings() :
 _baudRate(0),
@@ -59,9 +60,9 @@ CtiTablePortSettings& CtiTablePortSettings::setCDWait(const INT w)
    return *this;
 }
 
-RWCString CtiTablePortSettings::getLineSettings() const       { return _lineSettings;}
-RWCString& CtiTablePortSettings::getLineSettings()             { return _lineSettings;}
-CtiTablePortSettings& CtiTablePortSettings::setLineSettings(const RWCString str)
+string CtiTablePortSettings::getLineSettings() const       { return _lineSettings;}
+string& CtiTablePortSettings::getLineSettings()             { return _lineSettings;}
+CtiTablePortSettings& CtiTablePortSettings::setLineSettings(const string str)
 {
    _lineSettings = str;
    return *this;
@@ -71,14 +72,14 @@ INT CtiTablePortSettings::getBits() const
 {
    char temp[8];
    memset(temp, '\0', 8);
-   temp[0] = _lineSettings.data()[0];
+   temp[0] = _lineSettings[0];
 
    return atoi(temp);
 }
 
 INT CtiTablePortSettings::getParity() const
 {
-   char paritychar = _lineSettings.data()[1];
+   char paritychar = _lineSettings[1];
    int  parity = NOPARITY;
 
    switch(paritychar)
@@ -105,7 +106,7 @@ INT CtiTablePortSettings::getParity() const
 
 INT CtiTablePortSettings::getStopBits() const
 {
-   char stopchar = _lineSettings.data()[2];
+   char stopchar = _lineSettings[2];
    int  stop = ONESTOPBIT;
 
    switch(stopchar)

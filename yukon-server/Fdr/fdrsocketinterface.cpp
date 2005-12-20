@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2005/10/19 16:53:22 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.12  2005/12/20 17:17:14  tspar
+*     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 *     Revision 1.11  2005/10/19 16:53:22  dsutton
 *     Added the ability to set the connection timeout using a cparm.  Interfaces will
 *     kill the connection if they haven't heard anything from the other system after
@@ -42,10 +45,9 @@
 #include <iostream>
 
 #include <stdio.h>
-//#include <rw/cstring.h>
-//#include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+////#include <rw/ctoken.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 /** include files **/
 #include "dllbase.h"
@@ -56,7 +58,7 @@
 #include "fdrsocketinterface.h"
 
 
-CtiFDRSocketInterface::CtiFDRSocketInterface(RWCString & interfaceType, int aPortNumber, int aWindow)
+CtiFDRSocketInterface::CtiFDRSocketInterface(string & interfaceType, int aPortNumber, int aWindow)
 : CtiFDRInterface(interfaceType), 
     iPortNumber (aPortNumber),
     iConnectPortNumber (aPortNumber),
@@ -181,11 +183,11 @@ bool CtiFDRSocketInterface::loadTranslationLists()
 {
     bool retCode = true;
 
-    retCode = loadList(RWCString(FDR_INTERFACE_SEND),getSendToList());
+    retCode = loadList(string(FDR_INTERFACE_SEND),getSendToList());
 
     if (retCode)
     {
-        retCode = loadList(RWCString (FDR_INTERFACE_RECEIVE),getReceiveFromList());
+        retCode = loadList(string (FDR_INTERFACE_RECEIVE),getReceiveFromList());
     }
     return retCode;
 }
@@ -269,7 +271,7 @@ int CtiFDRSocketInterface::sendAllPoints()
                 Sleep (2000);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Uploading all requested points to " << getInterfaceName() << endl;
+                    dout << CtiTime() << " Uploading all requested points to " << getInterfaceName() << endl;
                 }
 
                 CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
@@ -279,12 +281,12 @@ int CtiFDRSocketInterface::sendAllPoints()
                     point = myIterator.value();
                     if (!point->isControllable())
                     {
-                        if (point->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                        if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                         {
                             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " PointId " << point->getPointID();
+                                dout << CtiTime() << " PointId " << point->getPointID();
                                 dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
                             }
                         }
@@ -298,7 +300,7 @@ int CtiFDRSocketInterface::sendAllPoints()
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Control point Id " << point->getPointID();
+                            dout << CtiTime() << " Control point Id " << point->getPointID();
                             dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
                         }
                     }
@@ -346,7 +348,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Point registration response tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
+                dout << CtiTime() << " Point registration response tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
             }
             retVal = false;
         }
@@ -360,7 +362,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                 if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
+                    dout << CtiTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
                 }
             }
             else
@@ -371,12 +373,12 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                 * note: uninitialized points come across as 11-10-1990 
                 ********************************
                 */
-                if (point.getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PointId " << point.getPointID();
+                        dout << CtiTime() << " PointId " << point.getPointID();
                         dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
                     }
                     retVal = false;
@@ -393,7 +395,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                         catch (...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
+                            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
                         }
                     }
                 }

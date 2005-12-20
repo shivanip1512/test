@@ -48,7 +48,7 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long s
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         setValid(false);
     }

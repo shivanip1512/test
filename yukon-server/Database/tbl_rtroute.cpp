@@ -9,21 +9,24 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtroute.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/10/20 21:41:28 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dbaccess.h"
 #include "logger.h"
+#include "resolvers.h"
+
+#include "rwutil.h"
 
 CtiTableRoute::CtiTableRoute() :
 RouteID(-1),
 Type(RouteTypeInvalid)
 {}
 
-CtiTableRoute::CtiTableRoute(LONG &aRoute, RWCString aStr, INT aType) :
+CtiTableRoute::CtiTableRoute(LONG &aRoute, string aStr, INT aType) :
 RouteID(aRoute),
 Name(aStr),
 Type(aType)
@@ -55,19 +58,19 @@ void CtiTableRoute::DumpData()
     dout << " Route Type                                 " << Type << endl;
 }
 
-RWCString& CtiTableRoute::getSQLColumns(RWCString &str)
+string& CtiTableRoute::getSQLColumns(string &str)
 {
-    str += RWCString("ROUTE.ROUTEID,ROUTE.NAME,ROUTE.TYPE");
+    str += string("ROUTE.ROUTEID,ROUTE.NAME,ROUTE.TYPE");
     return str;
 }
 
-RWCString& CtiTableRoute::getSQLTables(RWCString &str)
+string& CtiTableRoute::getSQLTables(string &str)
 {
-    str += RWCString("ROUTE");
+    str += string("ROUTE");
     return str;
 }
 
-RWCString& CtiTableRoute::getSQLConditions(RWCString &str)
+string& CtiTableRoute::getSQLConditions(string &str)
 {
     return str;
 }
@@ -87,7 +90,7 @@ void CtiTableRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector 
 
 }
 
-void CtiTableRoute::getSQL(RWCString &Columns, RWCString &Tables, RWCString &Conditions)
+void CtiTableRoute::getSQL(string &Columns, string &Tables, string &Conditions)
 {
     getSQLColumns(Columns);
     getSQLTables(Tables);
@@ -102,9 +105,9 @@ CtiTableRoute& CtiTableRoute::setType( const INT aType )
     return *this;
 }
 
-RWCString  CtiTableRoute::getName() const                            { return Name;}
+string  CtiTableRoute::getName() const                            { return Name;}
 
-CtiTableRoute& CtiTableRoute::setName( const RWCString aName )
+CtiTableRoute& CtiTableRoute::setName( const string aName )
 {
     Name = aName;
     return *this;
@@ -124,7 +127,7 @@ void CtiTableRoute::Insert()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBInserter inserter = table.inserter();
 
         inserter << getRouteID() << getName() << getType();
@@ -138,12 +141,12 @@ void CtiTableRoute::Update()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBUpdater updater = table.updater();
 
         updater.where( table["routeid"] == RouteID );
 
-        updater << table["name"].assign(getName()) << table["type"].assign(getType());
+        updater << table["name"].assign(getName().c_str()) << table["type"].assign(getType());
 
         ExecuteUpdater(conn,updater,__FILE__,__LINE__);
     }
@@ -155,7 +158,7 @@ void CtiTableRoute::Delete()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBDeleter deleter = table.deleter();
 
         deleter.where( table["routeid"] == RouteID );
@@ -170,7 +173,7 @@ void CtiTableRoute::Restore()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBSelector selector = getDatabase().selector();
 
         selector << table["routeid"] << table["name"] << table["type"];
@@ -189,14 +192,14 @@ void CtiTableRoute::Restore()
     }
 }
 
-RWCString CtiTableRoute::getTableName() const
+string CtiTableRoute::getTableName() const
 {
     return "Route";
 }
 
 void CtiTableRoute::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {

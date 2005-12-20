@@ -54,12 +54,12 @@ CtiLMGroupGolay::~CtiLMGroupGolay()
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control golay shed ");
+    string controlString("control golay shed ");
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -74,7 +74,7 @@ CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LO
 CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createSmartCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -87,7 +87,7 @@ CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG pe
 CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTrueCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
     return NULL;
 }
 
@@ -99,12 +99,12 @@ CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG per
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control golay shed ");
+    string controlString("control golay shed ");
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -117,12 +117,12 @@ CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG she
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupGolay::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    RWCString controlString = RWCString("control golay shed ");
+    string controlString("control golay shed ");
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -225,7 +225,7 @@ void CtiLMGroupGolay::restore(RWDBReader& rdr)
     else
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " << " Golay LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " << " Golay LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
 #endif    
 }

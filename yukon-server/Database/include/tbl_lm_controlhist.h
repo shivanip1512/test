@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/07/25 16:40:53 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,15 +20,13 @@
 
 
 #include <map>
-using namespace std;
+using std::map;
 
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -59,30 +57,30 @@ protected:
 
     LONG        _lmControlHistID;
     LONG        _paoID;
-    RWTime      _startDateTime;          // represents the time at which control was begun
-    RWTime      _controlCompleteTime;    // represents the time at which control was last sent
-    RWTime      _stopDateTime;           // represents the time at which the current log interval completed.
+    CtiTime      _startDateTime;          // represents the time at which control was begun
+    CtiTime      _controlCompleteTime;    // represents the time at which control was last sent
+    CtiTime      _stopDateTime;           // represents the time at which the current log interval completed.
     LONG        _soeTag;
     INT         _controlDuration;
-    RWCString   _controlType;
+    string   _controlType;
     LONG        _currentDailyTime;
     LONG        _currentMonthlyTime;
     LONG        _currentSeasonalTime;
     LONG        _currentAnnualTime;
-    mutable RWCString   _activeRestore;
+    mutable string   _activeRestore;
     DOUBLE      _reductionValue;
 
     // Values below are note stored in the DB.
-    RWCString   _defaultActiveRestore;
-    RWTime      _prevLogTime;            // Not stored, but used to determine relative positions of controls
-    RWTime      _prevStopReportTime;
+    string   _defaultActiveRestore;
+    CtiTime      _prevLogTime;            // Not stored, but used to determine relative positions of controls
+    CtiTime      _prevStopReportTime;
     int         _reductionRatio;         // Needed to compute the contribution of cycles
 
 private:
 
     bool _isNewControl;
     static CtiMutex    _soeMux;
-    RWCString   _loadedActiveRestore;
+    string   _loadedActiveRestore;
 
 public:
 
@@ -91,15 +89,15 @@ public:
     // CtiTableLMControlHistory();
 
     CtiTableLMControlHistory(LONG             paoid   = 0,
-                             const RWTime&    start   = RWTime(),
+                             const CtiTime&    start   = CtiTime(),
                              LONG             soe     = 0,
                              INT              dur     = 0,
-                             const RWCString& type    = RWCString("Unavailable"),
+                             const string& type    = string("Unavailable"),
                              LONG             daily   = 0,
                              LONG             month   = 0,
                              LONG             season  = 0,
                              LONG             annual  = 0,
-                             const RWCString& restore = RWCString(LMAR_NEWCONTROL),
+                             const string& restore = string(LMAR_NEWCONTROL),
                              DOUBLE           reduce  = 0.0,
                              LONG             lmchid  = 0L);
 
@@ -116,20 +114,20 @@ public:
     LONG getPAOID() const;
     CtiTableLMControlHistory& setPAOID( const LONG paoID );
 
-    const RWTime& getStartTime() const;
-    CtiTableLMControlHistory& setStartTime( const RWTime& st );
+    const CtiTime& getStartTime() const;
+    CtiTableLMControlHistory& setStartTime( const CtiTime& st );
 
-    const RWTime& getControlCompleteTime() const;
-    CtiTableLMControlHistory& setControlCompleteTime( const RWTime& cst );
+    const CtiTime& getControlCompleteTime() const;
+    CtiTableLMControlHistory& setControlCompleteTime( const CtiTime& cst );
 
-    const RWTime& getStopTime() const;
-    CtiTableLMControlHistory& setStopTime( const RWTime& st );
+    const CtiTime& getStopTime() const;
+    CtiTableLMControlHistory& setStopTime( const CtiTime& st );
 
-    const RWTime& getPreviousLogTime() const;
-    CtiTableLMControlHistory& setPreviousLogTime( const RWTime& st );
+    const CtiTime& getPreviousLogTime() const;
+    CtiTableLMControlHistory& setPreviousLogTime( const CtiTime& st );
 
-    const RWTime& getPreviousStopReportTime() const;
-    CtiTableLMControlHistory& setPreviousStopReportTime( const RWTime& st );
+    const CtiTime& getPreviousStopReportTime() const;
+    CtiTableLMControlHistory& setPreviousStopReportTime( const CtiTime& st );
 
     LONG getSoeTag() const;
     CtiTableLMControlHistory& setSoeTag( const LONG soe );
@@ -137,8 +135,8 @@ public:
     INT getControlDuration() const;
     CtiTableLMControlHistory& setControlDuration( const INT cd );
 
-    const RWCString& getControlType() const;
-    CtiTableLMControlHistory& setControlType( const RWCString& ct );
+    const string& getControlType() const;
+    CtiTableLMControlHistory& setControlType( const string& ct );
 
     LONG getCurrentDailyTime() const;
     CtiTableLMControlHistory& setCurrentDailyTime( const LONG dt );
@@ -152,13 +150,13 @@ public:
     LONG getCurrentAnnualTime() const;
     CtiTableLMControlHistory& setCurrentAnnualTime( const LONG at );
 
-    const RWCString& getActiveRestore() const;
-    CtiTableLMControlHistory& setActiveRestore( const RWCString& ar );
+    const string& getActiveRestore() const;
+    CtiTableLMControlHistory& setActiveRestore( const string& ar );
 
-    const RWCString& getDefaultActiveRestore() const;
-    CtiTableLMControlHistory& setDefaultActiveRestore( const RWCString& ar );
+    const string& getDefaultActiveRestore() const;
+    CtiTableLMControlHistory& setDefaultActiveRestore( const string& ar );
 
-    const RWCString& getLoadedActiveRestore() const;
+    const string& getLoadedActiveRestore() const;
 
     DOUBLE getReductionValue() const;
     CtiTableLMControlHistory& setReductionValue( const DOUBLE rv );
@@ -166,14 +164,14 @@ public:
     int getReductionRatio() const;
     CtiTableLMControlHistory& setReductionRatio( int redrat );
 
-    CtiTableLMControlHistory& incrementTimes( const RWTime &now, const LONG increment, bool season_reset = false );
+    CtiTableLMControlHistory& incrementTimes( const CtiTime &now, const LONG increment, bool season_reset = false );
 
     bool isNewControl() const;
     CtiTableLMControlHistory& setNotNewControl( );
 
     static LONG getNextSOE();
-    static RWCString getTableName();
-    static RWCString getDynamicTableName();
+    static string getTableName();
+    static string getDynamicTableName();
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 

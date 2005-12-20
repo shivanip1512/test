@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_one.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
@@ -99,7 +99,7 @@ bool CtiAnsiTableThreeOne::getHoldTimeFlag( )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableThreeOne::printResult( RWCString deviceName )
+void CtiAnsiTableThreeOne::printResult( const string& deviceName )
 {
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked

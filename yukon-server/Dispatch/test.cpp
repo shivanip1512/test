@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/10/26 21:39:10 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw\cstring.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
@@ -49,6 +48,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_notif_email_attachment.h"
 #include "thread_monitor.h"
 #include "thread_register_data.h"
+
+#include "ctitime.h"
+#include "ctidate.h"
 
 BOOL bQuit = FALSE;
 
@@ -397,7 +399,7 @@ void main(int argc, char **argv)
     RWWinSockInfo info;
 
     dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputPath(gLogDirectory);
     dout.setOutputFile(argv[0]);
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
@@ -416,7 +418,7 @@ void main(int argc, char **argv)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 break;
@@ -427,13 +429,13 @@ void main(int argc, char **argv)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " You must supply at least one argument to indicate the test to run." << endl;
+            dout << CtiTime() << " You must supply at least one argument to indicate the test to run." << endl;
         }
         for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "   Function : " << testfunction[i].cmd << endl;
+                dout << CtiTime() << "   Function : " << testfunction[i].cmd << endl;
             }
         }
     }
@@ -451,14 +453,14 @@ void DoTheNasty(int argc, char **argv)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     try
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -478,7 +480,7 @@ void DoTheNasty(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         for(k = 0; k < atoi(argv[5]); k++ )
@@ -489,7 +491,7 @@ void DoTheNasty(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
                 delete pMsg;
@@ -519,7 +521,7 @@ void notifEmailExecute( int argc, char **argv )
 #else
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
    Sleep(5000);
    #endif
@@ -527,12 +529,12 @@ void notifEmailExecute( int argc, char **argv )
    CtiConnection Connect( 1515, argv[2] );
 
    CtiNotifEmailMsg  *message = new CtiNotifEmailMsg;
-   message->setSubject( RWCString( "Doom" ) );
-   message->setTo( RWCString( "eric@cannontech.com" ) );
-   message->setBody( RWCString( "Wanted to let you know that the world is ending..." ) );
+   message->setSubject( string( "Doom" ) );
+   message->setTo( string( "eric@cannontech.com" ) );
+   message->setBody( string( "Wanted to let you know that the world is ending..." ) );
    message->setNotifGroupId( 0 );
-   message->setToCC( RWCString( "ericschmit@mn.rr.com" ) );
-   message->setToBCC( RWCString( "ericschmit@mn.rr.com" ) );
+   message->setToCC( string( "ericschmit@mn.rr.com" ) );
+   message->setToBCC( string( "ericschmit@mn.rr.com" ) );
 
    message->setMessagePriority(15);
    Connect.WriteConnQue( message->replicateMessage() );
@@ -546,7 +548,7 @@ void notifEmailExecute( int argc, char **argv )
    Sleep( 2500 );
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
    return;
@@ -556,7 +558,7 @@ void tagExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = rwEpoch;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -566,7 +568,7 @@ void tagExecute(int argc, char **argv)
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -587,14 +589,14 @@ void tagExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages from registration" << endl;
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(1000)))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -603,16 +605,16 @@ void tagExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Done reading registration messages" << endl;
+            dout << CtiTime() << " Done reading registration messages" << endl;
         }
 
         CtiNotifEmailMsg  *message = new CtiNotifEmailMsg;
-        message->setSubject( RWCString( "Doom" ) );
-        message->setTo( RWCString( "eric@cannontech.com" ) );
-        message->setBody( RWCString( "Wanted to let you know that the world is ending..." ) );
+        message->setSubject( string( "Doom" ) );
+        message->setTo( string( "eric@cannontech.com" ) );
+        message->setBody( string( "Wanted to let you know that the world is ending..." ) );
         message->setNotifGroupId( 0 );
-        message->setToCC( RWCString( "ericschmit@mn.rr.com" ) );
-        message->setToBCC( RWCString( "ericschmit@mn.rr.com" ) );
+        message->setToCC( string( "ericschmit@mn.rr.com" ) );
+        message->setToBCC( string( "ericschmit@mn.rr.com" ) );
 
         message->setMessagePriority(15);
         Connect.WriteConnQue( message->replicateMessage() );
@@ -626,7 +628,7 @@ void tagExecute(int argc, char **argv)
         pTag->setTagID(1);
         pTag->setPointID(1);
         pTag->setAction(CtiTagMsg::AddAction);
-        pTag->setDescriptionStr(RWTime().asString() + " TEST");
+        pTag->setDescriptionStr(CtiTime().asString() + " TEST");
         pTag->setSource("Corey's Tester");
         pTag->setClientMsgId(21);
         pTag->setUser("Marley's Ghost");
@@ -639,7 +641,7 @@ void tagExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Looking for a response from dispatch!" << endl;
         }
 
@@ -657,7 +659,7 @@ void tagExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Dispatch responded or timed out!" << endl;
         }
 
@@ -669,7 +671,7 @@ void tagExecute(int argc, char **argv)
             pTag->setTagID(1);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::UpdateAction);
-            pTag->setDescriptionStr(RWTime().asString() + " TEST UPDATE");
+            pTag->setDescriptionStr(CtiTime().asString() + " TEST UPDATE");
             pTag->setSource("Corey's Tester");
             pTag->setClientMsgId(22);
             pTag->setUser("Harley's Ghost");
@@ -680,7 +682,7 @@ void tagExecute(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  TAG UPDATED!" << endl;
             }
 
@@ -690,13 +692,13 @@ void tagExecute(int argc, char **argv)
             pTag->setInstanceID(instance);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::RemoveAction);
-            pTag->setDescriptionStr(RWTime().asString() + " TEST REMOVE");
+            pTag->setDescriptionStr(CtiTime().asString() + " TEST REMOVE");
             pTag->setReferenceStr("This string is a reference string");
             pTag->dump();
             Connect.WriteConnQue(pTag);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  TAG REMOVED!" << endl;
             }
         }
@@ -704,7 +706,7 @@ void tagExecute(int argc, char **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "   UNABLE TO DETERMINE INSTANCE ID!! " << endl;
             }
 
@@ -714,14 +716,14 @@ void tagExecute(int argc, char **argv)
         #endif
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages caused by tag message submission." << endl;
+            dout << CtiTime() << " Reading inbound messages caused by tag message submission." << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(2500)))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -730,7 +732,7 @@ void tagExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Request application shutdown." << endl;
+            dout << CtiTime() << " Request application shutdown." << endl;
         }
 
         Sleep(1000);
@@ -741,7 +743,7 @@ void tagExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -779,7 +781,7 @@ void defaultExecute(int argc, char **argv)
         {
             int Op, k;
 
-            unsigned    timeCnt = rwEpoch;
+            unsigned    timeCnt = PASTDATE;
             unsigned    pt = 1;
             CtiMessage  *pMsg;
 
@@ -788,12 +790,12 @@ void defaultExecute(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Loading points...." << endl;
+                dout << CtiTime() << " Loading points...." << endl;
             }
             PointMgr.refreshList();     // This should give me all the points in the box.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " .... Done" << endl;
+                dout << CtiTime() << " .... Done" << endl;
             }
 
             CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
@@ -811,14 +813,14 @@ void defaultExecute(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(5000)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
 
@@ -834,7 +836,7 @@ void defaultExecute(int argc, char **argv)
                 pTag->setTagID(1);
                 pTag->setPointID(1);
                 pTag->setAction(CtiTagMsg::AddAction);
-                pTag->setDescriptionStr(RWTime().asString() + " TEST");
+                pTag->setDescriptionStr(CtiTime().asString().c_str() + string(" TEST"));
                 pTag->setSource("Corey's Tester");
                 pTag->setClientMsgId(57);
                 pTag->setUser("Marley's Ghost");
@@ -845,7 +847,7 @@ void defaultExecute(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Removing tag " << atoi(argv[4]) << endl;
                 }
 
@@ -887,7 +889,7 @@ void defaultExecute(int argc, char **argv)
                 pt = k;
 
                 Connect.WriteConnQue(CTIDBG_new CtiCommErrorHistoryMsg( pPoint->getDeviceID(), SYSTEM, 0, "ERROR TEST"));
-                Connect.WriteConnQue(CTIDBG_new CtiLMControlHistoryMsg( pPoint->getDeviceID(), 1, 0, RWTime(), -1, 100 ));
+                Connect.WriteConnQue(CTIDBG_new CtiLMControlHistoryMsg( pPoint->getDeviceID(), 1, 0, CtiTime(), -1, 100 ));
                 Connect.WriteConnQue(CTIDBG_new CtiPointDataMsg( pPoint->getID(), 1, NormalQuality,  pPoint->getType(), __FILE__));
 
 
@@ -919,7 +921,7 @@ void defaultExecute(int argc, char **argv)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Sent Point Change " << k << endl;
+                                dout << CtiTime() << " Sent Point Change " << k << endl;
                             }
 
                             Connect.WriteConnQue(pChg);
@@ -931,7 +933,7 @@ void defaultExecute(int argc, char **argv)
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Inserted Point Change " << k << endl;
+                                dout << CtiTime() << " Inserted Point Change " << k << endl;
                             }
                         }
                     }
@@ -940,7 +942,7 @@ void defaultExecute(int argc, char **argv)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             pMsg->dump();
                         }
 
@@ -959,7 +961,7 @@ void defaultExecute(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             INT cnt;
@@ -967,21 +969,21 @@ void defaultExecute(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                    dout << CtiTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
                 }
                 Sleep(1000);
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+                dout << CtiTime()  << " **** OutQueue is cleared" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(2500)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
 
@@ -1003,7 +1005,7 @@ void defaultExecute(int argc, char **argv)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         for(int i = 0; i < atoi(argv[4]); i++)
@@ -1056,7 +1058,7 @@ void seasonExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = rwEpoch;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1066,7 +1068,7 @@ void seasonExecute(int argc, char **argv)
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1087,14 +1089,14 @@ void seasonExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages from registration" << endl;
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(1000)))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -1103,7 +1105,7 @@ void seasonExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Done reading registration messages" << endl;
+            dout << CtiTime() << " Done reading registration messages" << endl;
         }
 
         CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::ResetControlHours, 7);
@@ -1115,7 +1117,7 @@ void seasonExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Looking for a response from dispatch!" << endl;
         }
 
@@ -1124,7 +1126,7 @@ void seasonExecute(int argc, char **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -1133,7 +1135,7 @@ void seasonExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Request application shutdown." << endl;
+            dout << CtiTime() << " Request application shutdown." << endl;
         }
 
         Sleep(1000);
@@ -1144,7 +1146,7 @@ void seasonExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -1170,7 +1172,7 @@ void lmExecute(int argc, char **argv)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Running the LM ramp module" << endl;
+        dout << CtiTime() << " Running the LM ramp module" << endl;
     }
 
     if(argc < 7)
@@ -1191,7 +1193,7 @@ void lmExecute(int argc, char **argv)
         {
             int i, steps, k;
 
-            unsigned    timeCnt = rwEpoch;
+            //ts//unsigned    timeCnt = rwEpoch;
             unsigned    pt = atoi(argv[4]);
             CtiMessage  *pMsg;
 
@@ -1239,7 +1241,7 @@ void lmExecute(int argc, char **argv)
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Message Sent: Id " << pData->getId() << " value = " << pData->getValue() << endl;
+                            dout << CtiTime() << " Message Sent: Id " << pData->getId() << " value = " << pData->getValue() << endl;
                         }
 
                         Connect.WriteConnQue(pChg);
@@ -1257,7 +1259,7 @@ void lmExecute(int argc, char **argv)
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Sleeping for " << stime << " millis" << endl;
+                        dout << CtiTime() << " Sleeping for " << stime << " millis" << endl;
                     }
 
                     Sleep(stime);
@@ -1270,14 +1272,14 @@ void lmExecute(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                    dout << CtiTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
                 }
                 Sleep(1000);
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+                dout << CtiTime()  << " **** OutQueue is cleared" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(2500)))
@@ -1303,7 +1305,7 @@ void  dbchangeExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = rwEpoch;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1313,7 +1315,7 @@ void  dbchangeExecute(int argc, char **argv)
     {
         int id = 0, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1332,7 +1334,7 @@ void  dbchangeExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages from registration" << endl;
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(500)))
@@ -1342,7 +1344,7 @@ void  dbchangeExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Done reading registration messages" << endl;
+            dout << CtiTime() << " Done reading registration messages" << endl;
         }
 
         CtiDBChangeMsg *pChg = 0;
@@ -1364,7 +1366,7 @@ void  dbchangeExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Looking for a response from dispatch!" << endl;
         }
 
@@ -1372,14 +1374,14 @@ void  dbchangeExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages caused by tag message submission." << endl;
+            dout << CtiTime() << " Reading inbound messages caused by tag message submission." << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(2500)))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             delete pMsg;
@@ -1387,7 +1389,7 @@ void  dbchangeExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Request application shutdown." << endl;
+            dout << CtiTime() << " Request application shutdown." << endl;
         }
 
         Sleep(1000);
@@ -1398,7 +1400,7 @@ void  dbchangeExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -1431,7 +1433,7 @@ void socketExecute(int argc, char **argv)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " Error getting Socket:  " << WSAGetLastError() << endl;
+        dout << endl << CtiTime() << " Error getting Socket:  " << WSAGetLastError() << endl;
     }
 
 
@@ -1458,7 +1460,7 @@ void shutdown(int argc, char **argv)
         {
             int Op, k;
 
-            unsigned    timeCnt = rwEpoch;
+            //ts//unsigned    timeCnt = rwEpoch;
             unsigned    pt = 1;
             CtiMessage  *pMsg;
 
@@ -1466,12 +1468,12 @@ void shutdown(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Loading points...." << endl;
+                dout << CtiTime() << " Loading points...." << endl;
             }
             PointMgr.refreshList();     // This should give me all the points in the box.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " .... Done" << endl;
+                dout << CtiTime() << " .... Done" << endl;
             }
 
             CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
@@ -1489,14 +1491,14 @@ void shutdown(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(5000)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
 
@@ -1506,7 +1508,7 @@ void shutdown(int argc, char **argv)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             INT cnt;
@@ -1514,21 +1516,21 @@ void shutdown(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                    dout << CtiTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
                 }
                 Sleep(1000);
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+                dout << CtiTime()  << " **** OutQueue is cleared" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(2500)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
 
@@ -1542,21 +1544,21 @@ void shutdown(int argc, char **argv)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                    dout << CtiTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
                 }
                 Sleep(1000);
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+                dout << CtiTime()  << " **** OutQueue is cleared" << endl;
             }
 
             while( NULL != (pMsg = Connect.ReadConnQue(2500)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     pMsg->dump();
                 }
 
@@ -1579,7 +1581,7 @@ void multiExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = rwEpoch;
     unsigned    pt = 1;
     CtiMessage  *pMsg;
 
@@ -1589,7 +1591,7 @@ void multiExecute(int argc, char **argv)
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         CtiMessage  *pMsg;
 
@@ -1613,14 +1615,14 @@ void multiExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reading inbound messages from registration" << endl;
+            dout << CtiTime() << " Reading inbound messages from registration" << endl;
         }
 
         while( NULL != (pMsg = Connect.ReadConnQue(1000)))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -1629,7 +1631,7 @@ void multiExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Done reading registration messages" << endl;
+            dout << CtiTime() << " Done reading registration messages" << endl;
         }
 
 
@@ -1648,7 +1650,7 @@ void multiExecute(int argc, char **argv)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 pMsg->dump();
             }
 
@@ -1657,7 +1659,7 @@ void multiExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Request application shutdown." << endl;
+            dout << CtiTime() << " Request application shutdown." << endl;
         }
 
         Sleep(1000);
@@ -1668,7 +1670,7 @@ void multiExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -1679,7 +1681,7 @@ void multiHelp()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " multiExecute - Help" << endl;
+        dout << CtiTime() << " multiExecute - Help" << endl;
         dout << " Arg1: multi " << endl <<
             " Arg2: <dispatch_machine_or_ip> " <<
             " Arg3: <point id to send> " <<
@@ -1694,14 +1696,14 @@ void historyExecute(int argc, char **argv)
 {
     int Op, k;
 
-    unsigned    timeCnt = rwEpoch;
+    //ts//unsigned    timeCnt = rwEpoch;
     unsigned    pt = 1;
 
     try
     {
         int Op, k;
 
-        unsigned    timeCnt = rwEpoch;
+        //ts//unsigned    timeCnt = rwEpoch;
         unsigned    pt = 1;
         unsigned    rows = 0;
         CtiMessage  *pMsg;
@@ -1719,17 +1721,17 @@ void historyExecute(int argc, char **argv)
         pt = atoi(argv[2]);
         rows = atoi(argv[3]);
 
-        RWDBDateTime dbtnow;
-        RWDBDateTime dbtpast;
+        CtiTime dbtnow;
+        CtiTime dbtpast;
 
 
         while(histCol.size() < rows)
         {
             dbtpast.addDays(-1);        // Back up one day from now.
-            RWCString sql = "select * from rawpointhistory where pointid = " + CtiNumStr(pt) + " and timestamp > '" + dbtpast.rwdate().asString() + "' and timestamp <= '" + dbtnow.rwdate().asString() + "' order by timestamp desc";
+            string sql = "select * from rawpointhistory where pointid = " + CtiNumStr(pt) + " and timestamp > '" + dbtpast.date().asString() + "' and timestamp <= '" + dbtnow.date().asString() + "' order by timestamp desc";
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << sql << endl;
             }
 
@@ -1744,7 +1746,7 @@ void historyExecute(int argc, char **argv)
                 {
                     long cid;
                     long pid;
-                    RWDBDateTime ts;
+                    CtiTime ts;
                     long qual;
                     double val;
                     long milli;
@@ -1756,13 +1758,13 @@ void historyExecute(int argc, char **argv)
                     rdr >> val;
                     rdr >> milli;
 
-                    historyCol_t::_Pairib inspair = histCol.insert( historyCol_t::value_type( make_pair(ts.rwtime().seconds(), milli), val) );
+                    historyCol_t::_Pairib inspair = histCol.insert( historyCol_t::value_type( make_pair(ts.seconds(), milli), val) );
 
                     if(inspair.second == false)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << " Failed insert on duplicate " << cid << " " << ts.rwtime() << "." << (char*)CtiNumStr(milli).zpad(3) << " " << val << endl;
+                            dout << " Failed insert on duplicate " << cid << " " << ts << "." << CtiNumStr(milli).zpad(3).toString() << " " << val << endl;
                         }
                     }
                 }
@@ -1773,7 +1775,7 @@ void historyExecute(int argc, char **argv)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " There are " << histCol.size() << " entries found" << endl;
         }
 
@@ -1782,7 +1784,7 @@ void historyExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -1792,7 +1794,7 @@ void historyHelp()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " historyExecute - Help" << endl;
+        dout << CtiTime() << " historyExecute - Help" << endl;
         dout << " Arg1: history " << endl <<
             " Arg2: <pointid to search> " << endl <<
             " Arg3: <number of history points> " <<
@@ -1805,11 +1807,11 @@ void dbtimeExecute(int argc, char **argv)
 {
     try
     {
-        RWTime now;
-        RWTime ttime;
+        CtiTime now;
+        CtiTime ttime;
 
-        RWDBDateTime dbt(2005, 10, 29, 23, 30, 0);
-        RWTime tt = dbt.rwtime();
+        CtiTime dbt(CtiDate(29, 10, 2005), 23, 30, 0);
+        CtiTime tt = dbt;
 
         int period = 300;
 
@@ -1821,13 +1823,13 @@ void dbtimeExecute(int argc, char **argv)
             }
 
             tt = tt.now();
-            dbt =  RWDBDateTime(RWTime(dbt.seconds() + period));
-            if(dbt.rwtime() < tt)
+            dbt =  CtiTime(dbt.seconds() + period);
+            if(dbt < tt)
             {
-                dbt =  RWDBDateTime(tt);
+                dbt =  tt;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -1835,7 +1837,7 @@ void dbtimeExecute(int argc, char **argv)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -1845,7 +1847,7 @@ void dbtimeHelp()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " dbtimeExecute - Help" << endl;
+        dout << CtiTime() << " dbtimeExecute - Help" << endl;
         dout << " Arg1: dbtime " << endl << endl;
     }
     return;

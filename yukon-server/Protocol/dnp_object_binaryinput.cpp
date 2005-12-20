@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/11/16 15:46:07 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ int BinaryInput::restoreVariation(const unsigned char *buf, int len, int variati
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _valid = false;
@@ -91,7 +91,7 @@ int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
         {
             {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _valid = false;
@@ -122,7 +122,7 @@ int BinaryInput::serializeVariation(unsigned char *buf, int variation) const
         {
             {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -156,7 +156,7 @@ int BinaryInput::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -192,7 +192,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -225,7 +225,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "Binary input, value " << val << endl;
     }
 
@@ -277,7 +277,7 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Time Relative: " << _timeRelative.getSeconds() << "s, " << _timeRelative.getMilliseconds() << "ms" << endl;
             }
 
@@ -288,7 +288,7 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _valid = false;
@@ -333,7 +333,7 @@ int BinaryInputChange::serialize(unsigned char *buf) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -373,7 +373,7 @@ int BinaryInputChange::getSerializedLen(void) const
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             len = 0;
@@ -395,7 +395,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
             tmpMsg = BinaryInput::getPoint(cto);
 
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_time.getSeconds() + rwEpoch);
+            tmpMsg->setTime(_time.getSeconds() );
             tmpMsg->setMillis(_time.getMilliseconds());
 
             break;
@@ -415,7 +415,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
             tmpMsg = BinaryInput::getPoint(cto);
 
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(seconds + rwEpoch);
+            tmpMsg->setTime(seconds );
             tmpMsg->setMillis(milliseconds);
         }
 

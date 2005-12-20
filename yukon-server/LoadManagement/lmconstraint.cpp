@@ -11,6 +11,10 @@
 #include "mgr_holiday.h"
 #include "numstr.h"
 
+#include "ctidate.h"
+#include "ctitime.h"
+
+
 extern ULONG _LM_DEBUG;
 
 CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901)
@@ -72,28 +76,28 @@ bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if(proposed_stop_from_1901 == gEndOfRWDBDateTimeSeconds)
+    if(proposed_stop_from_1901 == gEndOfCtiTimeSeconds)
     {
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
     CtiSeasonManager& seasonMgr = CtiSeasonManager::getInstance();
 
-    RWTime startTime(proposed_start_from_1901);
-    RWTime stopTime(proposed_stop_from_1901);
-
-    RWDate startDate(startTime);
-    RWDate stopDate(stopTime);
+    CtiTime startTime(proposed_start_from_1901);
+    CtiTime stopTime(proposed_stop_from_1901);
+ 
+    CtiDate startDate(startTime);
+    CtiDate stopDate(stopTime);
 
     do
     {
-        if(!CtiSeasonManager::getInstance().isInSeason(startDate, _lm_program.getSeasonScheduleId()))
+        if( !CtiSeasonManager::getInstance().isInSeason(startDate, _lm_program.getSeasonScheduleId()) )
         {
-            string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
-            result += RWDate(startTime).asString();
-            result += " is not in a season in schedule id: ";
-            result += CtiNumStr(_lm_program.getSeasonScheduleId());
-            _results.push_back(result);
+	    string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
+	    result += CtiTime(startTime).asString();
+	    result += " is not in a season in schedule id: ";
+	    result += CtiNumStr(_lm_program.getSeasonScheduleId());
+	    _results.push_back(result);
 
             return false;
         }
@@ -112,24 +116,24 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if(proposed_stop_from_1901 == gEndOfRWDBDateTimeSeconds)
+    if(proposed_stop_from_1901 == gEndOfCtiTimeSeconds)
     {
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
+    
+    const string& weekdays = _lm_program.getAvailableWeekDays();
+    
+    CtiTime startTime(proposed_start_from_1901);
+    CtiTime stopTime(proposed_stop_from_1901);
 
-    const RWCString& weekdays = _lm_program.getAvailableWeekDays();
-
-    RWTime startTime(proposed_start_from_1901);
-    RWTime stopTime(proposed_stop_from_1901);
-
-    RWDate startDate(startTime);
-    RWDate stopDate(stopTime);
+    CtiDate startDate(startTime);
+    CtiDate stopDate(stopTime);
 
     if(weekdays[(size_t)7] == 'Y' || weekdays[(size_t)7] == 'y')
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " <<  " Found 'Y' for the holiday slot in the available weekdays constraint for program: " << _lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor" << __FILE__ << "(" << __LINE__ << ")" << endl;
-        dout << RWTime() << " Cowardly deciding that holidays have no effect on this program." << endl;
+        dout << CtiTime() << " **Checkpoint** " <<  " Found 'Y' for the holiday slot in the available weekdays constraint for program: " << _lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Cowardly deciding that holidays have no effect on this program." << endl;
     }
 
     bool force_holiday = true;
@@ -409,15 +413,15 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
-    if(proposed_stop_from_1901 == gEndOfRWDBDateTimeSeconds)
+    if(proposed_stop_from_1901 == gEndOfCtiTimeSeconds)
     {
         proposed_stop_from_1901 = proposed_start_from_1901;
     }
 
     // We want the seconds at the beginning of the day in which the program is to start
-    RWTime startTime(proposed_start_from_1901);
-    RWDate startDate(startTime);
-    startTime = RWTime(startDate);
+    CtiTime startTime(proposed_start_from_1901);
+    CtiDate startDate(startTime);
+    startTime = CtiTime(startDate);
 
     CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - startTime.seconds());
     CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - startTime.seconds());
@@ -444,12 +448,12 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     if(start_ctrl_window != 0 && stop_ctrl_window == 0)
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-        result += RWTime(proposed_stop_from_1901).asString();
+        result += CtiTime(proposed_stop_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += RWTime(start_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
+        result += CtiTime(start_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
         result += " to ";
-        result += RWTime(start_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
-        _results.push_back(result);
+        result += CtiTime(start_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
+		_results.push_back(result);
 
         return false;
     }
@@ -457,19 +461,19 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
     if(start_ctrl_window == 0 && stop_ctrl_window != 0)
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-        result += RWTime(proposed_start_from_1901).asString();
+        result += CtiTime(proposed_start_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += RWTime(stop_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
+        result += CtiTime(stop_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
         result += " to ";
-        result += RWTime(stop_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
-        _results.push_back(result);
+        result += CtiTime(stop_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
+		_results.push_back(result);
 
         return false;
     }
 
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " <<  " Shouldn't get here " << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **Checkpoint** " <<  " Shouldn't get here " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return false;
 }
@@ -493,7 +497,7 @@ bool CtiLMProgramConstraintChecker::checkNotifyActiveOffset(ULONG proposed_start
     if((proposed_start_from_1901 - _seconds_from_1901) < _lm_program.getNotifyActiveOffset())
     {
         string result = "The program cannot start at the proposed start time of ";
-        result += RWTime(proposed_start_from_1901).asString();
+        result += CtiTime(proposed_start_from_1901).asString();
         result += " because that is only ";
         result += CtiNumStr((proposed_start_from_1901 - _seconds_from_1901)/60.0);
         result += " minutes from now and the program's notification offset (notify active offset) is set to ";
@@ -513,8 +517,8 @@ bool CtiLMProgramConstraintChecker::checkMasterActive()
 {
     bool master_active = false;
     set<CtiLMProgramDirect*>& master_set = ((CtiLMProgramDirect&)_lm_program).getMasterPrograms();
-
-    for(set<CtiLMProgramDirect*>::iterator master_iter = master_set.begin();
+    
+    for(std::set<CtiLMProgramDirect*>::iterator master_iter = master_set.begin();
         master_iter != master_set.end();
         master_iter++)
     {
@@ -549,10 +553,10 @@ void CtiLMProgramConstraintChecker::dumpViolations()
     }
 
     CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << RWTime() << " Program: " << _lm_program.getPAOName() << " constraint violations: " << endl;
-    for(vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++)
+    dout << CtiTime() << " Program: " << _lm_program.getPAOName() << " constraint violations: " << endl;
+    for(std::vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++)
     {
-        dout << RWTime() << "  " << *iter << endl;
+        dout << CtiTime() << "  " << *iter << endl;
     }
 }
 
@@ -606,7 +610,7 @@ bool CtiLMGroupConstraintChecker::checkCycle(LONG& counts, ULONG period, ULONG p
         else
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << " tried to divide by zero! Not modifying counts" << endl;
+            dout << CtiTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << " tried to divide by zero! Not modifying counts" << endl;
         }
         return true;
     }
@@ -764,10 +768,10 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
     {
         return true;
     }
-
-    RWTime now_t(_seconds_from_1901);
-    RWDBDateTime now_dt(now_t); // move this calc to a util function at least
-
+	
+    CtiTime now_t(_seconds_from_1901);
+    CtiTime now_dt(now_t); // move this calc to a util function at least
+    
     LONG seconds_from_beginning_of_today = (now_dt.hour() * 3600) + (now_dt.minute() * 60) + now_dt.second();
 
     CtiLMProgramControlWindow* control_window = _lm_program.getControlWindow(seconds_from_beginning_of_today);
@@ -815,10 +819,10 @@ void CtiLMGroupConstraintChecker::dumpViolations()
     }
 
     CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << RWTime() << " Load Group: " << _lm_group->getPAOName() << " constraint violations: " << endl;
-    for(vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++)
+    dout << CtiTime() << " Load Group: " << _lm_group->getPAOName() << " constraint violations: " << endl;
+    for(std::vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++)
     {
-        dout << RWTime() << "  " << *iter << endl;
+        dout << CtiTime() << "  " << *iter << endl;
     }
 }
 

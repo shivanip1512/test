@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_reg.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/collect.h>
-#include <rw/rwtime.h>
+
 
 #include "collectable.h"
 #include "logger.h"
@@ -98,7 +98,7 @@ CtiRegistrationMsg::CtiRegistrationMsg() :
    // cout << "Creating registration object" << endl;
 }
 
-CtiRegistrationMsg::CtiRegistrationMsg(RWCString str, int id, RWBoolean bUnique, int port, int delay) :
+CtiRegistrationMsg::CtiRegistrationMsg(string str, int id, RWBoolean bUnique, int port, int delay) :
    CtiMessage(15),
    _appIsUnique(bUnique),
    _appName(str),
@@ -137,9 +137,9 @@ CtiRegistrationMsg& CtiRegistrationMsg::operator=(const CtiRegistrationMsg& aRef
    return (*this);
 }
 
-RWCString   CtiRegistrationMsg::getAppName() const            { return _appName; }
-RWCString&  CtiRegistrationMsg::getAppName()                  { return _appName; }
-void        CtiRegistrationMsg::setAppName(RWCString str)     { _appName = str; }
+string   CtiRegistrationMsg::getAppName() const            { return _appName; }
+string&  CtiRegistrationMsg::getAppName()                  { return _appName; }
+void        CtiRegistrationMsg::setAppName(string str)     { _appName = str; }
 
 int         CtiRegistrationMsg::getAppId() const              { return _appId;   }
 void        CtiRegistrationMsg::setAppID(int id)              { _appId = id;    }

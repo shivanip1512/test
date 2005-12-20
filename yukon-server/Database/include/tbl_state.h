@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_state.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,8 +27,6 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dlldefs.h"
 
@@ -40,7 +38,7 @@ protected:
    LONG           _pointID;
    LONG           _stateGroupID;
    LONG           _rawState;
-   RWCString      _text;
+   string      _text;
 
    // LONG _foreColor;
    // LONG _bkgColor
@@ -60,14 +58,14 @@ public:
    LONG getRawState() const;
    CtiTableState& setRawState( const LONG id );
 
-   const RWCString& getText() const;
-   CtiTableState& setText( const RWCString &str );
+   const string& getText() const;
+   CtiTableState& setText( const string &str );
 
    LONG getPointID();
    CtiTableState& setPointID( const LONG ptid );
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static RWCString getTableName();
+   static string getTableName();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();
    virtual RWDBStatus Restore();

@@ -1,5 +1,6 @@
 #include "yukon.h"
 #include "mc_msg.h"
+#include <rwutil.h>
 
 /*-----------------------------------------------------------------------------*
 *
@@ -9,13 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_msg.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-
+using namespace std;
 /*=== CtiMCUpdateSchedule ===*/
 
 RWDEFINE_COLLECTABLE( CtiMCUpdateSchedule, MSG_MC_UPDATE_SCHEDULE );
@@ -77,17 +78,17 @@ void CtiMCUpdateSchedule::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
     aStream     <<  _schedule
-                <<  RWCString( (const char*) _script.data() );
+                <<  _script ;
 }
 
 void CtiMCUpdateSchedule::restoreGuts(RWvistream& aStream)
 {
-    RWCString temp_str;
+    string temp_str;
     CtiMessage::restoreGuts(aStream);
     aStream     >>  _schedule
                 >>  temp_str;
 
-    _script = (const char*) temp_str.data();
+    _script = temp_str;
 }
 
 /*=== CtiMCAddSchedule ===*/
@@ -150,18 +151,18 @@ void CtiMCAddSchedule::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
     aStream     << _schedule
-                << RWCString( (const char*) _script.data() );
+                << _script ;
 }
 
 void CtiMCAddSchedule::restoreGuts(RWvistream& aStream)
 {
-    RWCString temp_str;
+    string temp_str;
 
     CtiMessage::restoreGuts(aStream);
     aStream     >> _schedule
                 >> temp_str;
 
-    _script = (const char*) temp_str.data();
+    _script = temp_str;
 }
 
 /*=== CtiMCDeleteSchedule ===*/
@@ -320,13 +321,13 @@ CtiMCRetrieveScript::setScriptName(const string& name)
 void CtiMCRetrieveScript::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
-    aStream  <<  RWCString( (char*) _name.data() );
+    aStream  <<  string( _name );
 
 }
 
 void CtiMCRetrieveScript::restoreGuts(RWvistream& aStream)
 {
-    RWCString _rw_name;
+    string _rw_name;
 
     CtiMessage::restoreGuts(aStream);
     aStream  >>  _rw_name;
@@ -381,13 +382,13 @@ CtiMCVerifyScript::setScriptName(const string& name)
 void CtiMCVerifyScript::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
-    aStream  <<  RWCString( (char*) _name.data() );
+    aStream  <<  string(  _name );
 
 }
 
 void CtiMCVerifyScript::restoreGuts(RWvistream& aStream) 
 {
-    RWCString _rw_name;
+    string _rw_name;
 
     CtiMessage::restoreGuts(aStream);
     aStream >> _rw_name;
@@ -438,12 +439,12 @@ long CtiMCOverrideRequest::getID() const
     return _id;
 }
 
-RWTime CtiMCOverrideRequest::getStartTime() const
+CtiTime CtiMCOverrideRequest::getStartTime() const
 {
     return _start_time;
 }
 
-RWTime CtiMCOverrideRequest::getStopTime() const
+CtiTime CtiMCOverrideRequest::getStopTime() const
 {
     return _stop_time;
 }
@@ -460,13 +461,13 @@ CtiMCOverrideRequest& CtiMCOverrideRequest::setID(long id)
     return *this;
 }
 
-CtiMCOverrideRequest& CtiMCOverrideRequest::setStartTime(const RWTime& time)
+CtiMCOverrideRequest& CtiMCOverrideRequest::setStartTime(const CtiTime& time)
 {
     _start_time = time;
     return *this;
 }
 
-CtiMCOverrideRequest& CtiMCOverrideRequest::setStopTime(const RWTime& time)
+CtiMCOverrideRequest& CtiMCOverrideRequest::setStopTime(const CtiTime& time)
 {
     _stop_time = time;
     return *this;
@@ -551,18 +552,14 @@ void CtiMCInfo::saveGuts(RWvostream &aStream) const
 {
     CtiMessage::saveGuts(aStream);
     aStream     <<  _id
-                <<  RWCString( (char*) _info.data() );
+                <<  _info ;
 
 }
 
 void CtiMCInfo::restoreGuts(RWvistream& aStream)
 {
-    RWCString _rw_info;
-
     CtiMessage::restoreGuts(aStream);
     aStream     >>  _id
-                >>  _rw_info;
-
-    _info = _rw_info;
+                >>  _info;
 }
 

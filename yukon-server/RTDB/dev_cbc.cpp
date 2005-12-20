@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/26 21:38:54 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,8 +55,8 @@ int CtiDeviceCBC::getCBCRetries( void )
     //  check if it's been initialized
     if( _cbcTries <= 0 )
     {
-        RWCString retryStr = gConfigParms.getValueAsString("CBC_RETRIES");
-        int            tmp = atol( retryStr.data() );
+        string retryStr = gConfigParms.getValueAsString("CBC_RETRIES");
+        int            tmp = atol( retryStr.c_str() );
 
         if( tmp > 0  )
         {
@@ -70,7 +70,7 @@ int CtiDeviceCBC::getCBCRetries( void )
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "CBC_RETRIES cparm not found - defaulting CBC retry count to 2 (3 attempts)" << endl;
             }
         }
@@ -123,7 +123,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                          RWTPtrSlist< OUTMESS >         &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
     int   address;
 
     CtiRouteSPtr Route;
@@ -147,7 +147,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "Error: group addressing number > 9999, truncating" << endl;
                 }
 
@@ -194,8 +194,8 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             }
             else
             {
-                RWCString actn = parse.getActionItems()[0];
-                RWCString desc = getDescription(parse);
+                string actn = parse.getActionItems()[0];
+                string desc = getDescription(parse);
 
                 vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
@@ -203,14 +203,15 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3); 
+            resultString += " performing command on route " + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -227,7 +228,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     string(OutMessage->Request.CommandStr),
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
@@ -248,7 +249,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
@@ -264,7 +265,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                      RWTPtrSlist< OUTMESS >         &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     CtiPoint *pPoint = NULL;
@@ -296,7 +297,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
 
             if(pPoint != NULL)
             {
-                RWCString resultString;
+                string resultString;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
                 resultString = "CBC Control ";
@@ -309,8 +310,8 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
             }
             else
             {
-                RWCString actn = parse.getActionItems()[0];
-                RWCString desc = getDescription(parse);
+                string actn = parse.getActionItems()[0];
+                string desc = getDescription(parse);
 
                 vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
@@ -318,18 +319,19 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         /*
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3); 
+            resultString += " performing command on route " + Route->getName();
 
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
@@ -347,7 +349,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     string(OutMessage->Request.CommandStr),
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
@@ -368,7 +370,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 
@@ -379,11 +381,12 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
 {
-    RWCString tmp;
+    string tmp;
 
-    tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
+    tmp = "CBC Device: " + getName();
+    tmp += " SN: " + CtiNumStr(_cbc.getSerial());
 
     return tmp;
 }
@@ -452,7 +455,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                        RWTPtrSlist< OUTMESS >         &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     CtiRouteSPtr Route;
     CtiPoint *pPoint = NULL;
@@ -479,7 +482,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
         {
             if( parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE) )
             {
-                RWCString resultString;
+                string resultString;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
                 resultString = "CBC Control ";
@@ -490,16 +493,17 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
             }
             else if( parse.isKeyValid("xcflip") )
             {
-                RWCString actn;
-                RWCString desc("CBC Flip Command Executed");
+
+                string actn;
+                string desc("CBC Flip Command Executed");
 
                 vgList.insert(CTIDBG_new CtiSignalMsg(pPoint->getPointID(), pReq->getSOE(), desc, actn, CapControlLogType, SignalEvent, pReq->getUser()));
             }
         }
         else if(parse.getActionItems().entries() == 1)
         {
-            RWCString actn = parse.getActionItems()[0];
-            RWCString desc = getDescription(parse);
+            string actn = parse.getActionItems()[0];
+            string desc = getDescription(parse);
 
             vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
         }
@@ -508,11 +512,12 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3);
+            resultString += " performing command on route " + Route->getName();
 
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
@@ -530,7 +535,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
         resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     string(OutMessage->Request.CommandStr),
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
@@ -551,7 +556,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 

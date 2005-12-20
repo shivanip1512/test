@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,15 +17,11 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+
 
 #include <rw/tvhdict.h>
-#include <rw/cstring.h>
-#include <rw/rwdate.h>
 #include <rw/tvslist.h>
 
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 #include <rw\ctoken.h>
 
 #include "cmdparse.h"
@@ -45,7 +41,7 @@ using namespace std;
 #include "prot_711.h"
 #include "utility.h"
 
-
+using namespace std;
 
 CtiDeviceCCU::CtiDeviceCCU()
 {
@@ -158,7 +154,7 @@ INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
@@ -168,12 +164,12 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case Command_Loop:
         {
             char temp[10];
-            RWCString cmd(InMessage->Return.CommandStr);
+            string cmd(InMessage->Return.CommandStr);
 
 
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             cmd,
-                                                            RWCString(getName() + " / successful ping"),
+                                                            string(getName() + " / successful ping"),
                                                             InMessage->EventCode & 0x7fff,
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
@@ -193,7 +189,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                             InMessage->Return.CommandStr,
-                                                            RWCString(getName() + " / reset submitted"),
+                                                            string(getName() + " / reset submitted"),
                                                             InMessage->EventCode & 0x7fff,
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
@@ -213,7 +209,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** ACH. Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** ACH. Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "InMessage->Sequence = " << InMessage->Sequence << endl;
             }
 
@@ -271,8 +267,8 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                 {
                     nRet = NoMethod;
                     retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                            RWCString(OutMessage->Request.CommandStr),
-                                                            RWCString("Non-711 CCUs do not support this command"),
+                                                            string(OutMessage->Request.CommandStr),
+                                                            string("Non-711 CCUs do not support this command"),
                                                             nRet,
                                                             OutMessage->Request.RouteID,
                                                             OutMessage->Request.MacroOffset,
@@ -299,8 +295,8 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("CCU Devices do not support this command (yet?)"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("CCU Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,

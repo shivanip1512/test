@@ -5,7 +5,7 @@
 #define __FDRSOCKETSERVER_H__
 
 #include <windows.h>
-#include <rw/cstring.h>
+
 #include <rw/tpslist.h>
 
 #include "dlldefs.h"
@@ -13,14 +13,14 @@
 #include "fdrclientserverconnection.h"
 #include "fdrinterface.h"
 
-class RWTime;
+class CtiTime;
 
 class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 {                                    
 
     public:
         // constructors and destructors
-        CtiFDRSocketServer(RWCString &); 
+        CtiFDRSocketServer(string &); 
 
         virtual ~CtiFDRSocketServer();
 
@@ -73,7 +73,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
                                                unsigned int& bufferSize) = 0;
                                           
     private:
-        bool loadList(RWCString& aDirection,  CtiFDRPointList& aList);
+        bool loadList(string& aDirection,  CtiFDRPointList& aList);
         
         RWThreadFunction  _threadConnection;
         void threadFunctionConnection(void);

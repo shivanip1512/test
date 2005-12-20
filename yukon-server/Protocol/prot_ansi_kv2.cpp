@@ -9,15 +9,24 @@
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
 <<<<<<< prot_ansi_kv2.cpp
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *    History: 
 =======
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:19:55 $
 *    History:
 >>>>>>> 1.7
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.9  2005/12/20 17:19:55  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.8.2.2  2005/08/12 19:54:03  jliu
+      Date Time Replaced
+
+      Revision 1.8.2.1  2005/07/14 22:27:01  jliu
+      RWCStringRemoved
+
       Revision 1.8  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -46,7 +55,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/cstring.h>
 
 #include "guard.h"
 #include "logger.h"
@@ -100,7 +108,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating KV2 table 0" << endl;
+                   dout << CtiTime() << " Creating KV2 table 0" << endl;
                 }
                 _tableZero = new CtiAnsiKV2ManufacturerTableZero( data );
                 _tableZero->printResult();
@@ -110,7 +118,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating KV2 table 70" << endl;
+                   dout << CtiTime() << " Creating KV2 table 70" << endl;
                 }
 
                 _tableSeventy = new CtiAnsiKV2ManufacturerTableSeventy( data );
@@ -121,7 +129,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << RWTime() << " Creating KV2 table 110" << endl;
+                   dout << CtiTime() << " Creating KV2 table 110" << endl;
                 }
 
                 _tableOneHundredTen = new CtiAnsiKV2ManufacturerTableOnehundredten( data );
@@ -141,7 +149,7 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     int nbrValidInts = getNbrValidIntvls();
     int nbrIntsPerBlock = getNbrIntervalsPerBlock();
     int nbrBlksSet = getNbrValidBlks();
-    RWTime currentTime;
+    CtiTime currentTime;
     
 
     currentTime.now();

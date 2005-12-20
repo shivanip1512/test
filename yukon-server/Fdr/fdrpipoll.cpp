@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.2 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.3 $
+ * DATE         :  $Date: 2005/12/20 17:17:14 $
  */
 
 #include <windows.h>
@@ -23,10 +23,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>
@@ -71,8 +70,8 @@ void CtiFDRPiPoll::beginNewPoints()
 void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info) 
 {
 
-  RWCString periodStr = info.ctiPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
-  info.period = atoi(periodStr);
+  string periodStr = info.ctiPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
+  info.period = atoi(periodStr.c_str());
   if (info.period <= 0)
   {
     info.period = _defaultPeriod; 
@@ -103,8 +102,9 @@ void CtiFDRPiPoll::endNewPoints()
     int pollPeriod = (*myIter).first;
 
     time_t now;
-    time(&now);
-    struct tm *now_local = localtime(&now);
+    ::time(&now);
+    struct tm *now_local = NULL;
+    now_local = CtiTime::localtime_r(&now);
 
     int secondsPastHour;
     secondsPastHour = now_local->tm_min * 60;
@@ -139,7 +139,7 @@ void CtiFDRPiPoll::endNewPoints()
 void CtiFDRPiPoll::doUpdates()
 {
   time_t now;
-  time(&now);
+  ::time(&now);
 
   for (PollDataList::iterator myIter =  _pollData.begin();
        myIter != _pollData.end();
@@ -183,7 +183,9 @@ void CtiFDRPiPoll::doUpdates()
       for (int i = 0; i < pointCount; ++i)
       {
         // remove local offset (might not be thread-safe)
-        time_t timeStamp = mktime(gmtime(&timeArray[i]));
+        struct tm *temp = NULL;
+        temp = CtiTime::gmtime_r(&timeArray[i]);
+        time_t timeStamp = mktime(temp);
         // if 'alwaysSendValues' send the time we were supposed to poll, this has the
         // effect of always sending the values
         time_t timeToSend = _alwaysSendValues ? pollInfo.nextUpdate: timeStamp;
@@ -211,10 +213,10 @@ void CtiFDRPiPoll::readThisConfig()
 {
   CtiFDRPiBase::readThisConfig();
 
-  RWCString   tempStr;
+  string   tempStr;
 
   tempStr = iConfigParameters.getValueAsString( KEY_ALWAYS_SEND, "FALSE" );
-  _alwaysSendValues = tempStr.contains("TRUE", RWCString::ignoreCase);
+  _alwaysSendValues = findStringIgnoreCase(tempStr,"TRUE");
 
   _defaultPeriod = iConfigParameters.getValueAsInt( KEY_DEFAULT_PERIOD, 60);
 

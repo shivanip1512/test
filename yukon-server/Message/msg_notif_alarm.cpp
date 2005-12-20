@@ -4,6 +4,8 @@
 #include "msg_notif_alarm.h"
 #include "rwutil.h"
 
+using namespace std;
+
 RWDEFINE_COLLECTABLE( CtiNotifAlarmMsg, NOTIF_ALARM_MSG_ID );
 
 CtiNotifAlarmMsg::CtiNotifAlarmMsg()
@@ -110,7 +112,7 @@ CtiMessage* CtiNotifAlarmMsg::replicateMessage() const
 
 void CtiNotifAlarmMsg::dump() const
 {
-    dout << RWTime() << " CtiNotifAlarmMsg -" << endl;
+    dout << CtiTime() << " CtiNotifAlarmMsg -" << endl;
     for(vector<int>::const_iterator i = _notif_group_ids.begin(); i != _notif_group_ids.end(); i++)
     {
 	dout << "  Notification Group ID: " <<  *i << endl;

@@ -8,15 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/10/27 20:59:52 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <rw/db/db.h>
-#include <rw\cstring.h>
+
 
 #include "desolvers.h"
 #include "dsm2.h"
@@ -24,8 +24,9 @@
 #include "devicetypes.h"
 #include "pointtypes.h"
 #include "logger.h"
+#include "rwutil.h"
 
-RWCString desolveScanType( LONG scanType )
+string desolveScanType( LONG scanType )
 {
 /*
    ScanRateGeneral = 0,
@@ -35,7 +36,7 @@ RWCString desolveScanType( LONG scanType )
    ScanRateInvalid
 */
 
-   RWCString Ret;
+   string Ret;
 
    if(scanType == ScanRateGeneral)
    {
@@ -68,9 +69,9 @@ RWCString desolveScanType( LONG scanType )
    return Ret;
 }
 
-RWCString desolveDeviceWindowType( LONG aType )
+string desolveDeviceWindowType( LONG aType )
 {
-   RWCString Ret;
+   string Ret;
 
    if(aType == DeviceWindowScan)
    {
@@ -95,9 +96,9 @@ RWCString desolveDeviceWindowType( LONG aType )
 }
 
 
-RWCString desolveStatisticsType( INT statType )
+string desolveStatisticsType( INT statType )
 {
-   RWCString Ret;
+   string Ret;
 
    if(statType == StatTypeMonthly)
    {
@@ -122,9 +123,9 @@ RWCString desolveStatisticsType( INT statType )
 
 }
 
-RWCString desolveAmpUseType( INT useType )
+string desolveAmpUseType( INT useType )
 {
-   RWCString autype;
+   string autype;
 
    if( useType == RouteAmpAlternating )
    {
@@ -160,9 +161,9 @@ RWCString desolveAmpUseType( INT useType )
 }
 
 
-RWCString desolveDeviceType( INT aType )
+string desolveDeviceType( INT aType )
 {
-    RWCString Ret;
+    string Ret;
 
 
    if(aType == TYPE_CCU711)
@@ -518,13 +519,13 @@ RWCString desolveDeviceType( INT aType )
        }
    }
 
-   Ret.toUpper();
+   CtiToUpper(Ret);
    return Ret;
 }
 
-RWCString desolvePAOCategory( INT aCategory )
+string desolvePAOCategory( INT aCategory )
 {
-RWCString Ret;
+string Ret;
 
     if(aCategory == PAO_CATEGORY_DEVICE)
     {
@@ -557,9 +558,9 @@ return Ret;
 }
 
 
-RWCString desolvePortType( INT aType )
+string desolvePortType( INT aType )
 {
-RWCString Ret;
+string Ret;
 
     if(aType == PortTypeLocalDirect)
     {
@@ -600,9 +601,9 @@ return Ret;
 }
 
 
-RWCString desolveRouteType( INT aType )
+string desolveRouteType( INT aType )
 {
-RWCString Ret;
+string Ret;
 
     if(aType == RouteTypeCCU)
     {
@@ -659,9 +660,9 @@ return Ret;
 }
 
 
-RWCString desolveLoadManagementType( INT aType )
+string desolveLoadManagementType( INT aType )
 {
-RWCString Ret;
+string Ret;
 
     if(aType == TYPE_LMPROGRAM_DIRECT)
     {
@@ -694,9 +695,9 @@ return Ret;
 }
 
 
-RWCString desolveCapControlType( INT aType )
+string desolveCapControlType( INT aType )
 {
-RWCString Ret;
+string Ret;
 
     if(aType == TYPE_CC_SUBSTATION_BUS)
     {

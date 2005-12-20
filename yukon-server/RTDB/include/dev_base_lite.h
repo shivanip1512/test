@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/06/24 16:13:35 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,9 +20,8 @@
 
 
 #include <windows.h>
-//using namespace std;
 
-#include <rw\cstring.h>
+
 
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
@@ -38,13 +37,13 @@ class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject
 protected:
 
     LONG        _deviceID;
-    LONG        _portID;
-    RWCString   _class;
-    RWCString   _name;
-    RWCString   _description;
-    RWCString   _objectType;
-    RWCString   _disableFlag;
-    RWCString   _controlInhibitFlag;
+    LONG        _portID;    
+    string   _class;
+    string   _name;
+    string   _description;
+    string   _objectType;
+    string   _disableFlag;
+    string   _controlInhibitFlag;
 
     private:
 
@@ -57,23 +56,23 @@ protected:
 
     CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
     LONG getID() const;
-    LONG getPortID() const;
-    RWCString getClass() const;
-    RWCString getName() const;
-    RWCString getDescription() const;
+    LONG getPortID() const;    
+    string getClass() const;
+    string getName() const;
+    string getDescription() const;
 
     CtiDeviceBaseLite& setID( LONG id );
-    CtiDeviceBaseLite& setPortID( LONG id );
-    CtiDeviceBaseLite& setClass( const RWCString &str );
-    CtiDeviceBaseLite& setName( const RWCString &str );
-    CtiDeviceBaseLite& setDescription( const RWCString &str );
-    CtiDeviceBaseLite& setDisableFlag( const RWCString &str );
-    CtiDeviceBaseLite& setControlInhibitFlag( const RWCString &str );
+    CtiDeviceBaseLite& setPortID( LONG id );    
+    CtiDeviceBaseLite& setClass( const string &str );
+    CtiDeviceBaseLite& setName( const string &str );
+    CtiDeviceBaseLite& setDescription( const string &str );
+    CtiDeviceBaseLite& setDisableFlag( const string &str );
+    CtiDeviceBaseLite& setControlInhibitFlag( const string &str );
 
-    RWCString getObjectType() const;
-    RWCString getDisableFlag() const;
+    string getObjectType() const;
+    string getDisableFlag() const;
     bool isDisabled() const;
-    RWCString getControlInhibitFlag() const;
+    string getControlInhibitFlag() const;
     bool isControlInhibited() const;
 
     bool operator<( const CtiDeviceBaseLite &rhs ) const;
@@ -81,7 +80,7 @@ protected:
     bool operator()(const CtiDeviceBaseLite& aRef) const;
 
 
-    static RWCString getTableName();
+    static string getTableName();
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual RWDBStatus Restore();

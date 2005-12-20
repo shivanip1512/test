@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2005/12/20 17:17:13 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.10  2005/12/20 17:17:13  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.9.2.3  2005/08/12 19:53:43  jliu
+      Date Time Replaced
+
+      Revision 1.9.2.2  2005/07/14 22:26:55  jliu
+      RWCStringRemoved
+
+      Revision 1.9.2.1  2005/07/12 21:08:36  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.9  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -108,10 +120,9 @@
 
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -123,20 +134,20 @@
 
 
 // Constructors, Destructor, and Operators
-CtiFDRFtpInterface::CtiFDRFtpInterface(RWCString &aInterface)
+CtiFDRFtpInterface::CtiFDRFtpInterface(string &aInterface)
 : CtiFDRInterface(aInterface),
 iPort (INTERNET_DEFAULT_FTP_PORT),
 iTries (3),
 iDownloadInterval (3600),
-iLogin (RWCString()),
-iPassword (RWCString()),
-iServerFileName (RWCString()),
-iLocalFileName (RWCString()),
-iFTPDirectory (RWCString()),
-iIPAddress (RWCString())
+iLogin (string()),
+iPassword (string()),
+iServerFileName (string()),
+iLocalFileName (string()),
+iFTPDirectory (string()),
+iIPAddress (string())
 { 
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 }
@@ -191,97 +202,97 @@ CtiFDRFtpInterface &CtiFDRFtpInterface::setDownloadInterval (int aInterval)
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getIPAddress()
+string & CtiFDRFtpInterface::getIPAddress()
 {
     return iIPAddress;
 }
 
-RWCString  CtiFDRFtpInterface::getIPAddress() const
+string  CtiFDRFtpInterface::getIPAddress() const
 {
     return iIPAddress;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setIPAddress (RWCString aAddress)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setIPAddress (string aAddress)
 {
     iIPAddress = aAddress;
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getLogin()
+string & CtiFDRFtpInterface::getLogin()
 {
     return iLogin;
 }
 
-RWCString  CtiFDRFtpInterface::getLogin() const
+string  CtiFDRFtpInterface::getLogin() const
 {
     return iLogin;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setLogin (RWCString aLogin)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setLogin (string aLogin)
 {
     iLogin = aLogin;
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getPassword()
+string & CtiFDRFtpInterface::getPassword()
 {
     return iPassword;
 }
 
-RWCString  CtiFDRFtpInterface::getPassword() const
+string  CtiFDRFtpInterface::getPassword() const
 {
     return iPassword;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setPassword (RWCString aPassword)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setPassword (string aPassword)
 {
     iPassword = aPassword;
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getServerFileName()
+string & CtiFDRFtpInterface::getServerFileName()
 {
     return iServerFileName;
 }
 
-RWCString  CtiFDRFtpInterface::getServerFileName() const
+string  CtiFDRFtpInterface::getServerFileName() const
 {
     return iServerFileName;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setServerFileName (RWCString aServerFileName)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setServerFileName (string aServerFileName)
 {
     iServerFileName = aServerFileName;
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getFTPDirectory()
+string & CtiFDRFtpInterface::getFTPDirectory()
 {
     return iFTPDirectory;
 }
 
-RWCString  CtiFDRFtpInterface::getFTPDirectory() const
+string  CtiFDRFtpInterface::getFTPDirectory() const
 {
     return iFTPDirectory;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setFTPDirectory (RWCString aDir)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setFTPDirectory (string aDir)
 {
     iFTPDirectory = aDir;
     return *this;
 }
 
-RWCString & CtiFDRFtpInterface::getLocalFileName()
+string & CtiFDRFtpInterface::getLocalFileName()
 {
     return iLocalFileName;
 }
 
-RWCString  CtiFDRFtpInterface::getLocalFileName() const
+string  CtiFDRFtpInterface::getLocalFileName() const
 {
     return iLocalFileName;
 }
 
-CtiFDRFtpInterface &CtiFDRFtpInterface::setLocalFileName (RWCString aLocalFileName)
+CtiFDRFtpInterface &CtiFDRFtpInterface::setLocalFileName (string aLocalFileName)
 {
     iLocalFileName = aLocalFileName;
     return *this;
@@ -377,9 +388,9 @@ bool CtiFDRFtpInterface::loadTranslationLists()
 {
     bool                successful(FALSE);
     CtiFDRPoint *       translationPoint = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -388,7 +399,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       RWCString (FDR_INTERFACE_RECEIVE));
+                                                       string (FDR_INTERFACE_RECEIVE));
 
         listStatus = pointList->loadPointList();
 
@@ -436,19 +447,22 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                         * and have specific names already assigned them
                         *********************
                         */
-                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+                        boost::char_separator<char> sep(";");
+                        Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep);
+                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
 
-                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        if (!(tempString1 = *tok_iter).empty())
                         {
-                            RWCTokenizer nextTempToken(tempString1);
+                            boost::char_separator<char> sep1(":");
+                            Boost_char_tokenizer nextTempToken(tempString1, sep1);
+                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                            // do not care about the first part
-                            nextTempToken(":");
+                            tok_iter1++;
 
-                            tempString2 = nextTempToken(":");
+                            tempString2 = *tok_iter1;
 
                             // now we have a point name
-                            if ( !tempString2.isNull() )
+                            if ( !tempString2.empty() )
                             {
                                 translationPoint->getDestinationList()[x].setTranslation (tempString2);
                                 successful = true;
@@ -467,7 +481,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -476,14 +490,14 @@ bool CtiFDRFtpInterface::loadTranslationLists()
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 
@@ -492,7 +506,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
         RWTHROW(e);
     }
 
@@ -500,7 +514,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
     return successful;
@@ -530,8 +544,8 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0,tries=0;
-    RWTime         timeNow;
-    RWTime         refreshTime(rwEpoch);
+    CtiTime         timeNow;
+    CtiTime         refreshTime(PASTDATE);
     ULONG  errorNum, errorLength=500;
     CHAR errorBuffer[500];
     int fileNumber=0;
@@ -542,7 +556,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
     HANDLE   workerThread; 
     DWORD    threadID;
     ULONG    exitCode = 0;
-    RWCString action,desc;
+    string action,desc;
     RWWaitStatus workerThreadReturnStatus;
     RWCompletionState workerThreadCompletionState;
 
@@ -562,12 +576,12 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
             pSelf.sleep (1000);
 
 
-            timeNow = RWTime();
+            timeNow = CtiTime();
 
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                iInitialHandle = InternetOpen (getInterfaceName().data(),
+                iInitialHandle = InternetOpen (getInterfaceName().c_str(),
                                                INTERNET_OPEN_TYPE_DIRECT,  // valid if direct connection to internet used
                                                NULL,
                                                NULL,
@@ -589,7 +603,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error connecting to " <<getInterfaceName() << " " << RWCString (errorBuffer) << endl;
+                        dout << CtiTime() << " Error connecting to " <<getInterfaceName() << " " << string (errorBuffer) << endl;
                     }
 
                     action = getInterfaceName() + ": Failed to connect";
@@ -602,15 +616,15 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     if (tries <= 0)
                     {
                         tries = getTries();
-                        refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                        refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                         fail();
                     }
                 }
                 else
                 {
 
-                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory(),getInterfaceName().data(),fileNumber);
-                    iLocalFileName = RWCString (fileName);
+                    _snprintf (fileName, 200, "%s\\%s%d.txt",getFTPDirectory(),getInterfaceName().c_str(),fileNumber);
+                    iLocalFileName = string (fileName);
                     iThreadInternetConnect.start();
 //                    workerThreadReturnStatus = iThreadInternetConnect.join( 5000);
                     workerThreadReturnStatus = iThreadInternetConnect.join( 120000);
@@ -620,7 +634,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Timeout error connecting to " << getInterfaceName() << endl;
+                            dout << CtiTime() << " Timeout error connecting to " << getInterfaceName() << endl;
                         }
 
                         action = getInterfaceName() + ": Timeout error";
@@ -638,7 +652,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         if (tries <= 0)
                         {
                             tries = getTries();
-                            refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                            refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                             fail();
                         }
                     }
@@ -650,7 +664,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Error connecting to " <<getInterfaceName() << endl;
+                                dout << CtiTime() << " Error connecting to " <<getInterfaceName() << endl;
                             }
 
                             action = getInterfaceName() + ": Failed to connect";
@@ -664,7 +678,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             if (tries <= 0)
                             {
                                 tries = getTries();
-                                refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                                refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                 fail();
                             }
                         }
@@ -679,7 +693,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Timeout error retrieving file " << iServerFileName << " for " << getInterfaceName() << endl;
+                                    dout << CtiTime() << " Timeout error retrieving file " << iServerFileName << " for " << getInterfaceName() << endl;
                                 }
                                 action = getInterfaceName() + ": Timeout error";
                                 desc = "Timeout retrieving file " + iServerFileName ;
@@ -697,7 +711,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 if (tries <= 0)
                                 {
                                     tries = getTries();
-                                    refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                                    refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                     fail();
                                 }
                             }
@@ -709,7 +723,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Error connecting to " <<getInterfaceName() << " " << RWCString (errorBuffer) << endl;
+                                        dout << CtiTime() << " Error connecting to " <<getInterfaceName() << " " << string (errorBuffer) << endl;
                                     }
                                     action = getInterfaceName() + ": Timeout error";
                                     desc = "Error retrieving file " + iServerFileName ;
@@ -721,7 +735,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     if (tries <= 0)
                                     {
                                         tries = getTries();
-                                        refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                                        refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                         fail();
                                     }
                                 }
@@ -730,7 +744,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     if (decodeFile())
                                         fail();
 
-                                    refreshTime = RWTime() - (RWTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
+                                    refreshTime = CtiTime() - (CtiTime::now().seconds() % iDownloadInterval) + iDownloadInterval;
                                     tries = getTries();
                                 }
 
@@ -758,7 +772,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
     {
         InternetCloseHandle (iInitialHandle);
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionRetrieveFrom " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionRetrieveFrom " << getInterfaceName() << " is dead! " << endl;
     }
 }
 
@@ -773,10 +787,10 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( vo
             {
 
                 iSessionHandle = InternetConnect (iInitialHandle,
-                                                  iIPAddress.data(),
+                                                  iIPAddress.c_str(),
                                                   iPort,
-                                                  iLogin.data(),
-                                                  iPassword.data(),
+                                                  iLogin.c_str(),
+                                                  iPassword.c_str(),
                                                   INTERNET_SERVICE_FTP,
                                                   0,
                                                   0);
@@ -808,7 +822,7 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( vo
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Internet connection iInitialHandle set to null " << getInterfaceName() << endl;
+            dout << CtiTime() << " Internet connection iInitialHandle set to null " << getInterfaceName() << endl;
         }
     }
 
@@ -823,7 +837,7 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( vo
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
         retCode = RW_THR_TERMINATED;
     }
     return retCode;
@@ -844,8 +858,8 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile()
         if (iSessionHandle != NULL)
         {
             if (!FtpGetFile (iSessionHandle,
-                             iServerFileName.data(),
-                             iLocalFileName.data(),
+                             iServerFileName.c_str(),
+                             iLocalFileName.c_str(),
                              FALSE,
                              FILE_ATTRIBUTE_NORMAL,
                              FTP_TRANSFER_TYPE_BINARY | INTERNET_FLAG_RELOAD,
@@ -861,7 +875,7 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " FTP Get File iSessionHandle set to null " << getInterfaceName() << endl;
+            dout << CtiTime() << " FTP Get File iSessionHandle set to null " << getInterfaceName() << endl;
         }
     }
 
@@ -876,7 +890,7 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile()
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
         retCode = RW_THR_TERMINATED;
     }
 

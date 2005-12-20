@@ -11,16 +11,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_one.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:19:57 $
 *    History: 
       $Log: std_ansi_tbl_one_one.cpp,v $
+      Revision 1.7  2005/12/20 17:19:57  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_one_one.cpp
+      Revision 1.5.2.2  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
+      Revision 1.5.2.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.6  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5.4.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.6
       Revision 1.5  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -36,6 +48,7 @@
 #include "logger.h"
 #include "std_ansi_tbl_one_one.h"
 
+using std::endl;
 
 const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA3 = "GAS_CONSTANTS_AGA3";
 const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA7 = "GAS_CONSTANTS_AGA7";
@@ -100,10 +113,10 @@ void CtiAnsiTableOneOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneOne::printResult( RWCString deviceName )
+void CtiAnsiTableOneOne::printResult( const string& deviceName )
 {
     int integer;
-    RWCString string1,string2;
+    string string1,string2;
     bool flag;
 
     /**************************************************************
@@ -272,17 +285,17 @@ int CtiAnsiTableOneOne::getRawConstantsSelector( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedConstantsSelector( void )
+string CtiAnsiTableOneOne::getResolvedConstantsSelector( void )
 {
-    RWCString ret;
+    string ret;
     if ((int)_source_record->constants_selector == gasConstantsAGA3)
-        ret = RWCString (SELECTOR_CONSTANTS_GAS_AGA3);
+        ret = string (SELECTOR_CONSTANTS_GAS_AGA3);
     else if ((int)_source_record->constants_selector == gasConstantsAGA7)
-        ret = RWCString (SELECTOR_CONSTANTS_GAS_AGA7);
+        ret = string (SELECTOR_CONSTANTS_GAS_AGA7);
     else if ((int)_source_record->constants_selector == electricConstants)
-        ret = RWCString (SELECTOR_CONSTANTS_ELECTRIC);
+        ret = string (SELECTOR_CONSTANTS_ELECTRIC);
     else
-        ret= RWCString (SELECTOR_CONSTANTS_RESERVED);
+        ret= string (SELECTOR_CONSTANTS_RESERVED);
     return ret;
 }
 //=========================================================================================================================================
@@ -295,13 +308,13 @@ bool CtiAnsiTableOneOne::getRawNoOffsetFlag( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedNoOffsetFlag( void )
+string CtiAnsiTableOneOne::getResolvedNoOffsetFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.no_offset_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -315,13 +328,13 @@ bool CtiAnsiTableOneOne::getRawSetOnePresentFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedSetOnePresentFlag( void )
+string CtiAnsiTableOneOne::getResolvedSetOnePresentFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.set1_preset_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -335,13 +348,13 @@ bool CtiAnsiTableOneOne::getRawSetTwoPresentFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedSetTwoPresentFlag( void )
+string CtiAnsiTableOneOne::getResolvedSetTwoPresentFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.set2_preset_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -357,13 +370,13 @@ bool CtiAnsiTableOneOne::getRawPFExcludeFlag( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedPFExcludeFlag( void )
+string CtiAnsiTableOneOne::getResolvedPFExcludeFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.pf_exclude_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -377,13 +390,13 @@ bool CtiAnsiTableOneOne::getRawResetExcludeFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedResetExcludeFlag( void )
+string CtiAnsiTableOneOne::getResolvedResetExcludeFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.reset_exclude_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -397,13 +410,13 @@ bool CtiAnsiTableOneOne::getRawBlockDemandFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedBlockDemandFlag( void )
+string CtiAnsiTableOneOne::getResolvedBlockDemandFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.block_demand_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -416,13 +429,13 @@ bool CtiAnsiTableOneOne::getRawSlidingDemandFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedSlidingDemandFlag( void )
+string CtiAnsiTableOneOne::getResolvedSlidingDemandFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.sliding_demand_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }
@@ -435,13 +448,13 @@ bool CtiAnsiTableOneOne::getRawThermalDemandFlag( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiTableOneOne::getResolvedThermalDemandFlag( void )
+string CtiAnsiTableOneOne::getResolvedThermalDemandFlag( void )
 {
-    RWCString ret;
+    string ret;
     if ((bool)_source_record->source_flags.thermal_demand_flag == 0)
-        ret = RWCString (ANSI_FALSE);
+        ret = string (ANSI_FALSE);
     else
-        ret = RWCString (ANSI_TRUE);
+        ret = string (ANSI_TRUE);
 
    return ret;
 }

@@ -13,16 +13,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_zero_zero.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/12 20:34:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:01 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.h,v $
+      Revision 1.7  2005/12/20 17:20:01  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+<<<<<<< std_ansi_tbl_zero_zero.h
+      Revision 1.5.4.2  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
+      Revision 1.5.4.1  2005/07/12 21:08:43  jliu
+      rpStringWithoutCmpParser
+
+=======
       Revision 1.6  2005/12/12 20:34:48  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5.6.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
+>>>>>>> 1.6
       Revision 1.5  2004/12/10 21:58:43  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -41,6 +53,8 @@
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
+
+using std::string;
 
 #pragma pack( push, 1)
 
@@ -100,37 +114,37 @@ private:
 public:
 
     int getRawDataOrder( void );
-    RWCString getResolvedDataOrder( void );
+    string getResolvedDataOrder( void );
     int getRawCharFormat( void );
-    RWCString getResolvedCharFormat( void );
+    string getResolvedCharFormat( void );
     bool getRawMfgSerialNumberFlag( void );
-    RWCString getResolvedMfgSerialNumberFlag( void );
+    string getResolvedMfgSerialNumberFlag( void );
     int getRawTimeFormat( void );
-    RWCString getResolvedTimeFormat( void );
+    string getResolvedTimeFormat( void );
     int getRawDataAccess( void );
-    RWCString getResolvedDataAccess( void );
+    string getResolvedDataAccess( void );
     bool getRawIdFormat( void );
-    RWCString getResolvedIdFormat( void );
+    string getResolvedIdFormat( void );
     int getRawIntFormat( void );
-    RWCString getResolvedIntFormat( void );
+    string getResolvedIntFormat( void );
     int getRawNIFormat1( void );
-    RWCString getResolvedNIFormat1( void );
+    string getResolvedNIFormat1( void );
     int getRawNIFormat2( void );
-    RWCString getResolvedNIFormat2( void );
+    string getResolvedNIFormat2( void );
     int getRawDeviceClass( void );
-    RWCString getResolvedDeviceClass( void );
+    string getResolvedDeviceClass( void );
     int getRawNameplateType( void );
-    RWCString getResolvedNameplateType( void );
+    string getResolvedNameplateType( void );
     int getRawDefaultSetUsed( void );
-    RWCString getResolvedDefaultSetUsed( void );
+    string getResolvedDefaultSetUsed( void );
     int getRawMaxProcParmLength( void );
-    RWCString getResolvedMaxProcParmLength( void );
+    string getResolvedMaxProcParmLength( void );
     int getRawMaxRespDataLen( void );
-    RWCString getResolvedMaxRespDataLen( void );
+    string getResolvedMaxRespDataLen( void );
     int getRawStdVersionNo( void );
-    RWCString getResolvedStdVersionNo( void );
+    string getResolvedStdVersionNo( void );
     int getRawStdRevisionNo( void );
-    RWCString getResolvedStdRevisionNo( void );
+    string getResolvedStdRevisionNo( void );
 
     unsigned char * getStdTblsUsed(void);
     int getDimStdTblsUsed(void);
@@ -138,11 +152,11 @@ public:
     int getDimMfgTblsUsed(void);
 
 
-    RWCString getNonIntegerFormat( int aFormat );
+    string getNonIntegerFormat( int aFormat );
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( RWCString deviceName );
+    void printResult( const string& deviceName );
 
     CtiAnsiTableZeroZero( );
    CtiAnsiTableZeroZero( BYTE *dataBlob );

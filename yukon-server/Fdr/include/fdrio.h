@@ -4,7 +4,7 @@
 
 #include <queue>
 
-using namespace std;
+using std::queue;
 
 #include <rw/thr/mutex.h>
 #include <rw/thr/guard.h>

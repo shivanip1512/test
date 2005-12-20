@@ -18,8 +18,8 @@
 
 #include "fdrlodestarinfo.h"
 
-CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(RWCString &aDrivePath, RWCString &aFileName,
-                                                   RWCString &aFolderName)
+CtiFDR_LodeStarInfoTable::CtiFDR_LodeStarInfoTable(string &aDrivePath, string &aFileName,
+                                                   string &aFolderName)
 : _lodeStarDrivePath(aDrivePath),
   _lodeStarFileName(aFileName),
   _lodeStarFolderName(aFolderName)
@@ -40,46 +40,46 @@ CtiFDR_LodeStarInfoTable &CtiFDR_LodeStarInfoTable::operator=( const CtiFDR_Lode
     return *this;
 }
 
-RWCString & CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void)
+string & CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void)
 {
     return _lodeStarDrivePath;
 }
-RWCString CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void) const
+string CtiFDR_LodeStarInfoTable::getLodeStarDrivePath(void) const
 {
     return _lodeStarDrivePath;
 }
-CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarDrivePath(RWCString aDrivePath)
+CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarDrivePath(string aDrivePath)
 {
     _lodeStarDrivePath = aDrivePath;
     return *this;
 }
 
-RWCString & CtiFDR_LodeStarInfoTable::getLodeStarFileName(void)
+string & CtiFDR_LodeStarInfoTable::getLodeStarFileName(void)
 {
     return _lodeStarFileName;
 }
-RWCString CtiFDR_LodeStarInfoTable::getLodeStarFileName(void) const
+string CtiFDR_LodeStarInfoTable::getLodeStarFileName(void) const
 {
     return _lodeStarFileName;
 }
 
-CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFileName(RWCString aFileName)
+CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFileName(string aFileName)
 {
     _lodeStarFileName = aFileName;
     return *this;
 
 }
 
-RWCString & CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void)
+string & CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void)
 {
     return _lodeStarFolderName;
 }
-RWCString CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void) const
+string CtiFDR_LodeStarInfoTable::getLodeStarFolderName(void) const
 {
     return _lodeStarFolderName;
 }
 
-CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFolderName(RWCString aFolderName)
+CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFolderName(string aFolderName)
 {
     _lodeStarFolderName = aFolderName;
     return *this;
@@ -90,8 +90,8 @@ CtiFDR_LodeStarInfoTable& CtiFDR_LodeStarInfoTable::setLodeStarFolderName(RWCStr
     const char * ptr1;
     const char * ptr2;
 
-    ptr1 = lodeStarInfoList1.getLodeStarFileName().data();
-    ptr2 = lodeStarInfoList2.getLodeStarFileName().data();
+    ptr1 = lodeStarInfoList1.getLodeStarFileName().c_str();
+    ptr2 = lodeStarInfoList2.getLodeStarFileName().c_str();
 
     return !strcmp(ptr1, ptr2);
 }

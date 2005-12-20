@@ -19,6 +19,7 @@
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
+#include "ctitime.h"
 
 #include "observe.h"
                 
@@ -37,24 +38,24 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
     
     LONG getCustomerId() const;
     LONG getOfferId() const;
-    const RWCString& getAcceptStatus() const;
-    const RWDBDateTime& getAcceptDateTime() const;
+    const string& getAcceptStatus() const;
+    const CtiTime& getAcceptDateTime() const;
     LONG getRevisionNumber() const;
-    const RWCString& getIPAddressOfAcceptUser() const;
-    const RWCString& getUserIdName() const;
-    const RWCString& getNameOfAcceptPerson() const;
-    const RWCString& getEnergyExchangeNotes() const;
+    const string& getIPAddressOfAcceptUser() const;
+    const string& getUserIdName() const;
+    const string& getNameOfAcceptPerson() const;
+    const string& getEnergyExchangeNotes() const;
     RWOrdered& getLMEnergyExchangeHourlyCustomers();
 
     CtiLMEnergyExchangeCustomerReply& setCustomerId(LONG custid);
     CtiLMEnergyExchangeCustomerReply& setOfferId(LONG offid);
-    CtiLMEnergyExchangeCustomerReply& setAcceptStatus(const RWCString& accstatus);
-    CtiLMEnergyExchangeCustomerReply& setAcceptDateTime(const RWDBDateTime& acctime);
+    CtiLMEnergyExchangeCustomerReply& setAcceptStatus(const string& accstatus);
+    CtiLMEnergyExchangeCustomerReply& setAcceptDateTime(const CtiTime& acctime);
     CtiLMEnergyExchangeCustomerReply& setRevisionNumber(LONG revnumber);
-    CtiLMEnergyExchangeCustomerReply& setIPAddressOfAcceptUser(const RWCString& ipaddress);
-    CtiLMEnergyExchangeCustomerReply& setUserIdName(const RWCString& username);
-    CtiLMEnergyExchangeCustomerReply& setNameOfAcceptPerson(const RWCString& nameaccperson);
-    CtiLMEnergyExchangeCustomerReply& setEnergyExchangeNotes(const RWCString& exchangenotes);
+    CtiLMEnergyExchangeCustomerReply& setIPAddressOfAcceptUser(const string& ipaddress);
+    CtiLMEnergyExchangeCustomerReply& setUserIdName(const string& username);
+    CtiLMEnergyExchangeCustomerReply& setNameOfAcceptPerson(const string& nameaccperson);
+    CtiLMEnergyExchangeCustomerReply& setEnergyExchangeNotes(const string& exchangenotes);
 
     CtiLMEnergyExchangeCustomerReply* replicate() const;
 
@@ -75,9 +76,9 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
     // Static Members
 
     // Possible accept statuses
-    static const RWCString NoResponseAcceptStatus;
-    static const RWCString AcceptedAcceptStatus;
-    static const RWCString DeclinedAcceptStatus;
+    static const string NoResponseAcceptStatus;
+    static const string AcceptedAcceptStatus;
+    static const string DeclinedAcceptStatus;
 
 protected:
 
@@ -87,13 +88,13 @@ private:
 
     LONG _customerid;
     LONG _offerid;
-    RWCString _acceptstatus;
-    RWDBDateTime _acceptdatetime;
+    string _acceptstatus;
+    CtiTime _acceptdatetime;
     LONG _revisionnumber;
-    RWCString _ipaddressofacceptuser;
-    RWCString _useridname;
-    RWCString _nameofacceptperson;
-    RWCString _energyexchangenotes;
+    string _ipaddressofacceptuser;
+    string _useridname;
+    string _nameofacceptperson;
+    string _energyexchangenotes;
 
     RWOrdered _lmenergyexchangehourlycustomers;
 };

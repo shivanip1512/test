@@ -1,10 +1,14 @@
 #ifndef __MSG_NOTIF_ALARM_H_
 #define __MSG_NOTIF_ALARM_H_
 
+#include <vector>
+
 #include <rw/collect.h>
 
 #include "dlldefs.h"
 #include "message.h"
+
+using std::vector;
 
 /*
  * CtiNotifAlarmMsg is used to tell the notification server

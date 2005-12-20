@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ci_cust.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:23:47 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,12 +22,12 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_ci_cust.h"
+
+using namespace std;
 
 bool CtiTableCICustomerBase::operator<( const CtiTableCICustomerBase &rhs ) const
 {
@@ -55,9 +55,9 @@ CtiTableCICustomerBase& CtiTableCICustomerBase::setID( const LONG &aRef )
     return *this;
 }
 
-RWCString CtiTableCICustomerBase::getTableName()
+string CtiTableCICustomerBase::getTableName()
 {
-    return RWCString("CICustomerBase");
+    return string("CICustomerBase");
 }
 
 RWDBStatus CtiTableCICustomerBase::Restore()
@@ -70,7 +70,7 @@ RWDBStatus CtiTableCICustomerBase::Restore()
     RWDBStatus dbstat;
 
     {
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBSelector selector = getDatabase().selector();
 
         selector << table["customerid"];
@@ -161,7 +161,7 @@ RWDBStatus CtiTableCICustomerBase::Restore()
 
 void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName().c_str() );
 
     selector <<
     keyTable["customerid"];
@@ -171,7 +171,7 @@ void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 
 void CtiTableCICustomerBase::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString temp;
+    string temp;
 
     {
         rdr["customerid"] >> _id;
@@ -210,7 +210,7 @@ void CtiTableCICustomerBase::dumpContactNotifications() const
   catch(...)
     {
       CtiLockGuard<CtiLogger> guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -236,7 +236,7 @@ vector<int> CtiTableCICustomerBase::getContactNotificationVector() const
   catch(...)
     {
       CtiLockGuard<CtiLogger> guard(dout);
-      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
   return n_vec;

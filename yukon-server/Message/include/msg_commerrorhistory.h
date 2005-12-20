@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_commerrorhistory.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/06 18:53:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,8 +16,7 @@
 #ifndef __MSG_COMMERRORHISTORY_H__
 #define __MSG_COMMERRORHISTORY_H__
 
-#include <rw/rwtime.h>
-#include <rw/cstring.h>
+
 #include "message.h"
 #include "yukon.h"
 
@@ -27,12 +26,12 @@ protected:
 
    long        _commErrorId;        // .
    long        _paoId;              // .
-   RWTime      _dateTime;           // .
+   CtiTime      _dateTime;           // .
    int         _errorType;          // .
    long        _errorNumber;        // .
-   RWCString   _command;            // .
-   RWCString   _outMessage;         // .
-   RWCString   _inMessage;          // .
+   string   _command;            // .
+   string   _outMessage;         // .
+   string   _inMessage;          // .
 
 private:
 
@@ -46,11 +45,11 @@ public:
                           long       paoid      = 0,
                           int        type       = 0,
                           long       errornum   = 0,
-                          RWCString  command    = RWCString(),
-                          RWCString  outmess    = RWCString(),
-                          RWCString  inmess     = RWCString(),
+                          string  command    = string(),
+                          string  outmess    = string(),
+                          string  inmess     = string(),
                           int        pri        = 7,
-                          RWTime     time       = RWTime(),
+                          CtiTime     time       = CtiTime(),
                           long       ceid       = 0
                           );
 
@@ -65,8 +64,8 @@ public:
    long  getPAOId() const;
    CtiCommErrorHistoryMsg& setPAOId( const long a_id );
 
-   const RWTime& getDateTime() const;
-   CtiCommErrorHistoryMsg& setDateTime(const RWTime& time);
+   const CtiTime& getDateTime() const;
+   CtiCommErrorHistoryMsg& setDateTime(const CtiTime& time);
 
    int  getErrorType() const;
    CtiCommErrorHistoryMsg& setErrorType( const int type );
@@ -74,14 +73,14 @@ public:
    long  getErrorNumber() const;
    CtiCommErrorHistoryMsg& setErrorNumber( const long number );
 
-   const RWCString& getCommand() const;
-   CtiCommErrorHistoryMsg& setCommand(const RWCString& string);
+   const string& getCommand() const;
+   CtiCommErrorHistoryMsg& setCommand(const string& string);
 
-   const RWCString& getOutMessage() const;
-   CtiCommErrorHistoryMsg& setOutMessage(const RWCString& string);
+   const string& getOutMessage() const;
+   CtiCommErrorHistoryMsg& setOutMessage(const string& string);
 
-   const RWCString& getInMessage() const;
-   CtiCommErrorHistoryMsg& setInMessage(const RWCString& string);
+   const string& getInMessage() const;
+   CtiCommErrorHistoryMsg& setInMessage(const string& string);
 
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);

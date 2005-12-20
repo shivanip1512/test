@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/11/15 14:20:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,20 +141,20 @@ class IM_EX_CONFIG ConfigurationPart : public Base
 {
     friend class CtiConfigManager;
 private:
-    typedef map<int,RWCString> ConfigDataContainer;
+    typedef map<int,string> ConfigDataContainer;
 
     ConfigDataContainer     _dataMap;
 public:
-    T getResolvedKey(RWCString key);
-    bool setValueWithKey(const RWCString &value, T enumKey);
-    RWCString getValueFromKey(T enumKey);
+    T getResolvedKey(string key);
+    bool setValueWithKey(const string &value, T enumKey);
+    string getValueFromKey(T enumKey);
     long getLongValueFromKey(T enumKey);
 
     virtual CtiConfig_type getType();
 
 protected:
-    virtual int getProtectedResolvedKey(RWCString key);
-    virtual bool setProtectedValueWithKey(const RWCString &value, const int key);
+    virtual int getProtectedResolvedKey(string key);
+    virtual bool setProtectedValueWithKey(const string &value, const int key);
 };
 
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTAddressing>;
@@ -171,7 +171,7 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTRelays>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTPrecannedTable>;
 
 template <class T>
-bool ConfigurationPart<T>::setValueWithKey(const RWCString &value, T enumKey)
+bool ConfigurationPart<T>::setValueWithKey(const string &value, T enumKey)
 {
     LockGuard config_guard(_mux);//make thread safe
 
@@ -179,10 +179,10 @@ bool ConfigurationPart<T>::setValueWithKey(const RWCString &value, T enumKey)
     return true;
 }
 
-//Get the RWCString stored for this key
-//Returns a null RWCString if there is no stored value.
+//Get the string stored for this key
+//Returns a null string if there is no stored value.
 template <class T>
-RWCString ConfigurationPart<T>::getValueFromKey(T enumKey)
+string ConfigurationPart<T>::getValueFromKey(T enumKey)
 {
     LockGuard config_guard(_mux);//make thread safe
 
@@ -193,7 +193,7 @@ RWCString ConfigurationPart<T>::getValueFromKey(T enumKey)
     }
     else
     {
-        return RWCString();
+        return string();
     }
 }
 
@@ -201,10 +201,10 @@ RWCString ConfigurationPart<T>::getValueFromKey(T enumKey)
 template <class T>
 long ConfigurationPart<T>::getLongValueFromKey(T enumKey)
 {
-    RWCString tempStr = getValueFromKey(enumKey);
-    long tempLong = numeric_limits<long>::min();
+    string tempStr = getValueFromKey(enumKey);
+    long tempLong = std::numeric_limits<long>::min();
 
-    if(!tempStr.isNull())
+    if(!tempStr.empty())
     {
         tempLong = strtol(tempStr.data(),NULL,16);
     }
@@ -224,13 +224,13 @@ long ConfigurationPart<T>::getLongValueFromKey(T enumKey)
 
 //Protected Function
 template <class T>
-int ConfigurationPart<T>::getProtectedResolvedKey(RWCString key)
+int ConfigurationPart<T>::getProtectedResolvedKey(string key)
 {
     return getResolvedKey(key);
 }
 
 template <class T>
-bool ConfigurationPart<T>::setProtectedValueWithKey(const RWCString &value, int key)
+bool ConfigurationPart<T>::setProtectedValueWithKey(const string &value, int key)
 {
     LockGuard config_guard(_mux);//make thread safe
 

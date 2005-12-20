@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/23 12:54:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ typedef struct _DR87LoadProfile_t
 {
     ULONG                porterLPTime;
     BOOL                 lastLPMessage;
-    RWTime               recorderTime;
+    CtiTime               recorderTime;
     DR87LPConfig         config;
     DOUBLE               channelUsage[4];
     BYTE                 loadProfileData[300];
@@ -201,12 +201,12 @@ public:
                             INT ScanPriority);
 
     virtual INT ResultDecode(INMESS *InMessage,
-                             RWTime &TimeNow,
+                             CtiTime &TimeNow,
                              RWTPtrSlist< CtiMessage >   &vgList,
                              RWTPtrSlist< CtiMessage > &retList,
                              RWTPtrSlist< OUTMESS > &outList);
     virtual INT ErrorDecode(INMESS*,
-                            RWTime&,
+                            CtiTime&,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
                             RWTPtrSlist<OUTMESS> &outList);
@@ -230,23 +230,23 @@ public:
     virtual INT freeDataBins ();
 
     virtual INT   decodeResultScan (INMESS                    *InMessage,
-                                    RWTime                    &TimeNow,
+                                    CtiTime                    &TimeNow,
                                     RWTPtrSlist< CtiMessage > &vgList,
                                     RWTPtrSlist< CtiMessage > &retList,
                                     RWTPtrSlist< OUTMESS >    &outList);
 
     virtual INT decodeResultLoadProfile (INMESS                    *InMessage,
-                                         RWTime                    &TimeNow,
+                                         CtiTime                    &TimeNow,
                                          RWTPtrSlist< CtiMessage > &vgList,
                                          RWTPtrSlist< CtiMessage > &retList,
                                          RWTPtrSlist< OUTMESS >    &outList);
     virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointID,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,
-                                               RWTime        aTime,
+                                               CtiTime        aTime,
                                                CtiReturnMsg *aReturnMsg,
                                                USHORT        aIntervalType=0,
-                                               RWCString     aValReport=RWCString());
+                                               string     aValReport=string());
 
     virtual BOOL insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
                                            CtiReturnMsg *aReturnMsg);
@@ -257,7 +257,7 @@ public:
     INT     getMessageInDataStream (CtiXfer  &Transfer,int aCommValue);
     INT     decodeReceivedMessage ();
     INT     fillUploadTransferObject (CtiXfer  &aTransfer, USHORT aCmd, USHORT aStartAddress, USHORT aOffset, USHORT aBytesToRead);
-    BOOL    getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, DR87ScanData_t *aScanData);
+    BOOL    getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, DR87ScanData_t *aScanData);
     LONG    findLPDataPoint (DR87LPPointInfo_t &point, USHORT aMetric);
     INT     calculateBlockSize(void);
 };

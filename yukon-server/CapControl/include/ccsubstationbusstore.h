@@ -140,9 +140,11 @@ public:
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
 
+
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
-    static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+
 
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
@@ -158,20 +160,20 @@ private:
     void handleAMFMChanges(RWDBReader& rdr);
     void shutdown();
 
-    void feederReconfigureM3IAMFM( RWCString& capacitor_id_string, LONG circt_id_normal,
-                                   RWCString& circt_nam_normal, LONG circt_id_current,
-                                   RWCString& circt_name_current, RWDBDateTime& switch_datetime,
-                                   RWCString& owner, RWCString& capacitor_name, RWCString& kvar_rating,
-                                   RWCString& cap_fs, RWCString& cbc_model, RWCString& serial_no,
-                                   RWCString& location, RWCString& switching_seq, RWCString& cap_disable_flag,
-                                   RWCString& cap_disable_type, RWCString& inoperable_bad_order_equipnote,
-                                   RWCString& open_tag_note, RWCString& cap_change_type );
+    void feederReconfigureM3IAMFM( string& capacitor_id_string, LONG circt_id_normal,
+                                   string& circt_nam_normal, LONG circt_id_current,
+                                   string& circt_name_current, CtiTime& switch_datetime,
+                                   string& owner, string& capacitor_name, string& kvar_rating,
+                                   string& cap_fs, string& cbc_model, string& serial_no,
+                                   string& location, string& switching_seq, string& cap_disable_flag,
+                                   string& cap_disable_type, string& inoperable_bad_order_equipnote,
+                                   string& open_tag_note, string& cap_change_type );
     void capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank,
                                        LONG feederid, LONG capswitchingorder);
     void capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank,
                                          LONG capswitchingorder);
-    void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, RWCString& enableddisabled, RWCString& fixedswitched);
-    void feederOutOfServiceM3IAMFM(LONG feederid, RWCString& fixedswitched, RWCString& enableddisabled);
+    void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, string& enableddisabled, string& fixedswitched);
+    void feederOutOfServiceM3IAMFM(LONG feederid, string& fixedswitched, string& enableddisabled);
 
     void doResetThr();
     void doAMFMThr();
@@ -188,28 +190,28 @@ private:
     BOOL _reregisterforpoints;
     BOOL _reloadfromamfmsystemflag;
     BOOL _wassubbusdeletedflag;
-    RWDBDateTime _lastdbreloadtime;
+    CtiTime _lastdbreloadtime;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
 
     //Possible static strings
-    static const RWCString m3iAMFMInterfaceString;
+    static const string m3iAMFMInterfaceString;
 
-    static const RWCString m3iAMFMChangeTypeCircuitOutOfService;
-    static const RWCString m3iAMFMChangeTypeCircuitReturnToService;
-    static const RWCString m3iAMFMChangeTypeCapOutOfService;
-    static const RWCString m3iAMFMChangeTypeCapReturnedToService;
-    static const RWCString m3iAMFMChangeTypeCircuitReconfigured;
-    static const RWCString m3iAMFMChangeTypeCircuitReconfiguredToNormal;
-    //static const RWCString M3IAMFMCapChangeTypeString;
+    static const string m3iAMFMChangeTypeCircuitOutOfService;
+    static const string m3iAMFMChangeTypeCircuitReturnToService;
+    static const string m3iAMFMChangeTypeCapOutOfService;
+    static const string m3iAMFMChangeTypeCapReturnedToService;
+    static const string m3iAMFMChangeTypeCircuitReconfigured;
+    static const string m3iAMFMChangeTypeCircuitReconfiguredToNormal;
+    //static const string M3IAMFMCapChangeTypeString;
 
-    static const RWCString m3iAMFMEnabledString;
-    static const RWCString m3iAMFMDisabledString;
-    static const RWCString m3iAMFMFixedString;
-    static const RWCString m3iAMFMSwitchedString;
+    static const string m3iAMFMEnabledString;
+    static const string m3iAMFMDisabledString;
+    static const string m3iAMFMFixedString;
+    static const string m3iAMFMSwitchedString;
 
-    static const RWCString m3iAMFMNullString;
+    static const string m3iAMFMNullString;
 
     map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
     map< long, CtiCCFeederPtr > _paobject_feeder_map;

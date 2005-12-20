@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/09/13 20:45:53 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.9  2005/12/20 17:17:14  tspar
+*     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
 *     Revision 1.8  2005/09/13 20:45:53  tmack
 *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
 *
@@ -39,10 +42,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
+#include "ctitime.h"
+#include "ctidate.h"
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -67,16 +69,16 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrsinglesocket.h"
 
 // Constructors, Destructor, and Operators
-CtiFDRSingleSocket::CtiFDRSingleSocket(RWCString &name)
+CtiFDRSingleSocket::CtiFDRSingleSocket(string &name)
 : CtiFDRSocketInterface(name),
     iLayer (NULL)
 {
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE)); 
     getReceiveFromList().setPointList (recList);
     recList = NULL;
 
-    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), RWCString(FDR_INTERFACE_SEND));
+    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (sendList);
     sendList = NULL;
 }
@@ -88,7 +90,7 @@ CtiFDRSingleSocket::~CtiFDRSingleSocket()
     // cleanup memory
     if (iLayer != NULL)
     {
-        RWCString desc,action;
+        string desc,action;
         desc = iLayer->getName() + "'s link has failed";
         logEvent (desc,action,true);
         delete iLayer;
@@ -178,8 +180,8 @@ BOOL CtiFDRSingleSocket::run( void )
     // log this now so we dont' have to everytime one comes in 
     if (!shouldUpdatePCTime())
     {
-        RWCString desc = getInterfaceName() + RWCString (" has been configured to NOT process time sync updates to PC clock");
-        logEvent (desc,RWCString());
+        string desc = getInterfaceName() + string (" has been configured to NOT process time sync updates to PC clock");
+        logEvent (desc,string());
     }
 
     if (isInterfaceInDebugMode())
@@ -234,16 +236,16 @@ BOOL CtiFDRSingleSocket::stop( void )
 * 
 *************************************************************************
 */
-bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
+bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
     bool                successful(false);
     CtiFDRPoint *       translationPoint = NULL;
     CtiFDRPoint *       point = NULL;
-    RWCString           tempString1;
-    RWCString           tempString2;
-    RWCString           translationName;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
     bool                foundPoint = false, translatedPoint(false);
-    RWCString           controlDirection;
+    string           controlDirection;
     static bool firstPassHackFlag=false;  // yuck
     RWDBStatus          listStatus;
 
@@ -282,7 +284,7 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
                             dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
                         }
                         // translate and put the point id the list
@@ -314,7 +316,7 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " No (" << aDirection << ") points defined for use by interface " << getInterfaceName() << endl;
+                            dout << CtiTime() << " No (" << aDirection << ") points defined for use by interface " << getInterfaceName() << endl;
                         }
                     }
                 }
@@ -322,14 +324,14 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error loading (" << aDirection << ") points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                dout << CtiTime() << " Error loading (" << aDirection << ") points for " << getInterfaceName() << " : Empty data set returned " << endl;
                 successful = false;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
     }   // end try block
@@ -337,7 +339,7 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
     catch (RWExternalErr e )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  " << e.why() << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  " << e.why() << endl;
         RWTHROW(e);
     }
 
@@ -345,7 +347,7 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  (...)" << endl;
+        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  (...)" << endl;
     }
 
     return successful;
@@ -461,7 +463,7 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Time sync message received from " << getInterfaceName() << endl;
+                        dout << CtiTime() << " Time sync message received from " << getInterfaceName() << endl;
                     }
 
                     retVal = processTimeSyncMessage (aBuffer);
@@ -471,8 +473,8 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Time sync message received from " << getInterfaceName() << endl;
-                        dout << RWTime() << " PC time will not updated due to current configuration " << endl;
+                        dout << CtiTime() << " Time sync message received from " << getInterfaceName() << endl;
+                        dout << CtiTime() << " PC time will not updated due to current configuration " << endl;
                     }
                 }
                 break;
@@ -482,7 +484,7 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Heartbeat message received from " << getInterfaceName() << " at " << RWCString (inet_ntoa(iLayer->getInBoundConnection()->getAddr().sin_addr)) <<  endl;
+                    dout << CtiTime() << " Heartbeat message received from " << getInterfaceName() << " at " << string (inet_ntoa(iLayer->getInBoundConnection()->getAddr().sin_addr)) <<  endl;
                 }
                 break;
             }
@@ -490,7 +492,7 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unknown message type " << ntohs (*function) <<  " received from " << getInterfaceName() << endl;
+                dout << CtiTime() << " Unknown message type " << ntohs (*function) <<  " received from " << getInterfaceName() << endl;
             }
     }
 
@@ -537,9 +539,9 @@ int CtiFDRSingleSocket::getMessageSize(CHAR *aBuffer)
     return 0;
 }
 
-RWCString CtiFDRSingleSocket::decodeClientName(CHAR * aBuffer)
+string CtiFDRSingleSocket::decodeClientName(CHAR * aBuffer)
 {
-    return RWCString ();
+    return string ();
 }
 
 /**************************************************************************
@@ -557,8 +559,8 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
     CtiFDRClientConnection   *clinetConnection;
     CtiFDRSocketLayer   *layer;
     int connectionIndex;
-    RWCString            desc;
-    RWCString           action;
+    string            desc;
+    string           action;
     SOCKADDR_IN tmp;
 
     SOCKET listener, tmpConnection;
@@ -572,7 +574,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDRSingleSocket::threadFunctionConnection for " << getInterfaceName() << endl;
+            dout << CtiTime() << " Initializing CtiFDRSingleSocket::threadFunctionConnection for " << getInterfaceName() << endl;
         }
         for ( ; ; )
         {
@@ -602,7 +604,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Failed to create listener socket for " << getInterfaceName() << endl;
+                        dout << CtiTime() << " Failed to create listener socket for " << getInterfaceName() << endl;
                     }
                 }
                 else
@@ -613,7 +615,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Failed to set reuse option for listener socket in "<< getInterfaceName() << endl;
+                            dout << CtiTime() << " Failed to set reuse option for listener socket in "<< getInterfaceName() << endl;
                         }
 
                         shutdown(listener, 2);
@@ -631,7 +633,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Failed to bind listener socket in " << getInterfaceName() << endl;
+                                dout << CtiTime() << " Failed to bind listener socket in " << getInterfaceName() << endl;
                             }
 
                             shutdown(listener, 2);
@@ -649,7 +651,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << iLayer->getName() << "'s link has failed" << endl;
+                                    dout << CtiTime() << " " << iLayer->getName() << "'s link has failed" << endl;
                                 }
                                 desc = iLayer->getName() + "'s link has failed";
                                 logEvent (desc,action,true);
@@ -669,7 +671,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout <<  RWTime() << " Listening for connection on port " << getPortNumber() << endl;
+                                    dout <<  CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
                                 }
 
                                 // new socket
@@ -687,7 +689,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Accept call failed in " << getInterfaceName() <<endl;
+                                        dout << CtiTime() << " Accept call failed in " << getInterfaceName() <<endl;
                                     }
                                 }
                                 else 
@@ -711,10 +713,10 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
 //                                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                                     {
                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                       dout << RWTime() << " Connection established to " << decodeClientName(NULL) << " at " << RWCString (inet_ntoa(returnAddr.sin_addr)) << endl;
+                                       dout << CtiTime() << " Connection established to " << decodeClientName(NULL) << " at " << string (inet_ntoa(returnAddr.sin_addr)) << endl;
                                     }
 
-                                    desc = decodeClientName(NULL) + RWCString ("'s client link has been established at ") + RWCString (inet_ntoa(returnAddr.sin_addr));
+                                    desc = decodeClientName(NULL) + string ("'s client link has been established at ") + string (inet_ntoa(returnAddr.sin_addr));
                                     logEvent (desc,action, true);
                                 }
                             }
@@ -751,7 +753,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
         setCurrentClientLinkStates();
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  CtiFDRSingleSocket::threadFunctionConnection in " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  CtiFDRSingleSocket::threadFunctionConnection in " << getInterfaceName() << " is dead! " << endl;
     }
 }
 
@@ -768,7 +770,7 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Starting Debug Thread for " << getInterfaceName() << endl;
+        dout << CtiTime() << " Starting Debug Thread for " << getInterfaceName() << endl;
     }
 
     // don't try to do anything until the layer is available
@@ -834,7 +836,7 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
         iLayer->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         iLayer->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  threadFunctionDebugData in " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error:  threadFunctionDebugData in " << getInterfaceName() << " is dead! " << endl;
     }
 }
 

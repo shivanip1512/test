@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/mgr_config.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/17 16:47:59 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,12 +35,12 @@ private:
     ConfigTypeMap       _typeConfig;
     ConfigDeviceMap     _deviceConfig;
 
-    RWCString getConfigPartsTableName();
-    RWCString getConfigValuesTableName();
-    RWCString getConfigTypeTableName();
-    RWCString getConfigDeviceTableName();
+    string getConfigPartsTableName();
+    string getConfigValuesTableName();
+    string getConfigTypeTableName();
+    string getConfigDeviceTableName();
     BaseSPtr createConfigByType(const int type);
-    bool insertValueIntoConfigMap(const int partID, const RWCString &value, const RWCString &valueid);
+    bool insertValueIntoConfigMap(const int partID, const string &value, const string &valueid);
 
 public:
     CtiConfigManager();

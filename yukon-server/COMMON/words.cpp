@@ -52,6 +52,8 @@
 #include "porter.h"
 #include "logger.h"
 
+using std::endl;
+
 
 /* Routine A_Word generates an 'A' type message */
 INT IM_EX_CTIBASE A_Word (PBYTE AWord, const ASTRUCT &ASt, BOOL Double)      /* A word structure */
@@ -283,7 +285,7 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
          return(Code);
       }
@@ -307,7 +309,7 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
          return(Code);
       }
@@ -733,7 +735,7 @@ INT IM_EX_CTIBASE I_Words (PBYTE IWords,      /* IWords to decode */
    {
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
       return(Code);
    }
@@ -763,7 +765,7 @@ INT IM_EX_CTIBASE I_Words (PBYTE IWords,      /* IWords to decode */
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
          return(Code);
       }
@@ -787,7 +789,7 @@ INT IM_EX_CTIBASE I_Words (PBYTE IWords,      /* IWords to decode */
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
          return(Code);
       }

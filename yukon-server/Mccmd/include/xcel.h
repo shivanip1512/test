@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/INCLUDE/xcel.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:18:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,9 +30,8 @@
 #define XCEL_H
 
 #include <iostream>
-using namespace std;
+using std::iostream;
 
-#include <rw/cstring.h>
 #include <rw/collstr.h>
 
 #include <rw/ordcltn.h>
@@ -41,9 +40,9 @@ using namespace std;
 #include "guard.h"
 #include "types.h"
 
-bool DecodePMSIFile(const RWCString& file, RWOrdered* results);
-static bool isValidPMSILine( char* line, char &command, RWCString &serialNum, RWCString &programming);
-static char * getEntry (char* InBuffer, RWCString &OutBuffer);
+bool DecodePMSIFile(const string& file, RWOrdered* results);
+static bool isValidPMSILine( char* line, char &command, string &serialNum, string &programming);
+static char * getEntry (char* InBuffer, string &OutBuffer);
 
 
 #endif

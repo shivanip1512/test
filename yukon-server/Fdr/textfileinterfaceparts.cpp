@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/textfileinterfaceparts.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2005/02/10 23:23:52 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: textfileinterfaceparts.cpp,v $
+      Revision 1.4  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
       Revision 1.3  2005/02/10 23:23:52  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -40,7 +43,6 @@
 #include <windows.h>
 
 /** include files **/
-#include <rw/cstring.h>
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -51,7 +53,7 @@
 
 
 // Constructors, Destructor, and Operators
-CtiFDRTextFileInterfaceParts::CtiFDRTextFileInterfaceParts(RWCString &aFileName, RWCString &aPath, int aInterval)
+CtiFDRTextFileInterfaceParts::CtiFDRTextFileInterfaceParts(string &aFileName, string &aPath, int aInterval)
 :    _fileName(aFileName),
     _driveAndPath (aPath),
     _interval(aInterval)
@@ -75,33 +77,33 @@ CtiFDRTextFileInterfaceParts &CtiFDRTextFileInterfaceParts::setInterval (int aIn
     return *this;
 }
 
-RWCString & CtiFDRTextFileInterfaceParts::getFileName()
+string & CtiFDRTextFileInterfaceParts::getFileName()
 {
     return _fileName;
 }
 
-RWCString  CtiFDRTextFileInterfaceParts::getFileName() const
+string  CtiFDRTextFileInterfaceParts::getFileName() const
 {
     return _fileName;
 }
 
-CtiFDRTextFileInterfaceParts &CtiFDRTextFileInterfaceParts::setFileName (RWCString aFile)
+CtiFDRTextFileInterfaceParts &CtiFDRTextFileInterfaceParts::setFileName (string aFile)
 {
     _fileName = aFile;
     return *this;
 }
 
-RWCString & CtiFDRTextFileInterfaceParts::getDriveAndPath()
+string & CtiFDRTextFileInterfaceParts::getDriveAndPath()
 {
     return _driveAndPath;
 }
 
-RWCString  CtiFDRTextFileInterfaceParts::getDriveAndPath() const
+string  CtiFDRTextFileInterfaceParts::getDriveAndPath() const
 {
     return _driveAndPath;
 }
 
-CtiFDRTextFileInterfaceParts &CtiFDRTextFileInterfaceParts::setDriveAndPath (RWCString aPath)
+CtiFDRTextFileInterfaceParts &CtiFDRTextFileInterfaceParts::setDriveAndPath (string aPath)
 {
     _driveAndPath = aPath;
     return *this;

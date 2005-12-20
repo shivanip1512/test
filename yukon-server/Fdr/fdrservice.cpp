@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/03/29 21:40:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:17:14 $
 *
 * AUTHOR: Ben Wallace
 *
@@ -58,7 +58,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/cstring.h>
 #include <rw/ctoken.h>
 
 #include "cparms.h"
@@ -117,7 +116,7 @@ void CtiFDRService::RunInConsole( DWORD argc, LPTSTR *argv )
     {
         iGoodStatus = FALSE;
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " FDR Could not install control handler" << endl;
+        dout << CtiTime() << " FDR Could not install control handler" << endl;
     }
 
 
@@ -146,7 +145,7 @@ void CtiFDRService::DeInit( )
 void CtiFDRService::Init( )
 {
     // add FDR stuff here
-    RWCString   interfaces;
+    string   interfaces;
     int         count;
 
 
@@ -169,12 +168,15 @@ void CtiFDRService::Init( )
             return;
         }
 
-        RWCTokenizer    next(interfaces);
-        RWCString       myInterfaceName;
-        RWCString       tempString;
+        boost::char_separator<char> sep(",");
+        Boost_char_tokenizer next(interfaces, sep);
+        Boost_char_tokenizer::iterator tok_iter = next.begin(); 
+        
+        string       myInterfaceName;
+        string       tempString;
 
         // parse the interfaces
-        while (!(myInterfaceName=next(",")).isNull())
+        while (!(myInterfaceName=*tok_iter++).empty())
         {
             HMODULE     ModuleHandle = (HMODULE) NULL;
             HINSTANCE   hInterfaceLib;
@@ -182,7 +184,7 @@ void CtiFDRService::Init( )
             myInterfaceName+= ".DLL";
 
             //  load DLL
-            if( !(hInterfaceLib = LoadLibrary( myInterfaceName )) )
+            if( !(hInterfaceLib = LoadLibrary( myInterfaceName.c_str() )) )
             {
                 DWORD errCode = GetLastError();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -307,7 +309,7 @@ void CtiFDRService::startInterfaces( )
     // start all interfaces
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Starting All FDR Interfaces" << endl;
+        dout << CtiTime() << " Starting All FDR Interfaces" << endl;
     }
 
     for (int i=0; i < iInterfaceCount; i++)
@@ -326,7 +328,7 @@ void CtiFDRService::stopInterfaces( )
     // stop all interfaces
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Stopping All FDR Interfaces" << endl;
+        dout << CtiTime() << " Stopping All FDR Interfaces" << endl;
     }   
 
     for (int i=0; i < iInterfaceCount; i++)

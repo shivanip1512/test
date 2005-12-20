@@ -58,11 +58,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     LONG getCurrentGearNumber() const;
     LONG getLastGroupControlled() const;
 //    LONG getDailyOps();
-    const RWDBDateTime& getDirectStartTime() const;
-    const RWDBDateTime& getDirectStopTime() const;
-    const RWDBDateTime& getNotifyActiveTime() const;
-    const RWDBDateTime& getNotifyInactiveTime() const;
-    const RWDBDateTime& getStartedRampingOutTime() const;
+    const CtiTime& getDirectStartTime() const;
+    const CtiTime& getDirectStopTime() const;
+    const CtiTime& getNotifyActiveTime() const;
+    const CtiTime& getNotifyInactiveTime() const;
+    const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
     
     bool getIsRampingIn();
@@ -86,15 +86,15 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
 
     
-    CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
-    CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
-    CtiLMProgramDirect& setNotifyActiveTime(const RWDBDateTime& notify);    
-    CtiLMProgramDirect& setNotifyInactiveTime(const RWDBDateTime& notify);
-    CtiLMProgramDirect& setStartedRampingOutTime(const RWDBDateTime& started);
+    CtiLMProgramDirect& setDirectStartTime(const CtiTime& start);
+    CtiLMProgramDirect& setDirectStopTime(const CtiTime& stop);
+    CtiLMProgramDirect& setNotifyActiveTime(const CtiTime& notify);    
+    CtiLMProgramDirect& setNotifyInactiveTime(const CtiTime& notify);
+    CtiLMProgramDirect& setStartedRampingOutTime(const CtiTime& started);
     CtiLMProgramDirect& setConstraintOverride(BOOL override);
     
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
@@ -135,9 +135,9 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool restoreGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
     bool terminateGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
     
-    void scheduleNotification(const RWDBDateTime& start_time, const RWDBDateTime& stop_time);
-    void scheduleStartNotification(const RWDBDateTime& start_time);
-    void scheduleStopNotification(const RWDBDateTime& stop_time);
+    void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
+    void scheduleStartNotification(const CtiTime& start_time);
+    void scheduleStopNotification(const CtiTime& stop_time);
 	
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -170,16 +170,16 @@ private:
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
 
-    RWDBDateTime _directstarttime;
-    RWDBDateTime _directstoptime;
-    RWDBDateTime _notify_active_time;
-    RWDBDateTime _notify_inactive_time;
+    CtiTime _directstarttime;
+    CtiTime _directstoptime;
+    CtiTime _notify_active_time;
+    CtiTime _notify_inactive_time;
 
-    RWDBDateTime _startedrampingout;
+    CtiTime _startedrampingout;
     BOOL _constraint_override;
     
     //When the dynamic data was last saved
-    RWDBDateTime  _dynamictimestamp;
+    CtiTime  _dynamictimestamp;
     
     RWOrdered _lmprogramdirectgears;
     CtiLMGroupVec  _lmprogramdirectgroups;
@@ -198,6 +198,8 @@ private:
     void ResetGroupsInternalState();    
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
+
+
     
     void restore(RWDBReader& rdr);
 };

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.h-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2005/06/24 20:08:00 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/20 17:17:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.h,v $
+      Revision 1.3  2005/12/20 17:17:15  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.2.2  2005/08/12 19:53:47  jliu
+      Date Time Replaced
+
+      Revision 1.2.2.1  2005/07/27 19:27:58  alauinger
+      merged from the head 20050720
       Revision 1.2  2005/06/24 20:08:00  dsutton
       New interface for KEM electric to send information to their
       power supplier Basin Electric
@@ -53,16 +61,16 @@ public:
     int readConfig( void );
     bool sendMessageToForeignSys ( CtiMessage *aMessage );
 
-    RWCString YukonToForeignTime (RWTime aTime);
+    string YukonToForeignTime (CtiTime aTime);
     CHAR YukonToForeignQuality (USHORT aQuality);
     CHAR YukonToForeignDST (bool aFlag);
 
     bool shouldAppendToFile() const;
     CtiFDR_BEPC &setAppendToFile (bool aFlag);
 
-    RWCString & getCoopID();
-    RWCString  getCoopID() const;
-    CtiFDR_BEPC &setCoopID (RWCString aID);
+    string & getCoopID();
+    string  getCoopID() const;
+    CtiFDR_BEPC &setCoopID (string aID);
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
@@ -81,7 +89,7 @@ public:
 private:
     RWThreadFunction    _threadWriteToFile;
     bool                _appendFlag;
-    RWCString           _coopid;
+    string           _coopid;
 };
 
 #endif

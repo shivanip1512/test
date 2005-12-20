@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.11 $                               #
-#       $Date: 2005/09/15 18:11:59 $                  #
+#       $Revision: 1.12 $                               #
+#       $Date: 2005/12/20 17:25:48 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -111,8 +111,10 @@ DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 
-BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib
+BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\libboost_regex-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib
 
+BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.lib
+                                                     
 !IFDEF DEBUG
 CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD
 DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD 

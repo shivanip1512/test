@@ -9,15 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/08/12 14:08:07 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dev_meter.h"
-
+using namespace std;
 
 CtiDeviceMeter::CtiDeviceMeter( )
 {
@@ -47,9 +47,9 @@ CtiDeviceMeter &CtiDeviceMeter::operator=(const CtiDeviceMeter& aRef)
 
 
 inline bool CtiDeviceMeter::isMeter() const   { return true; }
-inline RWCString CtiDeviceMeter::getMeterGroupName() const              { return getMeterGroup().getCollectionGroup();}
-inline RWCString CtiDeviceMeter::getAlternateMeterGroupName() const     { return getMeterGroup().getTestCollectionGroup();}
-inline RWCString CtiDeviceMeter::getBillingGroupName() const            { return getMeterGroup().getBillingGroup();}
+inline string CtiDeviceMeter::getMeterGroupName() const              { return getMeterGroup().getCollectionGroup();}
+inline string CtiDeviceMeter::getAlternateMeterGroupName() const     { return getMeterGroup().getTestCollectionGroup();}
+inline string CtiDeviceMeter::getBillingGroupName() const            { return getMeterGroup().getBillingGroup();}
 
 CtiTableDeviceMeterGroup  CtiDeviceMeter::getMeterGroup() const     {  return MeterGroup;  }
 CtiTableDeviceMeterGroup& CtiDeviceMeter::getMeterGroup()           {  return MeterGroup;  }
@@ -61,10 +61,10 @@ CtiDeviceMeter& CtiDeviceMeter::setMeterGroup( const CtiTableDeviceMeterGroup &a
 }
 
 
-int CtiDeviceMeter::readDSTFile( RWCString &id )
+int CtiDeviceMeter::readDSTFile( string &id )
 {
     int tmpDSTFlag;
-    RWCString tmpID;
+    string tmpID;
     ifstream dstFile( "\\yukon\\server\\config\\meterDSTfix.txt" );
 
     tmpDSTFlag = FALSE;
@@ -75,8 +75,8 @@ int CtiDeviceMeter::readDSTFile( RWCString &id )
     {
         while( !dstFile.eof( ) )
         {
-            tmpID.readLine( dstFile );
-
+            //tmpID.readLine( dstFile );
+            getline(dstFile,tmpID,'\n');
             if( tmpID == id )
             {
                 tmpDSTFlag = TRUE;
@@ -116,7 +116,7 @@ void CtiDeviceMeter::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiDeviceMeter::shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLength)
 {
-    ULONG nowTime     = RWTime().seconds();
+    ULONG nowTime     = CtiTime().seconds();
     ULONG deltaTime   = (nowTime - aLPTime);
     bool retVal;
 
@@ -155,7 +155,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
                                    RWTPtrSlist< OUTMESS >     &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     bool found = false;
 
@@ -179,13 +179,13 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << RWTime() << "   Command: " << pReq->CommandString() << endl;
+            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
+            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
-                                        RWCString(OutMessage->Request.CommandStr),
+                                        string(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,
                                         OutMessage->Request.RouteID,

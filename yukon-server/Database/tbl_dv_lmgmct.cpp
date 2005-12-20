@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "tbl_dv_lmgmct.h"
 #include "dllbase.h"
 #include "logger.h"
+#include "rwutil.h"
 
 CtiTableLMGroupMCT::CtiTableLMGroupMCT()
 {
@@ -47,9 +48,9 @@ CtiTableLMGroupMCT &CtiTableLMGroupMCT::operator=( const CtiTableLMGroupMCT& aRe
 }
 
 
-RWCString CtiTableLMGroupMCT::getTableName()
+string CtiTableLMGroupMCT::getTableName()
 {
-    return RWCString("lmgroupmct");
+    return string("lmgroupmct");
 }
 
 
@@ -85,7 +86,7 @@ long CtiTableLMGroupMCT::getMCTUniqueAddress() const
 
 void CtiTableLMGroupMCT::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl       = db.table(getTableName());
+    RWDBTable devTbl       = db.table(getTableName().c_str());
     RWDBTable mctAddrTable = db.table("devicecarriersettings");
 
     selector << devTbl["deviceid"  ] <<
@@ -104,7 +105,7 @@ void CtiTableLMGroupMCT::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
 void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString tmpStr;
+    string tmpStr;
     char *buf;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -123,9 +124,10 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
     }
 
     rdr["mctlevel"   ] >> tmpStr;
-    tmpStr.toLower();
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+    
 
-    switch( (tmpStr.data())[0] )
+    switch( (tmpStr.c_str())[0] )
     {
         case 'b':   _addressLevel = Addr_Bronze;    break;
         case 'm':   _addressLevel = Addr_Unique;    break;
@@ -134,8 +136,8 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unknown/bad address level specifier \"" << (tmpStr.data())[0] << "\" for device ID " << _deviceID << endl;
+                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown/bad address level specifier \"" << (tmpStr.c_str())[0] << "\" for device ID " << _deviceID << endl;
             }
 
             _addressLevel = Addr_Invalid;
@@ -147,7 +149,7 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
     _relays = 0;
     for( int i = 0; i < tmpStr.length(); i++ )
     {
-        switch( (tmpStr.data())[i] )
+        switch( (tmpStr.c_str())[i] )
         {
             case '1':   _relays |= 0x01;  break;
             case '2':   _relays |= 0x02;  break;
@@ -160,7 +162,7 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "No relays selected for control in MCT load group, device ID " << _deviceID << endl;
             dout << "All shed commands will fail (restores will work, however)" << endl;
         }
@@ -175,7 +177,7 @@ RWDBStatus CtiTableLMGroupMCT::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -186,7 +188,7 @@ RWDBStatus CtiTableLMGroupMCT::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -197,7 +199,7 @@ RWDBStatus CtiTableLMGroupMCT::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }
@@ -207,7 +209,7 @@ RWDBStatus CtiTableLMGroupMCT::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return RWDBStatus::notSupported;
 }

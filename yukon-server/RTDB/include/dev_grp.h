@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ class CtiDeviceGroupBase : public CtiDeviceBase
 protected:
 
     INT _isShed;
-    RWCString _lastCommand;
+    string _lastCommand;
 
 private:
 
@@ -83,9 +83,9 @@ public:
 
     void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList)
     {
-        RWTime now;
-        RWCString prevLastAction = _lastCommand;    // Save a temp copy.
-        _lastCommand = RWCString();                 // Blank it!
+        CtiTime now;
+        string prevLastAction = _lastCommand;    // Save a temp copy.
+        _lastCommand = string();                 // Blank it!
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will
@@ -93,18 +93,18 @@ public:
         //
         if(parse.getActionItems().entries())
         {
-            bool reducelogs = !gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG").compareTo("true", RWCString::ignoreCase);
+            bool reducelogs = !stringCompareIgnoreCase(gConfigParms.getValueAsString("REDUCE_CONTROL_REPORTS_TO_SYSTEM_LOG"),"true");
 
             for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
             {
-                RWCString actn = parse.getActionItems()[offset];
-                RWCString desc = getDescription(parse);
+                string actn = parse.getActionItems()[offset];
+                string desc = getDescription(parse);
 
                 if(offset > 0) _lastCommand += " / ";
                 _lastCommand += actn;
 
                 // Check if this is a repeat of a previous control.  We should suppress repeats.
-                if( !reducelogs || now.seconds() > _lastCommandExpiration || !prevLastAction.contains(actn) )
+                if( !reducelogs || now.seconds() > _lastCommandExpiration || !prevLastAction.find(actn) )
                 {
                     CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                     LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
@@ -117,7 +117,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    void reportControlStart(int isshed, int shedtime, int reductionratio, RWTPtrSlist< CtiMessage >  &vgList, RWCString cmd = RWCString("") )
+    void reportControlStart(int isshed, int shedtime, int reductionratio, RWTPtrSlist< CtiMessage >  &vgList, string cmd = string("") )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
@@ -127,7 +127,7 @@ public:
 
         if(pControlStatus != 0)
         {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, RWTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), (isshed == CONTROLLED ? reductionratio : 0));
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, CtiTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), (isshed == CONTROLLED ? reductionratio : 0));
 
             hist->setControlType( cmd );      // Could be the state group name ????
             hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);
@@ -138,7 +138,7 @@ public:
             if(pControlStatus->isPseudoPoint())
             {
                 // There is no physical point to observe and respect.  We lie to the control point.
-                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)(isshed), NormalQuality, StatusPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
+                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)(isshed), NormalQuality, StatusPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));
                 pData->setMessagePriority( pData->getMessagePriority() + 1 );
                 //vgList.insert(pData);
                 pMulti->insert(pData);
@@ -147,8 +147,8 @@ public:
             if(isshed == CONTROLLED && shedtime > 0)
             {
                 // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
-                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, RWCString(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
-                pData->setTime( RWTime() + shedtime );
+                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
+                pData->setTime( CtiTime() + shedtime );
                 pData->setMessagePriority( pData->getMessagePriority() - 1 );
                 //vgList.insert(pData);
                 pMulti->insert(pData);
@@ -158,7 +158,7 @@ public:
         CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );
         if(pAnalog)
         {
-            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));
             pData->setMessagePriority( pData->getMessagePriority() + 1 );
             //vgList.insert(pData);
             pMulti->insert(pData);
@@ -167,7 +167,7 @@ public:
         vgList.insert(pMulti);
     }
 
-    RWCString getLastCommand() const
+    string getLastCommand() const
     {
         return _lastCommand;
     }

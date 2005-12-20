@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/01/04 22:16:35 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:20:29 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,14 +26,15 @@
 #include "yukon.h"
 #include <set>
 #include <vector>
-using namespace std;
+using std::set;
+using std::vector;
 
 class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceGroupBase // 2004/1/4 CGP // : public CtiDeviceBase
 {
 protected:
 
-    typedef vector< CtiDeviceSPtr >           deviceVec_t;
-    typedef vector< CtiDeviceSPtr >::iterator deviceIter_t;
+    typedef std::vector< CtiDeviceSPtr >           deviceVec_t;
+    typedef std::vector< CtiDeviceSPtr >::iterator deviceIter_t;
 
     deviceVec_t _deviceList;
 
@@ -66,7 +67,7 @@ public:
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     virtual INT processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList );
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
 };
 
 #endif // #ifndef __DEV_GRP_MACRO_H__

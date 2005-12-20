@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_cicust.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,8 +22,6 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -56,9 +54,9 @@ CtiTableCICustomerBase& CtiTableCICustomerBase::setID( const LONG &aRef )
     return *this;
 }
 
-RWCString CtiTableCICustomerBase::getTableName()
+string CtiTableCICustomerBase::getTableName()
 {
-    return RWCString("CICustomerBase");
+    return string("CICustomerBase");
 }
 
 RWDBStatus CtiTableCICustomerBase::Insert()
@@ -66,7 +64,7 @@ RWDBStatus CtiTableCICustomerBase::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
 
@@ -76,7 +74,7 @@ RWDBStatus CtiTableCICustomerBase::Insert()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     ExecuteInserter(conn,inserter,__FILE__,__LINE__);
@@ -89,7 +87,7 @@ RWDBStatus CtiTableCICustomerBase::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
 
@@ -98,7 +96,7 @@ RWDBStatus CtiTableCICustomerBase::Update()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     ExecuteUpdater(conn,updater,__FILE__,__LINE__);
@@ -117,7 +115,7 @@ RWDBStatus CtiTableCICustomerBase::Restore()
     RWDBStatus dbstat;
 
     {
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBSelector selector = getDatabase().selector();
 
         selector << table["deviceid"];
@@ -159,8 +157,8 @@ RWDBStatus CtiTableCICustomerBase::Restore()
             if(findpair.second == false)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Company lists contactid (tbl CICustomerContact)" << contactid << endl;
-                dout << RWTime() << "    Multiple times.  Only one notification will be sent." << endl;
+                dout << CtiTime() << " Company lists contactid (tbl CICustomerContact)" << contactid << endl;
+                dout << CtiTime() << "    Multiple times.  Only one notification will be sent." << endl;
             }
         }
     }
@@ -198,7 +196,7 @@ RWDBStatus CtiTableCICustomerBase::Restore()
                 if(findpair.second == false)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Company " << endl;
+                    dout << CtiTime() << " Company " << endl;
                     dout << "    Lists locationid (tbl CustomerContact) " << iTemp << endl;
                     dout << "    Multiple times with different contact names/ids." << endl;
                     dout << "    Only one notification will be sent. " << endl;
@@ -216,7 +214,7 @@ RWDBStatus CtiTableCICustomerBase::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getID() );
@@ -226,7 +224,7 @@ RWDBStatus CtiTableCICustomerBase::Delete()
 
 void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table( getTableName() );
+    keyTable = db.table( getTableName().c_str() );
 
     selector <<
     keyTable["deviceid"];
@@ -236,12 +234,9 @@ void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 
 void CtiTableCICustomerBase::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString temp;
 
-    {
-
-        rdr["deviceid"] >> _id;
-    }
+    rdr["deviceid"] >> _id;
+    
 
     return;
 }
@@ -278,7 +273,7 @@ set< int > CtiTableCICustomerBase::getRecipientSet() const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
 
@@ -305,7 +300,7 @@ void CtiTableCICustomerBase::dumpRecipients() const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -333,7 +328,7 @@ vector<int> CtiTableCICustomerBase::getRecipientVector() const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return vect;

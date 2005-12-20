@@ -14,10 +14,9 @@
 #ifndef CCMESSAGE_H
 #define CCMESSAGE_H
 
-#include <rw/cstring.h>
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/rwtime.h>
+#include "ctitime.h"
 
 #include "message.h"
 #include "ccsubstationbus.h"
@@ -29,17 +28,17 @@ class CtiCCMessage : public CtiMessage
 
 public:
     CtiCCMessage() { };
-    CtiCCMessage(const RWCString& message);
+    CtiCCMessage(const string& message);
 
     virtual ~CtiCCMessage() { };
 
-    const RWCString& getMessage() const;
+    const string& getMessage() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
 private:
-    RWCString _message;
+    string _message;
 };
 
 class CtiCCCommand : public CtiCCMessage
@@ -182,7 +181,7 @@ public:
 
     virtual ~CtiPAOScheduleMsg();
 
-    CtiPAOScheduleMsg(LONG action, LONG id, RWDBDateTime nextRunTime, LONG intervalRate) : _action(action), _scheduleId(id), _nextRunTime(nextRunTime), _intervalRate(intervalRate) { }; //provided for polymorphic persitence only
+    CtiPAOScheduleMsg(LONG action, LONG id, const CtiTime& nextRunTime, LONG intervalRate) : _action(action), _scheduleId(id), _nextRunTime(nextRunTime), _intervalRate(intervalRate) { }; //provided for polymorphic persitence only
     
 
     LONG getAction() const { return _action; };
@@ -199,8 +198,8 @@ private:
 
     LONG          _action;
     LONG          _scheduleId; //scheduleId...
-    RWDBDateTime  _nextRunTime; 
-    RWDBDateTime  _lastRunTime; 
+    CtiTime  _nextRunTime; 
+    CtiTime  _lastRunTime; 
     LONG          _intervalRate;
 
 };

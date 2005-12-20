@@ -35,7 +35,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         bool trouble = false;
 	if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) ) {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the dispatch host" << endl;
+            dout << CtiTime()  << " - Using " << temp << " as the dispatch host" << endl;
             dispatch_host = temp;
         }
         else {
@@ -44,7 +44,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
         if( (*fpGetAsString)("DISPATCH_PORT", temp, 64) ) {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the dispatch port" << endl;
+            dout << CtiTime()  << " - Using " << temp << " as the dispatch port" << endl;
             dispatch_port = atoi(temp);
         }
         else {
@@ -53,7 +53,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 	if( trouble ) {
 	    CtiLockGuard< CtiLogger > guard(dout);
-	    dout << RWTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
+	    dout << CtiTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
 	}
 
 	FreeLibrary(hLib);
@@ -64,7 +64,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 	dout << "Unable to load cparms dll " << endl;
     }
 
-    gDispatchConnection = new CtiConnection(dispatch_port, dispatch_host.data());
+    gDispatchConnection = new CtiConnection(dispatch_port, dispatch_host.c_str());
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("CTILOGIC", 0, false );
     gDispatchConnection->WriteConnQue( reg2 );

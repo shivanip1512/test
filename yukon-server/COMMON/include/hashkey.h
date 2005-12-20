@@ -5,13 +5,17 @@
 
 #include <rw\defs.h>
 #include <limits.h>
+#include <string>
+#include "hash_functions.h"
+
+using std::string;
 
 class CtiHashKey
 {
 private:
 
    bool              _bIDBased;
-   RWCString         _hashStr;
+   string         _hashStr;
    unsigned long     ID;
 
 
@@ -23,7 +27,7 @@ public:
       ID(MyId)
    {}
 
-   CtiHashKey(const RWCString str) :
+   CtiHashKey(const string str) :
       _bIDBased(false),
       _hashStr(str),
       ID(LONG_MAX)
@@ -60,8 +64,8 @@ public:
       return *this;
    }
 
-   RWCString      getHashStr() const                    { return _hashStr; }
-   CtiHashKey&    setHashStr(const RWCString &aStr)
+   string      getHashStr() const                    { return _hashStr; }
+   CtiHashKey&    setHashStr(const string &aStr)
    {
       _hashStr = aStr;
       return *this;
@@ -75,7 +79,7 @@ public:
       }
       else
       {
-         return _hashStr.hash();
+         return RSHash(_hashStr);
       }
    }
 

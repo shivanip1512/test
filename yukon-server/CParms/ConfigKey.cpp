@@ -1,20 +1,39 @@
 #include "yukon.h"
 #include <string.h>
 #include <stdlib.h>
+#include <algorithm>
+#include "rwutil.h"
+
+using namespace std;
 
 #include "configkey.h"
 
 #define COLLECTABLE_CONFIGKEY 0x1234
 
+unsigned int str_hash(const std::string& str)
+{
+
+   unsigned int hash = 5381;
+
+   for(unsigned int i = 0; i < str.length(); i++)
+   {
+      hash = ((hash << 5) + hash) + str[i];
+   }
+
+   return (hash & 0x7FFFFFFF);
+
+
+}
 
 RWDEFINE_COLLECTABLE(CtiConfigKey, COLLECTABLE_CONFIGKEY)
 
 CtiConfigKey::CtiConfigKey() : Key()
 {;}
 
-CtiConfigKey::CtiConfigKey(RWCString key) : Key(key)
+CtiConfigKey::CtiConfigKey(const string& key)
 {
-   Key.toUpper();
+   Key = key;
+   std::transform(Key.begin(), Key.end(), Key.begin(), ::toupper);
 }
 
 // Assignement operator
@@ -24,17 +43,17 @@ CtiConfigKey::operator=(const CtiConfigKey& key)
    Key = key.Key;
    return (*this);
 }
-
+/*
 RWspace
 CtiConfigKey::binaryStoreSize() const
 {
    return Key.binaryStoreSize();
 }
-
+*/
 int
 CtiConfigKey::compareTo(const RWCollectable *X ) const
 {
-   RWCString aStr = ((const CtiConfigKey*)X)->Key;
+   string aStr = ((const CtiConfigKey*)X)->Key;
 
    if(Key == aStr) return 0;
 
@@ -51,7 +70,7 @@ CtiConfigKey::compareTo(const RWCollectable *X ) const
 unsigned
 CtiConfigKey::hash() const
 {
-   return Key.hash();
+    return str_hash(Key);
 }
 
 RWBoolean
@@ -61,7 +80,7 @@ CtiConfigKey::isEqual(const RWCollectable *c) const
 
    if(c->isA() == COLLECTABLE_CONFIGKEY)
    {
-      RWCString aKey = (((const CtiConfigKey*)c)->getKey());
+      string aKey = (((const CtiConfigKey*)c)->getKey());
 
       aB = (Key == aKey);
    }

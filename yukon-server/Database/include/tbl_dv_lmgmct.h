@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/06/27 20:53:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/select.h>
+#include <string>
 
 #include "dlldefs.h"
 
@@ -55,7 +56,7 @@ public:
         Addr_Invalid
     };
 
-    static RWCString getTableName();
+    static std::string getTableName();
 
     unsigned int getRelays();
     unsigned long getAddress() const;

@@ -19,7 +19,6 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 
 #include "dev_repeater.h"
 
@@ -53,9 +52,9 @@ public:
    static bool initCommandStore( );
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-   virtual INT ResultDecode(INMESS*InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+   virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
 
-   INT decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   INT decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 };
 
 #endif // #ifndef __DEV_REPEATER800_H__

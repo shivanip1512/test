@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/09/13 15:55:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,8 +158,8 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+                                dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
+    
                             }
                             status = NORMAL;//quit command failed, all others passed, return normal
                         }
@@ -176,8 +176,8 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+                            dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
+    
                         }
                         status = NORMAL;//quit command failed, all others passed, return normal
                     }
@@ -195,7 +195,7 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
     {//reset and throw to regular error catcher.
         resetStates();
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         throw;
     }
     return status;
@@ -474,7 +474,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
     {//reset state settings and throw error to regular catcher.
         resetStates();
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         throw;
     }
     return status;
@@ -495,7 +495,7 @@ int CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceSnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceSnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -541,8 +541,8 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("SNPP Devices do not support this command (yet?)"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("SNPP Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -568,18 +568,18 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 char* CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!_table.getSenderID().isNull() && !_table.getSenderID().contains("none"))
+    if(!_table.getSenderID().empty() && !_table.getSenderID().find("none")!=string::npos)
     {
-        return const_cast<char *>(_table.getSenderID().data());
+        return const_cast<char *>(_table.getSenderID().c_str());
     }
     return NULL;
 }
 
 char* CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!_table.getSecurityCode().isNull() && !_table.getSecurityCode().contains("none"))
+    if(!_table.getSecurityCode().empty() && !_table.getSecurityCode().find("none")!=string::npos)
     {
-        return const_cast<char *>(_table.getSecurityCode().data());
+        return const_cast<char *>(_table.getSecurityCode().c_str());
     }
     return NULL;
 }
@@ -621,9 +621,9 @@ char* CtiDeviceSnppPagingTerminal::getPagePass()
 
 char* CtiDeviceSnppPagingTerminal::getPageNumber()
 {
-    if(!_table.getPagerNumber().isNull() && !_table.getPagerNumber().contains("none"))
+    if(!_table.getPagerNumber().empty() && !_table.getPagerNumber().find("none")!=string::npos)
     {
-        return const_cast<char *>(_table.getPagerNumber().data());
+        return const_cast<char *>(_table.getPagerNumber().c_str());
     }
     return NULL;
 }

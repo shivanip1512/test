@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,8 @@
 #include "numstr.h"
 #include "verification_objects.h"
 #include "dev_tap.h"
+
+using namespace std;
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
@@ -74,8 +76,8 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("TAP Devices do not support this command (yet?)"),
+                                                    string(OutMessage->Request.CommandStr),
+                                                    string("TAP Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -195,16 +197,15 @@ CHAR  CtiDeviceTapPagingTerminal::getPageBuffer(const INT i) const
 /*
 CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPageBuffer(const CHAR* copyBuffer, const INT len)
 {
-        setPageLength(len);
-        memcpy(_pageBuffer, copyBuffer, len);
-
+    setPageLength(len);
+    ::memcpy(_pageBuffer, copyBuffer, len);
     return *this;
 }
 */
 
-RWCString CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse) const
 {
-    RWCString trelay;
+    string trelay;
 
     trelay = "PAGE: " + getName();
 
@@ -523,14 +524,14 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
 
             SendLength = 4;
 
-            if(getPassword().isNull())
+            if(getPassword().empty())
             {
                 xfer.getOutBuffer()[4] = CHAR_CR;
                 SendLength += 1;
             }
             else
             {
-                memcpy (&xfer.getOutBuffer()[4], getPassword().data(), 6);
+                ::memcpy (&xfer.getOutBuffer()[4], getPassword().c_str(), 6);
                 xfer.getOutBuffer()[10] = CHAR_CR;
                 SendLength += 7;
             }
@@ -669,7 +670,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
 INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList)
 {
     ULONG i;
-    RWCString outStr;
+    string outStr;
     ULONG TracePointer;
 
     for(i = 0; i < Count; i++)
@@ -680,22 +681,22 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlis
     CtiTraceMsg trace;
 
     trace.setBrightYellow();
-    trace.setTrace(  RWTime().asString() + RWCString(" ") );
+    trace.setTrace(  CtiTime().asString() + string(" ") );
     trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightCyan();
-    trace.setTrace(  getName() + RWCString(" ") );
+    trace.setTrace(  getName() + string(" ") );
     trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightWhite();
-    trace.setTrace(  RWCString("SENT: ") );
+    trace.setTrace(  string("SENT: ") );
     trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightGreen();
-    trace.setTrace( RWCString("\"") + outStr + RWCString("\"") );
+    trace.setTrace( string("\"") + outStr + string("\"") );
     trace.setEnd(true);
     traceList.insert( trace.replicateMessage() );
 
@@ -718,33 +719,33 @@ INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlis
         CtiTraceMsg trace;
 
         trace.setBrightYellow();
-        trace.setTrace(  RWTime().asString() + RWCString(" ") );
+        trace.setTrace(  CtiTime().asString() + string(" ") );
         trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightCyan();
-        trace.setTrace(  getName() + RWCString(" ") );
+        trace.setTrace(  getName() + string(" ") );
         trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightWhite();
-        trace.setTrace(  RWCString("RECV: ") );
+        trace.setTrace(  string("RECV: ") );
         trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightMagenta();
-        trace.setTrace( RWCString("\"") + _inStr + RWCString("\"") );
+        trace.setTrace( string("\"") + _inStr + string("\"") );
         trace.setEnd(true);
         traceList.insert( trace.replicateMessage() );
 
-        _inStr = RWCString();     // Reset it for the next message
+        _inStr = string();     // Reset it for the next message
     }
 
     return(NORMAL);
 }
 
 
-INT CtiDeviceTapPagingTerminal::printChar( RWCString &Str, CHAR Char )
+INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
 {
     switch(Char)
     {
@@ -799,15 +800,15 @@ INT CtiDeviceTapPagingTerminal::printChar( RWCString &Str, CHAR Char )
     default:
         if(Char >= 0x20 && Char < 0x7f)
         {
-            Str.append(Char);
+            Str.append(char2string(Char));
         }
         else
         {
-            Str.append( RWCString("<0x") + CtiNumStr(Char).hex().zpad(2) + RWCString(">") );
+            Str.append( string("<0x") + CtiNumStr(Char).hex().zpad(2) + string(">") );
             if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Unhandled character 0x" << hex << (int)Char << dec << endl;
             }
         }
@@ -865,7 +866,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
                 /* Stick a little TAPTerm fakey in there */
                 out[sendCnt++] = incrementPagePrefix();
 
-                sprintf(faker, "%05d", (getPageCount()++ & 0x0000ffff));
+                ::sprintf(faker, "%05d", (getPageCount()++ & 0x0000ffff));
 
                 for(i = 0; i < 5; i++)
                 {
@@ -1082,13 +1083,13 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                     }
                     else  // This is the good state;
                     {
-                        if(!_inStr.contains("<ACK>"))
+                        if(!_inStr.find("<ACK>")!=string::npos)
                         {
-                            if(_inStr.contains("<RS>"))
+                            if(_inStr.find("<RS>")!=string::npos)
                             {
                                 status = ErrorPageRS;
                             }
-                            else if(_inStr.contains("<NAK>"))
+                            else if(_inStr.find("<NAK>")!=string::npos)
                             {
                                 status = ErrorPageNAK;
                             }
@@ -1148,7 +1149,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -1342,7 +1343,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " " << getName() << "  Failed at state " << getCurrentState() << endl;
                 }
 
@@ -1425,7 +1426,7 @@ _idByteCount(20),
 _pageCount(0),
 _pagePrefix('a'),
 _pageLength(0),
-_inStr(RWCString()),
+_inStr(string()),
 _pageBuffer(NULL),
 _outMessage(NULL)
 {}
@@ -1437,7 +1438,7 @@ CtiDeviceTapPagingTerminal::CtiDeviceTapPagingTerminal(const CtiDeviceTapPagingT
    _pageCount(0),
    _pagePrefix('a'),
    _pageLength(0),
-   _inStr(RWCString()),
+   _inStr(string()),
    _pageBuffer(NULL)
 {
    *this = aRef;
@@ -1509,22 +1510,22 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
      *  This is an undocumented cparm.  It is in here only due to a lack of clarity on the effects of making the change in the else
      *  clause.  Can you say emergency backup?
      */
-    if( !gConfigParms.getValueAsString("TCPARM_USE_OLD_TAP_GUID").compareTo("true", RWCString::ignoreCase) )
+    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("TCPARM_USE_OLD_TAP_GUID"),"true") )
     {
-        RWCString num;
+        string num;
 
         for(int i = 0; i < getTap().getPagerNumber().length(); i++ )
         {
-            CHAR ch = getTap().getPagerNumber().data()[(size_t)i];
+            CHAR ch = getTap().getPagerNumber()[(size_t)i];
 
-            if( isdigit(ch) )
+            if( ::isdigit(ch) )
             {
-                num.append(ch);
+                num.append(char2string(ch));
             }
         }
 
         // Now get a standard CRC
-        CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+        CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.c_str(), num.length(), FALSE);
     }
     else
     {
@@ -1552,8 +1553,8 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
 
     if(pagesPerMinute > 0)
     {
-        RWTime now;
-        RWTime newbatch = nextScheduledTimeAlignedOnRate(_pacingTimeStamp, 60);
+        CtiTime now;
+        CtiTime newbatch = nextScheduledTimeAlignedOnRate(_pacingTimeStamp, 60);
 
         if(now >= newbatch)
         {
@@ -1567,7 +1568,7 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
             {
                 _pacingReport = true;
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
             }
 
             toofast = true;

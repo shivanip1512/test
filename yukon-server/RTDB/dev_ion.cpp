@@ -11,8 +11,6 @@
  *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
 #include "porter.h"
 
@@ -67,25 +65,25 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
 }
 
 
-RWCString CtiDeviceION::getMeterGroupName() const
+string CtiDeviceION::getMeterGroupName() const
 {
     return _collectionGroup;
 }
 
 
-RWCString CtiDeviceION::getAlternateMeterGroupName() const
+string CtiDeviceION::getAlternateMeterGroupName() const
 {
     return _testCollectionGroup;
 }
 
 
-RWCString CtiDeviceION::getBillingGroupName() const
+string CtiDeviceION::getBillingGroupName() const
 {
     return _billingGroup;
 }
 
 
-void CtiDeviceION::setMeterGroupData( const RWCString &collectionGroup, const RWCString &testCollectionGroup, const RWCString &meterNumber, const RWCString &billingGroup)
+void CtiDeviceION::setMeterGroupData( const string &collectionGroup, const string &testCollectionGroup, const string &meterNumber, const string &billingGroup)
 {
     _collectionGroup     = collectionGroup;
     _testCollectionGroup = testCollectionGroup;
@@ -104,7 +102,7 @@ Protocol::Interface *CtiDeviceION::getProtocol( void )
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceION::getDescription(const CtiCommandParser &parse) const
+string CtiDeviceION::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }
@@ -113,7 +111,7 @@ RWCString CtiDeviceION::getDescription(const CtiCommandParser &parse) const
 INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
 
     bool found = false;
 
@@ -126,7 +124,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 case ScanRateStatus:
                 case ScanRateGeneral:
                 {
-                    if( pReq->CommandString().contains("post_control", RWCString::ignoreCase) )
+                    if( findStringIgnoreCase(pReq->CommandString(),"post_control") )
                     {
                         //  post-control scan
                         _ion.setCommand(CtiProtocolION::Command_ExceptionScanPostControl);
@@ -166,7 +164,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -229,7 +227,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
             if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && has_offset )
             {
-                if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
+                if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"),"true") == 0 )
                 {
                     if( offset == 20 || offset == 21 )
                     {
@@ -253,7 +251,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     //  Also note that this is sending "CLOSED" as the expected state.
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), 1, RWTime(), 86400, 100);
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), 1, CtiTime(), 86400, 100);
 
                     hist->setMessagePriority(hist->getMessagePriority() + 1);
                     vgList.insert(hist);
@@ -265,12 +263,12 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                                             (DOUBLE)hist->getRawState(),
                                                                             NormalQuality,
                                                                             StatusPointType,
-                                                                            RWCString("This point has been controlled"));
+                                                                            string("This point has been controlled"));
                         pData->setUser(pReq->getUser());
                         vgList.insert(pData);
                     }
 
-                    OutMessage->ExpirationTime = RWTime().seconds() + point->getControlExpirationTime();
+                    OutMessage->ExpirationTime = CtiTime().seconds() + point->getControlExpirationTime();
                 }
 
                 _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
@@ -287,7 +285,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command. Command = " << parse.getCommand() << endl;
             }
 
@@ -306,7 +304,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail(_ion.getCommand()) ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
 
         CtiReturnMsg *retmsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       RWCString(OutMessage->Request.CommandStr),
+                                                       string(OutMessage->Request.CommandStr),
                                                        getName() + " / command submitted",
                                                        nRet,
                                                        OutMessage->Request.RouteID,
@@ -331,13 +329,13 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << RWTime() << "   Command: " << pReq->CommandString() << endl;
+            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
+            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
         }
 
         resultString = "NoMethod or invalid command.";
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
-                                        RWCString(OutMessage->Request.CommandStr),
+                                        string(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,
                                         OutMessage->Request.RouteID,
@@ -392,7 +390,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan general");
@@ -418,7 +416,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan integrity");
@@ -443,7 +441,7 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan accumulator");
@@ -460,16 +458,16 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> pointData;
     RWTPtrSlist<CtiSignalMsg>    eventData;
-    RWCString returnInfo;
+    string returnInfo;
 
     bool expectMore = false;
 
-    RWCString commandStr(InMessage->Return.CommandStr);
+    string commandStr(InMessage->Return.CommandStr);
 
     resetScanFlag(ScanRateGeneral);
 
@@ -484,7 +482,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 expectMore = true;
@@ -497,11 +495,11 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                                  InMessage->Return.MacroOffset,
                                                                  InMessage->Return.Attempt);
 
-                if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
+                if( findStringIgnoreCase(commandStr,"duke_issg_start") )
                 {
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_start");
                 }
-                else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
+                else if( findStringIgnoreCase(commandStr,"duke_issg_stop") )
                 {
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_stop");
                 }
@@ -523,7 +521,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             {
                 if( _postControlScanCount < IONPostControlScanMax )
                 {
-                    if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
+                    if( findStringIgnoreCase(commandStr,"duke_issg_start") )
                     {
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) == 0 &&
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) == 0 )
@@ -551,7 +549,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                             delete newReq;
                         }
                     }
-                    else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
+                    else if( findStringIgnoreCase(commandStr,"duke_issg_stop") )
                     {
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
@@ -591,7 +589,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     expectMore = true;
@@ -618,7 +616,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 {
                     CtiRequestMsg *newReq;
 
-                    if( gConfigParms.getValueAsString("PORTER_ION_EVENTLOG_TIMESYNCS").compareTo("true", RWCString::ignoreCase) == 0 )
+                    if( findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_ION_EVENTLOG_TIMESYNCS"),"true") == 0 )
                     {
                         newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                           "putconfig timesync",
@@ -695,7 +693,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     else
     {
         char error_str[80];
-        RWCString resultString;
+        string resultString;
 
         if( !ErrReturn )
         {
@@ -704,10 +702,10 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
         GetErrorString(ErrReturn, error_str);
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                       RWCString(InMessage->Return.CommandStr),
+                                                       string(InMessage->Return.CommandStr),
                                                        resultString,
                                                        ErrReturn,
                                                        InMessage->Return.RouteID,
@@ -723,8 +721,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 }
 
 
-void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,
-                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, RWCString &returnInfo, bool expectMore )
+void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,
+                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, string &returnInfo, bool expectMore )
 {
     CtiReturnMsg *retMsg, *vgMsg;
 
@@ -742,7 +740,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         CtiPointBase    *point;
         double           value;
-        RWCString        resultString;
+        string        resultString;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
@@ -806,7 +804,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
     retMsg->setResultString(returnInfo);
 
     //  not too kosher, but gets the job done
-    if( parse.getCommandStr().contains("eventlog", RWCString::ignoreCase) )
+    if( findStringIgnoreCase(parse.getCommandStr(),"eventlog") )
     {
         if( !_ion.areEventLogsComplete() )
         {
@@ -828,23 +826,23 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 }
 
 
-INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL, ErrReturn = InMessage->EventCode & 0x3fff;
 
     //CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *retMsg;
     CtiCommandMsg    *pMsg;
-    RWCString         resultString;
+    string         resultString;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                     RWCString(InMessage->Return.CommandStr),
-                                     RWCString(),
+                                     string(InMessage->Return.CommandStr),
+                                     string(),
                                      InMessage->EventCode & 0x7fff,
                                      InMessage->Return.RouteID,
                                      InMessage->Return.MacroOffset,
@@ -913,7 +911,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
         GetErrorString(ErrReturn, error_str);
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         retMsg->setResultString(resultString);
 

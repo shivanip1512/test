@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_rtcomm.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,11 +22,10 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
+
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <windows.h>
@@ -81,7 +80,7 @@ public:
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   static RWCString getTableName();
+   static string getTableName();
 
    virtual RWDBStatus Restore();  //object from db
    virtual RWDBStatus Insert();   //object into db from mem

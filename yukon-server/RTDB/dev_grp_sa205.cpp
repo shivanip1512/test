@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/10/25 14:36:22 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/12/20 17:20:22 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,11 +107,11 @@ LONG CtiDeviceGroupSA205::getRouteID()
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString CtiDeviceGroupSA205::getDescription(const CtiCommandParser & parse) const
+string CtiDeviceGroupSA205::getDescription(const CtiCommandParser & parse) const
 {
     CHAR  op_name[20];
     INT   mask = 1;
-    RWCString tmpStr;
+    string tmpStr;
 
 
     tmpStr = "Group: " + getName();
@@ -152,9 +152,9 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 {
     bool gracefulrestore = false;
     INT   nRet = NoError;
-    RWCString resultString;
+    string resultString;
     CtiRouteSPtr Route;
-    RWTime now;
+    CtiTime now;
 
     ULONG etime = 0;
 
@@ -178,7 +178,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
          * Beyond the last period, a graceful restore should do nothing.
          */
 
-        if(parse.getCommandStr().contains(" abrupt", RWCString::ignoreCase))
+        if(findStringIgnoreCase(parse.getCommandStr(), " abrupt"))
         {
             control = false;
         }
@@ -186,12 +186,12 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         {
             {
                 CtiLockGuard<CtiLogger> slog_guard(slog);
-                slog << RWTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
+                slog << CtiTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
             }
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
-                dout << RWTime() << " " << getName() << " Last interval of previous control begins at... " << _onePeriodLeft << endl;
+                dout << CtiTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
+                dout << CtiTime() << " " << getName() << " Last interval of previous control begins at... " << _onePeriodLeft << endl;
             }
 
             control = true; // Cause the protocol's function to remain a control type command, (not restore).
@@ -205,7 +205,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     int func = _loadGroup.getFunction(control);
 
-    parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
+    parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().c_str()));
     parse.setValue("sa_function", func);
 
     // Recover the "new" s/ctime.
@@ -221,7 +221,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         parse.setValue("control_reduction", 0 );
         parse.setValue("cycle_count", 0);
 
-        resultString = RWTime().asString() + " " + getName() + " is within the  graceful restore period.  No action is required to terminate the cycling. Use \"abrupt\" to force command.";
+        resultString = CtiTime().asString() + " " + getName() + " is within the  graceful restore period.  No action is required to terminate the cycling. Use \"abrupt\" to force command.";
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
             slog << resultString << endl;
@@ -232,7 +232,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         }
 
         nRet = BADPARAM;
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 0), vgList, parse.getCommandStr() );
@@ -242,7 +242,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         parse.setValue("control_interval", 0);
         parse.setValue("control_reduction", 0 );
-        if(func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase))
+        if(func == 1 && findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123"),"true"))
         {
             // restores on Function 1 (Relay 3) must be handled with a 7.5m shed!
             parse.setValue("sa_restore", TRUE);
@@ -284,7 +284,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** No method / Bad syntax for " << parse.getCommandStr() << endl;;
+            dout << CtiTime() << " **** No method / Bad syntax for " << parse.getCommandStr() << endl;;
         }
 
         return nRet;
@@ -303,12 +303,12 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         //  Form up the reply here since the ExecuteRequest function will consume the
         //  OutMessage.
         //
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.insert( pRet );
@@ -326,7 +326,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -337,7 +337,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << resultString << endl;
+            dout << CtiTime() << resultString << endl;
         }
     }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/12/20 17:20:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"
+
+using std::make_pair;
 
 using Cti::Protocol::Emetcon;
 
@@ -112,7 +114,7 @@ bool CtiDeviceDCT501::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
 ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 {
-    RWTime        Now, channelTime, blockStart;
+    CtiTime        Now, channelTime, blockStart;
     unsigned long midnightOffset;
     int           lpBlockSize, lpDemandRate, lpMaxBlocks;
 
@@ -163,7 +165,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 
                     if(pd.Restore().errorCode() == RWDBStatus::ok)
                     {
-                        _lastLPTime[i] = pd.getTimeStamp().rwtime().seconds();
+                        _lastLPTime[i] = pd.getTimeStamp().seconds();
                     }
                 }
 
@@ -180,19 +182,19 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
                 midnightOffset += blockStart.second();
 
                 //  make sure we're actually at the beginning of a block
-                blockStart -= midnightOffset % lpBlockSize;
+                blockStart = blockStart - midnightOffset % lpBlockSize;
 
                 //  we can only request in blocks, so we plan to request LP data
                 //    after one block (6 intervals) has passed
                 _nextLPTime[i]  = blockStart + lpBlockSize;
                 //  also add on time for it to move out of the memory we're requesting
-                _nextLPTime[i] += LPBlockEvacuationTime;
+                _nextLPTime[i] = _nextLPTime[i] + LPBlockEvacuationTime;
 
                 //  if we're overdue
                 while( (_nextLPTime[i] <= (Now - MCT_LPWindow)) ||
                        (_nextLPTime[i] <= _lastLPRequest[i]) )
                 {
-                    _nextLPTime[i] += getLPRetryRate(lpDemandRate);
+                    _nextLPTime[i] = _nextLPTime[i] + getLPRetryRate(lpDemandRate);
                 }
             }
 
@@ -207,7 +209,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 #if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
+        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(nextTime) << endl;
     }
 #endif
 
@@ -225,10 +227,10 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                    lpMaxBlocks,
                    lpBlockSize,
                    lpMidnightOffset;
-    RWTime         lpBlockStartTime;
-    RWTime         Now;
+    CtiTime         lpBlockStartTime;
+    CtiTime         Now;
     OUTMESS       *tmpOutMess;
-    RWCString      lpDescriptorString;
+    string      lpDescriptorString;
     int            lpChannel;
 
     lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
@@ -265,7 +267,7 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     {
                         //  start with everything but the current block
                         lpBlockStartTime  = Now.seconds();
-                        lpBlockStartTime -= (lpMaxBlocks - 1) * lpBlockSize;
+                        lpBlockStartTime  = lpBlockStartTime - (lpMaxBlocks - 1) * lpBlockSize;
                     }
 
                     //  figure out seconds from midnight
@@ -281,17 +283,17 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     //  adjust for wraparound
                     lpBlockAddress %= lpMaxBlocks;
 
-                    lpDescriptorString = RWCString(" channel ") + CtiNumStr(i+1) +
-                                         RWCString(" block ") + CtiNumStr(lpBlockAddress+1);
+                    lpDescriptorString = " channel " + CtiNumStr(i+1);
+                    lpDescriptorString += " block " + CtiNumStr(lpBlockAddress+1);
 
                     strncat( tmpOutMess->Request.CommandStr,
-                             lpDescriptorString.data(),
+                             lpDescriptorString.c_str(),
                              sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
@@ -303,7 +305,7 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -327,7 +329,7 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
         dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
     }
@@ -359,7 +361,7 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
         }
 
@@ -374,7 +376,7 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -407,7 +409,7 @@ INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
             }
             break;
@@ -418,7 +420,7 @@ INT CtiDeviceDCT501::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -427,7 +429,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     INT Error;
     USHORT StatusData[8];
     USHORT SaveCount;
-    RWCString resultString;
+    string resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -439,7 +441,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     resetScanFlag(ScanRateGeneral);
@@ -453,7 +455,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;
@@ -483,18 +485,19 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
                 if(Error == 0)
                 {
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                    resultString = getName() + " / " + pPoint->getName(); 
+                    resultString += " = " + CtiNumStr(Value,((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    resultString = "Error indicated on DCT " + getName() + " / " + pPoint->getName() + ";  Error " + CtiNumStr(Error);
+                    resultString = "Error indicated on DCT " + getName() + " / " + pPoint->getName();
+                    resultString += ";  Error " + CtiNumStr(Error);
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, UnknownQuality, AnalogPointType, resultString);
                 }
 
@@ -504,7 +507,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any demand input 1 messages we may have appended - we have a real one
-                    ReturnMsg->setResultString( RWCString() );
+                    ReturnMsg->setResultString( string() );
                 }
             }
             //  else send the raw pulses for offset 1
@@ -514,7 +517,9 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                 if( resultString != "" )
                     resultString += "\n";
 
-                resultString += getName() + " / Analog 1 " + CtiNumStr(pnt_offset) + " = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
+                resultString += getName() + " / Analog 1 " + CtiNumStr(pnt_offset);
+                resultString += " = " + CtiNumStr(Value);
+                resultString += "  --  POINT UNDEFINED IN DB";
                 ReturnMsg->setResultString( resultString );
             }
         }
@@ -523,7 +528,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
         {
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );
@@ -532,7 +537,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "  No demand accumulators are defined in the DB" << endl;
             }
             delete ReturnMsg;
@@ -543,13 +548,13 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 }
 
 
-INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int status = NORMAL;
 
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    RWCString val_report, result_string;
+    string val_report, result_string;
 
     int     demand_rate, block_size, max_blocks;
     int     current_block_num, retrieved_block_num, retrieved_channel, midnight_offset;
@@ -566,7 +571,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -576,7 +581,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
         }
@@ -589,7 +594,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retrieved_block_num--;
@@ -632,7 +637,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << InMessage->Return.CommandStr << endl;
                     }
 
@@ -642,7 +647,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << InMessage->Return.CommandStr << endl;
                         dout << "retrieved_block_num = " << retrieved_block_num << endl;
                         dout << "retrieved_channel = " << retrieved_channel << endl;
@@ -695,10 +700,10 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "value = " << value << endl;
                             dout << "interval_offset = " << interval_offset << endl;
-                            dout << "timestamp = " << RWTime(timestamp) << endl;
+                            dout << "timestamp = " << CtiTime(timestamp) << endl;
                         }
 
                         point_data->setTime(timestamp);
@@ -711,14 +716,15 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             }
             else
             {
-                result_string = "No load profile point defined for '" + getName() + "' demand accumulator " + CtiNumStr(retrieved_channel);
+                result_string = "No load profile point defined for '" + getName();
+                result_string += "' demand accumulator " + CtiNumStr(retrieved_channel);
             }
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             result_string  = "scan_loadprofile tokens not found in command string \"";
@@ -735,7 +741,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 }
 
 
-INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -750,8 +756,8 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         char rev;
         char temp[80];
 
-        RWCString sspec;
-        RWCString options("Options:\n");
+        string sspec;
+        string options("Options:\n");
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -759,55 +765,57 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
         rev = 64 + InMessage->Buffer.DSt.Message[1];
 
-        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
+        sspec = "\nSoftware Specification " + CtiNumStr(ssp);
+        sspec += "  Rom Revision " + rev;
+        sspec += "\n";
 
         if(InMessage->Buffer.DSt.Message[2] & 0x01)
         {
-            options+= RWCString("  Latched loads\n");
+            options+= string("  Latched loads\n");
         }
         if(InMessage->Buffer.DSt.Message[2] & 0x02)
         {
-            options+= RWCString("  Timed loads\n");
+            options+= string("  Timed loads\n");
         }
         if(InMessage->Buffer.DSt.Message[2] & 0x40)
         {
-            options+= RWCString("  Extended addressing\n");
+            options+= string("  Extended addressing\n");
         }
         if(InMessage->Buffer.DSt.Message[2] & 0x80)
         {
-            options+= RWCString("  Metering of basic kWh\n");
+            options+= string("  Metering of basic kWh\n");
         }
 
         if(InMessage->Buffer.DSt.Message[3] & 0x01)
         {
-            options+= RWCString("  Time-of-demand\n");
+            options+= string("  Time-of-demand\n");
         }
         if(InMessage->Buffer.DSt.Message[3] & 0x04)
         {
-            options+= RWCString("  Load survey\n");
+            options+= string("  Load survey\n");
         }
         if(InMessage->Buffer.DSt.Message[3] & 0x08)
         {
-            options+= RWCString("  Full group address support\n");
+            options+= string("  Full group address support\n");
         }
         if(InMessage->Buffer.DSt.Message[3] & 0x10)
         {
-            options+= RWCString("  Feedback load control\n");
+            options+= string("  Feedback load control\n");
         }
         if(InMessage->Buffer.DSt.Message[3] & 0x40)
         {
-            options+= RWCString("  Volt/VAR control\n");
+            options+= string("  Volt/VAR control\n");
         }
         if(InMessage->Buffer.DSt.Message[3] & 0x80)
         {
-            options+= RWCString("  Capacitor control\n");
+            options+= string("  Capacitor control\n");
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+                dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
             }
 
             return MEMORY;

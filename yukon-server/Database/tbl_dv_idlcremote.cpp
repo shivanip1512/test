@@ -8,14 +8,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_idlcremote.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "tbl_dv_idlcremote.h"
+
+#include "rwutil.h"
 
 CtiTableDeviceIDLC::CtiTableDeviceIDLC() :
 _deviceID(-1),
@@ -105,7 +107,7 @@ INT CtiTableDeviceIDLC::getAmp() const
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         case RouteAmpAlternating:
         case RouteAmpAltFail:
@@ -122,7 +124,7 @@ INT CtiTableDeviceIDLC::getAmp() const
 
 void CtiTableDeviceIDLC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector <<
     devTbl["address"] <<
@@ -137,7 +139,7 @@ void CtiTableDeviceIDLC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
 void CtiTableDeviceIDLC::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -153,7 +155,7 @@ void CtiTableDeviceIDLC::DecodeDatabaseReader(RWDBReader &rdr)
     _ccuAmpUseType = resolveAmpUseType(rwsTemp);
 }
 
-RWCString CtiTableDeviceIDLC::getTableName()
+string CtiTableDeviceIDLC::getTableName()
 {
     return "DeviceIDLCRemote";
 }
@@ -165,7 +167,7 @@ RWDBStatus CtiTableDeviceIDLC::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -195,7 +197,7 @@ RWDBStatus CtiTableDeviceIDLC::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
@@ -219,7 +221,7 @@ RWDBStatus CtiTableDeviceIDLC::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
 
     updater.where( table["deviceid"] == getDeviceID() );
@@ -227,7 +229,7 @@ RWDBStatus CtiTableDeviceIDLC::Update()
     updater <<
     table["address"].assign(getAddress() ) <<
     table["postcommwait"].assign(getPostDelay() ) <<
-    table["ccuampusetype"].assign(desolveAmpUseType(getCCUAmpUseType() ));
+    table["ccuampusetype"].assign(desolveAmpUseType(getCCUAmpUseType() )[0]);
 //      table["ampusetype"].assign( desolveAmpUseType( getAmpUseType() )) <<
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -242,7 +244,7 @@ RWDBStatus CtiTableDeviceIDLC::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["deviceid"] == getDeviceID() );

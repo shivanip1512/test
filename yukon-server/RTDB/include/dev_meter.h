@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/08/12 14:08:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:20:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #define __DEV_METER_H__
 
 
-#include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 
 #include "tbl_metergrp.h"
@@ -49,7 +48,7 @@ public:
 
    CtiDeviceMeter& operator=(const CtiDeviceMeter& aRef);
 
-   int readDSTFile( RWCString &id );
+   int readDSTFile( string &id );
 
    CtiTableDeviceMeterGroup  getMeterGroup() const;
    CtiTableDeviceMeterGroup& getMeterGroup();
@@ -81,12 +80,12 @@ public:
    virtual INT   decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList ) { return NoDecodeResponseMethod; };
 
    virtual INT   decodeResultScan( INMESS                    *InMessage,
-                                   RWTime                    &TimeNow,
+                                   CtiTime                    &TimeNow,
                                    RWTPtrSlist< CtiMessage > &vgList,
                                    RWTPtrSlist< CtiMessage > &retList,
                                    RWTPtrSlist< OUTMESS >    &outList )         { return NoResultDecodeMethod; };
    virtual INT   decodeResultLoadProfile( INMESS                    *InMessage,
-                                          RWTime                    &TimeNow,
+                                          CtiTime                    &TimeNow,
                                           RWTPtrSlist< CtiMessage > &vgList,
                                           RWTPtrSlist< CtiMessage > &retList,
                                           RWTPtrSlist< OUTMESS >    &outList )  { return NoResultDecodeMethod; };
@@ -94,18 +93,18 @@ public:
    virtual BOOL verifyAndAddPointToReturnMsg( LONG   aPointId,
                                               DOUBLE aValue,
                                               USHORT aQuality,
-                                              RWTime aTime,
+                                              CtiTime aTime,
                                               CtiReturnMsg *aReturnMsg,
                                               USHORT aIntervalType=0,
-                                              RWCString aValReport=RWCString()) { return YukonBaseError; };
+                                              string aValReport=string()) { return YukonBaseError; };
 
    virtual BOOL insertPointIntoReturnMsg( CtiMessage   *aDataPoint,
                                           CtiReturnMsg *aReturnMsg )            { return YukonBaseError; };
 
    virtual bool isMeter() const;
-   virtual RWCString getMeterGroupName() const;
-   virtual RWCString getAlternateMeterGroupName() const;
-   virtual RWCString getBillingGroupName() const;
+   virtual string getMeterGroupName() const;
+   virtual string getAlternateMeterGroupName() const;
+   virtual string getBillingGroupName() const;
 
 };
 

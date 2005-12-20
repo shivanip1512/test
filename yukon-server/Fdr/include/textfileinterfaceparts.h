@@ -8,8 +8,8 @@
 *    AUTHOR: David Sutton
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/textfileinterfaceparts.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:47 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/20 17:17:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -21,6 +21,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: textfileinterfaceparts.h,v $
+      Revision 1.3  2005/12/20 17:17:16  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.2.18.1  2005/07/12 21:08:39  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.2  2003/04/22 20:44:47  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -37,23 +43,23 @@ class IM_EX_FDRBASE CtiFDRTextFileInterfaceParts
 {
     public:
         // constructors and destructors
-        CtiFDRTextFileInterfaceParts(RWCString &aFileName=RWCString ("yukon.txt"), RWCString &aPath=RWCString("\\yukon\\server\\import"), int aInterval=900); 
+        CtiFDRTextFileInterfaceParts(string &aFileName=string ("yukon.txt"), string &aPath=string("\\yukon\\server\\import"), int aInterval=900); 
         virtual ~CtiFDRTextFileInterfaceParts();
     
-        RWCString & getFileName();
-        RWCString  getFileName() const;
-        CtiFDRTextFileInterfaceParts &setFileName (RWCString aName);
+        string & getFileName();
+        string  getFileName() const;
+        CtiFDRTextFileInterfaceParts &setFileName (string aName);
     
-        RWCString & getDriveAndPath();
-        RWCString  getDriveAndPath() const;
-        CtiFDRTextFileInterfaceParts &setDriveAndPath (RWCString aDriveAndPath);
+        string & getDriveAndPath();
+        string  getDriveAndPath() const;
+        CtiFDRTextFileInterfaceParts &setDriveAndPath (string aDriveAndPath);
 
         int getInterval() const;
         CtiFDRTextFileInterfaceParts &setInterval (int aInterval);
     
     private:
-        RWCString      _fileName;
-        RWCString      _driveAndPath;
+        string      _fileName;
+        string      _driveAndPath;
         int            _interval;
 };
 

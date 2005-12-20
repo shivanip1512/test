@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/applist.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #include <ctype.h>
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
@@ -59,7 +58,7 @@ int CtiApplList::Remove(T* ConMan)
 
    if(mHash.remove(ConMan))
    {
-      cout << RWTime() << " Removed Connection Manager " << ConMan->getClientName() <<
+      cout << CtiTime() << " Removed Connection Manager " << ConMan->getClientName() <<
          " from the List" << endl;
    }
    else

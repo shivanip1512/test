@@ -7,18 +7,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/12/20 17:25:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <utility>
+
 using namespace std;
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
 #include <rw/db/datetime.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
@@ -31,6 +30,8 @@ using namespace std;
 #include "dsm2err.h"
 #include "logger.h"
 #include "statistics.h"
+#include "rwutil.h"
+#include "ctidate.h"
 
 CtiStatistics::CtiStatistics(long id) :
     _restoreworked(0),
@@ -56,12 +57,12 @@ CtiStatistics::CtiStatistics(long id) :
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
 
-    RWTime now;
+    CtiTime now;
 
     int starthour = (now.hour() + 1) % 24;      // This is 24 hours ago.
 
@@ -95,7 +96,7 @@ CtiStatistics::~CtiStatistics()
 }
 
 
-void CtiStatistics::incrementRequest(const RWTime &stattime)
+void CtiStatistics::incrementRequest(const CtiTime &stattime)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Requests);
@@ -105,7 +106,7 @@ void CtiStatistics::incrementRequest(const RWTime &stattime)
     incrementCounter( Requests, Monthly, 1);
 }
 
-void CtiStatistics::decrementRequest(const RWTime &stattime)        // This is a retry scenario
+void CtiStatistics::decrementRequest(const CtiTime &stattime)        // This is a retry scenario
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Attempts);
@@ -115,7 +116,7 @@ void CtiStatistics::decrementRequest(const RWTime &stattime)        // This is a
     incrementCounter( Requests, Monthly, -1);
 }
 
-void CtiStatistics::incrementAttempts(const RWTime &stattime, int CompletionStatus)        // This is a retry scenario
+void CtiStatistics::incrementAttempts(const CtiTime &stattime, int CompletionStatus)        // This is a retry scenario
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Attempts);
@@ -131,7 +132,7 @@ void CtiStatistics::incrementAttempts(const RWTime &stattime, int CompletionStat
     }
 }
 
-void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionStatus)
+void CtiStatistics::incrementCompletion(const CtiTime &stattime, int CompletionStatus)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
 
@@ -145,7 +146,7 @@ void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionSt
     verifyThresholds();
 }
 
-void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype)
+void CtiStatistics::incrementFail(const CtiTime &stattime, CtiStatisticsCounters_t failtype)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, failtype);
@@ -156,7 +157,7 @@ void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_
     incrementCounter( failtype, Monthly, 1);
 }
 
-void CtiStatistics::incrementSuccess(const RWTime &stattime)
+void CtiStatistics::incrementSuccess(const CtiTime &stattime)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Completions);
@@ -170,7 +171,7 @@ void CtiStatistics::incrementSuccess(const RWTime &stattime)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") id " << getID() << " has a statistics anomoly" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") id " << getID() << " has a statistics anomoly" << endl;
         }
     }
 }
@@ -203,14 +204,14 @@ CtiStatistics::CtiStatisticsCounters_t CtiStatistics::resolveFailType( int Compl
     return failtype;
 }
 
-int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t countertoclean)
+int CtiStatistics::newHour(const CtiTime &newtime, CtiStatisticsCounters_t countertoclean)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
     static unsigned dumpit = 1;
     unsigned HourNo = newtime.hour();
 
-    RWDate lastdate( _previoustime );
-    RWDate newdate( newtime );
+    CtiDate lastdate( _previoustime );
+    CtiDate newdate( newtime );
 
     if( HourNo != _previoustime.hour() )
     {
@@ -261,7 +262,7 @@ long CtiStatistics::getID() const
     if(_pid < 0)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return _pid;
 }
@@ -303,7 +304,7 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -347,14 +348,14 @@ void CtiStatistics::dumpStats() const
     if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Statistics Report for PaoID " << _pid << endl;
+        dout << CtiTime() << " Statistics Report for PaoID " << _pid << endl;
         dout << "   Daily Requests              " << getCounter(Requests, Daily) << endl;
         dout << "   Daily Attempts              " << getCounter(Attempts, Daily) << endl;
         dout << "   Daily Completions           " << getCounter(Completions, Daily) << endl;
 
-        int starthour = (RWTime().hour() + 1) % 24;
+        int starthour = (CtiTime().hour() + 1) % 24;
 
-        for( ; starthour != RWTime().hour() ; starthour = (starthour + 1) % 24)
+        for( ; starthour != CtiTime().hour() ; starthour = (starthour + 1) % 24)
         {
             dout << "   " << getCounterName(starthour) << " Completions Ratio   " << getCompletionRatio(starthour) << endl;
         }
@@ -380,7 +381,7 @@ void CtiStatistics::verifyThresholds()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Threshold " << getCounterName(i) << " has been crossed" << endl;
+                dout << CtiTime() << " Threshold " << getCounterName(i) << " has been crossed" << endl;
             }
 
             _thresholdAlarm[i] = true;
@@ -393,7 +394,7 @@ void CtiStatistics::verifyThresholds()
 
 }
 
-RWCString CtiStatistics::_counterName[FinalCounterBin] = {
+string CtiStatistics::_counterName[FinalCounterBin] = {
     "Hour00",
     "Hour01",
     "Hour02",
@@ -443,25 +444,25 @@ int CtiStatistics::get(int counter, int index ) const
     return getCounter(index, counter);
 }
 
-RWCString CtiStatistics::getTableName()
+string CtiStatistics::getTableName()
 {
-    return RWCString("DynamicPaoStatistics");
+    return string("DynamicPaoStatistics");
 }
 
 RWDBStatus::ErrorCode CtiStatistics::Restore()
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWCString   typeStr;
+    string   typeStr;
     int         counter;
     int         val;
-    RWDBDateTime    startdt;
-    RWDBDateTime    stopdt;
+    CtiTime    startdt;
+    CtiTime    stopdt;
     RWDBStatus      dbstat;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["paobjectid"]
@@ -507,7 +508,7 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
                 rdr["startdatetime"]    >> startdt;
                 rdr["stopdatetime"]     >> stopdt;
 
-                _startStopTimePairs[counter] = make_pair( startdt.rwtime(), stopdt.rwtime() );
+                _startStopTimePairs[counter] = make_pair( startdt, stopdt );
             }
 
             dbstat = rdr.status();
@@ -537,7 +538,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
     RWDBStatus stat;
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( string2RWCString(getTableName()) );
     RWDBInserter ins = table.inserter();
 
     for(int i = 0; i < FinalCounterBin; i++)
@@ -553,8 +554,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
             getCounter( CommErrors, i ) <<
             getCounter( ProtocolErrors, i ) <<
             getCounter( SystemErrors, i ) <<
-            RWDBDateTime(_startStopTimePairs[i].first) <<
-            RWDBDateTime(_startStopTimePairs[i].second);
+            CtiTime(_startStopTimePairs[i].first) <<
+            CtiTime(_startStopTimePairs[i].second);
 
         stat = ExecuteInserter(conn,ins,__FILE__,__LINE__);
 
@@ -585,7 +586,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
     // CtiLockGuard<CtiMutex> guard(_statMux);
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( string2RWCString(getTableName()) );
     RWDBUpdater updater = table.updater();
 
 
@@ -601,11 +602,11 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
             table["attempts"].assign(getCounter( Attempts, i )) <<
             table["commerrors"].assign(getCounter( CommErrors, i )) <<
             table["protocolerrors"].assign(getCounter( ProtocolErrors, i )) <<
-            table["systemerrors"].assign(getCounter( SystemErrors, i )) <<
-            table["startdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].first)) <<
-            table["stopdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].second));
+            table["systemerrors"].assign(getCounter( SystemErrors, i )) <<                      
+            table["startdatetime"].assign( toRWDBDT(_startStopTimePairs[i].first) ) <<
+            table["stopdatetime"].assign( toRWDBDT(_startStopTimePairs[i].second) );
 
-            updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
+            updater.where( table["paobjectid"] == getID() && table["statistictype"] == string2RWCString(getCounterName( i )));
 
             ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
         }
@@ -627,12 +628,13 @@ RWDBStatus::ErrorCode  CtiStatistics::Update()
     return Update(conn);
 }
 
-int CtiStatistics::resolveStatisticsType(RWCString rwsTemp) const
+int CtiStatistics::resolveStatisticsType(const string& _rwsTemp) const
 {
     int stattype;
-
-    rwsTemp.toLower();
-    rwsTemp = rwsTemp.strip(RWCString::both);
+    string rwsTemp = _rwsTemp;
+    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    
+    rwsTemp = trim(rwsTemp);
 
     if(rwsTemp == "monthly")
     {
@@ -756,51 +758,51 @@ int CtiStatistics::resolveStatisticsType(RWCString rwsTemp) const
     return stattype;
 }
 
-void CtiStatistics::computeHourInterval(int hournumber, pair<RWTime, RWTime> &myinterval)
+void CtiStatistics::computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWTime startdt(RWDate());
+    CtiTime startdt = CtiTime();
     startdt = startdt + (hournumber * 3600);
-    RWTime stopdt(startdt + 3600);
+    CtiTime stopdt(startdt + 3600);
 
     myinterval = make_pair(startdt, stopdt);
 }
 
-void CtiStatistics::computeDailyInterval(pair<RWTime, RWTime> &myinterval)
+void CtiStatistics::computeDailyInterval(pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWDate todayDate;
-    RWDate tomorrow = todayDate;
+    CtiDate todayDate;
+    CtiDate tomorrow = todayDate;
 
     tomorrow++;
 
-    RWTime startdt(todayDate);
-    RWTime stopdt(tomorrow);
+    CtiTime startdt(todayDate);
+    CtiTime stopdt(tomorrow);
 
     myinterval = make_pair(startdt, stopdt);
 }
 
-void CtiStatistics::computeYesterdayInterval(pair<RWTime, RWTime> &myinterval)
+void CtiStatistics::computeYesterdayInterval(pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWDate todayDate;
-    RWDate yesterday(todayDate);
+    CtiDate todayDate;
+    CtiDate yesterday(todayDate);
 
-    yesterday--;
+    yesterday++;
 
-    RWTime startdt(yesterday);
-    RWTime stopdt(todayDate);
+    CtiTime startdt(yesterday);
+    CtiTime stopdt(todayDate);
 
     myinterval = make_pair(startdt, stopdt);
 }
 
-void CtiStatistics::computeMonthInterval(pair<RWTime, RWTime> &myinterval)
+void CtiStatistics::computeMonthInterval(pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWDate todayDate;
+    CtiDate todayDate;
     unsigned month = todayDate.month();
     unsigned year  = todayDate.year();
-    RWDate firstOfMonth(1, month, year);
+    CtiDate firstOfMonth(1, month, year);
 
     if(++month > 12)
     {
@@ -808,21 +810,21 @@ void CtiStatistics::computeMonthInterval(pair<RWTime, RWTime> &myinterval)
         year++;
     }
 
-    RWDate nextMonth(1, month, year);
+    CtiDate nextMonth(1, month, year);
 
-    RWTime startdt(firstOfMonth);
-    RWTime stopdt(nextMonth);
+    CtiTime startdt(firstOfMonth);
+    CtiTime stopdt(nextMonth);
 
     myinterval = make_pair(startdt, stopdt);
 }
 
-void CtiStatistics::computeLastMonthInterval(pair<RWTime, RWTime> &myinterval)
+void CtiStatistics::computeLastMonthInterval(pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    RWDate todayDate;
+    CtiDate todayDate;
     unsigned month = todayDate.month();
     unsigned year  = todayDate.year();
-    RWDate firstOfMonth(1, month, year);
+    CtiDate firstOfMonth(1, month, year);
 
     if(--month == 0)
     {
@@ -830,10 +832,10 @@ void CtiStatistics::computeLastMonthInterval(pair<RWTime, RWTime> &myinterval)
         year--;
     }
 
-    RWDate lastMonth(1, month, year);
+    CtiDate lastMonth(1, month, year);
 
-    RWTime startdt(lastMonth);
-    RWTime stopdt(firstOfMonth);
+    CtiTime startdt(lastMonth);
+    CtiTime stopdt(firstOfMonth);
 
     myinterval = make_pair(startdt, stopdt);
 }

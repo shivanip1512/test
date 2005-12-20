@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/09/27 00:53:09 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,10 @@
 #include "signalmanager.h"
 #include "tbl_dyn_ptalarming.h"
 
-extern RWCString AlarmTagsToString(UINT tags);
+
+using std::pair;
+using std::make_pair;
+extern string AlarmTagsToString(UINT tags);
 
 CtiSignalManager::CtiSignalManager() :
 _dirty(false)
@@ -47,7 +50,7 @@ CtiSignalManager::~CtiSignalManager()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -74,7 +77,7 @@ CtiSignalManager& CtiSignalManager::operator=(const CtiSignalManager& aRef)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return *this;
@@ -91,7 +94,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 tlg.tryAcquire(5000);
             }
@@ -110,7 +113,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
                         if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         SigMgrMap_t::iterator itr = ip.first;
@@ -125,7 +128,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
                                     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         dout << " ORIGINAL :" << endl;
 
                                         pOriginalSig->dump();
@@ -136,7 +139,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
                                     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         dout << " NEW :" << endl;
 
                                         pOriginalSig->dump();
@@ -151,7 +154,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -159,7 +162,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -178,7 +181,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             tlg.tryAcquire(5000);
         }
@@ -235,7 +238,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -252,7 +255,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Warning **** " << __FILE__ << " (" << __LINE__ << "): Unable to lock the signal manager sync object" << endl;
+            dout << CtiTime() << " **** Warning **** " << __FILE__ << " (" << __LINE__ << "): Unable to lock the signal manager sync object" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -310,7 +313,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -324,7 +327,7 @@ bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const       
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -338,7 +341,7 @@ bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const   
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -352,7 +355,7 @@ bool CtiSignalManager::isAlarmUnacknowledged(long pointid, int alarm_condition) 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -369,7 +372,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -394,7 +397,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -408,7 +411,7 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -445,7 +448,7 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -474,7 +477,7 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
         pSig = 0;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -489,7 +492,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -528,7 +531,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
         pSig = 0;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -542,7 +545,7 @@ size_t CtiSignalManager::entries() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -557,7 +560,7 @@ bool CtiSignalManager::empty() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -572,7 +575,7 @@ bool CtiSignalManager::dirty() const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -587,7 +590,7 @@ void CtiSignalManager::setDirty(bool set)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -603,7 +606,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
     }
@@ -617,13 +620,13 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     {
         if(!empty() && dirty())
         {
-            RWCString dpa("dyn_pt_alm");
+            string dpa("dyn_pt_alm");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
             if(conn.isValid())
             {
-                conn.beginTransaction(dpa);
+                conn.beginTransaction(dpa.c_str());
 
                 for(itr = _map.begin(); conn.isValid() && itr != _map.end(); itr++)
                 {
@@ -656,7 +659,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
                     pSig = 0;
                 }
 
-                conn.commitTransaction(dpa);
+                conn.commitTransaction(dpa.c_str());
             }
 
             setDirty(false);
@@ -666,7 +669,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 

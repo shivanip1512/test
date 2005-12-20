@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/08/05 20:01:42 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 
 #include <map>
 #include <string>
-using namespace std;
+
 
 #include <windows.h>
 
@@ -80,7 +80,7 @@ INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan general");
@@ -106,7 +106,7 @@ INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     pReq->setCommandString("scan integrity");
@@ -144,7 +144,7 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - General scan not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - General scan not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -154,7 +154,7 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - Accumulator scanrates not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - Accumulator scanrates not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     break;
@@ -182,7 +182,7 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -269,7 +269,7 @@ int Modbus::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outLi
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -349,7 +349,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
                                 default:
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint - An unexpected point (PID: "<<PointRecord->getPointID()<<") was seen " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** Checkpoint - An unexpected point (PID: "<<PointRecord->getPointID()<<") was seen " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         break;
                                     }
                                 }
@@ -360,7 +360,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
                     catch (...)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - An exception was thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - An exception was thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         _modbus.clearPoints();
                         retVal = UnknownError;
 						break;
@@ -370,7 +370,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - invalid command in Modbus::recvCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - invalid command in Modbus::recvCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 
             }
         }
@@ -380,7 +380,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid OutMessage in Modbus::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in Modbus::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         retVal = MemoryError;
@@ -442,7 +442,7 @@ int Modbus::sendCommResult(INMESS *InMessage)
         //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         string cropped("\n---cropped---");
@@ -469,8 +469,8 @@ void Modbus::sendDispatchResults(CtiConnection &vg_connection)
     CtiPointDataMsg             *pt_msg;
     CtiPointBase                *point;
     CtiPointNumeric             *pNumeric;
-    RWCString                    resultString;
-    RWTime                       Now;
+    string                    resultString;
+    CtiTime                       Now;
 
     Protocol::Interface::pointlist_t points;
     Protocol::Interface::pointlist_t::iterator itr;
@@ -532,7 +532,7 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
     CtiPoint *point;
-    RWCString resultString;
+    string resultString;
 
 
     for( itr = points.begin(); itr != points.end(); itr++ )
@@ -576,7 +576,7 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT Modbus::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
@@ -592,7 +592,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMes
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint InMessage->InLength > sizeof(InMessage->Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             InMessage->InLength = sizeof(InMessage->Buffer.InMessage);
@@ -602,7 +602,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMes
         result_string.assign(reinterpret_cast<char *>(InMessage->Buffer.InMessage), InMessage->InLength);
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         RWCString(InMessage->Return.CommandStr),
+                                         string(InMessage->Return.CommandStr),
                                          result_string.data(),
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
@@ -616,14 +616,14 @@ INT Modbus::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMes
     else
     {
         char error_str[80];
-        RWCString resultString;
+        string resultString;
 
         GetErrorString(ErrReturn, error_str);
 
-        resultString = getName() + " / operation failed \"" + error_str + "\" (" + RWCString(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+        resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
         retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         RWCString(InMessage->Return.CommandStr),
+                                         string(InMessage->Return.CommandStr),
                                          resultString,
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
@@ -639,14 +639,14 @@ INT Modbus::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMes
 }
 
 
-INT Modbus::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                              RWCString(InMessage->Return.CommandStr),
-                                              RWCString(),
+                                              string(InMessage->Return.CommandStr),
+                                              string(),
                                               InMessage->EventCode & 0x7fff,
                                               InMessage->Return.RouteID,
                                               InMessage->Return.MacroOffset,
@@ -658,7 +658,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMess
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     if( pPIL != NULL )
@@ -687,7 +687,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMess
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
@@ -699,7 +699,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMess
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-RWCString Modbus::getDescription(const CtiCommandParser &parse) const
+string Modbus::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }

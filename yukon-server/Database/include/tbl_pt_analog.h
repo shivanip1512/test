@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,9 +24,7 @@
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/datetime.h>
@@ -49,7 +47,7 @@ protected:
    DOUBLE      _multiplier;
    DOUBLE      _dataOffset;
    DOUBLE      _deadband;
-   RWCString   _transducerType;
+   string   _transducerType;
 
 private:
 
@@ -68,12 +66,12 @@ public:
    DOUBLE      getMultiplier() const;
    DOUBLE      getDataOffset() const;
    DOUBLE      getDeadband() const;
-   RWCString   getTransducerType() const;
+   string   getTransducerType() const;
 
    CtiTablePointAnalog& setMultiplier(DOUBLE d);
    CtiTablePointAnalog& setDataOffset(DOUBLE d);
    CtiTablePointAnalog& setDeadband(DOUBLE d);
-   CtiTablePointAnalog& setTransducerType(RWCString &str);
+   CtiTablePointAnalog& setTransducerType(string &str);
 
 };
 #endif // #ifndef __TBL_PT_ANALOG_H__

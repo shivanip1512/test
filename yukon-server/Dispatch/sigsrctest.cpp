@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigsrctest.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/07/19 22:48:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw\cstring.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
@@ -132,7 +131,7 @@ void main(int argc, char **argv)
                sprintf(desc, " POINT %d ERROR FORCED BY %s", k, argv[0]);
                sprintf(actn, " POINT ERROR FORCED");
 
-               pSig = CTIDBG_new CtiSignalMsg(k, 0, RWTime().asString() + RWCString(desc), RWCString(actn), GeneralLogType, SignalEvent, "sigsrctest.cpp", tag);
+               pSig = CTIDBG_new CtiSignalMsg(k, 0, CtiTime().asString().c_str() + string(desc), string(actn), GeneralLogType, SignalEvent, "sigsrctest.cpp", tag);
 
                pMulti->insert(pSig);
             }

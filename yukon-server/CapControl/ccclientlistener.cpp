@@ -34,24 +34,24 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
 {
     if ( _instance == NULL )
     {
-        RWCString str;
+        string str;
         char var[128];
         LONG capcontrolclientsport = CAPCONTROLNEXUS;
 
         strcpy(var, "CAP_CONTROL_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
-            LONG capcontrolclientsport = atoi(str.data());
+            LONG capcontrolclientsport = atoi(str.c_str());
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - " << var << ":  " << capcontrolclientsport << endl;
+                dout << CtiTime() << " - " << var << ":  " << capcontrolclientsport << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
         _instance = new CtiCCClientListener(capcontrolclientsport);
@@ -134,7 +134,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
     if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " BroadcastMessage() called." << endl;
+        dout << CtiTime() << " BroadcastMessage() called." << endl;
     }
 
     try
@@ -153,7 +153,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
                 catch(...)
                 {
                      CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
                 if(testValid)
                 {
@@ -165,7 +165,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
 
                     try
@@ -173,13 +173,13 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
                         if( _CC_DEBUG & CC_DEBUG_CLIENT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                            dout << CtiTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
                         }
                     }
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     try
                     {
@@ -188,27 +188,27 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
             }
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
     }
     catch(...)
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << __FILE__ << " (" << __LINE__ <<
+        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
     if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " BroadcastMessage() finished." << endl;
+        dout << CtiTime() << " BroadcastMessage() finished." << endl;
     }
 }
 
@@ -264,7 +264,7 @@ void CtiCCClientListener::_listen()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     } while ( !_doquit );
 
@@ -288,7 +288,7 @@ void CtiCCClientListener::_check()
 							if( _CC_DEBUG & CC_DEBUG_CLIENT )
 							{    
 								CtiLockGuard<CtiLogger> logger_guard(dout);
-								dout << RWTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() <<" : "<<toDelete->getPeerName() << endl;
+								dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
 							}
                             delete toDelete;
                         }
@@ -300,7 +300,7 @@ void CtiCCClientListener::_check()
         catch(...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         rwSleep(500);
     } while ( !_doquit );

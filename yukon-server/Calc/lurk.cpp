@@ -5,7 +5,6 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/cstring.h>
 //#include <rw/db/connect.h>
 
 #include "cparms.h"
@@ -57,7 +56,7 @@ void main(int argc, char **argv)
         exit(-1);
     }
 
-    RWTime startTime;
+    CtiTime startTime;
     long msgNum = 0;
     
 
@@ -74,7 +73,7 @@ void main(int argc, char **argv)
         //  write the registration message (this is only done once, because if the database changes,
         //    the program name and such doesn't change - only our requested points.)
 
-        RWCString regStr = "Lurker";
+        string regStr = "Lurker";
         
         myConnection.WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
         myConnection.WriteConnQue( new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
@@ -110,7 +109,7 @@ void main(int argc, char **argv)
         cout << msg.why() << endl;
     }
 
-    cout << msgNum << " messages in " << RWTime( ).seconds( ) - startTime.seconds( ) << " seconds" << endl;
+    cout << msgNum << " messages in " << CtiTime( ).seconds( ) - startTime.seconds( ) << " seconds" << endl;
 
     exit(0);
 }

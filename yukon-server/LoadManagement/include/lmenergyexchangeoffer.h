@@ -38,21 +38,21 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
 
     LONG getPAOId() const;
     LONG getOfferId() const;
-    const RWCString& getRunStatus() const;
-    const RWDBDateTime& getOfferDate() const;
+    const string& getRunStatus() const;
+    const CtiTime& getOfferDate() const;
     RWOrdered& getLMEnergyExchangeOfferRevisions();
 
     CtiLMEnergyExchangeOffer& setPAOId(LONG paoid);
     CtiLMEnergyExchangeOffer& setOfferId(LONG offid);
-    CtiLMEnergyExchangeOffer& setRunStatus(const RWCString& runstat);
-    CtiLMEnergyExchangeOffer& setOfferDate(const RWDBDateTime& offdate);
+    CtiLMEnergyExchangeOffer& setRunStatus(const string& runstat);
+    CtiLMEnergyExchangeOffer& setOfferDate(const CtiTime& offdate);
 
     void addLMEnergyExchangeProgramOfferTable();
-    void updateLMEnergyExchangeProgramOfferTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void updateLMEnergyExchangeProgramOfferTable(RWDBConnection& conn, CtiTime& currentDateTime);
     void deleteLMEnergyExchangeProgramOfferTable();
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     CtiLMEnergyExchangeOfferRevision* getCurrentOfferRevision();
 
     CtiLMEnergyExchangeOffer* replicate() const;
@@ -69,24 +69,24 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     // Static Members
 
     // Possible run statuses
-    static const RWCString NullRunStatus;
-    static const RWCString ScheduledRunStatus;
-    static const RWCString OpenRunStatus;
-    static const RWCString ClosingRunStatus;
-    static const RWCString CurtailmentPendingRunStatus;
-    static const RWCString CurtailmentActiveRunStatus;
-    static const RWCString CompletedRunStatus;
-    static const RWCString CanceledRunStatus;
-    //static const RWCString ActiveRunStatus;
-    //static const RWCString StoppedEarlyRunStatus;
-    //static const RWCString CompletedRunStatus;
+    static const string NullRunStatus;
+    static const string ScheduledRunStatus;
+    static const string OpenRunStatus;
+    static const string ClosingRunStatus;
+    static const string CurtailmentPendingRunStatus;
+    static const string CurtailmentActiveRunStatus;
+    static const string CompletedRunStatus;
+    static const string CanceledRunStatus;
+    //static const string ActiveRunStatus;
+    //static const string StoppedEarlyRunStatus;
+    //static const string CompletedRunStatus;
 
 private:
 
     LONG _paoid;
     LONG _offerid;
-    RWCString _runstatus;
-    RWDBDateTime _offerdate;
+    string _runstatus;
+    CtiTime _offerdate;
 
     RWOrdered _lmenergyexchangeofferrevisions;
 

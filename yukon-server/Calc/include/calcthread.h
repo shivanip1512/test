@@ -3,7 +3,6 @@
 #define __CALCTHREAD_H__
 
 #include <functional>
-using namespace std;
 
 #include <rw/tphdict.h>
 #include <rw/tvdeque.h>
@@ -20,6 +19,8 @@ using namespace std;
 #include "thread_monitor.h"
 #include "thread_register_data.h"
 //
+
+using std::string;
 
 class CtiCalculateThread
 {
@@ -63,11 +64,11 @@ public:
     RWMutexLock outboxMux;
 
     void calcThread( void );
-    bool appendPoint( long pointID, RWCString &updateType, int updateInterval );
-    void appendPointComponent( long pointID, RWCString &componentType, long componentPointID,
-                               RWCString &operationType, double constantValue, RWCString &functionName );
+    bool appendPoint( long pointID, string &updateType, int updateInterval );
+    void appendPointComponent( long pointID, string &componentType, long componentPointID,
+                               string &operationType, double constantValue, string &functionName );
     void appendCalcPoint( long pointID );
-    void pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags );
+    void pointChange( long changedID, double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags );
 
     BOOL isACalcPointID(const long aPointID);
     BOOL isAPeriodicCalcPointID(const long aPointID);

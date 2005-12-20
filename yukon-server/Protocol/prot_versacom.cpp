@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/11/04 17:52:11 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
+#include <boost/regex.hpp>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 
@@ -55,7 +56,7 @@ INT CtiProtocolVersacom::initVersacomMessage()
 {
     _vst[_last]->Nibbles = 2;
 
-    memset (_vst[_last]->Message, 0, MAX_VERSACOM_MESSAGE);
+    ::memset (_vst[_last]->Message, 0, MAX_VERSACOM_MESSAGE);
 
     _addressMode = 0;
 
@@ -179,7 +180,7 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                     #if 0
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << hex << setw(2) << (int)_vst[_last]->VData.Data[i / 2] << endl;
                     }
                     #endif
@@ -221,7 +222,7 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -1176,16 +1177,16 @@ INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
 
     if( serviceflag & VC_SERVICE_T_IN && serviceflag & VC_SERVICE_T_OUT )
     {
-        cout << RWTime() << " both in and out of service bits are set" << endl;
-        cout << RWTime() << "  assuming temporary IN service" << endl;
+        cout << CtiTime() << " both in and out of service bits are set" << endl;
+        cout << CtiTime() << "  assuming temporary IN service" << endl;
 
         serviceflag &=  ~VC_SERVICE_T_OUT;     // Get rid of this!
     }
 
     if( serviceflag & VC_SERVICE_C_IN && serviceflag & VC_SERVICE_C_OUT )
     {
-        cout << RWTime() << " both in and out of service bits are set" << endl;
-        cout << RWTime() << "  assuming contractual IN service" << endl;
+        cout << CtiTime() << " both in and out of service bits are set" << endl;
+        cout << CtiTime() << "  assuming contractual IN service" << endl;
 
         serviceflag &=  ~VC_SERVICE_C_OUT;     // Get rid of this!
     }
@@ -1397,7 +1398,7 @@ INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &a
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
             }
 
             status = CtiInvalidRequest;
@@ -1572,7 +1573,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(VersacomDataCommand( (BYTE *)parse.getsValue("raw").data() ), parse.getsValue("raw").length())
+        if(VersacomDataCommand( (BYTE *)parse.getsValue("raw").c_str() ), parse.getsValue("raw").length())
             removeLastVStruct();
     }
 
@@ -1580,7 +1581,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
+        if(VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").c_str() ))
             removeLastVStruct();
     }
 
@@ -1588,14 +1589,14 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if( parse.getsValue("lcrmode").compareTo("v") == 0 )
+        if( parse.getsValue("lcrmode").compare("v") == 0 )
         {
            config[0] = 0x01;
 
            if(VersacomConfigCommand(VCT_LCRMode, config))
               removeLastVStruct();
         }
-        else if( parse.getsValue("lcrmode").compareTo("e") == 0 )
+        else if( parse.getsValue("lcrmode").compare("e") == 0 )
         {
            config[0] = 0x00;
 
@@ -1606,7 +1607,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("lcrmode") << "\" for \"putconfig lcrmode\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("lcrmode") << "\" for \"putconfig lcrmode\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
         }
     }
@@ -1615,14 +1616,14 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if( parse.getsValue("eclp").contains("en") )
+        if( parse.getsValue("eclp").find("en")!=string::npos )
         {
            config[0] = 0x01;
 
            if(VersacomConfigCommand(VCT_EmetconColdLoad, config))
               removeLastVStruct();
         }
-        else if( parse.getsValue("eclp").contains("dis") )
+        else if( parse.getsValue("eclp").find("dis")!=string::npos )
         {
            config[0] = 0x00;
 
@@ -1633,7 +1634,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("eclp") << "\" for \"putconfig eclp\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("eclp") << "\" for \"putconfig eclp\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
         }
     }
@@ -1655,7 +1656,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("gold") << "\" for \"putconfig gold\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("gold") << "\" for \"putconfig gold\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
         }
     }
@@ -1677,7 +1678,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {
            {
               CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("silver") << "\" for \"putconfig silver\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("silver") << "\" for \"putconfig silver\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
         }
     }
@@ -1721,7 +1722,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {  // We have a utility id to configure
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-            memset(config, 0, 6);      // Blank the bytes
+            ::memset(config, 0, 6);      // Blank the bytes
             config[0] = (BYTE)uid;
             if(VersacomConfigCommand( VCONFIG_UTILID, config ))
                 removeLastVStruct();
@@ -1731,7 +1732,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {  // We have a utility id to configure
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-            memset(config, 0, 6);      // Blank the bytes
+            ::memset(config, 0, 6);      // Blank the bytes
             config[0] = (BYTE)aux;
             if(VersacomConfigCommand( VCONFIG_AUXID, config ))
                 removeLastVStruct();
@@ -1741,7 +1742,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-            memset(config, 0, 6);      // Blank the bytes
+            ::memset(config, 0, 6);      // Blank the bytes
 
             config[0] = (BYTE)sec;
 
@@ -1763,7 +1764,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
             {  // We have a utility id to configure
                 primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-                memset(config, 0, 6);      // Blank the bytes
+                ::memset(config, 0, 6);      // Blank the bytes
                 config[0] = (BYTE)iNum;
                 if(VersacomConfigCommand( VCONFIG_SECTION, config ))
                     removeLastVStruct();
@@ -1773,7 +1774,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
             {  // We have a utility id to configure
                 primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-                memset(config, 0, 6);      // Blank the bytes
+                ::memset(config, 0, 6);      // Blank the bytes
 
                 IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
 
@@ -1788,7 +1789,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
             {  // We have a utility id to configure
                 primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-                memset(config, 0, 6);      // Blank the bytes
+                ::memset(config, 0, 6);      // Blank the bytes
                 IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
 
                 config[0] = HIBYTE (IAddress);
@@ -1937,7 +1938,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
     }
 
     return status;
@@ -2061,27 +2062,40 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
 
     if( getTransmitterType() != TYPE_TCU5000 && sn != 0 )
     {
-        RWCString vcrangestr = gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES");
+        string vcrangestr = gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES");
 
-        if(!vcrangestr.isNull())
+        if(!vcrangestr.empty())
         {
             int loopcnt = 0;
-            while(!vcrangestr.isNull())
+            while(!vcrangestr.empty())
             {
-                RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
+                boost::regex e1("[0-9]*-[0-9]*,?");
+                boost::match_results<std::string::const_iterator> what;
+                boost::regex_search(vcrangestr, what, e1, boost::match_default);
+                
+                string rstr = what[0];
 
-                if(!rstr.isNull())
+                if(!rstr.empty())
                 {
                     char *chptr;
-                    RWCString startstr = rstr.match("[0-9]*");
-                    RWCString stopstr = rstr.match(" *- *[0-9]* *,? *");
-                    stopstr = stopstr.strip(RWCString::both, ' ');
-                    stopstr = stopstr.strip(RWCString::leading, '-');
-                    stopstr = stopstr.strip(RWCString::trailing, ',');
-                    stopstr = stopstr.strip(RWCString::both, ' ');
 
-                    UINT startaddr = strtoul( startstr.data(), &chptr, 10 );
-                    UINT stopaddr = strtoul( stopstr.data(), &chptr, 10 );
+                    e1.assign("[0-9]*");
+                    boost::regex_search(rstr, what, e1, boost::match_default);
+
+                    string startstr = what[0];
+
+                    e1.assign(" *- *[0-9]* *,? *");
+                    boost::regex_search(rstr, what, e1, boost::match_default);
+
+                    string stopstr = what[0];
+
+                    stopstr = trim(stopstr);
+                    stopstr = trim_left(stopstr, "-");
+                    stopstr = trim_right(stopstr, ",");
+                    stopstr = trim(stopstr);
+
+                    UINT startaddr = strtoul( startstr.c_str(), &chptr, 10 );
+                    UINT stopaddr = strtoul( stopstr.c_str(), &chptr, 10 );
 
                     if(startaddr <= sn && sn <= stopaddr)
                     {
@@ -2090,13 +2104,13 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                         break;
                     }
                 }
-
-                vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+				e1.assign("[0-9]*-[0-9]*,?");
+                vcrangestr = boost::regex_replace(vcrangestr, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
                 if(loopcnt++ > 256)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ERROR **** Problem found with configuration item VERSACOM_FULL_ADDRESS_SERIAL_RANGES : \"" << gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES") << "\"" << endl;
+                        dout << CtiTime() << " **** ERROR **** Problem found with configuration item VERSACOM_FULL_ADDRESS_SERIAL_RANGES : \"" << gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES") << "\"" << endl;
                         break;
                     }
                 }

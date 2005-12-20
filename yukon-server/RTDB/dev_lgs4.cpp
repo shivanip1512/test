@@ -1,7 +1,5 @@
 #include "yukon.h"
 #include <math.h>
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
 #include "porter.h"
 #include "dev_lgs4.h"
@@ -25,6 +23,9 @@
 #include "logger.h"
 #include "guard.h"
 #include "utility.h"
+#include "ctidate.h"
+#include "ctitime.h"
+
 
 
 void reverseCharacters (UCHAR *source, PCHAR dest);
@@ -242,7 +243,7 @@ INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSl
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -281,7 +282,7 @@ INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiM
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -440,7 +441,7 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< 
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -609,7 +610,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtr
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
@@ -638,7 +639,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commR
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
                 }
                 setCurrentState (StateHandshakeAbort);
                 break;
@@ -680,7 +681,7 @@ INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValu
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
+                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
                 }
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
@@ -713,7 +714,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
+                        dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -743,7 +744,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
+                        dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -884,7 +885,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
             retCode = StateScanAbort;
@@ -914,7 +915,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
+                        dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -945,7 +946,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                     if (Transfer.doTrace(ERRUNKNOWN))
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
+                        dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -1107,7 +1108,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
+                                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
                                         }
                                         setCommandPacket (getCommandPacket()+5);
                                         setPreviousState (StateScanDecode4);
@@ -1124,8 +1125,8 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                                         **********************************
                                         */
                                         // do this from midnight, we don't want to miss data because of rounding problems
-                                        RWTime midnightOnLastLP (RWDate(RWDate(RWTime(localLP->porterLPTime)).day(), RWDate(RWTime(localLP->porterLPTime)).year()));
-                                        ULONG difference = ((((RWTime::now().seconds()) - (midnightOnLastLP.seconds())) / 86400) + 1);
+                                        CtiTime midnightOnLastLP (CtiDate(CtiDate(CtiTime(localLP->porterLPTime)).day(), CtiDate(CtiTime(localLP->porterLPTime)).year()));
+                                        ULONG difference = ((((CtiTime::now().seconds()) - (midnightOnLastLP.seconds())) / 86400) + 1);
 
                                         // no more than thirty one days
                                         if (difference > 31)
@@ -1149,7 +1150,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
+                                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
                                     }
                                     setCommandPacket (getCommandPacket()+5);
                                     setPreviousState (StateScanDecode4);
@@ -1237,7 +1238,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
                         default:
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " (" << __LINE__ << ") Unknown command sent to " << getName() << endl;
+                                dout << CtiTime() << " (" << __LINE__ << ") Unknown command sent to " << getName() << endl;
                             }
                     }
                 }
@@ -1281,7 +1282,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
             }
             setCurrentState (StateScanAbort);
             retCode = StateScanAbort;
@@ -1301,7 +1302,7 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " General Scan of device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
     }
 
     ULONG BytesWritten;
@@ -1820,7 +1821,7 @@ INT CtiDeviceLandisGyrS4::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotal
 
 
 INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
-                                        RWTime &TimeNow,
+                                        CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
                                         RWTPtrSlist< OUTMESS > &outList)
@@ -1847,7 +1848,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Scan decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
                 }
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
@@ -1857,7 +1858,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " LP decode for device " << getName() << " in progress " << endl;
+                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
                 }
 
 
@@ -1870,7 +1871,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " LP decode failed device " << getName() << " invalid state " << endl;
+                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << endl;
                     }
                 }
 
@@ -1880,7 +1881,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
+                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
                 }
             }
     }
@@ -1889,21 +1890,21 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
 }
 
 INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
-                                       RWTime &TimeNow,
+                                       CtiTime &TimeNow,
                                        RWTPtrSlist< CtiMessage >   &vgList,
                                        RWTPtrSlist< CtiMessage > &retList,
                                        RWTPtrSlist< OUTMESS > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -1940,7 +1941,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
 
 
 INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
-                                            RWTime &TimeNow,
+                                            CtiTime &TimeNow,
                                             RWTPtrSlist< CtiMessage >   &vgList,
                                             RWTPtrSlist< CtiMessage > &retList,
                                             RWTPtrSlist< OUTMESS > &outList)
@@ -1961,7 +1962,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     USHORT   UValue;
     FLOAT    PartHour;
     DOUBLE   PValue;
-    RWTime    peakTime;
+    CtiTime    peakTime;
 
     DIALUPREQUEST      *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
     DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
@@ -1971,8 +1972,8 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -2058,7 +2059,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
 }
 
 INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
-                                                   RWTime &TimeNow,
+                                                   CtiTime &TimeNow,
                                                    RWTPtrSlist< CtiMessage >   &vgList,
                                                    RWTPtrSlist< CtiMessage > &retList,
                                                    RWTPtrSlist< OUTMESS > &outList)
@@ -2076,7 +2077,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
     DOUBLE  intervalData;
     USHORT   expectedLastInterval;
     ULONG lastLPTime = getLastLPTime().seconds();
-    RWTime   intervalTime;
+    CtiTime   intervalTime;
 
     CHAR    buffer[60];
     BOOL  validPointFound=FALSE;
@@ -2085,8 +2086,8 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointNumeric   *pNumericPoint = NULL;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
+                                            string(InMessage->Return.CommandStr),
+                                            string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
@@ -2196,7 +2197,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 // fill message with plug data to next interval
                                 for (int y=0; y < localLP->configuration.numberOfChannels;y++)
                                 {
-                                    intervalTime = RWTime (getCurrentLPDate() +
+                                    intervalTime = CtiTime (getCurrentLPDate() +
                                                            ((x+1) * localLP->configuration.intervalLength * 60));
 
                                     verifyAndAddPointToReturnMsg (validLPPointInfo[y].pointId,
@@ -2242,7 +2243,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 */
 
                 BYTE mon = (0x1F & localLP->loadProfileData[dataWalker+1]);
-                int year = RWDate().year();
+                int year = CtiDate().year();
 
                 // check what year we are in
                 if (S4BCDtoBase10 (&mon,1) > localLP->meterDate.month)
@@ -2251,7 +2252,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     year -= 1;
                 }
 
-                RWDate recordDate (S4BCDtoBase10 (&localLP->loadProfileData[dataWalker],1),
+                CtiDate recordDate (S4BCDtoBase10 (&localLP->loadProfileData[dataWalker],1),
                                    S4BCDtoBase10 (&mon,1),
                                    year);
 
@@ -2268,7 +2269,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     */
 
                     // power down is date plus seconds past midnight
-                    RWTime recordTime(recordDate);
+                    CtiTime recordTime(recordDate);
                     ULONG  powerDown = getCurrentLPDate() + getPowerDownTime();
                     ULONG  missingIntervals = (recordTime.seconds() - powerDown) /
                                               (localLP->configuration.intervalLength * 60) ;
@@ -2279,7 +2280,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                         for (int y=0; y < localLP->configuration.numberOfChannels;y++)
                         {
 
-                            intervalTime = RWTime (getCurrentLPDate() +
+                            intervalTime = CtiTime (getCurrentLPDate() +
                                                    ((x+1) * localLP->configuration.intervalLength * 60));
 
                             verifyAndAddPointToReturnMsg (validLPPointInfo[y].pointId,
@@ -2301,7 +2302,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 }
 
                 // always set this because it gets zeroed out if a data packet comes in
-                setNewDate (RWTime(recordDate).seconds());
+                setNewDate (CtiTime(recordDate).seconds());
 
                 // set previous date only if newDate doesn't exists
                 if (getOldTime() != 0)
@@ -2313,7 +2314,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 {
                     // set the previous load profile date
                     setPreviousLPDate (getCurrentLPDate());
-                    setCurrentLPDate (RWTime(recordDate).seconds());
+                    setCurrentLPDate (CtiTime(recordDate).seconds());
                 }
 
                 // CTIDBG_new day start from zero
@@ -2354,8 +2355,8 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     *
                     *****************************
                     */
-                    RWTime todayMidnight(0,0);
-                    expectedLastInterval = (RWTime::now().seconds() - todayMidnight.seconds()) /
+                    CtiTime todayMidnight(0,0);
+                    expectedLastInterval = (CtiTime::now().seconds() - todayMidnight.seconds()) /
                                              (localLP->configuration.intervalLength * 60.0);
 
 
@@ -2395,7 +2396,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                     // fill message with plug data to next interval
                                     for (int y=0; y < localLP->configuration.numberOfChannels;y++)
                                     {
-                                        intervalTime = RWTime (getCurrentLPDate() +
+                                        intervalTime = CtiTime (getCurrentLPDate() +
                                                                ((x+1) * localLP->configuration.intervalLength * 60));
 
                                         verifyAndAddPointToReturnMsg (validLPPointInfo[y].pointId,
@@ -2413,7 +2414,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 */
                                 setCurrentLPInterval ((ULONG)newInterval);
 
-                                intervalTime = RWTime (getCurrentLPDate() +
+                                intervalTime = CtiTime (getCurrentLPDate() +
                                                        ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
 
                                 validPointFound =
@@ -2440,7 +2441,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             else
                             {
 
-                                intervalTime = RWTime (getCurrentLPDate() +
+                                intervalTime = CtiTime (getCurrentLPDate() +
                                                        ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
 
                                 validPointFound =
@@ -2456,7 +2457,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                         }
                         else
                         {
-                            RWTime todayMidnight(0,0);
+                            CtiTime todayMidnight(0,0);
 
                             // we are one today, check for repeated data
                             if (todayMidnight.seconds() == getCurrentLPDate())
@@ -2465,7 +2466,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " (" << __LINE__ << ") *** ERROR *** Repeated data possible for " << getName() << endl;
+                                        dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Repeated data possible for " << getName() << endl;
                                     }
 
                                 }
@@ -2473,7 +2474,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 {
                                     // data is good, put it in the point and send it
                                     // if our offset if valid, add the point
-                                    intervalTime = RWTime (getCurrentLPDate() +
+                                    intervalTime = CtiTime (getCurrentLPDate() +
                                                            ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
 
                                     validPointFound =
@@ -2490,7 +2491,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             else
                             {
                                 // data is good, put it in the point and send it
-                                intervalTime = RWTime (getCurrentLPDate() +
+                                intervalTime = CtiTime (getCurrentLPDate() +
                                                        ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
                                 // if our offset if valid, add the point
                                 validPointFound =
@@ -2509,7 +2510,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Parity calculation failed interval "<<  getCurrentLPInterval() << " channel " << getCurrentLPChannel() << " for " << getName() << endl;
+                            dout << CtiTime() << " Parity calculation failed interval "<<  getCurrentLPInterval() << " channel " << getCurrentLPChannel() << " for " << getName() << endl;
                         }
                     }
 
@@ -2618,7 +2619,7 @@ INT CtiDeviceLandisGyrS4::ResultDisplay (INMESS *InMessage)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Result display for device " << getName() << " in progress " << endl;
+        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
 
         dout << "Meter ID          :   " << ptr->Real.deviceID << endl;
         dout << "Unit  SN          :   " << ptr->Real.serialNumber << endl;
@@ -3037,12 +3038,12 @@ DOUBLE CtiDeviceLandisGyrS4::calculateIntervalData (USHORT aInterval,
 }
 
 
-BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, RWTime &peak, LGS4ScanData_t *aScanData)
+BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak, LGS4ScanData_t *aScanData)
 {
     BOOL isValidPoint = FALSE;
 
     // this is initial value
-    peak = rwEpoch;
+    peak = PASTDATE;
 
     /* Get the value from InMessage */
     switch (aOffset)
@@ -3059,7 +3060,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                 if (aScanData->Real.dateTimeRateAMaxkW.month > 0 &&
                     aScanData->Real.dateTimeRateAMaxkW.month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->Real.dateTimeRateAMaxkW.day,
+                    peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateAMaxkW.day,
                                            aScanData->Real.dateTimeRateAMaxkW.month,
                                            aScanData->Real.dateTimeRateAMaxkW.year+2000),
                                    aScanData->Real.dateTimeRateAMaxkW.hours,
@@ -3082,7 +3083,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                 if (aScanData->Real.dateTimeRateBMaxkW.month > 0 &&
                     aScanData->Real.dateTimeRateBMaxkW.month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->Real.dateTimeRateBMaxkW.day,
+                    peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateBMaxkW.day,
                                            aScanData->Real.dateTimeRateBMaxkW.month,
                                            aScanData->Real.dateTimeRateBMaxkW.year+2000),
                                    aScanData->Real.dateTimeRateBMaxkW.hours,
@@ -3105,7 +3106,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                 if (aScanData->Real.dateTimeRateCMaxkW.month > 0 &&
                     aScanData->Real.dateTimeRateCMaxkW.month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->Real.dateTimeRateCMaxkW.day,
+                    peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateCMaxkW.day,
                                            aScanData->Real.dateTimeRateCMaxkW.month,
                                            aScanData->Real.dateTimeRateCMaxkW.year+2000),
                                    aScanData->Real.dateTimeRateCMaxkW.hours,
@@ -3129,7 +3130,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                 if (aScanData->Real.dateTimeRateDMaxkW.month > 0 &&
                     aScanData->Real.dateTimeRateDMaxkW.month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->Real.dateTimeRateDMaxkW.day,
+                    peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateDMaxkW.day,
                                            aScanData->Real.dateTimeRateDMaxkW.month,
                                            aScanData->Real.dateTimeRateDMaxkW.year+2000),
                                    aScanData->Real.dateTimeRateDMaxkW.hours,
@@ -3152,7 +3153,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                 if (aScanData->Real.dateTimeRateEMaxkW.month > 0 &&
                     aScanData->Real.dateTimeRateEMaxkW.month < 13)
                 {
-                    peak = RWTime (RWDate (aScanData->Real.dateTimeRateEMaxkW.day,
+                    peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateEMaxkW.day,
                                            aScanData->Real.dateTimeRateEMaxkW.month,
                                            aScanData->Real.dateTimeRateEMaxkW.year+2000),
                                    aScanData->Real.dateTimeRateEMaxkW.hours,
@@ -3198,7 +3199,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateAMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateAMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateAMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateAMaxkM.day,
                                                aScanData->Real.dateTimeRateAMaxkM.month,
                                                aScanData->Real.dateTimeRateAMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateAMaxkM.hours,
@@ -3214,7 +3215,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeMaxkM3.month > 0 &&
                         aScanData->Real.dateTimeMaxkM3.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeMaxkM3.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeMaxkM3.day,
                                                aScanData->Real.dateTimeMaxkM3.month,
                                                aScanData->Real.dateTimeMaxkM3.year+2000),
                                        aScanData->Real.dateTimeMaxkM3.hours,
@@ -3244,7 +3245,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateBMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateBMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateBMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateBMaxkM.day,
                                                aScanData->Real.dateTimeRateBMaxkM.month,
                                                aScanData->Real.dateTimeRateBMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateBMaxkM.hours,
@@ -3274,7 +3275,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateCMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateCMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateCMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateCMaxkM.day,
                                                aScanData->Real.dateTimeRateCMaxkM.month,
                                                aScanData->Real.dateTimeRateCMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateCMaxkM.hours,
@@ -3305,7 +3306,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateDMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateDMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateDMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateDMaxkM.day,
                                                aScanData->Real.dateTimeRateDMaxkM.month,
                                                aScanData->Real.dateTimeRateDMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateDMaxkM.hours,
@@ -3335,7 +3336,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateEMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateEMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateEMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateEMaxkM.day,
                                                aScanData->Real.dateTimeRateEMaxkM.month,
                                                aScanData->Real.dateTimeRateEMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateEMaxkM.hours,
@@ -3396,7 +3397,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateAMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateAMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateAMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateAMaxkM.day,
                                                aScanData->Real.dateTimeRateAMaxkM.month,
                                                aScanData->Real.dateTimeRateAMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateAMaxkM.hours,
@@ -3413,7 +3414,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeMaxkM3.month > 0 &&
                         aScanData->Real.dateTimeMaxkM3.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeMaxkM3.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeMaxkM3.day,
                                                aScanData->Real.dateTimeMaxkM3.month,
                                                aScanData->Real.dateTimeMaxkM3.year+2000),
                                        aScanData->Real.dateTimeMaxkM3.hours,
@@ -3443,7 +3444,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateBMaxkM.month >  0 &&
                         aScanData->Real.dateTimeRateBMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateBMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateBMaxkM.day,
                                                aScanData->Real.dateTimeRateBMaxkM.month,
                                                aScanData->Real.dateTimeRateBMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateBMaxkM.hours,
@@ -3474,7 +3475,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateCMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateCMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateCMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateCMaxkM.day,
                                                aScanData->Real.dateTimeRateCMaxkM.month,
                                                aScanData->Real.dateTimeRateCMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateCMaxkM.hours,
@@ -3504,7 +3505,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateDMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateDMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateDMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateDMaxkM.day,
                                                aScanData->Real.dateTimeRateDMaxkM.month,
                                                aScanData->Real.dateTimeRateDMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateDMaxkM.hours,
@@ -3534,7 +3535,7 @@ BOOL CtiDeviceLandisGyrS4::getMeterDataFromScanStruct (int aOffset, DOUBLE &aVal
                     if (aScanData->Real.dateTimeRateEMaxkM.month > 0 &&
                         aScanData->Real.dateTimeRateEMaxkM.month < 13)
                     {
-                        peak = RWTime (RWDate (aScanData->Real.dateTimeRateEMaxkM.day,
+                        peak = CtiTime (CtiDate (aScanData->Real.dateTimeRateEMaxkM.day,
                                                aScanData->Real.dateTimeRateEMaxkM.month,
                                                aScanData->Real.dateTimeRateEMaxkM.year+2000),
                                        aScanData->Real.dateTimeRateEMaxkM.hours,
@@ -3654,10 +3655,10 @@ void CtiDeviceLandisGyrS4::syncAppropriateTime (ULONG seconds)
 BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                          DOUBLE aValue,
                                                          USHORT aQuality,
-                                                         RWTime aTime,
+                                                         CtiTime aTime,
                                                          CtiReturnMsg *aReturnMsg,
                                                          USHORT aIntervalType,
-                                                         RWCString aValReport)
+                                                         string aValReport)
 
 {
     BOOL validPointFound = FALSE;
@@ -3681,14 +3682,14 @@ BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (LONG   aPointId,
                 pData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
             }
 
-            if (aTime != rwEpoch)
+            if (aTime != PASTDATE)
             {
                 //
                 //  hack fix for non-DST compliant meters - someday to be absorbed by a big, global timekeeper
                 //
                 if( _dstFlag && aTime.isDST( ) )
                 {
-                    aTime += 60 * 60;
+                    aTime = aTime +  60 * 60;
                 }
 
                 pData->setTime (aTime);

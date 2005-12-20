@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/07/13 16:09:04 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/20 17:16:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,8 @@
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
 #include "resolvers.h"
+
+using namespace std;
 
 static void verifyDynamicData(CtiPoint *&pTempPoint);
 
@@ -78,7 +80,7 @@ void ApplyInsertNonUpdatedDynamicData(const CtiHashKey *key, CtiPoint *&pTempPoi
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << " Unable to insert dynamicpointdata for " << pTempPoint->getName() << endl;
             }
         }
@@ -189,7 +191,7 @@ void CtiPointClientManager::DumpList(void)
         //Make sure the list is cleared
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         cout << "Attempting to clear device list..." << endl;
 
@@ -204,7 +206,7 @@ void CtiPointClientManager::DumpList(void)
 int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, const CtiPointRegistrationMsg &aReg, bool debugprint)
 {
     int nRet = 0;
-    RWTime   NowTime;
+    CtiTime   NowTime;
     int ptcnt = aReg.getCount();
 
     RemoveConnectionManager(CM);
@@ -290,9 +292,9 @@ int CtiPointClientManager::RemoveConnectionManager(CtiConnectionManager* CM)
     return nRet;
 }
 
-RWTime CtiPointClientManager::findNextNearestArchivalTime()
+CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 {
-    RWTime   closeTime(YUKONEOT);
+    CtiTime   closeTime(YUKONEOT);
 
     {
         LockGuard  guard(monitor());
@@ -318,7 +320,7 @@ RWTime CtiPointClientManager::findNextNearestArchivalTime()
     return closeTime;
 }
 
-void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTableRawPointHistory, less<CtiTableRawPointHistory> > &Que)
+void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiQueue<CtiTableRawPointHistory, less<CtiTableRawPointHistory> > &Que)
 {
     {
         LockGuard  guard(monitor());
@@ -361,7 +363,7 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                              */
                             pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
                         }
-                        else if( pPt->getArchiveInterval() >= 0 &&                                      // pPt->getArchiveInterval() != ULONG_MAX &&
+                        else if( pPt->getArchiveInterval() >= 0 &&                                     
                                  pDyn->getNextArchiveTime() > Now + (2 * pPt->getArchiveInterval()))
                         {
                             /*
@@ -387,11 +389,11 @@ void CtiPointClientManager::storeDirtyRecords()
         CtiRTDBIterator itr(Map);
 
         {
-            RWCString dyndisp("dyndisp");
+            string dyndisp("dyndisp");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
-            conn.beginTransaction(dyndisp);
+            conn.beginTransaction(dyndisp.c_str());
 
             for(; ++itr ;)
             {
@@ -420,19 +422,19 @@ void CtiPointClientManager::storeDirtyRecords()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
 
-            conn.commitTransaction(dyndisp);
+            conn.commitTransaction(dyndisp.c_str());
         }
     }
 
     if(count > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Updated " << count << " dynamic dispatch records. " << endl;
+        dout << CtiTime() << " **** Updated " << count << " dynamic dispatch records. " << endl;
     }
 
     return;
@@ -490,7 +492,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
 
     if(DebugLevel & 0x00000001)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Looking for Dynamic Dispatch Data" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Dynamic Dispatch Data" << endl;
     }
     CtiTablePointDispatch::getSQL( db, keyTable, selector );
 
@@ -532,14 +534,14 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Point id " << lTemp << " found in "  << CtiTablePointDispatch::getTableName() << ", no other point info available" << endl;
         }
     }
 
     if(DebugLevel & 0x00000001)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done looking for Dynamic Dispatch Data" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Dynamic Dispatch Data" << endl;
     }
 }
 

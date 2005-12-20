@@ -5,15 +5,15 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/12/16 16:24:34 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/20 17:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <vector>
-using namespace std;
+
 #include "cparms.h"
 #include "dev_single.h"
 #include "logger.h"
@@ -22,14 +22,19 @@ using namespace std;
 #include "numstr.h"
 #include "tbl_ptdispatch.h"
 #include "utility.h"
+#include "ctidate.h"
+#include "ctitime.h"
+
+using namespace std;
+
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
-RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
+CtiTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 {
-    RWTime    Now;
-    RWTime    When(YUKONEOT);
+    CtiTime    Now;
+    CtiTime    When(YUKONEOT);
     int       loop_count = 0;
     const int MaxLoopCount = 100;
 
@@ -49,7 +54,7 @@ RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -69,18 +74,18 @@ RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 }
 
 
-RWTime CtiDeviceSingle::firstScan( const RWTime &When, INT rate )
+CtiTime CtiDeviceSingle::firstScan( const CtiTime &When, INT rate )
 {
-    RWTime first;
+    CtiTime first;
 
     if( getScanRate(rate) > 3600 )
     {
-        RWTime hourstart = RWTime(When.seconds() - (When.seconds() % 3600)); // align to the hour.
-        first = RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getScanRate(rate)) + getScanRate(rate));
+        CtiTime hourstart = CtiTime(When.seconds() - (When.seconds() % 3600)); // align to the hour.
+        first = CtiTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getScanRate(rate)) + getScanRate(rate));
     }
     else if(getScanRate(rate) > 0 )    // Prevent a divide by zero with this check...
     {
-        first = RWTime(When.seconds() - (When.seconds() % getScanRate(rate)) + getScanRate(rate));
+        first = CtiTime(When.seconds() - (When.seconds() % getScanRate(rate)) + getScanRate(rate));
     }
     else if(getScanRate(rate) == 0)
     {
@@ -88,7 +93,7 @@ RWTime CtiDeviceSingle::firstScan( const RWTime &When, INT rate )
     }
     else
     {
-        first = RWTime(YUKONEOT);
+        first = CtiTime(YUKONEOT);
     }
 
     while(first <= When)
@@ -101,7 +106,7 @@ RWTime CtiDeviceSingle::firstScan( const RWTime &When, INT rate )
 
 void CtiDeviceSingle::validateScanTimes(bool force)
 {
-    RWTime Now;
+    CtiTime Now;
 
     LockGuard guard(monitor());
 
@@ -126,8 +131,8 @@ void CtiDeviceSingle::validateScanTimes(bool force)
                 {
                     setLastFreezeNumber(0L);
                     setPrevFreezeNumber(0L);
-                    setLastFreezeTime(RWTime());
-                    setPrevFreezeTime(RWTime());
+                    setLastFreezeTime(CtiTime());
+                    setPrevFreezeTime(CtiTime());
                 }
             }
             else if(isScanFlagSet(rate) || isScanFlagSet(ScanFreezePending))
@@ -142,7 +147,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
 INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
-    RWTime   Now;
+    CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each accumulator scanning device prior to the
@@ -185,7 +190,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
             {
                 // CAN NOT scan a global address.
                 setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
-                getNextScan(ScanRateAccum) = RWTime(YUKONEOT);
+                getNextScan(ScanRateAccum) = CtiTime(YUKONEOT);
                 return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
             }
 
@@ -206,7 +211,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
             if(  SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                dout << CtiTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
             }
 
             if( getScanRate(ScanRateAccum) < 60 )
@@ -247,7 +252,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
     }
     else
     {
-        setNextScan(ScanRateAccum, RWTime(YUKONEOT));
+        setNextScan(ScanRateAccum, CtiTime(YUKONEOT));
     }
 
     if(OutMessage != NULL)
@@ -267,7 +272,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
 INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
-    RWTime   Now;
+    CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each accumulator scanning device prior to the
@@ -299,7 +304,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Integrity Scan aborted due to inhibited device: " << getName() << endl;
+                dout << CtiTime() << " Integrity Scan aborted due to inhibited device: " << getName() << endl;
             }
 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
@@ -309,7 +314,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
         {
             //          {
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
+            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
             //          }
             nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
         }
@@ -323,7 +328,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateIntegrity, YUKONEOT);    // set him to the end of time!
-                    setNextScan(ScanRateIntegrity, RWTime(YUKONEOT));
+                    setNextScan(ScanRateIntegrity, CtiTime(YUKONEOT));
 
                     return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
                 }
@@ -331,7 +336,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Integrity Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
+                    dout << CtiTime() << " Integrity Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
                 }
 #endif
 
@@ -342,7 +347,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
                 if(nRet)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Integrity Scan error " << nRet << endl;
+                    dout << CtiTime() << " Integrity Scan error " << nRet << endl;
                 }
                 else
                 {
@@ -355,7 +360,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
                 if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                    dout << CtiTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                 }
 
                 if( getScanRate(ScanRateIntegrity) < 60 )
@@ -394,7 +399,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
-    RWTime   Now;
+    CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
 
     RWTPtrSlist< CtiMessage > vgList;
@@ -455,7 +460,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                     {
                         // CANNOT scan a global address.
                         setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
-                        setNextScan(ScanRateAccum, RWTime(YUKONEOT));
+                        setNextScan(ScanRateAccum, CtiTime(YUKONEOT));
 
                         return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
                     }
@@ -486,7 +491,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                     if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                        dout << CtiTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                     }
 
                     if( getScanRate(ScanRateGeneral) < 60 )
@@ -533,7 +538,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
-    RWTime   Now;
+    CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each load profile device prior to the
@@ -565,7 +570,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << endl;
+                dout << CtiTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << endl;
             }
 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
@@ -575,7 +580,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
         {
             //          {
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //             dout << RWTime() << " " << getName() << "'s scan window is closed " << endl;
+            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
             //          }
             nRet = SCAN_ERROR_DEVICE_WINDOW_CLOSED;
         }
@@ -589,7 +594,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateLoadProfile, YUKONEOT);    // set him to the end of time!
-                    setNextScan(ScanRateLoadProfile, RWTime(YUKONEOT));
+                    setNextScan(ScanRateLoadProfile, CtiTime(YUKONEOT));
 
                     return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
                 }
@@ -597,7 +602,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
 #if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Load Profile Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
+                    dout << CtiTime() << " Load Profile Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
                 }
 #endif
 
@@ -608,14 +613,14 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
                 if(nRet)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Load Profile Scan error " << nRet << endl;
+                    dout << CtiTime() << " Load Profile Scan error " << nRet << endl;
                 }
             }
             else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Load Profile Scan aborted due to scan in progress " << endl;
+                    dout << CtiTime() << " Load Profile Scan aborted due to scan in progress " << endl;
                 }
             }
         }
@@ -707,7 +712,7 @@ void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &wor
 
 
 INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
-                                   RWTime &TimeNow,
+                                   CtiTime &TimeNow,
                                    RWTPtrSlist< CtiMessage >   &vgList,
                                    RWTPtrSlist< CtiMessage > &retList,
                                    RWTPtrSlist< OUTMESS > &outList)
@@ -727,14 +732,15 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
     if( nRet )
     {
-        RWCString errStr;
-        RWCString CmdStr("Unknown");
+        string errStr;
+        string CmdStr("Unknown");
         char ErrStr[80];
 
         if(InMessage->Return.CommandStr[0] != '\0')
         {
-            CmdStr = RWCString(InMessage->Return.CommandStr);
-            CmdStr.toLower();
+            CmdStr = string(InMessage->Return.CommandStr);
+            std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
+            
         }
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
@@ -743,13 +749,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             InEchoToOut( InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, RWCString(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, string(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
 
             pReq->setConnectionHandle( InMessage->Return.Connection );
 
             {
-                RWCString msg;
-                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                string msg;
+                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -765,8 +771,8 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "   Status = " << status << ": " << FormatError(status) << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "   Status = " << status << ": " << FormatError(status) << endl;
                 }
             }
 
@@ -783,11 +789,11 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 OutTemplate = 0;
             }
         }
-        else if( CmdStr.contains("scan") && hasLongScanRate( CmdStr ) )
+        else if( CmdStr.find("scan")!=string::npos && hasLongScanRate( CmdStr ))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
@@ -829,7 +835,7 @@ INT CtiDeviceSingle::doDeviceInit(void)
 
     // RefreshDevicePoints();                         // Get attached points now.
 
-    RWTime   Now;
+    CtiTime   Now;
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -857,7 +863,7 @@ BOOL CtiDeviceSingle::isScanFlagSet(int scantype) const
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     return val;
@@ -884,7 +890,7 @@ BOOL     CtiDeviceSingle::setScanFlag(int scantype, BOOL b)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -923,31 +929,31 @@ CtiDeviceSingle& CtiDeviceSingle::setPrevFreezeNumber( const LONG aPrevFreezeNum
     return *this;
 }
 
-RWTime  CtiDeviceSingle::getLastFreezeTime() const
+CtiTime  CtiDeviceSingle::getLastFreezeTime() const
 {
     return getScanData()->getLastFreezeTime();
 }
-CtiDeviceSingle& CtiDeviceSingle::setLastFreezeTime( const RWTime& aLastFreezeTime )
+CtiDeviceSingle& CtiDeviceSingle::setLastFreezeTime( const CtiTime& aLastFreezeTime )
 {
     getScanData().setLastFreezeTime(aLastFreezeTime);
     return *this;
 }
 
-RWTime  CtiDeviceSingle::getPrevFreezeTime() const
+CtiTime  CtiDeviceSingle::getPrevFreezeTime() const
 {
     return getScanData()->getPrevFreezeTime();
 }
-CtiDeviceSingle& CtiDeviceSingle::setPrevFreezeTime( const RWTime& aPrevFreezeTime )
+CtiDeviceSingle& CtiDeviceSingle::setPrevFreezeTime( const CtiTime& aPrevFreezeTime )
 {
     getScanData().setPrevFreezeTime(aPrevFreezeTime);
     return *this;
 }
 
-RWTime  CtiDeviceSingle::getLastLPTime()
+CtiTime  CtiDeviceSingle::getLastLPTime()
 {
     static bool bDone = false;
 
-    RWTime rt;
+    CtiTime rt;
 
     rt += (24 * 60 * 60);  //  default to tomorrow, i.e., no LP data returned
 
@@ -955,13 +961,13 @@ RWTime  CtiDeviceSingle::getLastLPTime()
     {
         if(!bDone)
         {
-            RWTime dispatchTime = peekDispatchTime();
+            CtiTime dispatchTime = peekDispatchTime();
 
             if(getScanData().getLastLPTime() > dispatchTime)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Moving Last LP Time (" << getScanData().getLastLPTime() << ") back to " << dispatchTime << endl;
+                    dout << CtiTime() << " Moving Last LP Time (" << getScanData().getLastLPTime() << ") back to " << dispatchTime << endl;
                 }
                 setLastLPTime(dispatchTime);
             }
@@ -973,11 +979,11 @@ RWTime  CtiDeviceSingle::getLastLPTime()
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return rt;
 }
-CtiDeviceSingle& CtiDeviceSingle::setLastLPTime( const RWTime& aTime )
+CtiDeviceSingle& CtiDeviceSingle::setLastLPTime( const CtiTime& aTime )
 {
     if(useScanFlags())
     {
@@ -988,24 +994,24 @@ CtiDeviceSingle& CtiDeviceSingle::setLastLPTime( const RWTime& aTime )
 }
 
 
-RWTime CtiDeviceSingle::getNextScan(INT a)
+CtiTime CtiDeviceSingle::getNextScan(INT a)
 {
     LockGuard guard(monitor());
     return getScanData().getNextScan(a);
 }
-CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
+CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const CtiTime &b)
 {
     LockGuard guard(monitor());
 
     scheduleSignaledAlternateScan(a);
 
-    RWTime Now, When;
+    CtiTime Now, When;
 
     if( !isWindowOpen(Now, When) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << endl;
+            dout << CtiTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << endl;
         }
 
         getScanData().setNextScan(a, When);
@@ -1016,9 +1022,9 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
     return *this;
 }
 
-RWTime CtiDeviceSingle::nextRemoteScan() const
+CtiTime CtiDeviceSingle::nextRemoteScan() const
 {
-    RWTime nt = YUKONEOT;
+    CtiTime nt = YUKONEOT;
 
     if( useScanFlags() )
     {
@@ -1026,15 +1032,15 @@ RWTime CtiDeviceSingle::nextRemoteScan() const
 
         if(getDebugLevel() & 0x00100000)
         {
-            if(nt < RWTime(YUKONEOT))
+            if(nt < CtiTime(YUKONEOT))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
+                dout << CtiTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
+                dout << CtiTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
             }
         }
     }
@@ -1069,13 +1075,13 @@ void CtiDeviceSingle::deleteNonUpdatedScanRates()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << " deleting scanrate. Scantype " << i << endl;
+                    dout << CtiTime() << " " << getName() << " deleting scanrate. Scantype " << i << endl;
                 }
 
                 delete _scanRateTbl[i];
                 _scanRateTbl[i] = NULL;
 
-                setNextScan(i, RWTime(YUKONEOT));
+                setNextScan(i, CtiTime(YUKONEOT));
             }
         }
     }
@@ -1140,7 +1146,7 @@ CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     LockGuard guard(monitor());
@@ -1176,7 +1182,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
             if( _scanData.Insert().errorCode() != RWDBStatus::ok )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
+                dout << CtiTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
             }
         }
     }
@@ -1251,14 +1257,14 @@ LONG CtiDeviceSingle::getScanRate(int rate) const
     if(rate >= 0 && rate < ScanRateInvalid && _scanRateTbl[rate] != NULL)
     {
         bool bScanIsScheduled;
-        if(isAlternateRateActive(bScanIsScheduled, RWTime(), rate))
+        if(isAlternateRateActive(bScanIsScheduled, CtiTime(), rate))
         {
             // FirstScanInSignaledAlternateRate scan GOES NOW, once scheduled we report the normal rate.
             INT altrate = bScanIsScheduled ? _scanRateTbl[rate]->getAlternateRate() : 1L;
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << getName() << " is using an altrate of " << altrate << endl;
             }
 #endif
@@ -1309,7 +1315,7 @@ CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableD
     return *this;
 }
 
-BOOL CtiDeviceSingle::isWindowOpen(RWTime &aNow, RWTime &opensAt, CtiDeviceWindow_t windowType) const
+BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWindow_t windowType) const
 {
     BOOL status = TRUE;
 
@@ -1321,15 +1327,15 @@ BOOL CtiDeviceSingle::isWindowOpen(RWTime &aNow, RWTime &opensAt, CtiDeviceWindo
         {
             if(_windowVector[x].getType() == windowType)
             {
-                RWTime lastMidnight(RWDate());
-                RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
-                RWTime close (open.seconds()+_windowVector[x].getDuration());
+                CtiTime lastMidnight(CtiDate());
+                CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
+                CtiTime close (open.seconds()+_windowVector[x].getDuration());
 
                 if(open == close)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
+                        dout << CtiTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
                     }
                 }
                 else if((aNow < open) || (aNow > close))
@@ -1344,7 +1350,7 @@ BOOL CtiDeviceSingle::isWindowOpen(RWTime &aNow, RWTime &opensAt, CtiDeviceWindo
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         status = FALSE;
     }
@@ -1361,10 +1367,10 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
-            RWTime lastMidnight(RWDate());
-            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
-            RWTime close (open.seconds()+_windowVector[x].getDuration());
-            RWTime now;
+            CtiTime lastMidnight(CtiDate());
+            CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
+            CtiTime close (open.seconds()+_windowVector[x].getDuration());
+            CtiTime now;
 
             // this was a scan once and remove
             if( (open <= now) && ((_windowVector[x].getDuration() == 0) || (now > close)) )
@@ -1382,7 +1388,7 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
 }
 
 // this does a little more than it probably should but for now it will have to do DLS
-BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNow, int rate) const
+BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, CtiTime &aNow, int rate) const
 {
     BOOL status = FALSE;
 
@@ -1391,9 +1397,9 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNo
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
-        RWTime lastMidnight(RWDate());
-        RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
-        RWTime close (open.seconds()+_windowVector[x].getDuration());
+        CtiTime lastMidnight(CtiDate());
+        CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
+        CtiTime close (open.seconds()+_windowVector[x].getDuration());
 
         if(_windowVector[x].getType() == DeviceWindowAlternateRate)
         {
@@ -1421,18 +1427,18 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNo
     return status;
 }
 
-RWTime CtiDeviceSingle::getNextWindowOpen() const
+CtiTime CtiDeviceSingle::getNextWindowOpen() const
 {
-    RWTime now;
-    RWTime lastMidnight(RWDate());
-    RWTime windowOpens = RWTime(YUKONEOT);
+    CtiTime now;
+    CtiTime lastMidnight(CtiDate());
+    CtiTime windowOpens = CtiTime(YUKONEOT);
 
     try
     {
         // loop the vector
         for(int x=0; x <_windowVector.size(); x++)
         {
-            RWTime open (lastMidnight.seconds()+_windowVector[x].getOpen());
+            CtiTime open (lastMidnight.seconds()+_windowVector[x].getOpen());
 
             if(now <= open && open < windowOpens)
             {
@@ -1443,7 +1449,7 @@ RWTime CtiDeviceSingle::getNextWindowOpen() const
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return windowOpens;
@@ -1453,8 +1459,8 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 {
     bool found=false;
 
-    RWTime now;
-    RWTime lastMidnight(RWDate());
+    CtiTime now;
+    CtiTime lastMidnight(CtiDate());
 
     if(aOpen == -1 || aDuration == 0 || (lastMidnight.seconds()+aOpen+aDuration > now.seconds()))
     {
@@ -1509,13 +1515,13 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << now << " " << getName() << " changing to alternate scan rate starting " << RWTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
+            dout << now << " " << getName() << " changing to alternate scan rate starting " << CtiTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << RWTime(lastMidnight.seconds()+aOpen+aDuration) << endl;
+        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << CtiTime(lastMidnight.seconds()+aOpen+aDuration) << endl;
     }
 }
 
@@ -1543,7 +1549,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 {
     LockGuard guard(monitor());
 
-    RWCString rwsTemp;
+    string rwsTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -1578,7 +1584,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     RWDBNullIndicator isNull;
@@ -1599,7 +1605,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
+                dout << CtiTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
             }
         }
         else
@@ -1681,7 +1687,7 @@ INT CtiDeviceSingle::validateScanData()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -1692,9 +1698,9 @@ INT CtiDeviceSingle::validateScanData()
 /*
  *  Look for the oldest point in the archive which is greater than the default date...
  */
-RWTime CtiDeviceSingle::peekDispatchTime() const
+CtiTime CtiDeviceSingle::peekDispatchTime() const
 {
-    RWTime dispatchTime;
+    CtiTime dispatchTime;
 
     if(_pointMgr != NULL)
     {
@@ -1714,9 +1720,9 @@ RWTime CtiDeviceSingle::peekDispatchTime() const
 
                 if(dbstat.errorCode() == RWDBStatus::ok)
                 {
-                    if(pd.getTimeStamp() > ptdefault.getTimeStamp() && pd.getTimeStamp().rwtime() < dispatchTime)
+                    if(pd.getTimeStamp() > ptdefault.getTimeStamp() && pd.getTimeStamp() < dispatchTime)
                     {
-                        dispatchTime = pd.getTimeStamp().rwtime();
+                        dispatchTime = pd.getTimeStamp();
                     }
                 }
             }
@@ -1725,7 +1731,7 @@ RWTime CtiDeviceSingle::peekDispatchTime() const
         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "   Oldest dispatch write time is " << dispatchTime << endl;
         }
     }
@@ -1739,7 +1745,7 @@ bool CtiDeviceSingle::processAdditionalRoutes( INMESS *InMessage ) const
 }
 
 
-bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, RWTime &now)
+bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &now)
 {
     if(!status)     // In this case we need to make sure we have not gone tardy on this scan type
     {
@@ -1747,7 +1753,7 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, RWTime &n
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
+                dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
             }
             resetForScan(scantype);
             getScanData().setLastCommunicationTime(scantype, now);
@@ -1797,7 +1803,7 @@ ULONG CtiDeviceSingle::getTardyTime(int scantype) const
     return maxtardytime;
 }
 
-bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
+bool CtiDeviceSingle::hasLongScanRate(const string &cmd) const
 {
     bool bret = false;
 
@@ -1815,9 +1821,9 @@ bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
 }
 
 
-bool CtiDeviceSingle::hasRateOrClockChanged(int rate, RWTime &Now)
+bool CtiDeviceSingle::hasRateOrClockChanged(int rate, CtiTime &Now)
 {
-    RWTime previousScan;
+    CtiTime previousScan;
     bool bstatus = false;
 
     LONG scanrate = getScanRate(rate);
@@ -1848,16 +1854,16 @@ bool CtiDeviceSingle::hasRateOrClockChanged(int rate, RWTime &Now)
 BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
 {
     BOOL status = FALSE;
-    RWTime now;
-    RWTime lastMidnight(RWDate());
+    CtiTime now;
+    CtiTime lastMidnight(CtiDate());
 
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
-            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
-            RWTime close (open.seconds()+_windowVector[x].getDuration());
+            CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
+            CtiTime close (open.seconds()+_windowVector[x].getDuration());
 
             /*********************************
             * we have an alternate rate from the outside somewhere
@@ -1876,24 +1882,24 @@ BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
 /*
  * This method allows the command string to re-discover the scan type that was asked for.
  */
-int CtiDeviceSingle::desolveScanRateType( const RWCString &cmd )
+int CtiDeviceSingle::desolveScanRateType( const string &cmd )
 {
     // First decide what scan rate we are.
     int scanratetype = ScanRateInvalid;
 
-    if(cmd.contains(" general") || cmd.contains(" status"))
+    if(findStringIgnoreCase(cmd," general") || findStringIgnoreCase(cmd," status"))
     {
         scanratetype = ScanRateGeneral;
     }
-    else if(cmd.contains(" integrity"))
+    else if(findStringIgnoreCase(cmd," integrity"))
     {
         scanratetype = ScanRateIntegrity;
     }
-    else if(cmd.contains(" accumulator"))
+    else if(findStringIgnoreCase(cmd," accumulator"))
     {
         scanratetype = ScanRateAccum;
     }
-    else if(cmd.contains(" loadprofile"))
+    else if(findStringIgnoreCase(cmd," loadprofile"))
     {
         //  not applicable
         scanratetype = ScanRateLoadProfile;

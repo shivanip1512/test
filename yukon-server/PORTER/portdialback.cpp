@@ -7,11 +7,26 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:19:23 $
 *
 * HISTORY      :
 * $Log: portdialback.cpp,v $
+* Revision 1.5  2005/12/20 17:19:23  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.4.2.4  2005/08/12 19:53:59  jliu
+* Date Time Replaced
+*
+* Revision 1.4.2.3  2005/07/18 22:30:51  jliu
+* rebuild_cppunit&correct_find
+*
+* Revision 1.4.2.2  2005/07/14 22:27:00  jliu
+* RWCStringRemoved
+*
+* Revision 1.4.2.1  2005/07/12 21:08:41  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.4  2005/02/17 19:02:58  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -34,7 +49,6 @@
 #include <iostream>
 #include <iomanip>
 #include <set>
-using namespace std;
 
 #include <rw/regexp.h>
 #include <rw\ctoken.h>
@@ -53,6 +67,7 @@ using namespace std;
 #include "port_base.h"
 #include "portglob.h"
 
+using namespace std;
 
 VOID PortDialbackThread(void *pid)
 {
@@ -66,7 +81,7 @@ VOID PortDialbackThread(void *pid)
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
     DWORD oldmask = 0, inmask = 0;
     ULONG bytesRead;
-    RWCString byteString;
+    string byteString;
     bool copyBytes;
     int failedattempts;
     ULONG bytesWritten = 0;
@@ -75,7 +90,7 @@ VOID PortDialbackThread(void *pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " UNABLE TO START!" << endl;
+            dout << CtiTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " UNABLE TO START!" << endl;
         }
 
         return;
@@ -83,7 +98,7 @@ VOID PortDialbackThread(void *pid)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+        dout << CtiTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
     }
 
     while(!PorterQuit)
@@ -98,7 +113,7 @@ VOID PortDialbackThread(void *pid)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
+                        dout << CtiTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
                     }
                     continue;
                 }
@@ -106,14 +121,14 @@ VOID PortDialbackThread(void *pid)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << " for dialback" << endl;
+                        dout << CtiTime() << " Initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << " for dialback" << endl;
                     }
                 }
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Port->getName() << " Waiting for CD" << endl;
+                dout << CtiTime() << " " << Port->getName() << " Waiting for CD" << endl;
             }
 
             int tout = 0;
@@ -126,7 +141,7 @@ VOID PortDialbackThread(void *pid)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << Port->getName() << " - Waiting for DCD" << endl;
+                            dout << CtiTime() << " " << Port->getName() << " - Waiting for DCD" << endl;
                         }
                     }
 
@@ -142,7 +157,7 @@ VOID PortDialbackThread(void *pid)
             catch(...)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             if(PorterQuit)
@@ -155,12 +170,12 @@ VOID PortDialbackThread(void *pid)
                 char mych = '\0';
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << Port->getName() << " line has been answered..." << endl;
+                    dout << CtiTime() << " " << Port->getName() << " line has been answered..." << endl;
                 }
 
                 bytesRead = -1;
                 copyBytes = false;
-                byteString = RWCString();
+                byteString = string();
 
                 failedattempts = 0;
 
@@ -173,9 +188,9 @@ VOID PortDialbackThread(void *pid)
                         if(mych == 'B' || copyBytes)
                         {
                             copyBytes = true;
-                            byteString.append(mych);
+                            byteString.append((char*)mych);
 
-                            if(byteString.contains("END"))
+                            if(byteString.find("END")!=string::npos)
                             {
                                 break; // the while!
                             }
@@ -187,31 +202,34 @@ VOID PortDialbackThread(void *pid)
                     }
                 }
 
-                if(!byteString.isNull())
+                if(!byteString.empty())
                 {
                     // We need to look for the message.
-                    RWCTokenizer tok(byteString);
-                    RWCString tstr;
-                    RWCString strdev;
-                    RWCString strtime;
-                    RWCString strpriority;
-                    RWCString strmsg;
-                    RWTime msgtime;
+                    boost::tokenizer<> tok(byteString);
+                    boost::tokenizer<>::iterator beg=tok.begin(); 
+
+                  
+                    string tstr;
+                    string strdev;
+                    string strtime;
+                    string strpriority;
+                    string strmsg;
+                    CtiTime msgtime;
 
 
-                    tstr = tok(); // Grab "BEGIN"
-                    tstr = tok(); // Grab "ALARM"
-                    if(!tstr.compareTo("ALARM"))
+                    tstr = *beg++; // Grab "BEGIN"
+                    tstr = *beg++; // Grab "ALARM"
+                    if(!tstr.compare("ALARM"))
                     {
-                        strdev = tok();         // Get the translation name from the ion.
-                        strtime = tok();        // Unix time value!
-                        strpriority = tok();    // Priority.
+                        strdev = *beg++;         // Get the translation name from the ion.
+                        strtime = *beg++;        // Unix time value!
+                        strpriority = *beg++;    // Priority.
 
-                        while(!(tstr = tok()).isNull())
+                        while(!(tstr = *beg++).empty())
                         {
-                            tstr = tstr.strip(RWCString::trailing, '\r');
+                            tstr = trim_right(tstr, "\r");
 
-                            if(!tstr.compareTo("END"))
+                            if(!tstr.compare("END"))
                             {
                                 Port->writePort("ACK\r\n", 5, 5, &bytesWritten);
                                 break;
@@ -221,14 +239,14 @@ VOID PortDialbackThread(void *pid)
                         }
                     }
 
-                    if(!strtime.isNull())
+                    if(!strtime.empty())
                     {
-                        msgtime = RWTime( atoi(strtime.data()) + rwEpoch );
+                        msgtime = CtiTime( atoi(strtime.c_str()) );
                     }
 
-                    if(!strdev.isNull())
+                    if(!strdev.empty())
                     {
-                        CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_PORTER, 0, strdev + ": " + strmsg, RWCString("Priority ") + strpriority );
+                        CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_PORTER, 0, strdev + ": " + strmsg, string("Priority ") + strpriority );
                         if(pSig)
                         {
                             pSig->setMessageTime(msgtime);
@@ -254,7 +272,7 @@ VOID PortDialbackThread(void *pid)
 
                                 if( dbdelay )
                                 {
-                                    RWTime now;
+                                    CtiTime now;
                                     pAltRate->insert( (now.hour() * 3600) + (now.minute() * 60) + now.second() + dbdelay );  // Seconds since midnight, or NOW if negative.
                                 }
                                 else
@@ -268,14 +286,14 @@ VOID PortDialbackThread(void *pid)
 
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Requesting scans at the alternate scan rate for " << pDevice->getName() << endl;
+                                    dout << CtiTime() << " Requesting scans at the alternate scan rate for " << pDevice->getName() << endl;
                                 }
                             }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Device " << strdev << " not found in the yukon database." << endl;
+                            dout << CtiTime() << " Device " << strdev << " not found in the yukon database." << endl;
                         }
 
                         if(PorterDebugLevel & PORTER_DEBUG_DIALBACK_PILDIRECT)
@@ -289,26 +307,26 @@ VOID PortDialbackThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Phone has NOT been answered..." << endl;
+                    dout << CtiTime() << " Phone has NOT been answered..." << endl;
                 }
             }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << Port->getName() << " Hanging up the phone." << endl;
+                dout << CtiTime() << " " << Port->getName() << " Hanging up the phone." << endl;
             }
             Port->disconnect(CtiDeviceSPtr(), true);
         }
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Shutdown PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
+        dout << CtiTime() << " Shutdown PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
     }
 
 

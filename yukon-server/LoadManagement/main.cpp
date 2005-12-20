@@ -27,7 +27,7 @@ int main(int argc, char* argv[] )
 
     /*{
         RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime() << " - Load Management starting up..." << endl;
+        cout << CtiTime() << " - Load Management starting up..." << endl;
     }*/
 
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "LoadManagement")) != NULL )
@@ -52,7 +52,7 @@ int main(int argc, char* argv[] )
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << RWTime()  << " - Installing as a service..." << endl;
+            cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_DEMAND_START,
@@ -63,7 +63,7 @@ int main(int argc, char* argv[] )
         else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << RWTime()  << " - Installing as a service..." << endl;
+            cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_AUTO_START,
@@ -74,7 +74,7 @@ int main(int argc, char* argv[] )
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
             RWMutexLock::LockGuard guard(coutMux);
-            cout << RWTime()  << " - Removing service..." << endl;
+            cout << CtiTime()  << " - Removing service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Remove();
         }

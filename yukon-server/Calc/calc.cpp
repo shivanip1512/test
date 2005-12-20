@@ -1,19 +1,17 @@
 #include "yukon.h"
 
-#include <windows.h>
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+#include "include\calc.h"
+#include "logger.h"
+#include "utility.h"
+#include "rwutil.h"
 
 #include <rw/collect.h>
 #include <rw/thr/mutex.h>
-#include <rw/rwtime.h>
-
-#include "calc.h"
-#include "logger.h"
-#include "numstr.h"
-#include "utility.h"
+#include "ctitime.h"
 
 extern ULONG _CALC_DEBUG;
+
+using namespace std;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalc, "CtiCalc" );
 
@@ -25,41 +23,41 @@ const CHAR * CtiCalc::UpdateType_Historical = "Historical";
 const CHAR * CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
 const CHAR * CtiCalc::UpdateType_Constant   = "Constant";
 
-CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval )
+CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval )
 {
     _valid = TRUE;
     _pointId = pointId;
 
-    if( (!updateType.compareTo(UpdateType_Periodic, RWCString::ignoreCase))
+    if( (!stringCompareIgnoreCase(updateType,UpdateType_Periodic))
         && (updateInterval > 0) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = periodic;
     }
-    else if( !updateType.compareTo(UpdateType_AllChange, RWCString::ignoreCase))
+    else if( !stringCompareIgnoreCase(updateType,UpdateType_AllChange))
     {
         _updateInterval = 0;
         _updateType = allUpdate;
     }
-    else if( !updateType.compareTo(UpdateType_OneChange, RWCString::ignoreCase))
+    else if( !stringCompareIgnoreCase(updateType,UpdateType_OneChange))
     {
         _updateInterval = 0;
         _updateType = anyUpdate;
     }
-    else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
+    else if( !stringCompareIgnoreCase(updateType,UpdateType_Historical))
     {
         _valid = FALSE;
         _updateInterval = 0;
         _updateType = historical;
     }
-    else if( !updateType.compareTo(UpdateType_PeriodicPlusUpdate, RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(updateType,UpdateType_PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = periodicPlusUpdate;
     }
-    else if( !updateType.compareTo(UpdateType_Constant, RWCString::ignoreCase) )
+    else if( !stringCompareIgnoreCase(updateType,UpdateType_Constant) )
     {
         _updateInterval = 0;
         _updateType = constant;
@@ -75,7 +73,7 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
 
     if( _valid )
     {
-        _pointCalcWindowEndTime = RWTime(RWDate(1,1,1990));
+        _pointCalcWindowEndTime = CtiTime(CtiDate(1,1,1990));
     }
 }
 
@@ -112,7 +110,7 @@ void CtiCalc::cleanup( void )
 }
 
 
-double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid )
+double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid )
 {
     double retVal = 0.0;
     RWSlistCollectablesIterator iter( _components );
@@ -128,14 +126,16 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid
             CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcPointHashKey]);
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
         }
         _stack.clear();     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
 
         bool solidTime = false;             // If time is "solid" all components are the same time stamp.
         int componentQuality, qualityFlag = 0;
-        RWTime componentTime, minTime = RWTime(ULONG_MAX - 86400 * 2), maxTime = rwEpoch;
+        CtiTime componentTime, 
+            minTime = CtiTime(YUKONEOT), 
+            maxTime = rwEpoch;//TS FLAG
 
         /*
          *  Iterate this calc's components passing in each succesive result (through retVal).
@@ -165,14 +165,14 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid
         if( _CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
         }
     }
     catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION in calculate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION in calculate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "    Calc Point ID " << _pointId << endl;
         }
     }
@@ -198,7 +198,7 @@ double CtiCalc::pop( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         val = 0.0;
     }
@@ -225,14 +225,14 @@ BOOL CtiCalc::ready( void )
             isReady = FALSE;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
+            dout << CtiTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
         }
         else
         {
             switch( _updateType )
             {
             case periodic:
-                if(RWTime::now().seconds() > getNextInterval())
+                if(CtiTime::now().seconds() > getNextInterval())
                 {
                     isReady = TRUE;
                 }
@@ -260,10 +260,10 @@ BOOL CtiCalc::ready( void )
                 break;
             case periodicPlusUpdate:
                 {
-                    if(RWTime::now().seconds() >= getNextInterval())
+                    if(CtiTime::now().seconds() >= getNextInterval())
                     {
                         for( ; iter( ); )
-                            isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( _updateType, RWTime(getNextInterval()) );
+                            isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( _updateType, CtiTime(getNextInterval()) );
                     }
                     else
                     {
@@ -278,7 +278,7 @@ BOOL CtiCalc::ready( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -296,7 +296,7 @@ BOOL CtiCalc::ready( void )
 */
 CtiCalc& CtiCalc::setNextInterval( int aInterval )
 {
-    RWTime timeNow;
+    CtiTime timeNow;
     if(aInterval > 0)
     {
         _nextInterval = nextScheduledTimeAlignedOnRate(timeNow, aInterval).seconds();
@@ -334,8 +334,8 @@ long CtiCalc::findDemandAvgComponentPointId()
             returnPointId = tmpComponent->getComponentPointId();
         }
 
-        const RWCString& functionName = tmpComponent->getFunctionName();
-        if( functionName.contains("DemandAvg",RWCString::ignoreCase) )
+        const string& functionName = tmpComponent->getFunctionName();
+        if( findStringIgnoreCase(functionName, "DemandAvg") )
         {
             if(tmpComponent->getComponentPointId() > 0)
                 returnPointId = tmpComponent->getComponentPointId();    // else, it is the last point id found!
@@ -346,9 +346,9 @@ long CtiCalc::findDemandAvgComponentPointId()
     return returnPointId;
 }
 
-RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &maxTime )
+CtiTime CtiCalc::calcTimeFromComponentTime( const CtiTime &minTime, const CtiTime &maxTime )
 {
-    RWTime rtime;
+    CtiTime rtime;
 
     if(getUpdateType() != periodic)
     {
@@ -361,7 +361,7 @@ RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &
 /*
  *  Determines if all valid calc components have the same timestamp.  Nonupdated and Constant Qualities do not affect the timestamp output.
  */
-bool CtiCalc::calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime )
+bool CtiCalc::calcTimeFromComponentTime( CtiTime &componentTime, int componentQuality, CtiTime &minTime, CtiTime &maxTime )
 {
     if( componentQuality != NonUpdatedQuality &&        // Timestamps are ignored on non-updated or constant quality points.
         componentQuality != ConstantQuality )
@@ -376,7 +376,7 @@ bool CtiCalc::calcTimeFromComponentTime( RWTime &componentTime, int componentQua
     return minTime == maxTime;
 }
 
-int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const RWTime &minTime, const RWTime &maxTime )
+int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &minTime, const CtiTime &maxTime )
 {
     int component_quality = NormalQuality;
 
@@ -420,7 +420,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
 
     try
     {
-        RWTime currenttime;
+        CtiTime currenttime;
         // Use the value of TOS.  This will be the pointvalue, but should be the result of any preceeding calculations.
         double componentPointValue = pop();
         long componentId = findDemandAvgComponentPointId();
@@ -493,14 +493,14 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
+                            dout << CtiTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
                             //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
                             dout << "Current Point Calc Window End Time: " << calcPointPtr->getPointCalcWindowEndTime().asString() << endl;
                             //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
                             dout << "New Initial Demand Avg: " << retVal << endl;
                             dout << "Updates In Current Avg: " << updatesInCurrentAvg << endl;
                             dout << "Previous demand average has a timestamp of: " << calcPointPtr->getPointCalcWindowEndTime() << endl;
-                            dout << "Next demand average will have timestamp of: " << RWTime(calcPointPtr->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
+                            dout << "Next demand average will have timestamp of: " << CtiTime(calcPointPtr->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
                         }
                     }
                     else
@@ -510,7 +510,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " - Calc Point Id: " << getPointId() << " Demand Avg Reset!" << endl;
+                            dout << CtiTime() << " - Calc Point Id: " << getPointId() << " Demand Avg Reset!" << endl;
                         }
                     }
                     calcPointPtr->setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
@@ -524,7 +524,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Failed point: " << getPointId() << endl;
         }
     }

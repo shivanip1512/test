@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,10 +18,11 @@
 #include "resolvers.h"
 #include "logger.h"
 
+#include "rwutil.h"
 
 void CtiTablePointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable tbl = db.table(getTableName() );
+    RWDBTable tbl = db.table(getTableName().c_str() );
 
     selector <<
     tbl["initialstate"] <<
@@ -42,8 +43,8 @@ void CtiTablePointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 
 void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+    string rwsTemp;
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -52,8 +53,8 @@ void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["initialstate"]  >> _initialState;
 
     rdr["controlinhibit"]   >> rwsTemp;
-    rwsTemp.toLower();
-    _controlInhibit = ((rwsTemp == 'y') ? TRUE : FALSE);
+    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    _controlInhibit = ((rwsTemp == "y") ? TRUE : FALSE);
 
     rdr["controltype"]   >> rwsTemp;
     _controlType = resolveControlType(rwsTemp);
@@ -132,14 +133,14 @@ INT CtiTablePointStatus::getCloseTime2() const
     return _closeTime2;
 }
 
-const RWCString& CtiTablePointStatus::getStateZeroControl() const
+const string& CtiTablePointStatus::getStateZeroControl() const
 {
 
 
     return _stateZeroControl;
 }
 
-const RWCString& CtiTablePointStatus::getStateOneControl() const
+const string& CtiTablePointStatus::getStateOneControl() const
 {
 
 
@@ -211,7 +212,7 @@ CtiTablePointStatus& CtiTablePointStatus::setCloseTime2(INT i)
     return *this;
 }
 
-CtiTablePointStatus& CtiTablePointStatus::setStateZeroControl(const RWCString& zero)
+CtiTablePointStatus& CtiTablePointStatus::setStateZeroControl(const string& zero)
 {
 
 
@@ -219,7 +220,7 @@ CtiTablePointStatus& CtiTablePointStatus::setStateZeroControl(const RWCString& z
     return *this;
 }
 
-CtiTablePointStatus& CtiTablePointStatus::setStateOneControl(const RWCString& one)
+CtiTablePointStatus& CtiTablePointStatus::setStateOneControl(const string& one)
 {
 
 
@@ -294,7 +295,7 @@ CtiTablePointStatus::~CtiTablePointStatus()
 {
 }
 
-RWCString CtiTablePointStatus::getTableName()
+string CtiTablePointStatus::getTableName()
 {
     return "PointStatus";
 }
@@ -309,11 +310,11 @@ void CtiTablePointStatus::Update()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
-        RWDBTable table = getDatabase().table( getTableName() );
+        RWDBTable table = getDatabase().table( getTableName().c_str() );
         RWDBUpdater updater = table.updater();
 
         updater.where( table["pointid"] == getPointID() );
-        updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? RWCString("Y") : RWCString("N") );
+        updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? string("Y") : string("N") );
 
         if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
         {

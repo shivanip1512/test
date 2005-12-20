@@ -39,7 +39,7 @@ int main(int argc, char* argv[] )
 
     /*{
         RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime() << " - Cap Controller starting up..." << endl;
+        cout << CtiTime() << " - Cap Controller starting up..." << endl;
     }*/
 
     if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CapControl")) != NULL )
@@ -63,7 +63,7 @@ int main(int argc, char* argv[] )
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
         {
-            cout << RWTime()  << " - Installing as a service..." << endl;
+            cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_DEMAND_START,
@@ -73,7 +73,7 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
         {
-            cout << RWTime()  << " - Installing as an autostart service..." << endl;
+            cout << CtiTime()  << " - Installing as an autostart service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
                        SERVICE_AUTO_START,
@@ -83,7 +83,7 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
-            cout << RWTime()  << " - Removing service..." << endl;
+            cout << CtiTime()  << " - Removing service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Remove();
         }

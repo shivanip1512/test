@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive: $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ void CtiTableDeviceAddress::setPostDelay(int d)
 
 void CtiTableDeviceAddress::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    RWDBTable devTbl = db.table(getTableName() );
+    RWDBTable devTbl = db.table(getTableName().c_str() );
 
     selector << devTbl["masteraddress"] <<
                 devTbl["slaveaddress"]  <<
@@ -103,7 +103,7 @@ void CtiTableDeviceAddress::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
 void CtiTableDeviceAddress::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwsTemp;
+    string rwsTemp;
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -117,7 +117,7 @@ void CtiTableDeviceAddress::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["postcommwait"]  >> _postdelay;
 }
 
-RWCString CtiTableDeviceAddress::getTableName()
+string CtiTableDeviceAddress::getTableName()
 {
     return "DeviceAddress";
 }
@@ -126,7 +126,7 @@ RWDBStatus CtiTableDeviceAddress::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -136,7 +136,7 @@ RWDBStatus CtiTableDeviceAddress::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -146,7 +146,7 @@ RWDBStatus CtiTableDeviceAddress::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;
@@ -156,7 +156,7 @@ RWDBStatus CtiTableDeviceAddress::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return RWDBStatus::notSupported;

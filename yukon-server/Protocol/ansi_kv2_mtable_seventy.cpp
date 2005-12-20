@@ -9,10 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_seventy.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:19:53 $
 *    History: 
       $Log: ansi_kv2_mtable_seventy.cpp,v $
+      Revision 1.4  2005/12/20 17:19:53  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.3.2.1  2005/07/12 21:08:42  jliu
+      rpStringWithoutCmpParser
+
       Revision 1.3  2005/02/10 23:23:56  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -140,29 +146,29 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDateFormat( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
+string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
 {
-    RWCString ret;
+    string ret;
     switch (getRawDateFormat()) 
     {
         case 0:
             {
-                ret = RWCString ("DD MM YY");
+                ret = string ("DD MM YY");
                 break;
             }
         case 1:
             {
-                ret = RWCString ("MM DD YY");
+                ret = string ("MM DD YY");
                 break;
             }
         case 2:
             {
-                ret = RWCString ("YY MM DD");
+                ret = string ("YY MM DD");
                 break;
             }
         default:
             {
-                ret = RWCString ("Invalid _dateFormat Value");
+                ret = string ("Invalid _dateFormat Value");
                 break;
             }        
     }
@@ -186,34 +192,34 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDisplayScalar( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
+string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
 {
-    RWCString ret;
+    string ret;
     switch (getRawDisplayScalar()) 
     {
         case 0:
             {
-                ret = RWCString ("Do Not Scale");
+                ret = string ("Do Not Scale");
                 break;
             }
         case 1:
             {
-                ret = RWCString ("Scale by 0.1");
+                ret = string ("Scale by 0.1");
                 break;
             }
         case 2:
             {
-                ret = RWCString ("Scale by 0.01");
+                ret = string ("Scale by 0.01");
                 break;
             }
         case 3:
             {
-                ret = RWCString ("Scale by 0.001");
+                ret = string ("Scale by 0.001");
                 break;
             }
         default:
             {
-                ret = RWCString ("Invalid _displayScalar Value");
+                ret = string ("Invalid _displayScalar Value");
                 break;
             }        
     }
@@ -228,24 +234,24 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDemandDispUnits( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-RWCString CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
+string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
 {
-    RWCString ret;
+    string ret;
     switch (getRawDemandDispUnits()) 
     {
         case 0:
             {
-                ret = RWCString ("kW/kVA");
+                ret = string ("kW/kVA");
                 break;
             }
         case 1:
             {
-                ret = RWCString ("W/VA");
+                ret = string ("W/VA");
                 break;
             }
         default:
             {
-                ret = RWCString ("Invalid _demandDispUnits Value");
+                ret = string ("Invalid _demandDispUnits Value");
                 break;
             }        
     }

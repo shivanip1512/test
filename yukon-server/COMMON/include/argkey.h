@@ -2,10 +2,12 @@
 #define  __CtiARGKEY_H__
 
 #include <rw/collect.h>
-#include <rw/cstring.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>
+#include <string>
+
+using std::string;
 
 class CtiArgKey : public RWCollectable
 {
@@ -28,10 +30,10 @@ public:
    void restoreGuts(RWvistream&);
    void saveGuts(RWvostream&) const;
 
-   RWCString&  getKey()    { return Key; }
+   std::string&  getKey()    { return Key; }
 
 private:
-   RWCString   Key;
+   std::string   Key;
 };
 
 #endif //#ifndef  __CtiARGKEY_H__

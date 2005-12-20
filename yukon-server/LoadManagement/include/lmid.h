@@ -10,6 +10,7 @@
         
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
+#include "ctitime.h"
 
 /* Various message classes */
 #define CTILMMESSAGE_ID                         600
@@ -74,8 +75,8 @@
 //#define LM_DEBUG_                  0x00000004
 #define LM_DEBUG_EXTENDED          0x10000000
 
-extern RWDBDateTime gInvalidRWDBDateTime;
-extern ULONG gInvalidRWDBDateTimeSeconds;
+extern CtiTime gInvalidCtiTime;
+extern ULONG gInvalidCtiTimeSeconds;
 
-extern RWDBDateTime gEndOfRWDBDateTime;
-extern ULONG gEndOfRWDBDateTimeSeconds;
+extern CtiTime gEndOfCtiTime;
+extern ULONG gEndOfCtiTimeSeconds;

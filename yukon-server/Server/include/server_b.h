@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/12/07 01:39:57 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 17:20:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,9 @@
 #include <windows.h>
 #include <iostream>
 #include <functional>
-using namespace std;
+
+using std::iostream;
+using std::equal_to;
 
 
 #include <rw\thr\thrfunc.h>
@@ -106,7 +108,7 @@ public:
    virtual int   clientConfrontEveryone(PULONG pClientCount = NULL);
    virtual int   clientPurgeQuestionables(PULONG pDeadClients = NULL);
 
-   virtual RWCString getMyServerName() const;
+   virtual string getMyServerName() const;
 
    virtual void  shutdown();
 

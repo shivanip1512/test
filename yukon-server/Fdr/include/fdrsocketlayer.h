@@ -3,7 +3,6 @@
 #ifndef __FDRSOCKETLAYER_H__
 #define __FDRSOCKETLAYER_H__
 
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
@@ -33,14 +32,14 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
              Client_Multiple
         } FDRConnectionType;
 
-        CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);    
-        CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                              CtiFDRServerConnection *aInBoundConnection,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(RWCString & interfaceName, 
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
                                              SOCKET aInBound,
                                              SOCKET aOutBound,
                                              FDRConnectionType aType,
@@ -56,9 +55,9 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         HEV & getConnectionSem ();
         CtiFDRSocketLayer& setConnectionSem (HEV aSem);
 
-        RWCString       &   getName(void);
-        RWCString          getName(void) const;
-        CtiFDRSocketLayer& setName (RWCString aName);
+        string       &   getName(void);
+        string          getName(void) const;
+        CtiFDRSocketLayer& setName (string aName);
 
         CtiFDRSocketConnection::FDRConnectionStatus getInBoundConnectionStatus() const;
         CtiFDRSocketLayer& setInBoundConnectionStatus (CtiFDRSocketConnection::FDRConnectionStatus aStatus);
@@ -79,7 +78,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
 
         // convience functions used to get from layer to interface
         int getMessageSize(CHAR *data);
-        RWCString decodeClientName(CHAR *data);
+        string decodeClientName(CHAR *data);
         int processMessageFromForeignSystem (CHAR *data);
         bool sendMessageToForeignSys ( CtiMessage *aMessage );
         CHAR *buildForeignSystemHeartbeatMsg (void);
@@ -110,7 +109,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         void threadFunctionConnectionStatus( void );
 
     private:
-        RWCString               iName;
+        string               iName;
         CtiFDRSocketInterface  *iParent;    
                                    
         CtiFDRServerConnection  *iInBoundConnection;            

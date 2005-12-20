@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <ctime>
+#include <boost/regex.hpp>
 using namespace std;
 
 #if _MSC_VER > 1000
@@ -48,18 +49,20 @@ using namespace std;
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
+#include "rwutil.h"
+#include "ctidate.h"
 
 LONG GetMaxLMControl(long pao)
 {
-    RWCString sql;
+    string sql;
     INT id = 0;
 
-    sql = RWCString(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + RWCString(" AND ACTIVERESTORE != 'N'");
+    sql = string(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + string(" AND ACTIVERESTORE != 'N'");
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
 
     if(rdr() && rdr.isValid())
     {
@@ -126,7 +129,7 @@ LONG LMControlHistoryIdGen(bool force)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
         }
     }
@@ -187,7 +190,7 @@ LONG CommErrorHistoryIdGen(bool force)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unable to acquire mutex for CommErrorHistoryIdGen" << endl;
             }
         }
@@ -239,7 +242,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - force_value < vs_id (" << force_value << " < " << vs_id << ") in VerificationSequenceGen() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - force_value < vs_id (" << force_value << " < " << vs_id << ") in VerificationSequenceGen() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -279,7 +282,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unable to acquire mutex for VerificationSequenceGen" << endl;
             }
         }
@@ -418,11 +421,11 @@ INT VCUTime (OUTMESS *OutMessage, PULONG Seconds)
     return(NORMAL);
 }
 
-BOOL isFileTooBig(RWCString fileName, DWORD thisBig)
+BOOL isFileTooBig(const string& fileName, DWORD thisBig)
 {
     BOOL big = FALSE;
 
-    HANDLE hFile = CreateFile(fileName.data(),
+    HANDLE hFile = CreateFile(fileName.c_str(),
                               GENERIC_READ,
                               FILE_SHARE_READ,
                               NULL,
@@ -457,7 +460,7 @@ BOOL InEchoToOut(const INMESS *In, OUTMESS *Out)
     // Out->MessageFlags = In->MessageFlags;
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
-    memcpy(&(Out->Request), &(In->Return), sizeof(PIL_ECHO));
+    ::memcpy(&(Out->Request), &(In->Return), sizeof(PIL_ECHO));
 
     return bRet;
 }
@@ -466,10 +469,10 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
     BOOL bRet = FALSE;
 
     // Clear it...
-    memset(In, 0, sizeof(INMESS));
+    ::memset(In, 0, sizeof(INMESS));
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
-    memcpy(&(In->Return), &(Out->Request), sizeof(PIL_ECHO));
+    ::memcpy(&(In->Return), &(Out->Request), sizeof(PIL_ECHO));
     //  save this for the macro routes
     In->Priority = Out->Priority;
 
@@ -553,7 +556,7 @@ static char   gszLogFile[]  = "ctimail.log";
 void LogMessage( LPCTSTR lpszMsg )
 {
     DWORD dwRet;
-    if( ghFile != INVALID_HANDLE_VALUE ) WriteFile( ghFile, lpszMsg, strlen(lpszMsg), &dwRet, NULL );
+    if( ghFile != INVALID_HANDLE_VALUE ) WriteFile( ghFile, lpszMsg, ::strlen(lpszMsg), &dwRet, NULL );
 }
 
 
@@ -564,7 +567,7 @@ void identifyProject(const CTICOMPILEINFO &Info)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if((DebugLevel & DEBUGLEVEL_LUDICROUS) && Info.date)      // DEBUGLEVEL added 012903 CGP
         {
-            dout << RWTime() << " (Build " <<
+            dout << CtiTime() << " (Build " <<
             Info.major << "." <<
             Info.minor << "." <<
             Info.build << ", " <<
@@ -573,7 +576,7 @@ void identifyProject(const CTICOMPILEINFO &Info)
         }
         else
         {
-            dout << RWTime() << " (Build " <<
+            dout << CtiTime() << " (Build " <<
             Info.major << "." <<
             Info.minor << "." <<
             Info.build << ") " <<
@@ -584,9 +587,9 @@ void identifyProject(const CTICOMPILEINFO &Info)
     return;
 }
 
-RWCString identifyProjectVersion(const CTICOMPILEINFO &Info)
+string identifyProjectVersion(const CTICOMPILEINFO &Info)
 {
-    return RWCString(CtiNumStr(Info.major)) + "." + RWCString(CtiNumStr(Info.minor)) + "." + RWCString(CtiNumStr(Info.build));
+    return string(CtiNumStr(Info.major)) + "." + string(CtiNumStr(Info.minor)) + "." + string(CtiNumStr(Info.build));
 }
 
 void identifyProjectComponents(const CTICOMPONENTINFO *pInfo)
@@ -595,7 +598,7 @@ void identifyProjectComponents(const CTICOMPONENTINFO *pInfo)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " <<
+            dout << CtiTime() << " " <<
             pInfo[i].fname << " Rev. " <<
             pInfo[i].rev << "  " <<
             pInfo[i].date << endl;
@@ -629,11 +632,11 @@ ULONG OutMessageCount()
  * This method takes a USHORT (as an int) and converst it into it's constituent
  * bits.  The bits are numbered one to 16 with the zero (LSB) bit as 1.
  *****************************************************************************/
-RWCString convertVersacomAddressToHumanForm(INT address)
+string convertVersacomAddressToHumanForm(INT address)
 {
     BOOL        foundFirst = FALSE;
     CHAR        temp[32];
-    RWCString   rStr;
+    string   rStr;
 
     for(int i = 0; i < 16; i++)
     {
@@ -641,20 +644,20 @@ RWCString convertVersacomAddressToHumanForm(INT address)
         {
             if(foundFirst)
             {
-                sprintf(temp, ",%d", i+1);
+                ::sprintf(temp, ",%d", i+1);
             }
             else
             {
-                sprintf(temp, "%d", i+1);
+                ::sprintf(temp, "%d", i+1);
 
                 foundFirst = TRUE;
             }
 
-            rStr += RWCString(temp);
+            rStr += string(temp);
         }
     }
 
-    if(rStr.isNull())
+    if(rStr.empty())
     {
         rStr = "0";
     }
@@ -689,16 +692,16 @@ bool pokeDigiPortserver(CHAR *server, INT port)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Connected to " << server << " on port " << port << endl;
+            dout << CtiTime() << " Connected to " << server << " on port " << port << endl;
         }
 
-        memset(buffer, '\0', 120);
+        ::memset(buffer, '\0', 120);
 
         for(int i = 0; i < 5; i++)
         {
             telnetNexus.CTINexusWrite("\r", 1, &cnt, 1);
 
-            memset(buffer, '\0', 120);
+            ::memset(buffer, '\0', 120);
             cnt = 0;
             Sleep(1000);
 
@@ -729,7 +732,7 @@ bool pokeDigiPortserver(CHAR *server, INT port)
             {
                 // we found the login prompt.
                 cnt = 0;
-                memset(buffer, '\0', 120);
+                ::memset(buffer, '\0', 120);
 
                 telnetNexus.CTINexusWrite("root\r", 5, &cnt, 0);
 
@@ -744,13 +747,13 @@ bool pokeDigiPortserver(CHAR *server, INT port)
                         telnetNexus.CTINexusWrite("dbps\r", 5, &cnt, 0);
 
                         cnt = 0;
-                        memset(buffer, '\0', 120);
+                        ::memset(buffer, '\0', 120);
                         telnetNexus.CTINexusRead( buffer, 5, &cnt, 2);
                         if( cnt > 0)
                         {
                             CHAR reboot[] = {"boot action=reset\r"};
                             // Assume we just read out the prompt... sent the reboot sequence!
-                            telnetNexus.CTINexusWrite(reboot, strlen(reboot) , &cnt, 0);
+                            telnetNexus.CTINexusWrite(reboot, ::strlen(reboot) , &cnt, 0);
 
                             Success = true;
 
@@ -761,31 +764,31 @@ bool pokeDigiPortserver(CHAR *server, INT port)
                         else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
                         }
                     }
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
                     }
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
                 }
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << buffer << endl;
             }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         telnetNexus.CTINexusClose();
@@ -793,7 +796,7 @@ bool pokeDigiPortserver(CHAR *server, INT port)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return Success;
@@ -844,7 +847,7 @@ int generateTransmissionID()
 
 LONG GetPAOIdOfPoint(long pid)
 {
-    RWCString sql("SELECT PAOBJECTID FROM POINT WHERE POINTID = ");
+    string sql("SELECT PAOBJECTID FROM POINT WHERE POINTID = ");
     INT id = 0;
 
     sql += CtiNumStr(pid);
@@ -862,7 +865,7 @@ LONG GetPAOIdOfPoint(long pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " " << sql << endl;
         }
     }
@@ -872,7 +875,7 @@ LONG GetPAOIdOfPoint(long pid)
 
 INT GetPIDFromDeviceAndOffset(int device, int offset)
 {
-    RWCString sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
+    string sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
     INT id = 0;
 
     sql += CtiNumStr(device);
@@ -892,7 +895,7 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " " << sql << endl;
         }
     }
@@ -915,7 +918,7 @@ bool CheckSocketSubsystem()
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Socket subsystem is questionable.  Error " << WSAGetLastError() << endl;
+            dout << CtiTime() << " Socket subsystem is questionable.  Error " << WSAGetLastError() << endl;
         }
     }
     else
@@ -923,7 +926,7 @@ bool CheckSocketSubsystem()
         closesocket(s);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Socket subsystem is OK." << endl;
+            dout << CtiTime() << " Socket subsystem is OK." << endl;
         }
     }
 
@@ -931,7 +934,7 @@ bool CheckSocketSubsystem()
 }
 
 
-RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length)
+string& traceBuffer(string &str, BYTE *Message, ULONG Length)
 {
     INT status = NORMAL;
     ULONG i;
@@ -946,33 +949,33 @@ RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length)
     return str;
 }
 
-RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate )
+CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
 {
-    RWTime first(YUKONEOT);
+    CtiTime first(YUKONEOT);
 
     if( rate > 3600 )
     {
         if( rate == 2592000 ) // 1 month. == Midnight 1st of month.
         {
-           RWDate origindate(origin);
-           RWDate nextMonth = origindate.firstDayOfMonth() + origindate.daysInMonthYear(origindate.month(), origindate.year());
-           first = RWTime(nextMonth);
+           CtiDate origindate(origin);
+           CtiDate nextMonth = origindate.firstDayOfMonth() + origindate.daysInMonthYear(origindate.month(), origindate.year());
+           first = CtiTime(nextMonth);
         }
         else if( rate == 604800 ) // = 1 week. == Midnight Sunday!
         {
-            RWDate origindate(origin);
-            RWDate nextWeek = origindate + (7 - (origindate.weekDay() % 7));
-            first = RWTime(nextWeek);
+            CtiDate origindate(origin);
+            CtiDate nextWeek = origindate + (7 - (origindate.weekDay() % 7));
+            first = CtiTime(nextWeek);
         }
         else
         {
-            RWTime hourstart = RWTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
-            first = RWTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
+            CtiTime hourstart = CtiTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
+            first = CtiTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
         }
     }
     else if(rate > 0 )    // Prevent a divide by zero with this check...
     {
-        first = RWTime(origin.seconds() - (origin.seconds() % rate) + rate);
+        first = CtiTime(origin.seconds() - (origin.seconds() % rate) + rate);
     }
     else if(rate == 0)
     {
@@ -1105,7 +1108,7 @@ void autopsy(char *calleefile, int calleeline)
     try
     {
         DuplicateHandle( GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &hThread, 0, false, DUPLICATE_SAME_ACCESS );
-        memset( &c, '\0', sizeof c );
+        ::memset( &c, '\0', sizeof c );
         c.ContextFlags = CONTEXT_FULL;
 
         // init CONTEXT record so we know where to start the stackwalk
@@ -1124,17 +1127,17 @@ void autopsy(char *calleefile, int calleeline)
 
             if(doubt_guard.isAcquired())
             {
-                dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
+                dout << endl << CtiTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
                 dout << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
                 ShowStack( hThread, c );
-                dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+                dout << CtiTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
             }
             else    // This is a bit rough!
             {
-                dout << endl << RWTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
+                dout << endl << CtiTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
                 dout << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
                 ShowStack( hThread, c );
-                dout << RWTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+                dout << CtiTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
                 dout.flush();
             }
 
@@ -1146,7 +1149,7 @@ void autopsy(char *calleefile, int calleeline)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1214,7 +1217,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
     char *tt = 0, *p;
 
     STACKFRAME s; // in/out stackframe
-    memset( &s, '\0', sizeof s );
+    ::memset( &s, '\0', sizeof s );
 
     // NOTE: normally, the exe directory and the current directory should be taken
     // from the target process. The current dir would be gotten through injection
@@ -1230,7 +1233,7 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
     // dir with executable
     if( GetModuleFileName( 0, tt, TTBUFLEN ) )
     {
-        for( p = tt + strlen( tt ) - 1; p >= tt; -- p )
+        for( p = tt + ::strlen( tt ) - 1; p >= tt; -- p )
         {
             // locate the rightmost path separator
             if( *p == '\\' || *p == '/' || *p == ':' )
@@ -1299,14 +1302,14 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
     s.AddrFrame.Offset = c.Ebp;
     s.AddrFrame.Mode = AddrModeFlat;
 
-    memset( pSym, '\0', IMGSYMLEN + MAXNAMELEN );
+    ::memset( pSym, '\0', IMGSYMLEN + MAXNAMELEN );
     pSym->SizeOfStruct = IMGSYMLEN;
     pSym->MaxNameLength = MAXNAMELEN;
 
-    memset( &Line, '\0', sizeof Line );
+    ::memset( &Line, '\0', sizeof Line );
     Line.SizeOfStruct = sizeof Line;
 
-    memset( &Module, '\0', sizeof Module );
+    ::memset( &Module, '\0', sizeof Module );
     Module.SizeOfStruct = sizeof Module;
 
     offsetFromSymbol = 0;
@@ -1409,25 +1412,25 @@ void ShowStack( HANDLE hThread, CONTEXT& c )
                 switch( Module.SymType )
                 {
                 case SymNone:
-                    strcpy( ty, "-nosymbols-" );
+                    ::strcpy( ty, "-nosymbols-" );
                     break;
                 case SymCoff:
-                    strcpy( ty, "COFF" );
+                    ::strcpy( ty, "COFF" );
                     break;
                 case SymCv:
-                    strcpy( ty, "CV" );
+                    ::strcpy( ty, "CV" );
                     break;
                 case SymPdb:
-                    strcpy( ty, "PDB" );
+                    ::strcpy( ty, "PDB" );
                     break;
                 case SymExport:
-                    strcpy( ty, "-exported-" );
+                    ::strcpy( ty, "-exported-" );
                     break;
                 case SymDeferred:
-                    strcpy( ty, "-deferred-" );
+                    ::strcpy( ty, "-deferred-" );
                     break;
                 case SymSym:
-                    strcpy( ty, "SYM" );
+                    ::strcpy( ty, "SYM" );
                     break;
                 default:
                     _snprintf( ty, sizeof ty, "symtype=%ld", (long) Module.SymType );
@@ -1486,9 +1489,9 @@ void enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid )
     {
         // unfortunately, SymLoadModule() wants writeable strings
         img = new char[(*it).imageName.size() + 1];
-        strcpy( img, (*it).imageName.c_str() );
+        ::strcpy( img, (*it).imageName.c_str() );
         mod = new char[(*it).moduleName.size() + 1];
-        strcpy( mod, (*it).moduleName.c_str() );
+        ::strcpy( mod, (*it).moduleName.c_str() );
 
         if( pSLM( hProcess, 0, img, mod, (*it).baseAddress, (*it).size ) == 0 )
         {
@@ -2033,7 +2036,7 @@ VOID BDblLittleEndian(CHAR *BigEndianBDouble)
    Flipper[1] = *cptr++;
    Flipper[0] = *cptr++;
 
-   memcpy(BigEndianBDouble, Flipper, 9);
+   ::memcpy(BigEndianBDouble, Flipper, 9);
 }
 
 /* Function to return system time in milliseconds */
@@ -2109,24 +2112,30 @@ bool findLPRequestEntries(void *om, void* d)
             (NewGuy->Sequence     == LOADPROFILESEQUENCE) &&
             (OutMessage->TargetID == NewGuy->TargetID) )
         {
-            RWCString oldstr(OutMessage->Request.CommandStr);
-            RWCString newstr(NewGuy->Request.CommandStr);
+            string oldstr(OutMessage->Request.CommandStr);
+            string newstr(NewGuy->Request.CommandStr);
 
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Comparing Outmessage->CommandStr" << endl;
+                dout << CtiTime() << " Comparing Outmessage->CommandStr" << endl;
                 dout << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl;
                 dout << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"" << endl;
             }
 
-            bRet = oldstr.contains("scan loadprofile") && newstr.contains("scan loadprofile");
+            bRet = (oldstr.find("scan loadprofile")!=string::npos) && (newstr.find("scan loadprofile")!=string::npos);
 
-            if( bRet && oldstr.contains(" channel", RWCString::ignoreCase) )
+            if( bRet && findStringIgnoreCase(oldstr," channel") )
             {
-                RWCRExpr re_channel(" channel +[0-9]");
 
-                if( !(newstr.match(re_channel) == oldstr.match(re_channel)) )
+                boost::regex re_channel(" channel +[0-9]");
+                boost::match_results<std::string::const_iterator> new_what;
+                boost::match_results<std::string::const_iterator> old_what;
+                boost::regex_search(newstr, new_what, re_channel, boost::match_default);
+                boost::regex_search(oldstr, old_what, re_channel, boost::match_default);
+
+
+                if( !(string(new_what[0]) == string(old_what[0])) )
                 {
                     bRet = false;
                 }
@@ -2137,7 +2146,7 @@ bool findLPRequestEntries(void *om, void* d)
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " bRet = " << bRet << endl;
+        dout << CtiTime() << " bRet = " << bRet << endl;
     }
 
     return(bRet);
@@ -2149,7 +2158,7 @@ void cleanupOutMessages(void *unusedptr, void* d)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Removing Outmessage for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Removing Outmessage for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     delete OutMessage;
@@ -2175,7 +2184,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - priority = " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - priority = " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
@@ -2212,7 +2221,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Malformed OutMessage.  Header and Footer are not valid. **** " << endl;
+        dout << CtiTime() << " **** Malformed OutMessage.  Header and Footer are not valid. **** " << endl;
     }
 
     return;
@@ -2250,11 +2259,11 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
 
  */
 
-RWCString explainTags(const unsigned tags)
+string explainTags(const unsigned tags)
 {
     int i;
     unsigned mask;
-    RWCString str("");
+    string str("");
 
     for(i = 0; i < 32; i++)
     {
@@ -2266,127 +2275,127 @@ RWCString explainTags(const unsigned tags)
             {
             case TAG_DISABLE_POINT_BY_POINT:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_POINT_BY_POINT";
                     break;
                 }
             case TAG_DISABLE_ALARM_BY_POINT:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_ALARM_BY_POINT";
                     break;
                 }
             case TAG_DISABLE_CONTROL_BY_POINT:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_CONTROL_BY_POINT";
                     break;
                 }
             case TAG_DISABLE_DEVICE_BY_DEVICE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_DEVICE_BY_DEVICE";
                     break;
                 }
             case TAG_DISABLE_ALARM_BY_DEVICE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_ALARM_BY_DEVICE";
                     break;
                 }
             case TAG_DISABLE_CONTROL_BY_DEVICE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_DISABLE_CONTROL_BY_DEVICE";
                     break;
                 }
             case TAG_POINT_MOA_REPORT:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_MOA_REPORT";
                     break;
                 }
             case TAG_POINT_DELAYED_UPDATE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_DELAYED_UPDATE";
                     break;
                 }
             case TAG_POINT_FORCE_UPDATE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_FORCE_UPDATE";
                     break;
                 }
             case TAG_POINT_MUST_ARCHIVE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_MUST_ARCHIVE";
                     break;
                 }
             case TAG_POINT_MAY_BE_EXEMPTED:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_MAY_BE_EXEMPTED";
                     break;
                 }
             case TAG_POINT_LOAD_PROFILE_DATA:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_POINT_LOAD_PROFILE_DATA";
                     break;
                 }
             case TAG_MANUAL:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_MANUAL";
                     break;
                 }
             case TAG_EXTERNALVALUE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_EXTERNALVALUE";
                     break;
                 }
             case TAG_CONTROL_SELECTED:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_CONTROL_SELECTED";
                     break;
                 }
             case TAG_CONTROL_PENDING:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_CONTROL_PENDING";
                     break;
                 }
             case TAG_REPORT_MSG_TO_ALARM_CLIENTS:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_REPORT_MSG_TO_ALARM_CLIENTS";
                     break;
                 }
             case TAG_ATTRIB_CONTROL_AVAILABLE:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_ATTRIB_CONTROL_AVAILABLE";
                     break;
                 }
             case TAG_ATTRIB_PSEUDO:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_ATTRIB_PSEUDO";
                     break;
                 }
             case TAG_UNACKNOWLEDGED_ALARM:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_UNACKNOWLEDGED_ALARM";
                     break;
                 }
             case TAG_ACTIVE_ALARM:
                 {
-                    if(!str.isNull()) str += " | ";
+                    if(!str.empty()) str += " | ";
                     str += "TAG_ACTIVE_ALARM";
                     break;
                 }
@@ -2430,7 +2439,7 @@ IM_EX_CTIBASE void testSA305CRC(char* testData)
 {
     unsigned i;
     unsigned char crc=0;
-    for (i=0; i<strlen(testData)-3; i++)
+    for (i=0; i<::strlen(testData)-3; i++)
         crc = addOctalCharToSA305CRC(crc,testData[i]);
     // shift in one false 0
     crc = addBitToSA305CRC(crc, 0);
@@ -2458,16 +2467,16 @@ IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length)
 
 LONG GetPAOIdOfEnergyPro(long devicesn)
 {
-    RWCString sql("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE TYPE='ENERGYPRO' AND PAOBJECTID IN (SELECT DEVICEID FROM DEVICEIED WHERE SLAVEADDRESS='");
+    string sql("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE TYPE='ENERGYPRO' AND PAOBJECTID IN (SELECT DEVICEID FROM DEVICEIED WHERE SLAVEADDRESS='");
 
-    sql += CtiNumStr(devicesn) + RWCString("')");
+    sql += CtiNumStr(devicesn) + string("')");
 
     INT id = 0;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
 
     if(rdr() && rdr.isValid())
     {
@@ -2477,7 +2486,7 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " " << sql << endl;
         }
     }

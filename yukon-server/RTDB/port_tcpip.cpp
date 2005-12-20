@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/09/08 21:39:23 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/20 17:20:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;
+
 
 #include "cparms.h"
 #include "logger.h"
@@ -109,12 +109,12 @@ INT& CtiPortTCPIPDirect::getIPPort()
     return _tcpIpInfo.getIPPort();
 }
 
-RWCString CtiPortTCPIPDirect::getIPAddress() const
+string CtiPortTCPIPDirect::getIPAddress() const
 {
     return _tcpIpInfo.getIPAddress();
 }
 
-RWCString& CtiPortTCPIPDirect::getIPAddress()
+string& CtiPortTCPIPDirect::getIPAddress()
 {
     return _tcpIpInfo.getIPAddress();
 }
@@ -131,7 +131,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
@@ -139,7 +139,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << getName() << " closing port " << _socket << endl;
+                dout << CtiTime() << " Port " << getName() << " closing port " << _socket << endl;
             }
             close(FALSE);
 
@@ -173,6 +173,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             }
 
             _server.sin_family = AF_INET;
+            _server.sin_addr.s_addr = inet_addr ( getIPAddress().c_str() );
             _server.sin_port = htons( ipport );
             _server.sin_addr = *(in_addr*)&ip;
 
@@ -181,7 +182,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
+                    dout << CtiTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
                 }
                 shutdownClose(__FILE__, __LINE__);
                 status = TCPCONNECTERROR;
@@ -192,7 +193,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
+                        dout << CtiTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
                     }
                     shutdownClose(__FILE__, __LINE__);
                     return(TCPCONNECTERROR);
@@ -200,7 +201,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << getName() << " acquiring socket handle " << _socket << endl;
+                    dout << CtiTime() << " Port " << getName() << " acquiring socket handle " << _socket << endl;
                 }
 
                 _open = true;
@@ -210,7 +211,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (char *) &OptVal, sizeof (OptVal)))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+                    dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
                 }
 
                 LINGER ling;
@@ -220,7 +221,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling)))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+                    dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
                 }
 
                 _connected   = true;
@@ -230,14 +231,14 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             if((status = reset(true)) != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
+                dout << CtiTime() << " Error resetting port for dialup on " << getName() << endl;
             }
 
             /* set the modem parameters */
             if((status = setup(true)) != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
+                dout << CtiTime() << " Error setting port for dialup modem on " << getName() << endl;
             }
         }
     }
@@ -342,7 +343,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< C
                 if(0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/4 seconds " << endl;
                 }
 
@@ -422,7 +423,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< C
 
                 if(status != NORMAL && SomeRead)
                 {
-                    memcpy (Message, SomeMessage, SomeRead);
+                    ::memcpy (Message, SomeMessage, SomeRead);
                     byteCount = SomeRead;
                 }
 
@@ -618,7 +619,7 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Port " << getName() << " closing socket " << _socket;
+            dout << CtiTime() << " Port " << getName() << " closing socket " << _socket;
 
             if(Label != NULL)
             {
@@ -637,7 +638,7 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Socket close failed. Error = " << iRet << endl;
+                dout << CtiTime() << " Socket close failed. Error = " << iRet << endl;
             }
         }
 
@@ -648,7 +649,7 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
 
     if(isDialup() && gConfigParms.isOpt("PORTER_TCPIP_DIALOUT_MS_CLOSE_DELAY"))
     {
-        Sleep( atoi(gConfigParms.getValueAsString("PORTER_TCPIP_DIALOUT_MS_CLOSE_DELAY").data()) );
+        Sleep( atoi(gConfigParms.getValueAsString("PORTER_TCPIP_DIALOUT_MS_CLOSE_DELAY").c_str()) );
     }
 
     return(iRet);
@@ -722,7 +723,7 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
                 shutdownClose(__FILE__, __LINE__);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
+                    dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
                 }
                 return(TCPREADERROR);
             }
@@ -757,7 +758,7 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
                 shutdownClose(__FILE__, __LINE__);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
+                    dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
                 }
                 status = TCPREADERROR;
             }
@@ -792,7 +793,7 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
         shutdownClose(__FILE__, __LINE__);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error Sending Message to Terminal Server:  " << WSAGetLastError() << endl;
+            dout << CtiTime() << " Error Sending Message to Terminal Server:  " << WSAGetLastError() << endl;
         }
         status = TCPWRITEERROR;
     }
@@ -826,7 +827,7 @@ void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -855,7 +856,7 @@ INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -916,7 +917,7 @@ INT  CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceI
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " opened for connect." << endl;
+            dout << CtiTime() << " " << getName() << " opened for connect." << endl;
         }
     }
 
@@ -981,7 +982,7 @@ CtiPort& CtiPortTCPIPDirect::setShouldDisconnect(BOOL b)
 }
 
 
-RWCString& CtiPortTCPIPDirect::traceASCII(RWCString &str, BYTE *Message, ULONG Length)
+string& CtiPortTCPIPDirect::traceASCII(string &str, BYTE *Message, ULONG Length)
 {
     INT status = NORMAL;
     ULONG i;

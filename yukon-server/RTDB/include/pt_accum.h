@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:20:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,13 +16,15 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw\cstring.h>
 
 #include "dlldefs.h"
 #include "logger.h"
 #include "pt_numeric.h"
 #include "tbl_pt_accum.h"
 #include "tbl_pt_accumhistory.h"
+
+using std::cout;
+using std::endl;
 
 class IM_EX_PNTDB CtiPointAccumulator : public CtiPointNumeric
 {
@@ -56,7 +58,7 @@ public:
 
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                   dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << endl;
                   dout << "     ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                }
@@ -142,7 +144,7 @@ public:
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " **** MEMORY ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               dout << CtiTime() << " **** MEMORY ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
          }
       }

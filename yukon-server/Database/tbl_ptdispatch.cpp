@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,17 +20,19 @@ using namespace std;
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_ptdispatch.h"
-
+#include "rwutil.h"
+#include "ctidate.h"
+#include "ctitime.h"
 
 CtiTablePointDispatch::CtiTablePointDispatch() :
 _pointID(0),
-_timeStamp( RWDBDateTime( (UINT)1990, (UINT)1, (UINT)1) ),
+_timeStamp( CtiDate( (UINT)1, (UINT)1, (UINT)1990 )),
 _quality(UnintializedQuality),
 _value(0),
 _tags(0),
 _staleCount(0),
 _lastAlarmLogID(0),
-_nextArchiveTime(RWTime(UINT_MAX - 86400))
+_nextArchiveTime(CtiTime(YUKONEOT+86400))
 {
     setTimeStampMillis(0);
 }
@@ -38,7 +40,7 @@ _nextArchiveTime(RWTime(UINT_MAX - 86400))
 CtiTablePointDispatch::CtiTablePointDispatch(LONG pointid,
                                              DOUBLE value,
                                              UINT quality,
-                                             const RWDBDateTime& timestamp,
+                                             const CtiTime& timestamp,
                                              UINT millis) :
 _pointID(pointid),
 _timeStamp(timestamp),
@@ -47,7 +49,7 @@ _value(value),
 _tags(0),
 _staleCount(0),
 _lastAlarmLogID(0),
-_nextArchiveTime(RWTime(UINT_MAX - 86400))
+_nextArchiveTime(CtiTime(YUKONEOT - 86400))
 {
     setTimeStampMillis(millis);
 
@@ -91,14 +93,14 @@ int CtiTablePointDispatch::operator==(const CtiTablePointDispatch& right) const
     return( getPointID() == right.getPointID() );
 }
 
-RWCString CtiTablePointDispatch::getTableName()
+string CtiTablePointDispatch::getTableName()
 {
     return "DynamicPointDispatch";
 }
 
 void CtiTablePointDispatch::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    keyTable = db.table(CtiTablePointDispatch::getTableName());
+    keyTable = db.table(CtiTablePointDispatch::getTableName().c_str());
 
     selector <<
     keyTable["pointid"]     <<
@@ -119,7 +121,7 @@ RWDBStatus CtiTablePointDispatch::Restore()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBSelector selector = getDatabase().selector();
 
     selector <<
@@ -163,34 +165,41 @@ RWDBStatus CtiTablePointDispatch::Update()
 
 RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBUpdater updater = table.updater();
-
-    updater.where( table["pointid"] == getPointID() );
-
-    updater <<
-    table["timestamp"].assign(getTimeStamp()) <<
-    table["quality"].assign(getQuality()) <<
-    table["value"].assign(getValue()) <<
-    table["tags"].assign(getTags()) <<
-    table["nextarchive"].assign(getNextArchiveTime()) <<
-    table["stalecount"].assign(getStaleCount())  <<
-    table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
-    table["millis"].assign(getTimeStampMillis());
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-    if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+    try
     {
-        resetDirty(FALSE);
-    }
-    else
-    {
+    
+        updater.where( table["pointid"] == getPointID() );
+    
+        updater <<
+        table["timestamp"].assign(toRWDBDT(getTimeStamp())) <<
+        table["quality"].assign(getQuality()) <<
+        table["value"].assign(getValue()) <<
+        table["tags"].assign(getTags()) <<
+        table["nextarchive"].assign(toRWDBDT(getNextArchiveTime())) <<
+        table["stalecount"].assign(getStaleCount())  <<
+        table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
+        table["millis"].assign(getTimeStampMillis());
+    
+        ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+    
+        if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << updater.asString() << endl;
+            resetDirty(FALSE);
         }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << updater.asString() << endl;
+            }
+        }
+    }catch(...)
+    {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return updater.status();
@@ -206,16 +215,16 @@ RWDBStatus CtiTablePointDispatch::Insert()
 
 RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
 
     inserter <<
     getPointID() <<
-    getTimeStamp() <<
+    toRWDBDT(getTimeStamp()) <<
     getQuality() <<
     getValue() <<
     getTags() <<
-    getNextArchiveTime() <<
+    toRWDBDT( getNextArchiveTime() ) <<
     getStaleCount() <<
     getLastAlarmLogID() <<
     getTimeStampMillis();
@@ -243,7 +252,7 @@ RWDBStatus CtiTablePointDispatch::Delete()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBTable table = getDatabase().table( getTableName() );
+    RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBDeleter deleter = table.deleter();
 
     deleter.where( table["pointid"] == getPointID() );
@@ -282,19 +291,19 @@ CtiTablePointDispatch& CtiTablePointDispatch::setPointID(LONG pointid)
     return *this;
 }
 
-const RWDBDateTime& CtiTablePointDispatch::getTimeStamp() const
+const CtiTime& CtiTablePointDispatch::getTimeStamp() const
 {
     return _timeStamp;
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::setTimeStamp(const RWDBDateTime& timestamp)
+CtiTablePointDispatch& CtiTablePointDispatch::setTimeStamp(const CtiTime& timestamp)
 {
     setDirty(TRUE);
     _timeStamp = timestamp;
     return *this;
 }
 
-UINT CtiTablePointDispatch::getTimeStampMillis() const
+INT CtiTablePointDispatch::getTimeStampMillis() const
 {
     return _timeStampMillis;
 }
@@ -307,7 +316,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::setTimeStampMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis %= 1000;
@@ -316,7 +325,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::setTimeStampMillis(INT millis)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         millis = 0;
@@ -383,24 +392,24 @@ CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
     return *this;
 }
 
-const RWDBDateTime& CtiTablePointDispatch::getNextArchiveTime() const
+const CtiTime& CtiTablePointDispatch::getNextArchiveTime() const
 {
     return _nextArchiveTime;
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::setNextArchiveTime(const RWDBDateTime& timestamp)
+CtiTablePointDispatch& CtiTablePointDispatch::setNextArchiveTime(const CtiTime& timestamp)
 {
     setDirty(TRUE);
     _nextArchiveTime= timestamp;
     return *this;
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const RWDBDateTime& timestamp,
+CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& timestamp,
                                                               UINT millis,
                                                               UINT quality,
                                                               DOUBLE value,
                                                               UINT tags,
-                                                              const RWDBDateTime& archivetime,
+                                                              const CtiTime& archivetime,
                                                               UINT count )
 {
 
@@ -443,10 +452,10 @@ void CtiTablePointDispatch::dump()
 
         dout << endl;
         dout << " PointID                                  : " << _pointID << endl;
-        dout << " Time Stamp                               : " << _timeStamp.rwtime() << ", " << _timeStampMillis << "ms" << endl;
+        dout << " Time Stamp                               : " << _timeStamp << ", " << _timeStampMillis << "ms" << endl;
         dout << " Value                                    : " << _value << endl;
         dout << " Quality                                  : " << _quality << endl;
-        dout << " Next Archive Time                        : " << _nextArchiveTime.rwtime() << endl;
+        dout << " Next Archive Time                        : " << _nextArchiveTime << endl;
         dout << " Tags                                     : 0x" << hex << setw(8) << _tags << dec << endl;
         dout << " Stale Count                              : " << _staleCount << endl;
 

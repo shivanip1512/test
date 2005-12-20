@@ -28,7 +28,7 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRAsciiImportBase(RWCString &interfaceType); 
+        CtiFDRAsciiImportBase(string &interfaceType); 
     
         virtual ~CtiFDRAsciiImportBase();
     
@@ -44,13 +44,13 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
         RWThreadFunction    iThreadReadFromFile;
         void threadFunctionReadFromFile( void );
     
-        RWCString & getFileName();
-        RWCString  getFileName() const;
-        CtiFDRAsciiImportBase &setFileName (RWCString aName);
+        string & getFileName();
+        string  getFileName() const;
+        CtiFDRAsciiImportBase &setFileName (string aName);
     
-        RWCString & getDriveAndPath();
-        RWCString  getDriveAndPath() const;
-        CtiFDRAsciiImportBase &setDriveAndPath (RWCString aDriveAndPath);
+        string & getDriveAndPath();
+        string  getDriveAndPath() const;
+        CtiFDRAsciiImportBase &setDriveAndPath (string aDriveAndPath);
 
         int getImportInterval() const;
         CtiFDRAsciiImportBase &setImportInterval (int aInterval);
@@ -63,11 +63,11 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
         void sendLinkState (int aState);
 
         virtual bool loadTranslationLists(void);
-        virtual bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg) = 0;
+        virtual bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg) = 0;
     
     private:
-        RWCString      iFileName;
-        RWCString      iDriveAndPath;
+        string      iFileName;
+        string      iDriveAndPath;
         int            iImportInterval;
         long           iLinkStatusID;
         bool           iDeleteFileAfterImportFlag;

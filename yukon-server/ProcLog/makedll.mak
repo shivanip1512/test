@@ -7,6 +7,7 @@ INCLPATHS+= \
 -I$(PROCLOG)\include \
 -I$(COMMON)\include \
 -I$(RW) \
+-I$(BOOST)
 
 .PATH.cpp = .
 
@@ -43,7 +44,7 @@ proclog.dll:    $(BASEOBJS) Makefile
                 @echo Building  ..\$@
                 @%cd $(OBJ)
                 $(CC) $(DLLFLAGS) $(BASEOBJS) id_proclog.obj $(INCLPATHS) $(PROCLIBS) /Fe..\$@ \
-/link /SECTION:.shr,S $(RWLIBS)
+/link /SECTION:.shr,S $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -18,7 +18,6 @@
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
-#include <rw\cstring.h>
 #include "prot_ansi.h"
 
 //#include "ansi_kv2_mtable_zero.h"

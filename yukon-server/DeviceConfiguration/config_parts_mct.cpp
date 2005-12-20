@@ -6,20 +6,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/11/15 14:20:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 #include "config_parts.h"
+#include "rwutil.h"
 
 namespace Cti    {
 namespace Config {
 
-MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(RWCString key)
+MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "bronze address")
     {
         return Bronze;
@@ -42,9 +43,9 @@ MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(RWCString key)
     }
 }
 
-MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(RWCString key)
+MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "day table")
     {
         return DayTable;
@@ -75,9 +76,9 @@ MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(RWCString key)
     }
 }
 
-MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(RWCString key)//DO NOT USE ME
+MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(string key)//DO NOT USE ME
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "dst begin")
     {
         return DstBegin;
@@ -96,9 +97,9 @@ MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(RWCString key)//DO NOT USE ME
     }
 }
 
-MCTVThreshold ConfigurationPart<MCTVThreshold>::getResolvedKey(RWCString key)
+MCTVThreshold ConfigurationPart<MCTVThreshold>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "under vthreshold")
     {
         return UnderVoltageThreshold;
@@ -113,9 +114,9 @@ MCTVThreshold ConfigurationPart<MCTVThreshold>::getResolvedKey(RWCString key)
     }
 }
 
-MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(RWCString key)
+MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "demand interval")
     {
         return DemandInterval;
@@ -142,9 +143,11 @@ MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(RWC
     }
 }
 
-MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(RWCString key)
+MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(string key)
 {
-    key.toLower();
+
+    CtiToLower(key);
+    
     if(key == "time adjust tolerance")
     {
         return TimeAdjustTolerance;
@@ -179,9 +182,9 @@ MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(RWCString key)
     }
 }
 
-MCTDisconnect ConfigurationPart<MCTDisconnect>::getResolvedKey(RWCString key)
+MCTDisconnect ConfigurationPart<MCTDisconnect>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "demand threshold")
     {
         return DemandThreshold;
@@ -196,9 +199,9 @@ MCTDisconnect ConfigurationPart<MCTDisconnect>::getResolvedKey(RWCString key)
     }
 }
 
-MCTHoliday ConfigurationPart<MCTHoliday>::getResolvedKey(RWCString key)
+MCTHoliday ConfigurationPart<MCTHoliday>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "holiday date 1")
     {
         return HolidayDate1;
@@ -217,9 +220,9 @@ MCTHoliday ConfigurationPart<MCTHoliday>::getResolvedKey(RWCString key)
     }
 }
 
-MCTLongLoadProfile ConfigurationPart<MCTLongLoadProfile>::getResolvedKey(RWCString key)
+MCTLongLoadProfile ConfigurationPart<MCTLongLoadProfile>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "channel 1 length")
     {
         return Channel1Length;
@@ -242,9 +245,9 @@ MCTLongLoadProfile ConfigurationPart<MCTLongLoadProfile>::getResolvedKey(RWCStri
     }
 }
 
-MCTLoadProfileChannels ConfigurationPart<MCTLoadProfileChannels>::getResolvedKey(RWCString key)
+MCTLoadProfileChannels ConfigurationPart<MCTLoadProfileChannels>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "channel config 1")
     {
         return ChannelConfig1;
@@ -299,9 +302,9 @@ MCTLoadProfileChannels ConfigurationPart<MCTLoadProfileChannels>::getResolvedKey
     }
 }
 
-MCTRelays ConfigurationPart<MCTRelays>::getResolvedKey(RWCString key)
+MCTRelays ConfigurationPart<MCTRelays>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "relay a timer")
     {
         return RelayATimer;
@@ -316,9 +319,9 @@ MCTRelays ConfigurationPart<MCTRelays>::getResolvedKey(RWCString key)
     }
 }
 
-MCTPrecannedTable ConfigurationPart<MCTPrecannedTable>::getResolvedKey(RWCString key)
+MCTPrecannedTable ConfigurationPart<MCTPrecannedTable>::getResolvedKey(string key)
 {
-    key.toLower();
+    CtiToLower(key);
     if(key == "table read interval")
     {
         return TableReadInterval;

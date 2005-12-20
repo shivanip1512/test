@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/20 17:19:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+
 
 
 #include "cmdparse.h"
@@ -31,6 +31,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "prot_fpcbc.h"
 #include "utility.h"
 
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
@@ -57,7 +58,7 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unsupported command on fisher pierce route Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " Unsupported command on fisher pierce route Command = " << parse.getCommand() << endl;
             }
 
             status = CtiInvalidRequest;
@@ -83,7 +84,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutConfig(CtiCommandParser  &parse, cons
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     return NoMethod;
 }
@@ -128,7 +129,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         firstOneDone = TRUE;
@@ -164,7 +165,7 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Incomplete code... for " << parse.getCommand() << " " << __FILE__ << " " << __LINE__<< endl;
+        dout << CtiTime() << " Incomplete code... for " << parse.getCommand() << " " << __FILE__ << " " << __LINE__<< endl;
     }
 
     return status;
@@ -178,7 +179,7 @@ INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
 
     if(fpst != NULL)
     {
-        memcpy((void*)fpst, &FPstTemplate, sizeof(FPSTRUCT));
+        ::memcpy((void*)fpst, &FPstTemplate, sizeof(FPSTRUCT));
 
         _fst.insert( fpst );
         _last = _fst.entries() - 1;      // Which one are we working on?

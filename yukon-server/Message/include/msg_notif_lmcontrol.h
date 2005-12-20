@@ -2,10 +2,11 @@
 #define __MSG_NOTIF_LMCONTROL_H_
 
 #include <rw/collect.h>
-#include <rw/rwtime.h>
 
 #include "dlldefs.h"
-#include "message.h"
+#include "message.h" 
+
+using std::vector;
 
 /*
  * CtiNotifLMControlMsg is used to tell the notification server
@@ -21,21 +22,21 @@ public:
     enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING };
     
     CtiNotifLMControlMsg();
-    CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const RWTime& start_time, const RWTime& stop_time);
+    CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time);
     
     virtual ~CtiNotifLMControlMsg();
 
     const vector<int>& getNotifGroupIDs() const;
     int getNotifType() const;
     int getProgramID() const;
-    const RWTime& getStartTime() const;
-    const RWTime& getStopTime() const;
+    const CtiTime& getStartTime() const;
+    const CtiTime& getStopTime() const;
 
     CtiNotifLMControlMsg& setNotifGroupIDs(const vector<int>& group_ids);
     CtiNotifLMControlMsg& setNotifType(int type);
     CtiNotifLMControlMsg& setProgramID(int program_id);
-    CtiNotifLMControlMsg& setStartTime(const RWTime& start_time);
-    CtiNotifLMControlMsg& setStopTime(const RWTime& stop_time);
+    CtiNotifLMControlMsg& setStartTime(const CtiTime& start_time);
+    CtiNotifLMControlMsg& setStopTime(const CtiTime& stop_time);
 
     virtual void saveGuts(RWvostream &aStream) const;
     virtual void restoreGuts(RWvistream& aStream);
@@ -45,8 +46,8 @@ private:
     vector<int> _notif_group_ids;
     int _notif_type;
     int _program_id;
-    RWTime _start_time;
-    RWTime _stop_time;
+    CtiTime _start_time;
+    CtiTime _stop_time;
 };
 
 

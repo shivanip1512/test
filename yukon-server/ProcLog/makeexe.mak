@@ -7,6 +7,7 @@ INCLPATHS+= \
 -I$(PROCLOG)\include \
 -I$(COMMON)\include \
 -I$(RW) \
+-I$(BOOST)\
 -I$(R_COMMON)\include \
 -I$(R_PROCLOG)\include \
 
@@ -25,7 +26,7 @@ plog.exe:       plog.obj Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-plog.obj -link $(LIBS) $(RWLIBS) $(COMPILEBASE)\lib\proclog.lib
+plog.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\proclog.lib
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

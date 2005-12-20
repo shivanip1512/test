@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ CtiTablePointLimit& CtiTablePointLimit::setLowLimit(DOUBLE d)
 void CtiTablePointLimit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
    keyTable =  db.table("Point");
-   RWDBTable tbl = db.table(getTableName() );
+   RWDBTable tbl = db.table(getTableName().c_str() );
 
    selector <<
       keyTable["pointid"] <<
@@ -112,7 +112,7 @@ void CtiTablePointLimit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
 {
    INT iTemp;
-   RWCString tStr;
+   string tStr;
 
    rdr["limitnumber"] >> _limitNumber;
    rdr["highlimit"] >> _highLimit;
@@ -159,7 +159,7 @@ CtiTablePointLimit::CtiTablePointLimit(const CtiTablePointLimit& aRef)
 
 CtiTablePointLimit::~CtiTablePointLimit() {}
 
-RWCString CtiTablePointLimit::getTableName()
+string CtiTablePointLimit::getTableName()
 {
    return "PointLimits";
 }

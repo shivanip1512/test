@@ -23,15 +23,17 @@
 #include "dllbase.h"
 #include "logger.h"
 
+using namespace std;
+
 DLLEXPORT CtiSemaphore  gDBAccessSema(gMaxDBConnectionCount, gMaxDBConnectionCount);
 
 // Bookkeeping information about a database connection
 struct DBInfo
 {
-    RWCString dll;
-    RWCString name;
-    RWCString user;
-    RWCString password;
+    string dll;
+    string name;
+    string user;
+    string password;
     RWDBDatabase*  db;
     bool reconnect;
     void (*error_handler) (const RWDBStatus&);
@@ -62,7 +64,7 @@ DLLEXPORT void testAnarchyOnDB()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** ANARCHY **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** ANARCHY **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 delete db_info[i]->db;
@@ -96,8 +98,8 @@ DLLEXPORT void cleanupDB()
 **/
 DLLEXPORT
 void setDatabaseParams(unsigned dbID,
-                       const RWCString& dbDll, const RWCString& dbName,
-                       const RWCString& dbUser, const RWCString& dbPassword )
+                       const string& dbDll, const string& dbName,
+                       const string& dbUser, const string& dbPassword )
 {
     assert( dbID == 0 || dbID == 1 );
 
@@ -170,7 +172,7 @@ RWDBDatabase getDatabase(unsigned dbID)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Invalidating all pending connections to " << info->name << " as " << info->user << " with " << info->dll << endl;
+                dout << CtiTime() << " Invalidating all pending connections to " << info->name << " as " << info->user << " with " << info->dll << endl;
             }
             try
             {
@@ -182,7 +184,7 @@ RWDBDatabase getDatabase(unsigned dbID)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION Invalidating database.  Nonfatal. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** EXCEPTION Invalidating database.  Nonfatal. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -200,7 +202,7 @@ RWDBDatabase getDatabase(unsigned dbID)
         try
         {
             RWDBManager::setErrorHandler(info->error_handler);
-            *db = RWDBManager::database( info->dll,info->name, info->user, info->password, "" );
+            *db = RWDBManager::database( info->dll.c_str(),info->name.c_str(), info->user.c_str(), info->password.c_str(), "" );
 
             if( db->isValid() )
             {
@@ -208,7 +210,7 @@ RWDBDatabase getDatabase(unsigned dbID)
                 reconnect = false;
 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() <<    " Connected to "    << info->name <<
+                dout << CtiTime() <<    " Connected to "    << info->name <<
                 " as "              << info->user <<
                 " with "            << info->dll << endl;
             }
@@ -217,7 +219,7 @@ RWDBDatabase getDatabase(unsigned dbID)
                 Sleep(10000);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Failed to connect to database" << endl;
+                    dout << CtiTime() << " Failed to connect to database" << endl;
                 }
             }
         }
@@ -225,7 +227,7 @@ RWDBDatabase getDatabase(unsigned dbID)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION Creating new database connection.  Nonfatal if non-repetitive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** EXCEPTION Creating new database connection.  Nonfatal if non-repetitive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -250,15 +252,15 @@ RWDBConnection getConnection(unsigned dbID)
 }
 
 DLLEXPORT
-RWDBReader ExecuteQuery(RWDBConnection& conn, const RWCString& query)
+RWDBReader ExecuteQuery(RWDBConnection& conn, const string& query)
 {
-    RWDBResult results = conn.executeSql(query);
+    RWDBResult results = conn.executeSql(query.c_str());
 
     if(!results.isValid())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
+            dout << CtiTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
             dout << query << endl << endl;
         }
     }
@@ -286,7 +288,7 @@ dbErrorHandler (const RWDBStatus& aStatus, DBInfo* dbInfo)
 
     default:
         {
-            RWTime Now;
+            CtiTime Now;
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             // Print out the error.
             dout << Now << " Thread id:        " << rwThreadId() << endl
@@ -335,16 +337,16 @@ RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater,
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** ";
+        dout << endl << CtiTime() << " **** Checkpoint **** ";
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << updater.asString() << endl;
     }
 
     if( ec != RWDBStatus::ok )
     {
-        RWTime Now;
+        CtiTime Now;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << Now << " Error Code = " << stat.errorCode() << ". ";
+        dout << CtiTime() << " Error Code = " << stat.errorCode() << ". ";
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << endl << updater.asString() << endl << endl;
 
@@ -375,16 +377,17 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** ";
+        dout << endl << CtiTime() << " **** Checkpoint **** ";
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << inserter.asString() << endl;
     }
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        RWTime Now;
+        CtiTime Now;
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << Now << " Error Code = " << stat.errorCode() << ". ";
+
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << endl << inserter.asString() << endl << endl;
 

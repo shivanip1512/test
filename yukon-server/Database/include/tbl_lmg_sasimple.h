@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/11/24 17:10:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ protected:
     LONG        _lmGroupId;
     LONG        _routeId;
 
-    RWCString   _operationalAddress;
+    string   _operationalAddress;
     int         _nominalTimeout;        // Switch is hardcoded to be off for this duration in seconds!
     int         _virtualTimeout;        // Group is desired to control for this duration in seconds.  If these are not equal multiple control messages must be sent to make it occur (master cycle-like)
     int         _function;
@@ -60,7 +60,7 @@ public:
 
     LONG getLmGroupId( void ) const;
     LONG getRouteId( void ) const;
-    RWCString getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
+    string getOperationalAddress( void ) const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     int getFunction( bool control ) const;
     int getNominalTimeout( void ) const;
     int getVirtualTimeout( void ) const;
@@ -69,12 +69,12 @@ public:
 
     CtiTableSASimpleGroup& setLmGroupId( LONG newVal );
     CtiTableSASimpleGroup& setRouteId( LONG newVal );
-    CtiTableSASimpleGroup& setOperationalAddress( RWCString newVal );
+    CtiTableSASimpleGroup& setOperationalAddress( string newVal );
     CtiTableSASimpleGroup& setFunction( int newVal );          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
     CtiTableSASimpleGroup& setNominalTimeout( int newVal );
     CtiTableSASimpleGroup& setVirtualTimeout( int newVal );
 
-    static RWCString getTableName( void );
+    static string getTableName( void );
 
     static void getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector );
     virtual void DecodeDatabaseReader( RWDBReader &rdr );

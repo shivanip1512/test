@@ -9,10 +9,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/03/18 19:46:44 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 * HISTORY      :
 * $Log: tbl_lmg_sa305.h,v $
+* Revision 1.3  2005/12/20 17:16:08  tspar
+* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+*
+* Revision 1.2.4.1  2005/07/12 21:08:34  jliu
+* rpStringWithoutCmpParser
+*
 * Revision 1.2  2004/03/18 19:46:44  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -60,7 +66,7 @@ protected:
     int _hierarchy;         // 1 bit
 
     int _function;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    RWCString _addressUsage;      // Identifies which addressing components to use.
+    string _addressUsage;      // Identifies which addressing components to use.
 
 
 private:
@@ -88,7 +94,7 @@ public:
     int getRateMember() const;        // 4 bits
     int getHierarchy() const;         // 1 bit
     int getFunction() const;          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    RWCString  getAddressUsage() const;
+    string  getAddressUsage() const;
 
     CtiTableSA305LoadGroup& setLmGroupId(LONG newVal);
     CtiTableSA305LoadGroup& setRouteId(LONG newVal);
@@ -101,9 +107,9 @@ public:
     CtiTableSA305LoadGroup& setRateMember(int newVal);        // 4 bits
     CtiTableSA305LoadGroup& setHierarchy(int newVal);         // 1 bit
     CtiTableSA305LoadGroup& setFunction(int newVal);          // bitmask for functions to operate upon bit 0 is function 1.  Bit 3 is function 4.
-    CtiTableSA305LoadGroup& setAddressUsage(RWCString  newVal);      //
+    CtiTableSA305LoadGroup& setAddressUsage(string  newVal);      //
 
-    static RWCString getTableName();
+    static string getTableName();
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);

@@ -9,16 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:16:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #define __PTCONNECT_H__
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include "ctitime.h"
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <rw\thr\mutex.h>

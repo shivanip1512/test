@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_timing.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/06 18:04:27 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,14 +18,13 @@
 
 #include <limits.h>
 #include <rw/db/reader.h>
-#include <rw\cstring.h>
 #include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/datetime.h>
-#include <rw/rwtime.h>
+
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -65,6 +64,6 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   static RWCString getTableName();
+   static string getTableName();
 };
 #endif // #ifndef __TBL_PORT_TIMING_H__

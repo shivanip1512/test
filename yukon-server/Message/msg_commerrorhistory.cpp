@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_commerrorhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/12/20 17:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,12 +62,12 @@ CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setPAOId( const long a_id )
    return *this;
 }
 
-const RWTime& CtiCommErrorHistoryMsg::getDateTime() const
+const CtiTime& CtiCommErrorHistoryMsg::getDateTime() const
 {
     return _dateTime;
 }
 
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setDateTime(const RWTime& time)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setDateTime(const CtiTime& time)
 {
     _dateTime = time;
     return *this;
@@ -95,31 +95,31 @@ CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setErrorNumber( const long numbe
    return *this;
 }
 
-const RWCString& CtiCommErrorHistoryMsg::getCommand() const
+const string& CtiCommErrorHistoryMsg::getCommand() const
 {
    return _command;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setCommand(const RWCString& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setCommand(const string& string)
 {
    _command = string;
    return *this;
 }
 
-const RWCString& CtiCommErrorHistoryMsg::getOutMessage() const
+const string& CtiCommErrorHistoryMsg::getOutMessage() const
 {
    return _outMessage;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setOutMessage(const RWCString& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setOutMessage(const string& string)
 {
    _outMessage = string;
    return *this;
 }
 
-const RWCString& CtiCommErrorHistoryMsg::getInMessage() const
+const string& CtiCommErrorHistoryMsg::getInMessage() const
 {
    return _inMessage;
 }
-CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setInMessage(const RWCString& string)
+CtiCommErrorHistoryMsg& CtiCommErrorHistoryMsg::setInMessage(const string& string)
 {
    _inMessage = string;
    return *this;
@@ -155,11 +155,11 @@ CtiMessage* CtiCommErrorHistoryMsg::replicateMessage() const
 CtiCommErrorHistoryMsg::CtiCommErrorHistoryMsg(long paoid,
                                                int type,
                                                long errnumb,
-                                               RWCString comm,
-                                               RWCString outmess,
-                                               RWCString inmess,
+                                               string comm,
+                                               string outmess,
+                                               string inmess,
                                                int pri,
-                                               RWTime time,
+                                               CtiTime time,
                                                long ceid
                                                ) :
    Inherited(pri), _commErrorId(ceid), _paoId(paoid), _dateTime(time), _errorType(type),

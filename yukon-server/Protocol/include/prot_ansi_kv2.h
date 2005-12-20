@@ -13,10 +13,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *    History: 
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.6  2005/12/20 17:19:58  tspar
+      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
+
+      Revision 1.5.2.1  2005/07/14 22:27:02  jliu
+      RWCStringRemoved
+
       Revision 1.5  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -38,7 +44,6 @@
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
-#include <rw\cstring.h>
 #include "prot_ansi.h"
 #include "pointdefs.h"
 #include "ansi_kv2_mtable_zero.h"

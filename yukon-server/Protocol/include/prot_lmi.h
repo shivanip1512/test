@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/15 22:27:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/20 17:19:59 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,8 @@
 
 #include <map>
 #include <vector>
-using namespace std;
+using std::map;
+using std::vector;
 
 #include "dllbase.h"
 #include "dlldefs.h"
@@ -189,7 +190,7 @@ private:
     bool _first_code_block,
          _final_code_block;
 
-    RWCString _name;
+    string _name;
 
 protected:
 
@@ -229,7 +230,7 @@ public:
     };
 
     void setAddress(unsigned char address);
-    void setName(const RWCString &name);
+    void setName(const string &name);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
     void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
     void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
@@ -241,7 +242,7 @@ public:
     int recvCommResult (INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList);
 
     bool hasInboundData();
-    void getInboundData(RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info);
+    void getInboundData(RWTPtrSlist< CtiPointDataMsg > &pointList, string &info);
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest(OUTMESS *OutMessage);
@@ -256,8 +257,8 @@ public:
     bool   canDownloadCodes() const;
     int    getNumCodes() const;
     int    getPreloadDataLength() const;
-    RWTime getTransmissionEnd() const;
-    RWTime getLastCodeDownload() const;
+    CtiTime getTransmissionEnd() const;
+    CtiTime getLastCodeDownload() const;
 
     bool isTransactionComplete();
 

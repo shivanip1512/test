@@ -36,7 +36,7 @@ private:
     CtiProtocolION    _ion;
     CtiTableDeviceAddress _address;
 
-    RWCString _collectionGroup,
+    string _collectionGroup,
               _testCollectionGroup,
               _meterNumber,
               _billingGroup;
@@ -66,24 +66,24 @@ public:
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
-    virtual RWCString getMeterGroupName() const;
-    virtual RWCString getAlternateMeterGroupName() const;
-    virtual RWCString getBillingGroupName() const;
+    virtual string getMeterGroupName() const;
+    virtual string getAlternateMeterGroupName() const;
+    virtual string getBillingGroupName() const;
 
     CtiTableDeviceMeterGroup  getMeterGroup() const;
     CtiTableDeviceMeterGroup& getMeterGroup();
     CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
     //----
-    void setMeterGroupData( const RWCString &collectionGroup,
-                            const RWCString &testCollectionGroup,
-                            const RWCString &meterNumber,
-                            const RWCString &billingGroup);
+    void setMeterGroupData( const string &collectionGroup,
+                            const string &testCollectionGroup,
+                            const string &meterNumber,
+                            const string &billingGroup);
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual string getDescription(const CtiCommandParser & parse) const;
     Protocol::Interface *getProtocol( void );
 
     //  virtual in case different ION devices need to form up alternate requests for the same command
@@ -93,10 +93,10 @@ public:
     virtual INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-    virtual void processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &pointData, RWTPtrSlist<CtiSignalMsg> &eventData, RWCString &returnInfo, bool expectMore = false );
+    virtual void processInboundData(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &pointData, RWTPtrSlist<CtiSignalMsg> &eventData, string &returnInfo, bool expectMore = false );
 };
 
 #endif //  #ifndef __DEV_ION_H__

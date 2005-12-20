@@ -61,7 +61,7 @@ fdrcygnet.dll: fdrcygnet.obj fdrcygnet.mak
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist ..\cygnet\dclnd.lib copy ..\cygnet\dclnd.lib $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) fdrcygnet.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) fdrcygnet.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

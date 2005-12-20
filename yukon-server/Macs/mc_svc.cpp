@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_svc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/05/03 18:20:01 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 17:25:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 	if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )	
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
+	    dout << CtiTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
 	}
     
         SetEvent(hShutdown);
@@ -103,7 +103,7 @@ void CtiMCService::OnStop()
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )	
     {
 	CtiLockGuard<CtiLogger> dout_guard(dout);
-	dout << RWTime() << " **Checkpoint** " << "MACS service received an OnStop event.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
+	dout << CtiTime() << " **Checkpoint** " << "MACS service received an OnStop event.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
 	
     SetEvent(hShutdown);
@@ -138,7 +138,7 @@ void CtiMCService::Run()
 
     // Initialize the global logger
     dout.setOutputFile("macs");
-    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputPath(gLogDirectory);
     dout.setWriteInterval(0);
     dout.setToStdOut(true);
     dout.start();

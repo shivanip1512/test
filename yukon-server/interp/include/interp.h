@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_interp.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/09/05 19:26:34 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/20 17:17:31 $
 *
 * Copyright (c) 2003, Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,6 @@
 #ifndef __INTERP__H__
 #define __INTERP__H__
 
-#include <rw/cstring.h>
 #include <rw/tpslist.h>
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
@@ -84,7 +83,7 @@ private:
     volatile bool _dostop;
     volatile bool _block;
 
-    RWCString _evalstring;
+    string _evalstring;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
     
     static RWRecursiveLock<RWMutexLock> _mutex;

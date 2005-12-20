@@ -11,18 +11,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/09/27 20:41:19 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 17:19:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include <rw/rwtime.h>
-#include <rw/rwdate.h>
 
 #include "logger.h"
 #include "transdata_data.h"
+#include "ctidate.h"
+#include "ctitime.h"
+
 
 //=====================================================================================================================
 //=====================================================================================================================
@@ -176,8 +177,8 @@ void CtiTransdataData::formatData( void )
 void CtiTransdataData::formatTime( ULONG temp )
 {
    int      holder;
-   RWTime   time;
-   RWDate   date;
+   CtiTime   time;
+   CtiDate   date;
 
    switch( _formatCode )
    {

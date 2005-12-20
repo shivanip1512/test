@@ -7,7 +7,7 @@
 #include <iostream>
 #include <functional>
 #include <iostream>
-using namespace std;
+//using namespace std;
 
 #include "dlldefs.h"
 #include "logger.h"
@@ -19,6 +19,9 @@ using namespace std;
 #include <rw\tpsrtvec.h>      // for RWTPtrSortedVector<T>
 #include <rw\tpsrtdli.h>      // for RWTPtrSortedDlist<T>
 
+using std::string;
+using std::cout;
+using std::endl;
 
 // Template Queuing class
 template <class T,  class C>
@@ -28,7 +31,7 @@ private:
     RWCondition                dataAvailable;
     RWTPtrSortedDlist<T,C>     _sortedCol;
 
-    RWCString                  _name;
+    string                  _name;
 public:
 
     CtiQueue() :
@@ -156,7 +159,7 @@ public:
         LockGuard lock(monitor());   // acquire monitor mutex
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return _sortedCol.entries();
     }
@@ -185,12 +188,12 @@ public:
         _sortedCol.clearAndDestroy();
     }
 
-    RWCString getName() const
+    string getName() const
     {
         return _name;
     }
 
-    CtiQueue< T, C > & setName(const RWCString &str)
+    CtiQueue< T, C > & setName(const string &str)
     {
         _name = str;
         return *this;

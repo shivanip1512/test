@@ -9,14 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 17:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "tbl_pt_analog.h"
 #include "logger.h"
+
+#include "rwutil.h"
 
 CtiTablePointAnalog& CtiTablePointAnalog::operator=(const CtiTablePointAnalog& aRef)
 {
@@ -77,7 +79,7 @@ DOUBLE CtiTablePointAnalog::getDeadband() const
 {
    return _deadband;
 }
-RWCString CtiTablePointAnalog::getTransducerType() const
+string CtiTablePointAnalog::getTransducerType() const
 {
    return _transducerType;
 }
@@ -99,7 +101,7 @@ CtiTablePointAnalog& CtiTablePointAnalog::setDeadband(DOUBLE d)
    _deadband = d;
    return *this;
 }
-CtiTablePointAnalog& CtiTablePointAnalog::setTransducerType(RWCString &str)
+CtiTablePointAnalog& CtiTablePointAnalog::setTransducerType(string &str)
 {
    _transducerType = str;
    return *this;

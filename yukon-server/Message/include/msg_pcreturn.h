@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcreturn.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 17:18:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #ifndef __MSG_PCRETURN_H__
 #define __MSG_PCRETURN_H__
 
-#include <rw/cstring.h>
 #include <rw/ordcltn.h>
 
 #include "dlldefs.h"
@@ -30,8 +29,8 @@ class IM_EX_MSG CtiReturnMsg : public CtiMultiMsg
 private:
 
     long       _device_id;
-    RWCString  _command_string;        // Replica of the original request (only first 80 characters)
-    RWCString  _result_string;         // String representation of the result of the request.
+    string  _command_string;        // Replica of the original request (only first 80 characters)
+    string  _result_string;         // String representation of the result of the request.
     int        _status;                // Result code of the operation.  Zero if successful
     int        _routeid;               // Route ID which just succeeded, or failed.
     int        _macro_offset;          // Offset into a macro which should/could be tried next, Zero if there are no more.
@@ -47,8 +46,8 @@ public:
 
     CtiReturnMsg();
     CtiReturnMsg(long device_id,
-                    const RWCString& command_string = RWCString(),
-                    const RWCString& result_string = RWCString(),
+                    const string& command_string = string(),
+                    const string& result_string = string(),
                     int status       = 0,
                     int routeid = 0,
                     int macro_offset = 0,
@@ -69,11 +68,11 @@ public:
     long DeviceId() const;
     CtiReturnMsg& setDeviceId(long device_id);
 
-    const RWCString& CommandString() const;
-    CtiReturnMsg& setCommandString(const RWCString& command_string);
+    const string& CommandString() const;
+    CtiReturnMsg& setCommandString(const string& command_string);
 
-    const RWCString& ResultString() const;
-    CtiReturnMsg& setResultString(const RWCString& result_string);
+    const string& ResultString() const;
+    CtiReturnMsg& setResultString(const string& result_string);
 
     int Status() const;
     CtiReturnMsg& setStatus(int status);

@@ -9,11 +9,14 @@ using namespace std;
 #include "configkey.h"
 #include "configval.h"
 
-CtiConfigParameters::CtiConfigParameters(RWCString strName) :
+
+
+CtiConfigParameters::CtiConfigParameters(const string& strName) :
 FileName(strName),
-RefreshRate(900)
+RefreshRate(900),
+LastRefresh(::time(NULL))
 {
-    if(!FileName.isNull())
+    if(!FileName.empty())
     {
         RefreshConfigParameters();
     }
@@ -27,20 +30,20 @@ CtiConfigParameters::~CtiConfigParameters()
     mHash.clearAndDestroy();
 }
 
-CtiConfigParameters& CtiConfigParameters::setConfigFile(RWCString strName)
+CtiConfigParameters& CtiConfigParameters::setConfigFile(const string& strName)
 {
     FileName = strName;
     return *this;
 }
 
-RWCString CtiConfigParameters::getYukonBaseDir() const
+string CtiConfigParameters::getYukonBaseDir() const
 {
     char buf[2048] = "c:\\yukon";
     char* pos;
 
     //Assume the master.cfg is in the normal place
     //x:\\yukon\\server\\config\\master.cfg
-    int n = GetFullPathName(FileName, 2048, buf, &pos);
+    int n = GetFullPathName(FileName.c_str(), 2048, buf, &pos);
     if(n != 0 && n < 1000)
     {
         for(int i = 0; i < 3; i++)
@@ -52,7 +55,7 @@ RWCString CtiConfigParameters::getYukonBaseDir() const
         }
     }
 
-    return RWCString(buf);
+    return string(buf);
 }
 
 int CtiConfigParameters::RefreshConfigParameters()
@@ -60,6 +63,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     int   i;
     char  key;
+    char  valstr[80];
 
     char        Buffer[MAX_CONFIG_BUFFER];
     char        chKey[MAX_CONFIG_KEY];
@@ -67,7 +71,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     char        *pch;
 
-    RWCString   CurrentLine;
+    string   CurrentLine;
 
     FILE*       fp;
 
@@ -80,12 +84,12 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     mHash.clearAndDestroy();
 
-    if( FileName.isNull() )
+    if( FileName.empty() )
     {
         return -1;
     }
 
-    if((fp = fopen(FileName, "r")) != NULL)
+    if((fp = fopen(FileName.c_str(), "r")) != NULL)
     {
         while(fgets(Buffer, MAX_CONFIG_BUFFER, fp))
         {
@@ -104,13 +108,13 @@ int CtiConfigParameters::RefreshConfigParameters()
                             {
                                 HeadAndTail(pch, chValue, MAX_CONFIG_VALUE);
 
-                                CtiConfigKey   *Key = new CtiConfigKey(RWCString(chKey));
-                                CtiConfigValue *Val = new CtiConfigValue(RWCString(chValue));
+                                CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
+                                CtiConfigValue *Val = new CtiConfigValue(string(chValue));
 
                                 if(!mHash.insertKeyAndValue(Key, Val))
                                 {
                                     cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
-                                    cout << "\t" << chKey << " : " << getValueAsString(RWCString(chKey)) << endl;
+                                    cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
                                     delete Key;
                                     delete Val;
                                 }
@@ -133,7 +137,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     if(isOpt(ConfKeyRefreshRate))
     {
-        RefreshRate = atoi(getValueAsString(ConfKeyRefreshRate));
+        RefreshRate = atoi(getValueAsString(ConfKeyRefreshRate).c_str());
         // cout << "1. Expiring every " << RefreshRate << " seconds" << endl;
     }
     else
@@ -178,7 +182,7 @@ CtiConfigParameters::Dump()
     }
 }
 
-BOOL CtiConfigParameters::isOpt(RWCString key)
+BOOL CtiConfigParameters::isOpt(const string& key)
 {
     CtiConfigKey     Key(key);
     CtiConfigValue   *Value;
@@ -198,7 +202,7 @@ BOOL CtiConfigParameters::isOpt(RWCString key)
         return FALSE;
 }
 
-bool CtiConfigParameters::isOpt(RWCString key, RWCString isEqualThisValue)
+bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValue)
 {
     CtiConfigKey     Key(key);
     CtiConfigValue   *Value;
@@ -212,21 +216,21 @@ bool CtiConfigParameters::isOpt(RWCString key, RWCString isEqualThisValue)
     #endif
     Value = (CtiConfigValue*)mHash.findValue(&Key);
 
-    if(Value && !Value->getValue().compareTo(isEqualThisValue, RWCString::ignoreCase) )
+    if(Value && !stringCompareIgnoreCase(Value->getValue(),isEqualThisValue) )
         return true;
     else
         return false;
 }
 
 
-RWCString
-CtiConfigParameters::getValueAsString(RWCString key, RWCString defaultval)
+string
+CtiConfigParameters::getValueAsString(const string& key, const string& defaultval) 
 {
     BOOL           bRet = TRUE;
     CtiConfigKey   Key(key);
     CtiConfigValue *Value;
 
-    RWCString retStr = defaultval;      // A Null string.
+    string retStr = defaultval;      // A Null string.
 
     checkForRefresh();
 
@@ -244,38 +248,38 @@ CtiConfigParameters::getValueAsString(RWCString key, RWCString defaultval)
     return retStr;
 }
 
-int CtiConfigParameters::getValueAsInt(RWCString key, int defaultval)
+int CtiConfigParameters::getValueAsInt(const string& key, int defaultval) 
 {
     int ret = defaultval;
 
     if(isOpt(key))
     {
-        ret = atoi(getValueAsString(key));
+        ret = atoi(getValueAsString(key).c_str());
     }
 
     return ret;
 }
 
-ULONG CtiConfigParameters::getValueAsULong(RWCString key, ULONG defaultval, int base)
+ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, int base) 
 {
     char *ch;
     ULONG ret = defaultval;
 
     if(isOpt(key))
     {
-        ret = strtoul(getValueAsString(key).data(), &ch, base);
+        ret = strtoul(getValueAsString(key).c_str(), &ch, base);
     }
 
     return ret;
 }
 
-double CtiConfigParameters::getValueAsDouble(RWCString key, double defaultval)
+double CtiConfigParameters::getValueAsDouble(const string& key, double defaultval)  
 {
     double ret = defaultval;
 
     if(isOpt(key))
     {
-        ret = atof(getValueAsString(key));
+        ret = atof(getValueAsString(key).c_str());
     }
 
     return ret;
@@ -381,9 +385,9 @@ bool CtiConfigParameters::checkForRefresh()
     bool bRet = false;
     bool acquired = false;
 
-    RWTime now;
+    time_t now = ::time(NULL);
 
-    if(now.seconds() - (ULONG)RefreshRate > LastRefresh.seconds())
+    if(now - (ULONG)RefreshRate > LastRefresh)
     {
         #ifdef USE_RECURSIVE_MUX
         RWRecursiveLock<RWMutexLock>::TryLockGuard gaurd(mutex);           // Do it this way to reduce the need for locking to only once in a while, and no deadlocks.
@@ -393,7 +397,7 @@ bool CtiConfigParameters::checkForRefresh()
         CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
         #endif
 
-        if(acquired && now.seconds() - (ULONG)RefreshRate > LastRefresh.seconds())
+        if(acquired && now - (ULONG)RefreshRate > LastRefresh)
         {
             LastRefresh = now;
             RefreshConfigParameters();
