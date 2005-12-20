@@ -647,6 +647,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			else if( pointOffset == 1 && pointType == PointTypes.PULSE_ACCUMULATOR_POINT)
 			{
 				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"kWh");
+				if( pd == null)
+					pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Current Meter Reading");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
