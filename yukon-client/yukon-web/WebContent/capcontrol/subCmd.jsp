@@ -59,7 +59,7 @@
           <tr><td>
           	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>); nd();top.document.getElementById('tempIFrame').style.display='none';"
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Disable Sub</a>
 		  </td></tr>
 <% } %>
