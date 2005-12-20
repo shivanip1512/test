@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clientconn.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/05/26 20:57:43 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 19:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,9 @@
 #include "guard.h"
 #include "logger.h"
 #include "mutex.h"
+
+using std::ostream;
+using std::less;
 
 class CtiMCConnection : public CtiObservable
 {

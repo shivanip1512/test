@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_msg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 19:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,13 +298,13 @@ public:
 
     Action getAction() const;
     long getID() const;
-    RWTime getStartTime() const;
-    RWTime getStopTime() const;
+    CtiTime getStartTime() const;
+    CtiTime getStopTime() const;
 
     CtiMCOverrideRequest& setAction(Action action);
     CtiMCOverrideRequest& setID(long id);
-    CtiMCOverrideRequest& setStartTime(const RWTime& time);
-    CtiMCOverrideRequest& setStopTime(const RWTime& time);
+    CtiMCOverrideRequest& setStartTime(const CtiTime& time);
+    CtiMCOverrideRequest& setStopTime(const CtiTime& time);
 
     void saveGuts(RWvostream &aStream) const;
     void restoreGuts(RWvistream& aStream);
@@ -313,8 +313,8 @@ private:
 
     Action _action;
     long _id;
-    RWTime _start_time;
-    RWTime _stop_time;
+    CtiTime _start_time;
+    CtiTime _stop_time;
 };
 
 /*

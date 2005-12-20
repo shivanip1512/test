@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/16 23:56:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 19:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ public:
     const string& getCurrentState() const;
     const string& getStartPolicy() const;
     const string& getStopPolicy() const;
-    const RWTime& getLastRunTime() const;
+    const CtiTime& getLastRunTime() const;
     const string& getLastRunStatus() const;
     int getStartDay() const;
     int getStartMonth() const;
@@ -110,10 +110,10 @@ public:
     const string& getStopTime() const;
     const string& getValidWeekDays() const;
     int getDuration() const;
-    const RWTime& getManualStartTime() const;
-    const RWTime& getManualStopTime() const;
-    const RWTime& getCurrentStartTime() const;
-    const RWTime& getCurrentStopTime() const;
+    const CtiTime& getManualStartTime() const;
+    const CtiTime& getManualStopTime() const;
+    const CtiTime& getCurrentStartTime() const;
+    const CtiTime& getCurrentStopTime() const;
     int getTemplateType() const;
 
     //Only simple schedules will return meaningfull info for these
@@ -131,7 +131,7 @@ public:
     CtiMCSchedule& setCurrentState(const string& state);
     CtiMCSchedule& setStartPolicy(const string& start_policy);
     CtiMCSchedule& setStopPolicy(const string& stop_policy);
-    CtiMCSchedule& setLastRunTime(const RWTime& last_run_time);
+    CtiMCSchedule& setLastRunTime(const CtiTime& last_run_time);
     CtiMCSchedule& setLastRunStatus(const string& last_run_status);
     CtiMCSchedule& setStartDay(int start_day);
     CtiMCSchedule& setStartMonth(int start_month);
@@ -140,10 +140,10 @@ public:
     CtiMCSchedule& setStopTime(const string& stop_time);
     CtiMCSchedule& setValidWeekDays(const string& valid_week_days);
     CtiMCSchedule& setDuration(int duration);
-    CtiMCSchedule& setManualStartTime(const RWTime& manual_start_time);
-    CtiMCSchedule& setManualStopTime(const RWTime& manual_stop_time);
-    CtiMCSchedule& setCurrentStartTime(const RWTime& start_time);
-    CtiMCSchedule& setCurrentStopTime(const RWTime& stop_time);
+    CtiMCSchedule& setManualStartTime(const CtiTime& manual_start_time);
+    CtiMCSchedule& setManualStopTime(const CtiTime& manual_stop_time);
+    CtiMCSchedule& setCurrentStartTime(const CtiTime& start_time);
+    CtiMCSchedule& setCurrentStopTime(const CtiTime& stop_time);
     CtiMCSchedule& setTemplateType(int template_type);
 
     //Only simple schedules will return meaningfull info for these
@@ -166,8 +166,8 @@ public:
 
 protected:
 
-    RWTime _current_start_time;
-    RWTime _current_stop_time;
+    CtiTime _current_start_time;
+    CtiTime _current_stop_time;
 
     CtiTblPAO _pao_table;
     CtiTableMCSchedule _schedule_table;
@@ -175,7 +175,7 @@ protected:
 
 private:
 
-    bool isValidTime(const RWTime& t) const;
+    bool isValidTime(const CtiTime& t) const;
 };
 
 ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched );

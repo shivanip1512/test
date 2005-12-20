@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_scheduler.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/20 19:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,8 +41,8 @@
 
 #include <deque>
 #include <list>
-
-#include <rw/rwtime.h>
+         
+#include "ctitime.h"
 
 #include "mc.h"
 #include "mc_sched.h"
@@ -63,9 +63,9 @@ struct ScheduledEvent
 {
     long sched_id;
     ScheduledEventType event_type;
-    RWTime timestamp;
+    CtiTime timestamp;
 
-    ScheduledEvent() : timestamp(RWTime((unsigned long)0))
+    ScheduledEvent() : timestamp(CtiTime((unsigned long)0))
     { }
     // These will need to be sorted
     bool operator==(const ScheduledEvent& event) const
@@ -95,21 +95,21 @@ public:
     CtiMCScheduler(CtiMCScheduleManager& mgr) : _schedule_manager(mgr) { }
     ~CtiMCScheduler() { }
     
-    RWTime scheduleManualStart(const RWTime& now, CtiMCSchedule& sched);
-    RWTime scheduleManualStop(const RWTime& now,  CtiMCSchedule& sched);
-    RWTime schedulePolicyStart(const RWTime& now, CtiMCSchedule& sched);
-    RWTime schedulePolicyStop(const RWTime& start, CtiMCSchedule& sched);
-    RWTime scheduleRepeatInterval(const RWTime& now, const RWTime& start,
+    CtiTime scheduleManualStart(const CtiTime& now, CtiMCSchedule& sched);
+    CtiTime scheduleManualStop(const CtiTime& now,  CtiMCSchedule& sched);
+    CtiTime schedulePolicyStart(const CtiTime& now, CtiMCSchedule& sched);
+    CtiTime schedulePolicyStop(const CtiTime& start, CtiMCSchedule& sched);
+    CtiTime scheduleRepeatInterval(const CtiTime& now, const CtiTime& start,
                                   CtiMCSchedule& sched);
 
-    void getEvents(const RWTime& now, set< ScheduledEvent >& events);
+    void getEvents(const CtiTime& now, set< ScheduledEvent >& events);
 
 
-    void initEvents(const RWTime& now);
-    void initEvents(const RWTime& now, CtiMCSchedule& schedule);  
+    void initEvents(const CtiTime& now);
+    void initEvents(const CtiTime& now, CtiMCSchedule& schedule);  
     void removeEvents(long schedule_id);
 
-   RWTime getNextEventTime() const
+   CtiTime getNextEventTime() const
    {
        return   ( _event_deque.size() > 0  ?
                   _event_deque.front().timestamp :
@@ -119,13 +119,13 @@ public:
    void dumpEventQueue() const
     {
         CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Dumping macs event queue" << endl;
+        dout << CtiTime() << " Dumping macs event queue" << endl;
 
         for( int i = 0; i < _event_deque.size(); i++ )
         {
-            dout << RWTime() << " id:   " << _event_deque[i].sched_id << endl;
-            dout << RWTime() << " type:  " << _event_deque[i].event_type << endl;
-            dout << RWTime() << " timestamp:  " << _event_deque[i].timestamp << endl;
+            dout << CtiTime() << " id:   " << _event_deque[i].sched_id << endl;
+            dout << CtiTime() << " type:  " << _event_deque[i].event_type << endl;
+            dout << CtiTime() << " timestamp:  " << _event_deque[i].timestamp << endl;
         }
 }
 
@@ -134,7 +134,7 @@ private:
     CtiMCScheduleManager& _schedule_manager;
 
     // use this for an invalid time
-    static RWTime _invalid_time;
+    static CtiTime _invalid_time;
 
     deque< ScheduledEvent > _event_deque;
 
@@ -143,29 +143,29 @@ private:
     void addEvent(CtiMCSchedule& sched, const ScheduledEvent& event);   
     void removeEvents(long schedule_id, ScheduledEventType type);
 
-    RWTime calcPolicyStart(const RWTime& now, CtiMCSchedule& sched);
-    RWTime calcPolicyStop(const RWTime& now, CtiMCSchedule& sched);
+    RWTime calcPolicyStart(const CtiTime& now, CtiMCSchedule& sched);
+    RWTime calcPolicyStop(const CtiTime& now, CtiMCSchedule& sched);
 
-    bool calcIntervalEvent(const RWTime& now, const CtiMCSchedule& sched,
+    bool calcIntervalEvent(const CtiTime& now, const CtiMCSchedule& sched,
                            ScheduledEvent& event) const;
 
-    bool calcStopEvent(const RWTime& start, const CtiMCSchedule& sched,
+    bool calcStopEvent(const CtiTime& start, const CtiMCSchedule& sched,
                        ScheduledEvent& event) const;
 
-    void calcDateTimeStart(const RWTime& now, const CtiMCSchedule& sched,
-                           RWTime& start_time ) const;
+    void calcDateTimeStart(const CtiTime& now, const CtiMCSchedule& sched,
+                           CtiTime& start_time ) const;
 
-    void calcDayOfMonthStart(const RWTime& now, const CtiMCSchedule& sched,
-                             RWTime& start_time ) const;
+    void calcDayOfMonthStart(const CtiTime& now, const CtiMCSchedule& sched,
+                             CtiTime& start_time ) const;
 
-    void calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sched,
-                          RWTime& start_time ) const;
+    void calcWeekDayStart(const CtiTime& now, const CtiMCSchedule& sched,
+                          CtiTime& start_time ) const;
 
-    void calcAbsoluteTimeStop(const RWTime& start, const CtiMCSchedule& sched,
-                              RWTime& stop_time ) const;
+    void calcAbsoluteTimeStop(const CtiTime& start, const CtiMCSchedule& sched,
+                              CtiTime& stop_time ) const;
 
-    void calcDurationStop(const RWTime& start, const CtiMCSchedule& sched,
-                          RWTime& stop_time ) const;
+    void calcDurationStop(const CtiTime& start, const CtiMCSchedule& sched,
+                          CtiTime& stop_time ) const;
 
 
 
@@ -176,12 +176,12 @@ private:
                          unsigned int& minute, unsigned int& second) const;
 
 
-    bool isToday(const RWTime& t) const
+    bool isToday(const CtiTime& t) const
     {
-        return ( RWDate(t).day() == RWDate::now().day() );
+        return ( CtiDate(t).day() == CtiDate::now().day() );
     }
 
-    bool inInterval(const RWTime& t, const pair< RWTime, RWTime >& interval) const
+    bool inInterval(const CtiTime& t, const pair< CtiTime, CtiTime >& interval) const
     {
         return ( interval.first <= t && interval.second > t );
     }

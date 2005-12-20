@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/12/16 23:56:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 19:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@ public:
                        const string& state,
                        const string& start_policy,
                        const string& stop_policy,
-                       const RWTime& last_run_time,
+                       const CtiTime& last_run_time,
                        const string& last_run_status,
                        int start_day,
                        int start_month,
@@ -61,8 +61,8 @@ public:
                        const string& stop_time,
                        const string& valid_week_days,
                        int duration,
-                       const RWTime& manual_start_time,
-                       const RWTime& manual_stop_time,
+                       const CtiTime& manual_start_time,
+                       const CtiTime& manual_stop_time,
                        int template_type );
 
     virtual ~CtiTableMCSchedule();
@@ -82,7 +82,7 @@ public:
     const string& getCurrentState() const;
     const string& getStartPolicy() const;
     const string& getStopPolicy() const;
-    const RWTime& getLastRunTime() const;
+    const CtiTime& getLastRunTime() const;
     const string& getLastRunStatus() const;
     int getStartDay() const;
     int getStartMonth() const;
@@ -91,8 +91,8 @@ public:
     const string& getStopTime() const;
     const string& getValidWeekDays() const;
     int getDuration() const;
-    const RWTime& getManualStartTime() const;
-    const RWTime& getManualStopTime() const;
+    const CtiTime& getManualStartTime() const;
+    const CtiTime& getManualStopTime() const;
     int getTemplateType() const;
 
     CtiTableMCSchedule& setScheduleID(long sched_id);
@@ -104,7 +104,7 @@ public:
     CtiTableMCSchedule& setCurrentState(const string& state);
     CtiTableMCSchedule& setStartPolicy(const string& start_policy);
     CtiTableMCSchedule& setStopPolicy(const string& stop_policy);
-    CtiTableMCSchedule& setLastRunTime(const RWTime& last_run_time);
+    CtiTableMCSchedule& setLastRunTime(const CtiTime& last_run_time);
     CtiTableMCSchedule& setLastRunStatus(const string& last_run_status);
     CtiTableMCSchedule& setStartDay(int start_day);
     CtiTableMCSchedule& setStartMonth(int start_month);
@@ -113,8 +113,8 @@ public:
     CtiTableMCSchedule& setStopTime(const string& stop_time);
     CtiTableMCSchedule& setValidWeekDays(const string& valid_week_days);
     CtiTableMCSchedule& setDuration(int duration);
-    CtiTableMCSchedule& setManualStartTime(const RWTime& manual_start_time);
-    CtiTableMCSchedule& setManualStopTime(const RWTime& manual_stop_time);
+    CtiTableMCSchedule& setManualStartTime(const CtiTime& manual_start_time);
+    CtiTableMCSchedule& setManualStopTime(const CtiTime& manual_stop_time);
     CtiTableMCSchedule& setTemplateType(int template_type);
 
 private:
