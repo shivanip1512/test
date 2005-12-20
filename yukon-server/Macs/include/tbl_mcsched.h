@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 19:47:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,7 +132,7 @@ private:
     string          _current_state;
     string          _start_policy;
     string          _stop_policy;
-    RWTime          _last_run_time;
+    CtiTime          _last_run_time;
     string          _last_run_status;
     int             _start_day;
     int             _start_month;
@@ -143,8 +143,8 @@ private:
                              // Y = yes on that day, N = no on that day
                              // E = holiday exclusion,
     int             _duration;
-    RWTime          _manual_start_time;
-    RWTime          _manual_stop_time;
+    CtiTime          _manual_start_time;
+    CtiTime          _manual_stop_time;
     int             _template_type;
 
 };

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clientconn.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/20 19:47:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,6 @@
 #define CTIMCCONNECTION_H
 
 #include <rw/pstream.h>
-#include <rw/rwtime.h>
 
 #include <rw/toolpro/portal.h>
 #include <rw/toolpro/portstrm.h>

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/20 19:47:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #include <time.h>
 
 #include <rw/db/reader.h>
-#include <rw\rwtime.h>
 
 #include "mc.h"
 #include "dbmemobject.h"

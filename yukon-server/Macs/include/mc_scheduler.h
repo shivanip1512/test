@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_scheduler.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/12/20 19:47:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,8 +143,8 @@ private:
     void addEvent(CtiMCSchedule& sched, const ScheduledEvent& event);   
     void removeEvents(long schedule_id, ScheduledEventType type);
 
-    RWTime calcPolicyStart(const CtiTime& now, CtiMCSchedule& sched);
-    RWTime calcPolicyStop(const CtiTime& now, CtiMCSchedule& sched);
+    CtiTime calcPolicyStart(const CtiTime& now, CtiMCSchedule& sched);
+    CtiTime calcPolicyStop(const CtiTime& now, CtiMCSchedule& sched);
 
     bool calcIntervalEvent(const CtiTime& now, const CtiMCSchedule& sched,
                            ScheduledEvent& event) const;
