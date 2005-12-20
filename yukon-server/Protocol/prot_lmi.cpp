@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/12/20 20:08:50 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -715,8 +715,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                             if( !findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY") ,"false" ))
                             {
-                                ptime::time_duration_type expiration(seconds(60));
-                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).c_str(), codestr, expiration);
+                                //  we don't expire the messages until well after they should've been collected
+                                ptime::time_duration_type expiration(seconds((60 + 30) * _tick_time));
+
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, CtiProtocolSA3rdParty::asString(om->Buffer.SASt).data(), codestr, expiration);
 
                                 _verification_objects.push(work);
                             }
@@ -1008,16 +1010,13 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             case Command_ReadEchoedCodes:
                             {
                                 int offset = 0;
+                                bool final_block = false;
 
                                 offset++;  //  move past the UPA status for the time being
 
                                 if( !(_inbound.data[offset++] & 0x80) )
                                 {
-                                    //  final block of codes, so we're done
-                                    if( _command == Command_ReadEchoedCodes )
-                                    {
-                                        _command = Command_ClearEchoedCodes;
-                                    }
+                                    final_block = true;
                                 }
 
                                 while( offset < (_inbound.length - 1) )
@@ -1031,6 +1030,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     {
                                         if( !findStringIgnoreCase(gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY"),"false") )
                                         {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " CtiProtocolLMI::decode() creating report object for code \"" << buf << "\", receiver_id (" << _transmitter_id << ")" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+
                                             CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
                                             _verification_objects.push(report);
                                         }
@@ -1055,8 +1059,26 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                         dout << CtiTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
 
-                                    //  clear them out for safety
-                                    _command = Command_ClearEchoedCodes;
+                                    if( _command == Command_ReadEchoedCodes )
+                                    {
+                                        //  clear them out for safety
+                                        _command = Command_ClearEchoedCodes;
+                                    }
+                                    else
+                                    {
+                                        _transaction_complete = true;
+                                    }
+                                }
+                                else if( final_block )
+                                {
+                                    if( _command == Command_ReadEchoedCodes )
+                                    {
+                                        _command = Command_ClearEchoedCodes;
+                                    }
+                                    else
+                                    {
+                                        _transaction_complete = true;
+                                    }
                                 }
 
                                 break;
