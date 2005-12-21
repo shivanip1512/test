@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/12/21 18:11:56 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.22  2005/12/21 18:11:56  cplender
+* Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
+*
 * Revision 1.21  2005/12/20 17:16:57  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -1116,11 +1119,18 @@ void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc
 
     if(ppc.getControl().getStopTime() >= ppc.getControl().getStartTime())
     {
-        _dynLMControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
+        CtiTableLMControlHistory *pTbl = CTIDBG_new CtiTableLMControlHistory(ppc.getControl());
+        LONG chid = LMControlHistoryIdGen();
+        pTbl->setLMControlHistoryID( chid );
+        _dynLMControlHistoryQueue.putQueue( pTbl );
 
         if(ppc.getControl().getActiveRestore() != LMAR_LOGTIMER &&
            ppc.getControl().getActiveRestore() != LMAR_DISPATCH_SHUTDOWN)
-            _lmControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
+        {
+            pTbl = CTIDBG_new CtiTableLMControlHistory(ppc.getControl());
+            pTbl->setLMControlHistoryID( chid );
+            _lmControlHistoryQueue.putQueue( pTbl );
+        }
 
         if(ppc.getControl().isNewControl())
         {

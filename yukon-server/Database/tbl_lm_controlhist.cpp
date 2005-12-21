@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/12/21 18:11:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -564,7 +564,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 {
     RWDBStatus dbstat( RWDBStatus::ok );
 
-    setLMControlHistoryID( LMControlHistoryIdGen() );
+    if(!getLMControlHistoryID()) setLMControlHistoryID( LMControlHistoryIdGen() );
 
     RWDBTable table = getDatabase().table( getTableName().c_str() );
     RWDBInserter inserter = table.inserter();
