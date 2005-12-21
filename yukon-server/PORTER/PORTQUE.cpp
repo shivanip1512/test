@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/12/21 22:21:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cparms.h"
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -208,7 +209,7 @@ VOID QueueThread (VOID *Arg)
         }
 
         {
-            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager!
+            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply(applyBuildLGrpQ,NULL);
         }
     }
@@ -306,7 +307,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             IDLCFunction(Dev, 0, DEST_BASE, CLPWR);
 
             /* Now send a message to logger */
-            _snprintf(Message, 50, "%0.20sPower Fail Detected", Dev->getName());
+            _snprintf(Message, 50, "%0.20s Power Fail Detected", Dev->getName());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -365,7 +366,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20sTime Sync Loss", Dev->getName());
+            _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -388,7 +389,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
 
             /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20sLow Battery Detected", Dev->getName());
+            _snprintf(Message, 50,  "%0.20s Low Battery Detected", Dev->getName());
             SendTextToLogger ("Inf", Message);
         }
     }
@@ -415,7 +416,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             /* Now send a message to logger */
             if( Dev )
             {
-                _snprintf(Message, 50,  "%0.20sCold Start Sent", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s Cold Start Sent", Dev->getName());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -432,7 +433,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 /* Now send a message to logger */
                 if( Dev )
                 {
-                    _snprintf(Message, 50,  "%0.20sFAULTC Detected", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s FAULTC Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -455,7 +456,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 /* Now send a message to logger */
                 if( Dev )
                 {
-                    _snprintf(Message, 50,  "%0.20sCold Start Detected", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Cold Start Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -492,7 +493,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             LoadRemoteRoutes(Dev);
 
             /* set the time sync Algorithm startup time */
-            IDLCSetTSStores(Dev, 15, 600, 3600); // Priority, trigger time, period
+            IDLCSetTSStores(Dev, 15, gConfigParms.getValueAsInt("CCU_COMMS_LOST_TIME", 3600), 3600); // Priority, trigger time, period
 
             /* Enable the time Sync algorithm */
             IDLCFunction(Dev, 0,  DEST_TSYNC, ENPRO);
@@ -526,7 +527,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
             if(Dev)   /* Now send a message to logger */
             {
-                _snprintf(Message, 50,  "%0.20sDLC Alg Restarted", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s DLC Alg Restarted", Dev->getName());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -552,7 +553,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     /* Now send a message to logger */
                     if( Dev )
                     {
-                        _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
+                        _snprintf(Message, 50,  "%0.20s TS Alg ENABLED", Dev->getName());
                         SendTextToLogger ("Inf", Message);
                     }
                 }
@@ -571,7 +572,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             /* Now send a message to logger */
             if( Dev )
             {
-                _snprintf(Message, 50,  "%0.20sLM Alg ENPRO", Dev->getName());
+                _snprintf(Message, 50,  "%0.20s LM Alg ENPRO", Dev->getName());
                 SendTextToLogger ("Inf", Message);
             }
         }
@@ -638,13 +639,13 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 {
                     pInfo->RColQMin = 15;
                     /* Now send a message to logger */
-                    _snprintf(Message, 50,  "%0.20sBad Firmware Adjust ", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName());
                     SendTextToLogger ("Inf", Message);
                 }
                 else if(InMessage->IDLCStat[3] - 14 < 61)
                 {
                     pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20sBad Firmware Adjust2", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -653,7 +654,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 if(InMessage->IDLCStat[3] - 14 >= 15 && InMessage->IDLCStat[3] - 14 < 61)
                 {
                     pInfo->RColQMin = 61;
-                    _snprintf(Message, 50,  "%0.20sBad Firmware Adjust2", Dev->getName());
+                    _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName());
                     SendTextToLogger ("Inf", Message);
                 }
             }
@@ -1000,11 +1001,11 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             else if(pInfo->FreeSlots == 32 && pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
             {
                 // 20050506 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
-                pInfo->ClearStatus(INLGRPQ);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " FreeSlots is 32 and CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
                 }
+                QueueFlush(Dev);        // Clean up the queue sitution
             }
         }
     }
@@ -1031,11 +1032,11 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     // 20051129 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
     if(pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
     {
-        pInfo->ClearStatus(INLGRPQ);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
         }
+        QueueFlush(Dev);
     }
 
     if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
@@ -1282,7 +1283,6 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
 /* Routine to flush the 711 queue's for a given CCU */
 /* Dequeues only those entries marked as having been slated for queing (likely on the port queue) and INUSE */
 QueueFlush (CtiDeviceSPtr Dev)
-
 {
     USHORT QueTabEnt;
     INMESS InMessage;
@@ -1349,7 +1349,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
-    OUTMESS *MyOutMessage, *OutMessage;
+    OUTMESS *MyOutMessage, *OutMessage = 0;
     ULONG i, j;
     REQUESTDATA QueueResult;
     USHORT Offset;
@@ -1437,7 +1437,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
             /* if this is first in the group get memory for it */
             if(Offset == PREIDL)
             {
-                if((OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
+                if(!OutMessage && (OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1661,11 +1661,13 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                         dout << CtiTime() << " " << tempstr << endl;
                     }
                     delete OutMessage;                      // Starting over, so we'd better bop the OM.
+                    OutMessage = 0;
                     Offset = PREIDL;
                     continue;
                 }
                 else
                 {
+                    OutMessage = 0;                         // Passed on the memory now!
                     /* Update the port entries count */
                     pInfo->SetStatus(INLGRPQ);              // This should break our for loop too.
                     pInfo->PortQueueEnts++;
