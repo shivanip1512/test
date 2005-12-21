@@ -104,6 +104,11 @@ insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
 
 insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
 
+alter table LMProgramDirectGear add FrontRampOption VARCHAR2(32);
+update LMProgramDirectGear set FrontRampOption = '(none)';
+alter table LMProgramDirectGear modify FrontRampOption not null;
+
+
 
 
 
