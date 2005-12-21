@@ -1878,6 +1878,7 @@ void CtiLMControlAreaStore::reset()
                         {
                             CtiLMControlAreaTrigger* newTrigger = new CtiLMControlAreaTrigger(rdr);
                             attachProjectionData(newTrigger);
+			    newTrigger->calculateProjectedValue();
 
                             /****************************************************************
                             *******  Inserting Trigger into the correct Control Area  *******
