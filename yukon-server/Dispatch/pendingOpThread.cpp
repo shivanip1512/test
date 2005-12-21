@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/12/21 18:11:56 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/12/21 22:22:07 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.23  2005/12/21 22:22:07  cplender
+* Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
+*
 * Revision 1.22  2005/12/21 18:11:56  cplender
 * Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
 *
