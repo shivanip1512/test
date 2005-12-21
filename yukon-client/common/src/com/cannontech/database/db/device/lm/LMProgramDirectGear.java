@@ -2,6 +2,7 @@ package com.cannontech.database.db.device.lm;
 
 import java.sql.Statement;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
@@ -39,7 +40,11 @@ public abstract class LMProgramDirectGear
 	private Integer rampInPercent = new Integer(0);
 	private Integer rampOutInterval = new Integer(0);
 	private Integer rampOutPercent = new Integer(0);
-
+    private String frontRampOption = CtiUtilities.STRING_NONE;
+    private Integer frontRampTime = new Integer(0);
+    private String backRampOption = CtiUtilities.STRING_NONE;
+    private Integer backRampTime = new Integer(0);
+    
 	public static final String SETTER_COLUMNS[] =
    {
    		"DeviceID",
@@ -63,7 +68,11 @@ public abstract class LMProgramDirectGear
 		"RampInInterval",
 		"RampInPercent",
 		"RampOutInterval",
-		"RampOutPercent"
+		"RampOutPercent",
+        "FrontRampOption",
+        "FrontRampTime",
+        "BackRampOption",
+        "BackRampTime"
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
@@ -93,7 +102,9 @@ public abstract class LMProgramDirectGear
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
 			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
 			getMethodOptionType(), getMethodOptionMax(), getGearID(), getRampInInterval(),
-			getRampInPercent(), getRampOutInterval(), getRampOutPercent()
+			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
+            getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
+            getBackRampTime()
 		};
 
 		add(TABLE_NAME, addValues);
@@ -221,7 +232,7 @@ public abstract class LMProgramDirectGear
 					+ ", " + SETTER_COLUMNS[13] + ", " + SETTER_COLUMNS[14] + ", " + SETTER_COLUMNS[15]
 					+ ", " + SETTER_COLUMNS[16] + ", " + SETTER_COLUMNS[17] + ", " + SETTER_COLUMNS[18]
 					+ ", " + SETTER_COLUMNS[19] + ", " + SETTER_COLUMNS[20] + ", " + SETTER_COLUMNS[21]
-					+ " from " + TABLE_NAME +
+                    + ", " + SETTER_COLUMNS[22]+ " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
 		{
@@ -270,6 +281,7 @@ public abstract class LMProgramDirectGear
 					gear.setRampInPercent(new Integer(rset.getInt(20)));
 					gear.setRampOutInterval(new Integer(rset.getInt(21)));
 					gear.setRampOutPercent(new Integer(rset.getInt(22)));
+                    gear.setFrontRampOption(rset.getString(23));
 				}
 				
 				gearList.add(gear);
@@ -571,6 +583,26 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		return rampOutPercent;
 	}
+    
+    protected java.lang.String getFrontRampOption()
+    {
+        return frontRampOption;
+    }
+    
+    public java.lang.Integer getFrontRampTime()
+    {
+        return frontRampTime;
+    }
+    
+    protected java.lang.String getBackRampOption()
+    {
+        return backRampOption;
+    }
+    
+    public java.lang.Integer getBackRampTime()
+    {
+        return frontRampTime;
+    }
 	/**
 	 * retrieve method comment.
 	 */
@@ -604,6 +636,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setRampInPercent((Integer) results[19]);
 			setRampOutInterval((Integer) results[20]);
 			setRampOutPercent((Integer) results[21]);
+            setFrontRampOption((String) results[22]);
 		}
 		else
 			throw new Error(
@@ -792,6 +825,11 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		rampOutPercent = newPercent;
 	}
+    
+    public void setFrontRampOption(String newOption)
+    {
+        frontRampOption = newOption;
+    }
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/11/2002 3:34:44 PM)
@@ -814,7 +852,9 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
 			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
 			getMethodOptionType(), getMethodOptionMax(), getRampInInterval(),
-			getRampInPercent(), getRampOutInterval(), getRampOutPercent()
+			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
+            getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
+            getBackRampTime()
 		};
 
 		Object constraintValues[] = { getGearID() };

@@ -88,4 +88,14 @@ public void setStartingPeriodCnt(Integer periodCnt )
 {
 	setMethodRateCount( periodCnt );
 }
+
+public String getFrontRampOption()
+{
+    return super.getFrontRampOption();
+}
+
+public void setFrontRampOption(String newOption)
+{
+    super.setFrontRampOption(newOption);
+}
 }
