@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/12/20 20:08:50 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/12/21 20:32:46 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1141,6 +1141,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                     {
                                         _command = Command_ClearEchoedCodes;
 
+                                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
