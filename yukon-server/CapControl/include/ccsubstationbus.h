@@ -181,6 +181,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setOverlappingVerificationFlag( BOOL overlapFlag);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
+    LONG getLastFeederControlledSendRetries() const;
     BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges);
@@ -231,6 +232,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCapBankInactivityTime(void) const;
 
     BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges);
+    
 
 
     BOOL isDirty() const;
@@ -344,7 +346,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    void restoreSubstationBusTableValues(RWDBReader& rdr);
 
     string doubleToString(DOUBLE doubleVal);
     list <long> _pointIds;

@@ -123,6 +123,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getCurrentVarPointQuality() const;
     BOOL getWaiveControlFlag() const;
     const string& getParentControlUnits() const;
+    const string& getParentName() const;
+
     LONG getDecimalPlaces() const;
     BOOL getPeakTimeFlag() const;
     
@@ -186,13 +188,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
     CtiCCFeeder& setWaiveControlFlag(BOOL waive);
     CtiCCFeeder& setParentControlUnits(const string& parentControlUnits);
+    CtiCCFeeder& setParentName(const string& parentName);
     CtiCCFeeder& setDecimalPlaces(LONG decimalPlaces);
     CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
 
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo);
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
@@ -204,6 +207,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
     BOOL checkMaxDailyOpCountExceeded();
+
+    string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
 
     CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
     CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -307,6 +312,8 @@ private:
     BOOL _waivecontrolflag;
 
     string _parentControlUnits;
+    string _parentName;
+
     LONG _decimalPlaces;
     BOOL _peakTimeFlag;
 
@@ -325,8 +332,7 @@ private:
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    void restoreFeederTableValues(RWDBReader& rdr);
-    string doubleToString(DOUBLE doubleVal);
+    string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
     list <long> _pointIds;
 };

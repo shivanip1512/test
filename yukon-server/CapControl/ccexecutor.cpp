@@ -150,24 +150,11 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
         if( subID == currentSubstationBus->getPAOId() )
         {
-            if (!currentSubstationBus->getVerificationFlag())
-            {
-                currentSubstationBus->setVerificationFlag(TRUE);
-                currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
-                currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
-                currentSubstationBus->setBusUpdatedFlag(TRUE);
-               //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                string text("Substation Bus Verification Enabled");
-                string additional("Bus: ");
-                additional += currentSubstationBus->getPAOName();
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
-            }
-            else
-            {
-                if (currentSubstationBus->getPerformingVerificationFlag() &&
-                    _subVerificationMsg->getStrategy() < currentSubstationBus->getVerificationStrategy())
+            if (!currentSubstationBus->getDisableFlag())
+            {    
+                if (!currentSubstationBus->getVerificationFlag())
                 {
-                    currentSubstationBus->setOverlappingVerificationFlag( TRUE );
+                    currentSubstationBus->setVerificationFlag(TRUE);
                     currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
                     currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -176,6 +163,22 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     string additional("Bus: ");
                     additional += currentSubstationBus->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+                }
+                else
+                {
+                    if (currentSubstationBus->getPerformingVerificationFlag() &&
+                        _subVerificationMsg->getStrategy() < currentSubstationBus->getVerificationStrategy())
+                    {
+                        currentSubstationBus->setOverlappingVerificationFlag( TRUE );
+                        currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
+                        currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
+                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                       //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
+                        string text("Substation Bus Verification Enabled");
+                        string additional("Bus: ");
+                        additional += currentSubstationBus->getPAOName();
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+                    }
                 }
             }
             break;
@@ -1165,9 +1168,12 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         }
                         else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
+                            LONG sendRetries = currentSubstationBus->getControlSendRetries();
+                            if (currentFeeder->getStrategyId() > 0 && currentFeeder->getControlSendRetries() > 0)
+                                sendRetries = currentFeeder->getControlSendRetries();
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
-                                ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentFeeder->getLastOperationTime().seconds()) )
+                                ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
@@ -1180,9 +1186,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
                                  !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
+                            LONG sendRetries = currentSubstationBus->getControlSendRetries();
+                            if (currentFeeder->getStrategyId() > 0 && currentFeeder->getControlSendRetries() > 0)
+                                sendRetries = currentFeeder->getControlSendRetries();
+
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
-                                ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                                ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
@@ -1367,9 +1377,12 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                         {
+                            LONG sendRetries = currentSubstationBus->getControlSendRetries();
+                            if (currentFeeder->getStrategyId() > 0 && currentFeeder->getControlSendRetries() > 0)
+                                sendRetries = currentFeeder->getControlSendRetries();
                             if( savedFeederRecentlyControlledFlag ||
                                 ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentFeeder->getLastOperationTime().seconds()) ||
-                                ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentFeeder->getLastOperationTime().seconds()) )
+                                ((savedFeederLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentFeeder->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
@@ -1382,9 +1395,12 @@ void CtiCCCommandExecutor::ConfirmClose()
                         else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::SubstationBusControlMethod) ||
                                  !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                         {
+                            LONG sendRetries = currentSubstationBus->getControlSendRetries();
+                            if (currentFeeder->getStrategyId() > 0 && currentFeeder->getControlSendRetries() > 0)
+                                sendRetries = currentFeeder->getControlSendRetries();
                             if( savedBusRecentlyControlledFlag ||
                                 ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/_SEND_TRIES)) >= currentSubstationBus->getLastOperationTime().seconds()) ||
-                                ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(currentSubstationBus->getControlSendRetries()+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                                ((savedBusLastOperationTime.seconds()+(currentSubstationBus->getMaxConfirmTime()/(sendRetries+1))) >= currentSubstationBus->getLastOperationTime().seconds()) )
                             {
                                 confirmImmediately = TRUE;
                             }
@@ -2430,6 +2446,7 @@ void CtiCCPointDataMsgExecutor::Execute()
             break;
         }
     }
+    _pointDataMsg->setTags(tags | TAG_POINT_FORCE_UPDATE);
 
     CtiCapController::getInstance()->sendMessageToDispatch(_pointDataMsg->replicateMessage());
 }

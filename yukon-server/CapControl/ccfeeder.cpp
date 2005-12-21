@@ -57,7 +57,7 @@ CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::~CtiCCFeeder()
 {
-    //_cccapbanks.clearAndDestroy();
+    _pointIds.clear();
     try
     {
         _cccapbanks.clearAndDestroy();
@@ -608,6 +608,17 @@ const string& CtiCCFeeder::getParentControlUnits() const
 {
     return _parentControlUnits;
 }
+
+/*---------------------------------------------------------------------------
+    getParentName
+
+    Returns the ParentName of the feeder
+---------------------------------------------------------------------------*/
+const string& CtiCCFeeder::getParentName() const
+{
+    return _parentName;
+}
+
 
 /*---------------------------------------------------------------------------
     getDecimalPlaces
@@ -1341,6 +1352,22 @@ CtiCCFeeder& CtiCCFeeder::setParentControlUnits(const string& parentControlUnits
 }
 
 /*---------------------------------------------------------------------------
+    setParentName
+
+    Sets the ParentName in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setParentName(const string& parentName)
+{
+    if (_parentName != parentName)
+    {
+        _dirty = TRUE;
+    }
+    _parentName = parentName;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
     setParentDecimalPlaces
 
     Sets the ParentDecimalPlaces in the feeder
@@ -1399,7 +1426,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     string text = string("CapBank Exceeded Max Daily Operations");
                     string additional = string("CapBank: ");
                     additional += getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
                     if( currentCapBank->getMaxOpsDisableFlag() )
@@ -1409,7 +1436,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
                         additional += getPAOName();
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                         //keepGoing = FALSE;
                         // feeder disable flag is already set, so it will return false.
@@ -1440,7 +1467,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     string text("CapBank Exceeded Max Daily Operations");
                     string additional("CapBank: ");
                     additional += getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
                     if( currentCapBank->getMaxOpsDisableFlag() )
@@ -1450,7 +1477,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
                         additional += getPAOName();
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                         //keepGoing = FALSE;
                         // feeder disable flag is already set, so it will return false.
@@ -1476,7 +1503,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
@@ -1491,15 +1518,14 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOr
         setVarValueBeforeControl(getCurrentVarLoadPointValue());
         if( capBank->getStatusPointId() > 0 )
         {
-            char tempchar[80] = "";
-            string text = string("Open sent, Var Load = ");
-            _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
-            text += tempchar;
-            string additional = string("Feeder: ");
+            string additional;
+            additional = ("Sub: ");
+            additional += getParentName();
+            additional += " /Feeder: ";
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
             capBank->setLastStatusChangeTime(CtiTime());
         }
@@ -1545,12 +1571,17 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         if( capBank->getStatusPointId() > 0 )
         {
             char tempchar[80] = "";
-            string text("Open sent, Var Load = ");
+            string text = ("Open sent, Var Load = ");
+            if  (stringContainsIgnoreCase(capBank->getControllerType(), "CBC 70") &&
+                 _USE_FLIP_FLAG == TRUE)
+            {
+                text = ("Flip sent, Var Load = ");
+            }
             _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
             text += tempchar;
             string additional("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1602,12 +1633,17 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         if( capBank->getStatusPointId() > 0 )
         {
             char tempchar[80] = "";
-            string text("Open sent, Var Load = ");
+            string text = ("Open sent, Var Load = ");
+            if  (stringContainsIgnoreCase(capBank->getControllerType(), "CBC 70") &&
+                 _USE_FLIP_FLAG == TRUE)
+            {
+                text = ("Flip sent, Var Load = ");
+            }
             _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
             text += tempchar;
             string additional("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1644,7 +1680,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
@@ -1659,15 +1695,14 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOr
         setVarValueBeforeControl(getCurrentVarLoadPointValue());
         if( capBank->getStatusPointId() > 0 )
         {
-            char tempchar[80] = "";
-            string text("Close sent, Var Load = ");
-            _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
-            text += tempchar;
-            string additional("Feeder: ");
+            string additional;
+            additional = ("Sub: ");
+            additional += getParentName();
+            additional += " /Feeder: ";
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
             capBank->setLastStatusChangeTime(CtiTime());
         }
@@ -1787,8 +1822,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         ( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() ) )
     {
-        if( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits) ||
-            !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ) 
+        if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) ||
+            !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) ) 
         {
 
             if( (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
@@ -1799,14 +1834,14 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         
                 try
                 {
-                    if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
+                    if( ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
                           lagLevel < getCurrentVarLoadPointValue() ) ||
-                        ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) &&
+                        ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) &&
                           lagLevel > getCurrentVoltLoadPointValue() ) )
                     {                    
                         //if( _CC_DEBUG )
 
-                        if( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits) )
+                        if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName().data() << endl;
@@ -1837,7 +1872,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         }
                         else
                         {
-                            request = createDecreaseVarRequest(capBank , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                            DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank , pointChanges, text);
 
                             if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                             {
@@ -1857,7 +1894,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     else
                     {
                         //if( _CC_DEBUG )
-                        if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
+                        if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;
@@ -1872,7 +1909,10 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         }
 
                         CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution());
-                        request = createIncreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+
+                        DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, text);
     
                         if( request == NULL && (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                         {
@@ -1907,8 +1947,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                 !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        else if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                 !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
             if( getKVARSolution() < 0 )
             {
@@ -1938,7 +1978,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         DOUBLE adjustedBankKVARReduction = (lagLevel/100.0)*((DOUBLE)capBank->getBankSize());
                         if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                         {
-                            request = createDecreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                            string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank, pointChanges, text);
                         }
                         else
                         {//cap bank too big
@@ -1984,7 +2025,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
-                        request = createIncreaseVarRequest(capBank, pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
+                        string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, text);
                     }
                     else
                     {//cap bank too big
@@ -2047,7 +2089,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
     BOOL found = FALSE;
     char tempchar[64] = "";
     string text = "";
-    string additional = "";
+    string additional = "Sub: ";
+              additional += getParentName();
+              additional += " /Feeder: ";
+              additional += getPAOName();;
 
     for(LONG i=0;i<_cccapbanks.entries();i++)
     {
@@ -2074,27 +2119,28 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                             text = string("Var Change = ");
                             text += CtiNumStr(ratio*100.0,5).toString();
                             text += "%, OpenFail";
-                            additional = string("Feeder: ");
-                            additional = getPAOName();
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             text = string("Var Change = ");
                             text += CtiNumStr(ratio*100.0,5).toString();
-
                             text += "%, OpenQuestionable";
-                            additional = string("Feeder: ");
-                            additional = getPAOName();
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                            text = string("Var Change = ");
+                            text += CtiNumStr(ratio*100.0,5).toString();
+                            text += "%, Open";
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                        text = string("Var Change = ");
+                        text += CtiNumStr(ratio*100.0,5).toString();
+                        text += "%, Open";
                     }
                 }
                 else
@@ -2105,8 +2151,6 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
                     text += "%, OpenQuestionable";
-                    additional = string("Feeder: ");
-                    additional = getPAOName();
                 }
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -2128,29 +2172,29 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             text = string("Var Change = ");
                             text += CtiNumStr(ratio*100.0,5).toString();
-
                             text += "%, CloseFail";
-                            additional = string("Feeder: ");
-                            additional = getPAOName();
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             text = string("Var Change = ");
                             text += CtiNumStr(ratio*100.0,5).toString();
-
                             text += "%, CloseQuestionable";
-                            additional = string("Feeder: ");
-                            additional = getPAOName();
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                            text = string("Var Change = ");
+                            text += CtiNumStr(ratio*100.0,5).toString();
+                            text += "%, Closed";
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                        text = string("Var Change = ");
+                        text += CtiNumStr(ratio*100.0,5).toString();
+                        text += "%, Closed";
                     }
                 }
                 else
@@ -2161,8 +2205,6 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
                     text += "%, CloseQuestionable";
-                    additional = string("Feeder: ");
-                    additional = getPAOName();
                 }
             }
             else
@@ -2177,10 +2219,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                 if( text.length() > 0 )
                 {//if control failed or questionable, create event to be sent to dispatch
                     long tempLong = currentCapBank->getStatusPointId();
-                    pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent));
+                    pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                     ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                 }
-                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, currentCapBank->getPAOName()));
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                 currentCapBank->setLastStatusChangeTime(CtiTime());
             }
@@ -2277,7 +2319,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
                         DOUBLE change = newVarValue - oldVarValue;
-                        DOUBLE ratio = abs(change/currentCapBank->getBankSize());
+                        DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
                         if( ratio >= minConfirmPercent*.01 )
                         {
                             returnBoolean = TRUE;
@@ -2290,7 +2332,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        dout << CtiTime() << " - Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<"  controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                         returnBoolean = FALSE;
                     }
                     found = TRUE;
@@ -2317,6 +2359,11 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
 BOOL CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries)
 {
     BOOL returnBoolean = FALSE;
+
+    if (getStrategyId() > 0 && getControlSendRetries() > 0)
+    {
+        feederRetries = getControlSendRetries();
+    }
 
     if( ((getLastOperationTime().seconds() + (maxConfirmTime/_SEND_TRIES)) <= currentDateTime.seconds()) ||
         ((getLastOperationTime().seconds() + (maxConfirmTime/(feederRetries+1))) <= currentDateTime.seconds()) )
@@ -2349,11 +2396,14 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, RWOrder
                     figureEstimatedVarLoadPointValue();
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
-                        char tempchar[80] = "";
+
                         string text = string("Resending Open");
-                        string additional = string("Feeder: ");
+                        string additional;
+                        additional = string("Sub: ");
+                        additional += getParentName();
+                        additional += " /Feeder: ";
                         additional += getPAOName();
-                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                     }
                     else
@@ -2373,11 +2423,13 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, RWOrder
                     figureEstimatedVarLoadPointValue();
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
-                        char tempchar[80] = "";
                         string text = string("Resending Close");
-                        string additional = string("Feeder: ");
+                        string additional;
+                        additional = string("Sub: ");
+                        additional += getParentName();
+                        additional += " /Feeder: ";
                         additional += getPAOName();
-                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                     }
                     else
@@ -2814,7 +2866,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _maplocationid
     << _displayorder
     << _newpointdatareceivedflag
-    << _lastcurrentvarpointupdatetime
+    << _lastcurrentvarpointupdatetime   //JULIE: this used to be .rwtime() might cause a problem
     << _estimatedvarloadpointid
     << _estimatedvarloadpointvalue
     << _dailyoperationsanalogpointid
@@ -2822,7 +2874,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _estimatedpowerfactorpointid
     << _currentdailyoperations
     << _recentlycontrolledflag
-    << _lastoperationtime
+    << _lastoperationtime //JULIE: this used to be .rwtime() might cause a problem
     << _varvaluebeforecontrol
     << temppowerfactorvalue
     << tempestimatedpowerfactorvalue
@@ -2907,6 +2959,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _additionalFlags = right._additionalFlags;
         
         _parentControlUnits = right._parentControlUnits;
+        _parentName = right._parentName;
         _decimalPlaces = right._decimalPlaces;
         _peakTimeFlag = right._peakTimeFlag;
 
@@ -3117,11 +3170,11 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 
     Returns the string representation of a double
 ---------------------------------------------------------------------------*/
-string CtiCCFeeder::doubleToString(DOUBLE doubleVal)
+string CtiCCFeeder::doubleToString(DOUBLE doubleVal, LONG decimalPlaces)
 {
     char tempchar[80] = "";
     string retString = string("");
-    _snprintf(tempchar,80,"%d",(int)(doubleVal+0.5));
+    _snprintf(tempchar,80,"%.*f",decimalPlaces, doubleVal);
     retString += tempchar;
 
     return retString;
@@ -3149,10 +3202,10 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
     if( getMaxDailyOperation() > 0 &&
         _currentdailyoperations == getMaxDailyOperation() )//only send once
     {
-        string text = RWCString("Feeder Exceeded Max Daily Operations");
-        string additional = RWCString("Feeder: ");
+        string text = ("Feeder Exceeded Max Daily Operations");
+        string additional = ("Feeder: ");
         additional += getPAOName();
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
         //we should disable feeder if the flag says so
         if( getMaxOperationDisableFlag() )
@@ -3162,7 +3215,7 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
             string text = string("Feeder Disabled");
             string additional = string("Feeder: ");
             additional += getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
             //keepGoing = FALSE;
             // feeder disable flag is already set, so it will return false.
@@ -3171,6 +3224,81 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
     }
     return retVal;
 }
+
+string CtiCCFeeder::createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue)//, LONG decimalPlaces)
+{
+    string text = ("");
+    switch (control)
+    {
+        case 0:
+            {
+                text += "Open sent, ";
+            }
+            break;
+        case 1:
+            {
+                text += "Close sent, ";
+            }
+            break;
+        case 2:
+            {
+                text += "Resending Open, ";
+            }
+            break;
+        case 3:
+            {
+                text += "Resending Close, ";
+            }
+            break;
+        default:
+            break;
+
+    }
+    if (!stringCompareIgnoreCase(getParentControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+    {
+        if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::SubstationBusControlMethod))
+            text += "SubBus-Volt: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+            text += "BusOp-Volt: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::IndividualFeederControlMethod))
+            text += "IndvFdr-Volt: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::ManualOnlyControlMethod))
+            text += "Manual-Volt: ";
+        else
+            text += "No Method Defined? Volt: ";
+        text += doubleToString(controlValue, getDecimalPlaces());
+        text += "/Var: ";
+        text += doubleToString(monitorValue, getDecimalPlaces());
+    }
+    else if (!stringCompareIgnoreCase(getParentControlUnits(), CtiCCSubstationBus::KVARControlUnits) ||
+             !stringCompareIgnoreCase(getParentControlUnits(), CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+             !stringCompareIgnoreCase(getParentControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits))
+    {
+        if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::SubstationBusControlMethod))
+            text += "SubBus-Var: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+            text += "BusOp-Var: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::IndividualFeederControlMethod))
+            text += "IndvFdr-Var: ";
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::ManualOnlyControlMethod))
+            text += "Manual-Var: ";
+        else
+            text += "No Method Defined? Var:";
+
+        text += doubleToString(controlValue, getDecimalPlaces());
+        text += "/Var: ";
+        text += doubleToString(monitorValue, getDecimalPlaces());
+    }
+    else
+    {
+    }
+    return text; 
+
+}
+
+/*RWCString CtiCCFeeder::createAdditionalString()
+{
+} */
 
 
 

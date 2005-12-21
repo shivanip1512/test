@@ -142,12 +142,9 @@ public:
     CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
-    CtiCCCapBank& setCurrVCmdResult(CCBANKVRESULT CmdResult);
-    CtiCCCapBank& setPrevVCmdResult(CCBANKVRESULT CmdResult);
-    CtiCCCapBank& setVerificationState(CCBANKVSTATE verificationState);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
-     BOOL updateVerificationState(void);
+    BOOL updateVerificationState(void);
 
     //int getAssumedOrigVerificationState();
     CtiCCCapBank& initVerificationControlStatus();
@@ -240,18 +237,12 @@ private:
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
 
-
-    CCBANKVRESULT _currCmdResult; //0 = fail, 1 = success, 2 = retry????
-    CCBANKVRESULT _prevCmdResult;
-    CCBANKVSTATE _verificationState;
     
-
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    void restoreCapBankTableValues(RWDBReader& rdr);
     CtiCCCapBank();
 
     std::list <LONG> _pointIds;

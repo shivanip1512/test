@@ -20,8 +20,6 @@
 #include <rw/re.h>
 
 #include <boost/regex.hpp>
-
-           
      
 extern ULONG _CC_DEBUG;
 /* The singleton instance of CtiPAOScheduleManager */
@@ -156,48 +154,74 @@ void CtiPAOScheduleManager::mainLoop()
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                 currentTime.now();
                 mySchedules.clear();
-                if (checkSchedules(currentTime, mySchedules))
-                {
-                    updateSchedules.clear();
-                    while (!mySchedules.empty())
-                    {
-                        currentSched = new CtiPAOSchedule();
-                        currentSched = mySchedules.front();
-                        mySchedules.pop_front();
 
-                        if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
+                try
+                {
+                    if (checkSchedules(currentTime, mySchedules))
+                    {
+                        updateSchedules.clear();
+
+                        while (!mySchedules.empty())
+                        {
+                            currentSched = new CtiPAOSchedule();
+                            currentSched = mySchedules.front();
+                            mySchedules.pop_front();
+
+                            if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - ScheduleID "<<currentSched->getScheduleId() << " NextRunTime about to occur (" << CtiTime(currentSched->getNextRunTime().seconds()) << ")." << endl;
+                            }
+                            myEvents.clear();
+
+                            try
+                            {
+
+                                if (getEventsBySchedId(currentSched->getScheduleId(), myEvents))
+                                {
+                                    while (!myEvents.empty())
+                                    {
+                                        currentEvent = new CtiPAOEvent();
+                                        currentEvent = myEvents.front();
+                                        myEvents.pop_front();
+                                        if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " -- EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<"."<<endl;
+                                        }
+                                        runScheduledEvent(currentEvent);
+                                        //delete currentEvent;
+                                    }
+                                }
+                                updateRunTimes(currentSched);
+                                updateSchedules.push_back(currentSched);
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+
+                        }
+                        try
+                        {
+                            if (!updateSchedules.empty())
+                            {
+                                updateDataBaseSchedules(updateSchedules);
+                            } 
+                        }
+                        catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - ScheduleID "<<currentSched->getScheduleId() << " NextRunTime about to occur (" << CtiTime(currentSched->getNextRunTime().seconds()) << ")." << endl;
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        myEvents.clear();
-                        if (getEventsBySchedId(currentSched->getScheduleId(), myEvents))
-                        {
-                            while (!myEvents.empty())
-                            {
-                                currentEvent = new CtiPAOEvent();
-                                currentEvent = myEvents.front();
-                                myEvents.pop_front();
-                                if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " -- EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<"."<<endl;
-                                }
-                                runScheduledEvent(currentEvent);
-                            }
-                        }
-                        updateRunTimes(currentSched);
-                        updateSchedules.push_back(currentSched);
                     }
-                    if (!updateSchedules.empty())
-                    {
-                        updateDataBaseSchedules(updateSchedules);
-                    } 
                 }
-                /*else
+                catch(...)
                 {
-                    Sleep(500);
-                }*/
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
             }
             try
             {
@@ -228,30 +252,39 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
     bool retVal = false;
     schedules.clear();
 
-    if (!_schedules.empty())
+    try
     {
 
-        std::list <CtiPAOSchedule*>::iterator iter = _schedules.begin();
-        while (iter != _schedules.end())
+        if (!_schedules.empty())
         {
-            if ((*iter)->getNextRunTime() < currentTime)
+
+            std::list <CtiPAOSchedule*>::iterator iter = _schedules.begin();
+            while (iter != _schedules.end())
             {
-                if ((*iter)->getIntervalRate() > 0 && !(*iter)->isDisabled())
-                {                               
-                    schedules.push_back(*iter);
-                    retVal = true;
-                }
-                else
+                if ((*iter)->getNextRunTime() < currentTime)
                 {
-                    if ((*iter)->getNextRunTime() != (*iter)->getLastRunTime() && !(*iter)->isDisabled())
-                    {
+                    if ((*iter)->getIntervalRate() > 0 && !(*iter)->isDisabled())
+                    {                               
                         schedules.push_back(*iter);
                         retVal = true;
                     }
+                    else
+                    {
+                        if ((*iter)->getNextRunTime() != (*iter)->getLastRunTime() && !(*iter)->isDisabled())
+                        {
+                            schedules.push_back(*iter);
+                            retVal = true;
+                        }
+                    }
                 }
+                iter++;
             }
-            iter++;
         }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return retVal;
 }
@@ -711,30 +744,30 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
             do
             {
 
-                CtiPAOSchedule currentSchedule = *(schedules.front());
+                CtiPAOSchedule *currentSchedule = schedules.front();
                 schedules.pop_front();
 
-                if ( currentSchedule.isDirty() )
+                if ( currentSchedule->isDirty() )
                 {
                     try
                     {
 
                         RWDBUpdater updater = paoSchedule.updater();
 
-                        updater.where(paoSchedule["scheduleid"]==currentSchedule.getScheduleId());
+                        updater.where(paoSchedule["scheduleid"]==currentSchedule->getScheduleId());
 
-                        updater << paoSchedule["nextruntime"].assign( toRWDBDT(currentSchedule.getNextRunTime()) )
-                                << paoSchedule["lastruntime"].assign( toRWDBDT(currentSchedule.getLastRunTime()) );
+                        updater << paoSchedule["nextruntime"].assign( toRWDBDT(currentSchedule->getNextRunTime()) )
+                                << paoSchedule["lastruntime"].assign( toRWDBDT(currentSchedule->getLastRunTime()) );
 
                         updater.execute( conn );
 
                         if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
                         {
-                            currentSchedule.setDirty(FALSE);
+                            currentSchedule->setDirty(FALSE);
                         }
                         else
                         {
-                            currentSchedule.setDirty(TRUE);
+                            currentSchedule->setDirty(TRUE);
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

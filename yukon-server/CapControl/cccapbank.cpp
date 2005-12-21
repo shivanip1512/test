@@ -50,6 +50,7 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::~CtiCCCapBank()
 {
+    _pointIds.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -326,35 +327,6 @@ int  CtiCCCapBank::getVCtrlIndex() const
     return _vCtrlIndex;
 }
 
-/*---------------------------------------------------------------------------
-    getCurrVCmdResult
-        
-    Returns the CurrVCmdResult of the cap bank
----------------------------------------------------------------------------*/
-CCBANKVRESULT CtiCCCapBank::getCurrVCmdResult() const
-{
-    return _currCmdResult;
-}
-
-/*---------------------------------------------------------------------------
-    getPrevVCmdResult
-        
-    Returns the PrevVCmdResult of the cap bank
----------------------------------------------------------------------------*/
-CCBANKVRESULT CtiCCCapBank::getPrevVCmdResult() const
-{
-    return _prevCmdResult;
-}
-
-/*---------------------------------------------------------------------------
-    getVerificationState
-        
-    Returns the VerificationState of the cap bank
----------------------------------------------------------------------------*/
-CCBANKVSTATE CtiCCCapBank::getVerificationState() const
-{
-    return _verificationState;
-}
 
 /*---------------------------------------------------------------------------
     getAssumedOrigVerificationState
@@ -956,22 +928,6 @@ CtiCCCapBank& CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
     _vCtrlIndex = vCtrlIndex;
     return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setCurrVCmdResult(CCBANKVRESULT CmdResult)
-{
-    _currCmdResult = CmdResult;
-    return *this;
-}
-CtiCCCapBank& CtiCCCapBank::setPrevVCmdResult(CCBANKVRESULT CmdResult)
-{
-    _prevCmdResult = CmdResult;
-    return *this;
-}
-CtiCCCapBank& CtiCCCapBank::setVerificationState(CCBANKVSTATE verificationState)
-{
-    _verificationState = verificationState;
-    return *this;
-}
-
 
 CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(LONG status)
 {

@@ -12,6 +12,7 @@
         
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
+
 class CtiTime;
 /* Various message classes */
 #define CTICCMESSAGE_ID             500

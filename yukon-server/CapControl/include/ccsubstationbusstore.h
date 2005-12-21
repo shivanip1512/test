@@ -29,7 +29,7 @@
 #include "ccsubstationbus.h"
 #include "ccid.h"
 
-
+using std::multimap;
 
 struct CC_DBRELOAD_INFO
 {
@@ -95,9 +95,12 @@ public:
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
 
-    CtiCCSubstationBusPtr findSubBusByPointID(long point_id);
-    CtiCCFeederPtr findFeederByPointID(long point_id);
-    CtiCCCapBankPtr findCapBankByPointID(long point_id);
+    CtiCCSubstationBusPtr findSubBusByPointID(long point_id, int index);
+    CtiCCFeederPtr findFeederByPointID(long point_id, int index);
+    CtiCCCapBankPtr findCapBankByPointID(long point_id, int index);
+    int getNbrOfSubBusesWithPointID(long point_id);
+    int getNbrOfFeedersWithPointID(long point_id);
+    int getNbrOfCapBanksWithPointID(long point_id);
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
@@ -119,22 +122,24 @@ public:
 
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
-                                   map< long, CtiCCCapBankPtr > *pointid_capbank_map,
+                                   multimap< long, CtiCCCapBankPtr > *pointid_capbank_map,
                                    map< long, long> *capbank_subbus_map,
                                    map< long, long> *capbank_feeder_map,
                                    map< long, long> *feeder_subbus_map);
     void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                  map< long, CtiCCFeederPtr > *pointid_feeder_map, 
+                                  multimap< long, CtiCCFeederPtr > *pointid_feeder_map, 
                                   map< long, long> *feeder_subbus_map);
     void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                  map< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
+                                  multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
                                   RWOrdered *cCSubstationBuses );
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
+    void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
+                       map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);
@@ -217,9 +222,9 @@ private:
     map< long, CtiCCFeederPtr > _paobject_feeder_map;
     map< long, CtiCCCapBankPtr > _paobject_capbank_map;
 
-    map< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
-    map< long, CtiCCFeederPtr > _pointid_feeder_map;
-    map< long, CtiCCCapBankPtr > _pointid_capbank_map;
+    multimap< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
+    multimap< long, CtiCCFeederPtr > _pointid_feeder_map;
+    multimap< long, CtiCCCapBankPtr > _pointid_capbank_map;
 
     map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
 
@@ -228,6 +233,8 @@ private:
     map< long, long > _capbank_feeder_map;
 
     list <CC_DBRELOAD_INFO> _reloadList;
+    list <long> _orphanedCapBanks;
+    list <long> _orphanedFeeders;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };
