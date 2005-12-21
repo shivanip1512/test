@@ -723,14 +723,16 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, adjust_counts))
                             {
                                 CtiRequestMsg* requestMsg = NULL;
+                                bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
+                                
                                 if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) &&
                                     currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                                 {
-                                    requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                    requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                                 }
                                 else
                                 {
-                                    requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                    requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                                     if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -858,7 +860,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() &&
-			    !hasGroupExceededMaxDailyOps(currentLMGroup) )
+                            !hasGroupExceededMaxDailyOps(currentLMGroup) )
                         {
                             if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
                             {
@@ -1221,7 +1223,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                         if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, true))
                         {
-                            CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                            bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);                     
+                            CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1337,7 +1340,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         setLastControlSent(CtiTime());
                         setLastGroupControlled(currentLMGroup->getPAOId());
                         currentLMGroup->setLastControlSent(CtiTime());
-						currentLMGroup->incrementDailyOps();
+                                                currentLMGroup->incrementDailyOps();
                         currentLMGroup->setControlStartTime(CtiTime());
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                         if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1453,14 +1456,15 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, true))
                         {
                             CtiRequestMsg* requestMsg = NULL;
+                            bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);                                             
                             if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                             {
-                                requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                             }
                             else
                             {
                                 CtiLMProgramDirectGear* prevGearObject = 0;
-                                requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                                 if(_currentgearnumber > 0)
                                 {
                                     prevGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
@@ -2476,7 +2480,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                     if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, true))
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                        bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);                                                                     
+                        CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                         startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                         if( currentGearObject->getPercentReduction() > 0.0 )
@@ -2689,13 +2694,14 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, true))
                     {
                         CtiRequestMsg* requestMsg = NULL;
+                        bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);                                                                                             
                         if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                         {
-                            requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                            requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                         }
                         else
                         {
-                            requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                            requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
@@ -3286,14 +3292,15 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             if(getConstraintOverride() || con_checker.checkCycle(cycleCount, period, percent, adjust_counts))
                             {
                                 CtiRequestMsg* requestMsg = NULL;
+                                bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);                                                                                                                             
                                 if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) &&
                                     currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                                 {
-                                    requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                    requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                                 }
                                 else
                                 {
-                                    requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                                    requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                                     if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4273,7 +4280,7 @@ BOOL CtiLMProgramDirect::isPastMinRestartTime(ULONG secondsFrom1901)
 BOOL CtiLMProgramDirect::doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const
 {
     return !( (getMaxActivateTime() > 0 && (currentLMGroup->getCurrentControlDuration() + estimatedControlTimeInSeconds > getMaxActivateTime())) ||
-	  	      (getMaxHoursDaily() > 0 && (currentLMGroup->getCurrentHoursDaily() + estimatedControlTimeInSeconds) > getMaxHoursDaily()) ||
+                      (getMaxHoursDaily() > 0 && (currentLMGroup->getCurrentHoursDaily() + estimatedControlTimeInSeconds) > getMaxHoursDaily()) ||
               (getMaxHoursMonthly() > 0 && (currentLMGroup->getCurrentHoursMonthly() + estimatedControlTimeInSeconds) > getMaxHoursMonthly()*3600) ||
               (getMaxHoursSeasonal() > 0 && (currentLMGroup->getCurrentHoursSeasonal() + estimatedControlTimeInSeconds) > getMaxHoursSeasonal()*3600) ||
               (getMaxHoursAnnually() > 0 && (currentLMGroup->getCurrentHoursAnnually() + estimatedControlTimeInSeconds) > getMaxHoursAnnually()*3600) );
@@ -4455,11 +4462,11 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
           << _directstarttime
           << _directstoptime
           << _notify_active_time
-          << _notify_inactive_time	
+          << _notify_inactive_time      
           << _startedrampingout
           << _trigger_offset
-		  << _trigger_restore_offset
-		  << _constraint_override
+                  << _trigger_restore_offset
+                  << _constraint_override
           << _lmprogramdirectgears;
 
     // send groups, using a rwordered seems to be trouble
@@ -4504,7 +4511,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _directstarttime = right._directstarttime;
         _directstoptime = right._directstoptime;
         _notify_active_time = right._notify_active_time;
-        _notify_inactive_time = right._notify_inactive_time;	
+        _notify_inactive_time = right._notify_inactive_time;    
         _trigger_offset = right._trigger_offset;
         _trigger_restore_offset = right._trigger_restore_offset;
         _startedrampingout = right._startedrampingout;
@@ -5099,15 +5106,15 @@ void CtiLMProgramDirect::scheduleStartNotification(const CtiTime& start_time)
     // -1 indicates we shouldn't notify on active
     if(getNotifyActiveOffset() != -1)
     {
-	CtiTime notifyStartTime(start_time);
-	notifyStartTime.addSeconds(-1*getNotifyActiveOffset());
-	setNotifyActiveTime(CtiTime(notifyStartTime));
+        CtiTime notifyStartTime(start_time);
+        notifyStartTime.addSeconds(-1*getNotifyActiveOffset());
+        setNotifyActiveTime(CtiTime(notifyStartTime));
 
-	if( _LM_DEBUG & LM_DEBUG_STANDARD )
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << CtiTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;	    
-	}
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;            
+        }
     }
 }
 
@@ -5120,9 +5127,9 @@ void CtiLMProgramDirect::scheduleStopNotification(const CtiTime& stop_time)
     // -1 indicates we shouldn't notify on inactive
     if(getNotifyInactiveOffset() != -1)
     {
-	CtiTime notifyStopTime(stop_time);
-	notifyStopTime.addSeconds(getNotifyInactiveOffset());
-	setNotifyInactiveTime(CtiTime(notifyStopTime));
+        CtiTime notifyStopTime(stop_time);
+        notifyStopTime.addSeconds(getNotifyInactiveOffset());
+        setNotifyInactiveTime(CtiTime(notifyStopTime));
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {

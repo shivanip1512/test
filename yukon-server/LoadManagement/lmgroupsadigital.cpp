@@ -71,7 +71,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createTimeRefreshRequestMsg(LONG refreshRate
   method of smart cycle with the appropriate cycle percent, period length
   in minutes, and the default count of periods.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupSADigital::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSADigital::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for saDigital LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -84,7 +84,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createSmartCycleRequestMsg(LONG percent, LON
   Creates true cycle request msg which is exactly like a smart cycle but
   with the "truecycle" string at the end of the control string.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupSADigital::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSADigital::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for saDigital LM Groups " << __FILE__ << " at:" << __LINE__ << endl;

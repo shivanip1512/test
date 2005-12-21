@@ -58,7 +58,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     LONG getRampInPercent() const;
     LONG getRampOutInterval() const;
     LONG getRampOutPercent() const;
-
+    const string& getFrontRampOption() const;
+    
     CtiLMProgramDirectGear& setPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const string& name);
     CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
@@ -87,8 +88,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
-
-    CtiLMProgramDirectGear& operator=(const CtiLMProgramDirectGear& right);
 
     int operator==(const CtiLMProgramDirectGear& right) const;
     int operator!=(const CtiLMProgramDirectGear& right) const;
@@ -131,6 +130,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string LimitedCountDownMethodOptionType;
     static const string DynamicShedTimeMethodOptionType;
 
+    // Possible randomoption types
+    static const string NoneRandomOptionType;
+    static const string NoRampRandomOptionType;
+    static const string RandomizeRandomOptionType;
+    
 protected:
     void restore(RWDBReader& rdr);
 
@@ -158,6 +162,10 @@ private:
     LONG _rampinpercent;
     LONG _rampoutinterval;
     LONG _rampoutpercent;
+    string _front_ramp_option;
+    LONG _front_ramp_time;
+    string _back_ramp_option;
+    LONG _back_ramp_time;
 };
 #endif
 

@@ -727,11 +727,11 @@ void CtiLMCommandExecutor::CycleGroup()
 
                         if( command == CtiLMCommand::TRUE_CYCLE_GROUP )
                         {
-                            currentLMGroup->createTrueCycleRequestMsg(percent,period,cycleCount,CtiLMProgramDirect::defaultLMStartPriority);
+                            currentLMGroup->createTrueCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
                         }
                         else
                         {
-                            currentLMGroup->createSmartCycleRequestMsg(percent,period,cycleCount,CtiLMProgramDirect::defaultLMStartPriority);
+                            currentLMGroup->createSmartCycleRequestMsg(percent,period,cycleCount,false,CtiLMProgramDirect::defaultLMStartPriority);
                         }
 
                         if( routeId > 0 )

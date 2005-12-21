@@ -74,7 +74,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRat
     method of smart cycle with the appropriate cycle percent, period length
     in minutes, and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     char tempchar[64];
     string controlString("control xcom cycle ");
@@ -86,6 +86,11 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     controlString += " period ";
     controlString += buildPeriodString(period);
 
+    if(no_ramp)
+    {
+	controlString += " noramp";
+    }
+    
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -100,7 +105,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     Creates true cycle request msg which is exactly like a smart cycle but
     with the "truecycle" string at the end of the control string.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     char tempchar[64];
     string controlString("control xcom cycle ");
@@ -113,6 +118,11 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
     controlString += buildPeriodString(period);
     controlString += " truecycle";
 
+    if(no_ramp)
+    {
+	controlString += " noramp";
+    }
+    
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

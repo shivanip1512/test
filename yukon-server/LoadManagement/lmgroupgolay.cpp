@@ -71,7 +71,7 @@ CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LO
   method of smart cycle with the appropriate cycle percent, period length
   in minutes, and the default count of periods.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
@@ -84,7 +84,7 @@ CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG pe
   Creates true cycle request msg which is exactly like a smart cycle but
   with the "truecycle" string at the end of the control string.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;

@@ -72,7 +72,7 @@ CtiRequestMsg* CtiLMGroupSA205::createTimeRefreshRequestMsg(LONG refreshRate, LO
   method of smart cycle with the appropriate cycle percent, period length
   in minutes, and the default count of periods.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupSA205::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSA205::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     char tempchar[64];
     string controlString("control sa205 cycle ");
@@ -98,7 +98,7 @@ CtiRequestMsg* CtiLMGroupSA205::createSmartCycleRequestMsg(LONG percent, LONG pe
   Creates true cycle request msg which is exactly like a smart cycle but
   with the "truecycle" string at the end of the control string.
   --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupSA205::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupSA205::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);
     dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for sa205 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;

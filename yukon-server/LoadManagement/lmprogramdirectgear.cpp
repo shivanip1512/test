@@ -31,6 +31,10 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear::CtiLMProgramDirectGear()
+    : _front_ramp_option(NoneRandomOptionType),
+      _front_ramp_time(0),
+      _back_ramp_option(NoneRandomOptionType),
+      _back_ramp_time(0)
 {   
 }
 
@@ -294,6 +298,15 @@ LONG CtiLMProgramDirectGear::getRampOutInterval() const
 LONG CtiLMProgramDirectGear::getRampOutPercent() const
 {
     return _rampoutpercent;
+}
+
+/*----------------------------------------------------------------------------
+  getFrontRampOption
+  
+ ----------------------------------------------------------------------------*/
+const string& CtiLMProgramDirectGear::getFrontRampOption() const
+{
+    return _front_ramp_option;
 }
 
 /*---------------------------------------------------------------------------
@@ -574,9 +587,6 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampOutPercent(LONG percent)
 --------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
@@ -610,9 +620,6 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const  
 {
-
-
-        
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -640,42 +647,6 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
    
 
     return;
-}
-
-/*---------------------------------------------------------------------------
-    operator=
----------------------------------------------------------------------------*/
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDirectGear& right)
-{
-
-
-    if( this != &right )
-    {
-        _paoid = right._paoid;
-        _gearname = right._gearname;
-        _gearnumber = right._gearnumber;
-        _controlmethod = right._controlmethod;
-        _methodrate = right._methodrate;
-        _methodperiod = right._methodperiod;
-        _methodratecount = right._methodratecount;
-        _cyclerefreshrate = right._cyclerefreshrate;
-        _methodstoptype = right._methodstoptype;
-        _changecondition = right._changecondition;
-        _changeduration = right._changeduration;
-        _changepriority = right._changepriority;
-        _changetriggernumber = right._changetriggernumber;
-        _changetriggeroffset = right._changetriggeroffset;
-        _percentreduction = right._percentreduction;
-        _groupselectionmethod = right._groupselectionmethod;
-        _methodoptiontype = right._methodoptiontype;
-        _methodoptionmax = right._methodoptionmax;
-        _rampininterval = right._rampininterval;
-        _rampinpercent = right._rampinpercent;
-        _rampoutinterval = right._rampoutinterval;
-        _rampoutpercent = right._rampoutpercent;
-    }
-
-    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -735,6 +706,10 @@ void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
     rdr["rampinpercent"] >> _rampinpercent;
     rdr["rampoutinterval"] >> _rampoutinterval;
     rdr["rampoutpercent"] >>_rampoutpercent;
+    rdr["frontrampoption"] >> _front_ramp_option;
+    rdr["frontramptime"] >> _front_ramp_time;
+    rdr["backrampoption"] >> _back_ramp_option;
+    rdr["backramptime"] >> _back_ramp_time;
 }
 
 // Static Members
@@ -776,3 +751,7 @@ const string CtiLMProgramDirectGear::CountDownMethodOptionType = "CountDown";
 const string CtiLMProgramDirectGear::LimitedCountDownMethodOptionType = "LimitedCountDown";
 const string CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType = "DynamicShedTime";
 
+// Possible random option types
+const string CtiLMProgramDirectGear::NoneRandomOptionType = "(none)";
+const string CtiLMProgramDirectGear::NoRampRandomOptionType = "NoRamp";
+const string CtiLMProgramDirectGear::RandomizeRandomOptionType = "Random";
