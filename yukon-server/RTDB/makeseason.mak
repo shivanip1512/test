@@ -71,7 +71,7 @@ copy:
 
 
 deps:
-                scandeps -Output makedevdb.mak *.cpp
+                scandeps -Output makeseason.mak *.cpp
 
 
 clean:
