@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.121 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.122 $
+* DATE         :  $Date: 2005/12/22 00:08:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5496,7 +5496,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
             RWDBUpdater updater = deviceTable.updater();
 
             updater.where( deviceTable["deviceid"] == did );
-            updater << deviceTable["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_DEVICE & setmask?'Y':'N') );
+            updater << deviceTable["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_DEVICE & setmask?"Y":"N") );
 
             status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
@@ -5528,7 +5528,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
             RWDBUpdater updater = tbl.updater();
 
             updater.where( tbl["pointid"] == pid );
-            updater << tbl["serviceflag"].assign( (TAG_DISABLE_POINT_BY_POINT & setmask?'Y':'N') );
+            updater << tbl["serviceflag"].assign( (TAG_DISABLE_POINT_BY_POINT & setmask?"Y":"N") );
 
             status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
@@ -5542,7 +5542,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
             RWDBUpdater updater = tbl.updater();
 
             updater.where( tbl["pointid"] == pid );
-            updater << tbl["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_POINT & setmask?'Y':'N') );
+            updater << tbl["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_POINT & setmask?"Y":"N") );
 
             status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }

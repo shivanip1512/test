@@ -2669,7 +2669,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
             << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCFeederTable["waivecontrolflag"].assign( (_waivecontrolflag?'Y':'N')) 
+            << dynamicCCFeederTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N")) 
             << dynamicCCFeederTable["additionalflags"].assign( _additionalFlags[0] )
             << dynamicCCFeederTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue );
 
