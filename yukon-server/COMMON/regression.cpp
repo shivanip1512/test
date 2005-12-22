@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/11/21 16:04:54 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/12/22 14:33:47 $
 *
 * HISTORY      :
 * $Log: regression.cpp,v $
+* Revision 1.3  2005/12/22 14:33:47  cplender
+* Made a change to prevent pop before data was in the deque
+*
 * Revision 1.2  2005/11/21 16:04:54  cplender
 * Added object
 *
@@ -58,21 +61,24 @@ void CtiRegression::append( const val_type &vt )
 void CtiRegression::resize( size_t n )
 {
     _regDepth = n;
-    if(_regData.size() < _regDepth)
+    if(!_regData.empty())
     {
-        // It is Smaller.  COPY the oldest element to pad out the regression.
-        val_type front_element = _regData.front();
-        while(_regData.size() < _regDepth)
+        if(_regData.size() < _regDepth)
         {
-            _regData.push_front(front_element); // COPY the "oldest element" to make the collection _regDepth.
+            // It is Smaller.  COPY the oldest element to pad out the regression.
+            val_type front_element = _regData.front();
+            while(_regData.size() < _regDepth)
+            {
+                _regData.push_front(front_element); // COPY the "oldest element" to make the collection _regDepth.
+            }
         }
-    }
-    else
-    {
-        // It is bigger.  Pop the oldest elements.
-        while(_regData.size() > _regDepth)
+        else
         {
-            _regData.pop_front();               // Remove the "oldest element" to keep the collection at _regDepth.
+            // It is bigger.  Pop the oldest elements.
+            while(_regData.size() > _regDepth)
+            {
+                _regData.pop_front();               // Remove the "oldest element" to keep the collection at _regDepth.
+            }
         }
     }
 }
