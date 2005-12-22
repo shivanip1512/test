@@ -27,8 +27,8 @@ deps:
             @$(MAKE) -nologo -f makedevdb.mak $@
             @$(MAKE) -nologo -f makeprtdb.mak $@
             @$(MAKE) -nologo -f maketcpsup.mak $@
-            @$(MAKE) -nologo -f makeholiday.mak
-            @$(MAKE) -nologo -f makeseason.mak
+            @$(MAKE) -nologo -f makeholiday.mak $@
+            @$(MAKE) -nologo -f makeseason.mak $@
             @$(MAKE) -nologo -f makeexe.mak $@
 
 
