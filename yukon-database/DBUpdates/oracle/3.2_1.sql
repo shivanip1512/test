@@ -5,6 +5,8 @@ update command set category = 'All MCT-4xx Series' where commandid = -81;
 update command set category = 'All MCT-4xx Series' where commandid = -111;
 update command set command = 'putvalue powerfail reset' where commandid = -109;
 
+INSERT INTO DEVICETYPECOMMAND VALUES (-423, -111, 'MCT-470', 16, 'Y', -1);
+
 create table SettlementConfig (
    ConfigID             NUMBER                not null,
    FieldName            varchar2(64)          not null,
