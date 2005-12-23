@@ -30,7 +30,7 @@ com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointidMu
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPointIDOffsetMap() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPorts() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllRoutes() ;
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllStateGroups();;
+//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllStateGroups();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllTags() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllUnitMeasures();
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllUnusedCCDevices();
@@ -43,8 +43,8 @@ com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserRol
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserGroupMap() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonGroupUserMap();
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserRoleIDLookupMap() ;
-com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserRolePropertyIDLookupMap() ;
+//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserRoleIDLookupMap() ;
+//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getYukonUserRolePropertyIDLookupMap() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllEnergyCompanies() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllUserEnergyCompanies() ;
 com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllCustomers() ;
