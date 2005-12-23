@@ -379,11 +379,18 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		setDbConnection(null);
 	}
 	
+
+	public String toString() 
+	{
+		return getCiCustomerBase().getCompanyName();
+	}
+
+
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.String
 	 */
-	public String toString() 
+	public String getCompanyName() 
 	{
 		return getCiCustomerBase().getCompanyName();
 	}
