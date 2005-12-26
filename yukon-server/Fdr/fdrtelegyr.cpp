@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+// get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <stdio.h>
 
@@ -217,7 +217,7 @@ bool CtiFDRTelegyr::connect( int centerNumber, int &status )
    if( status != API_NORMAL )
    {
       setConnected( false );
-   }                                           
+   }
    else
    {
       setConnected( true );
@@ -344,7 +344,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
       while( !_quit )
       {
          //init the Telegyr API
-         while( _inited != API_NORMAL )   
+         while( _inited != API_NORMAL )
          {
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
@@ -410,7 +410,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                      deleteGroups();
                      int code = api_disconnect( _controlCenter.getChannelID(), API_VALID );
 
-                     if(  code == API_NORMAL )
+                     if( code == API_NORMAL )
                      {
                         _numberOfConnections--;
                         setConnected( false );
@@ -856,7 +856,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
                dout << CtiTime::now() << " ---- Shutdown queued data got code " << returnCode << "; reason " << reason << endl;
             }
 
-            if(( reason == API_DISC_NOTIFY ) || ( reason == API_DELALL_RES ))
+            if( ( reason == API_DISC_NOTIFY ) || ( reason == API_DELALL_RES ) )
             {
                break;
             }
@@ -896,7 +896,6 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
       }
 
       return;
-
    }
    catch( RWCancellation &cancellationMsg )
    {
@@ -919,22 +918,24 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
 void CtiFDRTelegyr::buildAndRegisterGroups( void )
 {
-   int                  index;
-   int                  cnt;
-   int                  returnCode;
-   int                  channel_id;
-   int                  group_type;
-   int                  group_number;
-   int                  persistence;
-   int                  object_count;
-   int                  cycle_time;
-   int                  totalGroups = _controlCenter.getTelegyrGroupList().size();
-   char                 **name_list;
-   bool                 cyclic = false;
-   bool                 *created = new bool[totalGroups];
+   int   index;
+   int   cnt;
+   int   returnCode;
+   int   channel_id;
+   int   group_type;
+   int   group_number;
+   int   persistence;
+   int   object_count;
+   int   cycle_time;
+   int   totalGroups = _controlCenter.getTelegyrGroupList().size();
+   char  **name_list;
+   bool  cyclic = false;
+   bool  *created = new bool[totalGroups];
+   bool  interval;
 
    for( index = 0; index < totalGroups; index++ )
    {
+      interval = false;
       cyclic = false;
       cycle_time = 0;
       channel_id = _controlCenter.getChannelID();
@@ -942,89 +943,45 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
       string type = _controlCenter.getTelegyrGroupList()[index].getGroupType();
       std::transform(type.begin(), type.end(), type.begin(), tolower);
 
-      //if there's an interval, we have cyclic data
       if( _controlCenter.getTelegyrGroupList()[index].getInterval() != 0 )
       {
-         if(( type == STATUS_TYPE ) || ( type == DIGITAL_TYPE ))
-         {
-            group_type = API_GET_CYC_IND;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found a status group w/interval" << endl;
-            }
-         }
-         else if( type == ANALOG_TYPE )
-         {
-            group_type = API_GET_CYC_MEA;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found an analog group w/interval" << endl;
-            }
-         }
-         else if( type == COUNTER_TYPE )
-         {
-            group_type = API_GET_CYC_CNT;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found a counter group w/interval" << endl;
-            }
-         }
-         else
-         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found w/interval " << _controlCenter.getTelegyrGroupList()[index].getGroupType() << endl;
-            }
-         }
-
-         //this will always be in seconds
          cycle_time = _controlCenter.getTelegyrGroupList()[index].getInterval();
          cyclic = true;
+         interval = true;
       }
-      else   //if there's no interval, we get data when a point changes on the server
+
+      if( type == STATUS_TYPE || type == DIGITAL_TYPE )
       {
-         if( ( type == STATUS_TYPE ) || ( type == DIGITAL_TYPE ) )
-         {
+         if( interval )
+            group_type = API_GET_CYC_IND;
+         else
             group_type = API_GET_SPO_IND;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found a status group w/o interval" << endl;
-            }
-         }
-         else if( type == ANALOG_TYPE )
-         {
+      }
+      else if( type == ANALOG_TYPE )
+      {
+         if( interval )
+            group_type = API_GET_CYC_MEA;
+         else
             group_type = API_GET_SPO_MEA;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found an analog group w/o interval" << endl;
-            }
-         }
-         else if( type == COUNTER_TYPE )
-         {
+      }
+      else if( type == COUNTER_TYPE )
+      {
+         if( interval )
+            group_type = API_GET_CYC_CNT;
+         else
             group_type = API_GET_SPO_CNT;
-
-            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found a counter group w/o interval" << endl;
-            }
+      }
+      else
+      {
+         if( interval )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << CtiTime::now() << " Found w/interval " << _controlCenter.getTelegyrGroupList()[index].getGroupType() << endl;
          }
          else
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime::now() << " Found w/o interval " << _controlCenter.getTelegyrGroupList()[index].getGroupType() << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << CtiTime::now() << " Found w/o interval " << _controlCenter.getTelegyrGroupList()[index].getGroupType() << endl;
          }
       }
 
@@ -1068,25 +1025,23 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
             if( returnCode != API_NORMAL )
             {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << CtiTime::now() << " Creation of ";
-               }
+               string create = " Creation of ";
+               string error = " failed on submission.  Error code: ";
 
-               if(( group_type == API_GET_CYC_IND ) || ( group_type == API_GET_SPO_IND ))
+               if( ( group_type == API_GET_CYC_IND ) || ( group_type == API_GET_SPO_IND ) )
                {
                   CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << "status group " << group_number << " failed on submission.  Error code: " << returnCode << endl;
+                  dout << CtiTime::now() << create << "status group " << group_number << error << returnCode << endl;
                }
-               else if(( group_type == API_GET_CYC_MEA ) || ( group_type == API_GET_SPO_MEA ))
+               else if( ( group_type == API_GET_CYC_MEA ) || ( group_type == API_GET_SPO_MEA ) )
                {
                   CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << "analog group " << group_number << " failed on submission.  Error code: " << returnCode << endl;
+                  dout << CtiTime::now() << create << "analog group " << group_number << error << returnCode << endl;
                }
                else
                {
                   CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << "counter group " << group_number << " failed on submission.  Error code: " << returnCode << endl;
+                  dout << CtiTime::now() << create << "counter group " << group_number << error << returnCode << endl;
                }
             }
             else
@@ -1110,49 +1065,43 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
       group_number = _controlCenter.getTelegyrGroupList()[i].getGroupID();
       channel_id = _controlCenter.getChannelID();
       object_count = _controlCenter.getTelegyrGroupList()[i].getPointList().size();
+      bool interval = false;
 
       //if there's an interval, we have cyclic data
       if( _controlCenter.getTelegyrGroupList()[i].getInterval() != 0 )
       {
-         if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == STATUS_TYPE )
-         {
-            group_type = API_GET_CYC_IND;
-         }
-         else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == DIGITAL_TYPE )
-         {
-            group_type = API_GET_CYC_IND;
-         }
-         else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == ANALOG_TYPE )
-         {
-            group_type = API_GET_CYC_MEA;
-         }
-         else//COUNTER_TYPE
-         {
-            group_type = API_GET_CYC_CNT;
-         }
-
-         //this will always be in seconds
+         interval = true;
          cycle_time = _controlCenter.getTelegyrGroupList()[i].getInterval();
          cyclic = true;
       }
-      else   //if there's no interval, we get data when a point changes on the server
+
+      if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == STATUS_TYPE )
       {
-         if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == STATUS_TYPE )
-         {
+         if( interval )
+            group_type = API_GET_CYC_IND;
+         else
             group_type = API_GET_SPO_IND;
-         }
-         else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == DIGITAL_TYPE )
-         {
+      }
+      else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == DIGITAL_TYPE )
+      {
+         if( interval )
+            group_type = API_GET_CYC_IND;
+         else
             group_type = API_GET_SPO_IND;
-         }
-         else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == ANALOG_TYPE )
-         {
+      }
+      else if( _controlCenter.getTelegyrGroupList()[i].getGroupType() == ANALOG_TYPE )
+      {
+         if( interval )
+            group_type = API_GET_CYC_MEA;
+         else
             group_type = API_GET_SPO_MEA;
-         }
-         else//COUNTER_TYPE
-         {
+      }
+      else//COUNTER_TYPE
+      {
+         if( interval )
+            group_type = API_GET_CYC_CNT;
+         else
             group_type = API_GET_SPO_CNT;
-         }
       }
 
       if( ( object_count > 0 ) && created[i] )    //don't enable empty/uncreated groups
@@ -1204,20 +1153,20 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
 bool CtiFDRTelegyr::loadGroupLists( void )
 {
-   CtiFDRPoint             *translationPoint = NULL;
-   string               myTranslateName;
-   string               pointType;           //analog or status
-   string               pointStr;            //pointid
-   string               groupStr;            //now holds the rate to receive
-   RWDBStatus              listStatus;
-   bool                    successful( FALSE );
-   bool                    foundPoint        = false;
-   bool                    foundGroup        = false;
-   int                     groupNum          = 1;
-   int                     analogNum         = 1;
-   int                     statusNum         = 101;
+   CtiFDRPoint    *translationPoint = NULL;
+   string         myTranslateName;
+   string         pointType;           //analog or status
+   string         pointStr;            //pointid
+   string         groupStr;            //now holds the rate to receive
+   RWDBStatus     listStatus;
+   bool           successful( FALSE );
+   bool           foundPoint        = false;
+   bool           foundGroup        = false;
+   int            groupNum          = 1;
+   int            analogNum         = 1;
+   int            statusNum         = 101;
 
-   vector< CtiTelegyrGroup >           groupList;
+   vector< CtiTelegyrGroup >  groupList;
 
    try
    {
@@ -1240,7 +1189,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
          //empty the 2 entry thing is completly arbitrary
          //===================================================================================
 
-         if(( pointList->entries() == 0 ) || ( pointList->entries() > 0 ))
+         if( ( pointList->entries() == 0 ) || ( pointList->entries() > 0 ) )
          {
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator myIterator( pointList->getMap() );
@@ -1251,75 +1200,59 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                foundPoint = true;
                translationPoint = myIterator.value();
 
-
                //iterate through all our destinations per point (should have 1 for telegyr)
                for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )
                {
+                  boost::char_separator<char> sep1(";");
+                  Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
+                  Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+                  if( !(myTranslateName = *tok_iter++).empty() )
+                  {
+                     boost::char_separator<char> sep2(":");
+                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
+                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+                     tok_iter1++;
+                     Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
 
 
-                   boost::char_separator<char> sep1(";");
-                   Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                   Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                     pointStr = *nextTempToken_.begin();
+                     pointStr.replace(0,pointStr.length(), pointStr.substr(1,(pointStr.length()-1)));
+                  }
 
-                   if (!(myTranslateName = *tok_iter++).empty())
-                   {
-                       boost::char_separator<char> sep2(":");
-                       Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                       Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                       tok_iter1++;
-                       Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-
-
-                       pointStr = *nextTempToken_.begin();
-                       pointStr.replace(0,pointStr.length(), pointStr.substr(1,(pointStr.length()-1)));
-                   }
                   //note: we're making a brand new token (string) out of the data before the ';'
                   if( !(myTranslateName = *tok_iter++ ).empty() )
                   {
                      // this in the form of GROUP:xxxx (really, this is interval now)
-                      boost::char_separator<char> sep2(":");
-                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                      Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                     boost::char_separator<char> sep2(":");
+                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
+                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                      tok_iter1++;
-                      pointStr = *tok_iter1;
+                     tok_iter1++;
+                     pointStr = *tok_iter1;
                   }
-                  /*
-                  if( !(myTranslateName = nextTranslate( ";" ) ).isNull() )
-                  {
-                     // this in the form of POINTID:xxxx 
-                     RWCTokenizer nextTempToken( myTranslateName );
 
-                     // do not care about the first part so toss it
-                     nextTempToken( ":" );
-
-                     //now we find the end of the string
-                     pointStr = nextTempToken( ";" );
-                     pointStr( 0, pointStr.length() ) = pointStr( 1, pointStr.length()-1 );  //shifts over 1
-                  }
-                  */
-//                  if( !(myTranslateName = nextTranslate( ";" ) ).isNull() )
                   if( !(myTranslateName = *tok_iter++ ).empty() )
                   {
                      // this in the form of GROUP:xxxx (really, this is interval now)
-                      boost::char_separator<char> sep2(":");
-                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                      Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                     boost::char_separator<char> sep2(":");
+                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
+                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                      tok_iter1++;
-                      groupStr = *tok_iter1;
+                     tok_iter1++;
+                     groupStr = *tok_iter1;
                   }
 
                   if( !(myTranslateName = *tok_iter++ ).empty() )
                   {
                      // this in the form of POINTTYPE:xxxx
-                      boost::char_separator<char> sep2(":");
-                      Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
-                      Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                     boost::char_separator<char> sep2(":");
+                     Boost_char_tokenizer nextTempToken(myTranslateName, sep2);
+                     Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
 
-                      tok_iter1++;
-                      pointType = *tok_iter1;
+                     tok_iter1++;
+                     pointType = *tok_iter1;
 
                      if( !pointType.empty() )
                      {
@@ -1328,7 +1261,6 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   }
 
                   translationPoint->getDestinationList()[x].setTranslation( pointStr );
-
                }
 
                for( int i = 0; i < groupList.size(); i++ )
@@ -1338,8 +1270,8 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   int size = groupList[i].getPointList().size();
                   std::transform(type.begin(), type.end(), type.begin(), tolower);
                   std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
-                  
-                  if(( type == pointType ) && ( interval == atoi( groupStr.c_str() ) ) && ( size < 127 ))
+
+                  if( ( type == pointType ) && ( interval == atoi( groupStr.c_str() ) ) && ( size < 127 ) )
                   {
                      groupList[i].getPointList().push_back( *translationPoint );
                      foundGroup = true;
@@ -1401,6 +1333,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             else
             {
                _skipProcessing = true;
+
                //delete the old and swap the new list in
                _controlCenter.deleteTelegyrGroupList();
                _controlCenter.getTelegyrGroupList() = groupList;
@@ -1490,33 +1423,18 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
       }
       else
       {
-         //there are a bunch more that telegyr supports, we just don't care
-         if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_OUT_SCAN_BIT ) )
-         {
-            quality = NonUpdatedQuality;
-         }
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TELEM_F_BIT ) )
+         if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TELEM_F_BIT ) )
          {
             quality = NonUpdatedQuality;
             nonUpdated = true;
          }
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_Q_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TEST_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_BACKUP_BIT ) )
-            quality = QuestionableQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_UN_INIT_BIT ) )
-            quality = UnintializedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MISSING_BIT ) )
-            quality = PartialIntervalQuality;
          else
-            quality = NormalQuality;
+         {
+            quality = getQuality( aPoint.sys_dependent_info );
+         }
       }
 
-      if( nonUpdated == true )
+      if( nonUpdated )
       {
          pCmdMsg = new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
 
@@ -1591,25 +1509,8 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int grou
          quality = NormalQuality;
       }
       else
-      {  //there are a bunch more that telegyr supports, we just don't care
-         if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_OUT_SCAN_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TELEM_F_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_Q_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TEST_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_BACKUP_BIT ) )
-            quality = QuestionableQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_UN_INIT_BIT ) )
-            quality = UnintializedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MISSING_BIT ) )
-            quality = PartialIntervalQuality;
-         else
-            quality = NormalQuality;
+      {  
+         quality = getQuality( aPoint.sys_dependent_info );
       }
 
       pData = new CtiPointDataMsg( pointid, value, quality, StatusPointType );
@@ -1630,12 +1531,40 @@ bool CtiFDRTelegyr::processDigital( APICLI_GET_IND aPoint, int groupid, int grou
 }
 
 //=================================================================================================================================
+//there are a bunch more that telegyr supports, we just don't care
+//=================================================================================================================================
+
+USHORT CtiFDRTelegyr::getQuality( SYS_DEP_INFO  info )
+{
+   USHORT quality = NormalQuality;
+
+   if( api_check_quality_bit_set( info, API_QUAL_OUT_SCAN_BIT ) )
+      quality = NonUpdatedQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_TELEM_F_BIT ) )
+      quality = NonUpdatedQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_MAN_BIT ) )
+      quality = ManualQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_Q_MAN_BIT ) )
+      quality = ManualQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_TEST_BIT ) )
+      quality = NonUpdatedQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_BACKUP_BIT ) )
+      quality = QuestionableQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_UN_INIT_BIT ) )
+      quality = UnintializedQuality;
+   else if( api_check_quality_bit_set( info, API_QUAL_MISSING_BIT ) )
+      quality = PartialIntervalQuality;
+
+   return quality;
+}
+
+//=================================================================================================================================
 //we want to decipher the point and put it on the queue to Dispatch
 //=================================================================================================================================
 
 bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int group_type, int index )
 {
-   CtiPointDataMsg      *pData      = NULL;
+   CtiPointDataMsg      *pData = NULL;
    long                 pointid;
    bool                 returnCode;
    int                  x;
@@ -1664,25 +1593,8 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
          quality = NormalQuality;
       }
       else
-      {  //there are a bunch more that telegyr supports, we just don't care
-         if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_OUT_SCAN_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TELEM_F_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_Q_MAN_BIT ) )
-            quality = ManualQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_TEST_BIT ) )
-            quality = NonUpdatedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_BACKUP_BIT ) )
-            quality = QuestionableQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_UN_INIT_BIT ) )
-            quality = UnintializedQuality;
-         else if( api_check_quality_bit_set( aPoint.sys_dependent_info, API_QUAL_MISSING_BIT ) )
-            quality = PartialIntervalQuality;
-         else
-            quality = NormalQuality;
+      {  
+         quality = getQuality( aPoint.sys_dependent_info );
       }
 
       pData = new CtiPointDataMsg( pointid, value, quality, PulseAccumulatorPointType );
@@ -1707,9 +1619,9 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
 
 bool CtiFDRTelegyr::processBadPoint( int groupid, int index )
 {
-   long                 pointid;
-   int                  x;
-   string            pointName;
+   long     pointid;
+   int      x;
+   string   pointName;
 
    for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
    {

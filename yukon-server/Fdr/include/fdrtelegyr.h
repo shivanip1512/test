@@ -118,21 +118,25 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       long                                _linkStatusID;
    
       bool processBadPoint( int groupid, int index );
-      void deleteGroups( void );
-      void threadFunctionGetDataFromTelegyr( void );
       bool loadTranslationLists( void );
       bool loadGroupLists( void );
-      int readConfig( void );
       bool processAnalog( APICLI_GET_MEA aPoint, int groupid, int group_type, int index );
       bool processDigital( APICLI_GET_IND aPoint, int groupid, int group_type, int index );
       bool processCounter( APICLI_GET_CNT aPoint, int groupid, int group_type, int index );
       bool timeToReload( void );
       bool isReloadTime( void );
-      string decipherReason( int transmissionReason );
-      void buildAndRegisterGroups( void );
       bool connect( int controlCenterNumber, int &status );
       bool contact( int &status );
-   
+
+      void deleteGroups( void );
+      void threadFunctionGetDataFromTelegyr( void );
+      void buildAndRegisterGroups( void );
+
+      int readConfig( void );
+
+      string decipherReason( int transmissionReason );
+
+      USHORT getQuality( SYS_DEP_INFO );
 };
 
 #endif // #ifndef __FDRTELEGYR_H__
