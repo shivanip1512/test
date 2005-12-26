@@ -47,6 +47,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       bool        _regFlag;
       bool        _quit;
       bool        _reloadPending;
+      bool        _skipProcessing;
 
       int         _inited;
       int         _dbReloadInterval;
