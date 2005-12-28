@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/12/28 16:05:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ public:
     {
         int channel;
         int identifier;
-        RWTime creationTime;
+        CtiTime creationTime;
 
         bool channelWithID::operator<(const channelWithID &rhs) const
         {
@@ -129,7 +129,7 @@ private:
 
     typedef map<channelWithID, int > MessageCount_t;
     MessageCount_t _messageCount;
-    RWTime _lastExpirationCheckTime;
+    CtiTime _lastExpirationCheckTime;
 
 public:
 

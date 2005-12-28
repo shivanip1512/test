@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/12/28 16:05:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,8 +35,8 @@ public:
 private:
 
     static DLCCommandSet _commandStore;
-    RWTime _lastReadDataPurgeTime;
-    
+    CtiTime _lastReadDataPurgeTime;
+
 protected:
 
     enum WireConfig
@@ -81,12 +81,12 @@ protected:
         USHORT oldSequence;
         USHORT ioType;
         int location, length;
-        RWTime insertTime;
+        CtiTime insertTime;
 
         bool MessageReadData::operator<(const MessageReadData &rhs) const
         {
             bool retval = false;
-    
+
             if( newSequence < rhs.newSequence )
             {
                 retval = true;
@@ -104,7 +104,7 @@ protected:
         bool DynamicPaoAddressing::operator<(const DynamicPaoAddressing &rhs) const
         {
             bool retval = false;
-    
+
             if( address < rhs.address )
             {
                 retval = true;
@@ -112,7 +112,7 @@ protected:
             return retval;
         }
     };
-    
+
     int _lastSequenceNumber;
     MessageReadDataSet_t _expectedReadData;
     bool recordMessageRead(OUTMESS *OutMessage);
