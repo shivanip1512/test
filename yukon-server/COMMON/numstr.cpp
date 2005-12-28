@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/28 16:20:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -374,11 +374,13 @@ string operator +(CtiNumStr & numStr, const char * s){
     return numStr.toString() + string(s);
 }
 
-
+//  remove after RWCString is gone for good
+/*
 string operator +(const RWCString& rwcs,  CtiNumStr & numStr){
     return rwcs + numStr.toString().c_str();
-    
+
 }
 string operator +(CtiNumStr & numStr, const RWCString& rwcs){
     return string(numStr.toString().c_str() + rwcs);
-} 
+}
+*/
