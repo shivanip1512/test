@@ -134,20 +134,21 @@ public class LiteCICustomer extends LiteCustomer
 			
 			stat.execute();
 			
-			if( stat.getRowCount() <= 0 )
-				throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getLiteID() );
+			if( stat.getRowCount() > 0 )
+			{	
 			
-			Object[] objs = stat.getRow(0);
-			
-			setMainAddressID( ((java.math.BigDecimal) objs[0]).intValue() ); 			
-			setCompanyName( objs[1].toString() );	
-			setDemandLevel( Double.valueOf(objs[2].toString()).doubleValue() );
-			setCurtailAmount( Double.valueOf(objs[3].toString()).doubleValue() );
+    			Object[] objs = stat.getRow(0);
+    			
+    			setMainAddressID( ((java.math.BigDecimal) objs[0]).intValue() ); 			
+    			setCompanyName( objs[1].toString() );	
+    			setDemandLevel( Double.valueOf(objs[2].toString()).doubleValue() );
+    			setCurtailAmount( Double.valueOf(objs[3].toString()).doubleValue() );
+            }
 		}
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
-
+   
 }

@@ -6,10 +6,14 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
+import java.util.Map;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonRole;
 
@@ -48,6 +52,7 @@ public class YukonCustomerLookup
 			{
 			    theCustomer = new LiteCustomer(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());
 			    theCustomer.retrieve(CtiUtilities.YUKONDBALIAS);
+                theCustomer = loadCICustomer(theCustomer);
             }
 		}
 		catch( Exception e )
@@ -69,13 +74,31 @@ public class YukonCustomerLookup
         {
             theCustomer = new LiteCustomer(customerID);
             theCustomer.retrieve(CtiUtilities.YUKONDBALIAS);
+            theCustomer = loadCICustomer(theCustomer);
         }
         catch( Exception e )
         {
             com.cannontech.clientutils.CTILogger.error( "Error retrieving customer with ID: "+ customerID + "  " + e.getMessage(), e );
         }
-          
+        
         return theCustomer;
+    }
+    
+    public static LiteCustomer loadCICustomer( LiteCustomer customer )
+    {
+       try
+       {
+            LiteCICustomer newCICust = new LiteCICustomer(customer.getCustomerID());
+            newCICust.retrieve(CtiUtilities.getDatabaseAlias());
+            if(newCICust.getCompanyName() != null)
+                return newCICust;
+            else
+                return customer;
+        }
+        catch( Exception e )
+        {
+            return customer;
+        }
     }
     
 }

@@ -2507,26 +2507,44 @@ public class LiteStarsEnergyCompany extends LiteBase {
    	public ArrayList searchAccountByCompanyName(String searchName, boolean searchMembers) {
 	   	ArrayList accountList = new ArrayList();
 		
-		int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCompanyName( searchName + "%", getLiteID() );
-	   	if (accountIDs != null) 
-        {
-		   for (int i = 0; i < accountIDs.length; i++) 
-           {
-			   LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
-			   if (searchMembers)
-				   accountList.add( new Pair(liteAcctInfo, this) );
-			   else
-				   accountList.add( liteAcctInfo );
+	   	if (isAccountsLoaded()) 
+	   	{
+		   	ArrayList custAcctInfoList = getAllCustAccountInformation();
+		   	for (int i = 0; i < custAcctInfoList.size(); i++) 
+		   	{
+			   LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			   LiteCustomer liteDude = liteAcctInfo.getCustomer();
+				if (liteDude instanceof LiteCICustomer) 
+				{
+					LiteCICustomer liteCICust = (LiteCICustomer) liteDude;
+			  	 	if (liteCICust.getCompanyName().toUpperCase().startsWith( searchName.toUpperCase() ))
+			   		{
+				   		if (searchMembers)
+					   		accountList.add( new Pair(liteAcctInfo, this) );
+				   		else
+					   		accountList.add( liteAcctInfo );
+			   		}
+		   		}
+	   		}
+	   	}
+	   	else 
+	   	{
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCompanyName( searchName + "%", getLiteID() );
+		   	if (accountIDs != null) {
+			   for (int i = 0; i < accountIDs.length; i++) {
+				   LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+				   if (searchMembers)
+					   accountList.add( new Pair(liteAcctInfo, this) );
+				   else
+					   accountList.add( liteAcctInfo );
+			   }
 		   }
 	   }
 		
-	   if (searchMembers) 
-       {
+	   if (searchMembers) {
 		   ArrayList children = getChildren();
-		   synchronized (children) 
-           {
-			   for (int i = 0; i < children.size(); i++) 
-               {
+		   synchronized (children) {
+			   for (int i = 0; i < children.size(); i++) {
 				   LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
 				   ArrayList memberList = company.searchAccountByCompanyName( searchName, searchMembers );
 				   accountList.addAll( memberList );
