@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/12/29 22:12:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -405,7 +405,7 @@ enum CtiDBChanged_t
     ChangeCICustomerDb,
     ChangeLMConstraintDb,
     Number19IsntCurrentlyUsed,
-    ChangeSeasonScheduleDb, 
+    ChangeSeasonScheduleDb,
     ChangeTdcDb,
     ChangeDeviceTypeCommandDb,
     ChangeCommandDb,
@@ -446,7 +446,8 @@ enum CtiOutMessageFlags_t
     MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD  = 0x00000001 << 3,
     MSGFLG_EXPECT_MORE                    = 0x00000001 << 4,
     MSGFLG_QUEUED_TO_DEVICE               = 0x00000001 << 5,
-    MSGFLG_MSG_REQUEUED                   = 0x00000001 << 6         // This message was reque'd and retries were decremented.
+    MSGFLG_MSG_REQUEUED                   = 0x00000001 << 6,         // This message was reque'd and retries were decremented.
+    MSGFLG_PORT_SHARING                   = 0x00000001 << 7
 };
 
 
