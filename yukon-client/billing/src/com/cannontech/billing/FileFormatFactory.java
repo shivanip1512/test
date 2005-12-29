@@ -47,8 +47,11 @@ public final static FileFormatBase createFileFormat(int type)
 		case FileFormatTypes.SEDC_5_4:
 			return new SEDC54Format();
 
-		case FileFormatTypes.NISC:
+		case FileFormatTypes.NISC_TURTLE:
 			return new NISCFormat();
+			
+		case FileFormatTypes.NISC_TURTLE_5_DIGIT:
+			return new NISC_5Digit_kWh_Format();
 
 		case FileFormatTypes.NISC_NCDC:
 			return new NISC_NCDCFormat();

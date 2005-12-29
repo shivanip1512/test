@@ -29,12 +29,13 @@ public final class FileFormatTypes {
 	public static final int MVRS = 10;
 	public static final int MV_90 = 11;
 	public static final int SEDC_5_4 = 12;
-	public static final int NISC = 13;
+	public static final int NISC_TURTLE = 13;
 	public static final int NISC_NCDC = 14;
 	public static final int NCDC_HANDHELD = 15;
 	public static final int NISC_TOU_KVARH = 16;
 	public static final int SEDC_yyyyMMdd = 17;
 	public static final int ATS = 18;
+	public static final int NISC_TURTLE_5_DIGIT = 19;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -47,12 +48,13 @@ public final class FileFormatTypes {
 	public static final String CTI_STANDARD2_STRING = "CTI2";
 	public static final String MVRS_STRING = "MVRS";
 	public static final String SEDC_5_4_STRING = "SEDC 5.4";
-	public static final String NISC_STRING = "NISC-Turtle";
+	public static final String NISC_TURTLE_STRING = "NISC-Turtle";
 	public static final String NISC_NCDC_STRING = "NISC-NCDC";
 	public static final String NCDC_HANDHELD_STRING = "NCDC-Handheld";
 	public static final String NISC_TOU_KVARH_STRING = "NISC TOU (kVarH)";
 	public static final String SEDC_yyyyMMdd_STRING = "SEDC (yyyyMMdd)";
 	public static final String ATS_STRING = "ATS";
+	public static final String NISC_TURTLE_5_DIGIT_STRING = "NISC-Turtle 5Digit kWh";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;
@@ -191,7 +193,7 @@ public static synchronized boolean retrieveFileFormats()
                 		NCDC,
                 		CTIStandard2, 
                 		SEDC_5_4,
-                		NISC,
+                		NISC_TURTLE,
                 		NISC_NCDC,
                 		NCDC_HANDHELD,
                 		ATS
@@ -218,7 +220,7 @@ public static synchronized boolean retrieveFileFormats()
 	            		NCDC_STRING, 
 	            		CTI_STANDARD2_STRING,
 	            		SEDC_5_4_STRING,
-	            		NISC_STRING,
+	            		NISC_TURTLE_STRING,
 	            		NISC_NCDC_STRING,
 	            		NCDC_HANDHELD_STRING,
 	            		ATS_STRING
