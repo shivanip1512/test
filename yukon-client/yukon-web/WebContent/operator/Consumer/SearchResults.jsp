@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
@@ -133,6 +134,9 @@ function selectMemberAccount(accountID, memberID) {
                 if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_COMPANY_NAME) {  
 %>
                   <td width="18%" class="TableCell"><%= LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) %> 
+                  </td>
+<% } else if (customer instanceof LiteCICustomer) { %>                 
+                  <td width="30%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() + " (" + LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) + ")"%>  
                   </td>
 <% } else { %>                 
                   <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
