@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/12/20 20:02:41 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/12/29 22:12:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,6 +149,8 @@ public:
     INT queueDeInit();               // Blasts the PortQueue
     INT verifyPortIsRunnable(HANDLE hQuit = NULL);
 
+    INT writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit);
+
     RWThreadFunction& getPortThread();
 
     void haltLog();
@@ -255,6 +257,11 @@ public:
     INT setQueueOrphans(int num, CtiTime &rwt);          // Number of queue entries remaining on device following this pass.
     void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
 
+    bool getSharingStatus( ) const;
+    void setSharingStatus( bool b );
+    bool getShareToggle( ) const;
+    void setShareToggle( bool b );
+
 protected:
 
     ULONG               _queueGripe;
@@ -267,6 +274,7 @@ protected:
 
     RWThreadFunction  _portThread;
     HCTIQUEUE         _portQueue;
+    HCTIQUEUE         _portShareQueue;        // This queue is used for ALL portsharing OMs.
     LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
     ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
     BOOL              _tapPort;               // This port has a TAP terminal connected to it!
@@ -310,6 +318,8 @@ private:
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 
     mutable short               _simulated;
+    bool                        _sharingStatus;     // This is set to true if we are portsharing on this port.
+    bool                        _sharingToggle;     // true if the next OM should be from Yukon, false if the foreign system has priority
 };
 
 inline CtiMutex& CtiPort::getExclusionMux() { return _exclusionMux; }
@@ -358,6 +368,11 @@ inline HANDLE CtiPort::getQuitEventHandle() { return _quitEvent; }
 inline bool CtiPort::isExecutionProhibitedByInternalLogic() const { return false;}
 inline ULONG CtiPort::getQueueSlot() const { return _queueSlot; }
 inline CtiPort& CtiPort::setQueueSlot(const ULONG slot) { _queueSlot = slot; return *this; }
+
+inline bool CtiPort::getSharingStatus( ) const { return _sharingStatus; }
+inline void CtiPort::setSharingStatus( bool b ) { _sharingStatus = b; }
+inline void CtiPort::setShareToggle( bool b ) { _sharingToggle = b; }
+inline bool CtiPort::getShareToggle(  ) const { return _sharingToggle; }
 
 
 #endif // #ifndef __PORT_BASE_H__

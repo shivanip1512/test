@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2005/12/20 20:02:41 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2005/12/29 22:12:41 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.58  2005/12/29 22:12:41  cplender
+* Added _portShareQueue for support of the portsharing.
+* Allows at up to 50% comms to be shared if both comm types want time.
+*
 * Revision 1.57  2005/12/20 20:02:41  mfisher
 * removed generateTraces(), changed traceBytes() to a static so Cti::Porter::DNPUDP's functions can call it
 *
@@ -352,7 +356,11 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
     if(verifyPortIsRunnable( hQuit ) == NORMAL)
     {
-        if(_portQueue != NULL)
+        if(OutMessage && OutMessage->MessageFlags & MSGFLG_PORT_SHARING)        // This OM has been tagged as a sharing OM.
+        {
+            status = writeShareQueue(Request, DataSize, Data, Priority, &QueEntries);
+        }
+        else if(_portQueue != NULL)
         {
             if(_postEvent != INVALID_HANDLE_VALUE)
             {
@@ -521,6 +529,12 @@ CtiPort::~CtiPort()
         _portQueue = NULL;
     }
 
+    if(_portShareQueue != NULL)
+    {
+        CloseQueue( _portShareQueue );
+        _portShareQueue = NULL;
+    }
+
     if(_postEvent != INVALID_HANDLE_VALUE)
     {
         CloseHandle( _postEvent );
@@ -561,6 +575,7 @@ _quitEvent(INVALID_HANDLE_VALUE),
 _postEvent(INVALID_HANDLE_VALUE),
 _portFunc(0),
 _portQueue(NULL),
+_portShareQueue(NULL),
 _connectedDevice(0L),
 _connectedDeviceUID(-1),
 _tapPort(FALSE),
@@ -572,7 +587,9 @@ _attemptOtherFailCount(0),
 _attemptSuccessCount(0),
 _queueSlot(0),
 _queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
-_simulated(0)
+_simulated(0),
+_sharingStatus(false),
+_sharingToggle(false)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -580,7 +597,9 @@ _simulated(0)
 CtiPort::CtiPort(const CtiPort& aRef) :
 _queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _portFunc(0),
-_minMaxIdle(false)
+_minMaxIdle(false),
+_sharingStatus(false),
+_sharingToggle(false)
 {
     *this = aRef;
 }
@@ -1354,28 +1373,45 @@ INT CtiPort::searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*))
 
 INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount )
 {
+    bool readPortQueue = true;
     static CtiTime lastQueueReportTime;
     INT status = QUEUE_READ;
 
     ULONG Element = getQueueSlot();
 
-    if(_portQueue)
+    if( _portShareQueue && !Element && getSharingStatus() && getShareToggle() )
     {
+        /*
+         *  If we "detect" a queue slot element request, we will not pull from the shareQueue (starvation issue maybe on the shareQ)
+         *  if _portShareQueue is NULL, we will not pull from the shareQueue
+         *  if the SharingStatus is true, we MAY proceed
+         *  if the toggle is set to true, we MAY proceed!
+         */
+        // We are sharing the port and the share toggle is set to select a shared queue entry.
+        setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
+        status = ReadQueue(_portShareQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+
+        if(!status) readPortQueue = false; // We pulled one from the share queue.
+    }
+
+    if(readPortQueue && _portQueue)
+    {
+        setShareToggle(true);    // Indicates that the next queue read should look for a flagged (MSGFLG_PORT_SHARING) OM (One NOT from Yukon that is)
         status = ReadQueue(_portQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
 
-        if(status == NORMAL)
+        if(pElementCount && *pElementCount > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
-            setLastOMRead();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Port " << getName() << " has " << *pElementCount << " pending OUTMESS requests " << endl;
+            }
+            lastQueueReportTime = CtiTime() + 300;
         }
     }
 
-    if(pElementCount && *pElementCount > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
+    if(status == NORMAL)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << getName() << " has " << *pElementCount << " pending OUTMESS requests " << endl;
-        }
-        lastQueueReportTime = CtiTime() + 300;
+        setLastOMRead();
     }
 
     setQueueSlot(0);   // Set this back to zero every time.
@@ -1644,3 +1680,33 @@ void CtiPort::getQueueMetrics(int index, int &submit, int &processed, int &orpha
     orphan = _orphaned.get(index);
 }
 
+INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
+{
+    INT status = !NORMAL;
+    ULONG QueEntries;
+
+    if(!_portShareQueue)
+    {
+        LockGuard gd(monitor());
+
+        /* create the queue for this port */
+        if( (status = CreateQueue (&_portShareQueue, QUE_PRIORITY, hQuit)) != NORMAL )
+        {
+            CloseQueue( _portShareQueue );
+            _portShareQueue = NULL;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "Error Creating Shared Queue for Port:  " << setw(2) << getPortID() << " / " << getName() << endl;
+            }
+        }
+    }
+
+    if(_portShareQueue)
+    {
+        setSharingStatus(true);   // Indicates a sharing condition.
+        status = WriteQueue( _portShareQueue, Request, DataSize, Data, Priority, &QueEntries);
+    }
+
+    return status;
+}
