@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.161 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.162 $
+* DATE         :  $Date: 2005/12/29 22:11:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3412,11 +3412,15 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
 {
     INT            status = NORMAL;
     CtiXfer        transfer;
-    BYTE           inBuffer[512];
-    BYTE           outBuffer[256];
+    BYTE           inBuffer[2048];
+    BYTE           outBuffer[2048];
     ULONG          bytesReceived=0;
 
     INT            infLoopPrevention = 0;
+
+    #ifdef _DEBUG
+    memset(inBuffer, 0, sizeof(inBuffer));
+    #endif
 
     CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
 
