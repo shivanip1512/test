@@ -32,7 +32,6 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public TurtleRecordBase() {
 		super();
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
 	 * BaseRecord constructor comment.
@@ -41,7 +40,6 @@ public class TurtleRecordBase implements BillingRecordBase
 	{
 		super();
 		setMeterNumber(newMeterNumber);
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
 	 * BaseRecord constructor comment.
@@ -53,7 +51,6 @@ public class TurtleRecordBase implements BillingRecordBase
 		setReadingKWH(reading);
 		setDate(newTimestamp);
 		setTime(newTimestamp);
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
 	 * TurtleRecordBase constructor comment.
