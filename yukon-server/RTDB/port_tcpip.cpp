@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/12/29 22:12:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -173,7 +173,6 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             }
 
             _server.sin_family = AF_INET;
-            _server.sin_addr.s_addr = inet_addr ( getIPAddress().c_str() );
             _server.sin_port = htons( ipport );
             _server.sin_addr = *(in_addr*)&ip;
 
@@ -340,7 +339,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< C
                     ioctlsocket (_socket, FIONREAD, &bytesavail);
                 }
 
-                if(0)
+                if(0) // Was (0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -358,7 +357,10 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< C
                 }
             }
 
-            Xfer.setInCountExpected( bytesavail );
+            if(bytesavail <= Xfer.getInCountExpected())  // Make sure we don't acquire more data than we have space for!
+            {
+                Xfer.setInCountExpected( bytesavail );
+            }
         }
 
         /* If getInCountExpected() is 0 just return */
