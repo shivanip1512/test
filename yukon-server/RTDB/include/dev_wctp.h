@@ -142,7 +142,7 @@ public:
 private:
 
    CHAR* replaceChars(const CHAR *src, CHAR *dst);
-   CHAR* buildXMLMessage(const CHAR* recipientId, const CHAR* senderId, const CHAR* msgPayload, const CHAR* timeStamp);
+   CHAR* buildXMLMessage(const CHAR* recipientId, const CHAR* senderId, const CHAR* msgPayload, const CHAR* timeStamp, const CHAR *securityCode=0);
 
    INT   readLine(CHAR* str, CHAR* buf, INT bufLen);
    CHAR* getReadLinePtr()

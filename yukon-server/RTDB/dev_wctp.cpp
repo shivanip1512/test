@@ -45,7 +45,6 @@
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
-
 /*
  * XML characters encoding
  */
@@ -337,7 +336,7 @@ CHAR* CtiDeviceWctpTerminal::getOutBuffer()
 
     if(_outBuffer == NULL)
     {
-        _outBuffer = CTIDBG_new CHAR[1024];
+        _outBuffer = CTIDBG_new CHAR[4096];
         _outBuffer[0] = 0;
     }
 
@@ -350,8 +349,8 @@ CHAR* CtiDeviceWctpTerminal::getInBuffer()
 
     if(_inBuffer == NULL)
     {
-        _inBuffer = CTIDBG_new CHAR[1024];
-        _inBuffer[0] = 0;
+        _inBuffer = CTIDBG_new CHAR[4096];
+        ::memset(_inBuffer, 0, sizeof(_inBuffer));
     }
 
     return _inBuffer;
@@ -363,7 +362,7 @@ CHAR* CtiDeviceWctpTerminal::getXMLBuffer()
 
     if(_xmlBuffer == NULL)
     {
-        _xmlBuffer = CTIDBG_new CHAR[1024];
+        _xmlBuffer = CTIDBG_new CHAR[4096];
         _xmlBuffer[0] = 0;
     }
 
@@ -589,39 +588,92 @@ CHAR* CtiDeviceWctpTerminal::replaceChars(const CHAR *src, CHAR *dst)
 CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
                                              const CHAR *senderId,
                                              const CHAR *msgPayload,
-                                             const CHAR *timeStamp)
+                                             const CHAR *timeStamp,
+                                             const CHAR *securityCode)
 {
     CHAR* xmlMsg = getXMLBuffer();
     xmlMsg[0] = 0;
-    strcat(xmlMsg, "<?xml version=\"1.0\"?>");
-    strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
-    strcat(xmlMsg, WCTP_DOCTYPE);
-    strcat(xmlMsg, "\">");
-    strcat(xmlMsg, "<wctp-Operation wctpVersion=\"");
-    strcat(xmlMsg, WCTP_VERSION);
-    strcat(xmlMsg, "\">");
-    strcat(xmlMsg, "<wctp-SubmitClientMessage>");
-    strcat(xmlMsg, "<wctp-SubmitClientHeader submitTimestamp=\"");
-    strcat(xmlMsg, timeStamp);
-    strcat(xmlMsg, "\">");
-    strcat(xmlMsg, "<wctp-ClientOriginator senderID=\"");
-    strcat(xmlMsg, senderId);
-    strcat(xmlMsg, "\"/>");
-    strcat(xmlMsg, "<wctp-ClientMessageControl");
-    strcat(xmlMsg, " allowResponse=\"false\"");
-    strcat(xmlMsg, " preformatted=\"true\"");
-    strcat(xmlMsg, "/>");
-    strcat(xmlMsg, "<wctp-Recipient recipientID=\"");
-    strcat(xmlMsg, recipientId);
-    strcat(xmlMsg, "\"/>");
-    strcat(xmlMsg, "</wctp-SubmitClientHeader>");
-    strcat(xmlMsg, "<wctp-Payload>");
-    strcat(xmlMsg, "<wctp-Alphanumeric>");
-    strcat(xmlMsg, msgPayload);
-    strcat(xmlMsg, "</wctp-Alphanumeric>");
-    strcat(xmlMsg, "</wctp-Payload>");
-    strcat(xmlMsg, "</wctp-SubmitClientMessage>");
-    strcat(xmlMsg, "</wctp-Operation>");
+
+    if( stringContainsIgnoreCase( gConfigParms.getValueAsString("WCTP_USE_CLIENTMESSAGE", "true"), "true") )
+    {
+        strcat(xmlMsg, "<?xml version=\"1.0\"?>");
+        strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
+        strcat(xmlMsg, WCTP_DOCTYPE);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-Operation wctpVersion=\"");
+        strcat(xmlMsg, WCTP_VERSION);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-SubmitClientMessage>");
+        strcat(xmlMsg, "<wctp-SubmitClientHeader submitTimestamp=\"");
+        strcat(xmlMsg, timeStamp);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-ClientOriginator");
+        strcat(xmlMsg, " senderID=\"");
+        strcat(xmlMsg, senderId);
+        strcat(xmlMsg, "\"");
+        if(securityCode)
+        {
+            strcat(xmlMsg, " securityCode=\"");
+            strcat(xmlMsg, securityCode);
+            strcat(xmlMsg, "\"");
+        }
+        strcat(xmlMsg, "/>");
+        strcat(xmlMsg, "<wctp-ClientMessageControl");
+        strcat(xmlMsg, " allowResponse=\"false\"");
+        strcat(xmlMsg, " preformatted=\"true\"");
+        strcat(xmlMsg, "/>");
+        strcat(xmlMsg, "<wctp-Recipient recipientID=\"");
+        strcat(xmlMsg, recipientId);
+        strcat(xmlMsg, "\"/>");
+        strcat(xmlMsg, "</wctp-SubmitClientHeader>");
+        strcat(xmlMsg, "<wctp-Payload>");
+        strcat(xmlMsg, "<wctp-Alphanumeric>");
+        strcat(xmlMsg, msgPayload);
+        strcat(xmlMsg, "</wctp-Alphanumeric>");
+        strcat(xmlMsg, "</wctp-Payload>");
+        strcat(xmlMsg, "</wctp-SubmitClientMessage>");
+        strcat(xmlMsg, "</wctp-Operation>");
+    }
+    else
+    {
+        strcat(xmlMsg, "<?xml version=\"1.0\"?>");
+        strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
+        strcat(xmlMsg, WCTP_DOCTYPE);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-Operation wctpVersion=\"");
+        strcat(xmlMsg, WCTP_VERSION);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-SubmitRequest>");
+        strcat(xmlMsg, "<wctp-SubmitHeader submitTimestamp=\"");
+        strcat(xmlMsg, timeStamp);
+        strcat(xmlMsg, "\">");
+        strcat(xmlMsg, "<wctp-Originator");
+        strcat(xmlMsg, " senderID=\"");
+        strcat(xmlMsg, senderId);
+        strcat(xmlMsg, "\"");
+        if(securityCode)
+        {
+            strcat(xmlMsg, " securityCode=\"");
+            strcat(xmlMsg, securityCode);
+            strcat(xmlMsg, "\"");
+        }
+        strcat(xmlMsg, "/>");
+        strcat(xmlMsg, "<wctp-MessageControl");
+        strcat(xmlMsg, " allowResponse=\"true\"");
+        strcat(xmlMsg, " preformatted=\"true\"");
+        strcat(xmlMsg, "/>");
+        strcat(xmlMsg, "<wctp-Recipient recipientID=\"");
+        strcat(xmlMsg, recipientId);
+        strcat(xmlMsg, "\"/>");
+        strcat(xmlMsg, "</wctp-SubmitHeader>");
+        strcat(xmlMsg, "<wctp-Payload>");
+        strcat(xmlMsg, "<wctp-Alphanumeric>");
+        strcat(xmlMsg, msgPayload);
+        strcat(xmlMsg, "</wctp-Alphanumeric>");
+        strcat(xmlMsg, "</wctp-Payload>");
+        strcat(xmlMsg, "</wctp-SubmitRequest>");
+        strcat(xmlMsg, "</wctp-Operation>");
+    }
 
     return xmlMsg;
 }
@@ -697,6 +749,8 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
     INT   i;
     INT   status = NORMAL;
 
+    xfer.setInCountExpected(4000);
+
     switch( getCurrentState() )
     {
     case StateHandshakeComplete:
@@ -709,6 +763,11 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
         {
             xfer.setOutBuffer( (UCHAR*)getOutBuffer() );     // Don't use any buffer which may have been supplied
             xfer.setInBuffer( (UCHAR*)getInBuffer() );       // Don't use any buffer which may have been supplied
+
+            if(_inBuffer != NULL)
+            {
+                memset(_inBuffer, 0, sizeof(_inBuffer));
+            }
 
             CtiTime nowTime;
             CtiDate nowDate;
@@ -740,14 +799,28 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
             CHAR* xmlMsg = buildXMLMessage(getWctp().getPagerNumber().c_str(),
-                                           "yukonserver@cannontech.com",
+                                           getWctp().getSenderID().c_str(),      // "yukonserver@cannontech.com",
                                            msgPayload,
-                                           timeStamp);
+                                           timeStamp,
+                                           getWctp().getSecurityCode().c_str());
 
             CHAR* out = getOutBuffer();
             out[0] = 0;
             strcat(out, "POST ");
-            strcat(out, getPassword().c_str());                 // The path information is stored in password for now
+
+            if( !getPassword().empty() )
+            {
+                strcat(out, getPassword().c_str());                 // The path information is stored in password for now
+            }
+            else if(!getWctp().getPOSTPath().empty())
+            {
+                strcat(out, getWctp().getPOSTPath().c_str());       // The path information
+            }
+            else
+            {
+                strcat(out, "/wctp");                       // The DEFAULT path information
+            }
+
             strcat(out, " HTTP/1.0\r\n");
             strcat(out, "Content-Type: text/xml\r\n");
             strcat(out, "Content-Length: ");
@@ -768,8 +841,8 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             }
 
             xfer.setNonBlockingReads(true);         // Read as many bytes as possible
-            xfer.setInCountExpected(1024);
-            xfer.setInTimeout(1);
+            xfer.setInCountExpected(4000);
+            xfer.setInTimeout(gConfigParms.getValueAsULong("WCTP_READ_TIMEOUT", 1));                   // Works in conjunction with gConfigParms.getValueAsULong("WCTP_LOOP_TIMEOUT", 5)
             timeEllapsed++;
 
             setCurrentState( StateScanDecode1 );
@@ -777,12 +850,12 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
         }
     case StateScanValueSet2:
         {
-            if(timeEllapsed < WCTP_TIMEOUT)
+            if(timeEllapsed < gConfigParms.getValueAsULong("WCTP_LOOP_TIMEOUT", WCTP_TIMEOUT))
             {
                 xfer.setOutCount(0);                    // Nothing new here
                 xfer.setNonBlockingReads(true);
-                xfer.setInCountExpected(1024);
-                xfer.setInTimeout(1);
+                xfer.setInCountExpected(4000);
+                xfer.setInTimeout(gConfigParms.getValueAsULong("WCTP_READ_TIMEOUT", 1));               // Works in conjunction with gConfigParms.getValueAsULong("WCTP_LOOP_TIMEOUT", 5)
                 timeEllapsed++;
             }
             else
@@ -841,6 +914,21 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
 
                     statusParsed = FALSE;
                     headerParsed = FALSE;
+
+                    #if 0
+                    if(in[0] != 0)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        for(int b = 0; in[b] != 0 && b <= xfer.getInCountActual(); b++)
+                        {
+                            if( isprint(in[b]) ) dout << in[b];
+                        }
+                        dout << "  CHARCNT = " << b << endl;
+                    }
+
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
+                    #endif
 
                     setCurrentState( StateScanDecode2 );
 
@@ -1047,7 +1135,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                     }
                     else
                     {
-                        if(timeEllapsed < WCTP_TIMEOUT)
+                        if(timeEllapsed < gConfigParms.getValueAsULong("WCTP_LOOP_TIMEOUT", WCTP_TIMEOUT))
                         {
                             setCurrentState( StateScanValueSet2 );
                             break;
