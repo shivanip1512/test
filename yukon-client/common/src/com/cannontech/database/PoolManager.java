@@ -268,7 +268,7 @@ public class PoolManager
 			ConnectionPool pool =
 						   new ConnectionPool(poolName, url, user, password,
 											max, init, timeOut );
-            MBeanUtil.tryRegisterMBean("type=ConnectionPool,poolName=" + poolName, pool);
+            //MBeanUtil.tryRegisterMBean("type=ConnectionPool,poolName=" + poolName, pool);
 
 
 			pools.put(poolName, pool);
