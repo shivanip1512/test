@@ -291,7 +291,7 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
         
 		try
 		{
-			if( !"ok".equalsIgnoreCase(buttonPressed) )
+			if( !"Resubmit".equalsIgnoreCase(buttonPressed) )
 				return;
 
 
