@@ -133,7 +133,8 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 
 		<mkdir dir="build" />
 
-		<javac srcdir="src" destdir="build" target="1.4" debug="true">
+		<javac srcdir="src" destdir="build" target="${yukon.javac.target}" 
+	 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
@@ -152,7 +153,11 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 		<mkdir dir="work" />
 
 
-		<javac destdir="${yukon-web}/work" fork="true" srcdir="${yukon-web}/WebContent_temp" optimize="off" debug="true" failonerror="false" excludes="**/*.smap" memoryInitialSize="128M" memoryMaximumSize="512M" debuglevel="lines">
+		<javac destdir="${yukon-web}/work" fork="true" srcdir="${yukon-web}/WebContent_temp" 
+			optimize="off" target="${yukon.javac.target}" 
+	 	    source="${yukon.javac.source}" debug="${yukon.javac.debug}"
+			failonerror="false" excludes="**/*.smap" 
+			memoryInitialSize="128M" memoryMaximumSize="512M" debuglevel="lines">
 			<classpath>
 				<pathelement location="../build/jasper-compiler.jar" />
 				<pathelement location="../build/jasper-runtime.jar" />

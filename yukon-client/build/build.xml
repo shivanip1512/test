@@ -30,7 +30,7 @@
           
     <target name="clean">
         <delete>
-            <fileset dir="../lib" includes="*"/>
+            <fileset dir="${yukon.lib}" includes="*"/>
         </delete>
         <antcall target="callall" inheritAll="true" >
             <param name="dotarget" value="clean"/>
