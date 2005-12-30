@@ -6,12 +6,15 @@ import javax.management.*;
 import javax.management.remote.*;
 import javax.naming.Context;
 
+import mx4j.tools.naming.NamingService;
+
 import com.cannontech.clientutils.CTILogger;
 
 public class MBeanUtil {
     static private MBeanServer server;
     
     static {
+        
         //RMI specific setters
         System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory" );
         System.setProperty( Context.PROVIDER_URL, "rmi://localhost:1099" );
@@ -19,9 +22,10 @@ public class MBeanUtil {
         server = MBeanServerFactory.createMBeanServer("com.cannontech.yukon");
         
         try {
+            NamingService namingService = new NamingService();
             ObjectName naming = new ObjectName("Naming:type=registry");
             //  Create and register the MBean in the MBeanServer
-            server.createMBean("mx4j.tools.naming.NamingService", naming, null);            
+            server.registerMBean(namingService, naming);
             server.invoke(naming, "start", null, null);
 
    
