@@ -10,12 +10,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.util.MBeanUtil;
 
 public class PoolManager
 {
@@ -266,6 +268,7 @@ public class PoolManager
 			ConnectionPool pool =
 						   new ConnectionPool(poolName, url, user, password,
 											max, init, timeOut );
+            MBeanUtil.tryRegisterMBean("type=ConnectionPool,poolName=" + poolName, pool);
 
 
 			pools.put(poolName, pool);
@@ -310,6 +313,7 @@ public String[] getAllPoolsStrings()
 		 catch (SQLException e)
 		 {
 			CTILogger.error("Exception getting connection from " + name, e );
+            throw new RuntimeException("Unable to get database connection.",e);
 		 }
 	  }
 
