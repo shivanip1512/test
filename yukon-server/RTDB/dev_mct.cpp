@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2005/12/20 17:20:23 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2005/12/30 14:51:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1018,7 +1018,7 @@ bool CtiDeviceMCT::recordMessageRead(OUTMESS *OutMessage)
     }
 
     newData.ioType = OutMessage->Buffer.BSt.IO;
-    newData.insertTime = RWTime::now();
+    newData.insertTime = CtiTime::now();
     newData.location = OutMessage->Buffer.BSt.Function;
     newData.length = OutMessage->Buffer.BSt.Length;
 
