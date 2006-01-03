@@ -35,7 +35,7 @@ boolean isOverrideAllowed = lmSession.isOverrideAllowed(
           <td valign="bottom" height="102"> 
             <table width="656" cellspacing="0" cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="images/Header.gif">&nbsp;</td>
+                <td id="header" colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="images/Header.gif"/>">&nbsp;</td>
               </tr>
               <tr>
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp; 
@@ -125,7 +125,7 @@ boolean isOverrideAllowed = lmSession.isOverrideAllowed(
               <tr>
                 <td width="740" valign="middle" class="MainText"> 
 				<div align="center">
-					<input type="submit" name="submitChoice" value="Resubmit" class="defButton" >
+					<input type="submit" name="submitChoice" value="Resubmit" class="defButton">
 					<input type="submit" name="submitChoice" value="Cancel" class="defButton" >
 				</div>
 				
