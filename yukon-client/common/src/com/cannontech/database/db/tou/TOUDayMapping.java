@@ -52,7 +52,6 @@ public TOUDayMapping(Integer newSchedID, Integer newDayID, Integer newDayOffset)
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getScheduleID(), getDayID(), getDayOffset() };
-	deleteAMapping(getDayID(), getDbConnection());
 	add( TABLE_NAME, addValues );
 }
 

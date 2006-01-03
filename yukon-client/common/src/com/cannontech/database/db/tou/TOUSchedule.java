@@ -6,6 +6,9 @@
  */
 package com.cannontech.database.db.tou;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+
 /**
  * @author jdayton
  *
@@ -71,39 +74,28 @@ public String getDefaultRate()
 {
 	return defaultRate;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static Integer getNextTOUScheduleID()
+
+public static Integer getNextTOUScheduleID() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)
-	{
-		java.util.List touSchedules = cache.getAllTOUSchedules();
-		java.util.Collections.sort(touSchedules);
-
-		int counter = 1;
-		int currentID;
-		 														
-		for(int i = 0; i < touSchedules.size(); i++)
-		{
-			currentID = ((com.cannontech.database.data.lite.LiteTOUSchedule)touSchedules.get(i)).getScheduleID();
-
-			if( currentID > counter )
-				break;
-			else
-				counter = currentID + 1;
-		}		
-		
-		return new Integer( counter );
-	}
+    SqlStatement stmt = new SqlStatement("SELECT MAX(TOUSCHEDULEID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            return (new Integer(stmt.getRow(0)[0].toString()));
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return null;
 }
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 12:08:08 PM)
- */
+
 public void retrieve() throws java.sql.SQLException
 {
 	Object constraintValues[] = { getScheduleID()};
