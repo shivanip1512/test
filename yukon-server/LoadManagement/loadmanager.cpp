@@ -41,6 +41,7 @@
 #include "lmprogramdirect.h"
 #include "clistener.h"
 #include <time.h>
+#include "utility.h"
 
 #include <rw/thr/prodcons.h>
 

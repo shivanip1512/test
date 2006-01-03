@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/01/03 20:23:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,5 +141,15 @@ IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned c
 IM_EX_CTIBASE void testSA305CRC(char* testData);
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
+//String Functions
+IM_EX_CTIBASE void CtiToLower ( std::string& str);
+IM_EX_CTIBASE void CtiToUpper ( std::string& str);
+IM_EX_CTIBASE string trim_right ( std::string & source , std::string t = " ");
+IM_EX_CTIBASE string trim_left  ( std::string & source , std::string t = " ");
+IM_EX_CTIBASE string trim       ( std::string & source , std::string t = " ");
+IM_EX_CTIBASE int stringCompareIgnoreCase(const std::string& str1, const std::string& str2);
+IM_EX_CTIBASE int stringContainsIgnoreCase(const std::string& str1, const std::string& str2);
+IM_EX_CTIBASE string::size_type findStringIgnoreCase(std::string str, std::string sub);
+IM_EX_CTIBASE string char2string(char c);
 
 #endif // #ifndef __UTILITY_H__

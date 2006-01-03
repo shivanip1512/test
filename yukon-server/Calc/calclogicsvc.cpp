@@ -955,7 +955,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+                dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( )<<":"<< message->isA( )<< "\";  skipping" << endl;
             }
         }
     }

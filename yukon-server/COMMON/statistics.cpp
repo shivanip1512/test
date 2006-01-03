@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/01/03 20:23:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,9 @@ using namespace std;
 #include "dsm2err.h"
 #include "logger.h"
 #include "statistics.h"
+
 #include "rwutil.h"
+#include "utility.h"
 #include "ctidate.h"
 
 CtiStatistics::CtiStatistics(long id) :

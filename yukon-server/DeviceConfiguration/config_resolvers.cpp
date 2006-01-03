@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/03 20:23:37 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 
 #include "config_resolvers.h"
 #include "logger.h"
-
+#include "utility.h"
 
 namespace Cti    {
 namespace Config {

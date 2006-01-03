@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2005/12/20 17:17:14 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2006/01/03 20:23:38 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.13  2006/01/03 20:23:38  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.12  2005/12/20 17:17:14  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -125,6 +128,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
+#include "utility.h"
 
 #include "cparms.h"
 #include "msg_multi.h"

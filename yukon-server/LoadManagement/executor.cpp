@@ -36,7 +36,7 @@
 #include "lmcurtailcustomer.h"
 #include "lmconstraint.h"
 #include "ctidate.h"
-
+#include "utility.h"
 
 #include <rw/collstr.h>
 

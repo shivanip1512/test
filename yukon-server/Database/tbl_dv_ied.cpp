@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/01/03 20:23:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include "tbl_dv_ied.h"
 #include "logger.h"
 
+#include "utility.h"
 #include "rwutil.h"
 
 CtiTableDeviceIED::CtiTableDeviceIED() :

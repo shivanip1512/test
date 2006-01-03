@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/01/03 20:23:38 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.38  2006/01/03 20:23:38  tspar
+* Moved non RW string utilities from rwutil.h to utility.h
+*
 * Revision 1.37  2005/12/20 17:19:56  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -159,7 +162,7 @@
 #include "numstr.h"
 #include "prot_sa3rdparty.h"
 #include "protocol_sa.h"
-
+#include "utility.h"
 
 #define SA_PROTOCOL_COMPLETE TRUE
 

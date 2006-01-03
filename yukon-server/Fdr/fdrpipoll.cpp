@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2005/12/20 17:17:14 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2006/01/03 20:23:37 $
  */
 
 #include <windows.h>
@@ -26,6 +26,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
+#include "utility.h"
 #include <rw/db/db.h>
 #include <rw/db/connect.h>
 #include <rw/db/status.h>

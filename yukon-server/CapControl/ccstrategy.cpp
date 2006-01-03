@@ -29,6 +29,7 @@
 #include "mgr_holiday.h"
 
 #include "rwutil.h"
+#include "utility.h"
 
 RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
 

@@ -23,6 +23,9 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.7  2006/01/03 20:23:37  tspar
+ *      Moved non RW string utilities from rwutil.h to utility.h
+ *
  *      Revision 1.6  2005/12/20 17:17:12  tspar
  *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
  *
@@ -79,7 +82,7 @@
 #include "fdrpointlist.h"
 #include "fdrsocketinterface.h"
 #include "fdrscadahelper.h"
-
+#include "utility.h"
 // this class header
 #include "fdracsmulti.h"
 

@@ -41,6 +41,7 @@
 #include "resolvers.h" 
 //#include "ccscheduler.h"
 #include "mgr_paosched.h"
+#include "utility.h"
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"

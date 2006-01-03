@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/12/20 17:17:15 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/01/03 20:23:38 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.10  2006/01/03 20:23:38  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.9  2005/12/20 17:17:15  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -108,6 +111,7 @@
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
+#include "utility.h"
 
 #include "cparms.h"
 #include "msg_multi.h"

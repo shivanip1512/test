@@ -22,6 +22,7 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "loadmanager.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 

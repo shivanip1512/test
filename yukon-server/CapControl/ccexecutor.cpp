@@ -19,6 +19,7 @@
 #include "capcontroller.h"
 #include "ccid.h"
 #include "logger.h"
+#include "utility.h"
                      
 #include <rw/collstr.h>
 

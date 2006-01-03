@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2006/01/03 20:23:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "numstr.h"
-#include "rwutil.h"
+#include "utility.h"
 
 using std::transform;
 using std::endl;

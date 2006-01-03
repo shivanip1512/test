@@ -35,6 +35,7 @@
 #include "ctidate.h"
 #include "ctitime.h"
 #include "rwutil.h"
+#include "utility.h"
 
 using std::transform;
 

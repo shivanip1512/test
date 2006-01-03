@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/12/20 17:17:15 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/01/03 20:23:38 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.11  2006/01/03 20:23:38  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.10  2005/12/20 17:17:15  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -79,7 +82,7 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrtextimport.h"
-
+#include "utility.h"
 
 CtiFDR_TextImport * textImportInterface;
 

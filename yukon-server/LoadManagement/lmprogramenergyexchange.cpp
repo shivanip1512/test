@@ -25,6 +25,7 @@
 #include "lmenergyexchangecustomerreply.h"
 #include "msg_notif_email.h"
 #include "ctidate.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 

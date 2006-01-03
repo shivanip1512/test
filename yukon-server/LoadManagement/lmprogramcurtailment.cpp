@@ -23,6 +23,7 @@
 #include "msg_pcrequest.h"
 #include "msg_notif_email.h"
 #include "lmcontrolareatrigger.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 

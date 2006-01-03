@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.20 $
- *    DATE         :  $Date: 2005/12/20 17:17:13 $
+ *    REVISION     :  $Revision: 1.21 $
+ *    DATE         :  $Date: 2006/01/03 20:23:37 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.21  2006/01/03 20:23:37  tspar
+ *     Moved non RW string utilities from rwutil.h to utility.h
+ *
  *     Revision 1.20  2005/12/20 17:17:13  tspar
  *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
  *
@@ -58,6 +61,7 @@
 #include "guard.h"
 #include "fdrpointlist.h"
 
+#include "utility.h"
 
 /** local definitions **/
 CtiConfigParameters CtiFDRInterface::iConfigParameters;

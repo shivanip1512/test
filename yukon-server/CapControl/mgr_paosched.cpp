@@ -14,6 +14,7 @@
 #include "pao_event.h"
 #include "capcontroller.h"
 #include "ctitokenizer.h"
+#include "utility.h"
 
 #include <rw/thr/prodcons.h>
 #include <rw/ctoken.h>

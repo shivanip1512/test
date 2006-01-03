@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.17 $
-*    DATE         :  $Date: 2005/12/20 17:17:13 $
+*    REVISION     :  $Revision: 1.18 $
+*    DATE         :  $Date: 2006/01/03 20:23:37 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.18  2006/01/03 20:23:37  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.17  2005/12/20 17:17:13  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -95,6 +98,8 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrlodestarimport.h"
+
+#include "utility.h"
 
 using std::transform;
 // Constructors, Destructor, and Operators

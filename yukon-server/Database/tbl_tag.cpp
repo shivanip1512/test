@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/01/03 20:23:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_tag.h"
+#include "utility.h"
 #include "rwutil.h"
 
 CtiTableTag::CtiTableTag() :

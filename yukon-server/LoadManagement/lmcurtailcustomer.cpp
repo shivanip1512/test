@@ -20,6 +20,7 @@
 #include "loadmanager.h"
 #include "device.h"
 #include "resolvers.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 

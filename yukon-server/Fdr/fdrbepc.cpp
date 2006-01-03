@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2005/12/20 17:17:12 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2006/01/03 20:23:37 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.4  2006/01/03 20:23:37  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.3  2005/12/20 17:17:12  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -62,6 +65,8 @@
 #include "fdrtextfilebase.h"
 #include "fdrbepc.h"
 #include "ctitokenizer.h"
+
+#include "utility.h"
 
 using std::string;
 

@@ -29,6 +29,7 @@
 #include "resolvers.h"
 #include "mgr_holiday.h"
 #include "mgr_paosched.h"
+#include "utility.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;

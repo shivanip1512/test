@@ -26,7 +26,7 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 #include "numstr.h"
-
+#include "utility.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;

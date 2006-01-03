@@ -212,79 +212,15 @@ inline RWvistream&  operator>>(RWvistream& strm, std::string& s)
     return strm;
 }
 
-// compare string ignore cases (not used now)
-
-inline int stringCompareIgnoreCase(const std::string& str1, const std::string& str2){
-    std::string s1 = str1;
-    std::string s2 = str2;
-    std::transform(str1.begin(), str1.end(), s1.begin(), ::tolower);
-    std::transform(str2.begin(), str2.end(), s2.begin(), ::tolower);
-    return s1.compare(s2);
-
-}
-//TS add for a string contains without case sensitivity
-inline int stringContainsIgnoreCase(const std::string& str, const std::string& frag){
-    std::string s1 = str;
-    std::string s2 = frag;
-
-    std::transform(str.begin(), str.end(), s1.begin(), ::tolower);
-    std::transform(frag.begin(), frag.end(), s2.begin(), ::tolower);
-
-	if (str.find(frag) == string::npos)
-		return 0;
-	else return 1;
-}
-// find the substring ignorecase
-inline std::string::size_type findStringIgnoreCase(std::string str, std::string sub){
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-    std::transform(sub.begin(), sub.end(), sub.begin(), ::tolower);
-    return str.find(sub)!=std::string::npos;
-}
-
-inline std::string char2string(char c){
-    std::string s;
-    s = c;
-    return s;
-}
-
 //Conversion
 inline RWCString string2RWCString(std::string str){
     return RWCString(str.c_str());
 }
-inline void CtiToLower( std::string& str){
-	std::transform(str.begin(),str.end(),str.begin(),::tolower);
-}
-inline void CtiToUpper( std::string& str){
-	std::transform(str.begin(),str.end(),str.begin(),::toupper);
-}
+
 inline string RW2String( RWCString str ){
 	return string(str.data());
 }
-//String Modificaction:
-inline std::string trim_right ( std::string & source , std::string t = " ")
-{
-    std::string str = source;
-    return source = str.erase ( str.find_last_not_of ( t ) + 1 ) ;
-}
-
-// trim_left() 
-inline std::string trim_left ( std::string & source ,std::string t= " ")
-{
-    std::string str = source;
-    return source = str.erase ( 0 , source.find_first_not_of ( t ) ) ;
-}
-// trim() 
-inline std::string trim ( std::string & source , std::string t = " " )
-{
-    std::string str = source;
-    return source = trim_left ( trim_right ( str , t ) , t ) ;
-}
-
-
 typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
-
-
-
 
 /*
 * end wraper

@@ -1,6 +1,6 @@
 #include "yukon.h"
 #include "ctistring.h"
-
+#include "utility.h"
 
 int CtiString::compareTo(const string&s) const{
     return string::compare(s);

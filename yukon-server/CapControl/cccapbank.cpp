@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "resolvers.h"
 
+#include "utility.h"
 #include "rwutil.h"
 using namespace std;
 extern ULONG _CC_DEBUG;

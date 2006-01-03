@@ -40,7 +40,7 @@
 #include "lmconstraint.h"
 #include "ctitime.h"
 #include "ctidate.h"
-
+#include "utility.h"
 
 
 extern ULONG _LM_DEBUG;

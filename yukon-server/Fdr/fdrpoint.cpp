@@ -14,10 +14,13 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/12/20 17:17:14 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2006/01/03 20:23:37 $
 *    History:
       $Log: fdrpoint.cpp,v $
+      Revision 1.8  2006/01/03 20:23:37  tspar
+      Moved non RW string utilities from rwutil.h to utility.h
+
       Revision 1.7  2005/12/20 17:17:14  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -52,7 +55,7 @@ using namespace std;
 
 #include "logger.h"
 #include "rwutil.h"
-
+#include "utility.h"
 
 /** local definitions **/
 

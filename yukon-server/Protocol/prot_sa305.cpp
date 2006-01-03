@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/01/03 20:23:38 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.21  2006/01/03 20:23:38  tspar
+* Moved non RW string utilities from rwutil.h to utility.h
+*
 * Revision 1.20  2005/12/20 17:19:56  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -93,6 +96,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "prot_sa305.h"
+#include "utility.h"
 
 using namespace std;
 
