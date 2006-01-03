@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/01/03 20:23:36 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/01/03 20:48:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,14 +142,69 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
 //String Functions
-IM_EX_CTIBASE void CtiToLower ( std::string& str);
-IM_EX_CTIBASE void CtiToUpper ( std::string& str);
-IM_EX_CTIBASE string trim_right ( std::string & source , std::string t = " ");
-IM_EX_CTIBASE string trim_left  ( std::string & source , std::string t = " ");
-IM_EX_CTIBASE string trim       ( std::string & source , std::string t = " ");
-IM_EX_CTIBASE int stringCompareIgnoreCase(const std::string& str1, const std::string& str2);
-IM_EX_CTIBASE int stringContainsIgnoreCase(const std::string& str1, const std::string& str2);
-IM_EX_CTIBASE string::size_type findStringIgnoreCase(std::string str, std::string sub);
-IM_EX_CTIBASE string char2string(char c);
+inline void CtiToLower( std::string& str)
+{
+	std::transform(str.begin(),str.end(),str.begin(),::tolower);
+}
+inline void CtiToUpper( std::string& str)
+{
+	std::transform(str.begin(),str.end(),str.begin(),::toupper);
+}
+
+inline string trim_right ( std::string & source , std::string t = " ")
+{
+    std::string str = source;
+    return source = str.erase ( str.find_last_not_of ( t ) + 1 ) ;
+}
+
+inline string trim_left ( std::string & source ,std::string t = " ")
+{
+    std::string str = source;
+    return source = str.erase ( 0 , source.find_first_not_of ( t ) ) ;
+}
+
+inline string trim ( std::string & source , std::string t = " ")
+{
+    std::string str = source;
+    return source = trim_left ( trim_right ( str , t ) , t ) ;
+}
+
+inline int stringCompareIgnoreCase(const std::string& str1, const std::string& str2)
+{
+    std::string s1 = str1;
+    std::string s2 = str2;
+    std::transform(str1.begin(), str1.end(), s1.begin(), ::tolower);
+    std::transform(str2.begin(), str2.end(), s2.begin(), ::tolower);
+    return s1.compare(s2);
+
+}
+
+inline int stringContainsIgnoreCase(const std::string& str, const std::string& frag)
+{
+    std::string s1 = str;
+    std::string s2 = frag;
+
+    std::transform(str.begin(), str.end(), s1.begin(), ::tolower);
+    std::transform(frag.begin(), frag.end(), s2.begin(), ::tolower);
+
+	if (str.find(frag) == string::npos)
+		return 0;
+	else return 1;
+}
+
+inline string::size_type findStringIgnoreCase(std::string str, std::string sub)
+{
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    std::transform(sub.begin(), sub.end(), sub.begin(), ::tolower);
+    return str.find(sub)!=std::string::npos;
+}
+
+inline string char2string(char c)
+{
+    string s;
+    s = c;
+    return s;
+}
+
 
 #endif // #ifndef __UTILITY_H__
