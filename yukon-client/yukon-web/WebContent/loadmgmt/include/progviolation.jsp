@@ -81,7 +81,7 @@ boolean isOverrideAllowed = lmSession.isOverrideAllowed(
 
 	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" >
 	<input type="hidden" name="resendSyncMsgs" value="true" >
-	<input type="hidden" name="redirectURL" value="<%= request.getRequestURI() + (request.getQueryString()==null?"":"?"+request.getQueryString()) %>" >
+	<input type="hidden" name="redirectURL" value="<%= ServletUtil.tweakRequestURI(request, "quickrefresh", "true") %>" >
             <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
                 <td width="740" valign="top" class="MainText"> 

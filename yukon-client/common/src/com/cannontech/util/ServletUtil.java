@@ -1013,7 +1013,7 @@ public static Date roundToMinute(Date toRound) {
     public static String capitalize(String word) {
     	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
     }
-    
+        
     /**
      * Capitalize every word in a phrase.
      * @return String
@@ -1097,6 +1097,10 @@ public static Date roundToMinute(Date toRound) {
      * the String returned would be
      *    /dir/script.jsp?color=red&flavor=salty
      * 
+     * Alternatively can be used to remove a parameter from a URI.
+     * If newValue is null then newParameter will be removed from the
+     * generated request string.
+     * 
      * @param request the HttpServletRequest object for the current page
      * @param newParameter the name of the parameter to add or replace
      * @param newValue the value of the new parameter
@@ -1109,7 +1113,12 @@ public static Date roundToMinute(Date toRound) {
             result.append(request.getRequestURI());
             result.append("?");
             Map parameterMap = new HashMap(request.getParameterMap());
-            parameterMap.put(newParameter, new String[] {newValue});
+            if(newValue == null) {
+            	parameterMap.remove(newParameter);
+            }
+            else {            	
+            	parameterMap.put(newParameter, new String[] {newValue});
+            }
             List parameterPairs = new ArrayList(parameterMap.size());
             for (Iterator iter = parameterMap.keySet().iterator(); iter.hasNext();) {
                 String thisParameter = (String) iter.next();

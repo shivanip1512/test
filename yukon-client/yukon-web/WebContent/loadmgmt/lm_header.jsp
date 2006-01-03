@@ -63,11 +63,18 @@
 				? ControlAreaActionListener.SEL_ALL_CONTROL_AREAS
 				: ControlAreaActionListener.SEL_ACTIVE_AREAS );
 	
+	int refreshIn = 60*1000;
+	if( request.getParameter("quickrefresh") != null)
+	{
+		refreshIn = 4*1000;
+	}
+	// Remove the quickrefresh parameter
+	String reloadURI = ServletUtil.tweakRequestURI(request, "quickrefresh", null);
 %>
 
 <script language="JavaScript">
 function reload()
 {
-	setTimeout( "window.location.reload(true)", 60 * 1000 );
+	setTimeout( "window.location = '<%= reloadURI %>';", <%= refreshIn %> );
 }
 </script>
