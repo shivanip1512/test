@@ -8,7 +8,7 @@ using namespace std;
 #include "cparms.h"
 #include "configkey.h"
 #include "configval.h"
-
+#include "utility.h"
 
 
 CtiConfigParameters::CtiConfigParameters(const string& strName) :

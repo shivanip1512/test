@@ -14,6 +14,7 @@
 #include <string>
 
 #include "rwutil.h"
+#include "utility.h"
 
 using boost::unit_test_framework::test_suite;
 
