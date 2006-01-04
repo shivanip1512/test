@@ -11,6 +11,7 @@
 	if (contWorkPhone != null)
 		contPhoneNo.append(", ").append(contWorkPhone.getNotification()).append("(W)");
 %>
+      <% if(account.getCompany() != null && account.getCompany().length() > 0) { %> <span class="NavText"><%=account.getCompany() %></span><br> <%}%>
       <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><%= contPhoneNo.toString() %> 
       </span><br>
       <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
