@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/01/04 17:22:47 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -61,6 +61,9 @@ public:
    int getId( void );
    void setId( const int &in );
 
+   int getUnreportedCount(void);
+   void setUnreportedCount(int count);
+
    CtiThreadRegData::Behaviours getBehaviour( void );
    void setBehaviour( CtiThreadRegData::Behaviours in );
 
@@ -101,6 +104,7 @@ private:
    bool                 _critical;//is it critical or not (default true)
    bool                 _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
    ptime                _tickledTime;
+   int					_unreportedCount;
 
    //
    //registeration: must haves

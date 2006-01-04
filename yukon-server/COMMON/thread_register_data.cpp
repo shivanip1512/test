@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:25:48 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/01/04 17:22:47 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -31,7 +31,8 @@ CtiThreadRegData::CtiThreadRegData( int id,
                                      void *args2 ) :
     _tickledTime( second_clock::local_time() ),
     _critical(true),
-    _actionTaken(false)
+    _actionTaken(false),
+	_unreportedCount(0)
 {
    _id = id;
    _name = name;
@@ -257,4 +258,21 @@ void CtiThreadRegData::setName( const string in )
 void CtiThreadRegData::setId( const int &in )
 {
    _id = in;
+}
+
+
+//===========================================================================================================
+//===========================================================================================================
+
+int CtiThreadRegData::getUnreportedCount(void)
+{
+	return _unreportedCount;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void CtiThreadRegData::setUnreportedCount(int count)
+{
+	_unreportedCount = count;
 }
