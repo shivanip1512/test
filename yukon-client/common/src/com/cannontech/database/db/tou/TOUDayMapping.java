@@ -136,7 +136,7 @@ public static final java.util.Vector getAllDayIDList(Integer scheduleID, java.sq
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT " + SETTER_COLUMNS[0] + " FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= ?";
+	String sql = "SELECT DISTINCT " + SETTER_COLUMNS[0] + " FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= ?";
 
 	try
 	{		
@@ -153,7 +153,7 @@ public static final java.util.Vector getAllDayIDList(Integer scheduleID, java.sq
 	
 			while( rset.next() )
 			{
-				tmpList.add( new Integer(rset.getInt("deviceID")) );
+				tmpList.add( new Integer(rset.getInt("TOUDayID")) );
 			}
 					
 		}		
