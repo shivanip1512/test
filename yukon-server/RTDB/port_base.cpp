@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2005/12/29 22:12:41 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/01/04 17:17:50 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.59  2006/01/04 17:17:50  tspar
+* Added an  if statement in isSimulated() , minor change preventing un-needed executions
+*
 * Revision 1.58  2005/12/29 22:12:41  cplender
 * Added _portShareQueue for support of the portsharing.
 * Allows at up to 50% comms to be shared if both comm types want time.
@@ -663,15 +666,17 @@ bool CtiPort::isSimulated() const
         set<long>::iterator itr;
         _simulated = -1;  //  default to NOT simulated
 
-        itr = gSimulatedPortList.find(getPortID());
+        if ( !gSimulatedPortList.empty() ){//If Empty, not simulated
+            itr = gSimulatedPortList.find(getPortID());
 
-        if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
-        {
-            _simulated = 1;
-        }
-        else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
-        {
-            _simulated = 1;
+            if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
+            {
+                _simulated = 1;
+            }
+            else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
+            {
+                _simulated = 1;
+            }
         }
     }
 
