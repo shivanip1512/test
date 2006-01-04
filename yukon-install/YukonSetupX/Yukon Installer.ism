@@ -1327,7 +1327,7 @@
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>StartType</td><td>3,Long</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>TagID</td><td>0,Long</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>Uninstall</td><td>-1,Bool</td></row>
-		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\dispatch "</td></row>
+		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\dispatch.exe"</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>Description</td><td>""</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DesiredAccess</td><td>983088,Long</td></row>
@@ -1403,7 +1403,7 @@
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>StartType</td><td>3,Long</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>TagID</td><td>0,Long</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>Uninstall</td><td>-1,Bool</td></row>
-		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\scanner"</td></row>
+		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\scanner.exe"</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>Description</td><td>""</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DesiredAccess</td><td>983088,Long</td></row>
