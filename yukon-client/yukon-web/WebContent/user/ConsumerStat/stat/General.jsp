@@ -249,7 +249,7 @@
                   </td>
                   <td width="171" valign="top"><span class="SubtitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                    <!--<%= account.getCompany() %><br> -->
+                    <% if(account.getCompany() != null && account.getCompany().length() > 0) { %> <%=account.getCompany() %><br> <%}%>
 					<%= ServletUtils.formatAddress(propAddr) %><br>
                     <%= homePhoneNo %></span><br>
                     <br>
