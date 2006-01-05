@@ -214,7 +214,7 @@ private:
     RWCondition dataAvailable;
     RWTPtrDlist<T>  _col;
 
-    CtiString       _name;
+    string       _name;
 public:
 
     CtiFIFOQueue() :
@@ -371,12 +371,12 @@ public:
         _col.clearAndDestroy();
     }
 
-    CtiString getName() const
+    string getName() const
     {
         return _name;
     }
 
-    CtiFIFOQueue< T > & setName(const CtiString &str)
+    CtiFIFOQueue< T > & setName(const string &str)
     {
         _name = str;
         return *this;
