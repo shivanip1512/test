@@ -80,4 +80,6 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_SO_FILTER_BY = "SOFilterBy";
 	public static final String YUK_LIST_NAME_RATE_SCHEDULE = "RateSchedule";
 	
+	public static final String YUK_LIST_NAME_SETTLEMENT_TYPE = "Settlement";
+	
 }
