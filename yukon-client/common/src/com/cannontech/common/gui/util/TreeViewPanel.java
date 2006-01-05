@@ -314,6 +314,7 @@ private void initConnections()
 				}
 		
 				dialog.setVisible(false);
+                dialog.dispose();
 			}
 		}
 	};
