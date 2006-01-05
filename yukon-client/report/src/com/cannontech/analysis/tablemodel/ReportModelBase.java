@@ -19,10 +19,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.model.DeviceTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.util.ServletUtil;
 
@@ -79,7 +77,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	private Date startDate = null;
 	private Date stopDate = null;
 	/** Class fields */
-	private int[] ecIDs = null;
+//	private int[] ecIDs = null;
+	private Integer energyCompanyID = null;
 	
 	protected static final String ATT_START_DATE = "startDate";
 	protected static final String ATT_STOP_DATE = "stopDate";
@@ -233,7 +232,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		if (startDate == null)
 		{
-			startDate = ServletUtil.getYesterday();
+			startDate = ServletUtil.getYesterday(getTimeZone());
 		}
 		return startDate;
 	}
@@ -242,7 +241,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		if( stopDate == null)
 		{
-			stopDate = ServletUtil.getTomorrow();
+			stopDate = ServletUtil.getTomorrow(getTimeZone());
 		}
 		return stopDate;		
 	}
@@ -289,26 +288,35 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * @param i
 	 */
-	public void setECIDs(Integer ecID)
+//	public void setECIDs(Integer ecID)
+//	{
+//	    if( ecID != null)
+//	        setECIDs(new int[]{ecID.intValue()});
+//	}
+
+	public void setEnergyCompanyID(Integer ecID)
 	{
-	    if( ecID != null)
-	        setECIDs(new int[]{ecID.intValue()});
+		energyCompanyID = ecID;
 	}
 	/**
 	 * @return
 	 */
-	public int[] getECIDs()
-	{
-		return ecIDs;
-	}
+//	public int[] getECIDs()
+//	{
+//		return ecIDs;
+//	}
 
-	/**
-	 * @param is
-	 */
-	public void setECIDs(int[] is)
+	public Integer getEnergyCompanyID()
 	{
-		ecIDs = is;
+		return energyCompanyID;
 	}
+//	/**
+//	 * @param is
+//	 */
+//	public void setECIDs(int[] is)
+//	{
+//		ecIDs = is;
+//	}
 
 	/**
 	 * Override this method to build an html table for a model's "options".
@@ -446,9 +454,9 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		{
 			String param = req.getParameter(ATT_EC_ID);
 			if( param != null)
-				setECIDs(Integer.valueOf(param));
+				setEnergyCompanyID(Integer.valueOf(param));
 			else
-				setECIDs((int[])null);
+				setEnergyCompanyID(null);
 				
 			param = req.getParameter(ATT_START_DATE);
 			if( param != null)
