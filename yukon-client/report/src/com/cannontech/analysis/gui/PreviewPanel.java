@@ -28,7 +28,7 @@
  * Original Author:  David Gilbert (for Simba Management Limited);
  * Contributor(s):   Thomas Morgner;
  *
- * $Id: PreviewPanel.java,v 1.3 2005/05/09 16:26:08 stacey Exp $
+ * $Id: PreviewPanel.java,v 1.4 2006/01/05 19:17:44 stacey Exp $
  *
  * Changes (from 8-Feb-2002)
  * -------------------------
@@ -58,17 +58,17 @@ package com.cannontech.analysis.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+
 import javax.swing.Action;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import org.jfree.report.JFreeReport;
+import org.jfree.report.ReportProcessingException;
 import org.jfree.report.modules.gui.base.CloseAction;
 import org.jfree.report.modules.gui.base.PreviewBaseModule;
 import org.jfree.report.modules.gui.base.PreviewProxy;
 import org.jfree.report.modules.gui.base.PreviewProxyBase;
-
-import org.jfree.report.JFreeReport;
-import org.jfree.report.ReportProcessingException;
 import org.jfree.util.ResourceBundleSupport;
 
 /**
