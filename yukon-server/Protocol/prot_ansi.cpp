@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:55 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/01/05 23:42:00 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.18  2006/01/05 23:42:00  jrichter
+      BUG FIX:  Corrected LastLPTime update situation where there are 0 complete LP blocks so it didn't insert a bogus 2036 date for lastLPTime.
+
       Revision 1.17  2005/12/20 17:19:55  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -1186,7 +1189,8 @@ void CtiProtocolANSI::convertToTable(  )
                         _lpNbrIntvlsLastBlock = 0;//_tableSixOne->getNbrBlkIntsSet(1);
                         validIntvls = _lpNbrIntvlsLastBlock;
                         getApplicationLayer().setPartialProcessLPDataFlag(false);
-                        _forceProcessDispatchMsg = true;
+                        if (_lpNbrFullBlocks > 0)
+                            _forceProcessDispatchMsg = true;
                     }
 
                     _tableSixFour = new CtiAnsiTableSixFour( getApplicationLayer().getCurrentTable(), _lpNbrFullBlocks + 1,
