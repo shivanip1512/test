@@ -120,9 +120,9 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			else
 				isKeyIncomplete = true;
 			
-			reportBean.getModel().setParameters(req);
 			reportBean.getModel().setTimeZone(tz);
-			reportBean.getModel().setECIDs(energyCompanyID);
+			reportBean.getModel().setParameters(req);
+			reportBean.getModel().setEnergyCompanyID(energyCompanyID);
 
 			//Add ECId to the reportkey.
 			reportKey += String.valueOf(energyCompanyID);
