@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/25/2005 9:48:02 AM                        */
+/* Created on:     1/5/2006 4:39:28 PM                          */
 /*==============================================================*/
 
 
@@ -1851,6 +1851,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('SettlementConfig')
+            and   type = 'U')
+   drop table SettlementConfig
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('TEMPLATE')
             and   type = 'U')
    drop table TEMPLATE
@@ -2574,7 +2582,7 @@ insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE
 /* MCT-BASE */
 insert into command values(-1, 'getvalue kWh', 'Read Energy', 'All MCTs');
 insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MCTs');
-insert into command values(-3, 'getconfig model', 'Read Options', 'All MCTs');
+insert into command values(-3, 'getconfig model', 'Read Meter Config', 'All MCTs');
 insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
 insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
 insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
@@ -2596,7 +2604,7 @@ insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Mete
 insert into command values(-19, 'getconfig time sync', 'Read Last TimeSync', 'All LP Meters');
 /* IED-BASE */
 insert into command values(-20, 'getvalue ied demand', 'Read IED Last Interval Demands', 'All IED Meters');
-insert into command values(-21, 'getvalue ied kwh', 'Read IED KWH/KW', 'All IED Meters');
+insert into command values(-21, 'getvalue ied kwht', 'Read IED KWH/KW', 'All IED Meters');
 insert into command values(-22, 'getconfig ied time', 'Read IED Date/Time', 'All IED Meters');
 insert into command values(-23, 'Not Available', 'Read IED TOU Rate [A,B,C,or D]', 'All IED Meters');
 insert into command values(-24, 'Not Available', 'Read IED Reset Count', 'All IED Meters');
@@ -2670,7 +2678,7 @@ insert into command values(-74, 'putconfig raw 35 0', 'Set LCR 3000 to Emetcon M
 insert into command values(-75, 'putconfig raw 36 1', 'Set LCR 3000 to Versacom Mode', 'VersacomSerial');
 
 /* MCT410IL */
-insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
+insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'All MCT-4xx Series');
 insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
 insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
 insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
@@ -2701,12 +2709,22 @@ insert into command values(-105, 'getvalue lp channel ?''Channel (1 or 4)'' ?''M
 insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1 (returns 1&2), 3 (returns 3&4), 5 (returns 5&6)', 'MCT-410IL');
 insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
 insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
-insert into command values(-109, 'getvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
+insert into command values(-109, 'putvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
 insert into command values(-110, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
-insert into command values(-111, 'getconfig intervals', 'Read rates for Last Interval Demand, Load Profile Demand, Voltage Last Interval Demand, Voltage Profile Demand', 'MCT-410IL');
+insert into command values(-111, 'getconfig intervals', 'Read rates for Last Interval Demand, Load Profile Demand, Voltage Last Interval Demand, Voltage Profile Demand', 'All MCT-4xx Series');
 insert into command values(-112, 'putconfig emetcon intervals', 'Write rate intervals from database to MCT', 'MCT-410IL');
 insert into command values(-113, 'putstatus emetcon freeze ?''(one or two)''', 'Reset current peak demand, write current peak demand - kW and kWh to frozen register', 'MCT-410IL');
 insert into command values(-114, 'putstatus emetcon freeze voltage ?''(one or two)''', 'Reset current min/max voltage, write current min/max voltage to frozen register', 'MCT-410IL');
+
+insert into command values(-115, 'getvalue ied current kwha', 'Read Current Rate A kWh/Peak kW', 'MCT-470');
+insert into command values(-116, 'getvalue ied current kwhb', 'Read Current Rate B kWh/Peak kW', 'MCT-470');
+insert into command values(-117, 'getvalue ied current kwhc', 'Read Current Rate C kWh/Peak kW', 'MCT-470');
+insert into command values(-118, 'getvalue ied current kwhd', 'Read Current Rate D kWh/Peak kW', 'MCT-470');
+insert into command values(-119, 'getvalue ied frozen kwha', 'Read Frozen Rate A kWh/Peak kW', 'MCT-470');
+insert into command values(-120, 'getvalue ied frozen kwhb', 'Read Frozen Rate B kWh/Peak kW', 'MCT-470');
+insert into command values(-121, 'getvalue ied frozen kwhc', 'Read Frozen Rate C kWh/Peak kW', 'MCT-470');
+insert into command values(-122, 'getvalue ied frozen kwhd', 'Read Frozen Rate D kWh/Peak kW', 'MCT-470');
+insert into command values(-123, 'getconfig options', 'Read Options', 'MCT-470');
 alter table Command
    add constraint PK_COMMAND primary key  (CommandID)
 go
@@ -4228,6 +4246,26 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-404, -111, 'MCT-410CL', 22, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-405, -112, 'MCT-410CL', 23, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-406, -113, 'MCT-410CL', 24, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-407, -114, 'MCT-410CL', 25, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-408, -1, 'MCT-470', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-409, -2, 'MCT-470', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-410, -3, 'MCT-470', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-411, -20, 'MCT-470', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-412, -21, 'MCT-470', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-413, -22, 'MCT-470', 6, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-414, -115, 'MCT-470', 7, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-415, -116, 'MCT-470', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-416, -117, 'MCT-470', 9, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-417, -118, 'MCT-470', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-418, -119, 'MCT-470', 11, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-419, -120, 'MCT-470', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-420, -121, 'MCT-470', 13, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-421, -122, 'MCT-470', 14, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-422, -123, 'MCT-470', 15, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-423, -111, 'MCT-470', 16, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-424, -7, 'MCT-470', 17, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-425, -8, 'MCT-470', 18, 'Y', -1);
+
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key  (DeviceCommandID, CommandGroupID)
 go
@@ -4463,7 +4501,7 @@ create table DynamicLMControlHistory (
    StartDateTime        datetime             not null,
    SOE_Tag              numeric              not null,
    ControlDuration      numeric              not null,
-   ControlType          varchar(32)          not null,
+   ControlType          varchar(128)         not null,
    CurrentDailyTime     numeric              not null,
    CurrentMonthlyTime   numeric              not null,
    CurrentSeasonalTime  numeric              not null,
@@ -5137,7 +5175,7 @@ create table LMControlHistory (
    StartDateTime        datetime             not null,
    SOE_Tag              numeric              not null,
    ControlDuration      numeric              not null,
-   ControlType          varchar(20)          not null,
+   ControlType          varchar(128)         not null,
    CurrentDailyTime     numeric              not null,
    CurrentMonthlyTime   numeric              not null,
    CurrentSeasonalTime  numeric              not null,
@@ -5770,7 +5808,11 @@ create table LMProgramDirectGear (
    RampInInterval       numeric              not null,
    RampInPercent        numeric              not null,
    RampOutInterval      numeric              not null,
-   RampOutPercent       numeric              not null
+   RampOutPercent       numeric              not null,
+   FrontRampOption      varchar(80)          not null,
+   FrontRampTime        numeric              not null,
+   BackRampOption       varbinary(80)        not null,
+   BackRampTime         numeric              not null
 )
 go
 
@@ -6654,6 +6696,23 @@ go
 
 
 /*==============================================================*/
+/* Table: SettlementConfig                                      */
+/*==============================================================*/
+create table SettlementConfig (
+   ConfigID             numeric              not null,
+   FieldName            varchar(64)          not null,
+   FieldValue           varchar(64)          not null,
+   CTISettlement        varchar(32)          not null
+)
+go
+
+
+alter table SettlementConfig
+   add constraint PK_SETTLEMENTCONFIG primary key  (ConfigID)
+go
+
+
+/*==============================================================*/
 /* Table: TEMPLATE                                              */
 /*==============================================================*/
 create table TEMPLATE (
@@ -7257,12 +7316,17 @@ insert into yukongrouprole values (-766,-301,-210,-21001,'(none)');
 insert into yukongrouprole values (-767,-301,-210,-21002,'(none)');
 
 insert into yukongrouprole values (-770,-301,-202,-20200,'(none)');
-insert into yukongrouprole values (-775,-301,-203,-20300,'(none)');
-insert into yukongrouprole values (-776,-301,-203,-20301,'(none)');
-insert into yukongrouprole values (-777,-301,-203,-20302,'(none)');
-insert into yukongrouprole values (-778,-301,-203,-20303,'(none)');
 
+insert into yukongrouprole values (-775,-301,-900,-90000,'(none)');
+insert into yukongrouprole values (-776,-301,-900,-90001,'(none)');
+insert into yukongrouprole values (-777,-301,-900,-90002,'(none)');
+insert into yukongrouprole values (-778,-301,-900,-90003,'(none)');
+insert into yukongrouprole values (-779,-301,-900,-90004,'(none)');
 insert into yukongrouprole values (-780,-301,-204,-20400,'(none)');
+insert into yukongrouprole values (-781,-301,-900,-90005,'(none)');
+insert into yukongrouprole values (-782,-301,-900,-90006,'(none)');
+insert into yukongrouprole values (-783,-301,-900,-90007,'(none)');
+
 insert into yukongrouprole values (-785,-301,-205,-20500,'(none)');
 
 insert into yukongrouprole values (-790,-301,-207,-20700,'(none)');
@@ -7498,12 +7562,17 @@ insert into YukonGroupRole values (-1266,-2,-210,-21001,'(none)');
 insert into YukonGroupRole values (-1267,-2,-210,-21002,'(none)');
 
 insert into YukonGroupRole values (-1270,-2,-202,-20200,'(none)');
-insert into YukonGroupRole values (-1275,-2,-203,-20300,'(none)');
-insert into YukonGroupRole values (-1276,-2,-203,-20301,'(none)');
-insert into YukonGroupRole values (-1277,-2,-203,-20302,'(none)');
-insert into YukonGroupRole values (-1278,-2,-203,-20303,'(none)');
 
+insert into YukonGroupRole values (-1275,-2,-900,-90000,'(none)');
+insert into YukonGroupRole values (-1276,-2,-900,-90001,'(none)');
+insert into YukonGroupRole values (-1277,-2,-900,-90002,'(none)');
+insert into YukonGroupRole values (-1278,-2,-900,-90003,'(none)');
+insert into YukonGroupRole values (-1279,-2,-900,-90004,'(none)');
 insert into YukonGroupRole values (-1280,-2,-204,-20400,'(none)');
+insert into YukonGroupRole values (-1281,-2,-900,-90005,'(none)');
+insert into YukonGroupRole values (-1282,-2,-900,-90006,'(none)');
+insert into YukonGroupRole values (-1283,-2,-900,-90007,'(none)');
+
 insert into YukonGroupRole values (-1285,-2,-205,-20500,'(none)');
 
 insert into YukonGroupRole values (-1290,-2,-207,-20700,'(none)');
@@ -8253,7 +8322,6 @@ insert into YukonRole values(-109,'Reporting','Application','Access to reports g
 insert into YukonRole values(-200,'Administrator','Operator','Access to Yukon administration');
 insert into YukonRole values(-201,'Consumer Info','Operator','Operator access to consumer account information');
 insert into YukonRole values(-202,'Commercial Metering','Operator','Operator access to commerical metering');
-insert into YukonRole values(-203,'Direct Loadcontrol','Operator','Operator  access to direct loadcontrol');
 insert into YukonRole values(-204,'Direct Curtailment','Operator','Operator access to direct curtailment');
 insert into YukonRole values(-205,'Energy Buyback','Operator','Operator access to energy buyback');
 
@@ -8274,7 +8342,7 @@ insert into YukonRole values(-301,'Curtailment','CICustomer','Customer access to
 insert into YukonRole values(-302,'Energy Buyback','CICustomer','Customer access to commercial/industrial customer energy buyback');
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
 insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privilages.');
-insert into YukonRole values(-306, 'User Control', 'CICustomer', 'Customer access to user control operations.');
+insert into YukonRole values(-306,'User Control', 'CICustomer', 'Customer access to user control operations.');
 
 /* Consumer roles */
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
@@ -8285,6 +8353,8 @@ insert into YukonRole values (-700,'CBC Control','CapBank Control','Allows the u
 /* IVR roles */
 insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
 
+/* Load Control roles */
+insert into YukonRole values(-900,'Direct Loadcontrol','Load Control','Access and usage of direct loadcontrol system');
 alter table YukonRole
    add constraint PK_YUKONROLE primary key  (RoleID)
 go
@@ -8508,6 +8578,7 @@ insert into YukonRoleProperty values(-20154,-201,'Automatic Configuration','fals
 insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
+insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -8521,12 +8592,6 @@ insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','
 
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
-
-/* Operator Direct Loadcontrol Role Properties */
-insert into YukonRoleProperty values(-20300,-203,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
-insert into YukonRoleProperty values(-20301,-203,'Individual Switch','true','Controls access to operator individual switch control');
-insert into YukonRoleProperty values(-20302,-203,'3 Tier Direct Control','false','Allows access to the 3-tier load management web interface');
-insert into YukonRoleProperty values(-20303,-203,'Direct Loadcontrol','true','Allows access to the Direct load management web interface');
 
 /* Operator Direct Curtailment Role Properties */
 insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
@@ -8726,6 +8791,17 @@ insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','All
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
 insert into YukonRoleProperty values(-80002,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
+
+
+/* Loadcontrol Role Properties */
+insert into YukonRoleProperty values(-90000,-900,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
+insert into YukonRoleProperty values(-90001,-900,'Individual Switch','true','Controls access to operator individual switch control');
+insert into YukonRoleProperty values(-90002,-900,'3 Tier Direct Control','false','Allows access to the 3-tier load management web interface');
+insert into YukonRoleProperty values(-90003,-900,'Direct Loadcontrol','true','Allows access to the Direct load management web interface');
+insert into YukonRoleProperty values(-90004,-900,'Constraint Check','true','Allow load management program constraints to be CHECKED before starting');
+insert into YukonRoleProperty values(-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');
+insert into YukonRoleProperty values(-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
+insert into YukonRoleProperty values(-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
 go
@@ -9080,14 +9156,19 @@ insert into YukonUserRole values (-757,-1,-201,-20157,'(none)');
 
 insert into YukonUserRole values (-765,-1,-210,-21000,'(none)');
 insert into YukonUserRole values (-766,-1,-210,-21001,'(none)');
-
 insert into YukonUserRole values (-770,-1,-202,-20200,'(none)');
-insert into YukonUserRole values (-775,-1,-203,-20300,'(none)');
-insert into YukonUserRole values (-776,-1,-203,-20301,'(none)');
-insert into YukonUserRole values (-777,-1,-203,-20302,'(none)');
-insert into YukonUserRole values (-778,-1,-203,-20303,'(none)');
 
+insert into YukonUserRole values (-775,-1,-900,-90000,'(none)');
+insert into YukonUserRole values (-776,-1,-900,-90001,'(none)');
+insert into YukonUserRole values (-777,-1,-900,-90002,'(none)');
+insert into YukonUserRole values (-778,-1,-900,-90003,'(none)');
+insert into YukonUserRole values (-779,-1,-900,-90004,'(none)');
 insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
+insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
+insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');
+insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
+
+
 insert into YukonUserRole values (-785,-1,-205,-20500,'(none)');
 insert into YukonUserRole values (-790,-1,-207,-20700,'(none)');
 insert into YukonUserRole values (-791,-1,-209,-20900,'(none)');
