@@ -1,13 +1,21 @@
 package com.cannontech.database.cache.functions;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Iterator;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.RawPointHistory;
 
 /**
  * Insert the type's description here.
@@ -176,6 +184,59 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 		}
 	
 		return PointTypes.SYS_PID_SYSTEM; //not found
+	}
+	/**
+	 * Queries Rawpointhistory for the most recent entry for pointID.
+	 * Use this function in when PointChangeCache does not give you the most recent PointData.
+	 * @param pointID
+	 * @return
+	 */
+	public static Double retrieveCICustomerPointData(int pointID)
+	{
+		Double data = new Double(0);
+		String sqlString = "SELECT TIMESTAMP, VALUE FROM " + RawPointHistory.TABLE_NAME +
+			" WHERE POINTID = " + pointID + 
+			" ORDER BY TIMESTAMP DESC ";
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
+		try
+		{
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sqlString);
+
+			while (rset.next())
+			{
+				Timestamp ts = rset.getTimestamp(1);
+				double value = rset.getDouble(2);
+
+				data = new Double(value);
+				break;
+			}
+		}
+		catch (java.sql.SQLException e)
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if (rset != null)
+					rset.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			}
+			catch (java.sql.SQLException e)
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+		}
+		return data;
 	}
 	
 }
