@@ -472,6 +472,38 @@ function removeAllMembers(form) {
 <%
 	}
 %>
+
+                    <%//TODO add some role property for settlement%>
+					<tr> 
+                      <td><b><font color="#0000FF">Settlement Setup:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="1" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <%
+                               	YukonSelectionList list = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
+								for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+									YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+								%>
+                                <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
+                                  <td class="TableCell" width="30%"><%= entry.getEntryText() %></td>
+                                  <td class="TableCell" width="40%"> 
+                                    <hr width="90%" align="left">
+                                  </td>
+                                  <td class="TableCell" width="25%"> 
+                                 	<input type="button" name="Edit" value="Edit" onclick="location.href='SettlementConfig.jsp?YukDefID=<%= entry.getYukonDefID() %>'">
+                                  </td>
+                                </tr>
+                                <% } %>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <br>
+                      </td>
+                    </tr>
+
                     <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
 					<tr>
                       <td>
