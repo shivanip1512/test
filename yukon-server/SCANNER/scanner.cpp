@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2005/12/20 17:20:45 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/01/05 18:26:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1196,7 +1196,7 @@ void InitScannerGlobals(void)
     {
         string Temp = gConfigParms.getValueAsString("SCANNER_QUEUE");
         std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
-        
+
         if(Temp == "true" || Temp == "yes")
         {
             CCUNoQueue = FALSE;
@@ -1596,7 +1596,18 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         if(OutMessage->ExpirationTime == 0)
         {
             // Scanner is about to make some big decisions...
-            OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 10800);
+
+            LONG exptime = gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 3600);
+
+            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(OutMessage->TargetID);
+            if(pBase)
+            {
+                CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase.get();
+                exptime = DeviceRecord->getScanRate(ScanRateGeneral);
+                if(exptime < 60) exptime = 60;                                  // Don't expire any faster than once per minute
+            }
+
+            OutMessage->ExpirationTime = RWTime().seconds() + exptime;
         }
 
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
