@@ -131,10 +131,7 @@ public class DatabaseCacheBean implements IDatabaseCache
       return getCache().getAllDevices();
    }
    
-   /* (non-Javadoc)
-	* @see com.cannontech.yukon.IDatabaseCache#getAllDeviceTypeCommands()
-	*/
-   public List getAllDeviceTypeCommands()
+   public synchronized List getAllDeviceTypeCommands()
    {
 	   return getCache().getAllDeviceTypeCommands();
    }
@@ -179,12 +176,12 @@ public class DatabaseCacheBean implements IDatabaseCache
 	  return getCache().getAllSeasonSchedules();
    }
    
-   public List getAllCommands()
+   public synchronized List getAllCommands()
    {
 	   return getCache().getAllCommands();
    }
    
-   public Map getAllCommandsMap()
+   public synchronized Map getAllCommandsMap()
    {
 	   return getCache().getAllCommandsMap();
    }
@@ -266,7 +263,7 @@ public class DatabaseCacheBean implements IDatabaseCache
 	  return getCache().getAllLMControlAreas();
    }
 
-   public List getAllLMGroups()
+   public synchronized List getAllLMGroups()
    {
        return getCache().getAllLMGroups();
    }   
@@ -587,10 +584,7 @@ public class DatabaseCacheBean implements IDatabaseCache
       getCache().releaseAllDeviceMeterGroups();
    }
 
-   /* (non-Javadoc)
-	* @see com.cannontech.yukon.IDatabaseCache#releaseAllDeviceTypeCommands()
-	*/
-   public void releaseAllDeviceTypeCommands()
+   public synchronized void releaseAllDeviceTypeCommands()
    {
 	   getCache().releaseAllDeviceTypeCommands();
    }
@@ -632,7 +626,7 @@ public class DatabaseCacheBean implements IDatabaseCache
 	  getCache().releaseAllSeasonSchedules();
    }
 
-   public void releaseAllCommands()
+   public synchronized void releaseAllCommands()
    {
 	   getCache().releaseAllCommands();
    }   
@@ -753,27 +747,17 @@ public class DatabaseCacheBean implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_CollectionGroups()
-	 */
-	public List getAllDMG_CollectionGroups()
+	public synchronized List getAllDMG_CollectionGroups()
 	{
 		return getCache().getAllDMG_CollectionGroups();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_AlternateGroups()
-	 */
-	public List getAllDMG_AlternateGroups()
+	public synchronized  List getAllDMG_AlternateGroups()
 	{
 		return getCache().getAllDMG_AlternateGroups();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_BillingGroups()
-	 */
-	public List getAllDMG_BillingGroups()
+	public synchronized List getAllDMG_BillingGroups()
 	{
 		return getCache().getAllDMG_BillingGroups();
 	}
@@ -845,4 +829,17 @@ public class DatabaseCacheBean implements IDatabaseCache
         getCache().releaseUserContactMap();
     }
 
+	public synchronized List getAllSettlementConfigs()
+	{
+		return getCache().getAllSettlementConfigs();	  
+	}
+
+	public synchronized void releaseAllSettlementConfigs()
+	{
+		getCache().releaseAllSettlementConfigs();
+	}
+	public synchronized Map getAllSettlementConfigsMap()
+	{
+		return getCache().getAllSettlementConfigsMap();
+	}
 }

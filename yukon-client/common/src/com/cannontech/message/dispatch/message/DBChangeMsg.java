@@ -53,10 +53,9 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TOU_SCHEDULE_DB = 24;
 	public static final int CHANGE_CBC_STRATEGY_DB = 25;
 	public static final int CHANGE_PAO_SCHEDULE_DB = 26;
-	
+	public static final int CHANGE_SETTLEMENT_DB = 27;	
 
 
-	
 	public static final String CAT_POINT = "Point";
 	public static final String CAT_STATEGROUP ="StateGroup";
 	public static final String CAT_NOTIFCATIONGROUP = "NotificationGroup";
@@ -81,9 +80,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_TOU_SCHEDULE = "TOU Schedule";
 	public static final String CAT_CBC_STRATEGY = "CBC Strategy";
 	public static final String CAT_PAO_SCHEDULE = "PAO Schedule";
-
-
-
+	public static final String CAT_SETTLEMENT = "Settlement";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

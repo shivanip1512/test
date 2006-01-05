@@ -74,6 +74,10 @@ public interface IDatabaseCache
 	
 	//Map<Integer(stateGroupID), LiteStateGroup>
 	public java.util.Map getAllStateGroupMap();
+	
+	public java.util.List getAllSettlementConfigs();
+	//Map<Integer(configID), LiteSettlementConfig>
+	public java.util.Map getAllSettlementConfigsMap();
 
 	public java.util.List getAllTags();
 	public java.util.List getAllUnitMeasures();
@@ -175,6 +179,7 @@ public interface IDatabaseCache
 	public void releaseAllLMScenarios();
 	public void releaseAllLMPAOExclusions();
 	public void releaseAllTags();
+	public void releaseAllSettlementConfigs();
 	public void releaseAllSeasonSchedules();
 	public void releaseAllTOUSchedules();
 	public void releaseAllTOUDays();

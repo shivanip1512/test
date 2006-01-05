@@ -318,10 +318,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllLMPrograms();
    }
 
-   /* (non-Javadoc)
-	* @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
-	*/
-   public List getAllLMControlAreas()
+   public synchronized List getAllLMControlAreas()
    {
 	   return getDBCache().getAllLMControlAreas();
    }
@@ -771,27 +768,18 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	   getDBCache().releaseAllTags();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllDeviceTypeCommands()
-	 */
-	public List getAllDeviceTypeCommands()
+	public synchronized List getAllDeviceTypeCommands()
 	{
 		return getDBCache().getAllDeviceTypeCommands();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.yukon.IDatabaseCache#releaseAllDeviceTypeCommands()
-	 */
-	public void releaseAllDeviceTypeCommands()
+	public synchronized void releaseAllDeviceTypeCommands()
 	{
 		getDBCache().releaseAllDeviceTypeCommands();
 		
 	}
 
-    /* (non-Javadoc)
-     * @see com.cannontech.yukon.IDatabaseCache#getAllLMGroups()
-     */
-    public List getAllLMGroups()
+    public synchronized List getAllLMGroups()
     {
         return getDBCache().getAllLMGroups();
     }
@@ -863,5 +851,20 @@ public class DefaultDatabaseCache implements IDatabaseCache
     public void releaseUserContactMap() {
         getDBCache().releaseUserContactMap();
     }
+
+	public synchronized List getAllSettlementConfigs()
+	{
+		return getDBCache().getAllSettlementConfigs();
+	}
+
+	public synchronized void releaseAllSettlementConfigs()
+	{
+		getDBCache().releaseAllSettlementConfigs();		
+	}
+
+	public synchronized Map getAllSettlementConfigsMap()
+	{
+		return getDBCache().getAllSettlementConfigsMap();
+	}
 
 }

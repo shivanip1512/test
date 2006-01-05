@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -90,6 +91,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allLMPAOExclusions = null;
 
 	private ArrayList allTags = null;
+	private ArrayList allSettlementConfigs = null;
+	private Map allSettlementConfigsMap = null;
+	
 	private ArrayList allSeasonSchedules = null;
 	private ArrayList allGears = null;
 	private ArrayList allTOUSchedules = null;
@@ -1157,6 +1161,30 @@ public synchronized java.util.List getAllTags() {
 	return allTags;
 }
 
+public synchronized java.util.List getAllSettlementConfigs() {
+	if(allSettlementConfigs == null)
+	{
+		allSettlementConfigs = new ArrayList();
+		allSettlementConfigsMap = new HashMap();
+		SettlementConfigLoader stlmtCfgLoader = new SettlementConfigLoader(allSettlementConfigs, allSettlementConfigsMap, databaseAlias);
+		stlmtCfgLoader.run();
+	}
+	return allSettlementConfigs;
+}
+
+public synchronized java.util.Map getAllSettlementConfigsMap()
+{
+	if( allSettlementConfigsMap != null )
+		return allSettlementConfigsMap;
+	else
+	{
+		releaseAllSettlementConfigs();
+		getAllSettlementConfigs();
+
+		return allSettlementConfigsMap;
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -1897,6 +1925,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		}
 		retLBase = null;
 	}
+	else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
+	{
+		retLBase = handleSettlementConfigChange(dbType, id);
+	}
 	else  //let it all go!!
 		releaseAllCache();
 
@@ -2551,7 +2583,55 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 
 	return lTag;
 }
+private synchronized LiteBase handleSettlementConfigChange( int changeType, int id)
+{
+	LiteBase lBase = null;
 
+	// if the storage is not already loaded, we must not care about it
+	if( allSettlementConfigs == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+
+			lBase = (LiteBase)allSettlementConfigsMap.get( new Integer(id));
+			if( lBase == null)
+			{
+				LiteSettlementConfig lsc = new LiteSettlementConfig(id);
+				lsc.retrieve(databaseAlias);
+				allSettlementConfigs.add(lsc);
+				allSettlementConfigsMap.put( new Integer(lsc.getConfigID()), lsc);
+				
+				lBase = lsc;
+			}
+			break;
+			
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+			
+			LiteSettlementConfig lsc = (LiteSettlementConfig)allSettlementConfigsMap.get(new Integer(id));
+			lsc.retrieve(databaseAlias);
+			lBase = lsc;
+			break;
+			
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+			for(int i=0;i<allSettlementConfigs.size();i++)
+			{
+				if( ((LiteSettlementConfig)allSettlementConfigs.get(i)).getConfigID() == id )
+				{
+					allSettlementConfigsMap.remove( new Integer(id));
+					lBase = (LiteBase)allSettlementConfigs.remove(i);
+					break;
+				}
+			}
+			break;
+		default:
+				releaseAllSettlementConfigs();
+				break;
+	}
+
+	return lBase;
+}
 private synchronized LiteBase handleLMProgramConstraintChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -3123,6 +3203,8 @@ public synchronized void releaseAllCache()
 	allLMScenarioProgs = null;
 
 	allTags = null;
+	allSettlementConfigs = null;
+	allSettlementConfigsMap = null;
 	allSeasonSchedules = null;
 	allGears = null;
 	allDeviceTypeCommands = null;
@@ -3246,6 +3328,12 @@ public synchronized void releaseAllConfigs()
 public synchronized void releaseAllTags()
 {
 	allTags = null;
+}
+
+public synchronized void releaseAllSettlementConfigs()
+{
+	allSettlementConfigs = null;
+	allSettlementConfigsMap = null;
 }
 
 public synchronized void releaseAllLMProgramConstraints()
