@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/20 20:07:07 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/01/05 21:05:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -717,5 +717,11 @@ long CtiPorterVerification::logIDGen(bool force)
     }   // Temporary results are destroyed to free the connection
 
     return(++id);
+}
+
+long CtiPorterVerification::report() const
+{
+    long cnt = _work_queue.size() + _input.entries();
+    return cnt;
 }
 

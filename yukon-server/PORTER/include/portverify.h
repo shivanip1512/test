@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:25 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/01/05 21:05:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ class CtiPorterVerification : public CtiThread
 private:
 
     //  the input queue
-    CtiQueue< CtiVerificationBase, less< CtiVerificationBase > > _input;
+    CtiFIFOQueue< CtiVerificationBase > _input;
 
     //  the structures associating verification receivers with transmitters
     struct association
@@ -95,7 +95,7 @@ public:
 
     void run();
 
-    void report();
+    long report() const;
 };
 
 #endif // #ifndef __PORTVERIFY_H__
