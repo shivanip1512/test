@@ -34,7 +34,7 @@ private:
         modulo
     }                    _operationType;
     double               _constantValue;
-    string            _functionName;
+    string               _functionName;
     CtiCalc              *_calcpoint;
     int                  _pointUpdated;
     BOOL                 _valid;
@@ -51,7 +51,7 @@ public:
     CtiCalcComponent( ) :
     _componentType(constant), _pointId(-1), _componentPointId(-1), _operationType(multiplication),
     _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _calcpoint(NULL)
-    {}
+    {};
 
     CtiCalcComponent( const string &componentType, long componentPointId, const string &operationType,
                       double constantValue, const string &functionName );
