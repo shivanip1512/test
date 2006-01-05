@@ -8,12 +8,14 @@
 package com.cannontech.multispeak;
 
 import java.math.BigInteger;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import org.apache.axis.MessageContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -33,7 +35,9 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 
 	public com.cannontech.multispeak.ArrayOfString getMethods() throws java.rmi.RemoteException {
 		init();
-		String [] methods = new String[]{"pingURL", "getMethods", "getAMRSupportedMeters", "getLatestReadingByMeterNo", "isAMRMeter"};		
+		String [] methods = new String[]{"pingURL", "getMethods", 
+										 "getAMRSupportedMeters", "getLatestReadingByMeterNo",
+										 "getReadingsByMeterNo", "isAMRMeter"};		
 		return MultispeakFuncs.getMethods(INTERFACE_NAME , methods);
 	}
 
@@ -115,28 +119,24 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 
     public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
 		init();
-		String key = "meternumber";//MultispeakFuncs.getUniqueKey();
-		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		List allMeters = cache.getAllDeviceMeterGroups();
 
+		String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
+		MultispeakVendor vendor = Multispeak.getInstance().getMultispeakVendor(companyName);
+		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+		
 		if( meterNo != null && meterNo.length() > 0)
 		{
-			for (int i = 0; i < allMeters.size(); i++)
+			LiteYukonPAObject lPao = null;
+			if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+				lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNo);
+			else //if(key.toLowerCase().startsWith("meternum"))
+				lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNo);
+
+			if( lPao != null)
 			{
-				LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
-				String lastValue = "";
-				if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-					lastValue = PAOFuncs.getYukonPAOName(ldmn.getDeviceID());
-				else //if(key.toLowerCase().startsWith("meternum"))
-					lastValue = ldmn.getMeterNumber();
-			
-				if( lastValue.compareTo(meterNo) == 0)
-				{
-					CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
-					return true;
-				}					
-			}
+				CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
+				return true;
+			}					
 		}		
 		CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter() NOT found, returning false." );
         return false;
@@ -148,32 +148,27 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
     }
 
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
-		init();
-        return null;
+	//		init();	//init is already performed on the call to isAMRMeter()
+		if( ! isAMRMeter(meterNo))
+			throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
+		
+		MeterRead[] meterReads = Multispeak.getInstance().retrieveMeterReads(meterNo, startDate.getTime(), endDate.getTime());
+		ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
+	 
+        return arrayOfMeterReads;
     }
 
     public com.cannontech.multispeak.MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
 //		init();	//init is already performed on the call to isAMRMeter()
 		if( ! isAMRMeter(meterNo))
-		{
-		    MeterRead errorMR = new MeterRead();
-		    errorMR.setDeviceID(meterNo);
-		    errorMR.setObjectID(meterNo);
-		    errorMR.setMeterNo(meterNo);
-		    errorMR.setErrorString("MeterNumber (" + meterNo + "): NOT found.");
-		    return errorMR;
-		}
+			throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
+
 		if ( ! Multispeak.getInstance().getPilConn().isValid() )	//perform this after isAMRMeter so init() is called.
-		{
-		    MeterRead errorMR = new MeterRead();
-		    errorMR.setDeviceID(meterNo);
-		    errorMR.setObjectID(meterNo);
-		    errorMR.setMeterNo(meterNo);
-		    errorMR.setErrorString("Connection to Yukon Porter is not valid.  Please contact your Yukon administrator.");
-		    return errorMR;
-		}		
+			throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+
 		String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
 		return Multispeak.getInstance().MeterReadEvent(companyName, meterNo, "getvalue kwh update");
+
     }
 
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
