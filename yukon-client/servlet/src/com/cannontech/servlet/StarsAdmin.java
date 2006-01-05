@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,6 +20,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
@@ -27,6 +30,8 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteAddress;
@@ -44,6 +49,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
@@ -57,6 +64,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.SettlementConfigFuncs;
 import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -208,7 +216,8 @@ public class StarsAdmin extends HttpServlet {
 			updateMemberEnergyCompany( user, req, session );
 		else if (action.equalsIgnoreCase("RemoveMemberEnergyCompany"))
 			removeMemberEnergyCompany( user, req, session );
-        
+        else if( action.equalsIgnoreCase("UpdateSettlementConfig"))
+        	updateSettlementConfig(user, req, session);
 		resp.sendRedirect( redirect );
 	}
 	
@@ -356,6 +365,170 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	private void updateSettlementConfig(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		Vector paramNames = new Vector();
+		java.util.Enumeration enum1 = req.getParameterNames();
+				  while (enum1.hasMoreElements()) {
+					String ele = enum1.nextElement().toString();
+					paramNames.add(ele);
+					String [] vals = req.getParameterValues(ele);
+					for (int i= 0; i < vals.length; i++)
+					 CTILogger.info(ele + " - "+i + ": " + vals[i]);
+				}
+		
+		String yukDefIDStr = req.getParameter("YukonDefID");
+		int yukDefID = (yukDefIDStr == null ? -1 : Integer.valueOf(yukDefIDStr).intValue());
+		
+		String stlmtEntryIDStr= req.getParameter("SettlementEntryID");
+		int stlmtEntryID = (stlmtEntryIDStr == null ? -1 : Integer.valueOf(stlmtEntryIDStr).intValue());
+		
+		Vector validRateEntryID = new Vector();
+		for (int i = 0; i < paramNames.size(); i++)
+		{
+			String param = (String)paramNames.get(i);
+			String paramVal = req.getParameter(param);
+			if( param.startsWith("ConfigID") )
+			{
+				String configIDStr = param.substring(8);
+				int configID = Integer.valueOf(configIDStr).intValue();
+				LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(configID);
+				if (lsc.getConfigID() >= 0)
+				{
+					if( lsc != null && !lsc.getFieldValue().equalsIgnoreCase(paramVal))//only update the DBPers if the field Value actually changed
+						SettlementConfigFuncs.updateSettlementConfigTrx(lsc, paramVal);
+				}
+				else	//need to add new entries!
+				{
+					SettlementConfig newSC = new SettlementConfig();
+					newSC.setConfigID(SettlementConfig.getNextConfigID());
+					newSC.setFieldName(lsc.getFieldName());
+					newSC.setFieldValue(paramVal);
+					newSC.setCtiSettlement(SettlementConfigFuncs.getCTISettlementStr(yukDefID));
+					newSC.setYukonDefID(new Integer(yukDefID));
+					newSC.setDescription(lsc.getDescription());
+					newSC.setEntryID(new Integer(stlmtEntryID));
+					newSC.setRefEntryID(new Integer(0));
+					try
+					{
+						Transaction.createTransaction(Transaction.INSERT, newSC).execute();
+						DBChangeMsg msg = new DBChangeMsg(
+							newSC.getConfigID().intValue(),
+							DBChangeMsg.CHANGE_SETTLEMENT_DB,
+							DBChangeMsg.CAT_SETTLEMENT,
+							DBChangeMsg.CAT_SETTLEMENT,
+							DBChangeMsg.CHANGE_TYPE_ADD
+							);
+						ServerUtils.handleDBChangeMsg(msg);
+					}
+					catch (TransactionException e)
+					{
+						e.printStackTrace();
+					}
+						
+				}
+					//TODO if configid<0 then create new entry, else update entry.
+			}
+			else if( param.startsWith("EntryID"))
+			{
+				String entryIDStr = param.substring(7);
+				int entryID = 0;
+				int rateIndex = -1;
+				if( (rateIndex=param.indexOf("RateID")) > 0)	//There is a Rate Config in this string also
+				{
+					entryID = Integer.valueOf(param.substring(7, rateIndex)).intValue();
+					String configIDStr = param.substring(rateIndex+6);
+					int configID = Integer.valueOf(configIDStr).intValue();
+					
+					if( configID >= 0)	//custom rate, IDs < 0 are Yukon defaults.  Just need to update the SettlementConfig entry
+					{
+						LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(configID);
+						if( lsc != null && !lsc.getFieldValue().equalsIgnoreCase(paramVal)) //only update the DBPers if the field Value actually changed
+							SettlementConfigFuncs.updateSettlementConfigTrx(lsc, paramVal);
+					}
+					else	//Need to create a new entry in SettlementConfig
+					{
+						LiteSettlementConfig defaultLSC = SettlementConfigFuncs.getLiteSettlementConfig(configID);
+						
+						//Create a new (but very similar, so we can mostly copy) SettlementConfig entry
+						SettlementConfig newSC = new SettlementConfig();
+						newSC.setConfigID(SettlementConfig.getNextConfigID());
+						newSC.setFieldName(defaultLSC.getFieldName());	//the default FieldValue becomes the New entries FieldName
+						newSC.setFieldValue(paramVal);
+						newSC.setCtiSettlement(SettlementConfigFuncs.getCTISettlementStr(yukDefID));
+						newSC.setYukonDefID(new Integer(yukDefID));
+						newSC.setDescription(defaultLSC.getDescription());
+						newSC.setEntryID(new Integer(stlmtEntryID));
+						newSC.setRefEntryID(new Integer(entryID));
+						
+						try
+						{
+							Transaction.createTransaction(Transaction.INSERT, newSC).execute();
+							DBChangeMsg msg = new DBChangeMsg(
+								newSC.getConfigID().intValue(),
+								DBChangeMsg.CHANGE_SETTLEMENT_DB,
+								DBChangeMsg.CAT_SETTLEMENT,
+								DBChangeMsg.CAT_SETTLEMENT,
+								DBChangeMsg.CHANGE_TYPE_ADD
+								);
+							ServerUtils.handleDBChangeMsg(msg);
+						}
+						catch (TransactionException e)
+						{
+							e.printStackTrace();
+						}						
+					}
+				}
+				else	//only an EntryID
+				{ 
+					entryID = Integer.valueOf(entryIDStr).intValue();
+				}
+				validRateEntryID.add(new Integer(entryID));
+			}
+		}
+		
+		//loop through all updated/inserted Rates and remove all from the settlement config that were not submitted in this request
+		Vector allConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(yukDefID);
+		for (int i = 0; i < allConfigs.size(); i++)
+		{
+			LiteSettlementConfig lsc = (LiteSettlementConfig)allConfigs.get(i);
+			if( lsc.getEntryID() > 0 && lsc.getEntryID() != stlmtEntryID)	//0 is default for no mapping to a YukonListEntry
+			{
+				boolean deleteRate = true;
+				for (int j = 0; j < validRateEntryID.size(); j++)
+				{
+					if( ((Integer)validRateEntryID.get(j)).intValue() == lsc.getEntryID())
+					{
+						deleteRate = false;
+						break;
+					}
+				}
+				if( deleteRate)
+				{
+					try
+					{
+						CTILogger.info("DELETEING RATE: " + lsc.getConfigID());
+						SettlementConfig delSC = (SettlementConfig)LiteFactory.createDBPersistent(lsc);
+						Transaction.createTransaction(Transaction.DELETE, delSC).execute();
+						DBChangeMsg msg = new DBChangeMsg(
+							lsc.getConfigID(),
+							DBChangeMsg.CHANGE_SETTLEMENT_DB,
+							DBChangeMsg.CAT_SETTLEMENT,
+							DBChangeMsg.CAT_SETTLEMENT,
+							DBChangeMsg.CHANGE_TYPE_DELETE
+							);
+						ServerUtils.handleDBChangeMsg(msg);
+					}
+					catch (TransactionException e)
+					{
+						e.printStackTrace();
+					}						
+				}
+			}
+		}
+	}
+		
 	private void updateEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
