@@ -51,15 +51,17 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/** A string for the title of the data */
 	private static String title = "Load Control Verification";
 	
-	private Integer receiverID = null;
-	private Integer transmitterID = null;
+	private int[] receiverIDs = null;
+	private int[] transmitterIDs = null;
+//	private Integer receiverID = null;
+//	private Integer transmitterID = null;
 
 	private String command = null;
 	private String code = null;
 	
 	//	servlet attributes/parameter strings
-	protected static final String ATT_RECEIVER_ID = "receiverID";
-	protected static final String ATT_TRANSMITTER_ID = "transmitterID";
+	protected static final String ATT_RECEIVER_IDS = "receiverID";
+	protected static final String ATT_TRANSMITTER_IDS = "transmitterID";
 	protected static final String ATT_LC_COMMAND = "lcCommand";
 	protected static final String ATT_LC_CODE = "lcCode";
 	/**
@@ -132,10 +134,23 @@ public class LoadControlVerificationModel extends ReportModelBase
 			" FROM DYNAMICVERIFICATION ");
 			sql.append(" WHERE (TIMEARRIVAL > ?) AND (TIMEARRIVAL <= ?)");
 			
-			if( getTransmitterID() != null)
-				sql.append(" AND TRANSMITTERID = " + getTransmitterID().intValue());
-			else if ( getReceiverID() != null)
-				sql.append(" AND RECEIVERID = " + getReceiverID().intValue());
+//			Use transmitterIDs in query if they exist			
+			if( getTransmitterIDs() != null && getTransmitterIDs().length > 0)
+			{
+				sql.append(" AND TRANSMITTERID IN (" + getTransmitterIDs()[0]);
+			  	for (int i = 1; i < getTransmitterIDs().length; i++)
+					sql.append(", " + getTransmitterIDs()[i]);
+			  	sql.append(") ");
+			}
+			
+//			Use receiverIDs in query if they exist			
+			if( getReceiverIDs() != null && getReceiverIDs().length > 0)
+			{
+				sql.append(" AND RECEIVERID IN (" + getReceiverIDs()[0]);
+			  	for (int i = 1; i < getReceiverIDs().length; i++)
+					sql.append(", " + getReceiverIDs()[i]);
+			  	sql.append(") ");
+			}
 			
 			if( getCommand() != null)
 				sql.append(" AND COMMAND LIKE '%" + getCommand() + "%'" );
@@ -371,7 +386,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "          <td valign='top' class='TitleHeader'>" +LINE_SEPARATOR;
 
 		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.TRANSMITTER) +"' style='display:true'>" + LINE_SEPARATOR;
-		html += "              <select name='" + ATT_TRANSMITTER_ID+ "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
+		html += "              <select name='" + ATT_TRANSMITTER_IDS + "' size='10' multiple style='width:300px;'>" + LINE_SEPARATOR;
 
 		List objects = getObjectsByModelType(ModelFactory.TRANSMITTER);
 		if (objects != null)
@@ -397,7 +412,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "          <td valign='top' class='TitleHeader'>" +LINE_SEPARATOR;
 
 		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.RECEIVERS) +"' style='display:true'>" + LINE_SEPARATOR;
-		html += "            <select name='" + ATT_RECEIVER_ID+ "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
+		html += "            <select name='" + ATT_RECEIVER_IDS + "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
 
 		objects = getObjectsByModelType(ModelFactory.RECEIVERS);
 		if (objects != null)
@@ -442,19 +457,33 @@ public class LoadControlVerificationModel extends ReportModelBase
 		super.setParameters(req);
 		if( req != null)
 		{
-			String param = req.getParameter(ATT_TRANSMITTER_ID);
-			if (param != null)
-				setTransmitterID(Integer.valueOf(param));
+		    String[] paramArray = req.getParameterValues(ATT_TRANSMITTER_IDS);
+			if( paramArray != null)
+			{
+				int [] idsArray = new int[paramArray.length];
+				for (int i = 0; i < paramArray.length; i++)
+				{
+					idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+				}
+				setTransmitterIDs(idsArray);
+			}
 			else
-				setTransmitterID(null);
-
-			param = req.getParameter(ATT_RECEIVER_ID);
-			if (param != null)
-				setReceiverID(Integer.valueOf(param));
+				setTransmitterIDs(null);
+			
+		    paramArray = req.getParameterValues(ATT_RECEIVER_IDS);
+			if( paramArray != null)
+			{
+				int [] idsArray = new int[paramArray.length];
+				for (int i = 0; i < paramArray.length; i++)
+				{
+					idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+				}
+				setReceiverIDs(idsArray);
+			}
 			else
 				setReceiverID(null);
 
-			param = req.getParameter(ATT_LC_COMMAND);
+			String param = req.getParameter(ATT_LC_COMMAND);
 			if( param != null && param.length() > 0)
 				setCommand(param);	//ALL Of them!
 			else
@@ -465,6 +494,29 @@ public class LoadControlVerificationModel extends ReportModelBase
 				setCode(param);
 			else 
 				setCode(null);
+				
+				
+			//These are custom parameter values declared in the Reports.jsp file
+			param = req.getParameter("startHour");
+			String param2 = req.getParameter("startMinute");
+			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
+			{
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(getStartDate());
+				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
+				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
+				setStartDate(cal.getTime());
+			}
+			param = req.getParameter("stopHour");
+			param2 = req.getParameter("stopMinute");
+			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
+			{
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(getStopDate());
+				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
+				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
+				setStopDate(cal.getTime());
+			}				
 		}
 	}
 	/**
@@ -481,22 +533,6 @@ public class LoadControlVerificationModel extends ReportModelBase
 	public String getCommand()
 	{
 		return command;
-	}
-
-	/**
-	 * @return
-	 */
-	public Integer getReceiverID()
-	{
-		return receiverID;
-	}
-
-	/**
-	 * @return
-	 */
-	public Integer getTransmitterID()
-	{
-		return transmitterID;
 	}
 
 	/**
@@ -518,17 +554,50 @@ public class LoadControlVerificationModel extends ReportModelBase
 	/**
 	 * @param integer
 	 */
-	public void setReceiverID(Integer integer)
+	public void setReceiverID(Integer recID)
 	{
-		receiverID = integer;
+	    if( recID != null)
+	        setReceiverIDs(new int[]{recID.intValue()});
 	}
 
 	/**
 	 * @param integer
 	 */
-	public void setTransmitterID(Integer integer)
+	public void setTransmitterID(Integer transID)
 	{
-		transmitterID = integer;
+	    if( transID != null)
+	        setTransmitterIDs(new int[]{transID.intValue()});	    
 	}
-	
+	/**
+	 * 
+	 * @return
+	 */
+    public void setReceiverIDs(int[] recIDs)
+    {
+        receiverIDs = recIDs;
+    }
+    /**
+     * 
+     * @return
+     */
+    public void setTransmitterIDs(int[] transIDs)
+    {
+        transmitterIDs = transIDs;
+    }
+    /**
+     * 
+     * @return
+     */
+    public int[] getReceiverIDs()
+    {
+        return receiverIDs;
+    }
+    /**
+     * 
+     * @return
+     */
+    public int[] getTransmitterIDs()
+    {
+        return transmitterIDs;
+    }
 }
