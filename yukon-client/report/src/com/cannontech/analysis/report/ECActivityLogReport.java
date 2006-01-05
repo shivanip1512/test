@@ -94,7 +94,7 @@ public class ECActivityLogReport extends YukonReportBase
 			String subString = arg.substring(startIndex);				
 			
 			if( arg.startsWith("ec"))
-				model.setECIDs(Integer.valueOf(subString));
+				model.setEnergyCompanyID(Integer.valueOf(subString));
 			else if( arg.startsWith("start"))
 			{
 				Date startDate = ServletUtil.parseDateStringLiberally(subString);

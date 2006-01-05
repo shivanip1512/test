@@ -147,22 +147,13 @@ public class ActivityDetailModel extends ReportModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ActivityDetailModel(int [] ecIDs_)
-	{
-		this();
-		setECIDs(ecIDs_);
-	}
-	/**
-	 * Constructor class
-	 * Only ONE energycompanyID is used, constructor for convenience 
+	 * Only ONE energycompanyID is used 
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityDetailModel(Integer ecID_)
 	{
 		this();//default type
-		setECIDs(ecID_);
+		setEnergyCompanyID(ecID_);
 	}
 	
 	/* (non-Javadoc)
@@ -244,13 +235,10 @@ public class ActivityDetailModel extends ReportModelBase
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
 		" ON CA.ACCOUNTID = AL.ACCOUNTID " +
 		" WHERE AL.TIMESTAMP > ? AND AL.TIMESTAMP <= ? ");
-		if( getECIDs() != null )
-		{
-			sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
-			for (int i = 1; i < getECIDs().length; i++)
-				sql.append(", " + getECIDs()[i]);
-			sql.append(")");
-		}
+
+		if( getEnergyCompanyID() != null )
+			sql.append(" AND AL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
+
 		if( getActionGroupTypes() != null && getActionGroupTypes().length > 0)
 		{
 			String tempSql = "AND AL.ACTION IN ( ";
@@ -318,13 +306,9 @@ public class ActivityDetailModel extends ReportModelBase
 					" FROM ACTIVITYLOG AL" +
 					" WHERE TIMESTAMP >= ? AND TIMESTAMP < ?");
 
-				if( getECIDs() != null )
-				{
-					sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
-					for (int i = 1; i < getECIDs().length; i++)
-						sql.append(", " + getECIDs()[i]);
-					sql.append(")");
-				}
+				if( getEnergyCompanyID() != null )
+					sql.append(" AND AL.ENERGYCOMPANYID " + getEnergyCompanyID().intValue() + " ");
+					
 				if( getActionGroupTypes() != null && getActionGroupTypes().length > 0)
 				{
 					String tempSql = "AND AL.ACTION IN ( ";

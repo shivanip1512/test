@@ -97,7 +97,7 @@ public class ECActivityDetailReport extends YukonReportBase
 			String subString = arg.substring(startIndex);				
 			
 			if( arg.startsWith("ec"))
-				model.setECIDs(Integer.valueOf(subString));
+				model.setEnergyCompanyID(Integer.valueOf(subString));
 //			else if( arg.startsWith("program"))
 //				model.setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
 			else if( arg.startsWith("start"))

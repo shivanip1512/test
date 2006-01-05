@@ -309,7 +309,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			{
 				int[] ecIDs = getLiteIDsFromNodes();
 				if (model instanceof ActivityModel)
-					((ActivityModel)model).setECIDs(ecIDs);
+					((ActivityModel)model).setEnergyCompanyID(new Integer(ecIDs[0]));	//bad fix but this class is deprecated anyway.
 				report = new ECActivityLogReport();
 			}
 			else if (model instanceof CarrierDBModel)

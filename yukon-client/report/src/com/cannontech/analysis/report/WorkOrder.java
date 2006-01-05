@@ -21,7 +21,6 @@ import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
@@ -97,7 +96,7 @@ public class WorkOrder extends YukonReportBase
 		WorkOrderModel model = new WorkOrderModel();
 		model.setStartDate(start);
 		model.setStopDate(stop);
-		model.setECIDs(new Integer(0));
+		model.setEnergyCompanyID(new Integer(0));
 //		model.setAccountID(new Integer(1));
 //		model.setSearchColumn(WorkOrderModel.SEARCH_COL_DATE_CLOSED);
 		

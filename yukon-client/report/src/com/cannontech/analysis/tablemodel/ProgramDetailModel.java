@@ -74,24 +74,16 @@ public class ProgramDetailModel extends ReportModelBase
 	{
 		super();
 	}
+
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ProgramDetailModel(int [] ecIDs_)
-	{
-		this();
-		setECIDs(ecIDs_);
-	}
-	/**
-	 * Constructor class
-	 * Only ONE energycompanyID is used, constructor for convenience 
+	 * Only ONE energycompanyID is used 
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ProgramDetailModel(Integer ecID_)
 	{
 		this();//default type
-		setECIDs(ecID_);
+		setEnergyCompanyID(ecID_);
 	}
 	
 	/* (non-Javadoc)
@@ -170,13 +162,10 @@ public class ProgramDetailModel extends ReportModelBase
 		" WHERE LPWP.WEBSETTINGSID = YWC.CONFIGURATIONID "+  
 		" AND CA.ACCOUNTID = AM.ACCOUNTID " +
 		" AND LPWP.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID ");
-		if( getECIDs() != null)
-		{
-			sql.append(" AND EC.ENERGYCOMPANYID IN (" + getECIDs()[0]);
-			for (int i = 1; i < getECIDs().length; i++)
-				sql.append(", " + getECIDs()[i]);
-			sql.append(")");
-		}
+
+		if( getEnergyCompanyID() != null)
+			sql.append(" AND EC.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
+
 		sql.append(" AND GM.ENERGYCOMPANYID = EC.ENERGYCOMPANYID "+
 		" AND GM.ENERGYCOMPANYID = AM.ENERGYCOMPANYID "+
 		" AND AC.APPLIANCECATEGORYID = GM.ITEMID "+

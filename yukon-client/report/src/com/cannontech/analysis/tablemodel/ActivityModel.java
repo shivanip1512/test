@@ -158,22 +158,13 @@ public class ActivityModel extends ReportModelBase
 	}
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ActivityModel(int [] ecIDs_)
-	{
-		this();
-		setECIDs(ecIDs_);
-	}
-	/**
-	 * Constructor class
-	 * Only ONE energycompanyID is used, constructor for convenience 
+	 * Only ONE energycompanyID is used 
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityModel(Integer ecID_)
 	{
 		this();
-		setECIDs(ecID_);
+		setEnergyCompanyID(ecID_);
 	}
 	
 	/* (non-Javadoc)
@@ -253,13 +244,9 @@ public class ActivityModel extends ReportModelBase
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
 		" ON CA.ACCOUNTID = AL.ACCOUNTID " + 
 		" WHERE AL.TIMESTAMP > ? AND AL.TIMESTAMP <= ?");
-		if( getECIDs() != null )
-		{
-			sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
-			for (int i = 1; i < getECIDs().length; i++)
-				sql.append(", " + getECIDs()[i]);
-			sql.append(")");
-		}		
+		if( getEnergyCompanyID() != null )
+			sql.append(" AND AL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
+
 		sql.append(" GROUP BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.USERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION " +
 					" ORDER BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.USERID, CA.ACCOUNTNUMBER, ACTION");
 		return sql;
@@ -306,13 +293,8 @@ public class ActivityModel extends ReportModelBase
 					" FROM ACTIVITYLOG " +
 					" WHERE TIMESTAMP > ? AND TIMESTAMP <= ?");
 
-				if( getECIDs() != null )
-				{
-					sql.append(" AND ENERGYCOMPANYID IN (" + getECIDs()[0]);
-					for (int i = 1; i < getECIDs().length; i++)
-						sql.append(", " + getECIDs()[i]);
-					sql.append(")");
-				}							
+				if( getEnergyCompanyID() != null )
+					sql.append(" AND ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ");
 
 				sql.append(" GROUP BY ENERGYCOMPANYID, CUSTOMERID, USERID, ACCOUNTID, ACTION " +
 							" ORDER BY ENERGYCOMPANYID, CUSTOMERID, USERID, ACCOUNTID, ACTION");

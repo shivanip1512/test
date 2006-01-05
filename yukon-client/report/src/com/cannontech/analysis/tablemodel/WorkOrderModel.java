@@ -239,7 +239,7 @@ public class WorkOrderModel extends ReportModelBase {
 	
 	public WorkOrderModel(Integer ecID, Integer orderID, int searchColumn, Date start_, Date stop_) {
 		super(start_, stop_);
-		setECIDs( ecID );
+		setEnergyCompanyID( ecID );
 		setOrderID( orderID );
 		setSearchColumn( searchColumn );
 	}
@@ -326,12 +326,10 @@ public class WorkOrderModel extends ReportModelBase {
 				sql = "SELECT inv.AccountID, dmg.MeterNumber" +
 					" FROM InventoryBase inv, DeviceMeterGroup dmg, ECToInventoryMapping map" +
 					" WHERE inv.DeviceID > 0 AND inv.DeviceID = dmg.DeviceID AND inv.InventoryID = map.InventoryID";
-				if (getECIDs() != null) {
-					sql += " AND map.EnergyCompanyID IN (" + getECIDs()[0];
-					for (int i = 1; i < getECIDs().length; i++)
-						sql += ", " + getECIDs()[i];
-					sql += ")";
-				}
+				
+				if (getEnergyCompanyID() != null) 
+					sql += " AND map.EnergyCompanyID = " + getEnergyCompanyID().intValue() + " ";
+
 				sql += " ORDER BY inv.InventoryID";
 			}		
 			CTILogger.info( sql );
@@ -383,10 +381,10 @@ public class WorkOrderModel extends ReportModelBase {
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		if (getECIDs() == null) return;
+		if (getEnergyCompanyID() == null) return;
 		
-		for (int i = 0; i < getECIDs().length; i++) {
-			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getECIDs()[i] );
+		{
+			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
 			ArrayList woList = new ArrayList();
 			
 			if (getOrderID() != null) {

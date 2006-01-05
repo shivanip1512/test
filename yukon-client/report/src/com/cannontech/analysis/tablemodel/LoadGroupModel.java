@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,8 +11,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.LMFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
@@ -194,7 +191,7 @@ public class LoadGroupModel extends ReportModelBase
 //				if(!isShowAllActiveRestore())
 //					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
 
-				if( getECIDs() != null)
+				if( getEnergyCompanyID() != null)
 				{
 					sql.append("AND (LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
@@ -203,10 +200,7 @@ public class LoadGroupModel extends ReportModelBase
 					" WHERE us.PaoID = DG.DEVICEID " +
 					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
-					for (int i = 1; i < getECIDs().length; i++)
-						sql.append(", " + getECIDs()[i]+ " ");
-					sql.append(") ) )");
+					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )");					
 
 					//Get all groups that are part of a macroGroup
 					sql.append("OR LMCH.PAOBJECTID IN " +
@@ -217,10 +211,7 @@ public class LoadGroupModel extends ReportModelBase
 					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
 					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
-					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
-					for (int i = 1; i < getECIDs().length; i++)
-						sql.append(", " + getECIDs()[i]+ " ");
-					sql.append(") ) ) )");
+					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) ) )");
 				}
 				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
