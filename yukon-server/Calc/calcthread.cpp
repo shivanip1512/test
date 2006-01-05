@@ -42,7 +42,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         CtiHashKey hashKey(changedID);
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -62,7 +62,10 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
 
                 for( ; (*dependentIterator)( ); )
                 {
-                    _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+                    if( dependentIterator->key( ).dependentID != 0 )
+                    {
+                        _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+                    }
                 }
 
                 delete dependentIterator;
@@ -122,7 +125,7 @@ void CtiCalculateThread::periodicThread( void )
             {
                 tempTime = CtiTime( );
                 if( _pSelf.serviceInterrupt( ) )
-                    interrupted = TRUE;
+                    interrupted = interrupted = ( _interruptReason == Pause ) ? FALSE : TRUE;
                 else
                     _pSelf.sleep( 250 );
             }
@@ -270,7 +273,7 @@ void CtiCalculateThread::onUpdateThread( void )
 
                 if( _auSelf.serviceInterrupt( ) )
                 {
-                    interrupted = TRUE;
+                    interrupted = ( _interruptReason == Pause ) ? FALSE : TRUE;
                 }
                 else
                 {
@@ -775,6 +778,58 @@ void CtiCalculateThread::setConstantPointMap(const CtiCalcPointMap &points)
         _constantPoints.clearAndDestroy();
     }
     _constantPoints = points;
+}
+
+void CtiCalculateThread::clearPointMaps()
+{
+    if( _constantPoints.entries() > 0 )
+    {
+        _constantPoints.clearAndDestroy();
+    }
+
+    if( _onUpdatePoints.entries() > 0 )
+    {
+        _onUpdatePoints.clearAndDestroy();
+    }
+
+    if( _periodicPoints.entries() > 0 )
+    {
+        _periodicPoints.clearAndDestroy();
+    }
+}
+
+void CtiCalculateThread::removePointStoreObject( const long aPointID )
+{
+    CtiHashKey pointHashKey(aPointID);
+    CtiCalc *targetCalcPoint = NULL;
+    CtiPointStoreElement *tmpElementPtr = NULL;
+
+    if( _periodicPoints.contains( &pointHashKey ) )
+    {
+        targetCalcPoint  = _periodicPoints[&pointHashKey];
+    }
+    else if( _onUpdatePoints.contains( &pointHashKey ) )
+    {
+        targetCalcPoint  = _onUpdatePoints[&pointHashKey];
+    }
+    else if( _constantPoints.contains( &pointHashKey ) )
+    {
+        targetCalcPoint  = _constantPoints[&pointHashKey];
+    }
+    else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << __FILE__ << " (" << __LINE__ << ") Can't find calc point \"" << aPointID << "\" in either point collection (historical point?)" << endl;
+        return;
+    }
+
+    if( targetCalcPoint )
+    {
+        targetCalcPoint->clearComponentDependencies();
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        pointStore->removePointElement( aPointID );
+    }
 }
 
 void CtiCalculateThread::sendConstants()

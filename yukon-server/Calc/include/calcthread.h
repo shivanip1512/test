@@ -29,7 +29,8 @@ public:
     typedef enum
     {
         Shutdown = 0,
-        DBReload
+        DBReload,
+        Pause
 
     } CtiCalcThreadInterruptReason;
 
@@ -100,6 +101,10 @@ public:
     void setPeriodicPointMap(const CtiCalcPointMap &);
     void setOnUpdatePointMap(const CtiCalcPointMap &);
     void setConstantPointMap(const CtiCalcPointMap &);
+
+    void clearPointMaps();
+
+    void removePointStoreObject( const long aPointID );
 };
 
 #endif // #ifndef __CALCTHREAD_H__
