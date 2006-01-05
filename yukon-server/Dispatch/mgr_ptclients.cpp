@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/01/05 21:05:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -320,7 +320,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     return closeTime;
 }
 
-void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiQueue<CtiTableRawPointHistory, less<CtiTableRawPointHistory> > &Que)
+void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
 {
     {
         LockGuard  guard(monitor());
@@ -363,7 +363,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiQueue<CtiTabl
                              */
                             pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
                         }
-                        else if( pPt->getArchiveInterval() >= 0 &&                                     
+                        else if( pPt->getArchiveInterval() >= 0 &&
                                  pDyn->getNextArchiveTime() > Now + (2 * pPt->getArchiveInterval()))
                         {
                             /*

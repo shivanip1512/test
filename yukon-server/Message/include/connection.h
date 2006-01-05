@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/01/05 21:05:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,10 @@ using std::less;
 
 class IM_EX_MSG CtiConnection
 {
+public:
+
+    typedef  CtiFIFOQueue<CtiMessage> Que_t;
+
 protected:
 
    string               _name;
@@ -96,11 +100,9 @@ private:
 
 public:
 
-   typedef  CtiQueue<CtiMessage, less<CtiMessage> > Que_t;
-
    // Don't want anyone to use this one....
    CtiConnection( );
-   CtiConnection( const INT &Port, const CtiString &Host, Que_t *inQ = NULL, INT tt = 3);
+   CtiConnection( const INT &Port, const string &Host, Que_t *inQ = NULL, INT tt = 3);
    CtiConnection(CtiExchange *xchg, Que_t *inQ = NULL, INT tt = 3);
    virtual ~CtiConnection();
 

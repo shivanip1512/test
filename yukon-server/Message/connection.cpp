@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/01/05 21:05:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1286,8 +1286,8 @@ void CtiConnection::ThreadTerminate()
     }
 }
 
-CtiQueue<CtiMessage, less<CtiMessage> > & CtiConnection::getOutQueueHandle()  { return outQueue;}
-CtiQueue<CtiMessage, less<CtiMessage> > & CtiConnection::getInQueueHandle()   { return *inQueue;}
+CtiConnection::Que_t & CtiConnection::getOutQueueHandle()  { return outQueue;}
+CtiConnection::Que_t & CtiConnection::getInQueueHandle()   { return *inQueue;}
 
 BOOL CtiConnection::isViable() const
 {

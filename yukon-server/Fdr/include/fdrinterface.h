@@ -43,7 +43,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 {
     public:
         // constructors and destructors
-        CtiFDRInterface(string & interfaceType); 
+        CtiFDRInterface(string & interfaceType);
 
         virtual ~CtiFDRInterface( void );
 
@@ -51,10 +51,10 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual bool        sendMessageToForeignSys ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch   ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch   ( CtiMessage *aMessage );
-        bool                logEvent( const string &logDesc, 
-                                      const string &logMsg, 
+        bool                logEvent( const string &logDesc,
+                                      const string &logMsg,
                                       bool aSendImmediatelyFlag=false );
-                
+
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
 
@@ -69,7 +69,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         int                 getQueueFlushRate () const;
         CtiFDRInterface&    setQueueFlushRate (INT aTime);
-        
+
         FDRDbReloadReason   getDbReloadReason() const;
         CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=Signaled);
 
@@ -88,16 +88,16 @@ class IM_EX_FDRBASE CtiFDRInterface
         void                setUpdatePCTimeFlag(const BOOL aChangeFlag = TRUE);
 
 
-        virtual BOOL        init( void );   
+        virtual BOOL        init( void );
         virtual BOOL        run( void );
         virtual BOOL        stop( void );
 
         // load a single copy of the cparms
-        static CtiConfigParameters  iConfigParameters; 
+        static CtiConfigParameters  iConfigParameters;
         bool reloadTranslationLists(void);
 
         virtual int processMessageFromForeignSystem (CHAR *data) = 0;
-		virtual bool loadTranslationLists(void)=0;
+        virtual bool loadTranslationLists(void)=0;
 
         CtiFDRPointList   getSendToList () const;
         CtiFDRPointList & getSendToList ();
@@ -137,7 +137,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         void threadFunctionReceiveFromDispatch( void );
         void threadFunctionReloadDb( void );
         void threadFunctionConnectToDispatch( void );
-        
+
         static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
 
@@ -155,7 +155,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         int                 iOutboundSendRate;
         int                 iOutboundSendInterval;
-        int                 iTimeSyncVariation;  
+        int                 iTimeSyncVariation;
         BOOL                iUpdatePCTimeFlag;
 
         /***********************
@@ -171,7 +171,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRPointList    iReceiveFromList;
 
         // add things here and then send dispatch a multi point msg
-        CtiQueue<CtiMessage, less<CtiMessage> > iDispatchQueue;
+        // 20060104 CGP // CtiQueue<CtiMessage, less<CtiMessage> > iDispatchQueue;
+        CtiFIFOQueue<CtiMessage> iDispatchQueue;
 
 
         int  readConfig( void );

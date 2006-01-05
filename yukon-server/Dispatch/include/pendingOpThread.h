@@ -9,12 +9,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/01/05 21:05:14 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.9  2006/01/05 21:05:14  cplender
+* Changed a CtiQueue (sorted) to CtiFIFOQueue for speed.
+*
 * Revision 1.8  2006/01/05 19:30:10  cplender
-* InQ_t changed to Que_t typedef name.
+* Que_t changed to Que_t typedef name.
 *
 * Revision 1.7  2005/12/20 17:16:58  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
@@ -77,14 +80,14 @@ private:
     CtiConnection::Que_t *_pMainQueue;    // Main queue
 
     //  the input queue
-    CtiQueue< CtiPendable, less< CtiPendable > > _input;
+    CtiFIFOQueue< CtiPendable > _input;
     static CtiPendingOpSet_t _pendingControls;
     static CtiPendingOpSet_t _pendingPointData;
     static CtiPendingOpSet_t _pendingPointLimit;
 
 
-    CtiQueue< CtiTableLMControlHistory, less<CtiTableLMControlHistory> > _lmControlHistoryQueue;
-    CtiQueue< CtiTableLMControlHistory, less<CtiTableLMControlHistory> > _dynLMControlHistoryQueue;
+    CtiFIFOQueue< CtiTableLMControlHistory > _lmControlHistoryQueue;
+    CtiFIFOQueue< CtiTableLMControlHistory > _dynLMControlHistoryQueue;
 
     CtiICLMControlHistMap_t _controlHistoryPrimeValues;
     static CtiICLMControlHistMap_t _initialConditionControlHistMap;

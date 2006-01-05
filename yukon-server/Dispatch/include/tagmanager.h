@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/01/05 21:05:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ public:
 
 protected:
 
-    CtiQueue< CtiTableTagLog, std::less<CtiTableTagLog> >            _tagLogQueue;
+    CtiFIFOQueue< CtiTableTagLog >            _tagLogQueue;
     // This is a vector of the rows in the dynamic table which need to be Deleted.
     vector< int > _dynamicLogRemovals;
 

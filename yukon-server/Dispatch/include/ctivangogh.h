@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/01/05 21:05:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,11 +111,11 @@ private:
     RWThreadFunction  _dbSigEmailThread;
     RWThreadFunction  _appMonitorThread;
 
-    CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
+    CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
-    CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgQueue;
-    CtiQueue< CtiTableRawPointHistory, less<CtiTableRawPointHistory> > _archiverQueue;
-    CtiQueue< CtiTableCommErrorHistory, less<CtiTableCommErrorHistory> > _commErrorHistoryQueue;
+    CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
+    CtiFIFOQueue< CtiTableRawPointHistory > _archiverQueue;
+    CtiFIFOQueue< CtiTableCommErrorHistory > _commErrorHistoryQueue;
 
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
