@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/con_mgr_vg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ private:
 
 public:
 
-   CtiVanGoghConnectionManager(CtiExchange *XChg, InQ_t *MainQueue_);// :_blank(0),ClientKnownPort(-1),CtiConnectionManager(XChg, MainQueue_)
+   CtiVanGoghConnectionManager(CtiExchange *XChg, Que_t *MainQueue_);// :_blank(0),ClientKnownPort(-1),CtiConnectionManager(XChg, MainQueue_)
    virtual ~CtiVanGoghConnectionManager();
    static unsigned hash(const CtiVanGoghConnectionManager& aRef);
    int   getClientKnownPort() const;//          {return ClientKnownPort; }

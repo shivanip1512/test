@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.8  2006/01/05 19:30:10  cplender
+* InQ_t changed to Que_t typedef name.
+*
 * Revision 1.7  2005/12/20 17:16:58  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -71,7 +74,7 @@ private:
     CtiMultiMsg *_multi;
     RWThreadFunction  _dbThread;
 
-    CtiConnection::InQ_t *_pMainQueue;    // Main queue
+    CtiConnection::Que_t *_pMainQueue;    // Main queue
 
     //  the input queue
     CtiQueue< CtiPendable, less< CtiPendable > > _input;
@@ -111,7 +114,7 @@ public:
     void push(CtiPendable *e);                    //  the objects are consumed when submitted to the thread
     void run();
 
-    void setMainQueue(CtiConnection::InQ_t *pMQ);
+    void setMainQueue(CtiConnection::Que_t *pMQ);
     void processPendableQueue();
 
     void doPendingControls(bool bShutdown = false);

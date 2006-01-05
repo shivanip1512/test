@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "con_mgr.h"
 
 
-CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostMachine, InQ_t *inQ) :
+CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostMachine, Que_t *inQ) :
    ClientName("DEFAULT"),
    ClientAppId(0),
    ClientUnique(FALSE),
@@ -37,7 +37,7 @@ CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostM
    // cout << "**** Connection Manager!!! *****" << endl;
 }
 
-CtiConnectionManager::CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ) :
+CtiConnectionManager::CtiConnectionManager(CtiExchange *xchg, Que_t *inQ) :
    ClientName("DEFAULT"),
    ClientAppId(0),
    ClientUnique(FALSE),

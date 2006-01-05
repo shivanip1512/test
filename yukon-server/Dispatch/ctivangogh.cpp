@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.122 $
-* DATE         :  $Date: 2005/12/22 00:08:32 $
+* REVISION     :  $Revision: 1.123 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@
 #include "numstr.h"
 
 using namespace std;
-        
+
 #define DEBUGPOINTCHANGES
 
 #define LMCTLHIST_WINDOW         30             // How often partial LM control intervals are written out to DB.
@@ -269,7 +269,7 @@ void CtiVanGogh::VGMainThread()
     /*
      *  Iterators, place pointers etc.
      */
-    CtiConnection::InQ_t          *APQueue;
+    CtiConnection::Que_t          *APQueue;
     CtiExecutor                   *pExec;
     CtiMessage                    *MsgPtr;
 
@@ -3795,8 +3795,8 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_NOTIFICATION)
     {
-	dout << CtiTime() << " Sending alarm notification" << endl;
-	alarm_msg->dump();
+    dout << CtiTime() << " Sending alarm notification" << endl;
+    alarm_msg->dump();
     }
 
     if(!getNotificationConnection()->valid())

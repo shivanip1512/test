@@ -29,7 +29,7 @@ public:
       cout << "**** Connection Manager!!! *****" << endl;
    }
 
-   CtiPILConnectionManager(CtiExchange *XChg, InQ_t *MainQueue_) :
+   CtiPILConnectionManager(CtiExchange *XChg, Que_t *MainQueue_) :
       CtiConnectionManager( XChg, MainQueue_ )
    {
       // cout << "**** Connection Manager!!! *****" << endl;

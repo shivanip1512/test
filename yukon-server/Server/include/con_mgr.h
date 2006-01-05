@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/05 19:30:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,9 +55,9 @@ public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( const INT &Port, const string &HostMachine, InQ_t *inQ = NULL );
+   CtiConnectionManager( const INT &Port, const string &HostMachine, Que_t *inQ = NULL );
 
-   CtiConnectionManager(CtiExchange *xchg, InQ_t *inQ = NULL);
+   CtiConnectionManager(CtiExchange *xchg, Que_t *inQ = NULL);
 
    virtual ~CtiConnectionManager();
    int         getClientAppId() const;//              { return ClientAppId; }

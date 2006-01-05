@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1183,7 +1183,7 @@ _host("127.0.0.1")
 {
 }
 
-CtiConnection::CtiConnection( const INT &Port, const string &Host, InQ_t *inQ, INT tt) :
+CtiConnection::CtiConnection( const INT &Port, const string &Host, Que_t *inQ, INT tt) :
 _regMsg(NULL),
 _ptRegMsg(NULL),
 _termTime(tt),
@@ -1194,7 +1194,7 @@ _flag(0)
     doConnect(Port, Host, inQ);
 }
 
-CtiConnection::CtiConnection(CtiExchange *xchg, InQ_t *inQ, INT tt) :
+CtiConnection::CtiConnection(CtiExchange *xchg, Que_t *inQ, INT tt) :
 _regMsg(NULL),
 _ptRegMsg(NULL),
 _termTime(tt),
@@ -1210,7 +1210,7 @@ _host("127.0.0.1")
     _serverConnection = TRUE;
 }
 
-void CtiConnection::doConnect( const INT &Port, const string &Host, InQ_t *inQ)
+void CtiConnection::doConnect( const INT &Port, const string &Host, Que_t *inQ)
 {
     if(!_connectCalled)
     {
@@ -1222,7 +1222,7 @@ void CtiConnection::doConnect( const INT &Port, const string &Host, InQ_t *inQ)
 
         if(inQueue == NULL)
         {
-            inQueue = CTIDBG_new InQ_t;
+            inQueue = CTIDBG_new Que_t;
             _localQueueAlloc = TRUE;
         }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,8 +59,8 @@ protected:
    RWThreadFunction        outthread_;
    RWThreadFunction        inthread_;
 
-   CtiQueue<CtiMessage, less<CtiMessage> > outQueue;        // outthread_ pops out of here
-   CtiQueue<CtiMessage, less<CtiMessage> > *inQueue;        // inthread_ dumps into here
+    Que_t outQueue;        // outthread_ pops out of here
+    Que_t *inQueue;        // inthread_ dumps into here
 
 
    /*
@@ -96,15 +96,15 @@ private:
 
 public:
 
-   typedef  CtiQueue<CtiMessage, less<CtiMessage> > InQ_t;
+   typedef  CtiQueue<CtiMessage, less<CtiMessage> > Que_t;
 
    // Don't want anyone to use this one....
    CtiConnection( );
-   CtiConnection( const INT &Port, const string &Host, InQ_t *inQ = NULL, INT tt = 3);
-   CtiConnection(CtiExchange *xchg, InQ_t *inQ = NULL, INT tt = 3);
+   CtiConnection( const INT &Port, const CtiString &Host, Que_t *inQ = NULL, INT tt = 3);
+   CtiConnection(CtiExchange *xchg, Que_t *inQ = NULL, INT tt = 3);
    virtual ~CtiConnection();
 
-   virtual void doConnect( const INT &Port, const string &Host, InQ_t *inQ = NULL );
+   virtual void doConnect( const INT &Port, const string &Host, Que_t *inQ = NULL );
    virtual RWBoolean operator==(const CtiConnection& aRef) const;
    static unsigned hash(const CtiConnection& aRef);
    CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
@@ -126,8 +126,8 @@ public:
    virtual void OutThread();            // OutBound messages to the applicaiton go through here
 
    virtual void ThreadTerminate();
-   CtiQueue<CtiMessage, less<CtiMessage> > & getOutQueueHandle();
-   CtiQueue<CtiMessage, less<CtiMessage> > & getInQueueHandle();
+    Que_t & getOutQueueHandle();
+    Que_t & getInQueueHandle();
 
    BOOL  isViable() const;
    UINT  valid() const;

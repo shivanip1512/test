@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/12/21 22:22:07 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.24  2006/01/05 19:30:10  cplender
+* InQ_t changed to Que_t typedef name.
+*
 * Revision 1.23  2005/12/21 22:22:07  cplender
 * Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
 *
@@ -150,7 +153,7 @@ CtiPendingOpThread::~CtiPendingOpThread()
     if(_multi) delete _multi;
 }
 
-void CtiPendingOpThread::setMainQueue(CtiConnection::InQ_t *pMQ)
+void CtiPendingOpThread::setMainQueue(CtiConnection::Que_t *pMQ)
 {
     _pMainQueue = pMQ;
     return;

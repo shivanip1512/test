@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2005/12/20 17:19:08 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ void CtiPILServer::mainThread()
 
     CtiTime                     TimeNow;
 
-    // CtiConnection::InQ_t          *APQueue;
+    // CtiConnection::Que_t          *APQueue;
     CtiExecutor                   *pExec;
     CtiMessage                    *MsgPtr;
 
@@ -1375,7 +1375,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         // We are to do some magiks here.  Looking for names in groups
         string gname = parse.getsValue("group");
         std::transform(gname.begin(), gname.end(), gname.begin(), ::tolower);
-        
+
         {
             int groupsubmitcnt = 0;
             CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());

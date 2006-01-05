@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/01/05 19:30:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,7 @@ protected:
     */
    RWTPtrHashMultiSet< CtiConnectionManager, vg_hash, equal_to<CtiConnectionManager> > mConnectionTable;
 
-   CtiConnection::InQ_t          MainQueue_;    // Main queue (Message is the base class) Priority queue)
+   CtiConnection::Que_t          MainQueue_;    // Main queue (Message is the base class) Priority queue)
 
    RWInetPort                    NetPort;
    RWInetAddr                    NetAddr;    // This one for this server!

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/con_mgr_vg.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/05 19:30:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,7 +153,7 @@ void CtiVanGoghConnectionManager::reportRegistration() const
    dout << "Alarm       " << (getAlarm() ? "YES" : "NO ") << endl;
 }
 
-CtiVanGoghConnectionManager::CtiVanGoghConnectionManager(CtiExchange *XChg, InQ_t *MainQueue_) :
+CtiVanGoghConnectionManager::CtiVanGoghConnectionManager(CtiExchange *XChg, Que_t *MainQueue_) :
    _blank(0),
    ClientKnownPort(-1),
    CtiConnectionManager(XChg, MainQueue_)
