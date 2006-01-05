@@ -14,6 +14,9 @@ import com.cannontech.analysis.tablemodel.CapControlStatusModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
+import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
+import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
+import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
 import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
@@ -35,6 +38,8 @@ import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 
 
 /**
@@ -86,6 +91,11 @@ public class ReportTypes
 	
 	public static final int LOAD_CONTROL_VERIFICATION_DATA = 27;
 	
+	//Custom Settlement data.  Determined by EnergyCompanyID
+	public static final int HECO_LMEVENT_SUMMARY_DATA = 28;
+	public static final int HECO_MONTHLY_BILLING_DATA = 29;
+	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 30;
+	
 	private static Class[] typeToClassMap =
 	{
 		StatisticModel.class,
@@ -121,7 +131,11 @@ public class ReportTypes
 		PointDataIntervalModel.class,
 		PointDataSummaryModel.class,
 		
-		LoadControlVerificationModel.class	
+		LoadControlVerificationModel.class,
+		
+		HECO_LMEventSummaryModel.class,
+		HECO_MonthlyBillingSettlementModel.class,
+		HECO_CustomerMonthlyBillingSettlementModel.class	
 	};
 		
 	/** String names for report types */
@@ -161,6 +175,11 @@ public class ReportTypes
 	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
 	
 	public static final String LOAD_CONTROL_VERIFICATION_STRING = "Load Control Verification";
+	
+	//Custom settlement reports, based on EnergyCompanyID
+	public static final String HECO_LMEVENT_SUMMARY_STRING = "LM Event Summary";
+	public static final String HECO_MONTHLY_BILLING_STRING = "Monthly Billing Settlement";
+	public static final String HECO_CUSTOMER_MONTHLY_BILLING_STRING = "Customer Monthly Billing Settlement";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -199,7 +218,12 @@ public class ReportTypes
 		POINT_DATA_INTERVAL_DATA_STRING,
 		POINT_DATA_SUMMARY_DATA_STRING,
 		
-		LOAD_CONTROL_VERIFICATION_STRING
+		LOAD_CONTROL_VERIFICATION_STRING,
+		
+		
+		HECO_LMEVENT_SUMMARY_STRING,
+		HECO_MONTHLY_BILLING_STRING,
+		HECO_CUSTOMER_MONTHLY_BILLING_STRING
 	};
 
 
@@ -213,6 +237,9 @@ public class ReportTypes
 	public static final int STARS_REPORTS_GROUP = 6;
 	public static final int OTHER_REPORTS_GROUP = 7;
 	
+	//This is a special case, it needs to be set up based on the current EC settlement mapping.  It will NOT be in the groupToTypeMap
+	public static final int SETTLEMENT_REPORTS_GROUP = 100;
+	
 	public static final String ADMIN_REPORTS_GROUP_STRING = "Administrative";
 	public static final String AMR_REPORTS_GROUP_STRING = "AMR";
 	public static final String STATISTICAL_REPORTS_GROUP_STRING = "Communication";
@@ -221,6 +248,8 @@ public class ReportTypes
 	public static final String DATABASE_REPORTS_GROUP_STRING = "Database";
 	public static final String STARS_REPORTS_GROUP_STRING = "STARS";
 	public static final String OTHER_REPORTS_GROUP_STRING = "Miscellaneous";
+	
+	public static final String SETTLEMENT_REPORTS_GROUP_STRING = "Settlement";
 
 	/** Report String to enum mapping */
 	public static final String[] reportGroupName = {
@@ -233,89 +262,122 @@ public class ReportTypes
 		STARS_REPORTS_GROUP_STRING,
 		OTHER_REPORTS_GROUP_STRING
 	};
-	
-//	[groupID][typeID array]
-// xxx_reports_group may appear in multiple mappings
-	private static int[][] groupToTypeMap = {
-		{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, 
-			EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//archive data, admin log reports
-		{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA},	//amr reports
-		{STATISTIC_DATA},	//stat reports
-		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA},		//lm reports
-		{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA}, //cap control reports
-		{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA}, //database reports
-		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
-		    STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
-		    /*TODO STARS_AMR_SUMMARY_DATA,*/ STARS_AMR_DETAIL_DATA},	//stars reports
-		{NONE}	//other reports
-	};
 
-	public static int getReportGroupType(int reportType)
-	{
-		for (int i = 0; i < groupToTypeMap.length; i++)
-		{
-			for (int j = 0; j < groupToTypeMap[i].length; j++)
-			{
-				if( groupToTypeMap[i][j] == reportType)
-				{
-					return i;
-				}
-			}
-		}
-		return -1;	//unknown
-	}
+	private static int[] adminGroupReportTypes = new int[]{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA};
+	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
+	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
+	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
+	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA};
+	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
+	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
+			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
+			/*TODO STARS_AMR_SUMMARY_DATA,*/ STARS_AMR_DETAIL_DATA};
+	private static int[] otherGroupReportTypes = new int[0];
+	private static int[] settlementGroupReportTypes = new int[0];
+
 	/**
+	 * Retuns int[] of settlement reportTypes for yukonDefID 
+	 * @param yukonDefID
 	 * @return
 	 */
-	public static int[][] getGroupToTypeMap()
+	public static int[] getSettlementReportTypes(int yukonDefID)
 	{
-		return groupToTypeMap;
+		switch (yukonDefID)
+		{
+			case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO:
+			{
+				return new int[]{HECO_LMEVENT_SUMMARY_DATA,
+										HECO_MONTHLY_BILLING_DATA,
+										HECO_CUSTOMER_MONTHLY_BILLING_DATA										
+										};
+			}
+//			case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_XCEL_ISOC:	//TODO
+			default :
+				return new int[0];
+		}
 	}
-	public static int[] getGroupTypes(int groupID)
+	/**
+	 * Returns int[] of all reportTypes for groupID
+	 * @param groupID
+	 * @return
+	 */
+	public static int[] getGroupReportTypes(int groupID)
 	{
-		return groupToTypeMap[groupID];
+		switch (groupID)
+		{
+			case ADMIN_REPORTS_GROUP :
+				return adminGroupReportTypes;
+			case AMR_REPORTS_GROUP:
+				return amrGroupReportTypes;
+			case STATISTICAL_REPORTS_GROUP:
+				return statGroupReportTypes;
+			case LOAD_MANAGEMENT_REPORTS_GROUP:
+				return lmGroupReportTypes;
+			case CAP_CONTROL_REPORTS_GROUP:
+				return capControlGroupReportTypes;
+			case DATABASE_REPORTS_GROUP:
+				return databaseGroupReportTypes;
+			case STARS_REPORTS_GROUP:
+				return starsGroupReportTypes;
+			case OTHER_REPORTS_GROUP:
+				return otherGroupReportTypes;
+			//Settlement is specific for each energy company, therefore it cannot return anything from this static method but should be handled 
+			// in the specific code.				
+			case SETTLEMENT_REPORTS_GROUP:
+			default :
+				return new int[0];	//an empty list
+		}
 	}
+	/**
+	 * Returns the String name for reportType
+	 * @param reportType
+	 * @return
+	 */
 	public static String getReportName(int reportType)
 	{
 		return reportName[reportType];
 	}
 	
+	/**
+	 * Returns the Group string name for reportGroupType
+	 * @param reportGroupType
+	 * @return
+	 */
 	public static String getReportGroupName(int reportGroupType)
 	{
+		if( reportGroupType == SETTLEMENT_REPORTS_GROUP)
+			return SETTLEMENT_REPORTS_GROUP_STRING;
 		return reportGroupName[reportGroupType];
 	}
 	
 	/**
-	 * This method was created in VisualAge.
+	 * Creates and returns an instance of ReportModelBase (or extended class) for type
 	 * @return com.cannontech.database.model.DBTreeModel
 	 * @param type int
 	 */
-	public static ReportModelBase create(int type) {
+	public static ReportModelBase create(int reportType) {
 	
 		ReportModelBase returnVal = null;
 		
-		if( type >= 0 && type < typeToClassMap.length )
+		if( reportType >= 0 && reportType < typeToClassMap.length )
 		{
 			try
 			{
-				returnVal = (ReportModelBase) typeToClassMap[type].newInstance();
+				returnVal = (ReportModelBase) typeToClassMap[reportType].newInstance();
 			}
 			catch( IllegalAccessException e1 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e1.getMessage(), e1 );
+				CTILogger.error( e1.getMessage(), e1 );
 			}
 			catch( InstantiationException e2 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+				CTILogger.error( e2.getMessage(), e2 );
 			}
-		
 		}
 		else
 		{
 			return null;
 		}
-	
 		return returnVal;
-	
 	}
 }

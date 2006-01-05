@@ -16,8 +16,67 @@ import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
-import com.cannontech.analysis.report.*;
-import com.cannontech.analysis.tablemodel.*;
+import com.cannontech.analysis.report.CapBankReport;
+import com.cannontech.analysis.report.CapControlNewActivityReport;
+import com.cannontech.analysis.report.CapControlStatusReport;
+import com.cannontech.analysis.report.CarrierDBReport;
+import com.cannontech.analysis.report.DailyPeaksReport;
+import com.cannontech.analysis.report.DisconnectReport;
+import com.cannontech.analysis.report.ECActivityDetailReport;
+import com.cannontech.analysis.report.ECActivityLogReport;
+import com.cannontech.analysis.report.HECO_CustomerMonthlyBillingSettlementReport;
+import com.cannontech.analysis.report.HECO_LMEventSummaryReport;
+import com.cannontech.analysis.report.HECO_MonthlyBillingSettlementReport;
+import com.cannontech.analysis.report.LGAccountingReport;
+import com.cannontech.analysis.report.LPDataSummaryReport;
+import com.cannontech.analysis.report.LPSetupDBReport;
+import com.cannontech.analysis.report.LoadControlVerificationReport;
+import com.cannontech.analysis.report.MeterOutageReport;
+import com.cannontech.analysis.report.MeterReadReport;
+import com.cannontech.analysis.report.PointDataIntervalReport;
+import com.cannontech.analysis.report.PointDataSummaryReport;
+import com.cannontech.analysis.report.PowerFailReport;
+import com.cannontech.analysis.report.ProgramDetailReport;
+import com.cannontech.analysis.report.RouteDBReport;
+import com.cannontech.analysis.report.RouteMacroReport;
+import com.cannontech.analysis.report.StarsAMRDetailReport;
+import com.cannontech.analysis.report.StarsLMDetailReport;
+import com.cannontech.analysis.report.StarsLMSummaryReport;
+import com.cannontech.analysis.report.StatisticReport;
+import com.cannontech.analysis.report.SystemLogReport;
+import com.cannontech.analysis.report.WorkOrder;
+import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.ActivityDetailModel;
+import com.cannontech.analysis.tablemodel.ActivityModel;
+import com.cannontech.analysis.tablemodel.CapBankListModel;
+import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
+import com.cannontech.analysis.tablemodel.CapControlStatusModel;
+import com.cannontech.analysis.tablemodel.CarrierDBModel;
+import com.cannontech.analysis.tablemodel.DailyPeaksModel;
+import com.cannontech.analysis.tablemodel.DisconnectModel;
+import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
+import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
+import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
+import com.cannontech.analysis.tablemodel.LMControlLogModel;
+import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
+import com.cannontech.analysis.tablemodel.LPSetupDBModel;
+import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
+import com.cannontech.analysis.tablemodel.LoadGroupModel;
+import com.cannontech.analysis.tablemodel.MeterOutageModel;
+import com.cannontech.analysis.tablemodel.MeterReadModel;
+import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
+import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
+import com.cannontech.analysis.tablemodel.PowerFailModel;
+import com.cannontech.analysis.tablemodel.ProgramDetailModel;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.analysis.tablemodel.RouteDBModel;
+import com.cannontech.analysis.tablemodel.RouteMacroModel;
+import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
+import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
+import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
+import com.cannontech.analysis.tablemodel.StatisticModel;
+import com.cannontech.analysis.tablemodel.SystemLogModel;
+import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.keypoint.PngEncoder;
 
 /**
@@ -86,7 +145,13 @@ public class ReportFuncs
 		else if( model instanceof CapControlStatusModel)
 			returnVal = new CapControlStatusReport();	        
 		else if( model instanceof LoadControlVerificationModel)
-			returnVal = new LoadControlVerificationReport();	        
+			returnVal = new LoadControlVerificationReport();
+		else if( model instanceof HECO_LMEventSummaryModel)
+			returnVal = new HECO_LMEventSummaryReport();
+		else if( model instanceof HECO_MonthlyBillingSettlementModel)
+			returnVal = new HECO_MonthlyBillingSettlementReport();
+		else if( model instanceof HECO_CustomerMonthlyBillingSettlementModel)
+			returnVal= new HECO_CustomerMonthlyBillingSettlementReport();	        
 	    else
 	        return null;
 
