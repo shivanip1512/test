@@ -35,6 +35,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
@@ -62,7 +63,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
  */
 public class StarsDatabaseCache implements com.cannontech.database.cache.DBChangeListener {
 	
-	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
+	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
     
