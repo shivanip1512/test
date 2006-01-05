@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/01/05 18:27:10 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.14  2006/01/05 18:27:10  cplender
+* Removed annoying printouts about VRReport
+*
 * Revision 1.13  2005/12/20 17:20:24  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -594,10 +597,12 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                             }
 
                             _codes_received++;
-                            {
+
+
+                            /*{
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** VReport Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
-                            }
+                            }*/
                             report = CTIDBG_new CtiVerificationReport(prot_type, getID(), codestr, second_clock::universal_time(), cmdStr);
                             _verification_objects.push(report);
                         }
