@@ -1,7 +1,9 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -138,5 +140,27 @@ public static LiteCICustomer getLiteCICustomer(int customerID)
 		return (LiteCICustomer)lc;
 		
 	return null;
+}
+
+/**
+ * Returns a vector of LiteCustomers with given energyCompanyID
+ * @param energycompanyID
+ * @return Vector liteCustomers
+ */
+public static Vector getAllLiteCustomersByEnergyCompany(int energyCompanyID)
+{
+	Vector liteCustomers = new Vector();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized(cache) 
+	{
+		List allCustomers = cache.getAllCustomers();
+		for( int i= 0; i < allCustomers.size(); i++)
+		{
+			LiteCustomer lc = (LiteCustomer)allCustomers.get(i);
+			if( lc.getEnergyCompanyID() == energyCompanyID)
+				liteCustomers.add(lc);
+		}
+	}
+	return liteCustomers;
 }
 }
