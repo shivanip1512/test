@@ -364,7 +364,11 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	 * Get the selection list name based on the specified list entry yukon definition ID 
 	 */
 	public static String getYukonListName(int yukonDefID) {
-		if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
+		if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_RATE_SCHED_J)
+			return YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
 			return YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
 			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY;
