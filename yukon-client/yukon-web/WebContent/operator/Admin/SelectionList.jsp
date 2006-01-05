@@ -377,16 +377,58 @@ function init() {
                           <hr>
                         </td>
                       </tr>
-                      <tr> 
-                        <td width="15%" align="right" class="TableCell">Entry 
-                          Definition: </td>
-                        <td width="85%" class="MainText"> 
+                      
+                      <% if( listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE) ){%> 
+					  <tr> 
+                        <td colspan="2" width="85%" class="MainText"> 
+                        <input type="hidden" name="EntryID" value="0">
+                        <%-- The hidden fields are here for compilation, they are used on the "else" clause--%>
+                        <input type="hidden" name="DefaultListEntries">
+                        <input type="hidden" name="Default">
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr class="TableCell"> 
-                              <td width="50%" height="20">1. Select an entry from 
-                                the default list: </td>
-                              <td width="50%" height="20">2. Then enter/update 
-                                the entry text:</td>
+                              <td width="50%" valign="top" > 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+									<tr>
+		                              <td colspan=2 width="50%" height="20">1. Enter/update the entry text:</td>
+									</tr>
+                                    <tr> 
+                                      <td width="15%" align="right">Text: 
+                                      </td>
+                                      <td width="85%"> 
+                                        <input type="text" name="EntryText" size="30">
+                                      </td>
+                                    </tr>
+									<tr>
+		                              <td colspan=2 width="50%" height="20">2. Then enter/update the Yukon Definition ID:<BR>&nbsp;&nbsp;&nbsp;&nbsp;(ID provided by Cannon)</td>
+									</tr>
+                                    <tr> 
+                                      <td width="15%" align="right">ID: 
+                                      </td>
+                                      <td width="85%"> 
+                                        <input type="text" name="YukonDefID" size="30">
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="15%"></td>
+                                      <td width="85%" align="left" valign="middle" height="60"> 
+										<input type="button" name="Save" value="Add" onclick="saveEntry(this.form)">
+                                      </td>
+                                    </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>                      
+                      <% } else {%>
+                      <tr> 
+                        <td width="15%" align="right" class="TableCell">Entry Definition: </td>
+                        <td width="85%" class="MainText"> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr class="TableCell">
+                              <td width="50%" height="20">1. Select an entry from the default list: </td>
+                              <td width="50%" height="20">2. Then enter/update the entry text:</td>
                             </tr>
                             <tr class="TableCell" valign="top"> 
                               <td width="50%"> 
@@ -423,6 +465,8 @@ function init() {
                           </table>
                         </td>
                       </tr>
+					  <%}%>                      
+                      
                     </table>
                   </td>
                 </tr>
