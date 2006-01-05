@@ -78,17 +78,21 @@ public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.OD_OASoa
 		String url = (vendor != null ? vendor.getUrl() : "(none)");
 		if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE))
 		{
-			ErrorObject error = new ErrorObject();
-			error.setErrorString("OMS vendor unknown.  Please contact Yukon administrator to set the OMS_WEBSERVICES_URL Role Property value in Yukon.");
+			throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
+/*			ErrorObject error = new ErrorObject();
+			error.setErrorString("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
 			error.setEventTime(new GregorianCalendar());
 			errorObjects = new ErrorObject[]{error};
+*/
 		}
 		else if ( ! Multispeak.getInstance().getPilConn().isValid() )
 		{
-			ErrorObject error = new ErrorObject();
+			throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+/*			ErrorObject error = new ErrorObject();
 			error.setErrorString("Connection to Yukon Porter is not valid.");
 			error.setEventTime(new GregorianCalendar());
 			errorObjects = new ErrorObject[]{error};
+*/
 		}
 		else
 		{
