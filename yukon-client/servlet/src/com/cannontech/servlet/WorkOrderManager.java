@@ -261,7 +261,7 @@ public class WorkOrderManager extends HttpServlet {
 		try {
 		    ReportBean reportBean = new ReportBean();
 		    reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
-		    reportBean.getModel().setECIDs( energyCompany.getEnergyCompanyID() );
+		    reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
 			
 			JFreeReport report = reportBean.createReport();;
