@@ -14,6 +14,7 @@
 #include "pointdefs.h"
 #include "regression.h"
 #include "ctitime.h"
+#include "ctidate.h"
 
 #define CALC_DEBUG_INBOUND_POINTS                   0x00000001
 #define CALC_DEBUG_OUTBOUND_POINTS                  0x00000002
@@ -66,7 +67,7 @@ private:
     unsigned _pointTags;
     CtiTime _pointTime, _calcPointWindowEndTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
-
+    
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
     CtiTime _lastValueChangedTime;
     CtiRegression _regress;
@@ -74,7 +75,7 @@ private:
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
     _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0), _lastValueChangedTime(pointValue),
-    _updatesInCurrentAvg(0), _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
+    _updatesInCurrentAvg(0), _calcPointWindowEndTime(CtiTime(CtiDate(1,1,1990))), _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
     {  };
 
     long    getPointNum( void )            {   return _pointNum;   };
@@ -102,6 +103,17 @@ public:
 
     const CtiTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
     void          setPointCalcWindowEndTime( const CtiTime& endTime ) {   _calcPointWindowEndTime = endTime;  };
+
+    //removes the dependent and returns the number of dependents remaining
+    unsigned int removeDependent( long dependentID )
+    {
+        struct depStore newDependent;
+        newDependent.dependentID = dependentID;
+        int size = _dependents.entries();
+        _dependents.remove( newDependent );
+
+        return _dependents.entries();
+    }
 
 protected:
     void setPointValue( double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags )
@@ -150,6 +162,7 @@ class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_
 public:
     static CtiPointStore *getInstance();
     CtiPointStoreElement *insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType );
+    void                 removePointElement( long pointNum );
 
 private:
 
