@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:19:25 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/05 21:05:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,8 @@ public:
 
 protected:
 
-   UINT _busy;                                  // counts outstanding requests.  > 1 indicates a problem.
+   bool _sequenceFailReported;
+   UINT _requestCount;                          // counts outstanding requests.  > 1 indicates a problem.
    CTINEXUS _returnNexus;                       // Who gets us back where we belong.
    shared_ptr< CtiPort > _port;                 // The port on which this share exists.
 
@@ -77,11 +78,11 @@ public:
    CtiPortShare(shared_ptr< CtiPort > myPort, INT listenPort);
    virtual ~CtiPortShare();
 
-   UINT getBusyCount() const;
+   UINT getRequestCount() const;
 
-   CtiPortShare& setBusyCount(UINT bc);
-   CtiPortShare& incBusyCount();
-   CtiPortShare& decBusyCount();
+   CtiPortShare& setRequestCount(UINT bc);
+   CtiPortShare& incRequestCount();
+   CtiPortShare& decRequestCount();
 
    virtual void interruptBlockingAPI();
 

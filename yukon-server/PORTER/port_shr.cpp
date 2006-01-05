@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/01/05 21:05:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 #include "CTICALLS.H"
 
 CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
+   _sequenceFailReported(false),
    _port(myPort),
    _listenPort(listenPort)
 {
@@ -47,28 +48,28 @@ CtiPortSPtr CtiPortShare::getPort()
 
 
 
-UINT CtiPortShare::getBusyCount() const
+UINT CtiPortShare::getRequestCount() const
 {
-   return _busy;
+   return _requestCount;
 }
 
 
-CtiPortShare& CtiPortShare::setBusyCount(UINT bc)
+CtiPortShare& CtiPortShare::setRequestCount(UINT bc)
 {
-   _busy = bc;
+   _requestCount = bc;
    return *this;
 }
 
 
-CtiPortShare& CtiPortShare::incBusyCount()
+CtiPortShare& CtiPortShare::incRequestCount()
 {
-   _busy++;
+   _requestCount++;
    return *this;
 }
 
-CtiPortShare& CtiPortShare::decBusyCount()
+CtiPortShare& CtiPortShare::decRequestCount()
 {
-   _busy--;
+   if(_requestCount > 0) _requestCount--;
    return *this;
 }
 
