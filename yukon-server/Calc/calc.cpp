@@ -109,6 +109,29 @@ void CtiCalc::cleanup( void )
     _components.clearAndDestroy( );
 }
 
+void CtiCalc::clearComponentDependencies( void )
+{
+    RWSlistCollectablesIterator iter( _components );
+    CtiCalcComponent *tmpComponent;
+
+    for( ; iter(); )
+    {
+        tmpComponent = (CtiCalcComponent *)iter.key( );
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiHashKey componentHashKey(tmpComponent->getComponentPointId());
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
+
+        if ( componentPointPtr )
+		{
+            if( componentPointPtr->removeDependent(_pointId) == 0 )
+            {//There are no dependents left, no one cares about this guy!
+                pointStore->removePointElement( tmpComponent->getComponentPointId() );
+            }
+        }
+    }
+}
+
 
 double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid )
 {
