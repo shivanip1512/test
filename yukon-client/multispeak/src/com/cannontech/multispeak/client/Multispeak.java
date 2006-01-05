@@ -8,7 +8,12 @@ package com.cannontech.multispeak.client;
 
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,16 +23,25 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.xml.utils.IntVector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
@@ -50,6 +64,7 @@ import com.cannontech.multispeak.OutageDetectDeviceType;
 import com.cannontech.multispeak.OutageDetectionEvent;
 import com.cannontech.multispeak.OutageEventType;
 import com.cannontech.multispeak.OutageLocation;
+import com.cannontech.multispeak.event.*;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.roles.yukon.SystemRole;
@@ -70,12 +85,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
 
-	/** A map of Long(userMessageID) to ODEvent values */
-	private static Map ODEventsMap = new HashMap();
-	
-	/** A map of Long(userMessageID) to MeterReadEvent value */
-	private static Map meterReadEventsMap = new HashMap();
-
+	/** A map of Long(userMessageID) to MultispeakEvent values */
+	private static Map eventsMap = new HashMap();
 	/** A map of String<companyName> (from the MultispeakRole) to MultispeakVendor objects*/
 	private static Map mspRolesMap = null;
 	 
@@ -148,24 +159,15 @@ public class Multispeak implements MessageListener, DBChangeListener {
 				CTILogger.debug("A MESSAGE: (ExpectMore=" + returnMsg.getExpectMore() + ") " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 				if( returnMsg.getExpectMore() == 0)
 				{
-				    boolean done = false;
 					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
-					ODEvent event = (ODEvent)getODEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-					if( event != null)
-					{
-					    messageReceived_ODEvent(event, returnMsg);
-					    done = true;
-					}
+					MultispeakEvent event = (MultispeakEvent)getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
+					
+					if( event instanceof ODEvent)
+					    messageReceived_ODEvent((ODEvent)event, returnMsg);
 
-					if( !done )
-					{
-						MeterReadEvent mrEvent = (MeterReadEvent)getMeterReadEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-						if( mrEvent != null)
-						{
-						    messageReceived_MeterReadEvent(mrEvent, returnMsg);
-						    done = true;
-						}
-					}
+					else if( event instanceof MeterReadEvent)
+					    messageReceived_MeterReadEvent((MeterReadEvent)event, returnMsg);
+
 				}
 			}
 		}
@@ -216,10 +218,24 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	    mrEvent.setMeterRead(meterRead);
 	}
 
-    /**
-     * 
-     */
-    private void messageReceived_ODEvent(ODEvent event, Return returnMsg)
+	/** ERRORCODE								Description
+	 * The following codes are indeterminate, there may not be an outage
+	 * 31 (Timeout reading from port)			This is a communications error between Yukon and the CCU.  Not a carrier error.
+	 * 32 (Sequence Reject Frame Received)		This is a communications error between Yukon and the CCU.  Not a carrier error.
+	 * 33 (Framing error)						This is a communications error between Yukon and the CCU.  Not a carrier error.
+	 * 65 (No DCD on return message)			This is a communications error between Yukon and the CCU.  Not a carrier error.
+	 *
+	 * The following codes constitute NO Outage, the meter responded in some fashion at least.
+	 * 1 (Bad BCH)								Powerline carrier checksum failed.  Powerline is noisy, and the return message is incomplete when received by Yukon.
+	 * 17 (Word 1 Nack)							CCU receives a partial return message from any 2-way device.
+	 * 74 (Route Failed on CCU Queue Entry)		Essentially the same as an error 17.  CCU receives a partial return message from any 2-way device.  The only difference being that a 74 will be the 							error generated for a queued message and an error 17 will be generated for a non-queued message.
+
+	 * The following codes constitute and OUTAGE 
+	 * 20 (Word 1 Nack Padded)					No return message received at the CCU.  Failed 2-way device.
+	 * 57 (E-Word Received in Return Message)	This message only occurs in systems containing repeaters.  The repeater did not receive an expected return message from a 2-way device.							Failed 2-way device.
+	 * 72 (DLC Read Timeout On CCU Queue Entry)	Essentially the same as an error 20.  No return message received.  The only difference is that a 72 will be the error code during a queued message and 						an error 20 will be the error for a non-queued message.
+	*/
+	private void messageReceived_ODEvent(ODEvent event, Return returnMsg)
     {
 		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
 		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
@@ -236,23 +252,6 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		loc.setMeterNo(keyValue);
 		ode.setOutageLocation(loc);
 	    
-		/** ERRORCODE								Description
-		 * The following codes are indeterminate, there may not be an outage
-		 * 31 (Timeout reading from port)			This is a communications error between Yukon and the CCU.  Not a carrier error.
-		 * 32 (Sequence Reject Frame Received)		This is a communications error between Yukon and the CCU.  Not a carrier error.
-		 * 33 (Framing error)						This is a communications error between Yukon and the CCU.  Not a carrier error.
-		 * 65 (No DCD on return message)			This is a communications error between Yukon and the CCU.  Not a carrier error.
-		 *
-		 * The following codes constitute NO Outage, the meter responded in some fashion at least.
- 		 * 1 (Bad BCH)								Powerline carrier checksum failed.  Powerline is noisy, and the return message is incomplete when received by Yukon.
-		 * 17 (Word 1 Nack)							CCU receives a partial return message from any 2-way device.
-		 * 74 (Route Failed on CCU Queue Entry)		Essentially the same as an error 17.  CCU receives a partial return message from any 2-way device.  The only difference being that a 74 will be the 							error generated for a queued message and an error 17 will be generated for a non-queued message.
-
-		 * The following codes constitute and OUTAGE 
-		 * 20 (Word 1 Nack Padded)					No return message received at the CCU.  Failed 2-way device.
-		 * 57 (E-Word Received in Return Message)	This message only occurs in systems containing repeaters.  The repeater did not receive an expected return message from a 2-way device.							Failed 2-way device.
-		 * 72 (DLC Read Timeout On CCU Queue Entry)	Essentially the same as an error 20.  No return message received.  The only difference is that a 72 will be the error code during a queued message and 						an error 20 will be the error for a non-queued message.
-		*/
 		if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
 		{	//Meter did not respond - outage assumed
 	        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ") " + returnMsg.getResultString());
@@ -281,7 +280,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	    event.setOutageDetectionEvent(ode);
 		ODEventNotification(event);
 
-		getODEventsMap().remove(new Long(event.getPilMessageID()));        
+		getEventsMap().remove(new Long(event.getPilMessageID()));        
     }
 
     /**
@@ -336,7 +335,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 				{
 					long id = generateMessageID();		
 					ODEvent event = new ODEvent(vendor.getCompanyName(), id);
-					getODEventsMap().put(new Long(id), event);
+					getEventsMap().put(new Long(id), event);
 				    
 					pilRequest = new Request(lPao.getYukonID(), "ping noqueue", id);
 					pilRequest.setPriority(13);	//just below Client applications
@@ -379,7 +378,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		long id = generateMessageID();
 
 		MeterReadEvent event = new MeterReadEvent(companyName, id);
-		getMeterReadEventsMap().put(new Long(id), event);
+		getEventsMap().put(new Long(id), event);
 		
 		Request pilRequest = null;
 		CTILogger.info("Received " + meterNumber + " for Meter Reading from " + companyName);
@@ -403,7 +402,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		    synchronized (event)
             {
 		        long millisTimeOut = 0;	//
-		        while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 8 seconds
+		        while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 2 minutes
 		        {
 		            try
                     {
@@ -468,20 +467,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	/**
 	 * @return
 	 */
-	public static Map getODEventsMap() {
-		return ODEventsMap;
-	}
-	/**
-	 * @return
-	 */
-	public static Map getMeterReadEventsMap() {
-		return meterReadEventsMap;
-	}
-	/**
-	 * @param map
-	 */
-	public static void setODEventsMap(Map map) {
-		ODEventsMap = map;
+	public static Map getEventsMap() {
+		return eventsMap;
 	}
 
 	/* (non-Javadoc)
@@ -587,6 +574,132 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	{
 		return (MultispeakVendor)getMultispeakRolesMap().get(companyName.toLowerCase());
 	}
-			
+
+	/**
+	 * Returns a MeterRead[] with kW and kWh readings for MeterNo, > startDate and <= endDate 
+	 * @param meterNo
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public MeterRead[] retrieveMeterReads(String meterNo, Date startDate, Date endDate)
+	{
+		LiteYukonPAObject lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNo);
+		MeterRead[] meterReadArray = new MeterRead[0];
+		if (lPao != null)
+		{
+			LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(lPao.getYukonID());
+			IntVector pointIDs = new IntVector(2);	//we only want the point IDs for kW and kWh
+			for (int i = 0; i < litePoints.length; i ++)
+			{
+				LitePoint lp = litePoints[i];
+				if( (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT || lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT) &&
+						lp.getPointOffset() == 1)
+					pointIDs.addElement(lp.getPointID());
+
+			}
+
+			if (pointIDs.size() > 0)
+			{
+				String sql = "SELECT DISTINCT POINTID, TIMESTAMP, VALUE FROM " + RawPointHistory.TABLE_NAME + " " + 
+							" WHERE POINTID IN (" + pointIDs.elementAt(0);
+							for (int i = 1; i < pointIDs.size(); i++)
+								sql += ", " + pointIDs.elementAt(i); 
+		
+							sql += " ) " + 
+									" AND TIMESTAMP > ? AND TIMESTAMP <= ? " +
+									" ORDER BY TIMESTAMP, POINTID ";
+								
+				Connection conn = null;
+				PreparedStatement pstmt = null;
+				ResultSet rset = null;
+		
+				try
+				{
+					conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		
+					if( conn == null )
+					{
+						CTILogger.error(getClass() + ":  Error getting database connection.");
+						return meterReadArray;
+					}
+					else
+					{
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setTimestamp(1, new Timestamp( startDate.getTime() ));
+						pstmt.setTimestamp(2, new Timestamp( endDate.getTime() ));				
+						CTILogger.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE < " + endDate);
+						rset = pstmt.executeQuery();
+
+						long lastTimestamp = -1; 
+						
+						Vector vectorOfMeterReads = new Vector();
+						MeterRead meterRead = null;
+						while( rset.next())
+						{
+							int pointID = rset.getInt(1);
+							Timestamp ts = rset.getTimestamp(2);
+							GregorianCalendar dateTime = new GregorianCalendar();
+							dateTime.setTimeInMillis(ts.getTime());
+							double value = rset.getDouble(3);
+		
+							if( lastTimestamp != ts.getTime())	//same time interval, use the previous MeterRead object
+							{
+								if( lastTimestamp > -1)
+									vectorOfMeterReads.add(meterRead);//save the previous data
+		
+								//Create new meter read object
+								meterRead = new MeterRead();
+								meterRead.setDeviceID(meterNo);
+								meterRead.setMeterNo(meterNo);
+								meterRead.setObjectID(meterNo);
+								
+								lastTimestamp = ts.getTime();
+							}
+
+							//load the meter readings
+							meterRead.setReadingDate(dateTime);
+							LitePoint lp = PointFuncs.getLitePoint(pointID);
+							if(lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)
+							{
+								meterRead.setKW(new Float(value));
+								meterRead.setKWDateTime(dateTime);
+							}
+							else if( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() ==1)
+							{
+								//Need to convert the double into BigInteger
+								meterRead.setPosKWh(new BigInteger(String.valueOf(new Double(value).intValue())));
+							}
+						}
+						//Add the last meterRead object
+						if( meterRead != null)
+							vectorOfMeterReads.add(meterRead);
+							
+						meterReadArray = (MeterRead[])vectorOfMeterReads.toArray(meterReadArray);
+					}
+				}
+				
+				catch( java.sql.SQLException e )
+				{
+					e.printStackTrace();
+				}
+				finally
+				{
+					try
+					{
+						if( pstmt != null )
+							pstmt.close();
+						if( conn != null )
+							conn.close();
+					}
+					catch( java.sql.SQLException e )
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return meterReadArray;
+	}
 }
 
