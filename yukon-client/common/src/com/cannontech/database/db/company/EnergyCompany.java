@@ -1,12 +1,14 @@
 package com.cannontech.database.db.company;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.company.EnergyCompanyBase;
 
 /**
  * Creation date: (10/18/2001 1:20:37 PM)
  */
 public class EnergyCompany extends com.cannontech.database.db.DBPersistent 
 {
+	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 	private Integer energyCompanyID = null;
 	private String name = null;
 	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ZERO_ID);
