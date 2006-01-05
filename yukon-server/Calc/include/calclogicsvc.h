@@ -11,6 +11,8 @@
 #include "thread_monitor.h"
 #include "thread_register_data.h"
 //
+#include "msg_dbchg.h"
+#include <queue>
 
 class CtiCalcLogicService : public CService
 {
@@ -29,9 +31,13 @@ protected:
     virtual void ParseArgs(DWORD argc, LPTSTR* argv);
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
+    BOOL isANewCalcPointID(const long aPointID);
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
     void dropDispatchConnection( );
+    void pauseInputThread();
+    void resumeInputThread();
     void loadConfigParameters( );
+    void updateCalcData();
     static void mainComplain( void *la );
     static void outComplain( void *la );
     static void inComplain( void *la );
@@ -41,11 +47,14 @@ private:
     RWThreadFunction _inputFunc;
     RWThreadFunction _outputFunc;
 
-    CtiTime _dispatchPingedFailed;
+    CtiTime _dispatchPingedFailed, _lastDispatchMessageTime;
     bool _dispatchConnectionBad;
-    bool _ok, _restart;
+    bool _ok, _restart, _update;
     string _dispatchMachine;
     INT _dispatchPort;
+    typedef queue<CtiDBChangeMsg> messageQueue;
+    messageQueue _dbChangeMessages;
+    CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
     CtiCalculateThread *calcThread;
     CtiConnection *_conxion;
     void _inputThread( void );

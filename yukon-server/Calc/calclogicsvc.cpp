@@ -34,7 +34,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "calclogicsvc.h"
 #include "calcthread.h"
 
-#define CHECK_RATE_SECONDS  60     // one minute check for db change
+#define CHECK_RATE_SECONDS  30     // 30 second check for db change, on a change some re-loading is done, this slows the max rate down.
 
 BOOL UserQuit = FALSE;
 
@@ -73,7 +73,8 @@ IMPLEMENT_SERVICE(CtiCalcLogicService, CALCLOGIC)
 
 
 CtiCalcLogicService::CtiCalcLogicService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
-CService( szName, szDisplay, dwType ), _ok(TRUE), _restart(false), _dispatchPingedFailed(YUKONEOT), _dispatchConnectionBad(false)
+CService( szName, szDisplay, dwType ), _ok(TRUE), _restart(false), _update(false), _dispatchPingedFailed(YUKONEOT),
+_dispatchConnectionBad(false), _lastDispatchMessageTime(CtiTime::now())
 {
     calcThread = 0;
     m_pThis = this;
@@ -200,6 +201,7 @@ void CtiCalcLogicService::Run( )
                     if(_conxion) dropDispatchConnection();
 
                     _restart = false;                      // make sure our flag is reset
+                    _update = false;
 
                     loadConfigParameters();             // Reload the config.
 
@@ -430,6 +432,7 @@ void CtiCalcLogicService::Run( )
             ::std::time(&_nextCheckTime);
             _nextCheckTime += CHECK_RATE_SECONDS;    // added some time to it
             _restart = false;                       // make sure our flag is reset
+            _update = false;
 
             for( ; !UserQuit; )
             {
@@ -438,7 +441,7 @@ void CtiCalcLogicService::Run( )
                     rwnow = rwnow.now();
                     if(rwnow > LastThreadMonitorTime)
                     {
-                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );//If you change this timing, be sure to fix the timing on the dispatch reset
                         if(pointID!=0)
                         {
                             _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString()));;
@@ -502,12 +505,27 @@ void CtiCalcLogicService::Run( )
 
                         // check for DB Changes on a set interval
                         // this makes us a little kinder on re-registrations
-                        if(_restart)
+                        if( _restart )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " CalcLogicSvc main thread has recieved a reset command (DB Change)." << endl;
 
                             break; // exit the loop and reload
+                        }
+
+                        if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " CalcLogic has not heard from dispatch for at least 7 minutes, resetting." << endl;
+                            }
+                            _lastDispatchMessageTime = CtiTime::now();
+                            break; // exit the loop and reload
+                        }
+
+                        if( _update )
+                        {
+                            updateCalcData();
                         }
 
                         _nextCheckTime = timeNow + CHECK_RATE_SECONDS;
@@ -728,7 +746,7 @@ void CtiCalcLogicService::_inputThread( void )
                 {
                     if( _pSelf.serviceInterrupt( ) )
                     {
-                        interrupted = TRUE;
+                        interrupted = ( _interruptReason == CtiCalculateThread::Pause ) ? false : true ;
                     }
                     else
                     {
@@ -777,7 +795,7 @@ void CtiCalcLogicService::_inputThread( void )
             // Just in case we have lots of messages inbound.
             if( _pSelf.serviceInterrupt( ) )
             {
-                interrupted = TRUE;
+                interrupted = ( _interruptReason == CtiCalculateThread::Pause ) ? false : true ;
             }
 
             try
@@ -820,154 +838,209 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 {
     BOOL retval = TRUE;
 
-    try
+    if(!calcThread)
+    { // This prevents changes from messing us up while we are still loading
+        retval = FALSE;
+    }
+    else
     {
-        int op;
-        CtiMultiMsg *msgMulti;
-        CtiPointDataMsg *pData;
-        int x;
-
-        switch( message->isA( ) )
+        try
         {
-        case MSG_DBCHANGE:
-            // only reload on if a database change was made to a point
-            if( ((CtiDBChangeMsg*)message)->getDatabase() == ChangePointDb)
-            {
-                if( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
-                {
-                    // Must have been a delete or update
-                    if(calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
-                    {
-                        _restart = true;
-                        _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
+            int op;
+            CtiMultiMsg *msgMulti;
+            CtiPointDataMsg *pData;
+            int x;
 
+            switch( message->isA( ) )
+            {
+            case MSG_DBCHANGE:
+                // only reload on if a database change was made to a point
+                if( ((CtiDBChangeMsg*)message)->getDatabase() == ChangePointDb)
+                {
+                    if( ((CtiDBChangeMsg*)message)->getTypeOfChange() != ChangeTypeAdd)
+                    {
+                        // Must have been a delete or update
+                        if(calcThread->isACalcPointID(((CtiDBChangeMsg*)message)->getId()) == TRUE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                            _update = true;
+                            _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
+                            _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
+    
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                            }
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
+                            }
                         }
                     }
                     else
                     {
+                        bool wasCalcPoint = true;
+    
+                        wasCalcPoint = isANewCalcPointID( ((CtiDBChangeMsg*)message)->getId() );
+                        if( wasCalcPoint )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
+                            // always load when a point is added
+                            _update = true;
+                            _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
+                            _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
+    
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime()  << " - Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                            }
                         }
                     }
                 }
-                else
+    
+                break;
+    
+            case MSG_COMMAND:
+                // we will handle some messages
+                op = ((CtiCommandMsg*)message)->getOperation();
+                switch( op )
                 {
-                    // always load when a point is added
-                    _restart = true;
-                    _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
-
+                case (CtiCommandMsg::Shutdown):
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime()  << " - Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
-                    }
-                }
-            }
-
-            break;
-
-        case MSG_COMMAND:
-            // we will handle some messages
-            op = ((CtiCommandMsg*)message)->getOperation();
-            switch( op )
-            {
-            case (CtiCommandMsg::Shutdown):
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CalcLogic received a shutdown message - Ignoring!!" << endl;
-                }
-                break;
-
-            case (CtiCommandMsg::AreYouThere):
-                {
-                    // echo back the same message - we are here
-
-                    CtiCommandMsg *pCmd = (CtiCommandMsg*)message;
-                    if(pCmd->getUser() != CALCLOGICNAME)
-                    {
-                        if(_conxion) _conxion->WriteConnQue( pCmd->replicateMessage() );
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " CalcLogic has been pinged" << endl;
-                        }
-                        _dispatchConnectionBad = false;
-                    }
-                    else
-                    {
-                        // This is a response to our own ping to dispatch.  Mark it out so the machinery does not try to reconnect
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Dispatch connection ping verified." << endl;
-                        }
-                        _dispatchPingedFailed = CtiTime(YUKONEOT);
-                        _dispatchConnectionBad = true;
+                        dout << CtiTime() << " CalcLogic received a shutdown message - Ignoring!!" << endl;
                     }
                     break;
+    
+                case (CtiCommandMsg::AreYouThere):
+                    {
+                        // echo back the same message - we are here
+    
+                        CtiCommandMsg *pCmd = (CtiCommandMsg*)message;
+                        if(pCmd->getUser() != CALCLOGICNAME)
+                        {
+                            if(_conxion) _conxion->WriteConnQue( pCmd->replicateMessage() );
+    
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " CalcLogic has been pinged" << endl;
+                            }
+                            _dispatchConnectionBad = false;
+                        }
+                        else
+                        {
+                            // This is a response to our own ping to dispatch.  Mark it out so the machinery does not try to reconnect
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Dispatch connection ping verified." << endl;
+                            }
+                            _dispatchPingedFailed = CtiTime(YUKONEOT);
+                            _dispatchConnectionBad = true;
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " CalcLogic received a unknown/don't care Command message- " << op << endl;
+                    }
+                    break;
+    
                 }
+                break;
+    
+            case MSG_POINTDATA:
+                {
+                    _lastDispatchMessageTime = CtiTime::now();
+
+                    pData = (CtiPointDataMsg *)message;
+                    calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
+                    _dispatchConnectionBad = false;
+                }
+                break;
+    
+            case MSG_MULTI:
+                // pull all of the messages out
+                msgMulti = (CtiMultiMsg *)message;
+    
+                if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
+                }
+    
+                for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+                {
+                    // recursive call to parse this message
+                    parseMessage( msgMulti->getData( )[x], calcThread );
+                }
+                break;
+    
+            case MSG_SIGNAL:
+                // not an error
+                if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+                }
+                break;
+    
             default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CalcLogic received a unknown/don't care Command message- " << op << endl;
+                    dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
                 }
-                break;
-
-            }
-            break;
-
-        case MSG_POINTDATA:
-            {
-                pData = (CtiPointDataMsg *)message;
-                calcThread->pointChange( pData->getId(), pData->getValue(), pData->getTime(), pData->getQuality(), pData->getTags() );
-                _dispatchConnectionBad = false;
-            }
-            break;
-
-        case MSG_MULTI:
-            // pull all of the messages out
-            msgMulti = (CtiMultiMsg *)message;
-
-            if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
-            }
-
-            for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
-            {
-                // recursive call to parse this message
-                parseMessage( msgMulti->getData( )[x], calcThread );
-            }
-            break;
-
-        case MSG_SIGNAL:
-            // not an error
-            if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
-            }
-            break;
-
-        default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( )<<":"<< message->isA( )<< "\";  skipping" << endl;
             }
         }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
     }
 
     return retval;
 }
 
+/*-----------------------------------------------------------------------------*
+* Function Name: isANewCalcPointID()
+*
+* Description: returns true if the PointID is a Calc Point ID
+*              Different then isACalcPointID in it checks the database
+*              not memory, so new points are checked also. Much less efficient.
+*-----------------------------------------------------------------------------*
+*/
+BOOL CtiCalcLogicService::isANewCalcPointID(const long aPointID)
+{
+    int retVal = false;
+
+    //  connect to the database
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection( );
+
+    //  figure out what points are calc points
+
+    RWDBDatabase db             = conn.database();
+    RWDBTable    calcBaseTable  = db.table("CALCBASE");
+    RWDBSelector selector       = db.selector();
+
+    selector << calcBaseTable["POINTID"];
+
+    selector.from( calcBaseTable );
+
+    selector.where( selector["POINTID"] == aPointID );
+
+    RWDBReader  rdr = selector.reader( conn );
+
+    // If this exists, return true, else return false
+    if( rdr() )
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
 
 bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 {
@@ -1130,7 +1203,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
 void CtiCalcLogicService::dropDispatchConnection(  )
 {
-
+    _interruptReason = CtiCalculateThread::Shutdown;
     try
     {
         if( _conxion != NULL )
@@ -1241,6 +1314,116 @@ void CtiCalcLogicService::dropDispatchConnection(  )
 
 
     return;
+}
+
+void CtiCalcLogicService::pauseInputThread()
+{
+    _interruptReason = CtiCalculateThread::Pause;
+    try
+    {
+        _inputFunc.requestInterrupt( 5000 );
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
+void CtiCalcLogicService::resumeInputThread()
+{
+    try
+    {
+        _inputFunc.releaseInterrupt( );
+    }
+    catch(RWTHRIllegalUsage &msg)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << msg.why() <<  ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
+void CtiCalcLogicService::updateCalcData()
+{
+    CtiTime start, stop;
+
+    try
+	{
+        start = start.now();
+
+        CtiDBChangeMsg *dbChangeMsg;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " DB Update Started" << endl;
+        }
+
+        pauseInputThread();//Pause threads that would use our data
+        calcThread->interruptThreads(CtiCalculateThread::Pause);
+        _update = false;
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+        for( ; _dbChangeMessages.size() ; )
+        {
+            dbChangeMsg = &_dbChangeMessages.front();
+
+            int pointID = dbChangeMsg->getId();
+
+            if( dbChangeMsg->getTypeOfChange() != ChangeTypeAdd )
+            {
+                calcThread->removePointStoreObject( pointID );
+            
+            }
+    /*      else
+            {
+                //Do nothing on Add, the data was never there to begin with!
+            }
+    */
+            _dbChangeMessages.pop();//Because of the way I made the queue, there is no need to delete
+        }
+
+        calcThread->clearPointMaps();
+        readCalcPoints(calcThread);
+        _registerForPoints();       //From here on Im not positive about this ordering, resume threads before or after we register?
+        calcThread->sendConstants();
+
+        calcThread->resumeThreads();
+        resumeInputThread();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " DB Update Complete" << endl;
+        }
+
+        stop = stop.now();
+        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to reload calc tables" << endl;
+        }
+	}
+	catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+		calcThread->resumeThreads();
+		resumeInputThread();
+        _restart = true;
+    }
 }
 
 //ecs 1/5/2005
