@@ -6,16 +6,25 @@
  */
 package com.cannontech.analysis.gui;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.util.IntList;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -28,7 +37,10 @@ public class ReportBean
 {
 	private ReportModelBase model = null;
 	private int type = -1;
+	private int[] availReportTypes = new int[0];
 	private int groupType = -1;
+	private int userID = UserUtils.USER_YUKON_ID;
+	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private String start = "";
 	private String stop = "";
@@ -41,13 +53,12 @@ public class ReportBean
 	public ReportBean()
 	{
 		super();
-		CTILogger.info(" CREATING REPORT BEAN");
+		CTILogger.info("Report Bean Initialized");
 	}
 
 	public static void main(final String[] args) throws Exception
 	{
 		ReportBean bean = new ReportBean();
-		CTILogger.info("HERE");
 		bean.setType(16);
 		bean.buildOptionsHTML();
 	}
@@ -151,7 +162,10 @@ public class ReportBean
 		if( i != groupType)
 		{
 			groupType = i;
-			setType(ReportTypes.getGroupTypes(groupType)[0]);	//default to the first one
+			loadReportTypes();
+			int [] reportTypes = getReportTypes();
+			if( reportTypes.length > 0)
+				setType(reportTypes[0]);	//default to the first one
 			setChanged(true);
 		}
 	}
@@ -165,7 +179,7 @@ public class ReportBean
 	{
 	    if (model == null || isChanged())
 	    {
-	        model = ReportTypes.create(getType());
+	        setModel(ReportTypes.create(getType()));
 	        setChanged(false);
 	    }
 		return model;
@@ -191,6 +205,7 @@ public class ReportBean
 	}
 
 	/**
+	 * Returns true if some other parameter has changed.
 	 * @return
 	 */
 	public boolean isChanged()
@@ -199,6 +214,7 @@ public class ReportBean
 	}
 
 	/**
+	 * Set isChanged value
 	 * @param b
 	 */
 	public void setChanged(boolean b)
@@ -226,5 +242,82 @@ public class ReportBean
     public void setModel(ReportModelBase model)
     {
         this.model = model;
+        if( model != null)
+        	model.setEnergyCompanyID(new Integer(getEnergyCompanyID()));
     }
+	/**
+	 * Returns the EnergyCompanyID for the reportBean's user
+	 * @return
+	 */
+	public int getEnergyCompanyID()
+	{
+		return energyCompanyID;
+	}
+
+	/**
+	 * Set the EnergyCompanyID for the reportBean's user
+	 * @param i
+	 */
+	public void setEnergyCompanyID(int ecID)
+	{
+		energyCompanyID = ecID;
+	}
+
+	/**
+	 * Returns the userID
+	 * @return
+	 */
+	public int getUserID()
+	{
+		return userID;
+	}
+
+	/**
+	 * Set userID
+	 * @param i
+	 */
+	public void setUserID(int i)
+	{
+		userID = i;
+	}
+	
+	/**
+	 * Returns an array of reportType ints that are valid for grpType
+	 * Settlement groupType reportTypes will be loaded based on getEnergyCompanyID()
+	 * @param groupType
+	 * @return
+	 */
+	public int[] getReportTypes()
+	{
+		return availReportTypes;
+	}
+	
+	/**
+	 * Load the availReportTypes for getGroupType().
+	 */
+	private void loadReportTypes()
+	{
+		if (getGroupType() == ReportTypes.SETTLEMENT_REPORTS_GROUP)
+		{
+			//Need to replace types with the settlement report types based on the energyCompany's Settlement list and yukonListEntries.
+			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID() );
+			YukonSelectionList list = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
+			ArrayList yukListEntries = list.getYukonListEntries();
+			IntList intList = new IntList(3);
+			//Loop through all list entries, there may be more than one settlement type per energycompany.
+			for (int i = 0; i < yukListEntries.size(); i ++)
+			{
+				YukonListEntry entry = (YukonListEntry)yukListEntries.get(i);
+				int[] addTypes = ReportTypes.getSettlementReportTypes(entry.getYukonDefID());
+				//Loop through all reportTypes per yukDefID and add them to intList.
+				for (int j = 0; j < addTypes.length; j++)
+				{
+					intList.add(addTypes[j]);
+				}
+			}
+			availReportTypes = intList.toArray();
+		}
+		else
+			availReportTypes = ReportTypes.getGroupReportTypes(getGroupType());
+	}
 }
