@@ -1,6 +1,7 @@
 <html>
 <%@ page import="com.cannontech.analysis.*" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
@@ -9,18 +10,25 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
-
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/> 
+<%
+	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+	StarsYukonUser starsYukonUser = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+%>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
+	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=EnergyCompanyFuncs.getEnergyCompany(lYukonUser).getEnergyCompanyID()%>"/>
+
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>
 <jsp:setProperty name="REPORT_BEAN" property="start" param="startDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
+
 <head>
 <title>Yukon Reporting</title>
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -87,7 +95,6 @@ function enableDates(value)
 }
 </script>
 <%
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 		
 	String bulletImg = "<img src='../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
@@ -199,6 +206,13 @@ function enableDates(value)
 							  	onMouseOut="window.status='';return true;">
 							  	<cti:getProperty propertyid="<%= ReportingRole.STARS_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.STARS_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
+					        <cti:checkProperty propertyid="<%=ReportingRole.SETTLEMENT_REPORTS_GROUP%>">
+							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.SETTLEMENT_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.ADMIN_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
+								onMouseOver="window.status='Settlement Reports';return true;"
+							  	onMouseOut="window.status='';return true;">
+							  	<cti:getProperty propertyid="<%= ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.ADMIN_REPORTS_GROUP)%>"/></a>
+					        </cti:checkProperty>
+					        
 							</td>
 						  </tr>
 						</table>
@@ -274,8 +288,9 @@ function enableDates(value)
 			  <tr>			  
                 <td class="main" width="25%" valign="top" style="padding-left:5; padding-top:5">
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-					<% if ( REPORT_BEAN.getGroupType() >= 0) {
-						int [] rptTypes = ReportTypes.getGroupToTypeMap()[REPORT_BEAN.getGroupType()];
+	                <%if ( REPORT_BEAN.getGroupType() >= 0)
+					  {
+						int [] rptTypes = REPORT_BEAN.getReportTypes();
 						for (int i = 0; i < rptTypes.length; i++){%>
 				    	<tr>
 						  <td class="main">
@@ -359,7 +374,7 @@ function enableDates(value)
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
-					    <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";reportForm.submit();'>
+					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";reportForm.submit();'>
 					  </td>
 					</tr>
 				  </table>
