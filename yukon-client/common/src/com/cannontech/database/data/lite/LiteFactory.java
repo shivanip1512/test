@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.command.Command;
+import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
@@ -221,6 +222,15 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((RawPointHistory)returnObject).setValue(new Double(((LiteRawPointHistory)liteObject).getValue()));
 			((RawPointHistory)returnObject).setQuality(new Integer(((LiteRawPointHistory)liteObject).getQuality()));					 		
 			break;
+		case LiteTypes.SETTLEMENT:
+			returnObject = new SettlementConfig();
+			((SettlementConfig)returnObject).setConfigID(new Integer(((LiteSettlementConfig)liteObject).getConfigID()));				
+			((SettlementConfig)returnObject).setFieldName(((LiteSettlementConfig)liteObject).getFieldName());
+			((SettlementConfig)returnObject).setFieldValue(((LiteSettlementConfig)liteObject).getFieldValue());
+			((SettlementConfig)returnObject).setYukonDefID(new Integer(((LiteSettlementConfig)liteObject).getYukonDefID()));
+			((SettlementConfig)returnObject).setDescription(((LiteSettlementConfig)liteObject).getDescription());
+			((SettlementConfig)returnObject).setEntryID(new Integer(((LiteSettlementConfig)liteObject).getEntryID()));			
+			break;			
 		default:
 			returnObject = null;
 			break;
@@ -438,7 +448,18 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((RawPointHistory)val).getQuality().intValue(),
 			((RawPointHistory)val).getValue().doubleValue());	
    	}
-		
+	else if( val instanceof SettlementConfig)
+	{
+	   returnLite = new LiteSettlementConfig(
+			 ((SettlementConfig)val).getConfigID().intValue(),
+			 ((SettlementConfig)val).getFieldName(),
+			 ((SettlementConfig)val).getFieldValue(),
+			 ((SettlementConfig)val).getYukonDefID().intValue(),
+			 ((SettlementConfig)val).getDescription(), 
+			 ((SettlementConfig)val).getEntryID().intValue(),
+			 ((SettlementConfig)val).getRefEntryID().intValue());
+	}
+
 	return returnLite;
 }
 
