@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/12/20 17:20:27 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/01/05 19:58:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -600,20 +600,20 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
 
     ptr_type pPort = PortGetEqual(pid);
 
-    if(pPort->isInhibited())
+    if(pPort)
     {
-        status = PORTINHIBITED;
-    }
-    else
-    {
-        if(pPort)
+        if(pPort->isInhibited())
         {
-            status = pPort->writeQueue(Request, DataSize, Data, Priority);
+            status = PORTINHIBITED;
         }
         else
         {
-            status = BADPORT;
+            status = pPort->writeQueue(Request, DataSize, Data, Priority);
         }
+    }
+    else
+    {
+        status = BADPORT;
     }
 
     return status;
