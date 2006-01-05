@@ -185,5 +185,11 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_RATE_SCHED_PLS				= 3604;
 	public static final int YUK_DEF_ID_RATE_SCHED_PP				= 3605;
 	public static final int YUK_DEF_ID_RATE_SCHED_PT				= 3606;
+	
+	public static final int YUK_DEF_ID_SETTLEMENT_HECO				= 3651; 
+	//The below stmts are here...preparing for the future.
+//	public static final int YUK_DEF_ID_SETTLEMENT_XCEL_ISOC				= 3652;
+//	public static final int YUK_DEF_ID_SETTLEMENT_XCEL_PDP				= 3653;
+	
 
 }
