@@ -100,7 +100,8 @@ public class TreeFindPanel extends DataInputPanel implements KeyListener
 	
 	public void focusOnTextBox() 
 	{
-		getJTextFieldText().requestFocus();
+		boolean worked;
+        worked = getJTextFieldText().requestFocusInWindow();
 	}
 	/**
 	 * This method was created in VisualAge.
@@ -149,12 +150,12 @@ public class TreeFindPanel extends DataInputPanel implements KeyListener
 	 */
 	public void setValue(Object val) 
 	{
-		getJTextFieldText().requestFocus();
-
+		//getJTextFieldText().requestFocus();
+		
 		if( val == null )
 			return;
 
 		getJTextFieldText().setText( val.toString() );
-		getJTextFieldText().requestFocus();
+		//getJTextFieldText().requestFocus();
 	}
 }
