@@ -1083,7 +1083,6 @@ alter table Command
 /*==============================================================*/
 /* Table: CommandGroup                                          */
 /*==============================================================*/
-insert into CommandGroup values (-1, 'Default Commands');
 create table CommandGroup  (
    CommandGroupID       NUMBER                          not null,
    CommandGroupName     VARCHAR2(60)                    not null
@@ -3685,7 +3684,7 @@ create table LMProgramDirectGear  (
    RampOutPercent       NUMBER                          not null,
    FrontRampOption      VARCHAR2(80)                    not null,
    FrontRampTime        NUMBER                          not null,
-   BackRampOption       LONG RAW                        not null,
+   BackRampOption       VARCHAR2(80)                    not null,
    BackRampTime         NUMBER                          not null
 );
 
@@ -7281,7 +7280,7 @@ alter table DeviceTypeCommand
       references Command (CommandID);
 
 alter table DeviceTypeCommand
-   add constraint "FK_DevCmd_Grp " foreign key (CommandGroupID)
+   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
       references CommandGroup (CommandGroupID);
 
 alter table DeviceVerification

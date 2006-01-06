@@ -2733,7 +2733,6 @@ go
 /*==============================================================*/
 /* Table: CommandGroup                                          */
 /*==============================================================*/
-insert into CommandGroup values (-1, 'Default Commands');
 create table CommandGroup (
    CommandGroupID       numeric              not null,
    CommandGroupName     varchar(60)          not null
@@ -5811,7 +5810,7 @@ create table LMProgramDirectGear (
    RampOutPercent       numeric              not null,
    FrontRampOption      varchar(80)          not null,
    FrontRampTime        numeric              not null,
-   BackRampOption       varbinary(80)        not null,
+   BackRampOption       varchar(80)          not null,
    BackRampTime         numeric              not null
 )
 go
@@ -6424,11 +6423,11 @@ go
 
 
 insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
-	select pointid,
-	'',
-	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
-	'N',
-	1, 0  from point;
+        select pointid,
+        '',
+        'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
+        'N',
+        1, 0  from point;
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key  (PointID)
 go
@@ -9887,7 +9886,7 @@ go
 
 
 alter table DeviceTypeCommand
-   add constraint "FK_DevCmd_Grp " foreign key (CommandGroupID)
+   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
       references CommandGroup (CommandGroupID)
 go
 
