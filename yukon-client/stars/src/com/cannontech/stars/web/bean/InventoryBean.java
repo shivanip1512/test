@@ -35,6 +35,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.util.FilterWrapper;
 
 /**
  * @author yao
@@ -56,6 +57,7 @@ public class InventoryBean {
 	public static final int HTML_STYLE_SELECT_INVENTORY = 2;
 	public static final int HTML_STYLE_SELECT_LM_HARDWARE = 4;
 	public static final int HTML_STYLE_INVENTORY_SET = 8;
+    public static final int HTML_STYLE_FILTERED_INVENTORY_SUMMARY = 9;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
@@ -73,6 +75,9 @@ public class InventoryBean {
 			return inv1.getInventoryID() - inv2.getInventoryID();
 		}
 	};
+    
+    private HttpServletRequest internalRequest;
+    private String filterInventoryHTML;
 	
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -163,12 +168,6 @@ public class InventoryBean {
 	
 	private int sortBy = YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO;
 	private int sortOrder = SORT_ORDER_ASCENDING;
-	private int filterBy = CtiUtilities.NONE_ZERO_ID;
-	private int deviceType = CtiUtilities.NONE_ZERO_ID;
-	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
-	private int location = INV_LOCATION_WAREHOUSE;
-	private int addressingGroup = CtiUtilities.NONE_ZERO_ID;
-	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
@@ -182,6 +181,8 @@ public class InventoryBean {
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList inventoryList = null;
+    private ArrayList filterByList = null;
+    private boolean showAll = false;
 	
 	public InventoryBean() {
 	}
@@ -245,123 +246,137 @@ public class InventoryBean {
 			}
 		}
 		
-		java.util.TreeSet sortedInvs = null;
-		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-			sortedInvs = new java.util.TreeSet( SERIAL_NO_CMPTOR );
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
-			sortedInvs = new java.util.TreeSet( INST_DATE_CMPTOR );
-		else
-			sortedInvs = new java.util.TreeSet( INV_ID_CMPTOR );
-		
-		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) {
-			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
-			
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase)
-						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				
-				if (liteInv instanceof LiteStarsLMHardware &&
-					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), getDeviceType() )
-					|| getDeviceType() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
-				{
-					sortedInvs.add( hardwares.get(i) );
-				}
-			}
-		}
-		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) {
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase)
-						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				
-				if (liteInv.getInstallationCompanyID() == getServiceCompany())
-					sortedInvs.add( hardwares.get(i) );
-			}
-		}
-		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) {
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase)
-						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				
-				if (getLocation() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
-					|| getLocation() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
-				{
-					sortedInvs.add( hardwares.get(i) );
-				}
-			}
-		}
-		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
-			Hashtable ecHwCfgMap = new Hashtable();
-			
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase)
-						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID)
-					continue;
-				
-				LiteStarsEnergyCompany company = (showEnergyCompany)?
-						(LiteStarsEnergyCompany) ((Pair)hardwares.get(i)).getSecond() : getEnergyCompany();
-				
-				if (company.isAccountsLoaded()) {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-							company.getCustAccountInformation( liteInv.getAccountID(), false );
-					
-					if (liteAcctInfo != null) {
-						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-							if (liteApp.getInventoryID() == liteInv.getInventoryID()
-								&& liteApp.getAddressingGroupID() == getAddressingGroup())
-							{
-								sortedInvs.add( hardwares.get(i) );
-								break;
-							}
-						}
-					}
-				}
-				else {
-					Hashtable hwCfgMap = (Hashtable) ecHwCfgMap.get( company.getEnergyCompanyID() );
-					if (hwCfgMap == null) {
-						hwCfgMap = new Hashtable();
-						
-						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] hwConfig =
-								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getAllLMHardwareConfiguration( company.getLiteID() );
-						
-						for (int j = 0; j < hwConfig.length; j++) {
-							ArrayList cfgList = (ArrayList) hwCfgMap.get( hwConfig[j].getInventoryID() );
-							if (cfgList == null) {
-								cfgList = new ArrayList();
-								hwCfgMap.put( hwConfig[j].getInventoryID(), cfgList );
-							}
-							cfgList.add( hwConfig[j].getAddressingGroupID() );
-						}
-						
-						ecHwCfgMap.put( company.getEnergyCompanyID(), hwCfgMap );
-					}
-					
-					ArrayList cfgList = (ArrayList) hwCfgMap.get( new Integer(liteInv.getInventoryID()) );
-					if (cfgList != null) {
-						for (int j = 0; j < cfgList.size(); j++) {
-							if (((Integer)cfgList.get(j)).intValue() == getAddressingGroup()) {
-								sortedInvs.add( hardwares.get(i) );
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase)
-						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-				
-				if (liteInv.getDeviceStatus() == getDeviceStatus())
-					sortedInvs.add( hardwares.get(i) );
-			}
-		}
-		else {
-			sortedInvs.addAll( hardwares );
-		}
-		
+        /*
+         * Now that we have potentially n filters instead of one, we need to iterate through.
+         */
+        for(int x = 0; x < getFilterByList().size(); x++)
+        {
+            ArrayList filteredHardwares = new ArrayList();
+            Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
+            Integer specificFilterID = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterID());
+            if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) 
+            {
+    			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
+    			
+    			for (int i = 0; i < hardwares.size(); i++) {
+    				LiteInventoryBase liteInv = (LiteInventoryBase)
+    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+    				
+    				if (liteInv instanceof LiteStarsLMHardware &&
+    					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
+    					|| specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
+    				{
+    					filteredHardwares.add( hardwares.get(i) );
+    				}
+    			}
+    		}
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) {
+    			for (int i = 0; i < hardwares.size(); i++) {
+    				LiteInventoryBase liteInv = (LiteInventoryBase)
+    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+    				
+    				if (liteInv.getInstallationCompanyID() == specificFilterID.intValue())
+    					filteredHardwares.add( hardwares.get(i) );
+    			}
+    		}
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) {
+    			for (int i = 0; i < hardwares.size(); i++) {
+    				LiteInventoryBase liteInv = (LiteInventoryBase)
+    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+    				
+    				if (specificFilterID.intValue() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
+    					|| specificFilterID.intValue() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
+    				{
+    					filteredHardwares.add( hardwares.get(i) );
+    				}
+    			}
+    		}
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
+    			Hashtable ecHwCfgMap = new Hashtable();
+    			
+    			for (int i = 0; i < hardwares.size(); i++) {
+    				LiteInventoryBase liteInv = (LiteInventoryBase)
+    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+    				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID)
+    					continue;
+    				
+    				LiteStarsEnergyCompany company = (showEnergyCompany)?
+    						(LiteStarsEnergyCompany) ((Pair)hardwares.get(i)).getSecond() : getEnergyCompany();
+    				
+    				if (company.isAccountsLoaded()) {
+    					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+    							company.getCustAccountInformation( liteInv.getAccountID(), false );
+    					
+    					if (liteAcctInfo != null) {
+    						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+    							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+    							if (liteApp.getInventoryID() == liteInv.getInventoryID()
+    								&& liteApp.getAddressingGroupID() == specificFilterID.intValue())
+    							{
+    								filteredHardwares.add( hardwares.get(i) );
+    								break;
+    							}
+    						}
+    					}
+    				}
+    				else {
+    					Hashtable hwCfgMap = (Hashtable) ecHwCfgMap.get( company.getEnergyCompanyID() );
+    					if (hwCfgMap == null) {
+    						hwCfgMap = new Hashtable();
+    						
+    						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] hwConfig =
+    								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getAllLMHardwareConfiguration( company.getLiteID() );
+    						
+    						for (int j = 0; j < hwConfig.length; j++) {
+    							ArrayList cfgList = (ArrayList) hwCfgMap.get( hwConfig[j].getInventoryID() );
+    							if (cfgList == null) {
+    								cfgList = new ArrayList();
+    								hwCfgMap.put( hwConfig[j].getInventoryID(), cfgList );
+    							}
+    							cfgList.add( hwConfig[j].getAddressingGroupID() );
+    						}
+    						
+    						ecHwCfgMap.put( company.getEnergyCompanyID(), hwCfgMap );
+    					}
+    					
+    					ArrayList cfgList = (ArrayList) hwCfgMap.get( new Integer(liteInv.getInventoryID()) );
+    					if (cfgList != null) {
+    						for (int j = 0; j < cfgList.size(); j++) {
+    							if (((Integer)cfgList.get(j)).intValue() == specificFilterID.intValue()) {
+    								filteredHardwares.add( hardwares.get(i) );
+    								break;
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
+    			for (int i = 0; i < hardwares.size(); i++) {
+    				LiteInventoryBase liteInv = (LiteInventoryBase)
+    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+    				
+    				if (liteInv.getDeviceStatus() == specificFilterID.intValue())
+    					filteredHardwares.add( hardwares.get(i) );
+    			}
+    		}
+    		else {
+    			filteredHardwares.addAll( hardwares );
+    		}
+            
+            hardwares = filteredHardwares;
+        }
+            
+        java.util.TreeSet sortedInvs = null;
+        if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
+            sortedInvs = new java.util.TreeSet( SERIAL_NO_CMPTOR );
+        else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
+            sortedInvs = new java.util.TreeSet( INST_DATE_CMPTOR );
+        else
+            sortedInvs = new java.util.TreeSet( INV_ID_CMPTOR );
+
+        sortedInvs.addAll(hardwares);
+        
 		inventoryList = new ArrayList();
 		java.util.Iterator it = sortedInvs.iterator();
 		while (it.hasNext()) {
@@ -382,11 +397,18 @@ public class InventoryBean {
 		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		boolean showEnergyCompany = false;
-		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) {
+        if((getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) && AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+                && (getEnergyCompany().getChildren().size() > 0))
+                showEnergyCompany = true;
+        else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) 
+        {
 			if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
 				showEnergyCompany = true;
 		}
-		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0 || (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0 || 
+                (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0 ||
+                (getHtmlStyle() & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 ) 
+        {
 			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (getEnergyCompany().getChildren().size() > 0))
 				showEnergyCompany = true;
@@ -394,17 +416,26 @@ public class InventoryBean {
 		
 		ArrayList hwList = null;
 		String errorMsg = null;
+        int numberOfHardware = 0;
 		try {
 			hwList = getHardwareList( showEnergyCompany );
 			if (hwList == null || hwList.size() == 0)
+            {
 				errorMsg = "No hardware found.";
-		}
+            }
+        }
 		catch (WebClientException e) {
 			errorMsg = e.getMessage();
 		}
 		
-		StringBuffer htmlBuf = new StringBuffer();
-		
+        StringBuffer htmlBuf = new StringBuffer();
+        
+        numberOfHardware = hwList.size();
+        if(getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY)
+        {
+            return htmlBuf.append(numberOfHardware).toString();
+        }
+        		
 		if (errorMsg != null) {
 			htmlBuf.append("<p class='ErrorMsg'>").append(errorMsg).append("</p>").append(LINE_SEPARATOR);
 			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) == 0) {
@@ -493,7 +524,8 @@ public class InventoryBean {
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0
+            || (getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
 		{
 			htmlBuf.append("          <td class='HeaderCell' width='1%'>&nbsp;</td>").append(LINE_SEPARATOR);
 		}
@@ -505,6 +537,7 @@ public class InventoryBean {
 			htmlBuf.append("          <td class='HeaderCell' width='17%'>Member</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
+        htmlBuf.append("<form name='iterateForm' method='post' action=''>").append(LINE_SEPARATOR);
 		for (int i = minInvNo; i <= maxInvNo; i++) {
 			LiteInventoryBase liteInv = null;
 			LiteStarsEnergyCompany member = null;
@@ -551,6 +584,12 @@ public class InventoryBean {
 				htmlBuf.append("<input type='radio' name='InvID' onclick='selectInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append(")'>");
 				htmlBuf.append("</td>").append(LINE_SEPARATOR);
 			}
+            else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+            {
+                htmlBuf.append("          <td class='TableCell' width='1%'>");
+                htmlBuf.append("<input type='checkbox' name='checkMultiInven' value='").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append(")'>");
+                htmlBuf.append("</td>").append(LINE_SEPARATOR);
+            }
 	        
 			htmlBuf.append("          <td class='TableCell' width='17%'>");
 			if (!showEnergyCompany || member.equals(energyCompany))
@@ -596,6 +635,7 @@ public class InventoryBean {
             
 			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
+        htmlBuf.append("</form>").append(LINE_SEPARATOR);        
         
 		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
@@ -612,7 +652,8 @@ public class InventoryBean {
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+        
+        if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
 			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 		{
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
@@ -630,6 +671,29 @@ public class InventoryBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
+        else if((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+        {
+            htmlBuf.append("<br>").append(LINE_SEPARATOR);
+            htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+            htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='CheckAll' value='Check All (On Page)' onclick='checkAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All (On Page)' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeAll(this.form)>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+            if (referer != null)
+                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
+            else
+                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+            htmlBuf.append("</table>").append(LINE_SEPARATOR);
+        }
         
 		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
@@ -645,8 +709,8 @@ public class InventoryBean {
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
         
-		htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
-		htmlBuf.append("  <input type='hidden' name='InvID' value=''>").append(LINE_SEPARATOR);
+        htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
+        htmlBuf.append("  <input type='hidden' name='InvID' value=''>").append(LINE_SEPARATOR);
 		if (getAction() != null)
 			htmlBuf.append("  <input type='hidden' name='action' value='" + getAction() + "'>").append(LINE_SEPARATOR);
 		if (showEnergyCompany)
@@ -674,13 +738,13 @@ public class InventoryBean {
 		htmlBuf.append("  location.href='").append(pageName).append("?page=' + document.getElementById('Page').value;").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
 		
-		htmlBuf.append("function selectInventory(invID, memberID) {").append(LINE_SEPARATOR);
-		htmlBuf.append("  var form = document.InventoryBeanForm;").append(LINE_SEPARATOR);
-		htmlBuf.append("  form.InvID.value = invID;").append(LINE_SEPARATOR);
-		if (showEnergyCompany)
-			htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);
-		htmlBuf.append("}").append(LINE_SEPARATOR);
-		
+        htmlBuf.append("function selectInventory(invID, memberID) {").append(LINE_SEPARATOR);
+        htmlBuf.append("  var form = document.InventoryBeanForm;").append(LINE_SEPARATOR);
+        htmlBuf.append("  form.InvID.value = invID;").append(LINE_SEPARATOR);
+        if (showEnergyCompany)
+            htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);
+        htmlBuf.append("}").append(LINE_SEPARATOR);
+        
 		htmlBuf.append("function validate() {").append(LINE_SEPARATOR);
 		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append(LINE_SEPARATOR);
 		htmlBuf.append("  if (radioBtns != null) {").append(LINE_SEPARATOR);
@@ -695,6 +759,23 @@ public class InventoryBean {
 		htmlBuf.append("  form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
 		htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
+        
+        if((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+        {
+            htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
+            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
+            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+            
+            htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
+            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
+            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+        }
         
 		if (showEnergyCompany) {
 			htmlBuf.append("function selectMemberInventory(invID, memberID) {").append(LINE_SEPARATOR);
@@ -712,22 +793,6 @@ public class InventoryBean {
 	}
 
 	/**
-	 * Returns the deviceType.
-	 * @return int
-	 */
-	public int getDeviceType() {
-		return deviceType;
-	}
-
-	/**
-	 * Returns the filterBy.
-	 * @return int
-	 */
-	public int getFilterBy() {
-		return filterBy;
-	}
-
-	/**
 	 * Returns the page.
 	 * @return int
 	 */
@@ -735,38 +800,54 @@ public class InventoryBean {
 		return page;
 	}
 
-	/**
-	 * Returns the serviceCompany.
-	 * @return int
-	 */
-	public int getServiceCompany() {
-		return serviceCompany;
-	}
-
-	/**
-	 * Returns the sortBy.
-	 * @return int
-	 */
 	public int getSortBy() {
 		return sortBy;
 	}
 
-	/**
-	 * Sets the deviceType.
-	 * @param deviceType The deviceType to set
-	 */
-	public void setDeviceType(int deviceType) {
-		this.deviceType = deviceType;
-	}
-
-	/**
-	 * Sets the filterBy.
-	 * @param filterBy The filterBy to set
-	 */
-	public void setFilterBy(int filterBy) {
-		this.filterBy = filterBy;
-		// Update the search result
-		inventoryList = null;
+    public ArrayList getFilterByList() 
+    {
+        return filterByList;
+    }
+    
+    public void setFilterByList(ArrayList newFilters)
+    {
+	    ArrayList oldFilters = filterByList;
+        filterByList = newFilters;
+        
+        /**
+         * Because of the size of Xcel, we need to handle members as the first part of
+         * the filter process, regardless of where it is in the list of filters.
+         * This improves our best case significantly, and to some degree, also improves
+         * the worst case scenario.
+         * 
+         * Also added to this method: goes through and checks to see whether the stored
+         * inventoryList should be rebuilt, ie. did the filters actually change.
+         */
+        if(oldFilters == null || oldFilters.size() != newFilters.size())
+            inventoryList = null;
+        
+        for(int j = 0; j < filterByList.size(); j++)
+        {
+            Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(j)).getFilterTypeID());
+            Integer specificFilterID = new Integer(((FilterWrapper)filterByList.get(j)).getFilterID());
+            if(filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER)
+                setMember(specificFilterID.intValue());
+                        
+            if(inventoryList != null)
+            {
+                boolean found = false;
+                for(int x = 0; x < oldFilters.size(); x++)
+                {
+                    if(specificFilterID.intValue() == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterID()).intValue())
+                    {
+                        found = true;
+                    }    
+                }
+                
+                if(!found)
+                    inventoryList = null;
+            }
+        }
 	}
 
 	/**
@@ -778,14 +859,6 @@ public class InventoryBean {
 	}
 
 	/**
-	 * Sets the serviceCompany.
-	 * @param serviceCompany The serviceCompany to set
-	 */
-	public void setServiceCompany(int serviceCompany) {
-		this.serviceCompany = serviceCompany;
-	}
-
-	/**
 	 * Sets the sortBy.
 	 * @param sortBy The sortBy to set
 	 */
@@ -794,43 +867,11 @@ public class InventoryBean {
 	}
 
 	/**
-	 * Returns the location.
-	 * @return int
-	 */
-	public int getLocation() {
-		return location;
-	}
-
-	/**
-	 * Sets the location.
-	 * @param location The location to set
-	 */
-	public void setLocation(int location) {
-		this.location = location;
-	}
-
-	/**
 	 * Sets the energyCompanyID.
 	 * @param energyCompanyID The energyCompanyID to set
 	 */
 	public void setEnergyCompanyID(int energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
-	}
-
-	/**
-	 * Returns the addressingGroup.
-	 * @return int
-	 */
-	public int getAddressingGroup() {
-		return addressingGroup;
-	}
-
-	/**
-	 * Sets the addressingGroup.
-	 * @param addressingGroup The addressingGroup to set
-	 */
-	public void setAddressingGroup(int addressingGroup) {
-		this.addressingGroup = addressingGroup;
 	}
 
 	/**
@@ -897,34 +938,6 @@ public class InventoryBean {
 	/**
 	 * @return
 	 */
-	public int getDeviceStatus() {
-		return deviceStatus;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setDeviceStatus(int i) {
-		deviceStatus = i;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getMember() {
-		return member;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setMember(int i) {
-		member = i;
-	}
-
-	/**
-	 * @return
-	 */
 	public int getSearchBy() {
 		return searchBy;
 	}
@@ -947,7 +960,7 @@ public class InventoryBean {
 		}
 		
 		if (searchBy != CtiUtilities.NONE_ZERO_ID) {
-			filterBy = CtiUtilities.NONE_ZERO_ID;
+			//filterBy = CtiUtilities.NONE_ZERO_ID;
 			htmlStyle |= HTML_STYLE_INVENTORY_SET;
 		}
 	}
@@ -972,5 +985,32 @@ public class InventoryBean {
 	public void setAction(String string) {
 		action = string;
 	}
+
+    public int getMember() {
+        return member;
+    }
+
+    public void setMember(int member) {
+        this.member = member;
+    }
+    
+    public String getFilterInventoryHTML()
+    {
+        setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
+        
+        setFilterByList((ArrayList) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
+        String hardwareNum = getHTML(internalRequest);
+        setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
+        return hardwareNum;
+    }
+    
+    public void setInternalRequest(HttpServletRequest req)
+    {
+        internalRequest = req;
+    }
+
+    public void setShowAll(boolean showAll) {
+        this.showAll = showAll;
+    }
 
 }

@@ -255,10 +255,16 @@ function confirmDelete() {
             for existing hardware:</font></td>
           <td height="30" valign="bottom" width="7%">&nbsp;</td>
         </tr>
-        <tr> 
+        <tr>
+          <% if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { %>
+          <td width="25%" class="MainText"> <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Filter.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
+            </cti:checkProperty></td>
+          <% } else { %>
           <td width="25%" class="MainText"> <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Inventory.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
             </cti:checkProperty></td>
+          <% } %>
           <td width="25%" class="MainText">&nbsp;</td>
           <form name = "invSearchForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 		    <input type="hidden" name="action" value="SearchInventory">

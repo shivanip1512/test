@@ -79,6 +79,11 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_SO_SORT_BY = "SOSortBy";
 	public static final String YUK_LIST_NAME_SO_FILTER_BY = "SOFilterBy";
 	public static final String YUK_LIST_NAME_RATE_SCHEDULE = "RateSchedule";
+    public static final String YUK_LIST_NAME_CONSUMPTION_TYPE = "ConsumptionType";
+    public static final String YUK_LIST_NAME_EVENT_SYSTEM_CATEGORY = "EventSystemCategory";
+    public static final String YUK_LIST_NAME_ACCOUNT_ACTION = "EventAccountActions";
+    public static final String YUK_LIST_NAME_INVENTORY_ACTION = "EventInventoryActions";
+    public static final String YUK_LIST_NAME_WORKORDER_ACTION = "EventWorkOrderActions";
 	
 	public static final String YUK_LIST_NAME_SETTLEMENT_TYPE = "Settlement";
 	

@@ -39,6 +39,7 @@ import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.stars.util.EventUtils;
 
 /**
  * <p>Title: </p>
@@ -211,6 +212,8 @@ public class UpdateCustAccountAction implements ActionBase {
             
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account updated successfully" );
+            
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 10202, updateAccount.getAccountID());
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );

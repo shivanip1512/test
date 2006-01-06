@@ -32,10 +32,12 @@ public class WorkOrderBase extends DBPersistent {
     private java.util.Date dateCompleted = new java.util.Date(0);
     private String actionTaken = "";
     private Integer accountID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private String additionalOrderNumber = "";
 
     public static final String[] SETTER_COLUMNS = {
         "OrderNumber", "WorkTypeID", "CurrentStateID", "ServiceCompanyID", "DateReported",
-        "OrderedBy", "Description", "DateScheduled", "DateCompleted", "ActionTaken", "AccountID"
+        "OrderedBy", "Description", "DateScheduled", "DateCompleted", "ActionTaken", "AccountID",
+        "AdditionalOrderNumber"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "OrderID" };
@@ -62,7 +64,8 @@ public class WorkOrderBase extends DBPersistent {
         Object[] addValues = {
             getOrderID(), getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
             getServiceCompanyID(), getDateReported(), getOrderedBy(), getDescription(),
-            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID()
+            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID(),
+            getAdditionalOrderNumber()
         };
 
         add( TABLE_NAME, addValues );
@@ -72,7 +75,8 @@ public class WorkOrderBase extends DBPersistent {
         Object[] setValues = {
             getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
             getServiceCompanyID(), getDateReported(), getOrderedBy(), getDescription(),
-            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID()
+            getDateScheduled(),getDateCompleted(), getActionTaken(), getAccountID(),
+            getAdditionalOrderNumber()
         };
 
         Object[] constraintValues = { getOrderID() };
@@ -97,6 +101,7 @@ public class WorkOrderBase extends DBPersistent {
             setDateCompleted( new java.util.Date(((java.sql.Timestamp) results[8]).getTime()) );
             setActionTaken( (String) results[9] );
             setAccountID( (Integer) results[10] );
+            setAdditionalOrderNumber( (String) results[11]);
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -282,7 +287,14 @@ public class WorkOrderBase extends DBPersistent {
 	public Integer getWorkTypeID() {
 		return workTypeID;
 	}
+    
+    public String getAdditionalOrderNumber() {
+        return additionalOrderNumber;
+    }
 
+    public void setAdditionalOrderNumber(String newNum) {
+        this.additionalOrderNumber = newNum;
+    }
 	/**
 	 * Sets the actionTaken.
 	 * @param actionTaken The actionTaken to set

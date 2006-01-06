@@ -52,8 +52,10 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -94,6 +96,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import com.cannontech.user.UserUtils;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 /**
  * @author yao
@@ -216,6 +219,10 @@ public class StarsAdmin extends HttpServlet {
 			updateMemberEnergyCompany( user, req, session );
 		else if (action.equalsIgnoreCase("RemoveMemberEnergyCompany"))
 			removeMemberEnergyCompany( user, req, session );
+        else if (action.equalsIgnoreCase("AddContractorCodes"))
+            addContractorCodes( user, req, session );
+        else if (action.equalsIgnoreCase("UpdateWarehouse"))
+            updateWarehouse( user, req, session );
         else if( action.equalsIgnoreCase("UpdateSettlementConfig"))
         	updateSettlementConfig(user, req, session);
 		resp.sendRedirect( redirect );
@@ -1077,15 +1084,35 @@ public class StarsAdmin extends HttpServlet {
 				companyDB = (com.cannontech.database.db.stars.report.ServiceCompany)
 						Transaction.createTransaction( Transaction.UPDATE, companyDB ).execute();
 				StarsLiteFactory.setLiteServiceCompany( liteCompany, companyDB );
-			}
+                
+                if (req.getParameter("hasCodes").length() > 0) 
+                { 
+                    ArrayList oldCodeList = ServiceCompanyDesignationCode.getAllCodesForServiceCompany(companyID);
+                                        
+                    for(int j = 0; j < oldCodeList.size(); j++)
+                    {
+                        ServiceCompanyDesignationCode currentCode = (ServiceCompanyDesignationCode)oldCodeList.get(j);
+                        String codeToUpdateString = req.getParameter("CodeUpdate_" + currentCode.getDesignationCodeID().toString());
+                        if(codeToUpdateString != null && codeToUpdateString.length() > 0)
+                        {
+                            currentCode.setDesignationCodeValue(codeToUpdateString);
+                            Transaction.createTransaction( Transaction.UPDATE, currentCode).execute();
+                        }
+                        else if(codeToUpdateString != null && codeToUpdateString.length() <= 0)
+                        {
+                            Transaction.createTransaction(Transaction.DELETE, currentCode).execute();
+                        }
+                    }
+                }
+             }
 			
 			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 			for (int i = 0; i < descendants.size(); i++) {
 				LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
 				ec.updateStarsServiceCompanies();
 			}
-        	
-			session.removeAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
+            
+           	session.removeAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
 			if (newCompany)
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company created successfully");
 			else
@@ -2085,6 +2112,60 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login");
 		}
 	}
+    
+    private void addContractorCodes(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        
+        try 
+        {
+            String referer = req.getParameter( "REFERER" );
+            ServiceCompanyDesignationCode newCode = null;
+            StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
+            
+            String newCodeString = req.getParameter("NewCode1");
+            if(newCodeString.length() > 4)
+            {
+                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
+                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            }
+            
+            newCodeString = req.getParameter("NewCode2");
+            if(newCodeString.length() > 4)
+            {
+                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
+                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            }
+            
+            newCodeString = req.getParameter("NewCode3");
+            if(newCodeString.length() > 4)
+            {
+                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
+                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            }
+            
+            newCodeString = req.getParameter("NewCode4");
+            if(newCodeString.length() > 4)
+            {
+                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
+                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            }
+            
+            newCodeString = req.getParameter("NewCode5");
+            if(newCodeString.length() > 4)
+            {
+                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
+                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            }
+            
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Zip codes successfully assigned to contractor.");
+            
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add new zip codes to contractor.");
+            redirect = referer;
+        }
+    }
 	
 	private void removeMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
@@ -2098,5 +2179,59 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to remove member(s)");
 		}
 	}
+    
+    private void updateWarehouse(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        
+        try 
+        {
+            String referer = req.getParameter( "REFERER" );
+            Integer warehouseID = new Integer(req.getParameter("WarehouseID").toString());
+            Warehouse currentWarehouse = new Warehouse();
+            Address currentAddress = new Address();
+            boolean isNew = true;
+            
+            if(warehouseID.intValue() != CtiUtilities.NONE_ZERO_ID)
+            {    
+                currentWarehouse.setWarehouseID(warehouseID);
+                currentWarehouse = (Warehouse)Transaction.createTransaction(Transaction.RETRIEVE, currentWarehouse).execute();
+                currentAddress.setAddressID(currentWarehouse.getAddressID());
+                currentAddress = (Address)Transaction.createTransaction(Transaction.RETRIEVE, currentAddress).execute();
+                isNew = false;
+            }
+            
+            currentWarehouse.setWarehouseName(req.getParameter( "warehouseName"));
+            currentWarehouse.setNotes(req.getParameter( "notes"));
+            currentAddress.setLocationAddress1(req.getParameter( "addr1" ));
+            currentAddress.setLocationAddress2(req.getParameter( "addr2" ));
+            currentAddress.setCityName(req.getParameter( "city" ));
+            currentAddress.setStateCode(req.getParameter( "state" ));
+            currentAddress.setZipCode(req.getParameter( "zip" ));
+            
+            if(isNew)
+            {
+                currentAddress = (Address)Transaction.createTransaction(Transaction.INSERT, currentAddress).execute();
+                currentWarehouse.setAddressID(currentAddress.getAddressID());
+                currentWarehouse.setEnergyCompanyID(new Integer(user.getEnergyCompanyID()));
+                currentWarehouse = (Warehouse)Transaction.createTransaction(Transaction.INSERT, currentWarehouse).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Warehouse successfully created.");
+            }
+            else
+            {
+                currentAddress = (Address)Transaction.createTransaction(Transaction.UPDATE, currentAddress).execute();
+                currentWarehouse = (Warehouse)Transaction.createTransaction(Transaction.UPDATE, currentWarehouse).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Changes to warehouse completed successfully.");
+            }
+            
+            
+            
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add new warehouse to the database.");
+            redirect = referer;
+        }
+        
+    }
 	
 }

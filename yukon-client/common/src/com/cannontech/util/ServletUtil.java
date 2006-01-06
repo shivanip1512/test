@@ -46,9 +46,16 @@ public class ServletUtil {
 	public static final String ATT_REFERRER = "REFERRER";
 	public static final String ATT_REFERRER2 = "REFERRER2";
 
-	//if used in session, this attribute should be passed a CtiNavObject
+	/**
+     * if used in session, this attribute should be passed a CtiNavObject
+	 */
 	public static final String NAVIGATE = "CtiNavObject";
 
+    /**
+     * if used in session, this attribute should be passed an ArrayList of FilterWrappers
+     */
+    public static final String FILTER_INVEN_LIST = "InventoryFilters";
+    
 	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
 	public static final String ATT_REPORT_BEAN = "REPORT_BEAN";
 	public static final String ATT_BILLING_BEAN = "BILLING_BEAN";

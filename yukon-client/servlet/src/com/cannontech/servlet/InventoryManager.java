@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.*;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -62,6 +62,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.stars.web.action.MultiAction;
+import com.cannontech.stars.util.FilterWrapper;
 
 
 /**
@@ -168,7 +169,12 @@ public class InventoryManager extends HttpServlet {
 			selectLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("SelectDevice"))
 			selectDevice( user, req, session );
-		
+        else if (action.equalsIgnoreCase("FiltersUpdated"))
+            updateFilters( user, req, session );
+        else if (action.equalsIgnoreCase("ViewInventoryResults"))
+            redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
+        else if (action.equalsIgnoreCase("ManipulateInventoryResults"))
+            redirect = req.getContextPath() + "/operator/Hardware/ChangeSet.jsp";
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1355,5 +1361,24 @@ public class InventoryManager extends HttpServlet {
 		
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 	}
+    
+    private void updateFilters(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+        
+        String[] selectionIDs = req.getParameterValues("SelectionIDs");
+        String[] filterTexts = req.getParameterValues("FilterTexts");
+        String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
+        ArrayList filters = new ArrayList();
+        
+        for(int j = 0; j < filterTexts.length; j++)
+        {
+            FilterWrapper wrapper = new FilterWrapper(yukonDefIDs[j], filterTexts[j], selectionIDs[j] );
+            filters.add(wrapper);
+        }
+        
+        session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
+        redirect = req.getContextPath() + "/operator/Hardware/Filter.jsp?Record=Inventory";
+    };
 	
 }

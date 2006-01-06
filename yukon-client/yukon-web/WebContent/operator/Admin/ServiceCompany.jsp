@@ -1,4 +1,6 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<jsp:useBean id="servComp" scope="page" class="com.cannontech.stars.web.bean.ServiceCompanyBean" />
 <%
 	StarsServiceCompany company = null;
 	int compIdx = Integer.parseInt( request.getParameter("Company") );
@@ -21,7 +23,7 @@
 	if (action.equalsIgnoreCase("init")) {
 		session.removeAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 	}
-	else if (action.equalsIgnoreCase("EditAddress")) {
+	else if (action.equalsIgnoreCase("EditAddress") || action.equalsIgnoreCase("NewCode")) {
 		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 		if (scTemp == null) {
 			scTemp = new StarsServiceCompany();
@@ -33,6 +35,7 @@
 				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
 			else
 				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(company.getPrimaryContact(), PrimaryContact.class) );
+			scTemp.setCompanyID(company.getCompanyID());
 			session.setAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP, scTemp);
 		}
 		
@@ -51,8 +54,17 @@
 			scTemp.getPrimaryContact().addContactNotification(email);
 		}
 		
-		response.sendRedirect("Address.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
-		return;
+		if(action.equalsIgnoreCase("EditAddress"))
+		{	
+			response.sendRedirect("Address.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
+			return;
+		}
+		
+		if(action.equalsIgnoreCase("NewCode"))
+		{	
+			response.sendRedirect("NewCodes.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
+			return;
+		}
 	}
 	
 	StarsServiceCompany sc = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
@@ -75,6 +87,13 @@ function editAddress(form) {
 	form.action.value = "EditAddress";
 	form.submit();
 }
+
+function newCode(form) {
+	form.attributes["action"].value = "";
+	form.action.value = "NewCode";
+	form.submit();
+}
+
 </script>
 </head>
 
@@ -191,6 +210,32 @@ function editAddress(form) {
                   </td>
                 </tr>
               </table>
+              <br clear="all">
+              <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_ALLOW_DESIGNATION_CODES %>">
+	              <input type="hidden" name="hasCodes" value="true">
+	              <table width="300" border="1" cellspacing="0" cellpadding="0" align="center">
+	              	<tr> 
+	                  <td class="HeaderCell">Contractor Zip Codes</td>
+	                </tr>
+	                <c:set target="${servComp}" property="serviceCompanyID"> <%=company.getCompanyID()%> </c:set>
+	                <tr>
+	                	<td>
+		                	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+				                <c:forEach items="${servComp.designationCodes}" var="thisCode">
+					                <tr> 
+					                  <td class="TableCell" align="center" width="30%"> 	
+					                  	<input type="text" name='CodeUpdate_<c:out value="${thisCode.designationCodeID}"/>' size="16" value='<c:out value="${thisCode.designationCodeValue}"/>' onchange="setContentChanged(true)"/>
+                                 	  </td>
+					                </tr>
+				                </c:forEach>
+				        		<td class="TableCell" align="center" width="30%">                                    
+                                	<input type="button" name="AddCodes" value="Create New" onClick="newCode(this.form)">
+                           </table>
+						</td>
+					</tr>
+				 </table>
+	  		  <br clear="all">
+	  		  </cti:checkProperty>
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 

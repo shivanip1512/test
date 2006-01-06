@@ -1,8 +1,10 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -163,6 +165,20 @@ function removeAllMembers(form) {
 	form.MemberID.value = -1;
 	form.action.value = "RemoveMemberEnergyCompany";
 	form.submit();
+}
+
+function editWarehouse(form, warehouseID) {
+	form.attributes["action"].value = "Warehouse.jsp?Warehouse=" + warehouseID;
+	form.action.value = "init";
+	form.submit();
+}
+
+function confirmDeleteWarehouse() {
+	return confirm("Are you sure you want to delete the warehouse?");
+}
+
+function confirmDeleteAllWarehouses() {
+	return confirm("Are you sure you want to delete all warehouses?");
 }
 </script>
 </head>
@@ -686,6 +702,54 @@ function removeAllMembers(form) {
                     </tr>
                     <%
 	}
+	
+	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MULTI_WAREHOUSE))
+	{
+%>
+                    <tr> 
+                      <td> 
+                        <form name="form4" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+                          <b><font color="#0000FF">Warehouses:</font></b> 
+                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <input type="hidden" name="action" value="DeleteWarehouse">
+                                  <c:set target="${wareAdmin}" property="energyCompanyID"> <%=new Integer(liteEC.getLiteID())%> </c:set>
+                                  <c:forEach items="${wareAdmin.warehouses}" var="thisHouse">
+	                                  <tr> 
+	                                    <td class="TableCell" width="5%">&nbsp;</td>
+	                                    <td class="TableCell" width="70%"><c:out value="${thisHouse.warehouseName}"/></td>
+	                                    
+	                                    <td width="10%" class="TableCell"> 
+	                                      <input type="button" name="Edit" value="Edit" onclick="editWarehouse(this.form, <c:out value="${thisHouse.warehouseID}"/> )">
+	                                    </td>
+	                                    <td width="15%" class="TableCell"> 
+	                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.WarehouseID.value='<c:out value="${thisHouse.warehouseID}"/>'" return confirmDeleteWarehouse();">
+	                                    </td>
+	                                  </tr>
+                                  	</c:forEach>
+									
+                                 </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td width="20%"> 
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.WarehouseID.value=-1; return confirmDeleteAllWarehouses);">
+                              </td>
+                              <td width="80%"> 
+                                <input type="button" name="New" value="New" onclick="editWarehouse(this.form, 0)">
+                              </td>
+                            </tr>
+                          </table>
+                        </form>
+                      </td>
+                    </tr>
+<%
+	}
+	
 	if(!isMember || (isMember && canMembersChangeLogins)) 
 	{%>
                     <tr> 

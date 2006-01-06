@@ -22,9 +22,12 @@ public class AccountSite extends DBPersistent {
     private String siteNumber = "";
     private Integer streetAddressID = new Integer( 0 );
     private String propertyNotes = "";
+    private String customerStatus = "";
+    private String custAtHome = "";
 
     public static final String[] SETTER_COLUMNS = {
-        "SiteInformationID", "SiteNumber", "StreetAddressID", "PropertyNotes"
+        "SiteInformationID", "SiteNumber", "StreetAddressID", "PropertyNotes", 
+        "CustomerStatus", "CustAtHome"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "AccountSiteID" };
@@ -50,7 +53,8 @@ public class AccountSite extends DBPersistent {
     		
         Object[] addValues = {
             getAccountSiteID(), getSiteInformationID(), getSiteNumber(),
-            getStreetAddressID(), getPropertyNotes()
+            getStreetAddressID(), getPropertyNotes(), getCustomerStatus(),
+            getCustAtHome()
         };
 
         add( TABLE_NAME, addValues );
@@ -58,7 +62,8 @@ public class AccountSite extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getSiteInformationID(), getSiteNumber(), getStreetAddressID(), getPropertyNotes()
+            getSiteInformationID(), getSiteNumber(), getStreetAddressID(), getPropertyNotes(),
+            getCustomerStatus(), getCustAtHome()
         };
 
         Object[] constraintValues = { getAccountSiteID() };
@@ -76,6 +81,8 @@ public class AccountSite extends DBPersistent {
             setSiteNumber( (String) results[1] );
             setStreetAddressID( (Integer) results[2] );
             setPropertyNotes( (String) results[3] );
+            setCustomerStatus( (String) results[4] );
+            setCustAtHome( (String) results[5] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -146,5 +153,21 @@ public class AccountSite extends DBPersistent {
 
     public void setPropertyNotes(String newPropertyNotes) {
         propertyNotes = newPropertyNotes;
+    }
+    
+    public String getCustomerStatus() {
+        return customerStatus;
+    }
+
+    public void setCustomerStatus(String newCustomerStatus) {
+        customerStatus = newCustomerStatus;
+    }
+    
+    public String getCustAtHome() {
+        return custAtHome;
+    }
+
+    public void setCustAtHome(String newCustAtHome) {
+        custAtHome = newCustAtHome;
     }
 }

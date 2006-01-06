@@ -70,6 +70,7 @@ import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -405,6 +406,15 @@ public class StarsAdminUtil {
 				}
 			}
 		}
+        
+        /**
+         * Needed to delete any zip codes if they exist
+         */
+        ArrayList codes = ServiceCompanyDesignationCode.getAllCodesForServiceCompany(companyID);
+        for(int x = 0; x < codes.size(); x++)
+        {
+            Transaction.createTransaction(Transaction.DELETE, (ServiceCompanyDesignationCode)codes.get(x)).execute();
+        }
 		
 		LiteServiceCompany liteCompany = energyCompany.getServiceCompany( companyID );
 		

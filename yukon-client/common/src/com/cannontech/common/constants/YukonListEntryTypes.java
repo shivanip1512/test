@@ -19,14 +19,17 @@ public interface YukonListEntryTypes
 	public static final int YUK_ENTRY_ID_CELL_PHONE = 8;
 	public static final int YUK_ENTRY_ID_EMAIL_CELL = 9;
 
-	//standard YukonDefinitionIDs that should be in every DB
+    //entryIDs for EventLogging in STARS
+    public static final int EVENT_SYS_CAT_ACCOUNT = 10101;
+    public static final int EVENT_SYS_CAT_INVENTORY = 10102;
+    public static final int EVENT_SYS_CAT_WORKORDER = 10103;
+        
+    //standard YukonDefinitionIDs that should be in every DB
 	public static final int YUK_DEF_ID_EMAIL = 1;
 	public static final int YUK_DEF_ID_PHONE = 2;
 	public static final int YUK_DEF_ID_PIN = 3;
 	public static final int YUK_DEF_ID_PAGE = 4;
 	public static final int YUK_DEF_ID_FAX = 5;
-
-
 
 	//YukonDefinitionIDs used by STARS 
 	public static final int YUK_DEF_ID_CUST_EVENT_LMPROGRAM			= 1001;
@@ -124,6 +127,10 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_FILTER_BY_LOCATION		= 2903;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_CONFIG			= 2904;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS		= 2905;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_MEMBER         = 2906;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE      = 2907;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_ZIP_CODE       = 2908;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE   = 2909;
 	
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;

@@ -1,0 +1,42 @@
+.standardpurplesidebox
+{
+	position: relative;
+	width: 103px;
+	height: 450px;
+	background-color: #666699;
+	float: left;
+	margin-left: -7px;
+	margin-top: 7px;
+}
+
+.standardcentralwhitebody
+{
+	position: relative;
+	width: 657px;
+	height: 450px;
+	background-color: white;
+	border: black 1px solid;
+	float: left;
+	margin-top: 7px;
+
+}
+
+.standarddatabox
+{
+	position: relative;
+	width: 500px;
+	height: 300px;
+	background-color: white;
+	border: #CCCCCC 1px solid;
+	border-top: #CCCCCC 20px solid;
+	margin: 0 auto;
+}
+
+.headeremphasis 
+{  
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	background-color: #CCCCCC
+}
