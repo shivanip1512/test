@@ -2130,7 +2130,7 @@ private void initialize() {
 		consGridBagConstraints152.fill = java.awt.GridBagConstraints.VERTICAL;
 		consGridBagConstraints152.weighty = 0.0D;
 		consGridBagConstraints152.ipady = -3;
-		consGridBagConstraints55.insets = new java.awt.Insets(3,6,5,7);
+		consGridBagConstraints55.insets = new java.awt.Insets(3,6,3,7);
 		consGridBagConstraints55.ipady = -7;
 		consGridBagConstraints55.gridy = 2;
 		consGridBagConstraints55.gridx = 0;
