@@ -45,4 +45,4 @@ insert into YukonRoleProperty values(-10911,-109,'Settlement Reports Group','fal
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Ryan', '06-JAN-2005', 'Manual version insert done', 2 );
