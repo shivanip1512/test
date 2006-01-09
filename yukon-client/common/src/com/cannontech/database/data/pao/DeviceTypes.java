@@ -105,9 +105,10 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
 	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
+    public final static int MCT430                  = DEVICE_OFFSET + 86;
 	
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 85;
+	public final static int DEVICE_TYPES_COUNT = 86;
 	
 
 	//all the possible text representation of each device type.
@@ -142,6 +143,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_410CL = {"MCT-410CL", "MCT410CL"};
 	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
+    public static final String[] STRING_MCT_430 = {"MCT-430", "MCT430"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
