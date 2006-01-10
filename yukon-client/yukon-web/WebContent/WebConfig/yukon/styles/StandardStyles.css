@@ -11,13 +11,13 @@ body {
   border: 0;
 }
 
-#Header .left {
+#Header .stdhdr_left {
     float: left;
 }
-#Header .right {
+#Header .stdhdr_right {
     float: right;
 }
-#Header .clear {
+#Header .stdhdr_clear {
     clear: both;
 }
 
@@ -27,9 +27,14 @@ body {
     font-size: .9em;
     color: black;
 }
+
+#Menu  div.stdhdr_rightSide form {
+    padding: 0;
+    margin: 0;
+}
   
 #Content {
-  margin: 2em 0 0 0;
+  margin: 15px 0 0 0;
   }
   
 
@@ -41,7 +46,7 @@ body {
     font-size: .85em;
 }
 
-#Menu #topMenu .leftSide{
+#Menu #topMenu .stdhdr_leftSide{
     padding: .15em 0 0 0;
 }
 
@@ -86,15 +91,20 @@ body {
     color: white;
 }
 
-#Menu #topMenu a:hover, #Menu #topMenu a.selected {
+#Menu #topMenu a:hover, #Menu #topMenu a.stdhdr_selected {
     color: rgb(204,204,204);
 }
 
-#Menu .rightSide {
+#Menu .stdhdr_rightSide {
     float: right;
 }
 
-#Menu .leftSide {
+#Menu form {
+    padding: 0;
+    margin: 0;
+}
+  
+#Menu .stdhdr_leftSide {
     float: left;
 }
 
@@ -116,7 +126,7 @@ table.roundedTable {
 table.roundedTable td.upperLeft {
     border-style: hidden;
     padding: 0;
-    background-image: url(Header_left.gif);
+    background-image: url(../Header_left.gif);
     background-repeat: no-repeat;
     width: 6px;
 }
@@ -124,7 +134,7 @@ table.roundedTable td.upperLeft {
 table.roundedTable td.upperRight {
     border-style: hidden;
     padding: 0;
-    background-image: url(Header_right.gif);
+    background-image: url(../Header_right.gif);
     background-repeat: no-repeat;
     width: 6px;
 }
@@ -132,7 +142,7 @@ table.roundedTable td.upperRight {
 table.roundedTable td.lowerLeft {
     border-style: hidden;
     padding: 0;
-    background-image: url(Bottom_left.gif);
+    background-image: url(../Bottom_left.gif);
     background-repeat: no-repeat;
     width: 6px;
     height: 9px;
@@ -141,7 +151,7 @@ table.roundedTable td.lowerLeft {
 table.roundedTable td.lowerRight {
     border-style: hidden;
     padding: 0;
-    background-image: url(Bottom_right.gif);
+    background-image: url(../Bottom_right.gif);
     background-repeat: no-repeat;
     width: 6px;
     height: 9px;
@@ -150,7 +160,7 @@ table.roundedTable td.lowerRight {
 table.roundedTable td.leftSide {
     border-style: hidden;
     padding: 0;
-    background-image: url(Side_left.gif);
+    background-image: url(../Side_left.gif);
     background-repeat: repeat-y;
     width: 6px;
 }
@@ -158,7 +168,7 @@ table.roundedTable td.leftSide {
 table.roundedTable td.rightSide {
     border-style: hidden;
     padding: 0;
-    background-image: url(Side_right.gif);
+    background-image: url(../Side_right.gif);
     background-repeat: repeat-y;
     width: 6px;
 }
@@ -166,7 +176,7 @@ table.roundedTable td.rightSide {
 table.roundedTable td.bottom {
     border-style: hidden;
     padding: 0;
-    background-image: url(Bottom.gif);
+    background-image: url(../Bottom.gif);
     background-repeat: repeat-x;
     height: 9px;
 }
