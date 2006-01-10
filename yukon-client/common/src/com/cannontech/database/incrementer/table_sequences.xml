@@ -1,0 +1,9 @@
+<sequencetables>
+  <sequencetable name="SequenceNumber" valuecolumn="id" keycolumn="sequenceName">
+      <sequence name="general" >
+        <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
+        <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
+      </sequence>
+    
+  </sequencetable>
+</sequencetables>
