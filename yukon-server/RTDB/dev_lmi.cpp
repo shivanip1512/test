@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/12/20 17:20:23 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/01/10 22:25:16 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -549,7 +549,7 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
     bool retval = false;
     CtiTime now;
 
-    if( !isInhibited() )
+    if( !isInhibited() && _seriesv.getTickTime() )
     {
         if( now > (_lastPreload + (_seriesv.getTickTime() * 60) / 2) )
         {
