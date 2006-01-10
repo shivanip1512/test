@@ -41,7 +41,7 @@ private:
    CtiMutex                      _inMux;            // Protects the _inList.
    RWTPtrSlist< INMESS    >      _inList;           // Nexus dumps out into this list!
 
-   CtiQueue< CtiOutMessage, less<CtiOutMessage> >     _porterOMQueue;    // Queue for items to be sent to Porter!
+   CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
 public:
