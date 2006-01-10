@@ -7567,7 +7567,9 @@ insert into YukonGroupRole values (-1276,-2,-900,-90001,'(none)');
 insert into YukonGroupRole values (-1277,-2,-900,-90002,'(none)');
 insert into YukonGroupRole values (-1278,-2,-900,-90003,'(none)');
 insert into YukonGroupRole values (-1279,-2,-900,-90004,'(none)');
+
 insert into YukonGroupRole values (-1280,-2,-204,-20400,'(none)');
+
 insert into YukonGroupRole values (-1281,-2,-900,-90005,'(none)');
 insert into YukonGroupRole values (-1282,-2,-900,-90006,'(none)');
 insert into YukonGroupRole values (-1283,-2,-900,-90007,'(none)');
@@ -8772,6 +8774,7 @@ insert into YukonRoleProperty values(-40193,-400,'Heading Programs','Programs','
 insert into YukonRoleProperty values(-40194,-400,'Heading Trending','Trending','Heading of the trending links');
 insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
 insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
+insert into YukonRoleProperty values(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
@@ -9162,6 +9165,7 @@ insert into YukonUserRole values (-776,-1,-900,-90001,'(none)');
 insert into YukonUserRole values (-777,-1,-900,-90002,'(none)');
 insert into YukonUserRole values (-778,-1,-900,-90003,'(none)');
 insert into YukonUserRole values (-779,-1,-900,-90004,'(none)');
+
 insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
 insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
 insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');

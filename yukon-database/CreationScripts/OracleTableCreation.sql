@@ -6388,6 +6388,7 @@ insert into YukonRoleProperty values(-40193,-400,'Heading Programs','Programs','
 insert into YukonRoleProperty values(-40194,-400,'Heading Trending','Trending','Heading of the trending links');
 insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
 insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
+insert into YukonRoleProperty values(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
@@ -6760,7 +6761,6 @@ insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
 insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
 insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');
 insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
-
 
 insert into YukonUserRole values (-785,-1,-205,-20500,'(none)');
 insert into YukonUserRole values (-790,-1,-207,-20700,'(none)');
