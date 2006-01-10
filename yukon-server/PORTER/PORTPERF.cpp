@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/01/10 20:11:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,11 +44,14 @@
    -------------------------------------------------------------------- */
 #include <windows.h>
 #include <process.h>
+
+#include <deque>
+using namespace std;
+
 #include "os2_2w32.h"
 #include "cticalls.h"
 
 #include <stdlib.h>
-//// #include "btrieve.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -71,9 +74,6 @@
 #include "guard.h"
 #include "utility.h"
 
-using std::make_pair;
-using std::vector;
-
 static CtiStatisticsMap_t   gDeviceStatMap;
 static bool                 gDeviceStatDirty = false;
 static CtiMutex             gDeviceStatMapMux;
@@ -81,6 +81,29 @@ static CtiMutex             gDeviceStatMapMux;
 static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
 bool statisticsDoTargetId(long deviceid, long targetid);
 
+static void statisticsProcessNewRequest(long paoportid, long trxpaoid, long targpaoid);
+static void statisticsProcessNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result);
+static void statisticsProcessNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result);
+
+
+typedef struct {
+    enum {
+        Attempt,
+        Completion,
+        Request
+    };
+
+    int action;
+    long paoportid;
+    long devicepaoid;
+    long targetpaoid;
+    int result;
+
+} CtiStatTuple;
+
+typedef deque< CtiStatTuple > statCol_t;
+
+static statCol_t statCol;
 
 /* Routine to Update statistics for Ports and Remotes every 5 minutes */
 VOID PerfUpdateThread (PVOID Arg)
@@ -98,7 +121,8 @@ VOID PerfUpdateThread (PVOID Arg)
     LONG delay;
 
     /* set the priority of this guy high */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    // CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
 
     try
     {
@@ -116,7 +140,7 @@ VOID PerfUpdateThread (PVOID Arg)
             //Thread Monitor Begins here**************************************************
             if(!(++sanity % SANITY_RATE))
             {
-                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
                 }
@@ -130,15 +154,44 @@ VOID PerfUpdateThread (PVOID Arg)
 
             CtiTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
 
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (nextTime.seconds() - now.seconds())) )
+            do
             {
+                now = now.now();
+                if(statCol.empty())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved quit event." << endl;
+                    Sleep(2500);
                 }
-                PorterQuit = TRUE;
-                break;
-            }
+                else   // Process the deque!
+                {
+                    {
+                        CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);    // Lock the global list for a minimal amount of time
+                        for(size_t qcnt = statCol.size(); qcnt > 0 && !PorterQuit; qcnt-- )
+                        {
+                            CtiStatTuple tup = statCol.front();
+                            statCol.pop_front();
+
+                            switch(tup.action)
+                            {
+                            case (CtiStatTuple::Request):
+                                {
+                                    statisticsProcessNewRequest(tup.paoportid, tup.devicepaoid, tup.targetpaoid);
+                                    break;
+                                }
+                            case (CtiStatTuple::Attempt):
+                                {
+                                    statisticsProcessNewAttempt(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
+                                    break;
+                                }
+                            case (CtiStatTuple::Completion):
+                                {
+                                    statisticsProcessNewCompletion(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } while( !PorterQuit && now.seconds() > nextTime.seconds()  );
 
             now = now.now();
 
@@ -254,6 +307,19 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
+    CtiStatTuple tup;
+
+    tup.action = CtiStatTuple::Request;
+    tup.paoportid = paoportid;
+    tup.devicepaoid = devicepaoid;
+    tup.targetpaoid = targetpaoid;
+    tup.result = 0;
+    statCol.push_back(tup);
+    return;
+}
+
+void statisticsProcessNewRequest(long paoportid, long devicepaoid, long targetpaoid)
+{
     if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
     #ifndef DONOSTATS
@@ -294,6 +360,20 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 }
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
+{
+    CtiStatTuple tup;
+
+    tup.action = CtiStatTuple::Attempt;
+    tup.paoportid = paoportid;
+    tup.devicepaoid = devicepaoid;
+    tup.targetpaoid = targetpaoid;
+    tup.result = result;
+
+    statCol.push_back(tup);
+    return;
+}
+
+void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
     if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
@@ -342,6 +422,19 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
 }
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
+{
+    CtiStatTuple tup;
+
+    tup.action = CtiStatTuple::Completion;
+    tup.paoportid = paoportid;
+    tup.devicepaoid = devicepaoid;
+    tup.targetpaoid = targetpaoid;
+    tup.result = result;
+    statCol.push_back(tup);
+    return;
+}
+
+void statisticsProcessNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
     if( !findStringIgnoreCase(gConfigParms.getValueAsString("PORTER_DOSTATISTICS"),"false") )
     {
