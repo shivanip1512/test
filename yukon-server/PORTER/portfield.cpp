@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.162 $
-* DATE         :  $Date: 2005/12/29 22:11:54 $
+* REVISION     :  $Revision: 1.163 $
+* DATE         :  $Date: 2006/01/10 20:11:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -234,62 +234,14 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        #if 0
-        if( Port->shouldProcessQueuedDevices() )
-        {
-            if( LastExclusionDevice &&
-                LastExclusionDevice->hasQueuedWork() &&                                             // This device has more work
-                nowTime >= LastExclusionDevice->getExclusion().getExecutingUntil() &&               // This device thinks he is ready for more work
-                nowTime <= LastExclusionDevice->getExclusion().getExecutionGrantExpires() &&        // The grant has not expired.
-                nowTime >= LastExclusionDevice->getExclusion().getEvaluateNextAt() )                // The device thinkscan be evaluated.
-            {
-                Device = LastExclusionDevice;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(slog);
-                    slog << nowTime << " " << Device->getName() << " has been reselected by exclusion logic." << endl;
-                }
-            }
-            else
-            {
-                // The OutMessage popped from here must come from a selection amongst devices that have queues...
-                Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
-                LastExclusionDevice = Device;
-            }
-
-            if(Device)
-            {
-                Device->getOutMessage(OutMessage);
-
-                /*  This block is trying to make us go back to normal processing through readQueue. */
-                if(!OutMessage)
-                {
-                    LastExclusionDevice.reset();
-                    Port->resetDeviceQueued(Device->getID());
-                }
-                else
-                {
-                    Device->incQueueProcessed(1, CtiTime());
-                }
-
-                // There may be retries on this device.
-                if(Device->hasQueuedWork())
-                {
-                    Port->setDeviceQueued(Device->getID());
-                }
-            }
-        }
-        #else
         Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
 
         if(Device)
         {
             Device->getOutMessage(OutMessage);
         }
-        #endif
 
-
-        if( profiling)
+        if(profiling)
         {
             ticks = GetTickCount();
         }
@@ -1284,8 +1236,6 @@ void processPreloads(CtiPortSPtr Port)
 
         if( dev->getCycleTime() )
         {
-//            if( load_begin > now )
-//            {
             paox.setCycleTime(dev->getCycleTime());
             paox.setCycleOffset((load_begin.seconds() - (long)preload_ideal) % dev->getCycleTime());
             paox.setTransmitTime((long)preload_ideal);
@@ -1294,27 +1244,7 @@ void processPreloads(CtiPortSPtr Port)
             dev->getExclusion().setEvaluateNextAt(load_begin.seconds() - preload_ideal);
 
             load_begin -= preload_ideal;
-/*            }
-            else
-            {
-                //  this should only possibly happen once, since this means that we've run out
-                //    of time for the devices to execute - so we'll handle this guy at the first available opportunity
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\", ";
-                    dout << " appending load to end of current cycle (" << load_end << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                paox.setCycleTime(dev->getCycleTime());
-                paox.setCycleOffset(load_end.seconds() % dev->getCycleTime());
-                paox.setTransmitTime(preload_ideal);
-                dev->getExclusion().addExclusion(paox);
-
-                dev->getExclusion().setEvaluateNextAt(load_end);
-
-                load_end += preload_ideal;
-            }*/
             if( load_begin < now )
             {
                 {
