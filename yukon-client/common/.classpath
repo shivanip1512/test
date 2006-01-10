@@ -26,13 +26,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-lang-2.1.jar">
-		<attributes>
-			<attribute value="http://jakarta.apache.org/commons/lang/api/" name="javadoc_location"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/commons-collections-3.1.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jdom.jar"/>
+	<classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
