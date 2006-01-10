@@ -25,7 +25,8 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	String deviceType[][] = {
 								{	//MCTs
 									PAOGroups.STRING_MCT_470[0],
-                                    PAOGroups.STRING_MCT_430[0],
+                                    PAOGroups.STRING_MCT_430A[0],
+                                    PAOGroups.STRING_MCT_430S[0],
 									PAOGroups.STRING_MCT_410IL[0],
 									PAOGroups.STRING_MCT_410CL[0],
 									PAOGroups.STRING_MCT_370[0],
