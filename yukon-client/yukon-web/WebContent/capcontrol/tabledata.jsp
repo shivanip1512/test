@@ -1,3 +1,6 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage title="Results" module="capcontrol">
+<cti:standardMenu/>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
@@ -53,52 +56,6 @@
 
 %>
 
-<HTML>
-<HEAD>
-<%@ page 
-language="java"
-contentType="text/html; charset=ISO-8859-1"
-pageEncoding="ISO-8859-1"
-%>
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-<TITLE>Results</TITLE>
-</HEAD>
-
-<body>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td><%@include file="cbc_header.jspf"%></td>
-	</tr>
-
-	<td>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
-		<tr>
-          <td valign="top">
-	          <div class="lAlign">
-				<cti:breadCrumbs>
-					<cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-					<cti:crumbLink url="subs.jsp" title="Substations" />
-					<cti:crumbLink url="feeders.jsp" title="Feeders" />
-					<cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
-				</cti:breadCrumbs>
-	          </div>
-          </td>
-		
-          <td valign="top">
-			<div class="rAlign">
-				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
-					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
-				</form>
-			</div>
-          </td>
-
-		</tr>
-	</table>
-
 
 <%
 int paosShown = 0;
@@ -106,17 +63,11 @@ for( int i = 0; i < titles.length && paosShown < MAX_PAOIDS; i++ ) {
 if( titles[i] != null ) {
 	paosShown++;
 %>          
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr> 
-          <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
-          <td class="trimBGColor cellImgShort"><%=titles[i]%></td>
-          <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
-        </tr>
-        <tr>
-          <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
-          <td>
+      <cti:titledContainer title="<%=titles[i]%>">
 
           <div class="scrollMed">
+			<form id="resForm" action="feeders.jsp" method="post">
+			<input type="hidden" name="itemid" />
             <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnheader lAlign">				
 				<td>Timestamp</td>
@@ -124,8 +75,6 @@ if( titles[i] != null ) {
                 <td>Event</td>
               </tr>
 
-			<form id="resForm" action="feeders.jsp" method="post">
-			<input type="hidden" name="itemid" />
 <%			
 	if( logData[i].length <= 0 ) {
 %>			
@@ -147,31 +96,15 @@ if( titles[i] != null ) {
 				<td><%=systLog.getDescription()%></td>
 			</tr>
 <%	} %>
-			</form>
 
             </table>
+			</form>
         </div>
 
-          </td>
-          <td class="cellImgFill rAlign" background="images\Side_right.gif"></td>
-        </tr>
-        <tr>
-          <td class="cellImgShort"><img src="images\Bottom_left.gif"></td>
-          <td class="cellImgShort" background="images\Bottom.gif"></td>
-          <td class="cellImgShort"><img src="images\Bottom_right.gif"></td>
-        </tr>
-	    <tr class="columnHeader">
-			<td><br></td>
-		</tr>
-      </table>
+      </cti:titledContainer>
 <% } %>
 <% } %>
 
 
-	</td>
-</table>
 
-<%@include file="cbc_footer.jspf"%>
-
-</body>
-</HTML>
+</cti:standardPage>

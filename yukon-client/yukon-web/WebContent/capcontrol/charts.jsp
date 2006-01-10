@@ -1,3 +1,4 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"

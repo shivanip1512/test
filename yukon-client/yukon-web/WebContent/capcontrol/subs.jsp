@@ -1,97 +1,57 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage title="Substations" module="capcontrol">
+
+
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+    class="com.cannontech.cbc.web.CapControlCache"
+    type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
 
 <%
-	SubBus[] areaSubs =
-		capControlCache.getSubsByArea( cbcSession.getLastArea() );
+    SubBus[] areaSubs =
+        capControlCache.getSubsByArea( cbcSession.getLastArea() );
 
-	boolean hasControl = CBCWebUtils.hasControlRights(session);
+    boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
-<html>
-<head>
-<%@ page 
-language="java"
-contentType="text/html; charset=ISO-8859-1"
-pageEncoding="ISO-8859-1"
-%>
+  <cti:includeCss link="base.css"/>
+  <cti:standardMenu/>
+  <cti:breadCrumbs>
+    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+    <cti:crumbLink url="subs.jsp" title="Substations" />
+  </cti:breadCrumbs>
+  
+  <script type="text/javascript">
+    Event.observe(window, 'load', callBack);
+  </script>
 
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-<title>Substations</title>
-</head>
-
-
-<body onload="callBack();">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
-    <%@include file="cbc_header.jspf"%>
-    </td>
-  </tr>
-
-    <tr><td> 
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
-        <tr>
-          <td valign="top">
-	          <div class="lAlign">
-				<cti:breadCrumbs>
-					<cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-					<cti:crumbLink url="subs.jsp" title="Substations" />
-				</cti:breadCrumbs>
-	          </div>
-          </td>
-        
-          <td valign="top">
-			<div class="rAlign">
-				<form id="findForm" action="results.jsp" method="post">
-					<div class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
-					<input type="image" name="Go" src="images/GoButton.gif" alt="Find"></div>
-				</form>
-			</div>
-          </td>
-
-        </tr>
-      </table>
-
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr> 
-          <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
-          <td class="trimBGColor cellImgShort">Substation Buses In Area:  <%=cbcSession.getLastArea()%></td>
-          <td class="cellImgFill"><img src="images/Header_right.gif" class="cellImgFill"></td>
-        </tr>
-        <tr>
-          <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
-          <td>
+      <cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>">
           
           <div class="scrollLarge">
-                <form id="subForm" action="feeders.jsp" method="post">
+            <form id="subForm" action="feeders.jsp" method="post">
             <input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
           
             <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="columnheader lAlign">				
-				<td>
-				<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
-				Sub Name</td>
-                <td>State</td>
-                <td>Target</td>
-                <td>VAR Load / Est.</td>
-                <td>Date/Time</td>
-                <td>PFactor / Est.</td>
-                <td>Watts / Volts</td>
-                <td>Daily / Max Ops</td>
+              <tr class="columnHeader lAlign">              
+                <th>
+                <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
+                Sub Name</th>
+                <th>State</th>
+                <th>Target</th>
+                <th>VAR Load / Est.</th>
+                <th>Date/Time</th>
+                <th>PFactor / Est.</th>
+                <th>Watts / Volts</th>
+                <th>Daily / Max Ops</th>
               </tr>
 
 <%
 String css = "tableCell";
 for( int i = 0; i < areaSubs.length; i++ )
 {
-	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-	SubBus subBus = areaSubs[i];
+    css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
+    SubBus subBus = areaSubs[i];
 %>
 	        <tr class="<%=css%>">
 				<td>
@@ -125,47 +85,31 @@ for( int i = 0; i < areaSubs.length; i++ )
 			</a>
 				</td>
 
-				<td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
-				</td>
-				<td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
-				</td>
-				<td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
-				</td>
-				<td><a type="param4" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
-				</td>
-				<td><a type="param5" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN)%></a>
-				</td>
-				<td><a type="param6" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN)%></a>
-				</td>
-			</tr>
+                <td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
+                </td>
+                <td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
+                </td>
+                <td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
+                </td>
+                <td><a type="param4" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
+                </td>
+                <td><a type="param5" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN)%></a>
+                </td>
+                <td><a type="param6" name="cti_dyn" id="<%=subBus.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN)%></a>
+                </td>
+            </tr>
 <% } %>
 
             </table>
-			</form>
+            </form>
         </div>
 
-          </td>
-          <td class="cellImgFill rAlign" background="images/Side_right.gif"></td>
-        </tr>
-        <tr>
-          <td class="cellImgShort"><img src="images/Bottom_left.gif"></td>
-          <td class="cellImgShort" background="images/Bottom.gif"></td>
-          <td class="cellImgShort"><img src="images/Bottom_right.gif"></td>
-        </tr>
-      </table>
+      </cti:titledContainer>
       
-    </td>
-    </tr>
-  </table>
-
-</body>
-
-<%@include file="cbc_footer.jspf"%>
-
-</html>
+</cti:standardPage>

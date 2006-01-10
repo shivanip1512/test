@@ -1,3 +1,6 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage title="Search Results" module="capcontrol">
+<cti:includeCss link="base.css"/>
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
 <%@include file="cbc_inc.jspf"%>
@@ -37,61 +40,16 @@
 
 %>
 
-<HTML>
-<HEAD>
-<%@ page 
-language="java"
-contentType="text/html; charset=ISO-8859-1"
-pageEncoding="ISO-8859-1"
-%>
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<cti:standardMenu/>
+<cti:breadCrumbs>
+  <cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
+  <cti:crumbLink url="results.jsp" title="Results"/>
+</cti:breadCrumbs>
 
-<TITLE>Search Results</TITLE>
-</HEAD>
 
-<body>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
-    <%@include file="cbc_header.jspf"%>
-    </td>
-  </tr>
 
-    <td> 
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
-		<tr>
-          <td valign="top">
-	          <div class="lAlign">
-				<cti:breadCrumbs>
-					<cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-					<cti:crumbLink url="results.jsp" title="Results" />
-				</cti:breadCrumbs>
-	          </div>
-          </td>
-		
-          <td valign="top">
-			<div class="rAlign">
-				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
-					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
-				</form>
-			</div>
-          </td>
-		</tr>
 
-      </table>
-
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr> 
-          <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
-          <td class="trimBGColor cellImgShort">Search Resuls For: '<%=label%>'   (<%=items.length%> found)</td>
-          <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
-        </tr>
-        <tr>
-          <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
-          <td>
-
+<cti:titledContainer title='<%="Search Resuls For: " + label + "   (" + items.length + " found)"%>'>
 
 
 <form id="parentForm" action="feeders.jsp" method="post">
@@ -100,11 +58,11 @@ pageEncoding="ISO-8859-1"
 
           <div class="scrollLarge">          
             <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="columnheader lAlign">				
-				<td>Name</td>
-                <td>Item Type</td>
-                <td>Description</td>
-                <td>Parent</td>
+              <tr class="columnHeader lAlign">				
+				<th>Name</th>
+                <th>Item Type</th>
+                <th>Description</th>
+                <th>Parent</th>
               </tr>
 
 <%
@@ -153,24 +111,6 @@ for( int i = 0; i < items.length; i++ )
             </table>
         </div>
 </form>
+</cti:titledContainer>
 
-
-          </td>
-          <td class="cellImgFill rAlign" background="images\Side_right.gif"></td>
-        </tr>
-        <tr>
-          <td class="cellImgShort"><img src="images\Bottom_left.gif"></td>
-          <td class="cellImgShort" background="images\Bottom.gif"></td>
-          <td class="cellImgShort"><img src="images\Bottom_right.gif"></td>
-        </tr>
-      </table>
-      
-    </td>
-  
-
-  </table>
-</body>
-
-<%@include file="cbc_footer.jspf"%>
-
-</HTML>
+</cti:standardPage>

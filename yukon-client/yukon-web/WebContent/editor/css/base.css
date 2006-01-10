@@ -1,4 +1,4 @@
-* { 
+#Content * { 
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	color: #000000;
@@ -6,29 +6,6 @@
 
 a.menuLink:active {
 	color: #FF9900;
-}
-
-a.menuLink:visited, a.menuLink:link, a.menuLink, .tableHeader, .menu {
-	color: #FFFFFF;
-}
-
-a.menuLink:hover {
-	color: #CCCCCC;
-}
-
-a.menuLink {
-	font-size: 13px;
-	background-color: #006699;
-	font-weight: bold;
-	text-decoration: none;
-	margin-left: 4px;
-	margin-right: 6px;
-}
-
-.menu {
-	font-size: 13px;
-	background-color: #006699;
-	font-weight: bold;
 }
 
 .submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
@@ -40,11 +17,6 @@ a.submenuLink:hover, legend, .editorHeader {
 	font-size: 11px;
 	background-color: #EEEEEE;
 	margin-left: 5px;
-}
-
-.crumbs {
-	font-size: 10px;
-	color: #FF9900;
 }
 
 .main {
@@ -195,29 +167,10 @@ legend {
 	width: 60%;
 }
 
-#header {
-	height: 50px;
-}
-
 #center {
 	margin-left: 10px;
 	margin-right: 10px;
 	width: 95%;
-}
-
-#footer {
-	margin-top: 5px;
-	margin-bottom: 5px;
-	margin-left: 10px;
-	margin-right: 10px;
-	text-align: center;
-	border-top-width: 2px;
-	border-bottom-width: 2px;
-	border-top-style: solid;
-	border-bottom-style: solid;
-	border-top-color: #006699;
-	border-bottom-color: #006699;
-	vertical-align: bottom;
 }
 
 .popupWin {

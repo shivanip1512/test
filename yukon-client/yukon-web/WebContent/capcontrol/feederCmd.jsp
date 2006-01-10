@@ -1,3 +1,5 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage title="" module="capcontrol_internal">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
@@ -10,13 +12,6 @@
 	Feeder feeder = capControlCache.getFeeder( new Integer(feederId) );
 %>
 
-<HTML>
-<HEAD>
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-
-<body>
 
 <!-------------- Form for submitting feeder commands ---------------->
 <form id="frmFdrCmd" action="/servlet/CBCServlet" method="post">
@@ -87,5 +82,4 @@
 </div>
 </form>
 
-</body>
-</html>
+</cti:standardPage>

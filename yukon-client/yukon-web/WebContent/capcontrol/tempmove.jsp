@@ -1,3 +1,6 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage title="Temp CapBank Move" module="capcontrol">
+<cti:includeCss link="base.css"/>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
@@ -21,25 +24,6 @@
 	
 %>
 
-<html>
-
-<HEAD>
-<%@ page 
-language="java"
-contentType="text/html; charset=ISO-8859-1"
-pageEncoding="ISO-8859-1"
-%>
-
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" type="text/css"
-	href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" >
-
-<TITLE>Temp CapBank Move</TITLE>
-</HEAD>
-
-
-<body class="pageBlank" >
-
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
  <form id="frmCapBankMove" action="/servlet/CBCServlet" method="post">
 	<input type="hidden" name="redirectURL" value="/capcontrol/feeders.jsp">
@@ -50,15 +34,7 @@ pageEncoding="ISO-8859-1"
 	<input type="hidden" name="opt"> <!--New Feeder ID-->
 	<input type="hidden" name="opt"> <!--Control Order-->
 
-  <table id="chartTable" width="70%" class="cAlign pageBlank" border="0" cellspacing="0" cellpadding="0" class="pageBlank" >
-    <tr> 
-      <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
-      <td class="trimBGColor cellImgShort">CapBank Temp Move (Pick feeder by clicking on name)</td>      
-      <td class="cellImgFill"><img src="images/Header_right.gif" class="cellImgFill"></td>
-    </tr>
-    <tr>
-      <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
-      <td>
+  <cti:titledContainer title="CapBank Temp Move (Pick feeder by clicking on name)">
       
       <div class="scrollLarge">
         <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
@@ -134,18 +110,8 @@ for( int i = 0; i < allSubs.length; i++ )
         </table>
     </div>
 
-      </td>
-
-      <td class="cellImgFill rAlign" background="images/Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="cellImgShort"><img src="images/Bottom_left.gif"></td>
-      <td class="cellImgShort" background="images/Bottom.gif"></td>
-      <td class="cellImgShort"><img src="images/Bottom_right.gif"></td>
-    </tr>
-  </table>
+    </cti:titledContainer>
   
 </form>
 
-</body>
-</html>
+</cti:standardPage>

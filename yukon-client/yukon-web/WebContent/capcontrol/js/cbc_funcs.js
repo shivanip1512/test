@@ -343,7 +343,7 @@ function showRecentCmds( baseUrl )
 	getValidChecks( elemBanks, validElems );
 
 	var url = createURLreq( validElems, baseUrl, 'value' );
-	return url;
+	window.location = url;
 }
 
 // -------------------------------------------
