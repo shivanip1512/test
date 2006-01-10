@@ -2912,12 +2912,13 @@ create table Customer (
    TimeZone             varchar(40)          not null,
    CustomerNumber       varchar(64)          not null,
    RateScheduleID       numeric              not null,
-   AltTrackNum          varchar(64)          not null
+   AltTrackNum          varchar(64)          not null,
+   TemperatureUnit      char(1)              not null
 )
 go
 
 
-INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)', 0, '(none)' );
+INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)', 0, '(none)', 'F');
 alter table Customer
    add constraint PK_CUSTOMER primary key  (CustomerID)
 go
@@ -8412,6 +8413,7 @@ insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group
 insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
 insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
 insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
+insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
 
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');

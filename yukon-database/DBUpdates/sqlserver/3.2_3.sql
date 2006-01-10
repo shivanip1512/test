@@ -90,6 +90,18 @@ insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
 go
 /*@error ignore-end */
 
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
+go
+
+alter table Customer add TemperatureUnit char(1);
+go
+update Customer set TemperatureUnit = 'F';
+go
+alter table Customer alter column TemperatureUnit char(1) not null;
+go
+/* @error ignore-end */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
