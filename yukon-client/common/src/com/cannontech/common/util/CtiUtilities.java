@@ -1412,7 +1412,7 @@ public static String getExtension(java.io.File f) {
 						&& methods[i].getReturnType().equals(String.class)
 						&& methods[i].getName().toLowerCase().endsWith(methodName.toLowerCase()) )
 				{
-					String s = (String)methods[i].invoke( value_, null );
+					String s = (String)methods[i].invoke( value_, (Object[]) null);
                
 					buf.replace( key_.indexOf("%")+1, key_.lastIndexOf("%"), s );
                

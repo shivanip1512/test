@@ -356,7 +356,7 @@ private Vector getListData( Object obj )
 
 					//determines if this is a valid method
 					if( methLength > 0 ) {
-						Object value = obj.getClass().getMethods()[i].invoke( obj, null );
+						Object value = obj.getClass().getMethods()[i].invoke( obj, (Object[])null);
 	
 						//format all objects that have an unreadable toString() output
 						value = formatSpecialObjects( value );							
