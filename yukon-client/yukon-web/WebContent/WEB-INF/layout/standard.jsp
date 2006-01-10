@@ -14,9 +14,9 @@
     </head>
 <body>
 <div id="Header">
-    <div class="left"><img src="/capcontrol/images/YourLogo.gif" alt="Your Logo Here"></div>
-    <div class="right"><img src="/capcontrol/images/HeaderGraphic.gif" alt="Capacitorcontrol.com powered by Yukon"></div>
-    <div class="clear"></div>
+    <div class="stdhdr_left"><img src="/capcontrol/images/YourLogo.gif" alt="Your Logo Here"></div>
+    <div class="stdhdr_right"><img src="/capcontrol/images/HeaderGraphic.gif" alt="Capacitorcontrol.com powered by Yukon"></div>
+    <div class="stdhdr_clear"></div>
 </div>
 <cti:outputMenu/>
 
@@ -25,7 +25,7 @@
 </div> <!-- Content -->
 
 <div id="CopyRight">
-Copyright &copy; 2002-2005, 
+Copyright &copy; 2002-2006, 
   Cannon Technologies, Inc. All rights reserved.
 </div>
 
