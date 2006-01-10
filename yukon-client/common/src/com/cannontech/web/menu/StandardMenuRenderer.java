@@ -100,7 +100,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildTopLeftSide() {
         Div leftDiv = new Div();
         leftDiv.setPrettyPrint(true);
-        leftDiv.setClass("leftSide");
+        leftDiv.setClass("stdhdr_leftSide");
         MenuBase menuBase = moduleBase.getMenuBase();
         Iterator topLevelOptionIterator = menuBase.getValidTopLevelOptions(yukonUser);
         boolean first = true;
@@ -120,7 +120,7 @@ public class StandardMenuRenderer implements MenuRenderer {
                 subMenuParents.add(optionParent);
                 // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
                 link.setHref("#");
-                link.setClass("menuLink");
+                link.setClass("stdhdr_menuLink");
                 link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName()) + "'); return false;"));
                 link.setTitle(e("Display Sub Menu for " + option.getLinkName()));
             }
@@ -158,8 +158,8 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildTopRightSide() {
         Div right = new Div();
         right.setPrettyPrint(true);
-        right.setClass("rightSide");
-        right.addElement(new Span("Module:").setClass("menu"));
+        right.setClass("stdhdr_rightSide");
+        right.addElement(new Span("Module:").setClass("stdhdr_menu"));
         Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
         Select select = new Select();
         select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
@@ -170,9 +170,10 @@ public class StandardMenuRenderer implements MenuRenderer {
         }
         right.addElement(select);
         right.addElement(" ");
-        right.addElement(new A("x", "Help").setClass("menuLink"));
-        right.addElement(SEPERATOR);
-        right.addElement(new A(buildUrl("/servlet/LoginController?ACTION=LOGOUT"), "Log Out").setClass("menuLink"));
+        //TODO there is nowhere to send to right now
+        //right.addElement(new A("x", "Help").setClass("stdhdr_menuLink"));
+        //right.addElement(SEPERATOR);
+        right.addElement(new A(buildUrl("/servlet/LoginController?ACTION=LOGOUT"), "Log Out").setClass("stdhdr_menuLink"));
         right.addElement(" ");
         return right;
     }
@@ -183,14 +184,14 @@ public class StandardMenuRenderer implements MenuRenderer {
         
         if (breadCrumbs != null) {
             Div left = new Div();
-            left.setClass("leftSide");
+            left.setClass("stdhdr_leftSide");
             left.addElement(breadCrumbs);
             wrapper.addElement(left);
         }
         
         if (moduleBase.getSearchPath() != null) {
             Div right = new Div();
-            right.setClass("rightSide");
+            right.setClass("stdhdr_rightSide");
             Form searchForm = new Form(moduleBase.getSearchPath(), "post");
             searchForm.setAcceptCharset("ISO-8859-1");
             Div searchDiv = new Div();
@@ -225,7 +226,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     
     private String generateIdForString(String title) {
         // strip out bad characters
-        return "menu_" + title.replaceAll("[^a-zA-Z0-9]", "_");
+        return "stdmenu_" + title.replaceAll("[^a-zA-Z0-9]", "_");
     }
     
     /**
