@@ -55,10 +55,10 @@
       <option name="Modify">
         <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
-          <option name="Substation">
+          <option name="Edit">
             <script>editorPost()</script>
           </option>
-          <option name="Feeder">
+          <option name="Delete">
             <script>deletePost()</script>
           </option>
         </sublinks>
@@ -67,15 +67,19 @@
         <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
           <option name="Today kVAR/Watt">
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW&amp;period=Today')</script>
           </option>
           <option name="Today PF">
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF&amp;period=Today')</script>
           </option>
           <option name="30 Day kVAR/Watt">
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=VW')</script>
           </option>
           <option name="30 Day PF">
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
           </option>
           <option name="Recent Controls">
@@ -107,6 +111,10 @@
     <search action="results.jsp" method="post"/>
     <skin name="standard"/>
   </module> 
+  
+  <module name="capcontrol_internal">
+    <skin name="inner"/>
+  </module>
   
   <module name="commercialcurtailment">
     <toplinks>
