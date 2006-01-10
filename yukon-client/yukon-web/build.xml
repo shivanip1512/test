@@ -8,9 +8,11 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
 
-	<target name="all" depends="clean, build, dir_print, jsp_build, build_webxml">
+	<target name="all" depends="clean, build">
 
 	</target>
+	
+	<target name="jspcompile" depends="dir_print, jsp_build, build_webxml"/>
 
 	<target name="dir_print">
 		<mkdir dir="WebContent_temp/WEB-INF/webxml/" />
@@ -139,6 +141,9 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
 				</fileset>
+                <fileset dir="${yukon-web}/WebContent/WEB-INF/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
 			</classpath>
 		</javac>
 
