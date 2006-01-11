@@ -1,4 +1,5 @@
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
+<%@ page import="com.cannontech.common.util.CtiUtilities" %>
 
 <%  
     /* Go through the devices and find a matching deviceid */
@@ -20,7 +21,7 @@
         
         try
         {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(operator.getDatabaseAlias());       
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());       
             cust.setDbConnection(conn);
             cust.retrieve();
             cust.setDbConnection(null);
@@ -56,7 +57,7 @@
           <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">
           <%= cust.getAddress().getLocationAddress2() %><br clear="ALL">
           <br>
-          <a href="<%= referrer %>"><font face="Arial, Helvetica, sans-serif">Back</font></a></font> 
+          <a href="<%= request.getParameter("REFERRER") %>"><font face="Arial, Helvetica, sans-serif">Back</font></a></font> 
       </td>
     </tr>
   </table>
