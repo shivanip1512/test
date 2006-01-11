@@ -8,12 +8,6 @@
 
 <faces-config>
 
-	<!-- Allows the usage of Tiles in our JSF world -->
-	<application>
-	    <view-handler>org.apache.myfaces.application.jsp.JspTilesViewHandlerImpl</view-handler>
-	</application>
-
-
 	<!-- Our DBCache object -->
     <managed-bean>
         <managed-bean-name>dbCache</managed-bean-name>
@@ -60,6 +54,7 @@
         <managed-bean-class>com.cannontech.web.editor.PAOScheduleForm</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    
 
 
 
@@ -76,8 +71,9 @@
 		<converter-id>cti_TimeConverter</converter-id> 
 		<converter-class>com.cannontech.web.util.TimeConverter</converter-class> 
 	</converter> 
-
-
+    
+    
+    
 
 	<!-- page navigation rules -->
 	<navigation-rule>
@@ -96,3 +92,4 @@
 
 
 </faces-config>
+        
