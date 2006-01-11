@@ -780,7 +780,7 @@ void CtiCalculateThread::setConstantPointMap(const CtiCalcPointMap &points)
     _constantPoints = points;
 }
 
-void CtiCalculateThread::clearPointMaps()
+void CtiCalculateThread::clearAndDestroyPointMaps()
 {
     if( _constantPoints.entries() > 0 )
     {
@@ -795,6 +795,24 @@ void CtiCalculateThread::clearPointMaps()
     if( _periodicPoints.entries() > 0 )
     {
         _periodicPoints.clearAndDestroy();
+    }
+}
+
+void CtiCalculateThread::clearPointMaps()
+{
+    if( _constantPoints.entries() > 0 )
+    {
+        _constantPoints.clear();
+    }
+
+    if( _onUpdatePoints.entries() > 0 )
+    {
+        _onUpdatePoints.clear();
+    }
+
+    if( _periodicPoints.entries() > 0 )
+    {
+        _periodicPoints.clear();
     }
 }
 

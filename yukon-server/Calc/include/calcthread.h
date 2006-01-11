@@ -103,6 +103,7 @@ public:
     void setConstantPointMap(const CtiCalcPointMap &);
 
     void clearPointMaps();
+    void clearAndDestroyPointMaps();
 
     void removePointStoreObject( const long aPointID );
 };
