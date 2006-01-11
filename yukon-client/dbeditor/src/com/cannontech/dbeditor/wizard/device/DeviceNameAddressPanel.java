@@ -14,6 +14,7 @@ import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.data.device.Ion7700;
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -652,6 +653,11 @@ public void setDeviceType(int newDeviceType)
 	  getPhysicalAddressLabel().setText("Address:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
+   
+   if( DeviceTypesFuncs.isCCU(getDeviceType()) ) {
+       getAddressTextField().setDocument( new LongRangeDocument(0L, 128L) );
+   }
+   
 }
 
 
