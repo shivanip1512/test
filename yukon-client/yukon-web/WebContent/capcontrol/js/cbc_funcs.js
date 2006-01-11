@@ -496,4 +496,38 @@ function toggleImg( imgID ) {
 		imgElem.src = 'images/nav-minus.gif';
 		return true;
 	}
+}
+
+var CtiNonScrollTable = Class.create();
+CtiNonScrollTable.prototype = {
+  initialize: function(mainTable, headerTable) {
+    this.mainTable = mainTable;
+    this.headerTable = headerTable;
+    this._alignHeaders();
+    Event.observe(window, 'resize', this._alignHeaders.bind(this)  ,false);
+},
+
+_alignHeaders: function() {
+
+var mytable = $(this.mainTable);
+var headerTable = $(this.headerTable);
+
+
+mytable = document.getElementById(this.mainTable);
+myrow=mytable.getElementsByTagName('tr').item(0);
+
+hdrTable =  document.getElementById(this.headerTable);
+hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+
+
+var colNum = myrow.cells.length;
+
+for(i=0;i < colNum - 1; i++) {
+
+hdrRow.getElementsByTagName('td').item(i).width =
+							myrow.cells[i].offsetWidth;
+}
+
+}
+
 }	

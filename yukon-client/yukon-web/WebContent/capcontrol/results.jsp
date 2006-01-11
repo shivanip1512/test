@@ -1,4 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
 <cti:standardPage title="Search Results" module="capcontrol">
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
@@ -13,7 +14,7 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-	//String type = ParamUtil.getString(request, "type", "");
+	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
 	if( srchCriteria == null )
 		srchCriteria = cbcSession.getLastSearchCriteria();
@@ -56,14 +57,16 @@
 	<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
 	<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
 
-          <div class="scrollLarge">          
-            <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="columnHeader lAlign">				
-				<th>Name</th>
-                <th>Item Type</th>
-                <th>Description</th>
-                <th>Parent</th>
-              </tr>
+   <table id="headerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+ 	 <tr class="columnHeader lAlign">
+ 	 <td>Name</td>
+ 	 <td>Item Type</td>
+ 	 <td>Description</td>
+ 	 <td>Parent</td>
+ 	 </tr>
+ </table>
+<div class="scrollLarge">          
+<table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 
 <%
 for( int i = 0; i < items.length; i++ )
@@ -111,6 +114,11 @@ for( int i = 0; i < items.length; i++ )
             </table>
         </div>
 </form>
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);
+</script>
+
 </cti:titledContainer>
 
 </cti:standardPage>
+
