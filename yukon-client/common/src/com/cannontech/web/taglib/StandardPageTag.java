@@ -42,7 +42,7 @@ public class StandardPageTag extends BodyTagSupport {
     private String htmlLevel = HTML_TRANSITIONAL;
     private List cssFiles = new ArrayList();
     private String module = "";
-    private String breadCrumbData;
+    private String breadCrumbData = "";
     private boolean debugMode = true;
     private boolean showMenu = false;
     
@@ -50,7 +50,8 @@ public class StandardPageTag extends BodyTagSupport {
         title = "";
         htmlLevel = HTML_TRANSITIONAL;
         module = "";
-        super.release();
+        breadCrumbData = "";
+        //super.release();
     }
     
     public int doStartTag() throws JspException {
