@@ -17,14 +17,9 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
-
-/**
- * @author rneuharth
- * 
-
-For 2.40 Yukon client updates, 
-the following minimum versions of software are needed:
- JRE 1.4.0
+/*
+The following minimum versions of software are needed:
+ JRE 1.4.2
  Oracle 9.2
  SQLServer 7 (prefer 2000)
 
@@ -40,7 +35,8 @@ Here is what the DBUpdater tool does:
     the file is written with embedded descriptive tags and renamed by adding the following text
     to the extension _MM-dd-yyyy_HH-mm-ss (ex: 2.40valids.sql_06-24-2003_10-40-08 )
     - If a command fails, the file is written with embedded descriptive tags and the
-    name of the file is left unchanged.
+    name of the file is left unchanged. The next time this application is run, it
+    will pick up the intermediate file instead of the DBupdate file.
 
 Embedded descriptive tags:
 All tags apply to the line below the tag.
@@ -63,8 +59,10 @@ Suggested DBUpdate Process Steps
 2) Update DBMS version (example: oracle 8 to oracle 9) (optional)
 3) Install new Yukon software (clients, server, etc)
 4) Execute DBUpdate application (DBToolsFrame.bat file in \yukon\client\bin\ )
+*/
 
- *
+/**
+ * @author rneuharth
  * Allows the user to update and change the DB. Here is a quick summary of what
  * format the files read should be in:
  * 
@@ -72,9 +70,6 @@ Suggested DBUpdate Process Steps
  * 2) a ; (semi colon) should follow every command
  * 3) File name must have the version number as the first 4 chars (ex: 2.40, 2.41)
  * 4) All meta data tags (the @ sign) should be nested in a comment
- * 5)
- * 
- * 
  */
 public class DBUpdater extends MessageFrameAdaptor
 {
