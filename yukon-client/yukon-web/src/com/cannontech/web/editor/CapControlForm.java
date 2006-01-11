@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -16,6 +17,7 @@ import javax.faces.model.SelectItem;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 import com.cannontech.database.TransactionException;
@@ -64,6 +66,9 @@ public class CapControlForm extends DBEditorForm
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
 	private int itemID = -1;
+	private String VARscrollOffsetTop = "";
+	private String WATTscrollOffsetTop = "";
+	private String VOLTscrollOffsetTop = "";	
 	
 	//contains <Integer(stratID), CapControlStrategy>
 	private HashMap cbcStrategiesMap = null;
@@ -221,7 +226,7 @@ public class CapControlForm extends DBEditorForm
 			rootData.getChildren().add( paos[i] );
 		}
 
-
+		
 		return rootData;
 	}
 
@@ -384,8 +389,16 @@ public class CapControlForm extends DBEditorForm
 		else if( getDbPersistent() instanceof CapControlSubBus )
 			((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setCurrentVarLoadPointID( new Integer(val) );
 
+		
 
 	}
+
+	public void setVARscrollOffsetTop(String rscrollOffsetTop) {
+	
+		this.VARscrollOffsetTop = rscrollOffsetTop;
+		
+	}
+	
 
 	/**
 	 * Event fired when the Watt Point selection has changed
@@ -1387,5 +1400,29 @@ public class CapControlForm extends DBEditorForm
 		else
 			return false;
 	}
+
+	public String getVARscrollOffsetTop() {
+		return VARscrollOffsetTop;
+	}
+
+	public String getWATTscrollOffsetTop() {
+		return WATTscrollOffsetTop;
+	}
+
+	public void setWATTscrollOffsetTop(String tscrollOffsetTop) {
+		WATTscrollOffsetTop = tscrollOffsetTop;
+	}
+
+	public String getVOLTscrollOffsetTop() {
+		return VOLTscrollOffsetTop;
+	}
+
+	public void setVOLTscrollOffsetTop(String tscrollOffsetTop) {
+		VOLTscrollOffsetTop = tscrollOffsetTop;
+	}
+
+
+
+
 
 }
