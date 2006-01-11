@@ -1,5 +1,3 @@
-<%@taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-
 <%@page import="java.util.*" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.roles.application.WebClientRole" %>
@@ -14,11 +12,11 @@
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
 <%@page import="com.cannontech.database.data.point.SystemLogData" %>
 
-<!--------------------------
+<!--
 -
 - Login and scope variables init
 -
----------------------------->
+-->
 <cti:checklogin/>
 <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
 	<jsp:forward page="/operator/Operations.jsp"/>
@@ -49,11 +47,11 @@
 <jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
 
 
-<!--------------------------
+<!--
 -
 - Init Javascript here
 -
----------------------------->
+-->
 <script type="text/javascript">
 	var clientRefresh = 
 		parseInt(
