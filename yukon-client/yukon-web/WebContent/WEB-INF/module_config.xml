@@ -108,12 +108,14 @@
         </sublinks>
       </option>
     </toplinks>
-    <search action="results.jsp" method="post"/>
+    <search action="results.jsp" method="post" fieldname="cbc_lastSearch"/>
     <skin name="standard"/>
+    <css file="css/base.css"/> <!-- normally this should be an absolute path -->
   </module> 
   
   <module name="capcontrol_internal">
     <skin name="inner"/>
+    <css file="css/base.css"/> <!-- normally this should be an absolute path -->
   </module>
   
   <module name="commercialcurtailment">

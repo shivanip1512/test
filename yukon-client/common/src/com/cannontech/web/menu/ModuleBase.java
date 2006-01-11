@@ -1,6 +1,7 @@
 package com.cannontech.web.menu;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections.iterators.FilterIterator;
@@ -20,6 +21,7 @@ public class ModuleBase {
     private String searchFieldName;
     private String searchMethod;
     private List quickLinks;
+    private List cssFiles = new LinkedList();
     private String skin;
     private MenuBase menuBase;
     
@@ -85,5 +87,13 @@ public class ModuleBase {
 
     public void setSearchMethod(String searchMethod) {
         this.searchMethod = searchMethod;
+    }
+
+    public List getCssFiles() {
+        return cssFiles;
+    }
+
+    public void addCssFiles(String cssFile) {
+        cssFiles.add(cssFile);
     }
 }

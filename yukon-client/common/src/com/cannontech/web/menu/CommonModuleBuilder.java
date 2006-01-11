@@ -86,6 +86,11 @@ public class CommonModuleBuilder implements ModuleBuilder {
         if (skinElement != null) {
             moduleBase.setSkin(skinElement.getAttributeValue("name"));
         }
+        List cssElements = moduleElement.getChildren("css");
+        for (Iterator iter = cssElements.iterator(); iter.hasNext();) {
+            Element cssElement = (Element) iter.next();
+            moduleBase.addCssFiles(cssElement.getAttributeValue("file"));
+        }
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
 
