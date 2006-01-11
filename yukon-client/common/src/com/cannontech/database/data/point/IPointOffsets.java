@@ -68,7 +68,7 @@ public interface IPointOffsets
 					new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30},
 					new String[] {"Total KWH","Peak KW (Rate A)","Rate A KWH","Rate B KW","Rate B KWH","Rate C KW","Rate C KWH","Rate D KW",
 						"Rate D KWH","Last Interval KW","Total KVARH","Peak KVAR (Rate A)","Rate A KVARH","Rate B KVAR","Rate B KVARH","Rate C KVAR",
-						"Rate C KVARH","Rate D KVAR","Rate D KVAR","Last Interval KVARH","Total KVAH","Peak KVA (Rate A)","Rate A KVAH","Rate B KVA",
+						"Rate C KVARH","Rate D KVAR","Rate D KVAR","Last Interval KVAR","Total KVAH","Peak KVA (Rate A)","Rate A KVAH","Rate B KVA",
 						"Rate B KVAH","Rate C KVA","Rate C KVAH","Rate D KVA","Rate D KVAH","Last Interval KVA"} ),
 		new PointOffset( PAOGroups.MCT370, PointTypes.PULSE_ACCUMULATOR_POINT,
 					new int[]{1,2,3,4,5,6,20},
@@ -94,7 +94,7 @@ public interface IPointOffsets
 					new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30},
 					new String[] {"Total KWH","Peak KW (Rate A)","Rate A KWH","Rate B KW","Rate B KWH","Rate C KW","Rate C KWH","Rate D KW",
 						"Rate D KWH","Last Interval KW","Total KVARH","Peak KVAR (Rate A)","Rate A KVARH","Rate B KVAR","Rate B KVARH","Rate C KVAR",
-						"Rate C KVARH","Rate D KVAR","Rate D KVAR","Last Interval KVARH","Total KVAH","Peak KVA (Rate A)","Rate A KVAH","Rate B KVA",
+						"Rate C KVARH","Rate D KVAR","Rate D KVAR","Last Interval KVAR","Total KVAH","Peak KVA (Rate A)","Rate A KVAH","Rate B KVA",
 						"Rate B KVAH","Rate C KVA","Rate C KVAH","Rate D KVA","Rate D KVAH","Last Interval KVA"} ),
 			
 		new PointOffset( PAOGroups.MCT318, PointTypes.STATUS_POINT, 
