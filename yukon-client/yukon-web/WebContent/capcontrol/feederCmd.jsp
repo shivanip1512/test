@@ -3,8 +3,6 @@
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
-<cti:includeCss link="base.css"/>
-
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>

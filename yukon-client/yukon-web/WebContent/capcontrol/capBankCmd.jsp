@@ -3,8 +3,6 @@
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
-<cti:includeCss link="base.css"/>
-
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
@@ -15,12 +13,6 @@
 	CapBankDevice capBank = capControlCache.getCapBankDevice( new Integer(capBankId) );
 %>
 
-<HTML>
-<HEAD>
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-<body>
 
 <!-- Form for submitting CapBank commands -->
 <form id="frmCapBankCmd" action="/servlet/CBCServlet" method="post">

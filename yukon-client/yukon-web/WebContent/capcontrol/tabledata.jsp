@@ -1,6 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Results" module="capcontrol">
-<cti:includeCss link="base.css"/>
 <cti:standardMenu/>
 <%@include file="cbc_inc.jspf"%>
 
