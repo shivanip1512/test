@@ -1,7 +1,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage module="capcontrol_internal" title="">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
+<cti:includeCss link="base.css"/>
 
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
@@ -20,7 +22,7 @@
 
 <body>
 
-<!-------------- Form for submitting CapBank commands ---------------->
+<!-- Form for submitting CapBank commands -->
 <form id="frmCapBankCmd" action="/servlet/CBCServlet" method="post">
 <input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_CAPBANK%>">
 <input type="hidden" name="paoID">
@@ -28,16 +30,8 @@
 <input type="hidden" name="opt">
 
 <% if( "field".equalsIgnoreCase(cmdType) ) {%>
-<div id="bankFldPopupMenu" >
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader"><%=capBank.getCcName()%></td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
+<div class="cmdPopupMenu">
+  <cti:titledContainer title="<%=capBank.getCcName()%>">
         <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr><td>
           	<a href="javascript:void(0);" class="optDeselect"
@@ -75,29 +69,13 @@
 
 
         </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
+     </cti:titledContainer>
 </div>
 
 <% } else { %>
 
-<div id="bankSysPopupMenu" >
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader"><%=capBank.getCcName()%></td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
+<div  class="cmdPopupMenu">
+  <cti:titledContainer title="<%=capBank.getCcName()%>">
         <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 <% if( capBank.getCcDisableFlag().booleanValue() ) { %>
           <tr><td>
@@ -145,19 +123,10 @@
 
 
         </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
+   </cti:titledContainer>
 </div>
 <% } %>
 
 </form>
 
-</body>
-</html>
+</cti:standardPage>

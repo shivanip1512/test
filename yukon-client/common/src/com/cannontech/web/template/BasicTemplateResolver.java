@@ -10,6 +10,8 @@ public class BasicTemplateResolver implements TemplateReslover {
     public String getTemplatePage(ModuleBase moduleBase, PageContext pageContext) {
         if (StandardPageTag.SKIN_PURPLE.equals(moduleBase.getSkin())) {
             return "/WEB-INF/layout/purple.jsp";
+        } else if (StandardPageTag.SKIN_INNER.equals(moduleBase.getSkin())){
+            return "/WEB-INF/layout/inner.jsp";
         } else {
             return "/WEB-INF/layout/standard.jsp";
         }

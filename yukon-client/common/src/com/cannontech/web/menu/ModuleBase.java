@@ -17,6 +17,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class ModuleBase {
     private String moduleName;
     private String searchPath;
+    private String searchFieldName;
+    private String searchMethod;
     private List quickLinks;
     private String skin;
     private MenuBase menuBase;
@@ -67,5 +69,21 @@ public class ModuleBase {
 
     public void setSkin(String skin) {
         this.skin = skin;
+    }
+
+    public String getSearchFieldName() {
+        return searchFieldName;
+    }
+
+    public void setSearchFieldName(String searchFieldName) {
+        this.searchFieldName = searchFieldName;
+    }
+
+    public String getSearchMethod() {
+        return searchMethod;
+    }
+
+    public void setSearchMethod(String searchMethod) {
+        this.searchMethod = searchMethod;
     }
 }

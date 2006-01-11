@@ -192,12 +192,12 @@ public class StandardMenuRenderer implements MenuRenderer {
         if (moduleBase.getSearchPath() != null) {
             Div right = new Div();
             right.setClass("stdhdr_rightSide");
-            Form searchForm = new Form(moduleBase.getSearchPath(), "post");
+            Form searchForm = new Form(moduleBase.getSearchPath(), moduleBase.getSearchMethod());
             searchForm.setAcceptCharset("ISO-8859-1");
             Div searchDiv = new Div();
             searchDiv.setID("findForm");
             searchDiv.addElement("Find: ");
-            searchDiv.addElement(new Input(Input.text, "searchString"));
+            searchDiv.addElement(new Input(Input.text, moduleBase.getSearchFieldName()));
             searchDiv.addElement(new Input(Input.image, "Go")
                                   .setSrc(buildUrl("/WebConfig/yukon/GoButton.gif"))
                                   .setAlt("Go")

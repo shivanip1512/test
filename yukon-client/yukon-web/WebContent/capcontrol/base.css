@@ -194,3 +194,7 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	background-color: #eeeeee;
 	display: none;
 }
+
+.cmdPopupMenu {
+    font-size: 10px;
+}

@@ -47,6 +47,8 @@
 <jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
 
 
+
+
 <!--
 -
 - Init Javascript here

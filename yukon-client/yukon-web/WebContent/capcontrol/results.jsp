@@ -8,6 +8,10 @@
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache" type="com.cannontech.cbc.web.CapControlCache"
 	scope="application"></jsp:useBean>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
 	//String type = ParamUtil.getString(request, "type", "");
@@ -41,16 +45,13 @@
 %>
 
 <cti:standardMenu/>
+
 <cti:breadCrumbs>
   <cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
   <cti:crumbLink url="results.jsp" title="Results"/>
 </cti:breadCrumbs>
 
-
-
-
 <cti:titledContainer title='<%="Search Resuls For: " + label + "   (" + items.length + " found)"%>'>
-
 
 <form id="parentForm" action="feeders.jsp" method="post">
 	<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />

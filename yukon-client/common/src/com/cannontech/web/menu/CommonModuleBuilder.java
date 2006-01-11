@@ -79,6 +79,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
         Element searchElement = moduleElement.getChild("search");
         if (searchElement != null) {
             moduleBase.setSearchPath(searchElement.getAttributeValue("action"));
+            moduleBase.setSearchFieldName(searchElement.getAttributeValue("fieldname"));
+            moduleBase.setSearchMethod(searchElement.getAttributeValue("method"));
         }
         Element skinElement = moduleElement.getChild("skin");
         if (skinElement != null) {

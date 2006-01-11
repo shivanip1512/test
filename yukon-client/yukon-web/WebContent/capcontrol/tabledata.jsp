@@ -1,11 +1,23 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Results" module="capcontrol">
+<cti:includeCss link="base.css"/>
 <cti:standardMenu/>
 <%@include file="cbc_inc.jspf"%>
+
+<cti:breadCrumbs>
+    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+    <cti:crumbLink url="subs.jsp" title="Substations" />
+    <cti:crumbLink url="feeders.jsp" title="Feeders" />
+    <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
+</cti:breadCrumbs>
 
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
 	int MAX_PAOIDS = 3;

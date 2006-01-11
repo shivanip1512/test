@@ -1,12 +1,15 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
-
-
+<cti:includeCss link="base.css"/>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
     type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
     SubBus[] areaSubs =
@@ -15,18 +18,18 @@
     boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
-  <cti:includeCss link="base.css"/>
-  <cti:standardMenu/>
-  <cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-    <cti:crumbLink url="subs.jsp" title="Substations" />
-  </cti:breadCrumbs>
-  
-  <script type="text/javascript">
-    Event.observe(window, 'load', callBack);
-  </script>
 
-      <cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>">
+<cti:standardMenu/>
+<cti:breadCrumbs>
+  <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+  <cti:crumbLink url="subs.jsp" title="Substations" />
+</cti:breadCrumbs>
+  
+<script type="text/javascript">
+  Event.observe(window, 'load', callBack);
+</script>
+
+<cti:titledContainer title="<%="Substation Buses In Area:  " + cbcSession.getLastArea()%>">
           
           <div class="scrollLarge">
             <form id="subForm" action="feeders.jsp" method="post">

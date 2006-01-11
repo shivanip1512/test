@@ -2,20 +2,15 @@
 <cti:standardPage title="Feeders" module="capcontrol">
 <cti:includeCss link="base.css"/>
 <%@include file="cbc_inc.jspf"%>
-  <cti:standardMenu/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="subareas.jsp" title="SubBus Areas"  />
-        <cti:crumbLink url="subs.jsp" title="Substations" />
-        <cti:crumbLink url="feeders.jsp" title="Feeders" />
-    </cti:breadCrumbs>
-
-
-
 
 <jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+    class="com.cannontech.cbc.web.CapControlCache"
+    type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
 	int subid = cbcSession.getLastSubID();
@@ -27,7 +22,13 @@
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
+<cti:standardMenu/>
 
+<cti:breadCrumbs>
+    <cti:crumbLink url="subareas.jsp" title="SubBus Areas"  />
+    <cti:crumbLink url="subs.jsp" title="Substations" />
+    <cti:crumbLink url="feeders.jsp" title="Feeders" />
+</cti:breadCrumbs>
 
 <script type="text/javascript">
    Event.observe(window, 'load', callBack);
@@ -140,7 +141,7 @@ for( int i = 0; i < feeders.length; i++ )
 		href="javascript:void(0);"
 	    onmouseover="overlib(
 			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'tempIFrame', 0),
-			STICKY, WIDTH,135, HEIGHT,75, OFFSETX,-15,OFFSETY,-15,
+			STICKY, WIDTH,135, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
 			MOUSEOFF, FULLHTML);"
 	    onmouseout="nd();">		
 <% } else { %>

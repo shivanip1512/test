@@ -1,6 +1,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<cti:standardPage module="capcontrol_internal" title="">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
+
+<cti:includeCss link="base.css"/>
 
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
@@ -12,30 +15,14 @@
 %>
 
 
-<HTML>
-<HEAD>
-<link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-
-<body>
-
-<!-------------- Form for submitting substation commands ---------------->
+<!-- Form for submitting substation commands -->
 <form id="frmSubCmd" action="/servlet/CBCServlet" method="post">
 <input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_SUB%>">
 <input type="hidden" name="paoID">
 <input type="hidden" name="cmdID">
 
-<div id="subPopupMenu" >
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr> 
-      <td class="popupCell"><img src="images/Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader"><%=subBus.getCcName()%></td>
-      <td class="popupCell"><img src="images/Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images/Side_left.gif"></td>
-      <td>
+<div class="cmdPopupMenu">
+  <cti:titledContainer title="<%=subBus.getCcName()%>">
         <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 <% if ( subId <= 0 ) { %>
           <tr><td>
@@ -90,17 +77,7 @@
 <% } %>
 
         </table>
-      </td>
-      <td class="popupCell rAlign" background="images/Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images/Bottom_left.gif"></td>
-      <td class="popupCell" background="images/Bottom.gif"></td>
-      <td class="popupCell"><img src="images/Bottom_right.gif"></td>
-    </tr>
-  </table>
+  </cti:titledContainer>
 </div>
 </form>
-
-</body>
-</html>
+</cti:standardPage>

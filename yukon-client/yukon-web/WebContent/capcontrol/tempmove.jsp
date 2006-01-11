@@ -1,5 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<cti:standardPage title="Temp CapBank Move" module="capcontrol">
+<cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
 <cti:includeCss link="base.css"/>
 <%@include file="cbc_inc.jspf"%>
 

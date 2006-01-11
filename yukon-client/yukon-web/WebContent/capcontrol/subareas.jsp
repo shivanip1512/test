@@ -1,16 +1,21 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
+<cti:includeCss link="base.css"/>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
-    <cti:includeCss link="base.css"/>
-    <cti:standardMenu/>
-	<cti:breadCrumbs>
-		<cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
-	</cti:breadCrumbs>
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
+<cti:standardMenu/>
+
+<cti:breadCrumbs>
+    <cti:crumbLink url="subareas.jsp" title="SubBus Areas"/>
+</cti:breadCrumbs>
 
     <cti:titledContainer title="Substation Bus Areas">
           <div class="scrollLarge">
