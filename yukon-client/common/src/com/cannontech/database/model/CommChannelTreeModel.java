@@ -48,7 +48,8 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update() 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
+	
+    com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
@@ -130,7 +131,7 @@ public boolean insertTreeObject( LiteBase lb )
 			treePathWillExpand( rootPath );
 
 			updateTreeNodeStructure( rootNode );
-
+			update();
 			return true;
 		}
 	}
@@ -150,12 +151,12 @@ public boolean insertTreeObject( LiteBase lb )
 			nodesWereInserted(
 				rootNode,
 				ind );
-
+            update();
 			return true;
 		}
 
 	}
-	
+    update();
 	return false;
 }
 
