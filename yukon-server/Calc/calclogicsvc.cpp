@@ -321,6 +321,8 @@ void CtiCalcLogicService::Run( )
                             tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
                             tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
                             tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
+
+                            calcThread->clearPointMaps();
                         }
                         else
                         {
@@ -556,7 +558,12 @@ void CtiCalcLogicService::Run( )
             {
                 //  interrupt the calculation and i/o threads, and tell it to come back home
                 _dispatchPingedFailed = CtiTime(YUKONEOT);
-                dropDispatchConnection();
+
+                if( !UserQuit )
+                {
+                    dropDispatchConnection();
+                }
+
                 calcThreadFunc.requestInterrupt( );
 
                 try
@@ -609,10 +616,11 @@ void CtiCalcLogicService::Run( )
 
         //  tell Dispatch we're going away, then leave
         if(_conxion) _conxion->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        Sleep(2500);
         if(_conxion) _conxion->ShutdownConnection();
 
         ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::LogOut ) );
+        ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+        ThreadMonitor.join();
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
         dropDispatchConnection();
@@ -868,7 +876,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
     
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << CtiTime(_nextCheckTime) << endl;
                             }
                         }
                         else
@@ -1394,7 +1402,7 @@ void CtiCalcLogicService::updateCalcData()
             _dbChangeMessages.pop();//Because of the way I made the queue, there is no need to delete
         }
 
-        calcThread->clearPointMaps();
+        calcThread->clearAndDestroyPointMaps();
         readCalcPoints(calcThread);
         _registerForPoints();       //From here on Im not positive about this ordering, resume threads before or after we register?
         calcThread->sendConstants();
