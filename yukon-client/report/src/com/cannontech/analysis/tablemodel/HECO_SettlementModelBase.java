@@ -53,6 +53,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	private Double[] efslEmergencyCharges = null;
 	private Double[] efslDispatchedCharges = null;
 	private Double[] efslUnderfrequecyCharges = null;
+	private Double[] controlledDemandIncentive = null;
 	
 	private Integer[] customerIDS = null;
 	private Double[] custDemandLevels = null;
@@ -637,11 +638,25 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	public Double[] getERIIncentiveAmounts()
 	{
 		if( eriAmounts == null )
-			loadCustomerTotals();
+			loadCustomerEventTotals();
 
 		return eriAmounts;
 	}
 	
+	/**
+	 * Returns the total of all entris in the an array of eri Incentive Amounts.  
+	 * @return
+	 */
+	public double getERIIncentiveAmountsTotal()
+	{
+		double total = 0;
+		for (int i = 0; i < getERIIncentiveAmounts().length; i++)
+		{
+			total += getERIIncentiveAmounts()[i].doubleValue();
+		}
+		return total;
+
+	}	
 	/**
 	 * Returns an array of EFSL Dispatched Charges.  
 	 * Indexed based on the customerIDs:  Where index 0 contains the efslDispatchedCharges for the customer at customerIDs[0]
@@ -650,11 +665,23 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	public Double[] getEfslDispatchedCharges()
 	{
 		if( efslDispatchedCharges == null )
-			loadCustomerTotals();
+			loadCustomerEventTotals();
 		
 		return efslDispatchedCharges;
 	}
-
+	/**
+	 * Returns the total of all entries in the array of EFSL Dispatched Charges.  
+	 * @return
+	 */
+	public double getEfslDispatchedTotal()
+	{
+		double total = 0;
+		for (int i = 0; i < getEfslDispatchedCharges().length; i++)
+		{
+			total += getEfslDispatchedCharges()[i].doubleValue();
+		}
+		return total;
+	}
 	/**
 	 * Returns an array of EFSL Emergency Charges.  
 	 * Indexed based on the customerIDs:  Where index 0 contains the efslEmergencyCharges for the customer at customerIDs[0]
@@ -663,11 +690,23 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	public Double[] getEfslEmergencyCharges()
 	{
 		if( efslEmergencyCharges == null )
-			loadCustomerTotals();
+			loadCustomerEventTotals();
 		
 		return efslEmergencyCharges;
 	}
-
+	/**
+	 * Returns the total of all entries in the array of EFSL Emergency Charges.  
+	 * @return
+	 */
+	public double getEfslEmergencyTotal()
+	{	
+		double total = 0;
+		for (int i = 0; i < getEfslEmergencyCharges().length; i++)
+		{
+			total += getEfslEmergencyCharges()[i].doubleValue();
+		}
+		return total;
+	}
 	/**
 	 * Returns an array of EFSL UnderFrequency Charges.  
 	 * Indexed based on the customerIDs:  Where index 0 contains the efslUnderfrequencyCharges for the customer at customerIDs[0]
@@ -676,15 +715,117 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	public Double[] getEfslUnderfrequecyCharges()
 	{
 		if( efslUnderfrequecyCharges == null )
-			loadCustomerTotals();
+			loadCustomerEventTotals();
 		
 		return efslUnderfrequecyCharges;
 	}
 
-	
-	private void loadCustomerTotals()
+	/**
+	 * Returns the total of all entries in the array of EFSL UnderFrequency Charges.  
+	 * @return
+	 */
+	public double getEfslUnderfrequecyTotal()
+	{		
+		double total = 0;
+		for (int i = 0; i < getEfslUnderfrequecyCharges().length; i++)
+		{
+			total += getEfslUnderfrequecyCharges()[i].doubleValue();
+		}
+		return total;
+	}
+	/**
+	 * Returns an array of settlementCustomer ControlledDemandIncentive values.  
+	 * Indexed based on the customerIDs:  Where index 0 contains the controlledDemandIncentive for the settlementCustomer at customerIDs[0]
+	 * @return
+	 */
+	public Double[] getControlledDemandIncentive()
 	{
-//		Load all of the ERI Amounts
+		if( controlledDemandIncentive == null )
+			loadAllCustomerTotals();
+		
+		return controlledDemandIncentive;
+	}
+
+	/**
+	 * Returns  the total of all entries in the array of ControlledDemandIncentive.  
+	 * @return
+	 */
+	public double getControlledDemandIncentiveTotal()
+	{		
+		double total = 0;
+		for (int i = 0; i < getControlledDemandIncentive().length; i++)
+		{
+			total += getControlledDemandIncentive()[i].doubleValue();
+		}
+		return total;
+	}
+	
+	/**
+	 * Returns the total EFSL charges (Dispatched, Emergency, UF) for customer at index.
+	 * @param index
+	 * @return
+	 */
+	public Double getTotalEFSLCharges(int index)
+	{
+		return new Double( getEfslDispatchedCharges()[index].doubleValue() + 
+					getEfslEmergencyCharges()[index].doubleValue() + 
+					getEfslUnderfrequecyCharges()[index].doubleValue());
+	}
+	
+	/**
+ 	 * Returns the total EFSL charges (Dispatched, Emergency, UF) for All Customers. 
+	 * @param index
+	 * @return
+	 */
+	public double getAllTotalEFSLCharges()
+	{
+		return getEfslDispatchedTotal() + getEfslEmergencyTotal() + getEfslUnderfrequecyTotal();
+	}	
+	/**
+	 * Returns the total CIDLC credits, the sum of the total EFSL charges and total CIDLC incentive for customer at index.
+	 * @param index
+	 * @return
+	 */
+	public Double getTotalCIDLCredits(int index)
+	{
+		return new Double( getTotalEFSLCharges(index).doubleValue() + getTotalCIDLCIncentive(index).doubleValue());
+	}
+	/**
+	 * Returns the total CIDLC credits, the sum of the total EFSL charges and totoal CIDLC incentive for ALL Customers. 
+	 * @param index
+	 * @return
+	 */
+	public double getAllTotalCIDLCredits()
+	{
+		return getAllTotalCIDLCIncentive() + getAllTotalEFSLCharges();
+	}
+	/**
+	 * Returns the total CIDLC incentive, cdi(controlDemandIncentive), and ERI incentive
+	 * for customer at index.
+	 * @param index
+	 * @return
+	 */
+	public Double getTotalCIDLCIncentive(int index)
+	{
+		return new Double( getControlledDemandIncentive()[index].doubleValue() + getERIIncentiveAmounts()[index].doubleValue());
+	}
+	
+	/**
+	 * Returns the total CIDLC incentive, cdi(controlDemandIncentive), and ERI incentive
+	 * for ALL Customers.
+	 * @param index
+	 * @return
+	 */
+	public double getAllTotalCIDLCIncentive()
+	{
+		return getControlledDemandIncentiveTotal() + getERIIncentiveAmountsTotal();
+	}	
+	/**
+	 * Load the efsl charges arrays (Dispatched, Emergency, UF).
+	 */
+	private void loadCustomerEventTotals()
+	{
+		// Load all of the ERI Amounts
   		eriAmounts = new Double[getCustomerIDS().length];
   		efslDispatchedCharges = new Double[getCustomerIDS().length];
 		efslEmergencyCharges = new Double[getCustomerIDS().length];
@@ -726,5 +867,20 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	  		efslEmergencyCharges[i] = new Double(efslEmer);
 	  		efslUnderfrequecyCharges[i] = new Double(efslUF);
   		}
+	}
+	/**
+	 * Load the efsl charges arrays (Dispatched, Emergency, UF).
+	 */
+	private void loadAllCustomerTotals()
+	{
+		// Load all of the ERI Amounts
+		controlledDemandIncentive = new Double[getCustomerIDS().length];
+		double cdi = 0;
+		for ( int i = 0; i < getCustomerIDS().length; i++)
+		{
+			SettlementCustomer settleCust = getSettlementCustomer(getCustomerIDS()[i]);;
+			cdi += settleCust.getControlledDemandIncentive().doubleValue();
+			controlledDemandIncentive[i] = new Double(cdi);
+		}
 	}
 }
