@@ -30,7 +30,7 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	public static final int HECO_ALLOWED_VIOLATIONS = -6;
 	public static final int HECO_RESTORE_DURATION = -7;
 	public static final int HECO_RATE_DEMAND_CHARGE = -8;
-	public static final int HECO_RATE_PENALTY_CHARGE = -9;	//FAKE, DELETE
+//	public static final int HECO_RATE_PENALTY_CHARGE = -9;	//FAKE, DELETE
 	 
 	public static final String HECO_CDI_RATE_STRING = "CDI Rate";
 	public static final String HECO_ERI_RATE_STRING = "ERI Rate";
@@ -40,7 +40,7 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	public static final String HECO_ALLOWED_VIOLATIONS_STRING = "Allowed Violations";
 	public static final String HECO_RESTORE_DURATION_STRING = "Restore Duration";
 	public static final String HECO_RATE_DEMAND_CHARGE_STRING = "Demand Charge";
-	public static final String HECO_RATE_PENALTY_CHARGE_STRING = "Penalty Fee";	//FAKE, DELETE
+//	public static final String HECO_RATE_PENALTY_CHARGE_STRING = "Penalty Fee";	//FAKE, DELETE
 
 
 	public static final String SETTER_COLUMNS[] = 
