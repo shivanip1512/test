@@ -8,8 +8,10 @@ package com.cannontech.analysis.data.lm;
 
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
@@ -70,7 +72,7 @@ public class LMEventCustomer
 	 */
 	private Integer getDeviationPeriods()
 	{
-		if( deviationPeriods != null)
+		if( deviationPeriods == null)
 		{
 			int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
 			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ALLOWED_VIOLATIONS_STRING);
@@ -88,7 +90,7 @@ public class LMEventCustomer
 	 */
 	private Double getERIRate()
 	{
-		if( eriRate != null)
+		if( eriRate == null)
 		{
 			int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
 			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ERI_RATE_STRING);
@@ -167,7 +169,12 @@ public class LMEventCustomer
 			}
 			
 			if (eriCredit == null)	//we were unsuccessful in loading
+			{
 				eriCredit = new Double(0);
+				CTILogger.info("ERICredit defaulted to 0: Customer:" + getCustomerID().intValue() + 
+								" NumViolations:" + getNumIntervalViolations().toString() + 
+								" DevPeriods:" + getDeviationPeriods().toString() + " CurtailLoad:"+(getCustCurtailLoad()==null?"null":getCustCurtailLoad().toString()));
+			}
 		}
 		return eriCredit;
 	}
@@ -183,10 +190,25 @@ public class LMEventCustomer
 		{
 			if( getMaxKW().doubleValue() > 0)
 			{
-				excessFirmServiceLevelCharge = new Double( -(getMaxKW().doubleValue()) * 2d * 8.22d);
+				int ecID = CustomerFuncs.getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
+				Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+				double demandCharge = 0;
+				LiteCustomer liteCust = CustomerFuncs.getLiteCustomer(getCustomerID().intValue());
+				for (int i = 0; i < configs.size(); i++)
+				{
+					LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
+					if(lsc.getRefEntryID() == liteCust.getRateScheduleID())
+						demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
+				}
+							
+				excessFirmServiceLevelCharge = new Double( -(getMaxKW().doubleValue()) * 2d * demandCharge);
 			}
 			else
+			{
 				excessFirmServiceLevelCharge = new Double(0);
+				CTILogger.info("EFSL Charge defaulted to 0: Customer:" + getCustomerID().intValue() + 
+								" MaxKW:" + getMaxKW().toString() + " DemandLevel:"+(getCustDemandLevel()==null?"null":getCustDemandLevel().toString()));
+			}
 		}
 		return excessFirmServiceLevelCharge;
 	}
