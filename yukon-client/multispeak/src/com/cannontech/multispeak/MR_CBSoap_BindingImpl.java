@@ -104,6 +104,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 				meterID = ldmn.getMeterNumber();
 									
 			Meter m = new Meter(meterID, (lPao == null ? "none" : String.valueOf(lPao.getAddress())), "meter", "Cannon", null, MultispeakFuncs.AMR_TYPE, null, null);
+			m.setObjectID(meterID);
 			meters[indexCount++] = m;
 		}
 		if( endIndex != allMeters.size())
