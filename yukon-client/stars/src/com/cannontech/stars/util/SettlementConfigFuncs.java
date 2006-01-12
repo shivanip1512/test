@@ -159,8 +159,8 @@ public final class SettlementConfigFuncs {
 	public static boolean isEditableConfig(int configID, int entryID)
 	{
 		//YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO configs
-		if( configID == SettlementConfig.HECO_RATE_DEMAND_CHARGE ||
-			configID == SettlementConfig.HECO_RATE_PENALTY_CHARGE)
+		if( configID == SettlementConfig.HECO_RATE_DEMAND_CHARGE)
+//			|| configID == SettlementConfig.HECO_RATE_PENALTY_CHARGE)
 			return false;
 
 		if( configID >= 0)
@@ -196,7 +196,7 @@ public final class SettlementConfigFuncs {
 			if( yukDefID == YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
 			{
 				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_DEMAND_CHARGE)));
-				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_PENALTY_CHARGE)));
+//				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_PENALTY_CHARGE)));
 			}
 		}
 		return rateConfigs;
@@ -347,6 +347,24 @@ public final class SettlementConfigFuncs {
 		return null;
 	}
 	
+	public static Vector getLiteSettlementConfigs( int energyCompanyID, int yukonDefID, String fieldName)
+	{
+		Vector settleConfigs = new Vector();
+		
+		LiteStarsEnergyCompany lsec = new LiteStarsEnergyCompany(energyCompanyID);
+//			int entryID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
+		int entryID = lsec.getYukonListEntry(yukonDefID).getEntryID();	//2260
+		Vector settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);
+		for (int i = 0; i < settlementConfigs.size(); i++)
+		{
+			LiteSettlementConfig lsc = (LiteSettlementConfig)settlementConfigs.get(i);
+			if (lsc.getFieldName().equals(fieldName))
+			{
+				settleConfigs.add(lsc);
+			}
+		}
+		return settleConfigs;
+	}
 	public static int getConfigValue(int ecID, int yukonDefID, String fieldName)
 	{
 		LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, 
