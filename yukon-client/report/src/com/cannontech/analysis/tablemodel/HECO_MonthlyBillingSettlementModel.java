@@ -41,7 +41,7 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 	public static final int ACCOUNT_NUMBER_DATA = 2;
 	public static final int DSM_APPLICATION_NUMBER_DATA = 3;
 	public static final int RATE_SCHEDULE_DATA = 4;
-	public static final int CIDLC_DEMAND_CHARNGE_DATA = 5;
+	public static final int CIDLC_DEMAND_CHARGE_DATA = 5;
 	public static final int FIRM_SERVICE_LEVEL_DATA = 6;
 	public static final int CONTRACTED_INTERRUPTIBLE_LOAD_DATA = 7;
 	public static final int MAX_MONTHLY_MEASURED_DEMAND_DATA = 8;
@@ -62,7 +62,7 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 	public static final String ACCOUNT_NUMBER_STRING = "Account Number";
 	public static final String DSM_APPLICATION_NUMBER_STRING = "DSM Application Number";
 	public static final String RATE_SCHEDULE_STRING = "Rate Schedule";
-	public static final String CIDLC_DEMAND_CHARNGE_STRING = "CIDLC Demand Charge";
+	public static final String CIDLC_DEMAND_CHARGE_STRING = "CIDLC Demand Charge";
 	public static final String FIRM_SERVICE_LEVEL_STRING = "Firm Service Level";
 	public static final String CONTRACTED_INTERRUPTIBLE_LOAD_STRING = "Contracted Interruptible Load";
 	public static final String MAX_MONTHLY_MEASURED_DEMAND_STRING = "Max Monthly Measured Demand";
@@ -83,7 +83,7 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 		ACCOUNT_NUMBER_STRING,
 		DSM_APPLICATION_NUMBER_STRING,
 		RATE_SCHEDULE_STRING,
-		CIDLC_DEMAND_CHARNGE_STRING,
+		CIDLC_DEMAND_CHARGE_STRING,
 		FIRM_SERVICE_LEVEL_STRING,
 		CONTRACTED_INTERRUPTIBLE_LOAD_STRING,
 		MAX_MONTHLY_MEASURED_DEMAND_STRING,
@@ -149,10 +149,28 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 			
 			if( columnIndex == MONTHLY_TOTALS_COLUMN)
 			{
-				if( rowIndex <= MAX_MONTHLY_MEASURED_DEMAND_DATA)
-					return "";
-				else
-					return "Tot";
+				switch(rowIndex)
+				{
+					case CONTROLLED_DEMAND_INCENTIVE_DATA:
+						return decimalFormat.format(getControlledDemandIncentiveTotal());
+					case ENERGY_REDUCTION_INCENTIVE_DATA:
+						return decimalFormat.format(getERIIncentiveAmountsTotal());
+					case TOTAL_CIDLC_INCENTIVE_DATA:
+						return decimalFormat.format(getAllTotalCIDLCIncentive());
+							
+					case EFSL_DISPATCHED_DATA:
+						return decimalFormat.format(getEfslDispatchedTotal());
+					case EFSL_EMERGENCY_DATA:
+						return decimalFormat.format(getEfslEmergencyTotal());
+					case EFSL_UNDERFREQUENCY_DATA:
+						return decimalFormat.format(getEfslUnderfrequecyTotal());
+					case EFSL_TOTAL_CHARGE_DATA:
+						return decimalFormat.format( getAllTotalEFSLCharges());
+					case TOTAL_CIDLC_CREDITS_DEBITS_DATA:
+						return decimalFormat.format( getAllTotalCIDLCredits());
+					default:
+						return "";
+				}
 			}
 
 			for(int i = 0; i < getCustomerIDS().length; i++ )
@@ -182,11 +200,8 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 							return settleCust.getCICustomerBase().getCustomer().getAltTrackingNumber();
 						case RATE_SCHEDULE_DATA:
 							return YukonListFuncs.getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getEntryText();
-						case CIDLC_DEMAND_CHARNGE_DATA:
-						{
-							int rateID = YukonListFuncs.getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getYukonDefID();
-							SettlementConfigFuncs.getRateScheduleConfigs(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, rateID);
-						}
+						case CIDLC_DEMAND_CHARGE_DATA:
+							return decimalFormat.format(settleCust.getCIDLCDemandCharge());
 						case FIRM_SERVICE_LEVEL_DATA:
 							return decimalFormat.format(settleCust.getDemandLevel());
 						case CONTRACTED_INTERRUPTIBLE_LOAD_DATA:
@@ -200,7 +215,7 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 						case ENERGY_REDUCTION_INCENTIVE_DATA:
 							return decimalFormat.format(getERIIncentiveAmounts()[i]);
 						case TOTAL_CIDLC_INCENTIVE_DATA:
-							return decimalFormat.format(new Double(settleCust.getControlledDemandIncentive().doubleValue() + getERIIncentiveAmounts()[i].doubleValue()));
+							return decimalFormat.format(getTotalCIDLCIncentive(i));
 							
 						case EFSL_DISPATCHED_DATA:
 							return decimalFormat.format(getEfslDispatchedCharges()[i]);
@@ -209,17 +224,9 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 						case EFSL_UNDERFREQUENCY_DATA:
 							return decimalFormat.format(getEfslUnderfrequecyCharges()[i]);
 						case EFSL_TOTAL_CHARGE_DATA:
-							return decimalFormat.format( new Double(
-															getEfslDispatchedCharges()[i].doubleValue() + 
-															getEfslEmergencyCharges()[i].doubleValue() + 
-															getEfslUnderfrequecyCharges()[i].doubleValue()));
+							return decimalFormat.format( getTotalEFSLCharges(i));
 						case TOTAL_CIDLC_CREDITS_DEBITS_DATA:
-						return decimalFormat.format( new Double(
-														getEfslDispatchedCharges()[i].doubleValue() + 
-														getEfslEmergencyCharges()[i].doubleValue() + 
-														getEfslUnderfrequecyCharges()[i].doubleValue() +
-														settleCust.getControlledDemandIncentive().doubleValue() + 
-														getERIIncentiveAmounts()[i].doubleValue()));
+						return decimalFormat.format( getTotalCIDLCredits(i));
 					}
 				}
 			}
@@ -294,5 +301,13 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 		{
 			getData().add(new Integer( i));
 		}
-	}	
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getTitleString()
+	 */
+	public String getTitleString()
+	{
+		return title;
+	}
 }
