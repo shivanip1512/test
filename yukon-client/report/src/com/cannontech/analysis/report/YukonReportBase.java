@@ -70,7 +70,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
 	
 	protected int pageOrientation = PageFormat.LANDSCAPE;
-	private SimplePageDefinition pageDefinition = null;
+	protected SimplePageDefinition pageDefinition = null;
 
 	public void showPreviewFrame(ReportModelBase model_) throws Exception
 	{
