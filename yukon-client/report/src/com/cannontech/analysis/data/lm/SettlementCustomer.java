@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PointChangeCache;
@@ -21,7 +22,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -318,5 +322,23 @@ public class SettlementCustomer
 																			SettlementConfig.HECO_CDI_RATE_STRING).getFieldValue());
 		}
 		return cdiRate;
+	}
+	/**
+	 * Returns the rate schedule demand charge for customerID.
+	 * @return
+	 */
+	public Double getCIDLCDemandCharge()
+	{
+		Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(getCICustomerBase().getEnergyCompany().getEnergyCompanyID().intValue(),
+																		YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO,
+																		SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+		double demandCharge = 0;
+		for (int i = 0; i < configs.size(); i++)
+		{
+			LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
+			if(lsc.getRefEntryID() == getCICustomerBase().getCustomer().getRateScheduleID().intValue())
+				demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
+		}
+		return new Double(demandCharge);
 	}
 }
