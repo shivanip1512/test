@@ -175,7 +175,7 @@ public final class ModelFactory
 		"Holiday Schedule",
 		"Meter Number",
 		"Collection Group",
-		"Test Collection Group",
+		"Alternate Group",
 /*27*/	"Cap Feeders",
 		"MCT Broadcast",
 		"Login",

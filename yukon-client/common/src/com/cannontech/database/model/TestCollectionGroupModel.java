@@ -13,7 +13,7 @@ public class TestCollectionGroupModel extends DBTreeModel
  * @param root javax.swing.tree.TreeNode
  */
 public TestCollectionGroupModel() {
-	super( new DBTreeNode("Test Collection Group") );
+	super( new DBTreeNode("Alternate Group") );
 }
 /**
  * Insert the method's description here.
