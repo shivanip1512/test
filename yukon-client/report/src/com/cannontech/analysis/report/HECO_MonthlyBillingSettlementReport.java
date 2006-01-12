@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -12,11 +13,13 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.JFreeReportBoot;
+import org.jfree.report.SimplePageDefinition;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.ItemSumFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
@@ -154,7 +157,7 @@ public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-			if( i > 1)
+			if( i > 0)
 				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 			if( i == HECO_MonthlyBillingSettlementModel.CONTROLLED_DEMAND_INCENTIVE_DATA)
 				factory.setLineHeight(new Float(30));
@@ -162,19 +165,30 @@ public class HECO_MonthlyBillingSettlementReport extends YukonReportBase
 		}
 		return items;
 	}
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.report.YukonReportBase#getPageDefinition()
 	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
+	public SimplePageDefinition getPageDefinition()
 	{
-		super.getExpressions();
-		
-//		BoldFormatFunction boldItem = new BoldFormatFunction(HECO_LMEventSummaryModel.START_TIME_COLUMN);
-//		boldItem.setName("boldItem");
-//		boldItem.setElement(getModel().getColumnName(HECO_LMEventSummaryModel.START_TIME_COLUMN) + ReportFactory.NAME_ELEMENT);
-//		expressions.add(boldItem);
-		return expressions;
-	}	
+		if( pageDefinition == null)
+		{
+			java.awt.print.Paper reportPaper = new java.awt.print.Paper();
+			//Adjust the imagable width in the case of the columns being too large for one page.
+			int totalWidth = 0;
+			for (int i = 0; i < getModel().getColumnProperties().length; i++)
+			{
+				totalWidth += getModel().getColumnProperties(i).getWidth();
+			}
+
+			int numPagesWide = (totalWidth/732) + 1;
+			
+			reportPaper.setImageableArea(30, 30, 552, 732);	//8.5 x 11 -> 612w 792h
+			PageFormat pageFormat = new java.awt.print.PageFormat();
+			pageFormat.setOrientation(getPageOrientation());
+			pageFormat.setPaper(reportPaper);
+			pageDefinition = new SimplePageDefinition(pageFormat, numPagesWide, 1);
+		}
+		return pageDefinition;
+	}
 }
