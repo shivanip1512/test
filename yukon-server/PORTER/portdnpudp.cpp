@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 19:58:28 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/01/12 22:21:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -465,7 +465,8 @@ bool getPackets( int wait )
                         boost::shared_ptr<CtiDeviceBase> dev_base;
 
                         //  we didn't have this device in the mapping table, so look it up
-                        if( dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU) )
+                        if( (dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU)) ||
+                            (dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPECBC7020)) )
                         {
                             CtiDeviceSingleSPtr dev_single = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
 
