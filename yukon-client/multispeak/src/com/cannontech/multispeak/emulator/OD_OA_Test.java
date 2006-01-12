@@ -30,7 +30,7 @@ import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 public class OD_OA_Test {
 
 	private OD_OASoap_PortType port = null;
-	private String endpointURL = "http://localhost:8080/head/services/OD_OASoap";
+	private String endpointURL = "http://localhost:8080/3_1/services/OD_OASoap";
 	private SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 	
 	public static void main(String [] args)
@@ -38,8 +38,23 @@ public class OD_OA_Test {
 		OD_OA_Test test = new OD_OA_Test();
 
 		try {
-//			test.endpointURL = "http://localhost:8080/head/services/OD_OASoap";
-//			test.endpointURL = "http://localhost:90/head/services/OD_OASoap";
+			if( args != null && args.length > 0)
+			{
+				test.endpointURL = args[0]; 
+			}
+			String[] mn = new String[3];
+			mn[0] = "101015611";
+			mn[1] = "101015610";
+			mn[2] = "1010156107";
+			if( args.length > 2)	// comma separated list of meter numbers
+			{
+				String m = args[2];
+				mn  = m.split(",");
+			}
+			
+				
+//			test.endpointURL = "http://localhost:8080/3_1/services/OD_OASoap";
+//			test.endpointURL = "http://localhost:90/3_1/services/OD_OASoap";
 //			test.endpointURL = "http://65.201.119.107:80/soap/OA_ODSoap";
 			
 			OD_OA service = new OD_OALocator();
@@ -48,9 +63,19 @@ public class OD_OA_Test {
 			test.port = service.getOD_OASoap();
 			((OD_OASoap_BindingStub)test.port).setHeader(test.header);
 
-//			test.getMethodsTest();
-//			test.pingURLTest();
-			test.initiateOutageDetectionTest();			
+			if( args.length > 1)
+			{
+				String method = args[1];
+				if( method.toLowerCase().startsWith("i"))
+					test.initiateOutageDetectionTest(mn);
+				else if( method.toLowerCase().startsWith("m"))
+					test.getMethodsTest();
+				else
+					test.pingURLTest();
+			}
+			else	//if all else fails, ping!
+				test.pingURLTest();
+
 						
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -68,14 +93,10 @@ public class OD_OA_Test {
 		print_ArrayOfErrorObjects(objects);
 	}
 	
-	public void initiateOutageDetectionTest() throws RemoteException
+	public void initiateOutageDetectionTest(String [] meters) throws RemoteException
 	{
-		String[] mn = new String[3];
-		mn[0] = "101015611";
-		mn[1] = "101015610";
-		mn[2] = "1010156107";
 		ArrayOfString meterNums = new ArrayOfString();
-		meterNums.setString(mn);
+		meterNums.setString(meters);
 		
 		ArrayOfErrorObject objects = port.initiateOutageDetectionEventRequest(meterNums, new GregorianCalendar());
 		print_ArrayOfErrorObjects(objects);
