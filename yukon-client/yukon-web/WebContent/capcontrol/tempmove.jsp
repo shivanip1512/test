@@ -22,7 +22,7 @@
 	}
 	
 %>
-
+<div class="pageBlank">
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
  <form id="frmCapBankMove" action="/servlet/CBCServlet" method="post">
 	<input type="hidden" name="redirectURL" value="/capcontrol/feeders.jsp">
@@ -112,5 +112,6 @@ for( int i = 0; i < allSubs.length; i++ )
     </cti:titledContainer>
   
 </form>
+</div>
 
 </cti:standardPage>
