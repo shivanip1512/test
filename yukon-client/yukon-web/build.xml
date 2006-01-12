@@ -5,6 +5,8 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 <project name="yukon web" default="all">
 
 	<property file="../build/build.properties" />
+	<property name="yukon.web.src_build" value="build_src"/>
+	<property name="yukon.web.jsp_build" value="build_jsp_std"/>
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
 
@@ -126,16 +128,44 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 		<echo message="Implementation class created." />
 	</target>
 
+	<target name="build" depends="build_src, build_jsp_std"/>
+
+	<target name="build_jsp_std">
+        <mkdir dir="${yukon.web.jsp_build}"/>
+        <copy todir="${yukon.web.jsp_build}">
+            <fileset dir="${yukon-web}/WebContent">
+                <exclude name="build/**" />
+                <exclude name="jspbuild/**" />
+                <exclude name="**/CVS" />
+                <exclude name="WEB-INF/web.xml" />
+
+                <exclude name="**/.*" />
+                <exclude name="**/build.xml" />
+            </fileset>
+        </copy>
+
+		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
+        <copy todir="${yukon.web.jsp_build}/WEB-INF/lib">
+           <fileset dir="${yukon.lib}" >
+              <include name="**/*.jar" />
+              <exclude name="j2ee.jar"/>
+           </fileset>
+        </copy>
+
+	    <war destfile="${yukon.lib}/yukon.war" basedir="${yukon.web.jsp_build}"
+	        webxml="WebContent/WEB-INF/web.xml" duplicate="preserve">
+	    </war>
+
+
+	</target>
 
 
 
+	<target name="build_src">
 
+		<mkdir dir="${yukon.web.src_build}" />
 
-	<target name="build">
-
-		<mkdir dir="build" />
-
-		<javac srcdir="src" destdir="build" target="${yukon.javac.target}" 
+		<javac srcdir="src" destdir="${yukon.web.src_build}" target="${yukon.javac.target}" 
 	 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">
 			<classpath>
 				<fileset dir="${yukon.lib}">
@@ -147,7 +177,7 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 			</classpath>
 		</javac>
 
-		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="build/" />
+		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="${yukon.web.src_build}" />
 	</target>
 
 	<target name="install" depends="build">
@@ -193,22 +223,24 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 	<target name="clean">
 		<delete file="${yukon.lib}/yukon.war" />
 		<delete dir="build" />
+		<delete dir="${yukon.web.jsp_build}"/>
+		<delete dir="${yukon.web.src_build}"/>
 
-		<delete includeemptydirs="true">
+		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${yukon-web}/WebContent_temp">
 				<include name="**/*.java" />
 			</fileset>
 		</delete>
-		<delete>
+		<delete quiet="true">
 			<fileset dir="${yukon-web}/WebContent_build">
 				<include name="**/*.java" />
 			</fileset>
 		</delete>
 		<delete dir="work" />
-		<delete>
+		<delete quiet="true">
 			<fileset dir="WebContent_temp/WEB-INF/webxml/" />
 		</delete>
-		<delete file="WebContent_temp/WEB-INF/generated_web.xml" />
+		<delete file="WebContent_temp/WEB-INF/generated_web.xml"/>
 	</target>
 
 </project>
