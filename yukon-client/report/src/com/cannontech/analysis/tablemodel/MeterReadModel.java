@@ -562,7 +562,7 @@ public class MeterReadModel extends ReportModelBase
 	{
 	    String title = "";
 	    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-			title += "Succesful ";
+			title += "Successful ";
 		else if( getMeterReadType() ==  MISSED_METER_READ_TYPE)
     	    title += "Missed ";
 	    	    
