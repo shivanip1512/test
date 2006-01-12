@@ -28,7 +28,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 {
 	protected final int NUMBER_COLUMNS = 21;	// This is the number of STATIC Colums.  Customers are columns, but are added dynamically
 	
-	private static String title = "Monthly Billing Settlement Report";
+	private static String title = "Monthly Customer Billing Settlement Report";
 			
 	//ROW indexes (this model displays rows instead of columns)	
 	public static final int CUSTOMER_NAME_DATA = 0;
@@ -40,7 +40,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 	public static final int MAX_MONTHLY_MEASURED_DEMAND_DATA = 5;	
 	public static final int FIRM_SERVICE_LEVEL_DATA = 6;
 	public static final int CONTRACTED_INTERRUPTIBLE_LOAD_DATA = 7;
-	public static final int CIDLC_DEMAND_CHARNGE_DATA = 8;
+	public static final int CIDLC_DEMAND_CHARGE_DATA = 8;
 	
 	
 	public static final int CONTROLLED_DEMAND_INCENTIVE_DATA = 9;
@@ -68,7 +68,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 	public static final String MAX_MONTHLY_MEASURED_DEMAND_STRING = "Max Monthly Measured Demand";
 	public static final String FIRM_SERVICE_LEVEL_STRING = "Firm Service Level";
 	public static final String CONTRACTED_INTERRUPTIBLE_LOAD_STRING = "Contracted Interruptible Load";
-	public static final String CIDLC_DEMAND_CHARNGE_STRING = "CIDLC Demand Charge";
+	public static final String CIDLC_DEMAND_CHARGE_STRING = "CIDLC Demand Charge";
 	
 	public static final String CONTROLLED_DEMAND_INCENTIVE_STRING = "Controlled Demand Incentive Amount";
 	public static final String ENERGY_REDUCTION_INCENTIVE_STRING = "Energy Reduction Incentive Amount";
@@ -161,11 +161,8 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 					return settleCust.getCICustomerBase().getCustomer().getAltTrackingNumber();
 				case RATE_SCHEDULE_DATA:
 					return YukonListFuncs.getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getEntryText();
-				case CIDLC_DEMAND_CHARNGE_DATA:
-				{
-					int rateID = YukonListFuncs.getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getYukonDefID();
-					SettlementConfigFuncs.getRateScheduleConfigs(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, rateID);
-				}
+				case CIDLC_DEMAND_CHARGE_DATA:
+					return decimalFormat.format(settleCust.getCIDLCDemandCharge());
 				case FIRM_SERVICE_LEVEL_DATA:
 					return decimalFormat.format(settleCust.getDemandLevel());
 				case CONTRACTED_INTERRUPTIBLE_LOAD_DATA:
@@ -229,7 +226,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 				MAX_MONTHLY_MEASURED_DEMAND_STRING,
 				FIRM_SERVICE_LEVEL_STRING,
 				CONTRACTED_INTERRUPTIBLE_LOAD_STRING,
-				CIDLC_DEMAND_CHARNGE_STRING,
+				CIDLC_DEMAND_CHARGE_STRING,
 				CONTROLLED_DEMAND_INCENTIVE_STRING,
 				ENERGY_REDUCTION_INCENTIVE_STRING,
 				EFSL_TOTAL_CHARGE_STRING,
@@ -358,4 +355,12 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 		totalDispatchedHours = new Double(totalDisp);
 		totalUFHours = new Double(totalUF);
 	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getTitleString()
+	 */
+	public String getTitleString()
+	{
+		return title;
+	}	
+	
 }
