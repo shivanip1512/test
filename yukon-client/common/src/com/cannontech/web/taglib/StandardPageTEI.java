@@ -16,19 +16,11 @@ public class StandardPageTEI extends TagExtraInfo {
             htmlGood =  ArrayUtils.contains(StandardPageTag.ALLOWED_HTML_LEVELS, htmlLevel);
         }
         
-        boolean skinGood = false;
-        String skin = tagData.getAttributeString("skin");
-        if (skin == null) {
-            skinGood = true;
-        } else {
-            skinGood = ArrayUtils.contains(StandardPageTag.ALLOWED_SKIN_VALUES, skin);
-        }
-        
         boolean moduleGood = false;
         String module = tagData.getAttributeString("module");
         moduleGood = !StringUtils.isEmpty(module);
             
-        return htmlGood && skinGood && moduleGood;
+        return htmlGood && moduleGood;
     }
 
 }

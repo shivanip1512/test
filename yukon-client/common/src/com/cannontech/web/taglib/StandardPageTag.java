@@ -34,11 +34,6 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String HTML_STRICT = "strict";
     public static final String[] ALLOWED_HTML_LEVELS = {HTML_QUIRKS, HTML_TRANSITIONAL, HTML_STRICT};
     
-    public static final String SKIN_STANDARD = "standard";
-    public static final String SKIN_PURPLE = "purple";
-    public static final String SKIN_INNER = "inner";
-    public static final String[] ALLOWED_SKIN_VALUES     = {SKIN_STANDARD, SKIN_PURPLE, SKIN_INNER};
-    
     private String title = "";
     private String htmlLevel = HTML_TRANSITIONAL;
     private List cssFiles = new ArrayList();
