@@ -99,7 +99,18 @@ public final class LiteComparators
 		{
 			int thisVal = ((LiteYukonPAObject)o1).getPortID();
 			int anotherVal = ((LiteYukonPAObject)o2).getPortID();
-			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+            
+            
+            if( thisVal != anotherVal )
+                return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+                
+            //if the types are equal, we need to sort by Name
+            String thisName = ((LiteYukonPAObject)o1).getPaoName();
+            String anotherName = ((LiteYukonPAObject)o2).getPaoName();
+                
+            return( thisName.compareToIgnoreCase(anotherName) );            
+            //return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));            
+            
 		}
 		public boolean equals(Object obj)
 		{
