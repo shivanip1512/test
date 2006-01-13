@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/01/03 20:23:36 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/01/13 17:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -776,7 +776,7 @@ void CtiStatistics::computeDailyInterval(pair<CtiTime, CtiTime> &myinterval)
     CtiDate todayDate;
     CtiDate tomorrow = todayDate;
 
-    tomorrow++;
+    ++tomorrow;
 
     CtiTime startdt(todayDate);
     CtiTime stopdt(tomorrow);
@@ -790,7 +790,7 @@ void CtiStatistics::computeYesterdayInterval(pair<CtiTime, CtiTime> &myinterval)
     CtiDate todayDate;
     CtiDate yesterday(todayDate);
 
-    yesterday++;
+    ++yesterday;
 
     CtiTime startdt(yesterday);
     CtiTime stopdt(todayDate);
