@@ -1,6 +1,8 @@
 package com.cannontech.web.editor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +15,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
+import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
@@ -54,6 +58,7 @@ import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.point.*;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.*;
+import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author ryan
@@ -95,12 +100,47 @@ public class CapControlForm extends DBEditorForm
 	private SelectItem[] cbcStrategies = null;
 
 
+	//variables that hold sub bus info
+	protected ArrayList subBusList = null;
+	
+	public SubBus selectedSubBus = null;
+	
 	/**
 	 * default constructor
 	 */
 	public CapControlForm()
 	{
 		super();
+		
+		subBusList = new ArrayList(100);
+		//get the sub bus list from application ctxt
+		CapControlCache capControlCache = (CapControlCache) FacesContext
+				.getCurrentInstance().getExternalContext().getApplicationMap()
+				.get("capControlCache");
+
+		
+		for (int i = 0; i < capControlCache.getAreaNames().size(); i++) {
+			String areaStr = (String) capControlCache.getAreaNames().get(i);
+			SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
+			for (int j = 0; j < areaBuses.length; j++) {
+				SubBus subBus = areaBuses[j];
+				int idx = i*j + j;
+				//subBusList.add (new SelectItem
+				//(new Integer(idx), subBus.getCcName()));	
+				//System.out.println("Sub Bus Name - " + subBus.getCcName());
+				SelectItem[] siarr = new SelectItem[1];
+				siarr[0] =  
+					new SelectItem
+				(subBus.getCcId(), subBus.getCcName());
+				//SelectItemGroup sig = new SelectItemGroup(subBus.getCcName(), null, true, siarr);
+				subBusList.add(siarr[0]);
+				//just for testing purposes
+				if (i== 0 && j==0)
+					setSelectedSubBus(subBus);
+			}
+
+		}
+		
 	}
 
 	/**
@@ -304,7 +344,7 @@ public class CapControlForm extends DBEditorForm
 		if( unusedCCPAOs == null )
 			unusedCCPAOs = PAOFuncs.getAllUnusedCCPAOs(
 					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
-					
+		
 		return unusedCCPAOs;
 	}
 
@@ -582,6 +622,7 @@ public class CapControlForm extends DBEditorForm
 		getVisibleTabs().put( "CBCController", new Boolean(false) );
 		getVisibleTabs().put( "GeneralSchedule", new Boolean(false) );
 		getVisibleTabs().put( "CBCSchedule", new Boolean(false) );
+	
 
 
 		switch( paoType ) {
@@ -1423,6 +1464,20 @@ public class CapControlForm extends DBEditorForm
 
 
 
+	
+	public Collection getSubBusList(){
+		
+		return subBusList;
+	}
+	
+	public SubBus getSelectedSubBus() {
+		
+		return selectedSubBus;
+	}
+
+	public void setSelectedSubBus(SubBus selectedSubBus) {
+		this.selectedSubBus = selectedSubBus;
+	}
 
 
 }
