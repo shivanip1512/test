@@ -39,12 +39,13 @@ class ROUTE;
 /* Port and Remote Btrieve create structures */
 #define PORTNUMKEYS 3
 #define REMOTENUMKEYS 6
- 
+
 #define SANITY_RATE              300    //Number from van goh that slows down reporting rate for threads, note this can be tweaked or used differently
 #define SANITY_RATE_MED_SLEEPERS  75    //for medium rate sleepers!
 #define SANITY_RATE_LONG_SLEEPERS 10    //this is for objects that can sleep for a very long time
 /* Data structures used to access Btrieve records */
-typedef struct _PORT {
+struct PORT
+{
     USHORT Port;
     CHAR Description[STANDNAMLEN];
     CHAR PortName[STANDNAMLEN];
@@ -56,9 +57,10 @@ typedef struct _PORT {
     USHORT DCDSense;
     USHORT Status;
     STATS Stats;           /* Start of dynamic portion of record */
-} PORT;
+};
 
-class REMOTE {
+struct REMOTE
+{
     CHAR RemoteName[STANDNAMLEN];
     USHORT Port;
     USHORT Remote;
@@ -72,11 +74,12 @@ class REMOTE {
 
 
 /* Structure used for performance update */
-typedef struct _REMOTEPERF {
+struct REMOTEPERF
+{
     USHORT Port;
     USHORT Remote;
     USHORT Error;
-} REMOTEPERF;
+};
 
 
 /* Definitions used inside porter for flags in PortFlags */
@@ -258,7 +261,8 @@ typedef struct _REMOTEPERF {
 #define TCP_DUALWELCO   4
 
 
-typedef struct _QUEENT {
+struct QUEENT
+{
     USHORT InUse;
     ULONG TimeSent;
     CTINEXUS *ReturnNexus;
@@ -271,15 +275,15 @@ typedef struct _QUEENT {
     LONG TargetID;
     ULONG Address;
 
-    PIL_ECHO Request;         //
-
-} QUEENT;
+    PIL_ECHO Request;
+};
 
 /* structure used to keep track of sequencing */
-typedef struct _REMOTESEQUENCE {
+struct REMOTESEQUENCE
+{
     USHORT Reply;
     USHORT Request;
-} REMOTESEQUENCE;
+};
 
 /* Status definitions */
 #define POWERFAILED     0x0001
@@ -298,7 +302,8 @@ typedef struct _REMOTESEQUENCE {
 
 /* This information chokes the compiler and isn't needed to compile Windows apps */
 /* Information on CCU 711's*/
-typedef struct _CCUINFO {
+struct  CCUINFO
+{
     HANDLE           StatusSem;
     HCTIQUEUE        QueueHandle;
     HCTIQUEUE        ActinQueueHandle;
@@ -322,21 +327,23 @@ typedef struct _CCUINFO {
     ULONG            LCUFlags;
     OUTMESS          *ControlOutMessage;
     STATS            Stats;
-} CCUINFO;
+};
 
 typedef CCUINFO *PCCUINFO;
 
-typedef struct _PORTSTATS {
+struct PORTSTATS
+{
         STATS Stats;
-} PORTSTATS;
+};
 
 typedef PORTSTATS *PPORTSTATS;
 
-typedef struct _REMSHAREDSTRUCT {
+struct REMSHAREDSTRUCT
+{
         ULONG WaitSem;
         OUTMESS *OutMessage;
         CTINEXUS *MyNexusHandle;
-} REMSHAREDSTRUCT;
+};
 
 #ifdef OLD_CODE
 
