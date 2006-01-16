@@ -827,6 +827,14 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 }
             }
         }
+        else if( !stringCompareIgnoreCase(functionName,"Binary Encode") )
+        {
+            double newValue = _calcpoint->pop( );
+            double oldResult  = _calcpoint->pop( );
+
+            oldResult = oldResult*2;
+            retVal = oldResult + newValue;
+        }
         else
         {
             // We do not have a function.
