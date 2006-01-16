@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/22 14:33:47 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/01/16 20:29:10 $
 *
 * HISTORY      :
 * $Log: regression.cpp,v $
+* Revision 1.4  2006/01/16 20:29:10  mfisher
+* Changed RWTime to CtiTime
+*
 * Revision 1.3  2005/12/22 14:33:47  cplender
 * Made a change to prevent pop before data was in the deque
 *
@@ -138,7 +141,7 @@ double CtiRegression::regression( double xprojection )
             if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << "Forecast: for " << RWTime((ULONG)xprojection) << " = offset " << xoffset << ", " << y << endl;
+                dout << endl << "Forecast: for " << CtiTime((ULONG)xprojection) << " = offset " << xoffset << ", " << y << endl;
                 dout << endl;
             }
         }
