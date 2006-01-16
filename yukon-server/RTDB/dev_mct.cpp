@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2005/12/30 14:51:03 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2006/01/16 20:06:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -863,6 +863,20 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 {
     INT status = NORMAL;
 
+    status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+
+    if( status )
+    {
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
     switch( InMessage->Sequence )
     {
         case Emetcon::Control_Latch:
@@ -976,62 +990,69 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
     return status;
 }
 
-//Note that the outmessage may/will be modified on exit!
+//  Note that the outmessage may/will be modified on exit!
 bool CtiDeviceMCT::recordMessageRead(OUTMESS *OutMessage)
 {
-    if((_lastReadDataPurgeTime.now().seconds()-_lastReadDataPurgeTime.seconds())>=2*60*60)//2 hour span
+    bool message_inserted = false;
+
+    if( (_lastReadDataPurgeTime.now().seconds() - _lastReadDataPurgeTime.seconds()) >= (2 * 60 * 60) )  //  2 hour span
     {
-        //Clears out every data member that is over 1 hour old, operates at most every 2 hours.
+        //  Clears out every data member that is over 1 hour old, operates at most every 2 hours.
         _lastReadDataPurgeTime = _lastReadDataPurgeTime.now();
 
-        for(MessageReadDataSet_t::iterator i = _expectedReadData.begin();i != _expectedReadData.end();)
+        MessageReadDataSet_t::iterator itr = _expectedReadData.begin();
+        while( itr != _expectedReadData.end() )
         {
-            if((_lastReadDataPurgeTime.seconds() - i->insertTime.seconds()) >= 1*60*60)
-                i = _expectedReadData.erase(i);
+            if( (_lastReadDataPurgeTime.seconds() - itr->insertTime.seconds()) >= (1 * 60 * 60) )
+            {
+                itr = _expectedReadData.erase(itr);
+            }
             else
-                i++;
+            {
+                itr++;
+            }
         }
     }
 
-    if(OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Write || OutMessage->Buffer.BSt.IO == Emetcon::IO_Write)
+    //  we only record reads
+    if( OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Read ||
+        OutMessage->Buffer.BSt.IO == Emetcon::IO_Read )
     {
-        return false;
+        MessageReadData newData;
+        newData.oldSequence = OutMessage->Sequence;
+
+        if( _expectedReadData.empty() )
+        {
+            newData.newSequence = SequenceCountBegin;
+        }
+        else
+        {
+            newData.newSequence = _lastSequenceNumber+1;
+        }
+
+        _lastSequenceNumber = newData.newSequence;
+
+        if( _lastSequenceNumber >= SequenceCountEnd )
+        {
+            //  sloppy, but it has a range of 10k, no one cares
+            _lastSequenceNumber = SequenceCountBegin;
+        }
+
+        newData.insertTime = CtiTime::now();
+        newData.ioType     = OutMessage->Buffer.BSt.IO;
+        newData.location   = OutMessage->Buffer.BSt.Function;
+        newData.length     = OutMessage->Buffer.BSt.Length;
+
+        if( _expectedReadData.insert(newData).second )
+        {
+            //  the insert was successful
+            OutMessage->Sequence = newData.newSequence;
+
+            message_inserted = true;
+        }
     }
 
-    MessageReadData newData;
-    newData.oldSequence = OutMessage->Sequence;
-
-    if(_expectedReadData.empty())
-    {
-        newData.newSequence = SequenceCountBegin;
-    }
-    else
-    {
-        newData.newSequence = _lastSequenceNumber+1;
-    }
-
-    _lastSequenceNumber = newData.newSequence;
-
-    if(_lastSequenceNumber >= SequenceCountEnd)
-    {
-        _lastSequenceNumber = SequenceCountBegin;//sloppy, but it has a range of 10k, no one cares
-    }
-
-    newData.ioType = OutMessage->Buffer.BSt.IO;
-    newData.insertTime = CtiTime::now();
-    newData.location = OutMessage->Buffer.BSt.Function;
-    newData.length = OutMessage->Buffer.BSt.Length;
-
-    MessageReadDataSet_t::_Pairib testPair =  _expectedReadData.insert(newData);
-    if(testPair.second)
-    {
-        OutMessage->Sequence = newData.newSequence;
-    }
-    else
-    {
-        return false;
-    }
-    return true;
+    return message_inserted;
 }
 
 bool CtiDeviceMCT::recordMultiMessageRead(RWTPtrSlist< OUTMESS > &outList)
@@ -2421,7 +2442,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     errRet = NULL;
                 }
             }
-            else if( getAddress() != MCT_TestAddr1 && getAddress() != MCT_TestAddr2 )
+            else if( getAddress() != MCT_TestAddress1 && getAddress() != MCT_TestAddress2 )
             {
                 found = false;
 
@@ -3956,7 +3977,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
 
-        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
         {
             ReturnMsg->setExpectMore(true);
         }
