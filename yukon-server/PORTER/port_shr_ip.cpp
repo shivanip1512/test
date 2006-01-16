@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/05 21:05:36 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/01/16 21:11:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,8 +239,8 @@ void CtiPortShareIP::inThread()
                             OutMessage->ReturnNexus = getReturnNexus();
                             OutMessage->SaveNexus = NULL;
 
-                            OutMessage->MessageFlags |= MSGFLG_PORT_SHARING;
-                            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("PORTER_PORTSHARE_EXPIRATION_TIME", 600);
+                            OutMessage->MessageFlags |= MessageFlag_PortSharing;
+                            OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt("PORTER_PORTSHARE_EXPIRATION_TIME", 600);
 
                             //  Figure out what the out length is
                             OutMessage->OutLength = Buffer[3] - 3;
