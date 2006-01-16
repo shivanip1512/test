@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:19:21 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/01/16 18:51:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -265,7 +265,7 @@ IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
-    if(!p711Info->GetStatus(INRCOLQ))
+    if(!p711Info->getStatus(INRCOLQ))
     {
         if((OutMessage = CTIDBG_new OUTMESS) == NULL)
         {
@@ -350,7 +350,7 @@ IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         }
         else
         {
-            p711Info->SetStatus(INRCOLQ);
+            p711Info->setStatus(INRCOLQ);
             p711Info->PortQueueEnts++;
             p711Info->PortQueueConts++;
         }

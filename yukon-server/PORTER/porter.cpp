@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2006/01/16 18:52:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -380,9 +380,9 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
                 }
 
                 //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
-                if(pInfo->GetStatus(INLGRPQ))
+                if(pInfo->getStatus(INLGRPQ))
                 {
-                    pInfo->ClearStatus(INLGRPQ);
+                    pInfo->clearStatus(INLGRPQ);
                 }
             }
         }
@@ -499,7 +499,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     CHAR oldfill = dout.fill('0');
                     dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                    dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                    dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->getStatus() << endl;
                     dout.fill(oldfill);
                 }
             }
@@ -1745,7 +1745,7 @@ void LoadPorterGlobals(void)
     if(!(Temp = gConfigParms.getValueAsString("PORTER_IGNORE_TCU5000_QUEUEBUSY")).empty())
     {
         std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
-        
+
         if( Temp == "true" || Temp == "yes")
         {
             gIgnoreTCU5X00QueFull = true;

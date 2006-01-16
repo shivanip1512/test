@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/12/21 22:21:11 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/01/16 18:59:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,7 +154,7 @@ static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprti
             if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
             {
                 /* See if we have one outstanding */
-                if(!(pInfo->GetStatus(INLGRPQ)))
+                if(!(pInfo->getStatus(INLGRPQ)))
                 {
                     BuildLGrpQ(Dev);
                 }
@@ -282,11 +282,11 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* check the RCONT flag in the returned message */
     if(InMessage->IDLCStat[2] & 0x10)
     {
-        pInfo->ClearStatus(INRCONT);
+        pInfo->clearStatus(INRCONT);
     }
     else
     {
-        pInfo->SetStatus(INRCONT);
+        pInfo->setStatus(INRCONT);
     }
 
 
@@ -295,9 +295,9 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* Check if we have a CTIDBG_new power fail */
     if(InMessage->IDLCStat[6] & STAT_POWER)
     {
-        if(!(pInfo->GetStatus(POWERFAILED)))
+        if(!(pInfo->getStatus(POWERFAILED)))
         {
-            pInfo->SetStatus (POWERFAILED);
+            pInfo->setStatus (POWERFAILED);
 
             _snprintf(tempstr, 99,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage->Port, InMessage->Remote);
             {
@@ -313,16 +313,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
     else
     {
-        pInfo->ClearStatus(POWERFAILED);
+        pInfo->clearStatus(POWERFAILED);
     }
 
 
     /* Check if we need to issue a time sync to this guy */
     if(InMessage->IDLCStat[7] & STAT_BADTIM)
     {
-        if(!(pInfo->GetStatus(TIMESYNCED)))
+        if(!(pInfo->getStatus(TIMESYNCED)))
         {
-            pInfo->SetStatus(TIMESYNCED);
+            pInfo->setStatus(TIMESYNCED);
             _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -372,16 +372,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
     else
     {
-        pInfo->ClearStatus (TIMESYNCED);
+        pInfo->clearStatus (TIMESYNCED);
     }
 
 
     /* Check if we need to issue a Bad Battery Message */
     if(InMessage->IDLCStat[7] & STAT_BATTRY)
     {
-        if(!(pInfo->GetStatus(LOWBATTRY)))
+        if(!(pInfo->getStatus(LOWBATTRY)))
         {
-            pInfo->SetStatus(LOWBATTRY);
+            pInfo->setStatus(LOWBATTRY);
             _snprintf(tempstr, 99,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage->Port, InMessage->Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -395,7 +395,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
     else
     {
-        pInfo->ClearStatus(LOWBATTRY);
+        pInfo->clearStatus(LOWBATTRY);
     }
 
 
@@ -420,9 +420,9 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 SendTextToLogger ("Inf", Message);
             }
         }
-        else if(!(pInfo->GetStatus(RESETTING)))
+        else if(!(pInfo->getStatus(RESETTING)))
         {
-            pInfo->SetStatus(RESETTING);
+            pInfo->setStatus(RESETTING);
             if(InMessage->IDLCStat[6] & STAT_FAULTC)
             {
                 printf ("Fault Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
@@ -486,7 +486,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             IDLCSetDelaySets(Dev);
 
             /* set the Base Status List */
-            pInfo->SetStatus(SETSLIST);
+            pInfo->setStatus(SETSLIST);
 
             IDLCSetBaseSList(Dev);
 
@@ -502,16 +502,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
     else
     {
-        pInfo->ClearStatus(RESETTING);
+        pInfo->clearStatus(RESETTING);
     }
 
 
     /* Check the various algorithm status's and correct as neccessary */
     if(IDLCAlgStat (&InMessage->IDLCStat[8], AlgStatus))
     {
-        if(!(pInfo->GetStatus(SETSLIST)))  /* Check if we are in the process of doing this */
+        if(!(pInfo->getStatus(SETSLIST)))  /* Check if we are in the process of doing this */
         {
-            pInfo->SetStatus(SETSLIST);
+            pInfo->setStatus(SETSLIST);
             /* set the Base Status List */
             IDLCSetBaseSList(Dev);
         }
@@ -519,7 +519,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     else
     {
         /* Make sure we can update list if neccessary */
-        pInfo->ClearStatus (SETSLIST);
+        pInfo->clearStatus (SETSLIST);
 
         if(AlgStatus[DEST_DLC] != ALGO_RUNNING && ccu->checkAlgorithmReset(DEST_DLC) )  /* Check the DLC algorithm status */
         {
@@ -584,9 +584,9 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* Check for persistant DLC fault */
     if(InMessage->IDLCStat[10] & STAT_DLCFLT)
     {
-        if(!(pInfo->GetStatus(DLCFAULT)))
+        if(!(pInfo->getStatus(DLCFAULT)))
         {
-            pInfo->SetStatus(DLCFAULT);
+            pInfo->setStatus(DLCFAULT);
             _snprintf(tempstr, 99,"Persistant DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -596,7 +596,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
     else
     {
-        pInfo->ClearStatus(DLCFAULT);
+        pInfo->clearStatus(DLCFAULT);
     }
 
     /* Load the CCU's interpretation of queue Info available */
@@ -659,7 +659,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 }
             }
         }
-        else if( !pInfo->GetStatus(INRCOLQ) && pInfo->NCOcts)
+        else if( !pInfo->getStatus(INRCOLQ) && pInfo->NCOcts)
         {
             // REQACK was possibly due to full CCU Queue.
             // We must send an RCOLQ to empty it out!
@@ -998,7 +998,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     }
                 }
             }
-            else if(pInfo->FreeSlots == 32 && pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
+            else if(pInfo->FreeSlots == 32 && pInfo->ReadyN == 32 && pInfo->getStatus(INLGRPQ))
             {
                 // 20050506 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
                 {
@@ -1030,7 +1030,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 #endif
 
     // 20051129 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
-    if(pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
+    if(pInfo->ReadyN == 32 && pInfo->getStatus(INLGRPQ))
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1041,11 +1041,11 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
     if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
     {
-        pInfo->ClearStatus(INRCOLQ);
+        pInfo->clearStatus(INRCOLQ);
     }
 
     /* See if we need to clear an RCONT */
-    if(pInfo->GetStatus(INRCONT))
+    if(pInfo->getStatus(INRCONT))
     {
         if(!(pInfo->PortQueueConts))
         {
@@ -1088,7 +1088,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             }
         }
     }
-    else if(pInfo->FreeSlots < MAXQUEENTRIES && !(pInfo->GetStatus(INRCOLQ)) && pInfo->NCOcts)
+    else if(pInfo->FreeSlots < MAXQUEENTRIES && !(pInfo->getStatus(INRCOLQ)) && pInfo->NCOcts)
     {
         IDLCRColQ(Dev);
     }
@@ -1339,7 +1339,7 @@ QueueFlush (CtiDeviceSPtr Dev)
             }
         }
         pInfo->FreeSlots = MAXQUEENTRIES;
-        pInfo->ClearStatus(INLGRPQ);            // 20050506 CGP on a wh.
+        pInfo->clearStatus(INLGRPQ);            // 20050506 CGP on a wh.
     }
     return(NORMAL);
 }
@@ -1422,7 +1422,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
 
         /* Zero out the block counter */
         Offset = PREIDL;                  // First entry starts here.
-        for(i = 1; i <= Count && !pInfo->GetStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
+        for(i = 1; i <= Count && !pInfo->getStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
         {
             /* get the client submitted entry from the queue */
             if(ReadQueue (pInfo->QueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
@@ -1669,7 +1669,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 {
                     OutMessage = 0;                         // Passed on the memory now!
                     /* Update the port entries count */
-                    pInfo->SetStatus(INLGRPQ);              // This should break our for loop too.
+                    pInfo->setStatus(INLGRPQ);              // This should break our for loop too.
                     pInfo->PortQueueEnts++;
                     pInfo->PortQueueConts++;
                 }
