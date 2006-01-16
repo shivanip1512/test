@@ -22,15 +22,23 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	private static final String[] SWITCH_LIST = 
 	{
 			"LCR 5000       (EXPRESSCOM)",
-			"T-STAT         (EXPRESSCOM)",
 			"LCR 5000       (VERSACOM)",
+            "LCR 4700       (EXPRESSCOM)",
+            "LCR 4700       (Golay)",
+            "LCR 4500       (EXPRESSCOM)",
+            "LCR 4500       (Golay)",
+            "LCR 4000       (VERSACOM)",
 			"LCR 4000       (VERSACOM)",
+            "LCR 3100       (EXPRESSCOM)",
+            "LCR 3100       (VERSACOM)",
+            "LCR 3100       (EMETCON)",
 			"LCR 3000       (VERSACOM)",
 			"LCR 3000       (EMETCON)",
 			"LCR 2000       (VERSACOM)",
 			"LCR 1000       (Ripple)",
 			"LMT 100 Series (EMETCON)",
-			"DCU-S1180      (Golay)",	
+			"DCU-S1180      (Golay)",
+            "T-STAT         (EXPRESSCOM)",
 			"Point Group",
 			"MCT Group"
 	};
@@ -40,9 +48,15 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	private static final String[] SWITCH_LIST_SA = 
 	{
 			"LCR 5000       (EXPRESSCOM)",
-			"T-STAT         (EXPRESSCOM)",
 			"LCR 5000       (VERSACOM)",
+            "LCR 4700       (EXPRESSCOM)",
+            "LCR 4700       (Golay)",
+            "LCR 4500       (EXPRESSCOM)",
+            "LCR 4500       (Golay)",
 			"LCR 4000       (VERSACOM)",
+            "LCR 3100       (EXPRESSCOM)",
+            "LCR 3100       (VERSACOM)",
+            "LCR 3100       (EMETCON)",
 			"LCR 3000       (VERSACOM)",
 			"LCR 3000       (EMETCON)",
 			"LCR 2000       (VERSACOM)",
@@ -52,6 +66,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"DCU-S2000      (SA-205)",
 			"DCU-S1170      (SA Digital)",
 			"DCU-S1180      (Golay)",	
+            "T-STAT         (EXPRESSCOM)",
 			"Point Group",
 			"MCT Group"
 	};
@@ -232,7 +247,7 @@ private javax.swing.JList getSwitchList() {
 		try {
 			ivjSwitchList = new javax.swing.JList();
 			ivjSwitchList.setName("SwitchList");
-			ivjSwitchList.setPreferredSize(new java.awt.Dimension(300, 153));
+			ivjSwitchList.setPreferredSize(new java.awt.Dimension(300, 400));
 			ivjSwitchList.setBounds(0, 0, 300, 122);
 			// user code begin {1}
 
