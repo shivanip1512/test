@@ -80,7 +80,6 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
           CtiReturnMsg *retMsg = NULL;
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
-                                          //RWCString(),
                                           string(getName() + " / scan general in progress"),
                                           NORMAL,//EventCode & 0x7fff
                                           pReq->RouteId(),
@@ -316,7 +315,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         } */
 
         //executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
-    } 
+    }
 
     return nRet;
 }
@@ -331,7 +330,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtr
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";
 
-    //inMsgResultString = RWCString("successfully");
+    //inMsgResultString = string("successfully");
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
     if (getSentinelProtocol().getScanOperation() == 2) //demand Reset
@@ -401,13 +400,13 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtr
         else if (useScanFlags())
         {
             //if (InMessage->EventCode == NORMAL)
-            //if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
+            //if (findStringIgnoreCase(inMsgResultString, "successful"))
             {
                 unsigned long *lastLpTime;
                 lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
                 if (lastLpTime != NULL && *lastLpTime != 0)
-                {  
+                {
                     setLastLPTime(CtiTime(*lastLpTime));
                     if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
@@ -449,7 +448,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
     if (getSentinelProtocol().getScanOperation() == 2) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
-        {                                
+        {
             string returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
@@ -1033,7 +1032,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         {
                             delete []pData;
                             pData = NULL;
-                        }  
+                        }
                     }
                     pPoint = NULL;
                 }
@@ -1106,7 +1105,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
 }
 
 bool isUnintializedTimeAndValue(double value, double time)
-{   
+{
     CtiTime t1 =  CtiTime(time);
     CtiTime t2 =  CtiTime(CtiDate(1,1,2000));
 

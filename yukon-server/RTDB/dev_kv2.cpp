@@ -76,7 +76,6 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
           CtiReturnMsg *retMsg = NULL;
           retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                           pReq->CommandString(),
-                                          //RWCString(),
                                           string(getName() + " / scan general in progress"),
                                           NORMAL,//EventCode & 0x7fff
                                           pReq->RouteId(),
@@ -141,7 +140,7 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     string pswdTemp;
     pswdTemp = getIED().getPassword();
     std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
-    
+
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -383,7 +382,6 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
-                                            //RWCString(),
                                             string(getName() + " / demand reset successful"),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
@@ -396,7 +394,6 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
-                                            //RWCString(),
                                             string(getName() + " / demand reset failed"),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
@@ -441,7 +438,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
         else if (useScanFlags())
         {
             //if (InMessage->EventCode == NORMAL)
-            //if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
+            //if (findStringIgnoreCase(inMsgResultString, "successful"))
             {
                 unsigned long *lastLpTime;
                 lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
