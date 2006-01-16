@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_ccu.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/01/16 16:57:18 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,9 @@ private:
         AlgorithmRepeatInterval = 60
     };
 
-    int _tsAlgStatus[TimeSyncToggles * 2];
-    int _tsPos;
+    int     _tsAlgStatus[TimeSyncToggles * 2];
+    int     _tsPos;
+    CtiTime _tsLastCheck;
 
     unsigned long _algorithmCommandTime[AlgorithmCount];
 

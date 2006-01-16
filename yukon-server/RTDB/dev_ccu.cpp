@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/01/16 16:55:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,9 @@
 
 using namespace std;
 
-CtiDeviceCCU::CtiDeviceCCU()
+CtiDeviceCCU::CtiDeviceCCU() :
+    _tsLastCheck(0UL),
+    _tsPos(0)
 {
     int i;
 
@@ -56,8 +58,6 @@ CtiDeviceCCU::CtiDeviceCCU()
     {
         _algorithmCommandTime[i] = 0;
     }
-
-    _tsPos = 0;
 }
 
 
@@ -101,35 +101,45 @@ bool CtiDeviceCCU::checkAlgorithmReset(int alg)
 
 bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 {
-    bool retVal = true;
+    bool reset   = false,
+         ts_loop = false;
 
-    _tsAlgStatus[_tsPos] = status;
-
-    _tsPos = (_tsPos + 1) % (TimeSyncToggles * 2);
-
-    for( int i = 0; i < (TimeSyncToggles * 2 - 1); i++ )
+    if( (_tsLastCheck.seconds() + 60) < CtiTime::now().seconds() )
     {
-        //  if the state toggled are toggles
-        if( ((_tsAlgStatus[i] == ALGO_ENABLED) && (_tsAlgStatus[i+1] != ALGO_ENABLED)) ||
-            ((_tsAlgStatus[i] != ALGO_ENABLED) && (_tsAlgStatus[i+1] == ALGO_ENABLED)) )
+        reset = true;
+    }
+    else
+    {
+        _tsAlgStatus[_tsPos] = status;
+
+        _tsPos  = (_tsPos + 1) % (TimeSyncToggles * 2);
+
+        ts_loop = true;
+
+        for( int i = 0; ts_loop && (i < (TimeSyncToggles * 2 - 1)); i++ )
         {
-            retVal &= true;
-        }
-        else
-        {
-            retVal &= false;
+            //  if any of the states are not toggles, exit
+            if( !((_tsAlgStatus[i] == ALGO_ENABLED) && (_tsAlgStatus[i+1] != ALGO_ENABLED)) &&
+                !((_tsAlgStatus[i] != ALGO_ENABLED) && (_tsAlgStatus[i+1] == ALGO_ENABLED)) )
+            {
+                ts_loop = false;
+            }
         }
     }
 
-    if( retVal )
+    if( ts_loop || reset )
     {
         for( int i = 0; i < (TimeSyncToggles * 2); i++ )
         {
             _tsAlgStatus[i] = 0;
         }
+
+        _tsPos = 0;
     }
 
-    return retVal;
+    _tsLastCheck = CtiTime::now();
+
+    return ts_loop;
 }
 
 
