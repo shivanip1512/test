@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsimpsched.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/01/16 21:09:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,23 +131,23 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 {
     //CtiLockGuard< CtiMutex > guard( _mux );
 
-    // RWDBReader has no operator>>(string&) so use
-    // a temporary RWCString and then copy it
     string temp;
 
     rdr["scheduleid"]       >> _schedule_id;
 
     rdr["targetselect"]     >> temp;
+
     if(temp != " ")
-    _target_select = temp;
+    {
+        _target_select = temp;
+    }
     else
-    _target_select = "";
+    {
+        _target_select = "";
+    }
 
-    rdr["startcommand"]     >> temp;
-    _start_command = temp;
-
-    rdr["stopcommand"]     >> temp;
-    _stop_command = temp;
+    rdr["startcommand"]    >> _start_command;
+    rdr["stopcommand"]     >> _stop_command;
 
     rdr["repeatinterval"]  >> _repeat_interval;
 

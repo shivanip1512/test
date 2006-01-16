@@ -6,19 +6,22 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/01/03 20:23:38 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2006/01/16 21:09:35 $
 *
 *
 *    AUTHOR: David Sutton
 *
 *    PURPOSE:  ascii export
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.11  2006/01/16 21:09:35  mfisher
+      removed RogueWave stuff
+
       Revision 1.10  2006/01/03 20:23:38  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -97,9 +100,9 @@ const CHAR * CtiFDR_TextExport::KEY_FORMAT = "FDR_TEXTEXPORT_FORMAT";
 // Constructors, Destructor, and Operators
 CtiFDR_TextExport::CtiFDR_TextExport()
 : CtiFDRTextFileBase(string("TEXTEXPORT"))
-{  
+{
     // init these lists so they have something
-    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND)); 
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (recList);
     recList = NULL;
     init();
@@ -125,8 +128,8 @@ CtiFDR_TextExport &CtiFDR_TextExport::setAppendToFile (bool aFlag)
 BOOL CtiFDR_TextExport::init( void )
 {
     // init the base class
-    Inherited::init();    
-    _threadWriteToFile = rwMakeThreadFunction(*this, 
+    Inherited::init();
+    _threadWriteToFile = rwMakeThreadFunction(*this,
                                                &CtiFDR_TextExport::threadFunctionWriteToFile);
 
     if (!readConfig( ))
@@ -141,7 +144,7 @@ BOOL CtiFDR_TextExport::init( void )
 * Function Name: CtiFDR_TextExport::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_TextExport::run( void )
@@ -159,8 +162,8 @@ BOOL CtiFDR_TextExport::run( void )
 /*************************************************
 * Function Name: CtiFDR_TextExport::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_TextExport::stop( void )
@@ -209,7 +212,7 @@ CHAR CtiFDR_TextExport::YukonToForeignQuality (USHORT aQuality)
     if (aQuality == ManualQuality)
         quality = 'M';
 
-	return(quality);
+    return(quality);
 }
 
 CHAR CtiFDR_TextExport::YukonToForeignDST (bool aFlag)
@@ -224,7 +227,7 @@ CHAR CtiFDR_TextExport::YukonToForeignDST (bool aFlag)
 }
 
 int CtiFDR_TextExport::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -304,7 +307,7 @@ int CtiFDR_TextExport::readConfig( void )
             _format = survalent;
         }
     }
-    
+
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -323,7 +326,7 @@ int CtiFDR_TextExport::readConfig( void )
         {
             dout << CtiTime() << " Text Export format set to default" << endl;
         }
-        
+
         if (shouldAppendToFile())
             dout << CtiTime() << " Export will append to existing" << endl;
         else
@@ -340,9 +343,9 @@ int CtiFDR_TextExport::readConfig( void )
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_TextExport::loadTranslationLists()
@@ -358,7 +361,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_SEND));
 
         // keep the status
@@ -399,13 +402,13 @@ bool CtiFDR_TextExport::loadTranslationLists()
 
                         boost::char_separator<char> sep1(";");
                         Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
                         if (!(tempString1 = *tok_iter).empty())
                         {
                             boost::char_separator<char> sep2(":");
                             Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
                             tok_iter1++;
                             Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
@@ -427,7 +430,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
 
                 {
                     // lock the send list and remove the old one
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
                     if (getSendToList().getPointList() != NULL)
                     {
                         getSendToList().deletePointList();
@@ -485,7 +488,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
 }
 
 bool CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
-{   
+{
     bool retVal = true;
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
@@ -499,7 +502,7 @@ bool CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
 * Function Name: CtiFDRT_TextExport::threadFunctionWriteToFile (void )
 *
 * Description: thread that waits and then grabs the file for processing
-* 
+*
 ***************************************************************************
 */
 void CtiFDR_TextExport::threadFunctionWriteToFile( void )
@@ -560,11 +563,11 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                 }
                 else
                 {
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
                     CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
 
                     bool firstSurvalentPass=true;
-                   
+
 
                     for ( ; myIterator(); )
                     {
@@ -599,7 +602,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                 else if (timeWorker[0]=='C')
                                 {
                                     strcat (timeBuffer," CST");
-                                }                         
+                                }
                                 else if (timeWorker[0]=='M')
                                 {
                                     strcat (timeBuffer," MST");
@@ -616,7 +619,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 
                                 // grab the year
                                 strftime (timeWorker,50,"%Y",&tmbuf);
-                                
+
                                 fprintf (fptr,"%s %s\n",timeBuffer,timeWorker);
                                 fprintf (fptr,"TAG_NAME                              OUTPUT       VALID\n");
                                 fprintf (fptr,"=========================================================\n");
@@ -634,7 +637,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " PointId " << translationPoint->getPointID();
-                                    dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
+                                    dout << " was not exported to  " << string(fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
                                 }
                             }
                             else
@@ -650,12 +653,12 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                                    YukonToForeignTime(translationPoint->getLastTimeStamp()),
                                                    YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
                                                    );
-                                    
+
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                            dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                            dout << " value " << (int)translationPoint->getValue() << " to file " << string(fileName) << endl;
                                         }
                                     }
                                     else
@@ -671,7 +674,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                            dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                            dout << " value " << translationPoint->getValue() << " to file " << string(fileName) << endl;
                                         }
                                     }
                                     fprintf (fptr,workBuffer);
@@ -707,25 +710,25 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 * Description: This was added as a proof of concept for Trinity Valley.  Their survalent
 *               SCADA system takes this file as input. It was assumed we'd build a proper
 *               interface for this SCADA vendor if necessary
-* 
+*
 *   NOTE:  File must have the three heading lines as shown and then one line per point
 
 Tue Oct  4 14:55:04 EDT 2005
 TAG_NAME                         OUTPUT VALID
 =============================================
-LAU04B_KWH                        398.4 0          
-LAU04A_KWH                          360 0         
+LAU04B_KWH                        398.4 0
+LAU04A_KWH                          360 0
 ...
 ***************************************************************************
 */
 void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, CtiTime aLastWrite)
 {
-//    static RWTime lastWrite;
+//    static CtiTime lastWrite;
     int quality;
     char workBuffer[1024];
 
     try
-    {  
+    {
         /*****************************************************
         * Survalent has two qualities
         *      0=Normal
@@ -736,7 +739,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
         ******************************************************
         */
         // if we haven't received an update since last write, point is invalid
-        if ((aPoint->getQuality() == NormalQuality) && 
+        if ((aPoint->getQuality() == NormalQuality) &&
             (aLastWrite < aPoint->getLastTimeStamp()))
         {
             quality = 0;
@@ -752,7 +755,7 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
                        aPoint->getDestinationList()[0].getTranslation(),
                        (int)aPoint->getValue(),
                        quality);
-        
+
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -787,8 +790,8 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aP
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -799,11 +802,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -820,11 +823,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )
