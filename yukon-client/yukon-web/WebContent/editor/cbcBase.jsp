@@ -10,7 +10,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-<cti:standardMenu/>
 
 <%
     //****

@@ -22,7 +22,8 @@
 
 .columnHeader {
 	font-weight: bold;
-	background-color: white;
+	background-color: transparent;
+	
 }
 
 .altTableCell, .tableCell, .flyover {
@@ -62,6 +63,16 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 }
 
 .tableCell, .pageBlank {
+	background-color: white;
+}
+
+.tempMoveBackground {
+	width: 60%;
+	padding: 10px;
+	background-color: transparent;
+}
+
+.tempMoveBackground * {
 	background-color: white;
 }
 
@@ -196,5 +207,5 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 }
 
 .cmdPopupMenu {
-    font-size: 10px;
+    font-size: 12px;
 }

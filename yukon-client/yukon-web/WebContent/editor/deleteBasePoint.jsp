@@ -3,7 +3,6 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-<cti:standardMenu/>
 
 <f:subview id="deleteBasePoint">
     

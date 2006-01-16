@@ -22,7 +22,7 @@
 	}
 	
 %>
-<div class="pageBlank">
+<div class="tempMoveBackground">
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
  <form id="frmCapBankMove" action="/servlet/CBCServlet" method="post">
 	<input type="hidden" name="redirectURL" value="/capcontrol/feeders.jsp">
@@ -36,7 +36,7 @@
   <cti:titledContainer title="CapBank Temp Move (Pick feeder by clicking on name)">
       
       <div class="scrollLarge">
-        <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
+        <table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td>Name</td>
 				<td>State</td>
