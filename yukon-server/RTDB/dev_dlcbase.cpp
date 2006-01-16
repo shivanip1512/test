@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/01/16 20:09:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,7 +249,10 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         //           returned.  So by comparing only 13 bit for both it will not break in
         //           either case.
 
-        if((getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) && (InMessage->Buffer.DSt.Length))  //  make sure it's not just an ACK
+        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
+            getAddress() != CtiDeviceMCT::MCT_TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+            getAddress() != CtiDeviceMCT::MCT_TestAddress2 &&  //    since it'll return its native address and not the test address
+            (getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
         {
             //  Address did not match, so it's a comm error
             ErrReturn = WRONGADDRESS;
