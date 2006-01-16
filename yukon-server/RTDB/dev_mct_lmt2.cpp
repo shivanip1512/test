@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/01/16 20:14:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -328,7 +328,7 @@ bool CtiDeviceMCT_LMT2::calcLPRequestLocation( const CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceMCT_LMT2::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT_LMT2::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -360,7 +360,7 @@ INT CtiDeviceMCT_LMT2::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrS
 
         default:
         {
-            status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
             if(status != NORMAL)
             {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/12/20 17:20:23 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/01/16 20:14:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -521,7 +521,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
 
 
-INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -607,12 +607,12 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 
         default:
         {
-            status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - errors on Inherited::ResultDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - errors on Inherited::ModelDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
