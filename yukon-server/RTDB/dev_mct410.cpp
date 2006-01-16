@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2005/12/20 17:20:23 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/01/16 20:26:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1031,11 +1031,11 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
 
 /*
- *  ResultDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
+ *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -1252,7 +1252,7 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
         case (Emetcon::GetValue_PFCount):
         default:
         {
-            status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
             if(status != NORMAL)
             {
@@ -1273,7 +1273,7 @@ unsigned char CtiDeviceMCT410::crc8( const unsigned char *buf, unsigned int len 
 {
     const unsigned char llpcrc_poly = 0x07;
 
-    /* Function to calclulate the 8 bit crc of the channel of interest
+    /* Function to calculate the 8 bit crc of the channel of interest
          and the period of interest start time.  This 8 bit crc will
          be sent back in byte 1 of a long load profile read.
 
@@ -1903,13 +1903,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         int year, month, day, hour, minute;
         int interval_len, block_len;
 
-        boost::char_separator<char> date_sep("-/");              
+        boost::char_separator<char> date_sep("-/");
         Boost_char_tokenizer date_tok(parse.getsValue("lp_date"), date_sep);
-        Boost_char_tokenizer::iterator date_tok_iter = date_tok.begin(); 
+        Boost_char_tokenizer::iterator date_tok_iter = date_tok.begin();
 
         boost::char_separator<char> time_sep(":");
         Boost_char_tokenizer time_tok(parse.getsValue("lp_time"), time_sep);
-        Boost_char_tokenizer::iterator time_tok_iter = time_tok.begin(); 
+        Boost_char_tokenizer::iterator time_tok_iter = time_tok.begin();
 
 
         string cmd = parse.getsValue("lp_command");
@@ -2019,10 +2019,10 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                             interest_om->Sequence = Emetcon::PutConfig_LoadProfileInterest;
 
-                            interest_om->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
-                            interest_om->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
-                            interest_om->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
-                            interest_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+                            interest_om->Buffer.BSt.Function  = FuncWrite_LLPInterestPos;
+                            interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
+                            interest_om->Buffer.BSt.Length    = FuncWrite_LLPInterestLen;
+                            interest_om->MessageFlags       |= MessageFlag_ExpectMore;
 
                             unsigned long utc_time = request_time;
 
@@ -2073,11 +2073,11 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     if( ReturnMsg )
                     {
                         ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                        ReturnMsg->setResultString(string(getName() 
-                                                          + " / Load profile reporting currently only supported for SSPEC " 
-                                                          + CtiNumStr(MCT410_Sspec).toString().c_str() 
-                                                          + " revision " 
-                                                          + (char)('A' + MCT410_Min_NewLLPRev - 1) 
+                        ReturnMsg->setResultString(string(getName()
+                                                          + " / Load profile reporting currently only supported for SSPEC "
+                                                          + CtiNumStr(MCT410_Sspec).toString().c_str()
+                                                          + " revision "
+                                                          + (char)('A' + MCT410_Min_NewLLPRev - 1)
                                                           + " and up"));
 
                         retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
@@ -2126,10 +2126,10 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                 interest_om->Sequence = Emetcon::PutConfig_LoadProfileReportPeriod;
                                 interest_om->Request.Connection = 0;
 
-                                interest_om->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                                interest_om->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
-                                interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-                                interest_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+                                interest_om->Buffer.BSt.Function  = FuncWrite_LLPPeakInterestPos;
+                                interest_om->Buffer.BSt.IO        = Emetcon::IO_Function_Write;
+                                interest_om->Buffer.BSt.Length    = FuncWrite_LLPPeakInterestLen;
+                                interest_om->MessageFlags        |= MessageFlag_ExpectMore;
 
                                 unsigned long utc_time = request_time;
 
@@ -2192,7 +2192,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 sspec_om->Sequence = Emetcon::GetConfig_Model;
 
-                sspec_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+                sspec_om->MessageFlags |= MessageFlag_ExpectMore;
 
                 outList.append(sspec_om);
                 sspec_om = 0;
@@ -3050,7 +3050,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
             if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
-                pointTime -= pointTime.seconds() % getDemandInterval();
+                //  change this to be the voltage averaging rate - this will be in the configs
+                //  pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
                 ReturnMsg->PointData().insert(pData);
                 pData = NULL;  // We just put it on the list...
@@ -4307,7 +4308,9 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWT
                     byte_offset = 7;
                 }
 
-                resultString += "00:00: " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                resultString += "00:00: ";
+                resultString += (char)('A' + (rates & 0x03));
+                resultString += "\n";
                 rates >>= 2;
 
                 time_offset = 0;
@@ -4315,12 +4318,19 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWT
                 {
                     int hour, minute;
 
-                    time_offset += InMessage->Buffer.DSt.Message[switchtime + byte_offset];
+                    time_offset += InMessage->Buffer.DSt.Message[switchtime + byte_offset] * 300;
 
                     hour   = time_offset / 3600;
                     minute = (time_offset / 60) % 60;
 
-                    resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(hour).zpad(2) + ": " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                    if( hour > 23 )
+                    {
+                        resultString += "(past end of day): " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                    }
+                    else
+                    {
+                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(hour).zpad(2) + ": " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                    }
 
                     rates >>= 2;
                 }
@@ -4349,10 +4359,12 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWT
             }
             else
             {
-                resultString += RWCString((char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+                resultString += (char)('A' + InMessage->Buffer.DSt.Message[2]) + "\n";
             }
 
-            resultString += "Current rate: " + RWCString((char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+            resultString += "Current rate: ";
+            resultString += (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f));
+            resultString += "\n";
 
             if( InMessage->Buffer.DSt.Message[3] & 0x80 )
             {
@@ -4664,7 +4676,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, R
         ReturnMsg->setResultString( sspec + options );
 
         //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
-        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE )
+        if( InMessage->MessageFlags & MessageFlag_ExpectMore )
         {
             ReturnMsg->setExpectMore(true);
         }
