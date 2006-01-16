@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/01/16 20:34:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
-            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
+            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
 
             if(OutMessage->EventCode & VERSACOM)
             {
@@ -519,7 +519,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                 BSt.Function = 0x00; //According to doc if its not used it must be 0
             }
             BSt.IO = 0x00;//defined in expresscom doc
-            
+
             /* Calcultate the number of words that will be involved */
             // We can fit 3 bytes in B word, and 5 in each C word, up to 3 C words
             if(size <= 3)//whole thing fit into B word
@@ -619,7 +619,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                     byteString += CtiNumStr(xcom.getByte(j,i)).hex().zpad(2);
 
                 byteString += "\n";
-    
+
                 if(size>=2)
                 {
                     BSt.Address = 0x3D0000 | (xcom.getByte(0,i)<<8) | xcom.getByte(1,i);
@@ -628,7 +628,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                 {
                     BSt.Address = 0x3D0000 | (xcom.getByte(0,i)<<8);//I dont think this is technically possible
                 }
-    
+
                 if(size >=3)
                 {
                     BSt.Function = xcom.getByte(2,i);
@@ -638,7 +638,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                     BSt.Function = 0x00; //According to doc if its not used it must be 0
                 }
                 BSt.IO = 0x00;//defined in expresscom doc
-                
+
                 /* Calcultate the number of words that will be involved */
                 // We can fit 3 bytes in B word, and 5 in each C word, up to 3 C words
                 if(size <= 3)//whole thing fit into B word
@@ -649,14 +649,14 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                     cwordCount = 2;
                 else if(size <= 18)
                     cwordCount = 3;
-    
-    
+
+
                 /* If anything left place it in structure for C words */
                 if( cwordCount )
                 {
                     /* see how much is left */
                     BSt.Length = size-3;//simple, total minus number in B word
-    
+
                     /* clear the memory buffer */
                     memset (BSt.Message, 0, sizeof (BSt.Message));
                     /* copy it into a cleared out message buffer */
@@ -676,7 +676,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                         {
                             NewOutMessage->EventCode &= ~QUEUED;
                             NewOutMessage->EventCode |= (DTRAN | BWORD);
-    
+
                             /***** FALL THROUGH ** FALL THROUGH *****/
                         }
                     case TYPE_CCU711:
@@ -691,24 +691,24 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                             {
                                 NewOutMessage->EventCode |= BWORD;
                             }
-    
+
                             if(NewOutMessage->EventCode & DTRAN)
                             {
                                 /* Load the B word */
                                 B_Word (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN, BSt, cwordCount);
-    
+
                                 /* Load the C words if neccessary */
                                 if(cwordCount)
                                     C_Words (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN, BSt.Message, BSt.Length, &cwordCount);
-    
+
                                 /* Now do the preamble */
                                 BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
-    
+
                                 /* Calculate the length of the message */
                                 NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
                                 NewOutMessage->EventCode |= DTRAN & BWORD;
                                 NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
-    
+
                                 /* load the IDLC specific stuff for DTRAN */
                                 NewOutMessage->Source                = 0;
                                 NewOutMessage->Destination           = DEST_DLC;
@@ -722,7 +722,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                                 /* Load up the B word stuff */
                                 NewOutMessage->Buffer.BSt = BSt;
                             }
-    
+
                             break;
                         }
                 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/01/16 20:35:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
     if(parse.getiValue("type") == ProtocolEnergyProType)
     {
         OutMessage->TargetID = parse.getiValue("serial");
-        OutMessage->MessageFlags |= MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD;   // Take the shortcut!
+        OutMessage->MessageFlags |= MessageFlag_RouteToPorterGatewayThread;   // Take the shortcut!
 
         retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), "Gateway Request Submitted.  Results are async.",  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
 
