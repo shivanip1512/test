@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/16 19:55:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,34 +26,52 @@
 #include "mutex.h"
 #include "porter.h"
 
+#include <limits>
+
 class CtiTransmitterInfo
 {
 public:
 
-    CtiMutex         _statMux;
-    UINT             Status;
-    INT              Type;
-
-
+    //  eventually, we should move this to be a private variable
     REMOTESEQUENCE   RemoteSequence;                   // Used by WELCORTUs to track sequencing...?
-    USHORT           FiveMinuteCount;
-    ULONG            StageTime;
-    ULONG            NextCommandTime;
-    ULONG            LCUFlags;
-    OUTMESS          *ControlOutMessage;
 
 private:
 
+    CtiMutex      _statMux;
+
+    UINT          _status;
+
+    ULONG         _stageTime;
+    USHORT        _fiveMinuteCount;
+    ULONG         _lcuFlags;
+
+    ULONG         _nextCommandTime;
+
+    OUTMESS       *_controlOutMessage;
+
+    unsigned long _inlgrpq_expiration,
+                  _inrcolq_expiration;
+
+    INT           _type;  //  we can probably get rid of this - it's never really used
+
+    enum
+    {
+        INLGRPQ_Timeout = 300,
+        INRCOLQ_Timeout = 300,
+    };
+
 public:
 
-    CtiTransmitterInfo() :
-        Type(-1),
-        Status(0),
-        StageTime(0),
-        FiveMinuteCount(0),
-        NextCommandTime(0),
-        LCUFlags(0),
-        ControlOutMessage(NULL)
+    CtiTransmitterInfo(int type = -1) :
+        _type(type),
+        _status(0),
+        _stageTime(0),
+        _fiveMinuteCount(0),
+        _nextCommandTime(0),
+        _lcuFlags(0),
+        _controlOutMessage(NULL),
+        _inlgrpq_expiration(YUKONEOT),
+        _inrcolq_expiration(YUKONEOT)
     {
         RemoteSequence.Reply   = 0;
     }
@@ -65,10 +83,10 @@ public:
 
     virtual ~CtiTransmitterInfo()
     {
-        if(ControlOutMessage != NULL)
+        if( _controlOutMessage )
         {
-            delete ControlOutMessage;
-            ControlOutMessage = NULL;
+            delete _controlOutMessage;
+            _controlOutMessage = NULL;
         }
     }
 
@@ -84,27 +102,46 @@ public:
         return *this;
     }
 
-    /* Routine to set a status bit with Mutex protection */
-    INT SetStatus (USHORT Mask)
+    //  Routine to set a status bit (mutex-protected)
+    void setStatus( USHORT mask )
     {
         CtiLockGuard< CtiMutex > guard(_statMux);
-        Status |= Mask;
-        return(NORMAL);
+
+        if( mask == INRCOLQ )   _inrcolq_expiration = CtiTime::now().seconds() + INRCOLQ_Timeout;
+        if( mask == INLGRPQ )   _inlgrpq_expiration = CtiTime::now().seconds() + INLGRPQ_Timeout;
+
+        _status |= mask;
     }
 
-    /* Routine to clear a status bit with Mutex protection */
-    INT ClearStatus (USHORT Mask)
+    //  Routine to clear a status bit (mutex-protected)
+    void clearStatus( USHORT mask )
     {
         CtiLockGuard< CtiMutex > guard(_statMux);
-        Status &= ~Mask;
-        return(NORMAL);
+
+        _status &= ~mask;
     }
 
-    /* Routine to set a status bit with Mutex protection */
-    INT GetStatus (USHORT Mask)
+    //  Routine to get a status bit (mutex-protected)
+    INT getStatus( USHORT mask = std::numeric_limits<USHORT>::max() )
     {
         CtiLockGuard< CtiMutex > guard(_statMux);
-        return(Status & Mask);
+
+        unsigned long now_seconds = CtiTime::now().seconds();
+
+        if( (_status & INRCOLQ) && (_inrcolq_expiration < now_seconds) )    _status &= ~INRCOLQ;
+        if( (_status & INLGRPQ) && (_inlgrpq_expiration < now_seconds) )    _status &= ~INLGRPQ;
+
+        return (_status & mask);
+    }
+
+    ULONG getNextCommandTime( void )
+    {
+        return _nextCommandTime;
+    }
+
+    void setNextCommandTime( ULONG time )
+    {
+        _nextCommandTime = time;
     }
 
 };
