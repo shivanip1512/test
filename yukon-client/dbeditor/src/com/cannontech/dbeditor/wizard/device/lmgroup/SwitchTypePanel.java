@@ -247,7 +247,7 @@ private javax.swing.JList getSwitchList() {
 		try {
 			ivjSwitchList = new javax.swing.JList();
 			ivjSwitchList.setName("SwitchList");
-			ivjSwitchList.setPreferredSize(new java.awt.Dimension(300, 400));
+			//ivjSwitchList.setPreferredSize(new java.awt.Dimension(300, 400));
 			ivjSwitchList.setBounds(0, 0, 300, 122);
 			// user code begin {1}
 
