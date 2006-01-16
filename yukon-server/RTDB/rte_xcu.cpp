@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/01/16 21:10:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -281,7 +281,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     /* Calculate the length */
                     Length = (VSt.Nibbles + 1) / 2;
 
-                    NewOutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
+                    NewOutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
                     NewOutMessage->OutLength = MASTERLENGTH + Length;
 
                     /* Build MasterComm header */
@@ -380,7 +380,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
     OutMessage->TimeOut     = 2;
     OutMessage->InLength    = -1;
     OutMessage->EventCode    |= RIPPLE | ENCODED;
-    OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
+    OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
 
     lcu->lcuControl( OutMessage );        // This will return NULL or a CTIDBG_new OUTMESS
 

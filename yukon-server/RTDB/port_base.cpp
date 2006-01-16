@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2006/01/04 17:17:50 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2006/01/16 21:11:23 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.60  2006/01/16 21:11:23  mfisher
+* Message Flags naming change
+*
 * Revision 1.59  2006/01/04 17:17:50  tspar
 * Added an  if statement in isSimulated() , minor change preventing un-needed executions
 *
@@ -359,7 +362,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
     if(verifyPortIsRunnable( hQuit ) == NORMAL)
     {
-        if(OutMessage && OutMessage->MessageFlags & MSGFLG_PORT_SHARING)        // This OM has been tagged as a sharing OM.
+        if(OutMessage && OutMessage->MessageFlags & MessageFlag_PortSharing)        // This OM has been tagged as a sharing OM.
         {
             status = writeShareQueue(Request, DataSize, Data, Priority, &QueEntries);
         }

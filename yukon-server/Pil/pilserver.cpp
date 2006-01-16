@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2006/01/16 21:08:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -575,7 +575,7 @@ void CtiPILServer::resultThread()
                 // Find the device..
                 DeviceRecord = DeviceManager->getEqual(id);
 
-                if(DeviceRecord && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
+                if(DeviceRecord && !(InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
                 {
                     if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                     {
@@ -601,7 +601,7 @@ void CtiPILServer::resultThread()
                         }
                     }
                 }
-                else if( InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
+                else if( InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
                 {
                     // We need response strings from someone.  How can we get a list of results back?
 
@@ -634,7 +634,7 @@ void CtiPILServer::resultThread()
                         for( i = outList.entries() ; i > 0; i-- )
                         {
                             OutMessage = outList.get();
-                            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+                            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
                             _porterOMQueue.putQueue(OutMessage);
                             OutMessage = 0;
                         }

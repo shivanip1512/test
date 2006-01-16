@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/01/16 21:06:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -310,7 +310,7 @@ VOID ConnectionThread (VOID *Arg)
             }
         }
 
-        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
+        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
         {
             CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
@@ -331,7 +331,7 @@ VOID ConnectionThread (VOID *Arg)
         /*
          *  A bit of a wiggle here. 061903 CGP.  Capture and re-route this OM type to PorterGWThread.
          */
-        if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
+        if( OutMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
         {
             if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT"),"true"))
             {
@@ -349,7 +349,7 @@ VOID ConnectionThread (VOID *Arg)
 
             continue;
         }
-        else if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD )
+        else if( OutMessage->MessageFlags & MessageFlag_RouteToPorterDNPUDPThread )
         {
             Cti::Porter::DNPUDP::OutMessageQueue.putQueue( OutMessage );
 
