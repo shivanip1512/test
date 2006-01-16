@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/12/28 16:05:45 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/01/16 19:50:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -170,9 +170,6 @@ protected:
         MCT_PeakOffset                = 10,  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
 
         MCT_LPWindow                  = 60,
-
-        MCT_TestAddr1  = 0x155555,
-        MCT_TestAddr2  = 0x2aaaaa
     };
 
     enum
@@ -189,7 +186,11 @@ public:
     {
         //  for dev_mctbroadcast...  maybe he should be a friend someday
         MCT_Command_FreezeOne = 0x51,
-        MCT_Command_FreezeTwo = 0x52
+        MCT_Command_FreezeTwo = 0x52,
+
+        //  for dev_dlcbase...  maybe he should be a friend someday
+        MCT_TestAddress1  = 0x155555,
+        MCT_TestAddress2  = 0x2aaaaa,
     };
 
     typedef CtiDeviceCarrier Inherited;
@@ -244,9 +245,11 @@ public:
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
-    virtual INT ErrorDecode ( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
-    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
-    int         insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int scanType, int pOffset, CtiPointType_t pType );
+    virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+    virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+
+    INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+    int insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int scanType, int pOffset, CtiPointType_t pType );
 
     INT decodeLoopback ( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValue ( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
