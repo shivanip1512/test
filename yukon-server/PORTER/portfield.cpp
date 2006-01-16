@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.163 $
-* DATE         :  $Date: 2006/01/10 20:11:32 $
+* REVISION     :  $Revision: 1.164 $
+* DATE         :  $Date: 2006/01/16 18:57:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,6 +214,17 @@ VOID PortThread(void *pid)
 
     // Let the threads get up and running....
     WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
+
+    if( portid == gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0) )
+    {
+        while( !PorterQuit )
+        {
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L) )
+            {
+                PorterQuit = TRUE;
+            }
+        }
+    }
 
     /* and wait for something to come in */
     for(;!PorterQuit;)
@@ -470,7 +481,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
     {
         if(0 <= Device->getAddress() && Device->getAddress() < MAXIDLC)
         {
-            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
             if(pInfo)
             {
@@ -524,7 +535,7 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
                         }
                     }
                 }
-                pInfo->ClearStatus(NEEDSRESET);
+                pInfo->clearStatus(NEEDSRESET);
             }
         }
     }
@@ -741,7 +752,7 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
                     if(OutMessage->Command == CMND_LGRPQ)
                     {
                         InMessage->EventCode = PORTINHIBITED;
-                        p711Info->ClearStatus(INLGRPQ);
+                        p711Info->clearStatus(INLGRPQ);
                     }
 
                     p711Info->reduceEntsConts(OutMessage->EventCode & RCONT);
@@ -766,7 +777,7 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
                     if(OutMessage->Command == CMND_LGRPQ)
                     {
                         InMessage->EventCode = REMOTEINHIBITED;
-                        p711Info->ClearStatus(INLGRPQ);
+                        p711Info->clearStatus(INLGRPQ);
                     }
 
                     p711Info->reduceEntsConts(OutMessage->EventCode & RCONT);
@@ -1026,7 +1037,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
 
                 /* Check if we are in an RCONT condition */
-                if(pInfo->GetStatus(INRCONT))
+                if(pInfo->getStatus(INRCONT))
                 {
                     if(OutMessage->EventCode & RCONT)
                     {
@@ -1112,11 +1123,11 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             {
                 if((OutMessage->EventCode & VERSACOM) && VCUWait)
                 {
-                    CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
                     /* Check see if we need to wait for a message to complete */
                     UCTFTime (&TimeB);
-                    if(TimeB.time <= (LONG)pInfo->NextCommandTime)
+                    if(TimeB.time <= (LONG)pInfo->getNextCommandTime())
                     {
                         /* while queue is empty just sit on it otherwise put it back */
                         do
@@ -1147,7 +1158,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                                 CTISleep (100L);
                                 UCTFTime (&TimeB);
                             }
-                        } while(TimeB.time <= (LONG)pInfo->NextCommandTime);
+                        } while(TimeB.time <= (LONG)pInfo->getNextCommandTime());
 
                         if(QueueCount) status = !NORMAL;
                     }
@@ -2281,7 +2292,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         }
                     case TYPE_CCU711:
                         {
-                            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
                             PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
                             break;
                         }
@@ -2506,7 +2517,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
                         case TYPE_CCU711:
                             {
-                                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
                                 /* get the first 5 bytes in the return message */
                                 trx.setInBuffer( InMessage->IDLCStat );
@@ -2856,12 +2867,12 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     {
         try
         {
-            if(OutMessage && OutMessage->MessageFlags & MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL)
+            if(OutMessage && OutMessage->MessageFlags & MessageFlag_RequeueCommandOnceOnFail)
             {
                 CtiOutMessage *NewOM = CTIDBG_new CtiOutMessage(*OutMessage);
 
                 NewOM->Retry = 2;
-                NewOM->MessageFlags &= ~MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL;
+                NewOM->MessageFlags &= ~MessageFlag_RequeueCommandOnceOnFail;
 
                 CtiPort *prt = Port.get();
                 prt->writeQueue(NewOM->EventCode, sizeof (*NewOM), (char *) NewOM, NewOM->Priority, PortThread);
@@ -2910,13 +2921,13 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             /* Clear the RCOLQ flag if neccessary */
             if(OutMessage->Command == CMND_RCOLQ)
             {
-                p711info->ClearStatus (INRCOLQ);
+                p711info->clearStatus (INRCOLQ);
             }
 
             /* Clear a LGRPQ flag if neccessary */
             if(OutMessage->Command == CMND_LGRPQ)
             {
-                p711info->ClearStatus(INLGRPQ);
+                p711info->clearStatus(INLGRPQ);
             }
 
             if(OutMessage->EventCode & RCONT)
@@ -3003,7 +3014,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             {
                 if(VCUWait)
                 {
-                    CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                    CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
                     /* The assumption (for now) is overlapping coverage of VCU's on the
                            same comm port (VCU's on another comm port better damn well not
@@ -3025,14 +3036,14 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
                     UCTFTime (&TimeB);
 
-                    pInfo->NextCommandTime += TimeB.time;
+                    pInfo->setNextCommandTime(pInfo->getNextCommandTime() + TimeB.time);
 
 #ifdef OLD_CRAP
                     for(j = 0; j <= MAXIDLC; j++)
                     {
                         if(CCUInfo[ThreadPortNumber][j] != NULL && CCUInfo[ThreadPortNumber][j]->Type == TYPE_TCU5500)
                         {
-                            CCUInfo[ThreadPortNumber][j]->NextCommandTime = CCUInfo[ThreadPortNumber][Device->getAddress()]->NextCommandTime;
+                            CCUInfo[ThreadPortNumber][j]->setNextCommandTime(CCUInfo[ThreadPortNumber][Device->getAddress()]->getNextCommandTime());
                         }
                     }
 #else
@@ -3101,7 +3112,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             /* Handle the Sequencing */
             if(!(CommResult))
             {
-                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+                CtiTransmitterInfo *pInfo = Device->getTrxInfo();
                 pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
             }
 
@@ -3259,10 +3270,10 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
     {
         if( Device->hasTrxInfo() && !Device->isInhibited() ) // Does this device type support TrxInfo?
         {
-            CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+            CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
             /* Before we do anything else make damn sure we are not a protection violation */
-            if(pInfo != NULL && pInfo->GetStatus(NEEDSRESET))
+            if(pInfo != NULL && pInfo->getStatus(NEEDSRESET))
             {
                 /* Go Ahead an start this one up */
                 if( RemoteReset(Device, Port) )
@@ -3746,7 +3757,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
     try
     {
-        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC  ||
+        if(OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic  ||
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
         {
             CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
@@ -3834,7 +3845,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 
     try
     {
-        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
+        if(OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic ||
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )
         {
             CtiTablePaoExclusion exclusion;
