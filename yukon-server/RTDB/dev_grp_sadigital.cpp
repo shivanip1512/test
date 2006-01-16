@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/01/16 20:45:40 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.15  2006/01/16 20:45:40  mfisher
+* Message Flags naming change
+*
 * Revision 1.14  2005/12/20 17:20:22  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -231,7 +234,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
         {
             OutMessage->TargetID = getID();
-            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
             OutMessage->ExpirationTime = CtiTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
             reportActionItemsToDispatch(pReq, parse, vgList);

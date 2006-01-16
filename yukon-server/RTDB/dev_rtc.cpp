@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/01/16 20:40:33 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.38  2006/01/16 20:40:33  mfisher
+* Message Flags naming change
+*
 * Revision 1.37  2005/12/20 17:20:24  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -490,7 +493,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
-        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
+        OutMessage->MessageFlags |= MessageFlag_QueuedToDevice;
         _repeatList.push_back( make_pair(_repeatTime, OutMessage) );
 
         if(OutMessage->Buffer.SASt._groupType == SA305)
@@ -521,11 +524,11 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
-    if( !(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags) && hasExclusions())
+    if( !(MessageFlag_QueuedToDevice & OutMessage->MessageFlags) && hasExclusions())
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
-        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE; // This OM has already been queued to the device once.
+        OutMessage->MessageFlags |= MessageFlag_QueuedToDevice; // This OM has already been queued to the device once.
 
         _workQueue.putQueue(OutMessage);
         OutMessage= 0;

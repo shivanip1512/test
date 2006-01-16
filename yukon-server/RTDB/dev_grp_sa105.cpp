@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/01/16 20:48:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,7 +193,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
-        OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+        OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
         OutMessage->ExpirationTime = (control ? CtiTime().seconds() + parse.getiValue("control_interval", 300) : 0); // Time this out in 5 minutes or the setting.
 

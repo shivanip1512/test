@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/01/16 20:48:25 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.17  2006/01/16 20:48:25  mfisher
+* Message Flags naming change
+*
 * Revision 1.16  2005/12/20 17:20:21  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -231,7 +234,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
         {
             OutMessage->TargetID = getID();
-            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
             OutMessage->Retry = 0;
             OutMessage->ExpirationTime = CtiTime().seconds() + (_loadGroup.getNominalTimeout() >= 900 ? _loadGroup.getNominalTimeout() : 900); // Time this out in 15 minutes or the setting.
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/01/16 20:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -474,7 +474,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
         if( getPortID() == gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0) )
         {
-            OutMessage->MessageFlags |= MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD;
+            OutMessage->MessageFlags |= MessageFlag_RouteToPorterDNPUDPThread;
         }
 
         sendCommRequest(OutMessage, outList);
@@ -535,12 +535,12 @@ int DNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList 
     if( OutMessage )
     {
         //  assign all of the standard OM bits
-        OutMessage->OutLength    = sizeof(om_buf) + ::strlen(buf) + 1;  //  plus null
-        OutMessage->Source       = _dnp_address.getMasterAddress();
-        OutMessage->Destination  = _dnp_address.getSlaveAddress();
-        OutMessage->EventCode    = RESULT;
-        OutMessage->MessageFlags |= _dnp.commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
-        OutMessage->Retry        = _dnp.commandRetries();
+        OutMessage->OutLength     = sizeof(om_buf) + ::strlen(buf) + 1;  //  plus null
+        OutMessage->Source        = _dnp_address.getMasterAddress();
+        OutMessage->Destination   = _dnp_address.getSlaveAddress();
+        OutMessage->EventCode     = RESULT;
+        OutMessage->MessageFlags |= _dnp.commandRequiresRequeueOnFail() ? MessageFlag_RequeueCommandOnceOnFail : 0;
+        OutMessage->Retry         = _dnp.commandRetries();
 
         //  give it a higher priority if it's a time sync or a control command
         switch( _pil_info.protocol_command )
@@ -823,7 +823,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
                             demandValue = demandPoint->computeValueForUOM(demandValue);
 
-                            resultString = getName() + " / " + demandPoint->getName(); 
+                            resultString = getName() + " / " + demandPoint->getName();
                             resultString += ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);

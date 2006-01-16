@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/16 20:41:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                         string replaceString = " ";
                         replaceString += *tempItr; //FIX_ME Consider not keeping the old string but just creating a new, internal string.
                         replaceString += " ";
-                        
+
                         CtiToLower(tempString);
 
                         CtiString ts_tempString = tempString;
@@ -197,7 +197,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
-    
+
     return nRet;
 
 }
@@ -292,7 +292,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtr
     ULONG pfCount = 0;
     string resultString;
 
-    CtiReturnMsg  *ReturnMsg = NULL;    
+    CtiReturnMsg  *ReturnMsg = NULL;
 
     bool expectMore = false;
 
@@ -323,7 +323,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtr
                 ReturnMsg->setUserMessageId(InMessage->Return.UserID);
                 ReturnMsg->setResultString( resultString );
 
-                if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+                if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
                 {
                     ReturnMsg->setExpectMore(true);
                 }

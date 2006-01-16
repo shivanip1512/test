@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/16 20:48:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
     OutMessage->DeviceID = getID();
     OutMessage->TargetID = getID();
-    OutMessage->MessageFlags |= MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD;  // Suggest the execution path to porter.
+    OutMessage->MessageFlags |= MessageFlag_RouteToPorterGatewayThread;  // Suggest the execution path to porter.
 
     /*
      *  This method should only be called by the dev_base method

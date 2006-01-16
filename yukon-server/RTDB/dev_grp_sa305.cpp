@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/01/16 20:46:04 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.20  2006/01/16 20:46:04  mfisher
+* Message Flags naming change
+*
 * Revision 1.19  2005/12/20 17:20:22  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -263,7 +266,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
-        OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+        OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
         // OutMessage->Retry = 0;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
         OutMessage->ExpirationTime = etime;

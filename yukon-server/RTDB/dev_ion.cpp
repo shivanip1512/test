@@ -301,7 +301,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->TargetID     = getID();
         OutMessage->Retry        = IONRetries;
         OutMessage->Sequence     = _ion.getCommand();
-        OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail(_ion.getCommand()) ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
+        OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail(_ion.getCommand()) ? MessageFlag_RequeueCommandOnceOnFail : 0;
 
         CtiReturnMsg *retmsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        string(OutMessage->Request.CommandStr),
