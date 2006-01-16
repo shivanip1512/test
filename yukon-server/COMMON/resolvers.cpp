@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2006/01/03 20:23:36 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2006/01/16 18:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ INT resolveRouteType( const string& _rwsTemp)
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
 
-	trim(rwsTemp);//was missing..
+    trim(rwsTemp);//was missing..
     if(rwsTemp == "ccu")
     {
         Ret = RouteTypeCCU;
@@ -67,10 +67,10 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeTap;
     }
-    else if(rwsTemp == "snpp terminal") 
-    { 
-        Ret = RouteTypeSNPP; 
-    } 
+    else if(rwsTemp == "snpp terminal")
+    {
+        Ret = RouteTypeSNPP;
+    }
 
     else if(rwsTemp == "wctp terminal")
     {
@@ -97,7 +97,7 @@ INT resolveAmpUseType(const string& _rwsTemp)
     int autype = RouteAmpAlternating;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    
+
     trim(rwsTemp);
 
     if( rwsTemp == "alternating" )
@@ -504,7 +504,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPEMCT410;
     }
-    else if(rwsTemp == "mct-470")
+    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a" || rwsTemp == "mct-430s")
     {
         nRet = TYPEMCT470;
     }
