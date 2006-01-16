@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/01/16 20:20:46 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,9 @@ public:
     enum
     {
         MCT470_ChannelCount = 4,
+
+        MCT430A_Sspec       = 1037,
+        MCT430S_Sspec       = 1046,
 
         MCT470_Sspec        = 1030,
         MCT470_SspecRevMin  =    5,  //  rev e
@@ -82,7 +85,7 @@ protected:
 
         MCT470_Memory_AddressLeadPos       = 0x0E,
         MCT470_Memory_AddressLeadLen       =    2,
-        
+
         MCT470_Memory_AddressCollectionPos = 0x10,
         MCT470_Memory_AddressCollectionLen =    2,
 
@@ -332,7 +335,7 @@ public:
 
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 
-    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
+    virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
