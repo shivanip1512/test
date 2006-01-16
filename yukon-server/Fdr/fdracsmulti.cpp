@@ -16,13 +16,16 @@
  *
  *    DESCRIPTION: This class implements an interface that exchanges point data
  *                 from an ACS scada system.  The data is both status and Analog data.
- *				  Information is exchanged using sockets opened on a predefined socket 
- *				  number and also pre-defined messages between the systems.  See the 
- *				  design document for more information
+ *                Information is exchanged using sockets opened on a predefined socket
+ *                number and also pre-defined messages between the systems.  See the
+ *                design document for more information
  *
  *    ---------------------------------------------------
- *    History: 
+ *    History:
  *      $Log$
+ *      Revision 1.8  2006/01/16 21:09:52  mfisher
+ *      removed RogueWave stuff out of comments
+ *
  *      Revision 1.7  2006/01/03 20:23:37  tspar
  *      Moved non RW string utilities from rwutil.h to utility.h
  *
@@ -104,11 +107,11 @@ const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_UPDATE = "FDR_ACSMULTI_RESET_PC_TIME_O
 const CHAR * CtiFDRAcsMulti::KEY_POINT_TIME_VARIATION = "FDR_ACSMULTI_POINT_TIME_VARIATION";
 const CHAR * CtiFDRAcsMulti::KEY_FDR_ACS_SERVER_NAMES = "FDR_ACSMULTI_SERVER_NAMES";
 const CHAR * CtiFDRAcsMulti::KEY_LINK_TIMEOUT = "FDR_ACSMULTI_LINK_TIMEOUT_SECONDS";
-                                    
+
 // Constructors, Destructor, and Operators
 CtiFDRAcsMulti::CtiFDRAcsMulti()
 : CtiFDRScadaServer(string("ACSMULTI"))
-{   
+{
     init();
     _helper = new CtiFDRScadaHelper<CtiAcsId>(this);
 }
@@ -122,14 +125,14 @@ CtiFDRAcsMulti::~CtiFDRAcsMulti()
 * Function Name: CtiFDRAcsMulti::config()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDRAcsMulti::readConfig()
-{    
+{
     int         successful = TRUE;
     string   tempStr;
-    
+
     setPortNumber(iConfigParameters.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
 
     setTimestampReasonabilityWindow(iConfigParameters.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120));
@@ -141,7 +144,7 @@ int CtiFDRAcsMulti::readConfig()
     setOutboundSendRate(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1));
 
     setOutboundSendInterval(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0));
-    
+
     setLinkTimeout(iConfigParameters.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
     setTimeSyncVariation(iConfigParameters.getValueAsInt(KEY_TIMESYNC_VARIATION, 30));
@@ -149,9 +152,9 @@ int CtiFDRAcsMulti::readConfig()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Max time sync variation of " 
-                << getTimeSyncVariation() 
-                << " second(s) is invalid, defaulting to 5 seconds" 
+            logNow() << "Max time sync variation of "
+                << getTimeSyncVariation()
+                << " second(s) is invalid, defaulting to 5 seconds"
                 << endl;
         }
         // default to 5 seconds
@@ -177,7 +180,7 @@ int CtiFDRAcsMulti::readConfig()
     {
         setInterfaceDebugMode (false);
     }
-    
+
     tempStr = iConfigParameters.getValueAsString(KEY_FDR_ACS_SERVER_NAMES);
     std::string serverNames = tempStr;
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -203,7 +206,7 @@ int CtiFDRAcsMulti::readConfig()
                 if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Added server mapping: " << serverAddress 
+                    logNow() << "Added server mapping: " << serverAddress
                         << " -> " << serverName << endl;
                 }
             }
@@ -215,27 +218,27 @@ int CtiFDRAcsMulti::readConfig()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "----------------FDR-ACS Configs------------------------------" << endl;
-        dout << "  " << KEY_LISTEN_PORT_NUMBER << ": " 
+        dout << "  " << KEY_LISTEN_PORT_NUMBER << ": "
             << getPortNumber() << endl;
-            
-        dout << "  " << KEY_TIMESTAMP_WINDOW << ": " 
+
+        dout << "  " << KEY_TIMESTAMP_WINDOW << ": "
             << getTimestampReasonabilityWindow() << endl;
-            
+
         dout << "  " << KEY_DB_RELOAD_RATE << ": "
             << getReloadRate() << endl;
-        
+
         dout << "  " << KEY_QUEUE_FLUSH_RATE << ": "
             << getQueueFlushRate() << "       second(s)" << endl;
-            
+
         dout << "  " << KEY_OUTBOUND_SEND_RATE << ": "
             << getOutboundSendRate() << endl;
-        
+
         dout << "  " << KEY_OUTBOUND_SEND_INTERVAL << ": "
             << getOutboundSendInterval() << "       second(s)" << endl;
-            
+
         dout << "  " << KEY_TIMESYNC_VARIATION << ": "
             << getTimeSyncVariation() << "       second(s)" << endl;
-            
+
         dout << "  " << KEY_POINT_TIME_VARIATION << ": "
             << getPointTimeVariation() << "       second(s)" << endl;
 
@@ -273,10 +276,10 @@ CtiFDRClientServerConnection* CtiFDRAcsMulti::createNewConnection(SOCKET newSock
                                                  newSocket,
                                                  this);
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message
-    
+
     // I'm not sure this is the best location for this
     sendAllPoints(newConnection);
-    
+
     return newConnection;
 }
 
@@ -294,22 +297,22 @@ bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, 
         string remoteNumber = pointDestination.getTranslationValue("Remote");
         string pointNumber = pointDestination.getTranslationValue("Point");
         string categoryCode = pointDestination.getTranslationValue("Category");
-        
+
         if (remoteNumber.empty() || pointNumber.empty() || categoryCode.empty())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Unable to add destination " << pointDestination 
+            logNow() << "Unable to add destination " << pointDestination
                 << " because one of the fields was blank" << endl;
             return false;
         }
-        
+
         CtiAcsId acsId;
         acsId.RemoteNumber = atoi(remoteNumber.c_str());
         acsId.PointNumber = atoi(pointNumber.c_str());
         const char* temp = categoryCode.c_str(); // should be: acsId.CategoryCode = categoryCode[0]
         acsId.CategoryCode = temp[0];
         acsId.ServerName = pointDestination.getDestination();
-        
+
         if (isSend)
         {
             _helper->addSendMapping(acsId, pointDestination);
@@ -338,23 +341,23 @@ bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, 
 }
 
 bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destination,
-                                           char** buffer, 
+                                           char** buffer,
                                            unsigned int& bufferSize)
 {
     CHAR* acs = NULL;
     CtiFDRPoint point = *(destination.getParentPoint());
 
    /* we allocate a acs message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     */
-    
-    
+
+
     CtiAcsId acsId;
     if (!_helper->getIdForDestination(destination, acsId))
     {
         return false;
     }
-    
+
     acs = new CHAR[sizeof (ACSInterface_t)];
     ACSInterface_t *ptr = (ACSInterface_t *)acs;
 
@@ -422,7 +425,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "New Control State " 
+                            logNow() << "New Control State "
                                 << (point.getValue() == OPENED ? "OPEN" : "CLOSE")
                                 << " (" << ptr->Control.Value << ") from "
                                 << point << " queued to " << acsId << endl;
@@ -444,7 +447,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "State " << point.getValue() 
+                            logNow() << "State " << point.getValue()
                                 << " is invalid for " << point << endl;
                         }
                     }
@@ -455,7 +458,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "New Status Value " 
+                            logNow() << "New Status Value "
                                 << (point.getValue() == OPENED ? "OPEN" : "CLOSE")
                                 << " (" << ptr->Control.Value << ") from "
                                 << point << " queued to " << acsId << endl;
@@ -476,13 +479,13 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 }
 
 
-bool CtiFDRAcsMulti::buildForeignSystemHeartbeatMsg(char** buffer, 
+bool CtiFDRAcsMulti::buildForeignSystemHeartbeatMsg(char** buffer,
                                                  unsigned int& bufferSize)
 {
     CHAR* acs = NULL;
 
     /* we allocate a acs message here and it will be deleted
-     * inside of the write function on the connection 
+     * inside of the write function on the connection
      */
     acs = new CHAR[sizeof (ACSInterface_t)];
     ACSInterface_t* ptr = (ACSInterface_t* )acs;
@@ -502,7 +505,7 @@ unsigned int CtiFDRAcsMulti::getMessageSize(unsigned long header)
     return sizeof (ACSInterface_t);
 }
 
-bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connection, 
+bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connection,
                                      char* data, unsigned int size)
 {
     ACSInterface_t     *acsData = (ACSInterface_t*)data;
@@ -514,7 +517,7 @@ bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connectio
                                     acsData->Value.CategoryCode,
                                     acsData->Value.PointNumber,
                                     connection.getName());
-    // assign last stuff	
+    // assign last stuff
     quality = ForeignToYukonQuality(acsData->Value.Quality);
     timestamp = ForeignToYukonTime(acsData->TimeStamp);
     value = CtiFDRSocketInterface::ntohieeef(acsData->Value.LongValue);
@@ -522,7 +525,7 @@ bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connectio
     return _helper->handleValueUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connection, 
+bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connection,
                                       char* data, unsigned int size)
 {
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
@@ -535,7 +538,7 @@ bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connecti
                                     acsData->Status.PointNumber,
                                     connection.getName());
 
-    // assign last stuff	
+    // assign last stuff
     quality = ForeignToYukonQuality(acsData->Status.Quality);
     timestamp = ForeignToYukonTime(acsData->TimeStamp);
     value = ForeignToYukonStatus(acsData->Status.Value);
@@ -576,7 +579,7 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Time sync request was invalid: " 
+            logNow() << "Time sync request was invalid: "
                 <<  acsData->TimeStamp << endl;
         }
         return false;
@@ -585,7 +588,7 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
     CtiTime now;
     // check if the stamp is inside the window
     if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
-        timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
+        timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
     {
         retVal = NORMAL;
     }
@@ -599,32 +602,32 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
             /**********************
             *   Straight from the help files
             *
-            * It is not recommended that you add and subtract values 
-            * from the SYSTEMTIME structure to obtain relative times. Instead, you should 
+            * It is not recommended that you add and subtract values
+            * from the SYSTEMTIME structure to obtain relative times. Instead, you should
             *
-            * Convert the SYSTEMTIME structure to a FILETIME structure. 
-            * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure. 
-            * Use normal 64-bit arithmetic on the ULARGE_INTEGER value. 
+            * Convert the SYSTEMTIME structure to a FILETIME structure.
+            * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure.
+            * Use normal 64-bit arithmetic on the ULARGE_INTEGER value.
             ***********************
             */
             SYSTEMTIME  sysTime;
             FILETIME    fileTime;
             GetSystemTime(&sysTime);
             if (SystemTimeToFileTime (&sysTime, &fileTime))
-            {  
-                ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601 
+            {
+                ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601
                 timeNow.LowPart = fileTime.dwLowDateTime;
                 timeNow.HighPart = fileTime.dwHighDateTime;
 
                 // which way to move converted to 100 nanosecond parts
                 if (timestamp.seconds() > (now.seconds()))
                 {
-                    timeNow.QuadPart += 
+                    timeNow.QuadPart +=
                         ( __int64)((timestamp.seconds() - now.seconds()) * 10000000);
                 }
                 else
                 {
-                    timeNow.QuadPart -= 
+                    timeNow.QuadPart -=
                         ( __int64)((now.seconds() - timestamp.seconds()) * 10000000);
                 }
 
@@ -644,8 +647,8 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Request from " << connection 
-                            << " to change PC time to " << timestamp.asString() 
+                        logNow() << "Request from " << connection
+                            << " to change PC time to " << timestamp.asString()
                             << " has been processed" << endl;
                     }
                 }
@@ -672,7 +675,7 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << " Time change requested from " << connection
-                    << " of " << timestamp.asString() << " is outside standard +/-30 minutes" 
+                    << " of " << timestamp.asString() << " is outside standard +/-30 minutes"
                     << endl;
             }
         }
@@ -681,16 +684,16 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
     return retVal;
 }
 
-CtiAcsId CtiFDRAcsMulti::ForeignToYukonId(USHORT remote, CHAR category, USHORT point, 
+CtiAcsId CtiFDRAcsMulti::ForeignToYukonId(USHORT remote, CHAR category, USHORT point,
                                       CtiFDRClientServerConnection::Destination serverName)
 {
     CtiAcsId acsId;
-    
+
     acsId.CategoryCode = category;
     acsId.PointNumber = ntohs(point);
     acsId.RemoteNumber = ntohs(remote);
     acsId.ServerName = serverName;
-    
+
     return acsId;
 }
 
@@ -713,32 +716,32 @@ USHORT CtiFDRAcsMulti::ForeignToYukonQuality (USHORT aQuality)
 
 USHORT CtiFDRAcsMulti::YukonToForeignQuality (USHORT aQuality)
 {
-	USHORT Quality = ACS_PLUGGED;
+    USHORT Quality = ACS_PLUGGED;
 
-	/* Test for the various CTI Qualities and translate to ACS */
-	if (aQuality == NonUpdatedQuality)
-		Quality = ACS_PLUGGED;
+    /* Test for the various CTI Qualities and translate to ACS */
+    if (aQuality == NonUpdatedQuality)
+        Quality = ACS_PLUGGED;
 
-	if (aQuality == ManualQuality)
-		Quality = ACS_MANUALENTRY;
+    if (aQuality == ManualQuality)
+        Quality = ACS_MANUALENTRY;
 
-	if (aQuality == NormalQuality)
-		Quality = ACS_NORMAL;
+    if (aQuality == NormalQuality)
+        Quality = ACS_NORMAL;
 
-	if (aQuality == UnintializedQuality)
-		Quality = ACS_PLUGGED;
-    
-	return(htons (Quality));
+    if (aQuality == UnintializedQuality)
+        Quality = ACS_PLUGGED;
+
+    return(htons (Quality));
 }
 
 
-// Convert ACS status to CTI Status 
+// Convert ACS status to CTI Status
 int CtiFDRAcsMulti::ForeignToYukonStatus (USHORT aStatus)
 {
     int tmpstatus=INVALID;
 
     switch (ntohs (aStatus))
-    {  
+    {
         case ACS_Open:
             tmpstatus = OPENED;
             break;
@@ -752,18 +755,18 @@ int CtiFDRAcsMulti::ForeignToYukonStatus (USHORT aStatus)
 
 USHORT CtiFDRAcsMulti::YukonToForeignStatus (int aStatus)
 {
-	USHORT tmpstatus=ACS_Invalid;
+    USHORT tmpstatus=ACS_Invalid;
 
-	switch (aStatus)
-	{
-		case OPENED:
-			tmpstatus = ACS_Open;
-			break;
-		case CLOSED:
-			tmpstatus = ACS_Closed;
-			break;
-	}
-	return(htons (tmpstatus));
+    switch (aStatus)
+    {
+        case OPENED:
+            tmpstatus = ACS_Open;
+            break;
+        case CLOSED:
+            tmpstatus = ACS_Closed;
+            break;
+    }
+    return(htons (tmpstatus));
 }
 
 
@@ -814,7 +817,7 @@ CtiTime CtiFDRAcsMulti::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
         }
         else
         {
-            // if RWTime can't make a time or we are outside the window
+            // if we can't make a time or are outside the window
             if ((returnTime.seconds() > (CtiTime::now().seconds() + getTimestampReasonabilityWindow())) ||
                 (returnTime.seconds() < (CtiTime::now().seconds() - getTimestampReasonabilityWindow())) ||
                 (!returnTime.isValid()))
@@ -839,7 +842,7 @@ string CtiFDRAcsMulti::YukonToForeignTime (CtiTime aTimeStamp)
     /*******************************
     * if the timestamp is less than 01-01-2000 (completely arbitrary number)
     * then set it to now because its probably an error or its uninitialized
-    * note: uninitialized points come across as 11-10-1990 
+    * note: uninitialized points come across as 11-10-1990
     ********************************
     */
     if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
@@ -849,9 +852,9 @@ string CtiFDRAcsMulti::YukonToForeignTime (CtiTime aTimeStamp)
 
     CtiDate tmpDate (aTimeStamp);
 
-	// Place it into the ACS structure */
-	_snprintf (tmp,26,
-			 "%4ld%02ld%02ld%02ld%02ld%02ldS",
+    // Place it into the ACS structure */
+    _snprintf (tmp,26,
+             "%4ld%02ld%02ld%02ld%02ld%02ldS",
              tmpDate.year(),
              tmpDate.month(),
              tmpDate.dayOfMonth(),
@@ -859,18 +862,18 @@ string CtiFDRAcsMulti::YukonToForeignTime (CtiTime aTimeStamp)
              aTimeStamp.minute(),
              aTimeStamp.second());
 
-	if (aTimeStamp.isDST())
-	{
-		tmp[14] = 'D';
-	}
+    if (aTimeStamp.isDST())
+    {
+        tmp[14] = 'D';
+    }
 
-	return(string (tmp));
+    return(string (tmp));
 }
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -881,11 +884,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -902,11 +905,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )
