@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/01/16 19:59:34 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,7 +135,7 @@ private:
       if(!_trxInfo)
       {
           initTrxInfo();
-          _trxInfo->SetStatus( NEEDSRESET );
+          _trxInfo->setStatus( NEEDSRESET );
       }
       return _trxInfo;
    }
@@ -161,9 +161,7 @@ private:
       {
       case TYPE_CCU711:
          {
-            CtiTransmitter711Info *p711 = CTIDBG_new CtiTransmitter711Info;
-
-            p711->Type = getType();
+            CtiTransmitter711Info *p711 = CTIDBG_new CtiTransmitter711Info(getType());
 
             /* create the queue */
             if(CreateQueue (&p711->QueueHandle, QUE_PRIORITY))
@@ -177,15 +175,15 @@ private:
                printf ("Error Creating Actin Queue\n");
             }
 
-            _trxInfo = (CtiTransmitterInfo*)p711;
+            _trxInfo = p711;
 
             break;
 
          }
       default:
          {
-            _trxInfo = CTIDBG_new CtiTransmitterInfo;
-            _trxInfo->Type = getType();
+            _trxInfo = CTIDBG_new CtiTransmitterInfo(getType());
+
             break;
          }
       }
