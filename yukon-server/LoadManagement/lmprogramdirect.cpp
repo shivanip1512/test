@@ -4571,16 +4571,17 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     RWDBNullIndicator isNull;
     _insertDynamicDataFlag = FALSE;
 
+    rdr["heading"] >> _message_subject;
+    rdr["messageheader"] >> _message_header;
+    rdr["messagefooter"] >> _message_footer;
+    rdr["triggeroffset"] >> _trigger_offset;
+    rdr["restoreoffset"] >> _trigger_restore_offset;
+    rdr["notifyactiveoffset"] >> _notify_active_offset;
+    rdr["notifyinactiveoffset"] >> _notify_inactive_offset;            
     rdr["currentgearnumber"] >> isNull;
+    
     if( !isNull )
     {
-        rdr["heading"] >> _message_subject;
-        rdr["messageheader"] >> _message_header;
-        rdr["messagefooter"] >> _message_footer;
-        rdr["triggeroffset"] >> _trigger_offset;
-        rdr["restoreoffset"] >> _trigger_restore_offset;
-        rdr["notifyactiveoffset"] >> _notify_active_offset;
-        rdr["notifyinactiveoffset"] >> _notify_inactive_offset;
         rdr["currentgearnumber"] >> _currentgearnumber;
         rdr["lastgroupcontrolled"] >> _lastgroupcontrolled;
         rdr["starttime"] >> _directstarttime;
@@ -4598,14 +4599,10 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     }
     else
     {
-        _notify_active_offset = 0;
-        _notify_inactive_offset = 0;
         setCurrentGearNumber(0);
         setLastGroupControlled(0);
         setDirectStartTime(gInvalidCtiTime);
         setDirectStopTime(gInvalidCtiTime);
-        setTriggerOffset(0);
-        setTriggerRestoreOffset(0);
         _dynamictimestamp = gInvalidCtiTime;
         _notify_active_time = gInvalidCtiTime;
         _notify_inactive_time = gInvalidCtiTime;
