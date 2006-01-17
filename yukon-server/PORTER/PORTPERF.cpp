@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/01/10 20:11:59 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/01/17 17:52:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@ bool statisticsDoTargetId(long deviceid, long targetid);
 static void statisticsProcessNewRequest(long paoportid, long trxpaoid, long targpaoid);
 static void statisticsProcessNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result);
 static void statisticsProcessNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result);
+static void processCollectedStats(bool force);
 
 
 typedef struct {
@@ -163,39 +164,14 @@ VOID PerfUpdateThread (PVOID Arg)
                 }
                 else   // Process the deque!
                 {
-                    {
-                        CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);    // Lock the global list for a minimal amount of time
-                        for(size_t qcnt = statCol.size(); qcnt > 0 && !PorterQuit; qcnt-- )
-                        {
-                            CtiStatTuple tup = statCol.front();
-                            statCol.pop_front();
-
-                            switch(tup.action)
-                            {
-                            case (CtiStatTuple::Request):
-                                {
-                                    statisticsProcessNewRequest(tup.paoportid, tup.devicepaoid, tup.targetpaoid);
-                                    break;
-                                }
-                            case (CtiStatTuple::Attempt):
-                                {
-                                    statisticsProcessNewAttempt(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
-                                    break;
-                                }
-                            case (CtiStatTuple::Completion):
-                                {
-                                    statisticsProcessNewCompletion(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    processCollectedStats(false);
                 }
             } while( !PorterQuit && now.seconds() > nextTime.seconds()  );
 
             now = now.now();
 
             /* Do the statistics */
+            processCollectedStats(true);
             statisticsRecord();
 
             delay = CtiTime().seconds() - now.seconds();
@@ -307,6 +283,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
+    CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
     CtiStatTuple tup;
 
     tup.action = CtiStatTuple::Request;
@@ -361,6 +338,7 @@ void statisticsProcessNewRequest(long paoportid, long devicepaoid, long targetpa
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
+    CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
     CtiStatTuple tup;
 
     tup.action = CtiStatTuple::Attempt;
@@ -423,6 +401,7 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
+    CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
     CtiStatTuple tup;
 
     tup.action = CtiStatTuple::Completion;
@@ -640,3 +619,46 @@ void statisticsReport( CtiDeviceSPtr pDevice )
     }
 }
 
+void processCollectedStats(bool force)
+{
+    for(size_t qcnt = statCol.size(); qcnt > 0; qcnt-- )
+    {
+        CtiStatTuple tup;
+        {
+            CtiLockGuard<CtiMutex> guard(gDeviceStatColMux, 2500);
+
+            while(force && !guard.isAcquired())  guard.tryAcquire(2500);
+
+            if(guard.isAcquired())
+            {
+                tup = statCol.front();
+                statCol.pop_front();
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        switch(tup.action)
+        {
+        case (CtiStatTuple::Request):
+            {
+                statisticsProcessNewRequest(tup.paoportid, tup.devicepaoid, tup.targetpaoid);
+                break;
+            }
+        case (CtiStatTuple::Attempt):
+            {
+                statisticsProcessNewAttempt(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
+                break;
+            }
+        case (CtiStatTuple::Completion):
+            {
+                statisticsProcessNewCompletion(tup.paoportid, tup.devicepaoid, tup.targetpaoid, tup.result);
+                break;
+            }
+        }
+
+        if(!force && PorterQuit) break; // If force is set, WE WILL DO THEM ALL.
+    }
+}
