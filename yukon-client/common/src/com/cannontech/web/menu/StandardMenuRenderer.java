@@ -42,6 +42,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private String breadCrumbs;
     private final HttpServletRequest httpServletRequest;
     private LiteYukonUser yukonUser;
+    private MenuFeatureSet features;
 
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
@@ -72,11 +73,13 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div insideDiv = new Div();
         topDiv.addElement(insideDiv);
         menuDiv.addElement(topDiv);
-        insideDiv.addElement(buildTopLeftSide());
+        if (features.showMainNavigation) {
+            insideDiv.addElement(buildTopLeftSide());
+        }
         insideDiv.addElement(buildTopRightSide());
         insideDiv.addElement(new Div().setStyle("clear: both"));
         
-        if (subMenuParents.size() > 0) {
+        if (subMenuParents.size() > 0 && features.showMainNavigation) {
             Div middleDiv = new Div();
             middleDiv.setPrettyPrint(true);
             middleDiv.setID("subMenu");
@@ -159,16 +162,18 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div right = new Div();
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
-        right.addElement(new Span("Module:").setClass("stdhdr_menu"));
-        Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
-        Select select = new Select();
-        select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
-        select.addElement(new Option("").addElement(e("Select a location...")).setSelected(true));
-        while (quickLinkIterator.hasNext()) {
-            SimpleMenuOption element = (SimpleMenuOption) quickLinkIterator.next();
-            select.addElement(new Option(buildUrl(element.getUrl())).addElement(e(element.getLinkName())));
+        if (features.showModuleSelection) {
+            right.addElement(new Span("Module:").setClass("stdhdr_menu"));
+            Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
+            Select select = new Select();
+            select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
+            select.addElement(new Option("").addElement(e("Select a location...")).setSelected(true));
+            while (quickLinkIterator.hasNext()) {
+                SimpleMenuOption element = (SimpleMenuOption) quickLinkIterator.next();
+                select.addElement(new Option(buildUrl(element.getUrl())).addElement(e(element.getLinkName())));
+            }
+            right.addElement(select);
         }
-        right.addElement(select);
         right.addElement(" ");
         //TODO there is nowhere to send to right now
         //right.addElement(new A("x", "Help").setClass("stdhdr_menuLink"));
@@ -189,7 +194,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (moduleBase.getSearchPath() != null) {
+        if (moduleBase.getSearchPath() != null && features.showSearch) {
             Div right = new Div();
             right.setClass("stdhdr_rightSide");
             Form searchForm = new Form(moduleBase.getSearchPath(), moduleBase.getSearchMethod());
@@ -239,4 +244,11 @@ public class StandardMenuRenderer implements MenuRenderer {
         return StringEscapeUtils.escapeHtml(input);
     }
 
+    public void setFeatures(MenuFeatureSet features) {
+        this.features = features;
+    }
+    
+    public MenuFeatureSet getFeatures() {
+        return features;
+    }
 }

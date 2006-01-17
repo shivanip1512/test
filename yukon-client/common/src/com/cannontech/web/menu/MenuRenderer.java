@@ -16,4 +16,8 @@ public interface MenuRenderer {
 
     public void setBreadCrumb(String breadCrumbs);
 
+    public void setFeatures(MenuFeatureSet features);
+    
+    public MenuFeatureSet getFeatures();
+
 }

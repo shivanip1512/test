@@ -28,6 +28,7 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_DOCTYPE_LEVEL = "ctiDoctypeLevel";
     public static final String CTI_MODULE_BASE = "ctiMenuModule";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
+    public static final String CTI_SHOW_MENU = "ctiShowMenu";
     
     public static final String HTML_QUIRKS = "quirks";
     public static final String HTML_TRANSITIONAL = "transitional";
@@ -47,6 +48,7 @@ public class StandardPageTag extends BodyTagSupport {
         htmlLevel = HTML_TRANSITIONAL;
         module = "";
         breadCrumbData = "";
+        showMenu = false;
         //super.release();
     }
     
@@ -71,6 +73,7 @@ public class StandardPageTag extends BodyTagSupport {
             pageContext.setAttribute(CTI_DOCTYPE_LEVEL, getHtmlLevel(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MODULE_BASE, moduleBase, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_BREADCRUMBS, getBreadCrumb(), PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_SHOW_MENU, new Boolean(isShowMenu()), PageContext.REQUEST_SCOPE);
 
             TemplateReslover resolver = new BasicTemplateResolver();
             String wrapperPage = resolver.getTemplatePage(moduleBase, pageContext);
