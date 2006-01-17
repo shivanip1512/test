@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/01/17 17:52:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,12 +67,14 @@ CtiConnection  VanGoghConnection;
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
+extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid);
 extern bool processInputFunction(CHAR Char);
 extern void KickPIL();
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
     extern CtiPortManager PortManager;
+    extern CtiDeviceManager DeviceManager;
     extern CtiPILServer PIL;
 
     BOOL           bServerClosing = FALSE;
@@ -118,6 +120,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                 }
 
                 PortManager.apply( applyPortQueueReport, (void*)1 );
+                DeviceManager.apply( applyDeviceQueueReport, NULL );
             }
 
             if( PIL.isBroken() && !bServerClosing )
@@ -288,7 +291,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     {
                         previous = next;
                         checkCount = 0;
-                          
+
                         VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                     }
                 }
