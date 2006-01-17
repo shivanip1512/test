@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/01/16 18:59:22 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/01/17 17:52:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1005,7 +1005,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " FreeSlots is 32 and CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
                 }
-                QueueFlush(Dev);        // Clean up the queue sitution
+                pInfo->clearStatus(INLGRPQ);
             }
         }
     }
@@ -1028,16 +1028,6 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         }
     }
 #endif
-
-    // 20051129 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
-    if(pInfo->ReadyN == 32 && pInfo->getStatus(INLGRPQ))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
-        }
-        QueueFlush(Dev);
-    }
 
     if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
     {
@@ -1676,6 +1666,12 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
 
                 Offset = PREIDL;
             }
+        }
+
+        if(OutMessage)
+        {
+            delete OutMessage;
+            OutMessage = 0;
         }
     }
 
