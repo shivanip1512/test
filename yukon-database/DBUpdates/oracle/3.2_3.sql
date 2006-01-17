@@ -87,6 +87,38 @@ update Customer set TemperatureUnit = 'F';
 alter table Customer modify TemperatureUnit not null;
 /* @error ignore-end */
 
+alter table CapControlSubstationBus add AltSubID NUMBER;
+update CapControlSubstationBus set AltSubID = SubstationBusID;
+alter table CapControlSubstationBus modify AltSubID not null;
+
+alter table CapControlSubstationBus 
+   add constraint FK_CAPCONTR_ALTSUBID foreign key (AltSubID)
+      references CapControlSubstationBus (SubstationBusID);
+ 
+alter table CapControlSubstationBus add SwitchPointID NUMBER;
+update CapControlSubstationBus set SwitchPointID = 0;
+alter table CapControlSubstationBus modify SwitchPointID not null;
+
+alter table CapControlSubstationBus 
+   add constraint FK_CAPCONTR_SWPTID foreign key SwitchPointID)
+      references Point (PointID);
+
+alter table CapControlSubstationBus add DualBusEnabled char(1);
+update CapControlSubstationBus set DualBusEnabled = 'N';
+alter table CapControlSubstationBus modify DualBusEnabled not null;
+
+alter table dynamicCCSubstationBus add switchPointStatus char(1);
+update dynamicCCSubstationBus set switchPointStatus  = 'N';
+alter table dynamicCCSubstationBus modify switchPointStatus  not null;
+
+alter table dynamicCCSubstationBus add altSubControlValue NUMBER;
+update dynamicCCSubstationBus set altSubControlValue = 0;
+alter table dynamicCCSubstationBus modify altSubControlValue not null;
+
+insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
+insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
+insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
