@@ -210,8 +210,7 @@ public class ConnectionPool implements ConnectionPoolMBean
         }
         catch (Exception e)
         {
-            CTILogger.info( "Pooled Connection was NOT okay" );
-            CTILogger.error( "Pooled Connection was NOT okay", e );
+            CTILogger.warn( "Pooled Connection was NOT okay", e );
             
             return false;
         }
@@ -241,7 +240,7 @@ public class ConnectionPool implements ConnectionPoolMBean
             connectionsCreated++;
         }
         
-        CTILogger.debug("Opened a new connection" );
+        CTILogger.info("New database connection created" );
         
         
         return conn;
