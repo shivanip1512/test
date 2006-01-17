@@ -128,9 +128,9 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 		<echo message="Implementation class created." />
 	</target>
 
-	<target name="build" depends="build_src, build_jsp_std"/>
+	<target name="build" depends="build_src, war_std"/>
 
-	<target name="build_jsp_std">
+	<target name="war_std">
         <mkdir dir="${yukon.web.jsp_build}"/>
         <copy todir="${yukon.web.jsp_build}">
             <fileset dir="${yukon-web}/WebContent">
@@ -138,14 +138,14 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
                 <exclude name="jspbuild/**" />
                 <exclude name="**/CVS" />
                 <exclude name="WEB-INF/web.xml" />
-
+                <exclude name="WEB-INF/classes/**" />
                 <exclude name="**/.*" />
                 <exclude name="**/build.xml" />
             </fileset>
         </copy>
 
 		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
-        <copy todir="${yukon.web.jsp_build}/WEB-INF/lib">
+        <copy todir="${yukon.web.jsp_build}/WEB-INF/lib" flatten="true">
            <fileset dir="${yukon.lib}" >
               <include name="**/*.jar" />
               <exclude name="j2ee.jar"/>
@@ -222,6 +222,7 @@ dir_print, jsp_build, build_webxml targets has been tested only on Windows machi
 
 	<target name="clean">
 		<delete file="${yukon.lib}/yukon.war" />
+		<delete file="${yukon.lib}/yukon-web.jar" />
 		<delete dir="build" />
 		<delete dir="${yukon.web.jsp_build}"/>
 		<delete dir="${yukon.web.src_build}"/>
