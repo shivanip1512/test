@@ -399,6 +399,7 @@ private void initialize() {
 	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
 	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
 	getBaudRateComboBox().setSelectedItem(com.cannontech.common.version.DBEditorDefines.BAUD_1200);
+    
 	// user code end
 }
 /**
@@ -439,13 +440,25 @@ public void setValue(Object val)
 {
 }
 
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getDescriptionTextField().requestFocus(); 
+        } 
+    });    
+}
+
 public void setDisplayItems( boolean hideItems ) 
 {
 	getPhysicalPortComboBox().setVisible( !hideItems );
 	getPhysicalPortLabel().setVisible( !hideItems );
 
 	getBaudRateComboBox().setVisible( !hideItems );
-	getBaudRateLabel().setVisible( !hideItems );
+	getBaudRateLabel().setVisible( !hideItems );   
 }
 
 /**

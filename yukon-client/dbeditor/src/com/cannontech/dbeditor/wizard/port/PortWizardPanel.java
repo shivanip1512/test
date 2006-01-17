@@ -57,18 +57,21 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
-		return getPortTypeQuestionPanelA();
+        getPortTypeQuestionPanelA().setFirstFocus();
+        return getPortTypeQuestionPanelA();
 	}
 	else
 	if( currentInputPanel == getPortTypeQuestionPanelA() )
 	{
 		if( ((PortTypeQuestionPanelA) currentInputPanel).isLocalSerialPort() )
 		{
-			return getLocalPortTypeQuestionPanel();
+            getLocalPortTypeQuestionPanel().setFirstFocus();
+            return getLocalPortTypeQuestionPanel();
 		}
 		else
 		{
-			return getTerminalServerTypeQuestionPanel();
+            getTerminalServerTypeQuestionPanel().setFirstFocus();
+            return getTerminalServerTypeQuestionPanel();
 		}
 	}
 	else
@@ -80,12 +83,15 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 			//set some items to show or not
 			getSimpleLocalPortSettingsPanel().setDisplayItems(
 					getLocalPortTypeQuestionPanel().isDialoutPool() );
+            
+            getSimpleLocalPortSettingsPanel().setFirstFocus();
 
 			return getSimpleLocalPortSettingsPanel();
 		}
 		else
 		{
-			return getSimpleTerminalServerSettingsPanel();
+            getSimpleTerminalServerSettingsPanel().setFirstFocus();
+            return getSimpleTerminalServerSettingsPanel();
 		}
 	}
 	else
@@ -99,18 +105,20 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 			if( getLocalPortTypeQuestionPanel().isDialup()
 				 || getLocalPortTypeQuestionPanel().isDialBack() )
 			{
-				return getSimpleDialupModemPanel();
+				getSimpleDialupModemPanel().setFirstFocus();
+                return getSimpleDialupModemPanel();
 			}
 			else if( getLocalPortTypeQuestionPanel().isDialoutPool() )
 			{
-				return getPooledPortListPanel();
+				 return getPooledPortListPanel();
 			}
 		}
 		else
 		{
 			if( getTerminalServerTypeQuestionPanel().isDialup() )
 			{
-				return getSimpleDialupModemPanel();
+				getSimpleDialupModemPanel().setFirstFocus();
+                return getSimpleDialupModemPanel();
 			}	
 		}
 	}

@@ -315,6 +315,19 @@ public static void main(java.lang.String[] args) {
  */
 public void radioButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top textfield
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getLocalSerialPortRadioButton().requestFocus(); 
+        } 
+    });    
+}
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

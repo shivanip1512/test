@@ -590,6 +590,4 @@ public void setValue(Object val)
 
 //	getNameTextField().setText( ((PooledPort)val).getPortName() );
 }
-
-
 }
