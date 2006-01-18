@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.db.point.Point;
 
 /**
@@ -17,14 +18,20 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private String mapLocationID = "0";  //old integer default
 	private Integer strategyID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
-
+	
+	//some variables for the dual bus support
+	private Integer altSubstationID =   new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer switchPointID =   new Integer(CtiUtilities.NONE_ZERO_ID);
+	private String dualBusEnabled = "Y";
+	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"CurrentVarLoadPointID", "CurrentWattLoadPointID",
-		"MapLocationID", "StrategyID", "CurrentVoltLoadPointID"
-	};
+		"CurrentVarLoadPointID",
+			"CurrentWattLoadPointID", "MapLocationID", "StrategyID",
+			"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
+			"DualBusEnabled" };
 
-	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID"};
 
 
 	public static final String TABLE_NAME = "CapControlSubstationBus";
@@ -55,10 +62,11 @@ public void add() throws java.sql.SQLException
 {
 	Object[] addValues = 
 	{
-		getSubstationBusID(), getCurrentVarLoadPointID(),
-		getCurrentWattLoadPointID(), getMapLocationID(),
-		getStrategyID(), getCurrentVoltLoadPointID()
-	};
+		getSubstationBusID(),
+				getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
+				getMapLocationID(), getStrategyID(),
+				getCurrentVoltLoadPointID(), getAltSubstationID(),
+				getSwitchPointID(), getDualBusEnabled()};
 
 	add( TABLE_NAME, addValues );
 }
@@ -116,7 +124,7 @@ public java.lang.Integer getSubstationBusID() {
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	Object constraintValues[] = { getSubstationBusID() };
+	Object constraintValues[] = { getSubstationBusID()};
 	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
 	if( results.length == SETTER_COLUMNS.length )
@@ -126,6 +134,9 @@ public void retrieve() throws java.sql.SQLException
 		setMapLocationID( (String) results[2] );
 		setStrategyID( (Integer) results[3] );
 		setCurrentVoltLoadPointID( (Integer) results[4] );
+		setAltSubstationID((Integer)results[5]);
+		setSwitchPointID((Integer)results[6]);
+		setDualBusEnabled((String)results[7]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -178,12 +189,12 @@ public void update() throws java.sql.SQLException
 	Object setValues[]= 
 	{
 		getCurrentVarLoadPointID(),
-		getCurrentWattLoadPointID(), getMapLocationID(),
-		getStrategyID(), getCurrentVoltLoadPointID()
-	};
+				getCurrentWattLoadPointID(), getMapLocationID(),
+				getStrategyID(), getCurrentVoltLoadPointID(),
+				getAltSubstationID(), getSwitchPointID(),getDualBusEnabled() };
 
 
-	Object constraintValues[] = { getSubstationBusID() };
+	Object constraintValues[] = { getSubstationBusID()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
@@ -286,6 +297,39 @@ public void update() throws java.sql.SQLException
 	
 	
 		return vect;
+	}
+
+
+	//methods for dual bus support
+	//setters and getters for the AltSubId field 
+	public Integer getAltSubstationID() {
+		return altSubstationID;
+	}
+
+
+	public void setAltSubstationID(Integer altSubstationID) {
+		
+
+		this.altSubstationID = altSubstationID;
+	}
+
+//	setters and getters for the SwitchPointId field 
+	public Integer getSwitchPointID() {
+		return switchPointID;
+	}
+
+	public void setSwitchPointID(Integer switchPointID) {
+		this.switchPointID = switchPointID;
+	}
+
+
+	public String getDualBusEnabled() {
+		return dualBusEnabled;
+	}
+
+
+	public void setDualBusEnabled(String dualBusEnabled) {
+		this.dualBusEnabled = dualBusEnabled;
 	}
 
 }
