@@ -530,4 +530,4 @@ hdrRow.getElementsByTagName('td').item(i).width =
 
 }
 
-}	
+}
