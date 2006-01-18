@@ -97,7 +97,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 {
 	if (currentInputPanel == null)
 	{
-		return getTypeChoicePanel();
+		getTypeChoicePanel().setFirstFocus();
+        return getTypeChoicePanel();
 	}
 	else if (currentInputPanel == getTypeChoicePanel())
 	{
@@ -105,15 +106,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		
 		if( mctType == 3 )
 		{
-			return getSeries300ConfigPanel();
+			getSeries300ConfigPanel().setFirstFocus();
+            return getSeries300ConfigPanel();
 		}
 		else if( mctType == 2)
 		{
-			return getSeries200ConfigPanel();
+			getSeries200ConfigPanel().setFirstFocus();
+            return getSeries200ConfigPanel();
 		}
 		else if( mctType == 4)
 		{
-			return getSeries400ConfigPanel();
+			getSeries400ConfigPanel().setFirstFocus();
+            return getSeries400ConfigPanel();
 		}
 	}
 
