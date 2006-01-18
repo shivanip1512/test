@@ -41,36 +41,42 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
-		return getRouteTypePanel();
+		getRouteTypePanel().setFirstFocus();
+        return getRouteTypePanel();
 	}
 	else
 	if( currentInputPanel == getRouteTypePanel() )
 	{
 		if( ((RouteTypePanel) currentInputPanel).isRouteMacro() )
 		{
-			return getRouteMacroNamePanel();
+			getRouteMacroNamePanel().setFirstFocus();
+            return getRouteMacroNamePanel();
 		}
 		else
 		{
 			getRouteType2Panel().setValue(null);
+            getRouteType2Panel().setFirstFocus();
 			return getRouteType2Panel();
 		}
 	}
 	else
 	if( currentInputPanel == getRouteType2Panel() )
 	{
-		return getRouteRepeaterQuestionPanel();
+		getRouteRepeaterQuestionPanel().setFirstFocus();
+        return getRouteRepeaterQuestionPanel();
 	}
 	else
 	if( currentInputPanel == getRouteRepeaterQuestionPanel() )
 	{
 		getRepeaterSelectPanel().setValue(null);
+        getRepeaterSelectPanel().setFirstFocus();
 		return getRepeaterSelectPanel();
 	}
 	else
 	if( currentInputPanel == getRouteMacroNamePanel() )
 	{
-		return getRouteMacroCommunicationRoutesPanel();
+		getRouteMacroCommunicationRoutesPanel().setFirstFocus();
+        return getRouteMacroCommunicationRoutesPanel();
 	}
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
