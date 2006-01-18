@@ -47,7 +47,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
-		return getGroupStateNamePanel();
+		getGroupStateNamePanel().setFirstFocus();
+        return getGroupStateNamePanel();
 	}
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
