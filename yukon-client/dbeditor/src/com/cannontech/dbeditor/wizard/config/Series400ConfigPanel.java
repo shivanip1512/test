@@ -738,7 +738,13 @@ private javax.swing.JComboBox getTOUComboBox() {
 		try {
 			ivjTOUCombobox = new javax.swing.JComboBox();
 			ivjTOUCombobox.setName("TOUComboBox");
-			ivjTOUCombobox.setSelectedIndex(0);
+            if(ivjTOUCombobox.getItemCount() <= 0)
+            {
+                ivjTOUCombobox.setSelectedIndex(-1);
+            }else
+            {
+                ivjTOUCombobox.setSelectedIndex(0);
+            }
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
