@@ -930,7 +930,7 @@ private void initialize() {
 		constraintsJScrollPane1.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJScrollPane1.weightx = 1.0;
 		constraintsJScrollPane1.weighty = 1.0;
-		constraintsJScrollPane1.ipadx = 138;
+		constraintsJScrollPane1.ipadx = 130;
 		constraintsJScrollPane1.ipady = 239;
 		constraintsJScrollPane1.insets = new java.awt.Insets(0, 5, 2, 2);
 		add(getJScrollPane1(), constraintsJScrollPane1);
@@ -948,7 +948,7 @@ private void initialize() {
 		constraintsJScrollPane2.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJScrollPane2.weightx = 1.0;
 		constraintsJScrollPane2.weighty = 1.0;
-		constraintsJScrollPane2.ipadx = 138;
+		constraintsJScrollPane2.ipadx = 130;
 		constraintsJScrollPane2.ipady = 239;
 		constraintsJScrollPane2.insets = new java.awt.Insets(0, 2, 2, 4);
 		add(getJScrollPane2(), constraintsJScrollPane2);
