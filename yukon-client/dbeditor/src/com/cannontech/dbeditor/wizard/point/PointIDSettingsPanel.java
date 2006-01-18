@@ -602,6 +602,19 @@ public void setValueLM(Object val, Integer initialPAOId)
 
 	getPointIDSpinner().setValue( com.cannontech.database.db.point.Point.getNextCachedPointID() );
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getNameTextField().requestFocus(); 
+        } 
+    });    
+}
+
 /**
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent

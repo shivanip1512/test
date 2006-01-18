@@ -455,6 +455,19 @@ public void reinitialize(Integer pointDeviceID, int pointType) {
  */
 public void setValue(Object val) {
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getPhysicalPointOffsetCheckBox().requestFocus();
+        } 
+    });    
+}
+
 /**
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent

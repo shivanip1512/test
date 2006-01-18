@@ -73,7 +73,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 {
 	if (currentInputPanel == null)
 	{
-		return getPointTypePanel();
+		getPointTypePanel().setFirstFocus();
+        return getPointTypePanel();
 	}
 	else if (currentInputPanel == getPointTypePanel())
 	{
@@ -93,11 +94,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if (editPointID)
 		{
 			getPointIDSettingsPanel().setValueCore( null, getInitialPAOId() );
+            getPointIDSettingsPanel().setFirstFocus();
 			return getPointIDSettingsPanel();
 		}
 		else
 		{
 			getPointSettingsPanel().setValueCore( null, getInitialPAOId() );
+            getPointSettingsPanel().setFirstFocus();
 			return getPointSettingsPanel();
 		}
 	}
@@ -107,19 +110,23 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		switch (getPointTypePanel().getPointType())
 		{
 			case PointTypes.ANALOG_POINT :
+                getPointAnalogSettingsPanel().setFirstFocus();
 				return getPointAnalogSettingsPanel();
 
 			case PointTypes.STATUS_POINT :
 			case PointTypes.CALCULATED_STATUS_POINT :
 				getPointStatusSettingsPanel().setValue(null);
+                getPointStatusSettingsPanel().setFirstFocus();
 				return getPointStatusSettingsPanel();
 
 			case PointTypes.PULSE_ACCUMULATOR_POINT :
 			case PointTypes.DEMAND_ACCUMULATOR_POINT :
+                getPointAccumulatorSettingsPanel().setFirstFocus();
 				return getPointAccumulatorSettingsPanel();
 
 			case PointTypes.CALCULATED_POINT :
 				getPointCalcBaseSettingsPanel().setValue(null);
+                getPointCalcBaseSettingsPanel().setFirstFocus();
 				return getPointCalcBaseSettingsPanel();
 				
 			default :
@@ -153,6 +160,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getPointPhysicalSettingsPanel().reinitialize(
 				getPointSettingsPanel().getPointDeviceID(),
 				getPointTypePanel().getPointType());
+        getPointPhysicalSettingsPanel().setFirstFocus();
 		return getPointPhysicalSettingsPanel();
 	}
 	else if (currentInputPanel == getPointAccumulatorSettingsPanel())
@@ -180,7 +188,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getPointPhysicalSettingsPanel().reinitialize(
 				getPointSettingsPanel().getPointDeviceID(),
 				getPointTypePanel().getPointType() );
-			
+		getPointPhysicalSettingsPanel().setFirstFocus();
 		return getPointPhysicalSettingsPanel();
 	}
 	else if (currentInputPanel == getPointStatusSettingsPanel())
@@ -189,6 +197,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if(getPointTypePanel().getPointType() == PointTypes.CALCULATED_STATUS_POINT)
 		{
 			getPointCalcBaseSettingsPanel().setValue(null);
+            getPointCalcBaseSettingsPanel().setFirstFocus();
 			return getPointCalcBaseSettingsPanel();
 		}
 				
@@ -212,6 +221,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getPointStatusPhysicalSettingsPanel().reinitialize(
 				getPointSettingsPanel().getPointDeviceID(),
 				getPointTypePanel().getPointType());
+        getPointStatusPhysicalSettingsPanel().setFirstFocus();
 		return getPointStatusPhysicalSettingsPanel();
 	}
 	else
