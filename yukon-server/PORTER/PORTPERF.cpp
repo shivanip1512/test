@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/01/17 17:52:19 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/01/18 15:20:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,6 +77,7 @@ using namespace std;
 static CtiStatisticsMap_t   gDeviceStatMap;
 static bool                 gDeviceStatDirty = false;
 static CtiMutex             gDeviceStatMapMux;
+static CtiMutex             gDeviceStatColMux;
 
 static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
 bool statisticsDoTargetId(long deviceid, long targetid);
