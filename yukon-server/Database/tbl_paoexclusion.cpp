@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/01/18 22:13:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -198,33 +198,33 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
         boost::regex e1("cycletime:[0-9]+");
         boost::match_results<std::string::const_iterator> what;
         boost::regex_search(_funcParams, what, e1, boost::match_default);
-        temp = what[0].matched;
+        temp = what[0];
         e1.assign("[0-9]+");
         boost::regex_search(temp, what, e1, boost::match_default);
-        _cycleTime = atoi(temp.c_str());
+        _cycleTime = atoi(what[0].str().c_str());
 
         e1.assign("offset:[0-9]+");
         boost::regex_search(_funcParams, what, e1, boost::match_default);
-        temp = what[0].matched;
+        temp = what[0];
         e1.assign("[0-9]+");
         boost::regex_search(temp, what, e1, boost::match_default);
-        _cycleOffset = atoi(temp.c_str());
+        _cycleOffset = atoi(what[0].str().c_str());
 
 
         e1.assign("transmittime:[0-9]+");
         boost::regex_search(_funcParams, what, e1, boost::match_default);
-        temp = what[0].matched;
+        temp = what[0];
         e1.assign("[0-9]+");
         boost::regex_search(temp, what, e1, boost::match_default);
-        _transmitTime = atoi(temp.c_str());
+        _transmitTime = atoi(what[0].str().c_str());
 
 
         e1.assign("maxtime:[0-9]+");
         boost::regex_search(_funcParams, what, e1, boost::match_default);
-        temp = what[0].matched;
+        temp = what[0];
         e1.assign("[0-9]+");
         boost::regex_search(temp, what, e1, boost::match_default);
-        _maxTransmitTime = atoi(temp.c_str());
+        _maxTransmitTime = atoi(what[0].str().c_str());
 
     }
 
