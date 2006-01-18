@@ -274,6 +274,18 @@ public void setValue(Object val)
 			new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
 }
 
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getMeterNumberTextField().requestFocus(); 
+        } 
+    });    
+}
+
 public void setMCT400Type(int truth)
 {
 	mctType = truth;

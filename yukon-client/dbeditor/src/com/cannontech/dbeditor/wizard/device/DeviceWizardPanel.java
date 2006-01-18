@@ -228,7 +228,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 {
 	if (currentInputPanel == null)
 	{
-		return getDeviceTypePanel();
+		getDeviceTypePanel().setFirstFocus();
+        return getDeviceTypePanel();
 	}
 	else if (currentInputPanel == getDeviceTypePanel())
 	{
@@ -236,30 +237,36 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		
 		if( devType == PAOGroups.TAPTERMINAL)
 		{
-			return getDeviceTapTerminalPanel();
+			getDeviceTapTerminalPanel().setFirstFocus();
+            return getDeviceTapTerminalPanel();
 		}
 		else if( devType == PAOGroups.WCTP_TERMINAL)
 		{
-			return getDeviceTapVerizonPanel();
+			getDeviceTapVerizonPanel().setFirstFocus();
+            return getDeviceTapVerizonPanel();
 		}
 		else if( devType == PAOGroups.SNPP_TERMINAL )
 		{
-			getDeviceTapVerizonPanel().setIsSNPP(true);
+			getDeviceTapVerizonPanel().setFirstFocus();
+            getDeviceTapVerizonPanel().setIsSNPP(true);
 			return getDeviceTapVerizonPanel();
 		}
 		else if( (DeviceTypesFuncs.isMeter(devType)
 					  && !DeviceTypesFuncs.isIon(devType))
 				    || devType == PAOGroups.DAVISWEATHER)
 		{
-			return getDeviceIEDNamePanel();
+			getDeviceIEDNamePanel().setFirstFocus();
+            return getDeviceIEDNamePanel();
 		}
 		else if( devType == PAOGroups.VIRTUAL_SYSTEM )
 		{
-			return getDeviceVirtualNamePanel();
+			getDeviceVirtualNamePanel().setFirstFocus();
+            return getDeviceVirtualNamePanel();
 		}
 		else
 		{
 			getDeviceNameAddressPanel().setDeviceType( devType );
+            getDeviceNameAddressPanel().setFirstFocus();
 			return getDeviceNameAddressPanel();
 		}
 	}
@@ -282,23 +289,26 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 				getDeviceMeterNumberPanel().setMCT400Type(devType);
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
 			}
-			
+			getDeviceMeterNumberPanel().setFirstFocus();
 			return getDeviceMeterNumberPanel();
 		}
 		else if( devType == PAOGroups.DAVISWEATHER )
 		{
 			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+            getDeviceScanRatePanel().setFirstFocus();
 			return getDeviceScanRatePanel();			
 		}
 		else if( com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST == devType )
 		{
 			MCTBroadcastListEditorPanel temp = getMCTBroadcastListEditorPanel();
 			temp.setValue(null);
+            temp.setFirstFocus();
 			return temp;
 		}
 		else
 		{
 			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+            getDeviceScanRatePanel().setFirstFocus();
 			return getDeviceScanRatePanel();
 		}
 	}
@@ -307,6 +317,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 
 		getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+        getDeviceScanRatePanel().setFirstFocus();
 		return getDeviceScanRatePanel();
 	}
 	else if (currentInputPanel == getDeviceScanRatePanel())
@@ -316,42 +327,50 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if( DeviceTypesFuncs.isCarrier(devType) )
 		{
 			getDeviceRoutePanel().setValue(null);
+            getDeviceRoutePanel().setFirstFocus();
 			return getDeviceRoutePanel();
 		}
 		else if( devType == PAOGroups.SIXNET)
 		{
-			return getDeviceSixnetWizardPanel();
+			getDeviceSixnetWizardPanel().setFirstFocus();
+            return getDeviceSixnetWizardPanel();
 		}
 		else if( DeviceTypesFuncs.isRTU(devType) || DeviceTypesFuncs.isCCU(devType))
 		{
 			getDeviceCommChannelPanel().setValue(null);
 			getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
 			getDeviceCommChannelPanel().setDeviceType(getDeviceTypePanel().getDeviceType());
+            getDeviceCommChannelPanel().setFirstFocus();
 			return getDeviceCommChannelPanel();
 		}
 		else
-			return getDeviceCommChannelPanel();
+			getDeviceCommChannelPanel().setFirstFocus();
+            return getDeviceCommChannelPanel();
 	}
 	else if (currentInputPanel == getDeviceSixnetWizardPanel())
 	{
 		getDeviceCommChannelPanel().setValue(null);
+        getDeviceCommChannelPanel().setFirstFocus();
 		return getDeviceCommChannelPanel();
 	}
 	else if (currentInputPanel == getDeviceTapTerminalPanel() || currentInputPanel == getDeviceTapVerizonPanel())
 	{
 		getDeviceCommChannelPanel().setValue(null);
+        getDeviceCommChannelPanel().setFirstFocus();
 		return getDeviceCommChannelPanel();
 	}
 	else if (currentInputPanel == getDeviceCommChannelPanel())
 	{
 		//To get to this point the device must be a dialup device
 		//If it isn't better go find out why we got here!
+        getDeviceCommChannelPanel().setFirstFocus();
 		return getDevicePhoneNumberPanel();
 	}
 	
 	else if (currentInputPanel == getMCTBroadcastListEditorPanel())
 	{
 			getDeviceRoutePanel().setValue(null);
+            getDeviceRoutePanel().setFirstFocus();
 			return getDeviceRoutePanel();
 	}
 	else
