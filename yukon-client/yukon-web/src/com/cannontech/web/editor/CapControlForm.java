@@ -53,6 +53,7 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.servlet.nav.*;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.point.*;
@@ -62,7 +63,7 @@ import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author ryan
- *
+ * 
  */
 public class CapControlForm extends DBEditorForm {
 	private String paoDescLabel = "Description";
@@ -81,82 +82,54 @@ public class CapControlForm extends DBEditorForm {
 
 	private String VOLTscrollOffsetTop = "";
 
-	//contains <Integer(stratID), CapControlStrategy>
+	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap cbcStrategiesMap = null;
 
-	//contains LiteYukonPAObject
+	// contains LiteYukonPAObject
 	private List unassignedBanks = null;
 
-	//contains LiteYukonPAObject
+	// contains LiteYukonPAObject
 	private List unassignedFeeders = null;
 
-	//possible selection types for every wizard panel
+	// possible selection types for every wizard panel
 	private CBCWizardModel wizData = null;
 
-	//possible editor for the CBC a CapBank belongs to
+	// possible editor for the CBC a CapBank belongs to
 	private CBControllerEditor cbControllerEditor = null;
 
 	private LiteYukonPAObject[] unusedCCPAOs = null;
 
-	//selectable items that appear in lists on the GUI
+	// selectable items that appear in lists on the GUI
 	private SelectItem[] kwkvarPaos = null;
 
 	private SelectItem[] kwkvarPoints = null;
 
 	private SelectItem[] cbcStrategies = null;
 
-	//variables that hold sub bus info
+	// variables that hold sub bus info
 	protected ArrayList subBusList = null;
 
 	protected ArrayList switchPointList = null;
 
-	//variables that hold the selection state info  for
-	//the alt subbus and switch point
-	private String selectedSubBus = "";
-	private String selectedSwitchPoint = "";
-	//Boolean to keep track of the disable dual subbus status
-	//by default will be set to true
-	private Boolean disableDualBus = new Boolean(true);
+	// variables that hold the selection state info for
+	// the alt subbus and switch point
+	private Integer selectedSubBus = null;
+
+	private Integer selectedSwitchPoint = null;
+
+	private String selectedSwitchPointName = "";
+
+	private String selectedSubBusName = "";
+
+	// Boolean to keep track of the disable dual subbus status
+	// by default will be set to true
+	private Boolean enableDualBus = new Boolean(false);
 
 	/**
 	 * default constructor
 	 */
 	public CapControlForm() {
 		super();
-		//TODO prescan the list to get the value
-		subBusList = new ArrayList(100);
-		//get the sub bus list from application ctxt
-		CapControlCache capControlCache = (CapControlCache) FacesContext
-				.getCurrentInstance().getExternalContext().getApplicationMap()
-				.get("capControlCache");
-		//TODO put this into separate private functions
-		//something like createSubBusArrayList and 
-		//createPointsArrayList
-		//TODO make sure check for null
-		for (int i = 0; i < capControlCache.getAreaNames().size(); i++) {
-			String areaStr = (String) capControlCache.getAreaNames().get(i);
-			SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
-			for (int j = 0; j < areaBuses.length; j++) {
-				SubBus subBus = areaBuses[j];
-
-				SelectItem si = new SelectItem(subBus.getCcId(), subBus
-						.getCcName());
-				subBusList.add(si);
-
-			}
-
-		}
-		PointLists pLists = new PointLists();
-		LiteYukonPAObject[] lPaos = pLists
-				.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_VAR_UOMIDS);
-		switchPointList = new ArrayList(lPaos.length);
-		for (int i = 0; i < lPaos.length; i++) {
-			SelectItem si = new SelectItem(String
-					.valueOf(lPaos[i].getYukonID()), lPaos[i].getPaoName());
-			switchPointList.add(si);
-		}
-		
-
 	}
 
 	/**
@@ -171,7 +144,7 @@ public class CapControlForm extends DBEditorForm {
 			cbcStrategies = new SelectItem[cbcDBStrats.length];
 
 			for (int i = 0; i < cbcDBStrats.length; i++) {
-				cbcStrategies[i] = new SelectItem( //value, label
+				cbcStrategies[i] = new SelectItem( // value, label
 						cbcDBStrats[i].getStrategyID(), cbcDBStrats[i]
 								.getStrategyName());
 
@@ -191,7 +164,7 @@ public class CapControlForm extends DBEditorForm {
 		if (cbcStrategiesMap == null) {
 			cbcStrategiesMap = new HashMap(32);
 
-			//force us to init our map with the correct data
+			// force us to init our map with the correct data
 			getCbcStrategies();
 		}
 
@@ -211,11 +184,11 @@ public class CapControlForm extends DBEditorForm {
 
 			SelectItem[] temp = new SelectItem[lPaos.length];
 			for (int i = 0; i < temp.length; i++)
-				temp[i] = new SelectItem( //value, label
+				temp[i] = new SelectItem( // value, label
 						new Integer(lPaos[i].getLiteID()), lPaos[i]
 								.getPaoName());
 
-			//add the none PAObject to this list
+			// add the none PAObject to this list
 			kwkvarPaos = new SelectItem[temp.length + 1];
 			kwkvarPaos[0] = new SelectItem(new Integer(
 					LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID()),
@@ -242,7 +215,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns the currently selected strategyID for the given Sub or Feeder
-	 *
+	 * 
 	 */
 	public int getCurrentStrategyID() {
 
@@ -260,7 +233,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns all available VAR points
-	 *
+	 * 
 	 */
 	public TreeNode getVarTreeData() {
 
@@ -273,7 +246,7 @@ public class CapControlForm extends DBEditorForm {
 		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
 		for (int i = 0; i < lPaos.length; i++) {
 
-			paos[i] = new TreeNodeBase( //type, description, leaf
+			paos[i] = new TreeNodeBase( // type, description, leaf
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
@@ -293,7 +266,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns all available WATT points
-	 *
+	 * 
 	 */
 	public TreeNode getWattTreeData() {
 
@@ -306,7 +279,7 @@ public class CapControlForm extends DBEditorForm {
 		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
 		for (int i = 0; i < lPaos.length; i++) {
 
-			paos[i] = new TreeNodeBase( //type, description, leaf
+			paos[i] = new TreeNodeBase( // type, description, leaf
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
@@ -326,7 +299,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns all available Volt points
-	 *
+	 * 
 	 */
 	public TreeNode getVoltTreeData() {
 
@@ -339,7 +312,7 @@ public class CapControlForm extends DBEditorForm {
 		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
 		for (int i = 0; i < lPaos.length; i++) {
 
-			paos[i] = new TreeNodeBase( //type, description, leaf
+			paos[i] = new TreeNodeBase( // type, description, leaf
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
@@ -358,8 +331,8 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Returns all the unused PAOs for a control point in the system. Only do this
-	 * once with each instance of this class
+	 * Returns all the unused PAOs for a control point in the system. Only do
+	 * this once with each instance of this class
 	 */
 	private LiteYukonPAObject[] getAllUnusedCCPAOs() {
 
@@ -372,8 +345,8 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Returns all status points that are available for a CapBank to use
-	 * for its control point
+	 * Returns all status points that are available for a CapBank to use for its
+	 * control point
 	 */
 	public TreeNode getCapBankPoints() {
 
@@ -383,8 +356,8 @@ public class CapControlForm extends DBEditorForm {
 			return rootNode;
 
 		LiteYukonPAObject[] lPaos = getAllUnusedCCPAOs();
-		//		LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
-		//					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
+		// LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
+		// ((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
 
 		Vector typeList = new Vector(32);
 		Arrays.sort(lPaos, LiteComparators.litePaoTypeComparator);
@@ -395,12 +368,13 @@ public class CapControlForm extends DBEditorForm {
 
 		for (int i = 0; i < lPaos.length; i++) {
 
-			//only show CapControl speficic PAOs
+			// only show CapControl speficic PAOs
 			if (!PAOGroups.isCapControl(lPaos[i]))
 				continue;
 
 			if (currType != lPaos[i].getType()) {
-				paoTypeNode = new TreeNodeBase( //type, description, identifier, isLeaf
+				paoTypeNode = new TreeNodeBase( // type, description,
+												// identifier, isLeaf
 						"paoTypes", "Type: "
 								+ PAOGroups
 										.getPAOTypeString(lPaos[i].getType()),
@@ -409,7 +383,7 @@ public class CapControlForm extends DBEditorForm {
 				typeList.add(paoTypeNode);
 			}
 
-			paoNodes[i] = new TreeNodeBase( //type, description, isLeaf
+			paoNodes[i] = new TreeNodeBase( // type, description, isLeaf
 					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
 							.getYukonID()), false);
 
@@ -417,7 +391,7 @@ public class CapControlForm extends DBEditorForm {
 					.getYukonID());
 			for (int j = 0; j < lPoints.length; j++) {
 
-				//status points are only allowed in this list
+				// status points are only allowed in this list
 				if (lPoints[j].getPointType() == PointTypes.STATUS_POINT)
 					paoNodes[i].getChildren().add(
 							new TreeNodeBase("points", lPoints[j]
@@ -425,16 +399,16 @@ public class CapControlForm extends DBEditorForm {
 									.getPointID()), true));
 			}
 
-			//only show PAObjects that have 1 or more points
+			// only show PAObjects that have 1 or more points
 			if (paoNodes[i].getChildren().size() > 0)
 				paoTypeNode.getChildren().add(paoNodes[i]);
 
 			currType = lPaos[i].getType();
 		}
 
-		//this list will be a fixed size with a controlled max value
-		//java.util.Collections.sort( typeList, DummyTreeNode.comparator);
-		//only show types that have 1 or more points
+		// this list will be a fixed size with a controlled max value
+		// java.util.Collections.sort( typeList, DummyTreeNode.comparator);
+		// only show types that have 1 or more points
 		for (int i = 0; i < typeList.size(); i++)
 			if (((TreeNodeBase) typeList.get(i)).getChildren().size() > 0)
 				rootNode.getChildren().add(typeList.get(i));
@@ -444,7 +418,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Event fired when the Var Point selection has changed
-	 *
+	 * 
 	 */
 	public void varPtTeeClick(ActionEvent ae) {
 
@@ -513,7 +487,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Event fired when the Volt Point selection has changed
-	 *
+	 * 
 	 */
 	public void voltPtTeeClick(ActionEvent ae) {
 
@@ -548,9 +522,10 @@ public class CapControlForm extends DBEditorForm {
 			((PAOSchedule) dbObj).setScheduleID(new Integer(id));
 			break;
 
-		//			case DBEditorTypes.EDITOR_POINT:
-		//				dbObj = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
-		//				break;			
+		// case DBEditorTypes.EDITOR_POINT:
+		// dbObj = PointFactory.createPoint(
+		// PointFuncs.getLitePoint(id).getPointType() );
+		// break;
 		}
 
 		setDbPersistent(dbObj);
@@ -575,14 +550,21 @@ public class CapControlForm extends DBEditorForm {
 		if (retrieveDBPersistent() == null)
 			return;
 
-		//decide what editor type should be used
+		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
 			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID()
 					.intValue();
+			// do the initialization for the dual bus parameters
+			// initialize subBusList
+			initSubBusList();
+			// initiliaze switchPointList
+			initSwitchPointList();
+			//make sure that controls are set to the current values in DB
+			initControls();
 			initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent())
 					.getPAOCategory(), ((YukonPAObject) getDbPersistent())
 					.getPAOType()));
-
+			
 		} else if (getDbPersistent() instanceof PointBase) {
 			itemID = ((PointBase) getDbPersistent()).getPoint().getPointID()
 					.intValue();
@@ -636,16 +618,16 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * All possible panels for this editor go here. Set visible panels and labels
-	 * based on type of object. DO NOT access the DB persitent object in
+	 * All possible panels for this editor go here. Set visible panels and
+	 * labels based on type of object. DO NOT access the DB persitent object in
 	 * this method since it may be null in the case of a Wizard.
 	 */
 	private void initPanels(int paoType) {
 
-		//all panels that are always displayed
+		// all panels that are always displayed
 		getVisibleTabs().put("General", new Boolean(true));
 
-		//all type specifc panels
+		// all type specifc panels
 		getVisibleTabs().put("GeneralPAO", new Boolean(true));
 		getVisibleTabs().put("BaseCapControl", new Boolean(false));
 		getVisibleTabs().put("CBCSubstation", new Boolean(false));
@@ -689,10 +671,10 @@ public class CapControlForm extends DBEditorForm {
 
 			getVisibleTabs().put("CBCType", new Boolean(true));
 
-			//------------------------------------------------------------------------------
+			// ------------------------------------------------------------------------------
 			// todo: Boolean should be TRUE, but this CBC panel is not currently
 			// working, will fix later
-			//------------------------------------------------------------------------------
+			// ------------------------------------------------------------------------------
 			getVisibleTabs().put("CBCController", new Boolean(false));
 			break;
 
@@ -703,7 +685,7 @@ public class CapControlForm extends DBEditorForm {
 			getVisibleTabs().put("CBCSchedule", new Boolean(true));
 			break;
 
-		//-------- todo ----------
+		// -------- todo ----------
 		case PointTypes.ANALOG_POINT:
 			break;
 
@@ -716,17 +698,18 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * The instance of the underlying base object
-	 *
+	 * 
 	 */
-	//	public YukonPAObject getPAOBase() {
-	//		return (YukonPAObject)getDbPersistent();
-	//	}
+	// public YukonPAObject getPAOBase() {
+	// return (YukonPAObject)getDbPersistent();
+	// }
 	public DBPersistent getPAOBase() {
 		return getDbPersistent();
 	}
 
 	/**
 	 * Fired when the kwkvarPaos component is changed
+	 * 
 	 * @param ev
 	 */
 	public void kwkvarPaosChanged(ValueChangeEvent ev) {
@@ -743,7 +726,7 @@ public class CapControlForm extends DBEditorForm {
 			temp[i] = new SelectItem(new Integer(lPoints[i].getLiteID()),
 					lPoints[i].getPointName());
 
-		//add the none LitePoint to this list
+		// add the none LitePoint to this list
 		kwkvarPoints = new SelectItem[temp.length + 1];
 		kwkvarPoints[0] = new SelectItem(new Integer(LitePoint.NONE_LITE_PT
 				.getLiteID()), LitePoint.NONE_LITE_PT.getPointName());
@@ -751,20 +734,19 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Executes any last minute object updates before writting
-	 * the data to the databse. The return value is where the requested
-	 * value is redirected as defined in our faces-config.xml
+	 * Executes any last minute object updates before writting the data to the
+	 * databse. The return value is where the requested value is redirected as
+	 * defined in our faces-config.xml
 	 * 
 	 */
 	public void update() {
 
-		//this message will be filled in by the super class
+		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
 
 		try {
-			//update the CBCStrategy object if we are editing it
+			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy()) {
-
 				int stratID = CtiUtilities.NONE_ZERO_ID;
 				if (getDbPersistent() instanceof CapControlFeeder)
 					stratID = ((CapControlFeeder) getDbPersistent())
@@ -777,24 +759,39 @@ public class CapControlForm extends DBEditorForm {
 				updateDBObject((CapControlStrategy) getCbcStrategiesMap().get(
 						new Integer(stratID)), facesMsg);
 
-				//clear out the memory of any list of Strategies
+				// clear out the memory of any list of Strategies
 				resetStrategies();
 				setEditingCBCStrategy(false);
 			}
 
-			//update the CBC object if we are editing it
+			// update the CBC object if we are editing it
 			if (isEditingController()) {
 				updateDBObject(getCBControllerEditor().getPaoCBC(), facesMsg);
 
-				//clear out the memory of CBCs structures
+				// clear out the memory of CBCs structures
 				resetCBCEditor();
 			}
+
+			// set the altSubId and SwitchPointId
+			// TODO create reset methods for the sublist and pointlist
+			// TODO put these methods inside set methods for the backing bean
+			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+					.setAltSubstationID(getSelectedSubBus());
+
+			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+					.setSwitchPointID(getSelectedSwitchPoint());
+
+			String dualBusCtl = (getEnableDualBus().booleanValue()) ? new String(
+					"Y")
+					: new String("N");
+			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+					.setDualBusEnabled(dualBusCtl);
 
 			updateDBObject(getDbPersistent(), facesMsg);
 
 			facesMsg.setDetail("Database update was SUCCESSFUL");
 		} catch (TransactionException te) {
-			//do nothing since the appropriate actions was taken in the super
+			// do nothing since the appropriate actions was taken in the super
 		} finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update",
 					facesMsg);
@@ -808,7 +805,7 @@ public class CapControlForm extends DBEditorForm {
 	private void createPostItems(int paoType, int parentID,
 			final FacesMessage facesMsg) throws TransactionException {
 
-		//store the objects we add to the DB
+		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
 
 		SmartMultiDBPersistent smartMulti = cbObjCreator.createChildItems(
@@ -818,13 +815,13 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Creates extra supporting object(s) for the given parent
-	 * based on the paoType
+	 * Creates extra supporting object(s) for the given parent based on the
+	 * paoType
 	 */
 	private void createPreItems(int paoType, DBPersistent dbObj,
 			final FacesMessage facesMsg) throws TransactionException {
 
-		//store the objects we add to the DB
+		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
 
 		SmartMultiDBPersistent smartMulti = cbObjCreator
@@ -832,15 +829,17 @@ public class CapControlForm extends DBEditorForm {
 
 		addDBObject(smartMulti, facesMsg);
 
-		//set the parent to use the newly created supporting items
+		// set the parent to use the newly created supporting items
 		if (dbObj instanceof CapBank && getWizData().isCreateNested()) {
 
-			//set the CapBanks ControlDeviceID to be the ID of the CBC we just created
+			// set the CapBanks ControlDeviceID to be the ID of the CBC we just
+			// created
 			((CapBank) dbObj).getCapBank().setControlDeviceID(
 					((YukonPAObject) smartMulti.getOwnerDBPersistent())
 							.getPAObjectID());
 
-			//find the first status point in our CBC and assign its ID to our CapBank
+			// find the first status point in our CBC and assign its ID to our
+			// CapBank
 			// for control purposes
 			StatusPoint statusPt = (StatusPoint) SmartMultiDBPersistent
 					.getFirstObjectOfType(StatusPoint.class, smartMulti);
@@ -853,23 +852,23 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Executes the creation of the current DB object. We stuff the current
-	 * DB persistent object with the newlay created one so our jump to the 
-	 * editor page will use the new created DB object.
+	 * Executes the creation of the current DB object. We stuff the current DB
+	 * persistent object with the newlay created one so our jump to the editor
+	 * page will use the new created DB object.
 	 */
 	public String create() {
 
-		//creates the DB object
+		// creates the DB object
 		FacesMessage facesMsg = new FacesMessage();
 
 		try {
 
-			//if there is a secondaryType set, use that value to creat the PAO
+			// if there is a secondaryType set, use that value to creat the PAO
 			int paoType = getWizData().getSelectedType();
 			DBPersistent dbObj = null;
 			int editorType = -1;
 
-			//todo: do this in a better way later
+			// todo: do this in a better way later
 			if (paoType == DBEditorTypes.PAO_SCHEDULE) {
 
 				dbObj = new PAOSchedule();
@@ -888,7 +887,7 @@ public class CapControlForm extends DBEditorForm {
 						.booleanValue());
 				((YukonPAObject) dbObj).setPAOName(getWizData().getName());
 
-				//for CBCs that have a portID with it
+				// for CBCs that have a portID with it
 				if (DeviceTypesFuncs.cbcHasPort(paoType))
 					((ICapBankController) dbObj).setCommID(getWizData()
 							.getPortID());
@@ -900,29 +899,30 @@ public class CapControlForm extends DBEditorForm {
 				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
 			}
 
-			//creates any extra db objects if need be
+			// creates any extra db objects if need be
 			createPostItems(paoType, itemID, facesMsg);
 
 			facesMsg.setDetail("Database add was SUCCESSFUL");
 
-			//init this form with the newly created DB object wich should be in the cache
+			// init this form with the newly created DB object wich should be in
+			// the cache
 			initItem(itemID, editorType);
 
-			//redirect to this form as the editor for this new DB object
+			// redirect to this form as the editor for this new DB object
 			return "cbcEditor";
 
 		} catch (TransactionException te) {
-			//do nothing since the appropriate actions was taken in the super
+			// do nothing since the appropriate actions was taken in the super
 		} finally {
 			FacesContext.getCurrentInstance()
 					.addMessage("cti_db_add", facesMsg);
 		}
 
-		return ""; //go nowhere since this action failed
+		return ""; // go nowhere since this action failed
 	}
 
 	/**
-	 * Puts our form into CBC editing mode 
+	 * Puts our form into CBC editing mode
 	 */
 	public void showScanRate(ValueChangeEvent ev) {
 
@@ -931,7 +931,7 @@ public class CapControlForm extends DBEditorForm {
 
 		Boolean isChecked = (Boolean) ev.getNewValue();
 
-		//find out if this device is TwoWay (used for 2 way CBCs)
+		// find out if this device is TwoWay (used for 2 way CBCs)
 		if (isControllerCBC() && getCBControllerEditor().isTwoWay()) {
 
 			TwoWayDevice twoWayDev = (TwoWayDevice) getCBControllerEditor()
@@ -943,8 +943,8 @@ public class CapControlForm extends DBEditorForm {
 							"scanExceptionChk") ? DeviceScanRate.TYPE_EXCEPTION
 							: "");
 
-			//store what scan we are or ar not editing
-			//getCBControllerEditor().setEditingScan( type, isChecked );
+			// store what scan we are or ar not editing
+			// getCBControllerEditor().setEditingScan( type, isChecked );
 
 			if (isChecked.booleanValue()) {
 				twoWayDev.getDeviceScanRateMap().put(
@@ -988,22 +988,22 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Tells us if we are editing a CBC 
+	 * Tells us if we are editing a CBC
 	 */
 	public boolean isEditingController() {
 		return editingController;
 	}
 
 	/**
-	 * Tells us if we are editing a CBC 
+	 * Tells us if we are editing a CBC
 	 */
 	public void setEditingController(boolean val) {
 		editingController = val;
 	}
 
 	/**
-	 * Creates a strategy 
-	 *
+	 * Creates a strategy
+	 * 
 	 */
 	public void createStrategy() {
 
@@ -1013,12 +1013,12 @@ public class CapControlForm extends DBEditorForm {
 		ccStrat.setStrategyID(newID);
 		ccStrat.setStrategyName("Strat #" + newID + " (New)");
 
-		//this message will be filled in by the super class
+		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
 		try {
 			addDBObject(ccStrat, facesMsg);
 
-			//set the current object to use this new Strategy
+			// set the current object to use this new Strategy
 			if (getDbPersistent() instanceof CapControlFeeder)
 				((CapControlFeeder) getDbPersistent()).getCapControlFeeder()
 						.setStrategyID(newID);
@@ -1026,13 +1026,13 @@ public class CapControlForm extends DBEditorForm {
 				((CapControlSubBus) getDbPersistent())
 						.getCapControlSubstationBus().setStrategyID(newID);
 
-			//clear out the memory of the any list of Strategies
+			// clear out the memory of the any list of Strategies
 			resetStrategies();
 			setEditingCBCStrategy(true);
 
 			facesMsg.setDetail("CapControl Strategy add was SUCCESSFUL");
 		} catch (TransactionException te) {
-			//do nothing since the appropriate actions was taken in the super
+			// do nothing since the appropriate actions was taken in the super
 		} finally {
 
 			FacesContext.getCurrentInstance()
@@ -1041,16 +1041,16 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Delete the selected Strategy 
-	 *
+	 * Delete the selected Strategy
+	 * 
 	 */
 	public void deleteStrategy() {
 
-		//this message will be filled in by the super class
+		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
 
 		try {
-			//cancel any editing of the Strategy we may have been doing
+			// cancel any editing of the Strategy we may have been doing
 			setEditingCBCStrategy(false);
 
 			int stratID = CtiUtilities.NONE_ZERO_ID;
@@ -1068,19 +1068,20 @@ public class CapControlForm extends DBEditorForm {
 								new Integer(CtiUtilities.NONE_ZERO_ID));
 			}
 
-			//decide if we need to do any special handling of this transaction
+			// decide if we need to do any special handling of this transaction
 			// based on what other PAOs use this Strategy
 			int[] paos = CapControlStrategy.getAllPAOSUsingStrategy(stratID,
 					itemID);
 			if (paos.length <= 0) {
 
-				//update the current PAOBase object just in case it uses the strategy we are deleting
+				// update the current PAOBase object just in case it uses the
+				// strategy we are deleting
 				updateDBObject(getDbPersistent(), null);
 
 				deleteDBObject((CapControlStrategy) getCbcStrategiesMap().get(
 						new Integer(stratID)), facesMsg);
 
-				//clear out the memory of the any list of Strategies
+				// clear out the memory of the any list of Strategies
 				resetStrategies();
 
 				facesMsg.setDetail("CapControl Strategy delete was SUCCESSFUL");
@@ -1116,6 +1117,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns the parent object to the current DB object
+	 * 
 	 * @return
 	 */
 	public String getParent() {
@@ -1142,6 +1144,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Adds an element from one table to another by the given id
+	 * 
 	 * @param event
 	 */
 	public void treeSwapAddAction() {
@@ -1152,14 +1155,15 @@ public class CapControlForm extends DBEditorForm {
 		int elemID = new Integer((String) paramMap.get("id")).intValue();
 
 		if ("CapBank".equalsIgnoreCase(swapType)) {
-			//a table that swaps CapBanks, must be for a Feeder object			
+			// a table that swaps CapBanks, must be for a Feeder object
 			if (unassignedBanks != null) {
 				for (int i = 0; i < unassignedBanks.size(); i++) {
 
 					if (elemID == ((LiteYukonPAObject) unassignedBanks.get(i))
 							.getLiteID()) {
 
-						//Add the mapping for the given CapBank id to this Feeder
+						// Add the mapping for the given CapBank id to this
+						// Feeder
 						CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
 						currFdr.getChildList().add(
 								new CCFeederBankList(new Integer(itemID),
@@ -1174,13 +1178,13 @@ public class CapControlForm extends DBEditorForm {
 			}
 
 		} else if ("Feeder".equalsIgnoreCase(swapType)) {
-			//a table that swaps Feeders, must be for a SubBus object
+			// a table that swaps Feeders, must be for a SubBus object
 			if (unassignedFeeders != null) {
 				for (int i = 0; i < unassignedFeeders.size(); i++) {
 
 					if (elemID == ((LiteYukonPAObject) unassignedFeeders.get(i))
 							.getLiteID()) {
-						//Add the mapping for the given Feeders id to this Sub
+						// Add the mapping for the given Feeders id to this Sub
 						CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
 						currSub.getChildList().add(
 								new CCFeederSubAssignment(new Integer(elemID),
@@ -1209,7 +1213,7 @@ public class CapControlForm extends DBEditorForm {
 		int elemID = new Integer((String) paramMap.get("id")).intValue();
 
 		if ("CapBank".equalsIgnoreCase(swapType)) {
-			//a table that swaps CapBanks, must be for a Feeder object			
+			// a table that swaps CapBanks, must be for a Feeder object
 			CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
 			for (int i = 0; i < currFdr.getChildList().size(); i++) {
 
@@ -1217,11 +1221,12 @@ public class CapControlForm extends DBEditorForm {
 						.getChildList().get(i);
 				if (elemID == listItem.getDeviceID().intValue()) {
 
-					//remove the mapping for the given CapBank id to this Feeder
+					// remove the mapping for the given CapBank id to this
+					// Feeder
 					currFdr.getChildList().remove(i);
 
 					unassignedBanks.add(PAOFuncs.getLiteYukonPAO(elemID));
-					//keep our order
+					// keep our order
 					Collections.sort(unassignedBanks,
 							LiteComparators.liteStringComparator);
 					break;
@@ -1229,7 +1234,7 @@ public class CapControlForm extends DBEditorForm {
 			}
 
 		} else if ("Feeder".equalsIgnoreCase(swapType)) {
-			//a table that swaps Feeders, must be for a SubBus object
+			// a table that swaps Feeders, must be for a SubBus object
 			CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
 
 			for (int i = 0; i < currSub.getChildList().size(); i++) {
@@ -1237,11 +1242,11 @@ public class CapControlForm extends DBEditorForm {
 						.getChildList().get(i);
 				if (elemID == listItem.getFeederID().intValue()) {
 
-					//remove the mapping for the given Feeder id to this SubBus
+					// remove the mapping for the given Feeder id to this SubBus
 					currSub.getChildList().remove(i);
 
 					unassignedFeeders.add(PAOFuncs.getLiteYukonPAO(elemID));
-					//keep our order
+					// keep our order
 					Collections.sort(unassignedFeeders,
 							LiteComparators.liteStringComparator);
 					break;
@@ -1252,8 +1257,9 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Builds up the available CapBanks and unavailable CapBanks for assignment to
-	 * a feeder. Also, inits panel state based on the editor object that is set.
+	 * Builds up the available CapBanks and unavailable CapBanks for assignment
+	 * to a feeder. Also, inits panel state based on the editor object that is
+	 * set.
 	 */
 	public void initEditorPanels() {
 		if (getDbPersistent() instanceof CapControlFeeder) {
@@ -1420,6 +1426,7 @@ public class CapControlForm extends DBEditorForm {
 
 	/**
 	 * Returns true if the DB object is a CapBank and the OpState is FIXED
+	 * 
 	 * @return
 	 */
 	public boolean isBankControlPtVisible() {
@@ -1462,8 +1469,8 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	/**
-	 * Returns true if our current CBCStrategy is set to do some form
-	 * of Voltage control, else false is returned
+	 * Returns true if our current CBCStrategy is set to do some form of Voltage
+	 * control, else false is returned
 	 */
 	public boolean isVoltageControl() {
 
@@ -1479,6 +1486,7 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	public String getVARscrollOffsetTop() {
+
 		return VARscrollOffsetTop;
 	}
 
@@ -1506,36 +1514,126 @@ public class CapControlForm extends DBEditorForm {
 		return switchPointList;
 	}
 
-	public String getSelectedSubBus() {
+	public Integer getSelectedSubBus() {
 
 		return selectedSubBus;
 	}
 
-	public void setSelectedSubBus(String selectedSubBus) {
-
+	public void setSelectedSubBus(Integer selectedSubBus) {
+		// System.out.println("The selected sub bus ID: - " + selectedSubBus);
 		this.selectedSubBus = selectedSubBus;
-
 	}
 
-	public String getSelectedSwitchPoint() {
+	public Integer getSelectedSwitchPoint() {
 
 		return selectedSwitchPoint;
 	}
 
-	public void setSelectedSwitchPoint(String selectedSwitchPoint) {
-
+	public void setSelectedSwitchPoint(Integer selectedSwitchPoint) {
 		this.selectedSwitchPoint = selectedSwitchPoint;
 
 	}
 
-	public Boolean getDisableDualBus() {
-		return disableDualBus;
+	public Boolean getEnableDualBus() {
+		return enableDualBus;
 	}
 
-	public void setDisableDualBus(Boolean disableDualBus) {
-		this.disableDualBus = disableDualBus;
+	public void setEnableDualBus(Boolean enableDualBus) {
+		this.enableDualBus = enableDualBus;
 	}
 
+	/**
+	 * method that is used to display the curent switch point selected
+	 * 
+	 * @return String name of the selected point
+	 * 
+	 */
 
+	public String getSelectedSwitchPointName() {
+		Object[] objarr = getSwitchPointList().toArray();
+		for (int i = 0; i < objarr.length; i++) {
 
+			SelectItem si = (SelectItem) objarr[i];
+			if (si.getValue().equals(this.getSelectedSwitchPoint().toString()))
+				this.selectedSwitchPointName = si.getLabel();
+		}
+		return this.selectedSwitchPointName;
+
+	}
+
+	/**
+	 * method that is used to display the curent subbus selected
+	 * @return String name of the selected point
+	 * 
+	 */
+	public String getSelectedSubBusName() {
+		Object[] objarr = this.getSubBusList().toArray();
+		for (int i = 0; i < objarr.length; i++) {
+			SelectItem si = (SelectItem) objarr[i];
+			if (si.getValue().equals(this.getSelectedSubBus()))
+				this.selectedSubBusName = si.getLabel();
+		}
+		return selectedSubBusName;
+	}
+
+	private void initSubBusList() {
+		int subBusListLength = 0;
+		// the plan is to get the list from capcontrolcache
+		CapControlCache capControlCache = (CapControlCache) FacesContext
+				.getCurrentInstance().getExternalContext().getApplicationMap()
+				.get("capControlCache");
+
+		// need to get the number of sub buses in the system
+		if (this.subBusList == null) {
+			for (int i = 0; i < capControlCache.getAreaNames().size(); i++) {
+				String areaStr = (String) capControlCache.getAreaNames().get(i);
+				SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
+				for (int j = 0; j < areaBuses.length; j++) {
+					subBusListLength++;
+				}
+			}
+			subBusList = new ArrayList(subBusListLength);
+			// get the sub bus list from application ctxt
+			for (int i = 0; i < capControlCache.getAreaNames().size(); i++) {
+				String areaStr = (String) capControlCache.getAreaNames().get(i);
+				SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
+				for (int j = 0; j < areaBuses.length; j++) {
+					SubBus subBus = areaBuses[j];
+					SelectItem si = new SelectItem(subBus.getCcId(), subBus
+							.getCcName());
+					subBusList.add(si);
+
+				}
+
+			}
+		}
+	}
+
+	private void initSwitchPointList() {
+		if (switchPointList == null) {
+			PointLists pLists = new PointLists();
+			LiteYukonPAObject[] lPaos = pLists
+					.getAllStatusPoints(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS);
+			switchPointList = new ArrayList(lPaos.length);
+			for (int i = 0; i < lPaos.length; i++) {
+				SelectItem si = new SelectItem(String.valueOf(lPaos[i]
+						.getYukonID()), lPaos[i].getPaoName());
+				switchPointList.add(si);
+
+			}
+		}
+	}
+private void initControls() {
+
+	setSelectedSubBus(((CapControlSubBus) getDbPersistent())
+			.getCapControlSubstationBus().getAltSubstationID());
+	setSelectedSwitchPoint(((CapControlSubBus) getDbPersistent())
+			.getCapControlSubstationBus().getSwitchPointID());
+	String dualBusCtl = ((CapControlSubBus) getDbPersistent())
+			.getCapControlSubstationBus().getDualBusEnabled();
+	Boolean b = (dualBusCtl.contentEquals(new StringBuffer("Y"))) ? new Boolean(
+			true)
+			: new Boolean(false);
+	setEnableDualBus(b);
+}
 }

@@ -3,12 +3,11 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 
 <f:verbatim>
-	
-	<script type="text/javascript">
+<script type="text/JavaScript">
 <!--
-//function that will set the scroll bar offset value to 0 on start up
-document.body.onload = init;
+window.onload = init;
 
+//function that will set the scroll bar offset value to 0 on start up
 function init() {
 
 var div_var    = document.getElementById("editorForm:subSetup:paoSubBus:VARscrollable_div"); 
@@ -39,9 +38,13 @@ div_volt.onscroll = 	function () {setHiddenOffsetValue(div_volt, hidden_volt); }
 //Event.observe(div_volt, 'onscroll', function() { new CtiPositionAwareScrollbar(div_volt, hidden_volt);    }, false);
 
 
-}
+//doesn't really belong here but needs to be untill
+//figure out a way to call functions from a file
+//focus users attention on the table data scroller element
+document.getElementById("editorForm:altDualBusSetup:altDualBus:scrollButtonsAltSubIdfirst").scrollIntoView(true);	
 
-//fires every time the the scroll bar position changes
+}	
+//helper functions for initSubBus()
 function setHiddenOffsetValue(div_el, hidden_el) {
 
 hidden_el.value = div_el.scrollTop;
@@ -53,12 +56,13 @@ div_el.scrollIntoView(true);
 div_el.scrollTop = hidden_el.value;
 
 }
-
 //-->
-
 </script>
-</f:verbatim>
 
+
+
+
+</f:verbatim>
 
 <f:subview id="subSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
 

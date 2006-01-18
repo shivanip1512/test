@@ -4,7 +4,6 @@
 
 <f:verbatim>
 	<script type="text/javascript">
-document.body.onload = init;
 <!--
 function radioButtonClick(type, radioObj) {
 //make sure that all the radio buttons are unchecked
@@ -38,40 +37,26 @@ switch (type) {
 	
 }
 
-function init() {
-//all radio buttons are reset
-var sb_table_id  		= "editorForm:altDualBusSetup:altDualBus:altSubBusData";
-
-var switch_p_table_id  	= "editorForm:altDualBusSetup:altDualBus:altSwitchPointData";
-
-var switch_p_hidden_id 	= "editorForm:altDualBusSetup:selectedSwitchPoint";
-var sb_hidden_id 		= "editorForm:altDualBusSetup:selectedSubBus";
-
-var tables = [sb_table_id,  switch_p_table_id];
-var hidden = [switch_p_hidden_id, sb_hidden_id]; 
-
-for(var i=0; i < tables.length; i++){
-	var currenttable =   document.getElementById(tables[i]);	
-	var current_hidden = document.getElementById(hidden[i]);
-	var inputElements = currenttable.getElementsByTagName("input");
-	for (var j=0; j < inputElements.length; j++) {
-		curr_radio_button = inputElements[j];
-		if (curr_radio_button.value == current_hidden.value)
-			curr_radio_button.checked = true;
-		}
-	
-	}
-document.getElementById("editorForm:altDualBusSetup:altDualBus:subBody").scrollIntoView(true);	
-}
--->
+//-->
 </script>
 </f:verbatim>
 <f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
 	<f:subview id="altDualBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
 		<h:panelGrid id="subBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell">
 			<x:panelGroup>
+				<f:verbatim>
+					<br />
+					<fieldset>
+						<legend>
+							Alternative Substation Bus
+						</legend>
+				
+				</f:verbatim>
+				<f:verbatim>
+				<x:outputText styleClass="tableHeader" value="Selected SubBus: #{capControlForm.selectedSubBus}/ #{capControlForm.selectedSubBusName}"/>
+				</f:verbatim>
 				<h:dataTable id="altSubBusData" var="subBus" styleClass="scrollerTable" headerClass="scrollerTableHeader" footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow" value="#{capControlForm.subBusList}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="25">
+					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="10" title="Choose an alternative substation bus for the current substation">
 					<h:column>
 						<f:facet name="header">
 							<x:outputText value="ID" />
@@ -92,10 +77,11 @@ document.getElementById("editorForm:altDualBusSetup:altDualBus:subBody").scrollI
 						</f:facet>
 
 						<h:selectOneRadio required="false" value="#{capControlForm.selectedSubBus}" onclick="radioButtonClick('SubBus', this)">
-							<f:selectItem itemValue="#{subBus.label}" itemLabel="" />
+							<f:selectItem itemValue="#{subBus.value}" itemLabel="" />
 						</h:selectOneRadio>
 					</h:column>
 				</h:dataTable>
+			
 				<h:panelGrid columns="1" columnClasses="scrollerCentered">
 					<x:dataScroller id="scrollButtonsAltSubId" for="altSubBusData" fastStep="25" pageCountVar="pageCount" pageIndexVar="pageIndex" styleClass="scroller" paginator="true" paginatorMaxPages="9" paginatorTableClass="paginator"
 						paginatorActiveColumnStyle="font-weight:bold;">
@@ -135,8 +121,18 @@ document.getElementById("editorForm:altDualBusSetup:altDualBus:subBody").scrollI
 				</h:panelGrid>
 			</x:panelGroup>
 			<x:panelGroup>
+				<f:verbatim>
+					<br />
+					<fieldset>
+						<legend>
+							Switch Point
+						</legend>
+				</f:verbatim>
+				<f:verbatim>
+				<x:outputText styleClass="tableHeader" value="Selected Switch Point: #{capControlForm.selectedSwitchPoint}/ #{capControlForm.selectedSwitchPointName}"/>
+				</f:verbatim>
 				<h:dataTable id="altSwitchPointData" var="switchPoint" styleClass="scrollerTable" headerClass="scrollerTableHeader" footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow" value="#{capControlForm.switchPointList}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="25">
+					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="10" title="Choose an alternative switch point for the current substation">
 					<h:column>
 						<f:facet name="header">
 							<x:outputText value="ID" />
@@ -157,7 +153,7 @@ document.getElementById("editorForm:altDualBusSetup:altDualBus:subBody").scrollI
 						</f:facet>
 
 						<h:selectOneRadio required="false" value="#{capControlForm.selectedSwitchPoint}" onclick="radioButtonClick('SwitchPoint', this)">
-							<f:selectItem itemValue="#{switchPoint.label}" itemLabel="" />
+							<f:selectItem itemValue="#{switchPoint.value}" itemLabel="" />
 						</h:selectOneRadio>
 					</h:column>
 				</h:dataTable>
@@ -203,8 +199,8 @@ document.getElementById("editorForm:altDualBusSetup:altDualBus:subBody").scrollI
 
 
 		</h:panelGrid>
-		<h:selectBooleanCheckbox id="disableDualBus" title="Disable Dual Bus" value="#{capControlForm.disableDualBus}" />
-		<h:outputText value="Disable Dual Bus" />
+		<h:selectBooleanCheckbox id="enableDualBus" title="Disable Dual Bus" value="#{capControlForm.enableDualBus}" />
+		<h:outputText value="Enable Dual Bus" />
 	</f:subview>
 	<h:inputHidden id="selectedSubBus" value="#{capControlForm.selectedSubBus}" />
 	<h:inputHidden id="selectedSwitchPoint" value="#{capControlForm.selectedSwitchPoint}" />
