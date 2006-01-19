@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/16 19:55:18 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/01/19 20:47:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,8 +128,26 @@ public:
 
         unsigned long now_seconds = CtiTime::now().seconds();
 
-        if( (_status & INRCOLQ) && (_inrcolq_expiration < now_seconds) )    _status &= ~INRCOLQ;
-        if( (_status & INLGRPQ) && (_inlgrpq_expiration < now_seconds) )    _status &= ~INLGRPQ;
+        if( (_status & INRCOLQ) && (_inrcolq_expiration < now_seconds) )
+        {
+            _status &= ~INRCOLQ;
+            _inrcolq_expiration = YUKONEOT;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+        if( (_status & INLGRPQ) && (_inlgrpq_expiration < now_seconds) )
+        {
+            _status &= ~INLGRPQ;
+            _inlgrpq_expiration = YUKONEOT;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
 
         return (_status & mask);
     }
