@@ -19,10 +19,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * a yukon user might do along with other possibly interesting information about the user.
  * i.e. account id, energy company id
  * 
- * It is intended to be useful to generate reports from.
+ * It is intende d to be useful to generate reports from.
  * @author yao
- * @author aaron
- */
+ * @author aaron 
+ */ 
 public class ActivityLogger {
 	
 	/**
