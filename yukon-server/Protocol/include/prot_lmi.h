@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/01/19 20:44:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,10 +103,15 @@ private:
 
         PointOffset_TransmitterPower = 1000,  //  analog
 
-        PointOffset_CodeVerification = 1001,  //  statuses
-        PointOffset_LMIComm          = 1002,
-        PointOffset_Transmitting     = 1003,
-        PointOffset_PowerReset       = 1004,
+        PointOffset_LoadShedVerifyState     = 1001,  //  statuses
+        PointOffset_LoadShedVerifyComplete  = 1002,
+        PointOffset_QuestionableRequest     = 1003,
+        PointOffset_LMICommunicationFailure = 1004,
+        PointOffset_TransmitterLoadVerified = 1005,
+        PointOffset_LoadShedCodesLocked     = 1006,
+        PointOffset_LMIReset                = 1007,
+
+        PointOffset_CodeVerification        = 1008,  //  a combination of VerifyState and VerifyComplete
 
         MaxConsecutiveStatusScans = 5,
 

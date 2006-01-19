@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/12/21 20:32:46 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/01/19 20:44:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1260,23 +1260,43 @@ void CtiProtocolLMI::decodeStatuses(lmi_status statuses)
     pd_template->setType(StatusPointType);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(PointOffset_CodeVerification);
-    pd->setValue(statuses.loadshed_verify_state && !statuses.loadshed_verify_complete);
+    pd->setId(PointOffset_LoadShedVerifyState);
+    pd->setValue(statuses.loadshed_verify_state);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(PointOffset_LMIComm);
+    pd->setId(PointOffset_LoadShedVerifyComplete);
+    pd->setValue(statuses.loadshed_verify_complete);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(PointOffset_QuestionableRequest);
+    pd->setValue(statuses.questionable_request);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(PointOffset_LMICommunicationFailure);
     pd->setValue(statuses.comm_failure);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(PointOffset_Transmitting);
+    pd->setId(PointOffset_TransmitterLoadVerified);
+    pd->setValue(statuses.transmitter_load_verified);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(PointOffset_LoadShedCodesLocked);
     pd->setValue(statuses.loadshed_codes_locked);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(PointOffset_PowerReset);
+    pd->setId(PointOffset_LMIReset);
     pd->setValue(statuses.reset);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(PointOffset_CodeVerification);
+    pd->setValue((statuses.loadshed_verify_complete << 1) | statuses.loadshed_verify_state);
     _lmi_statuses.push_back(pd);
 
     delete pd_template;
