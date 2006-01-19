@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/01/05 21:05:14 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/01/19 20:18:36 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.26  2006/01/19 20:18:36  cplender
+* Added CPARM function isTrue() cause I'm sick of doing the same thing everywhere.
+*
 * Revision 1.25  2006/01/05 21:05:14  cplender
 * Changed a CtiQueue (sorted) to CtiFIFOQueue for speed.
 *
@@ -339,7 +342,7 @@ void CtiPendingOpThread::processPendableQueue()
     QueryPerformanceCounter(&completeTime);
 
     #if 1
-    if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 500)
+    if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 500)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " processPendableQueue duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -560,7 +563,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
             QueryPerformanceCounter(&completeTime);
 
             #if 1
-            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
@@ -650,7 +653,7 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
             QueryPerformanceCounter(&completeTime);
 
             #if 1
-            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " doPendingPointDataOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -720,7 +723,7 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
             }
             QueryPerformanceCounter(&completeTime);
 
-            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " doPendingLimitsOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;

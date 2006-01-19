@@ -222,9 +222,13 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
         return false;
 }
 
+bool CtiConfigParameters::isTrue(string key)
+{
+    return !stringCompareIgnoreCase( getValueAsString(key, "false"), "true" );
+}
 
 string
-CtiConfigParameters::getValueAsString(const string& key, const string& defaultval) 
+CtiConfigParameters::getValueAsString(const string& key, const string& defaultval)
 {
     BOOL           bRet = TRUE;
     CtiConfigKey   Key(key);
@@ -248,7 +252,7 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
     return retStr;
 }
 
-int CtiConfigParameters::getValueAsInt(const string& key, int defaultval) 
+int CtiConfigParameters::getValueAsInt(const string& key, int defaultval)
 {
     int ret = defaultval;
 
@@ -260,7 +264,7 @@ int CtiConfigParameters::getValueAsInt(const string& key, int defaultval)
     return ret;
 }
 
-ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, int base) 
+ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, int base)
 {
     char *ch;
     ULONG ret = defaultval;
@@ -273,7 +277,7 @@ ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, 
     return ret;
 }
 
-double CtiConfigParameters::getValueAsDouble(const string& key, double defaultval)  
+double CtiConfigParameters::getValueAsDouble(const string& key, double defaultval)
 {
     double ret = defaultval;
 
