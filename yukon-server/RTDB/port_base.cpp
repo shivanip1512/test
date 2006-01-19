@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2006/01/16 21:11:23 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2006/01/19 16:20:58 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.61  2006/01/19 16:20:58  jotteson
+* Fixed problem with virtual ports.
+*
 * Revision 1.60  2006/01/16 21:11:23  mfisher
 * Message Flags naming change
 *
@@ -95,11 +98,11 @@
 #include "porter.h"
 #include "logger.h"
 #include "msg_trace.h"
+#include "dllbase.h"
 
 #include "numstr.h"
 
 #define SCREEN_WIDTH    80
-
 
 using namespace std;
 
@@ -669,17 +672,22 @@ bool CtiPort::isSimulated() const
         set<long>::iterator itr;
         _simulated = -1;  //  default to NOT simulated
 
-        if ( !gSimulatedPortList.empty() ){//If Empty, not simulated
+        if( !gSimulatedPortList.empty() )
+        {
             itr = gSimulatedPortList.find(getPortID());
+        }
+        else
+        {
+            itr = gSimulatedPortList.end();
+        }
 
-            if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
-            {
-                _simulated = 1;
-            }
-            else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
-            {
-                _simulated = 1;
-            }
+        if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
+        {
+            _simulated = 1;
+        }
+        else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
+        {
+            _simulated = 1;
         }
     }
 
