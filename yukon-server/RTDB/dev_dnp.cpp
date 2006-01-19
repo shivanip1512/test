@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/01/16 20:49:09 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/01/19 20:52:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -663,6 +663,7 @@ int DNP::sendCommResult(INMESS *InMessage)
         //  make sure we complain about it so we know the magnitude of the problem when people bring it up...
         //    one possible alternative is to send multple InMessages across with the string data - although,
         //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
