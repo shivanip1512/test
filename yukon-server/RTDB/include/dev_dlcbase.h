@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/01/19 20:46:21 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,11 @@ protected:
                            bool                        wait );
 
 public:
+
+    enum
+    {
+        DLC_BroadcastAddress = 0x3fffff
+    };
 
     typedef set< CtiDLCCommandStore > DLCCommandSet;
 
