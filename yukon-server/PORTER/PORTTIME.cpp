@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/01/19 20:40:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,6 +226,15 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         OutMessage->InLength  = 0;
                         OutMessage->ReturnNexus = NULL;
                         OutMessage->SaveNexus   = NULL;
+
+                        OutMessage->Buffer.BSt.Port                = RemoteRecord->getPortID();
+                        OutMessage->Buffer.BSt.Remote              = RemoteRecord->getAddress();
+                        OutMessage->Buffer.BSt.Address             = CtiDeviceDLCBase::DLC_BroadcastAddress;
+                        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
+                        OutMessage->Buffer.BSt.DlcRoute.Feeder     = RouteRecord->getBus();
+                        OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
+                        OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
+                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //getStages();                // How many repeaters on this route?
 
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
