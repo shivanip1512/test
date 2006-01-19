@@ -25,7 +25,6 @@ import com.loox.jloox.LxView;
  * A LxView isn't always necessary so it could be null
  * in some contexts.  (you can load a drawing and run it
  * through an svggenerator without creating an LxView for example)
- * 
  */
 public class Drawing implements Serializable {
 
