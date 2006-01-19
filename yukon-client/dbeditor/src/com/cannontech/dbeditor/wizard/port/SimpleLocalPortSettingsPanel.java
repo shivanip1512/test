@@ -5,7 +5,7 @@ package com.cannontech.dbeditor.wizard.port;
  */
 
 import java.awt.Dimension;
-
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
  
@@ -197,7 +197,7 @@ private javax.swing.JTextField getDescriptionTextField() {
 			ivjDescriptionTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjDescriptionTextField.setColumns(12);
 			// user code begin {1}
-			ivjDescriptionTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_PORT_DESCRIPTION_LENGTH));
+			ivjDescriptionTextField.setDocument(new TextFieldDocument(TextFieldDocument.MAX_PORT_DESCRIPTION_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
