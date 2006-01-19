@@ -1,11 +1,13 @@
 package com.cannontech.dbeditor.wizard.state;
 
+import javax.swing.event.CaretEvent;
+
 import com.cannontech.dbeditor.editor.state.GroupStateEditorPanel;
 
 /**
  * This type was created in VisualAge.
  */
-public class GroupStateNamePanel extends com.cannontech.common.gui.util.DataInputPanel {
+public class GroupStateNamePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjStateGroupNameLabel = null;
 	private javax.swing.JTextField ivjStateGroupNameTextField = null;
 	private javax.swing.JLabel ivjStateNumberLabel = null;
@@ -214,12 +216,38 @@ private void initialize() {
 		constraintsStateNumberSpinner.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsStateNumberSpinner.insets = new java.awt.Insets(5, 15, 5, 0);
 		add(getStateNumberSpinner(), constraintsStateNumberSpinner);
+        initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
 	// user code end
 }
+
+/**
+ * Initializes connections
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void initConnections() throws java.lang.Exception {
+    // user code begin {1}
+    // user code end
+    getStateGroupNameTextField().addCaretListener(this);
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return boolean
+ */
+public boolean isInputValid() {
+    if( getStateGroupNameTextField().getText().length() > 0 )
+    {
+        setErrorString("The State Group Name text field must be filled in");
+        return true;
+    }
+    else
+        return false;
+}
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -291,4 +319,45 @@ private static void getBuilderData() {
 	D0CB8788F5C03E00BE90GGGAAGGD0CB818294G94G88G88G5CF854ACF5C03E00BE90GGGAAGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGF890GGGG
 **end of data**/
 }
+/**
+ * Method to handle events for the CaretListener interface.
+ * @param e javax.swing.event.CaretEvent
+ */
+
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public void caretUpdate(javax.swing.event.CaretEvent e) {
+    // user code begin {1}
+    // user code end
+    if (e.getSource() == getStateGroupNameTextField()) 
+        connEtoC3(e);
+    // user code begin {2}
+    // user code end
+}
+
+/**
+ * connEtoC3:  (DescriptionTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> SimpleLocalPortSettingsPanel.descriptionTextField_CaretUpdate()V)
+ * @param arg1 javax.swing.event.CaretEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC3(javax.swing.event.CaretEvent arg1) {
+    try {
+        // user code begin {1}
+        // user code end
+        this.stateGroupNameTextField_CaretUpdate();
+        // user code begin {2}
+        // user code end
+    } catch (java.lang.Throwable ivjExc) {
+        // user code begin {3}
+        // user code end
+        handleException(ivjExc);
+    }
+}
+
+/**
+ * Comment
+ */
+public void stateGroupNameTextField_CaretUpdate() {
+    fireInputUpdate();
+}
+
 }
