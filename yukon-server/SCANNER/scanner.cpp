@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/01/05 18:26:37 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/01/19 16:10:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1598,15 +1598,6 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
             // Scanner is about to make some big decisions...
 
             LONG exptime = gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 3600);
-
-            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(OutMessage->TargetID);
-            if(pBase)
-            {
-                CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase.get();
-                exptime = DeviceRecord->getScanRate(ScanRateGeneral);
-                if(exptime < 60) exptime = 60;                                  // Don't expire any faster than once per minute
-            }
-
             OutMessage->ExpirationTime = RWTime().seconds() + exptime;
         }
 
