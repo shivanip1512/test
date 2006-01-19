@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/01/16 20:26:05 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/01/19 20:53:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4329,7 +4329,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWT
                     }
                     else
                     {
-                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(hour).zpad(2) + ": " + RWCString((char)('A' + (rates & 0x03))) + "\n";
+                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + RWCString((char)('A' + (rates & 0x03))) + "\n";
                     }
 
                     rates >>= 2;
