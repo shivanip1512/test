@@ -11,18 +11,22 @@
 		<XSDCompiler schema="cttp-v0r1.xsd" package="com.cannontech.cttp" destdir="gensrc" force="false"/>
    -->
        <mkdir dir="build"/>
-       
-       <javac srcdir="gensrc" destdir="build" target="1.4" debug="true">
+       <!--
+       <javac srcdir="gensrc" target="${yukon.source.target}" debug="${yukon.source.debug}" destdir="build">
           <classpath>
-              <fileset dir="build"/>
               <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
               </fileset>
 	      </classpath> 
      	</javac>
+     	-->
      	
-       <javac srcdir="src" destdir="build" target="1.4" debug="true">                               
+       <javac destdir="build" target="${yukon.javac.target}" 
+ 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+       	  <src path="src"/>
+       	  <src path="gensrc"/>
           <classpath>
+              <fileset dir="build"/>
               <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
               </fileset>
