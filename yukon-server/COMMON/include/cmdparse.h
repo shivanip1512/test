@@ -139,21 +139,21 @@ public:
  *    Offset Number (optional)
  *
  */
-#define CMD_FLAG_GV_RATEA        0x00000000
-#define CMD_FLAG_GV_RATEB        0x00000001
-#define CMD_FLAG_GV_RATEC        0x00000002
-#define CMD_FLAG_GV_RATED        0x00000004
-#define CMD_FLAG_GV_RATET        0x00000008
-#define CMD_FLAG_GV_RATEMASK     0x0000000F
+#define CMD_FLAG_GV_RATEA        0x00000001
+#define CMD_FLAG_GV_RATEB        0x00000002
+#define CMD_FLAG_GV_RATEC        0x00000004
+#define CMD_FLAG_GV_RATED        0x00000008
+#define CMD_FLAG_GV_RATET        0x00000010
+#define CMD_FLAG_GV_RATEMASK     0x0000001F
 
-#define CMD_FLAG_GV_KWH          0x00000010
-#define CMD_FLAG_GV_KVARH        0x00000020
-#define CMD_FLAG_GV_KVAH         0x00000040
-#define CMD_FLAG_GV_DEMAND       0x00000080
-#define CMD_FLAG_GV_PEAK         0x00000100
-#define CMD_FLAG_GV_MINMAX       0x00000200
-#define CMD_FLAG_GV_VOLTAGE      0x00000400
-#define CMD_FLAG_GV_CHMASK       0x000007F0
+#define CMD_FLAG_GV_KWH          0x00000020
+#define CMD_FLAG_GV_KVARH        0x00000040
+#define CMD_FLAG_GV_KVAH         0x00000080
+#define CMD_FLAG_GV_DEMAND       0x00000100
+#define CMD_FLAG_GV_PEAK         0x00000200
+#define CMD_FLAG_GV_MINMAX       0x00000400
+#define CMD_FLAG_GV_VOLTAGE      0x00000800
+#define CMD_FLAG_GV_CHMASK       0x00000FE0
 
 #define CMD_FLAG_GV_IED          0x00001000     // The reading is to be from a connected ied!
 
