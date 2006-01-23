@@ -18,8 +18,10 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
+import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
+import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
@@ -1641,8 +1643,7 @@ public class CapControlForm extends DBEditorForm {
 
 		TreeNode rootData = new TreeNodeBase("root", "2-Way Status Points",
 				false);
-
-		 
+	
 		PointLists pLists = new PointLists();
 		LiteYukonPAObject[] lPaos = pLists.getPAOsForTwoStateStatusPoints();
 		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
@@ -1710,4 +1711,25 @@ public class CapControlForm extends DBEditorForm {
 		
 		return retString;
 	}
+
+//method to expand the tree to the selected switch point
+	public void expandToSelectedSwitchPoint() {
+	Integer pointId = null;
+	
+	TreeNode tn = this.getSwitchPointList();		
+	TreeStateBase state = new TreeStateBase();
+	TreeModelBase tree = new TreeModelBase (tn);
+	tree.setTreeState(state); 
+
+	if (getDbPersistent() instanceof CapControlSubBus) {
+
+		pointId = ((CapControlSubBus) getDbPersistent())
+				.getCapControlSubstationBus().getSwitchPointID();
+
+	}	
+	
+	
+	
+	}
+
 }
