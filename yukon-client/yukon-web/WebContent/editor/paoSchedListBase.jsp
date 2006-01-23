@@ -2,9 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-<f:subview id="paoSchedListBase">
 
 <script type="text/javascript">
 <!--
@@ -149,5 +149,5 @@
     </x:panelLayout>
 
 
-</f:subview>
 </cti:standardPage>
+</f:view>
