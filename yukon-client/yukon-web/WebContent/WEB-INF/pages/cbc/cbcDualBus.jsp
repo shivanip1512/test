@@ -70,7 +70,7 @@ switch (type) {
 						</legend>
 				</f:verbatim>
 				<x:div styleClass="scrollSmallWidthSet" >
-					<x:dataList var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="ul">
+					<x:dataList var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="dataList">
 						
 							<x:panelGroup>
 								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
