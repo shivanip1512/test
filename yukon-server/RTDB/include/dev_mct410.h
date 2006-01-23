@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/01/16 20:21:57 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/01/23 17:35:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -314,9 +314,11 @@ protected:
         MCT4XX_LPRecentBlocks   =   16,
 
         MCT410_Sspec            = 1029,
-        MCT410_Min_NewLLPRev    =    8,
-        MCT410_Min_NewOutageRev =    8,
-        MCT410_Max_NewOutageRev =   30,
+
+        MCT410_SspecRev_NewLLP_Min    =    8,
+        MCT410_SspecRev_TOUPeak_Min   =   13,
+        MCT410_SspecRev_NewOutage_Min =    8,
+        MCT410_SspecRev_NewOutage_Max =   30,
 
         MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000, in UTC seconds
 

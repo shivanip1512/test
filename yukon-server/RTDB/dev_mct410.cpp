@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/01/19 20:53:03 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/01/23 17:35:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2060,7 +2060,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             {
                 //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
                 if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                    (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_Min_NewLLPRev ||
+                    (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewLLP_Min ||
                      getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
                 {
                     function = Emetcon::GetValue_LoadProfilePeakReport;
@@ -2077,7 +2077,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                                           + " / Load profile reporting currently only supported for SSPEC "
                                                           + CtiNumStr(MCT410_Sspec).toString().c_str()
                                                           + " revision "
-                                                          + (char)('A' + MCT410_Min_NewLLPRev - 1)
+                                                          + (char)('A' + MCT410_SspecRev_NewLLP_Min - 1)
                                                           + " and up"));
 
                         retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
@@ -2357,12 +2357,10 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         nRet = NoError;
-
     }
 
     if( errRet )
     {
-
         delete errRet;
         errRet = 0;
     }
@@ -2373,7 +2371,6 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
 int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
-
     int nRet = NORMAL;
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -3139,11 +3136,6 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 kwh rate c: 141
                 kwh rate d: 161
 
-                frozen kwh rate a:  111  //  DELETE THESE
-                frozen kwh rate b:  131
-                frozen kwh rate c:  151
-                frozen kwh rate d:  171
-
             demand accumulators:
 
                 peak kw rate a: 111
@@ -3151,10 +3143,6 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 peak kw rate c: 151
                 peak kw rate d: 171
 
-                peak frozen kw rate a:  121  //  DELETE THESE
-                peak frozen kw rate b:  141
-                peak frozen kw rate c:  161
-                peak frozen kw rate d:  181
     */
 
     pointoffset = 1;
@@ -3326,25 +3314,29 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         if( valid_data )  //  valid
         {
-            if( kw_point )
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT410_Sspec &&
+                getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_TOUPeak_Min )
             {
-                pi_kw.value = ((CtiPointNumeric*)kw_point)->computeValueForUOM(pi_kw.value);
-
-                result_string = getName() + " / " + kw_point->getName() + " = "
-                                          + CtiNumStr(pi_kw.value, ((CtiPointNumeric *)kw_point)->getPointUnits().getDecimalPlaces())
-                                          + " @ " + kw_time.asString();
-
-                if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
+                if( kw_point )
                 {
-                    pData->setTime(kw_time);
-                    ReturnMsg->PointData().insert(pData);
-                    pData = NULL;  // We just put it on the list...
+                    pi_kw.value = ((CtiPointNumeric*)kw_point)->computeValueForUOM(pi_kw.value);
+
+                    result_string = getName() + " / " + kw_point->getName() + " = "
+                                              + CtiNumStr(pi_kw.value, ((CtiPointNumeric *)kw_point)->getPointUnits().getDecimalPlaces())
+                                              + " @ " + kw_time.asString();
+
+                    if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
+                    {
+                        pData->setTime(kw_time);
+                        ReturnMsg->PointData().insert(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
                 }
-            }
-            else
-            {
-                result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
-                ReturnMsg->setResultString(result_string);
+                else
+                {
+                    result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
+                    ReturnMsg->setResultString(result_string);
+                }
             }
 
             if( kwh_point )
@@ -3552,8 +3544,8 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
                 if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_Min_NewOutageRev &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT410_Max_NewOutageRev )
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_NewOutage_Min &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT410_SspecRev_NewOutage_Max )
                 {
                     if( duration == 0x8000 )
                     {
