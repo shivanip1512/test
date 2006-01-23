@@ -20,7 +20,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	//some variables for the dual bus support
-	private Integer altSubstationID =   new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer altSubPAOId = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer switchPointID =   new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String dualBusEnabled = "Y";
 	
@@ -65,7 +65,7 @@ public void add() throws java.sql.SQLException
 		getSubstationBusID(),
 				getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
 				getMapLocationID(), getStrategyID(),
-				getCurrentVoltLoadPointID(), getAltSubstationID(),
+				getCurrentVoltLoadPointID(), getAltSubPAOId(),
 				getSwitchPointID(), getDualBusEnabled()};
 
 	add( TABLE_NAME, addValues );
@@ -134,7 +134,7 @@ public void retrieve() throws java.sql.SQLException
 		setMapLocationID( (String) results[2] );
 		setStrategyID( (Integer) results[3] );
 		setCurrentVoltLoadPointID( (Integer) results[4] );
-		setAltSubstationID((Integer)results[5]);
+		setAltSubPAOId((Integer)results[5]);
 		setSwitchPointID((Integer)results[6]);
 		setDualBusEnabled((String)results[7]);
 	}
@@ -191,7 +191,7 @@ public void update() throws java.sql.SQLException
 		getCurrentVarLoadPointID(),
 				getCurrentWattLoadPointID(), getMapLocationID(),
 				getStrategyID(), getCurrentVoltLoadPointID(),
-				getAltSubstationID(), getSwitchPointID(),getDualBusEnabled() };
+				getAltSubPAOId(), getSwitchPointID(),getDualBusEnabled() };
 
 
 	Object constraintValues[] = { getSubstationBusID()};
@@ -300,18 +300,6 @@ public void update() throws java.sql.SQLException
 	}
 
 
-	//methods for dual bus support
-	//setters and getters for the AltSubId field 
-	public Integer getAltSubstationID() {
-		return altSubstationID;
-	}
-
-
-	public void setAltSubstationID(Integer altSubstationID) {
-		
-
-		this.altSubstationID = altSubstationID;
-	}
 
 //	setters and getters for the SwitchPointId field 
 	public Integer getSwitchPointID() {
@@ -330,6 +318,16 @@ public void update() throws java.sql.SQLException
 
 	public void setDualBusEnabled(String dualBusEnabled) {
 		this.dualBusEnabled = dualBusEnabled;
+	}
+
+
+	public Integer getAltSubPAOId() {
+		return altSubPAOId;
+	}
+
+
+	public void setAltSubPAOId(Integer altSubPAOId) {
+		this.altSubPAOId = altSubPAOId;
 	}
 
 }
