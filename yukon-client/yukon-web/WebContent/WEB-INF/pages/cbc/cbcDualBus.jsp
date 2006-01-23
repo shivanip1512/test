@@ -4,7 +4,7 @@
 
 <f:verbatim>
 	<script type="text/javascript">
-<!--
+
 function radioButtonClick(type, radioObj) {
 //make sure that all the radio buttons are unchecked
 //radio buttons are inside a table, therefore get the name of the table
@@ -36,91 +36,54 @@ switch (type) {
 
 	
 }
+//Event.observe(window, 'load', function() { new CtiNonScrollTable('editorForm:altDualBusSetup:altDualBus:altSubBusData','AltSubHTable');    });
+//Event.observe(window, 'load', function() { new CtiNonScrollTable('editorForm:altDualBusSetup:altDualBus:altSwitchPointData','SwitchPointHTable');    });
 
-//-->
 </script>
 </f:verbatim>
 <f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
 	<f:subview id="altDualBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
-		<h:panelGrid id="subBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell">
+		<f:verbatim>
+			<br />
+			<fieldset>
+				<legend>
+					Dual Bus
+				</legend>
+		</f:verbatim>
+
+		<h:selectBooleanCheckbox styleClass="lAlign" id="enableDualBus" 
+		title="Disable Dual Bus" 
+		value="#{capControlForm.enableDualBus}" >
+			<h:outputText value="Enable Dual Bus" />
+		</h:selectBooleanCheckbox>
+		<h:panelGrid  id="subBody" columns="2" 
+		styleClass="gridLayout" 
+		rowClasses="gridCellSmall" 
+		columnClasses="gridColumn">
 			<x:panelGroup>
+				<h:outputText styleClass="tableHeader" value="#{capControlForm.selectedSubBusFormatString}"/>
 				<f:verbatim>
 					<br />
 					<fieldset>
 						<legend>
 							Alternative Substation Bus
 						</legend>
-				
 				</f:verbatim>
-				<f:verbatim>
-				<x:outputText styleClass="tableHeader" value="Selected SubBus: #{capControlForm.selectedSubBus}/ #{capControlForm.selectedSubBusName}"/>
-				</f:verbatim>
-				<h:dataTable id="altSubBusData" var="subBus" styleClass="scrollerTable" headerClass="scrollerTableHeader" footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow" value="#{capControlForm.subBusList}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="10" title="Choose an alternative substation bus for the current substation">
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="ID" />
-						</f:facet>
-						<h:outputText value="#{subBus.value}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="Alt Sub Name" />
-						</f:facet>
-						<x:outputText value="#{subBus.label}" title="#{subBus.description}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="Select" />
-						</f:facet>
-
-						<h:selectOneRadio required="false" value="#{capControlForm.selectedSubBus}" onclick="radioButtonClick('SubBus', this)">
-							<f:selectItem itemValue="#{subBus.value}" itemLabel="" />
-						</h:selectOneRadio>
-					</h:column>
-				</h:dataTable>
-			
-				<h:panelGrid columns="1" columnClasses="scrollerCentered">
-					<x:dataScroller id="scrollButtonsAltSubId" for="altSubBusData" fastStep="25" pageCountVar="pageCount" pageIndexVar="pageIndex" styleClass="scroller" paginator="true" paginatorMaxPages="9" paginatorTableClass="paginator"
-						paginatorActiveColumnStyle="font-weight:bold;">
-						<f:facet name="first">
-							<x:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page" />
-						</f:facet>
-						<f:facet name="last">
-							<x:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page" />
-						</f:facet>
-						<f:facet name="previous">
-							<x:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page" />
-						</f:facet>
-						<f:facet name="next">
-							<x:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page" />
-						</f:facet>
-						<f:facet name="fastforward">
-							<x:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages" />
-						</f:facet>
-						<f:facet name="fastrewind">
-							<x:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages" />
-						</f:facet>
-					</x:dataScroller>
-
-					<x:dataScroller id="scrollDisplay" for="altSubBusData" rowsCountVar="rowsCount" styleClass="scroller" displayedRowsCountVar="displayedRowsCountVar" firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex" pageCountVar="pageCount"
-						pageIndexVar="pageIndex">
-						<h:outputFormat value="{0} Alternative Subs found">
-							<f:param value="#{rowsCount}" />
-						</h:outputFormat>
-						<f:verbatim>
-							<br />
-						</f:verbatim>
-						<h:outputFormat value="Page {0} / {1}">
-							<f:param value="#{pageIndex}" />
-							<f:param value="#{pageCount}" />
-						</h:outputFormat>
-					</x:dataScroller>
-				</h:panelGrid>
+				<x:div styleClass="scrollSmallWidthSet" >
+					<x:dataList var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="ul">
+						
+							<x:panelGroup>
+								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
+								<x:commandLink id="ptLink" value="#{item.paoName}" actionListener="#{capControlForm.subBusPAOsClick}">
+									<f:param name="ptID" value="#{item.liteID}" />
+								</x:commandLink>
+							</x:panelGroup>
+						
+					</x:dataList>
+				</x:div>
 			</x:panelGroup>
 			<x:panelGroup>
+				<h:outputText styleClass="tableHeader" value="#{capControlForm.selectedTwoWayPointsFormatString}"/>
 				<f:verbatim>
 					<br />
 					<fieldset>
@@ -128,79 +91,41 @@ switch (type) {
 							Switch Point
 						</legend>
 				</f:verbatim>
+				
+				<x:div id="TwoWayPointScrollableDiv" styleClass="scrollSmallWidthSet">
+
+					<x:tree2 id="TwoWayPointsPaoListTree" value="#{capControlForm.switchPointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
+
+						<f:facet name="root">
+							<x:panelGroup>
+								<x:outputText id="rootLink" value="#{node.description}" />
+							</x:panelGroup>
+						</f:facet>
+						<f:facet name="paos">
+							<x:panelGroup>
+								<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+							</x:panelGroup>
+						</f:facet>
+						<f:facet name="points">
+							<x:panelGroup>
+								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.switchPointID == node.identifier}" />
+
+								<x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.twoWayPtsTeeClick}">
+									<f:param name="ptID" value="#{node.identifier}" />
+								</x:commandLink>
+							</x:panelGroup>
+						</f:facet>
+					</x:tree2>
+				</x:div>
 				<f:verbatim>
-				<x:outputText styleClass="tableHeader" value="Selected Switch Point: #{capControlForm.selectedSwitchPoint}/ #{capControlForm.selectedSwitchPointName}"/>
+					</fieldset>
 				</f:verbatim>
-				<h:dataTable id="altSwitchPointData" var="switchPoint" styleClass="scrollerTable" headerClass="scrollerTableHeader" footerClass="scrollerTableHeader" rowClasses="tableRow,altTableRow" value="#{capControlForm.switchPointList}"
-					columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" rows="10" title="Choose an alternative switch point for the current substation">
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="ID" />
-						</f:facet>
-						<h:outputText value="#{switchPoint.value}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="Alt Switch Point ID" />
-						</f:facet>
-						<x:outputText value="#{switchPoint.label}" title="#{switchPoint.description}" />
-					</h:column>
-
-					<h:column>
-						<f:facet name="header">
-							<x:outputText value="Select" />
-						</f:facet>
-
-						<h:selectOneRadio required="false" value="#{capControlForm.selectedSwitchPoint}" onclick="radioButtonClick('SwitchPoint', this)">
-							<f:selectItem itemValue="#{switchPoint.value}" itemLabel="" />
-						</h:selectOneRadio>
-					</h:column>
-				</h:dataTable>
-				<h:panelGrid columns="1" columnClasses="scrollerCentered">
-					<x:dataScroller id="scrollButtonsAltPointId" for="altSwitchPointData" fastStep="25" pageCountVar="pageCount" pageIndexVar="pageIndex" styleClass="scroller" paginator="true" paginatorMaxPages="9" paginatorTableClass="paginator"
-						paginatorActiveColumnStyle="font-weight:bold;">
-						<f:facet name="first">
-							<x:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page" />
-						</f:facet>
-						<f:facet name="last">
-							<x:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page" />
-						</f:facet>
-						<f:facet name="previous">
-							<x:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page" />
-						</f:facet>
-						<f:facet name="next">
-							<x:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page" />
-						</f:facet>
-						<f:facet name="fastforward">
-							<x:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages" />
-						</f:facet>
-						<f:facet name="fastrewind">
-							<x:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages" />
-						</f:facet>
-					</x:dataScroller>
-
-					<x:dataScroller id="scrollPointsDisplay" for="altSwitchPointData" rowsCountVar="rowsCount" styleClass="scroller" displayedRowsCountVar="displayedRowsCountVar" firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex" pageCountVar="pageCount"
-						pageIndexVar="pageIndex">
-						<h:outputFormat value="{0} Switch Points found">
-							<f:param value="#{rowsCount}" />
-						</h:outputFormat>
-						<f:verbatim>
-							<br />
-						</f:verbatim>
-						<h:outputFormat value="Page {0} / {1}">
-							<f:param value="#{pageIndex}" />
-							<f:param value="#{pageCount}" />
-						</h:outputFormat>
-					</x:dataScroller>
-				</h:panelGrid>
 			</x:panelGroup>
 
 
 
 		</h:panelGrid>
-		<h:selectBooleanCheckbox id="enableDualBus" title="Disable Dual Bus" value="#{capControlForm.enableDualBus}" />
-		<h:outputText value="Enable Dual Bus" />
+
 	</f:subview>
 	<h:inputHidden id="selectedSubBus" value="#{capControlForm.selectedSubBus}" />
 	<h:inputHidden id="selectedSwitchPoint" value="#{capControlForm.selectedSwitchPoint}" />

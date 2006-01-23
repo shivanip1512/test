@@ -1,13 +1,18 @@
 package com.cannontech.web.editor.point;
 
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
@@ -106,35 +111,60 @@ public class PointLists {
 		return (LitePoint[])pointSet.toArray( new LitePoint[pointSet.size()] );
 	}
 
-	//method for the dual bus
-	public LiteYukonPAObject[] getAllStatusPoints( int type)
-	{
+	//support for the dual bus
+	public LitePoint[] getAllTwoStateStatusPoints(int paoID) {
+		//ensures uniqueness and ordering by name
+		TreeSet pointSet = new TreeSet(LiteComparators.liteStringComparator);
+
+		LitePoint[] litePts = PAOFuncs.getLitePointsForPAObject(paoID);
+		Arrays.sort(litePts, LiteComparators.liteStringComparator); //sort the small list by PointName
+		for (int i = 0; i < litePts.length; i++) {
+			LitePoint litePoint = litePts[i];
+			
+			if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+				int stateGrpId = litePoint.getStateGroupID();
+				LiteStateGroup liteStateGroup = StateFuncs
+						.getLiteStateGroup(stateGrpId);
+				if (liteStateGroup.getStatesList().size() == 2) {
+					
+					pointSet.add(litePoint);
+				}
+			}
+		}
+		//return the uniquly ordered elements
+		return (LitePoint[]) pointSet.toArray(new LitePoint[pointSet.size()]);
+	}
+
+	public LiteYukonPAObject[] getPAOsForTwoStateStatusPoints() {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
-		//ensures uniqueness and ordering by name
-		TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
-		
-		synchronized(cache) {
+		// ensures uniqueness and ordering by name
+		TreeSet paoSet = new TreeSet(LiteComparators.liteStringComparator);
+
+		synchronized (cache) {
 			java.util.List allPoints = cache.getAllPoints();
 			LitePoint litePoint = null;
 
-			for( int i = 0; i < allPoints.size(); i++ ) {
+			for (int i = 0; i < allPoints.size(); i++) {
 
-				litePoint = (LitePoint)allPoints.get(i);
-					
-				//use the validPt boolean to see if this point is worthy
-				if(litePoint.getPointType() == PointTypes.STATUS_POINT 
-						&&
-						litePoint.getStateGroupID()	== type)				
-				{
-					LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
-					paoSet.add( liteDevice );
-			   }
+				litePoint = (LitePoint) allPoints.get(i);
+
+				if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+					int stateGrpId = litePoint.getStateGroupID();
+					LiteStateGroup liteStateGroup = StateFuncs
+							.getLiteStateGroup(stateGrpId);
+					if (liteStateGroup.getStatesList().size() == 2) {
+						LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+							
+						paoSet.add(liteDevice);
+					}
+				}
 			}
-		 }
-		 
-		//return the uniquly ordered elements
-		return (LiteYukonPAObject[])paoSet.toArray( new LiteYukonPAObject[paoSet.size()] );		 
+		}
+
+		// return the uniquly ordered elements
+		return (LiteYukonPAObject[]) paoSet
+				.toArray(new LiteYukonPAObject[paoSet.size()]);
 	}
 
 }

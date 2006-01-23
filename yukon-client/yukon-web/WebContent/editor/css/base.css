@@ -79,6 +79,12 @@ a.submenuLink:hover, legend, .editorHeader {
 	height: 200px;
 }
 
+.scrollSmallWidthSet {
+	overflow: scroll;
+	height: 200px;
+	width:  390px;
+}
+
 legend {
 	font-size: 14px;
 	background-color: #E7EFF7;
@@ -90,8 +96,7 @@ legend {
 	width: 100%;
 }
 
-
-/*
+	/*
 .gridLayout, .pageLayout, .pageHeader,
 .pageNavigation, .pageBody, .pageFooter {
 */
@@ -141,6 +146,7 @@ legend {
     padding: 3;
     text-align: center;
     border: none;
+	font-weight: bold;
 }
 
 .tableRow {
@@ -159,6 +165,10 @@ legend {
 	width: 10%;
 }
 
+.gridColumn{
+	width: 	40%;
+	padding-right: 205px;
+}
 .gridCellMedium {
 	width: 30%;
 }
@@ -210,3 +220,13 @@ legend {
 	padding-right: 3px;
 	
 }
+
+
+
+.ul { 
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	
+	}
+
