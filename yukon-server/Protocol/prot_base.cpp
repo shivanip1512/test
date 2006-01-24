@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/03/17 05:22:46 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/24 19:59:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,10 @@ bool Interface::isTransactionComplete( void ) {   return true;    }
 void Interface::getInboundPoints ( pointlist_t  &point_list )   {  };
 void Interface::getInboundStrings( stringlist_t &string_list )  {  };
 
+void Interface::setName( const string &name )
+{
+    _name = name;
+}
 
 }
 }

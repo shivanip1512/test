@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/24 19:59:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,8 @@ class IM_EX_PROT Interface
 private:
 
 protected:
+
+    string _name;
 
     virtual int commOut( OUTMESS *&OutMessage );
     virtual int commIn ( INMESS   *InMessage  );
@@ -69,6 +71,8 @@ public:
     virtual int decode  ( CtiXfer &xfer, int status );
 
     virtual int sendCommResult( INMESS  *InMessage  );
+
+    virtual void setName( const string &name );
 };
 
 }
