@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/01/24 20:07:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ int BinaryInput::restoreVariation(const unsigned char *buf, int len, int variati
 
     switch( variation )
     {
-        case WithStatus:
+        case BI_WithStatus:
         {
             _bi.raw = buf[pos++];
 
@@ -80,7 +80,7 @@ int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 
     switch( getVariation() )
     {
-        case SingleBitPacked:
+        case BI_SingleBitPacked:
         {
             _bi.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
 
@@ -111,7 +111,7 @@ int BinaryInput::serializeVariation(unsigned char *buf, int variation) const
 
     switch(getVariation())
     {
-        case WithStatus:
+        case BI_WithStatus:
         {
             buf[pos++] = _bi.raw;
 
@@ -145,7 +145,7 @@ int BinaryInput::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case WithStatus:
+        case BI_WithStatus:
         {
             retVal = 1;
 
@@ -175,29 +175,6 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
     int quality;
 
     val = _bi.flags.state;
-
-    //  this has to be rethought in terms of being called by inherited classes with ENTIRELY DIFFERENT VARIATIONS
-    /*switch(getVariation())
-    {
-        case WithStatus:
-        {
-            //  fall through
-        }
-        case SingleBitPacked:
-        {
-            break;
-        }
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
-        }
-    }*/
 
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
@@ -239,8 +216,8 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
 
 
 BinaryInputChange::BinaryInputChange(int variation) : BinaryInput(variation),
-    _time(Time::TimeAndDate),
-    _timeRelative(TimeDelay::Fine)
+    _time(Time::T_TimeAndDate),
+    _timeRelative(TimeDelay::TD_Fine)
 {
 
 }
@@ -254,24 +231,24 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
 
     switch( getVariation() )
     {
-        case WithoutTime:
+        case BIC_WithoutTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::BI_WithStatus);
 
             break;
         }
 
-        case WithTime:
+        case BIC_WithTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::BI_WithStatus);
             pos += _time.restore(buf + pos, len - pos);
 
             break;
         }
 
-        case WithRelativeTime:
+        case BIC_WithRelativeTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::BI_WithStatus);
             pos += _timeRelative.restore(buf + pos, len - pos);
 
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -306,24 +283,24 @@ int BinaryInputChange::serialize(unsigned char *buf) const
 
     switch( getVariation() )
     {
-        case WithoutTime:
+        case BIC_WithoutTime:
         {
-            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BI_WithStatus);
 
             break;
         }
 
-        case WithTime:
+        case BIC_WithTime:
         {
-            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BI_WithStatus);
             pos += _time.serialize(buf + pos);
 
             break;
         }
 
-        case WithRelativeTime:
+        case BIC_WithRelativeTime:
         {
-            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BI_WithStatus);
             pos += _timeRelative.serialize(buf + pos);
 
             break;
@@ -348,21 +325,21 @@ int BinaryInputChange::getSerializedLen(void) const
 
     switch( getVariation() )
     {
-        case WithoutTime:
+        case BIC_WithoutTime:
         {
             len = 1;
 
             break;
         }
 
-        case WithTime:
+        case BIC_WithTime:
         {
             len = 7;
 
             break;
         }
 
-        case WithRelativeTime:
+        case BIC_WithRelativeTime:
         {
             len = 3;
 
@@ -388,20 +365,25 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg = NULL;
 
+    tmpMsg = BinaryInput::getPoint(cto);
+
     switch(getVariation())
     {
-        case WithTime:
+        case BIC_WithoutTime:
         {
-            tmpMsg = BinaryInput::getPoint(cto);
+            break;
+        }
 
+        case BIC_WithTime:
+        {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_time.getSeconds() );
+            tmpMsg->setTime(_time.getSeconds());
             tmpMsg->setMillis(_time.getMilliseconds());
 
             break;
         }
 
-        case WithRelativeTime:
+        case BIC_WithRelativeTime:
         {
             unsigned long seconds;
             unsigned milliseconds;
@@ -412,15 +394,18 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
             seconds      += milliseconds / 1000;
             milliseconds %= 1000;
 
-            tmpMsg = BinaryInput::getPoint(cto);
-
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(seconds );
+            tmpMsg->setTime(seconds);
             tmpMsg->setMillis(milliseconds);
         }
 
         default:
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
             break;
         }
     }
