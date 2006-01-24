@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,12 +69,12 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
 
     switch(variation)
     {
-        case AI32Bit:
+        case AI_32Bit:
         {
             _flags.raw = buf[pos++];
             //  fall through
         }
-        case AI32BitNoFlag:
+        case AI_32BitNoFlag:
         {
             _value = 0;
 
@@ -87,12 +87,12 @@ int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variati
             break;
         }
 
-        case AI16Bit:
+        case AI_16Bit:
         {
             _flags.raw = buf[pos++];
             //  fall through
         }
-        case AI16BitNoFlag:
+        case AI_16BitNoFlag:
         {
             short tmpValue;
 
@@ -136,12 +136,12 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
 
     switch(variation)
     {
-        case AI32Bit:
+        case AI_32Bit:
         {
             buf[pos++] = _flags.raw;
             //  fall through
         }
-        case AI32BitNoFlag:
+        case AI_32BitNoFlag:
         {
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -151,12 +151,12 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
             break;
         }
 
-        case AI16Bit:
+        case AI_16Bit:
         {
             buf[pos++] = _flags.raw;
             //  fall through
         }
-        case AI16BitNoFlag:
+        case AI_16BitNoFlag:
         {
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -183,25 +183,25 @@ int AnalogInput::getSerializedLen(void) const
 
     switch( getVariation() )
     {
-        case AI32Bit:
+        case AI_32Bit:
         {
             retVal = 5;
             break;
         }
 
-        case AI16Bit:
+        case AI_16Bit:
         {
             retVal = 3;
             break;
         }
 
-        case AI32BitNoFlag:
+        case AI_32BitNoFlag:
         {
             retVal = 4;
             break;
         }
 
-        case AI16BitNoFlag:
+        case AI_16BitNoFlag:
         {
             retVal = 2;
             break;
@@ -232,25 +232,10 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 
     switch(getVariation())
     {
-        case AI32Bit:
-        {
-            val = _value;
-            break;
-        }
-
-        case AI16Bit:
-        {
-            val = _value;
-            break;
-        }
-
-        case AI32BitNoFlag:
-        {
-            val = _value;
-            break;
-        }
-
-        case AI16BitNoFlag:
+        case AI_32Bit:
+        case AI_16Bit:
+        case AI_32BitNoFlag:
+        case AI_16BitNoFlag:
         {
             val = _value;
             break;
@@ -309,7 +294,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 //  ---  ANALOG INPUT FROZEN  ---
 
 AnalogInputFrozen::AnalogInputFrozen(int variation) : AnalogInput(Group, variation),
-    _tof(Time::TimeAndDate)
+    _tof(Time::T_TimeAndDate)
 {
 
 }
@@ -335,40 +320,40 @@ int AnalogInputFrozen::restore(const unsigned char *buf, int len)
     {
         switch(getVariation())
         {
-            case AI16Bit:
+            case AIF_16Bit:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_16Bit);
                 break;
             }
 
-            case AI16BitNoFlag:
+            case AIF_16BitNoFlag:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16BitNoFlag);
+                pos += restoreVariation(buf + pos, len - pos, AI_16BitNoFlag);
                 break;
             }
 
-            case AI16BitWithTimeOfFreeze:
+            case AIF_16BitWithTimeOfFreeze:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_16Bit);
                 pos += _tof.restore(buf + pos, len - pos);
                 break;
             }
 
-            case AI32Bit:
+            case AIF_32Bit:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_32Bit);
                 break;
             }
 
-            case AI32BitNoFlag:
+            case AIF_32BitNoFlag:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16BitNoFlag);
+                pos += restoreVariation(buf + pos, len - pos, AI_16BitNoFlag);
                 break;
             }
 
-            case AI32BitWithTimeOfFreeze:
+            case AIF_32BitWithTimeOfFreeze:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_32Bit);
                 pos += _tof.restore(buf + pos, len - pos);
                 break;
             }
@@ -395,40 +380,40 @@ int AnalogInputFrozen::serialize(unsigned char *buf) const
 
     switch(getVariation())
     {
-        case AI16Bit:
+        case AIF_16Bit:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AI_16Bit);
             break;
         }
 
-        case AI16BitNoFlag:
+        case AIF_16BitNoFlag:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16BitNoFlag);
+            pos += serializeVariation(buf + pos, AI_16BitNoFlag);
             break;
         }
 
-        case AI16BitWithTimeOfFreeze:
+        case AIF_16BitWithTimeOfFreeze:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AI_16Bit);
             pos += _tof.serialize(buf + pos);
             break;
         }
 
-        case AI32Bit:
+        case AIF_32Bit:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AI_32Bit);
             break;
         }
 
-        case AI32BitNoFlag:
+        case AIF_32BitNoFlag:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16BitNoFlag);
+            pos += serializeVariation(buf + pos, AI_16BitNoFlag);
             break;
         }
 
-        case AI32BitWithTimeOfFreeze:
+        case AIF_32BitWithTimeOfFreeze:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AI_32Bit);
             pos += _tof.serialize(buf + pos);
             break;
         }
@@ -454,37 +439,37 @@ int AnalogInputFrozen::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case AI16Bit:
+        case AIF_16Bit:
         {
             retVal = 3;
             break;
         }
 
-        case AI16BitNoFlag:
+        case AIF_16BitNoFlag:
         {
             retVal = 2;
             break;
         }
 
-        case AI16BitWithTimeOfFreeze:
+        case AIF_16BitWithTimeOfFreeze:
         {
             retVal = 9;
             break;
         }
 
-        case AI32Bit:
+        case AIF_32Bit:
         {
             retVal = 5;
             break;
         }
 
-        case AI32BitNoFlag:
+        case AIF_32BitNoFlag:
         {
             retVal = 4;
             break;
         }
 
-        case AI32BitWithTimeOfFreeze:
+        case AIF_32BitWithTimeOfFreeze:
         {
             retVal = 11;
             break;
@@ -509,7 +494,7 @@ int AnalogInputFrozen::getSerializedLen(void) const
 //  ---  ANALOG INPUT CHANGE  ---
 
 AnalogInputChange::AnalogInputChange(int variation) : AnalogInput(Group, variation),
-    _toc(Time::TimeAndDate)
+    _toc(Time::T_TimeAndDate)
 {
 
 }
@@ -535,28 +520,28 @@ int AnalogInputChange::restore(const unsigned char *buf, int len)
     {
         switch(getVariation())
         {
-            case AI16BitNoTime:
+            case AIC_16BitNoTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_16Bit);
                 break;
             }
 
-            case AI16BitWithTime:
+            case AIC_16BitWithTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_16Bit);
                 pos += _toc.restore(buf + pos, len - pos);
                 break;
             }
 
-            case AI32BitNoTime:
+            case AIC_32BitNoTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_32Bit);
                 break;
             }
 
-            case AI32BitWithTime:
+            case AIC_32BitWithTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AI_32Bit);
                 pos += _toc.restore(buf + pos, len - pos);
                 break;
             }
@@ -583,28 +568,28 @@ int AnalogInputChange::serialize(unsigned char *buf) const
 
     switch(getVariation())
     {
-        case AI16BitNoTime:
+        case AIC_16BitNoTime:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AI_16Bit);
             break;
         }
 
-        case AI16BitWithTime:
+        case AIC_16BitWithTime:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AI_16Bit);
             pos += _toc.serialize(buf + pos);
             break;
         }
 
-        case AI32BitNoTime:
+        case AIC_32BitNoTime:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AI_32Bit);
             break;
         }
 
-        case AI32BitWithTime:
+        case AIC_32BitWithTime:
         {
-            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AI_32Bit);
             pos += _toc.serialize(buf + pos);
             break;
         }
@@ -630,25 +615,25 @@ int AnalogInputChange::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case AI16BitNoTime:
+        case AIC_16BitNoTime:
         {
             retVal = 3;
 
             break;
         }
-        case AI16BitWithTime:
+        case AIC_16BitWithTime:
         {
             retVal = 9;
 
             break;
         }
-        case AI32BitNoTime:
+        case AIC_32BitNoTime:
         {
             retVal = 5;
 
             break;
         }
-        case AI32BitWithTime:
+        case AIC_32BitWithTime:
         {
             retVal = 11;
 
@@ -668,8 +653,8 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
 
     switch(getVariation())
     {
-        case AI16BitWithTime:
-        case AI32BitWithTime:
+        case AIC_16BitWithTime:
+        case AIC_32BitWithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
             tmpMsg->setTime(_toc.getSeconds());
@@ -691,7 +676,7 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
 //  ---  ANALOG INPUT FROZEN EVENT  ---
 
 AnalogInputFrozenEvent::AnalogInputFrozenEvent(int variation) : AnalogInput(Group, variation),
-    _tofe(Time::TimeAndDate)
+    _tofe(Time::T_TimeAndDate)
 {
 
 }
@@ -710,6 +695,11 @@ int AnalogInputFrozenEvent::restore(const unsigned char *buf, int len)
 
 int AnalogInputFrozenEvent::serialize(unsigned char *buf) const
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return 0;
 }
 
@@ -720,30 +710,35 @@ int AnalogInputFrozenEvent::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case AI16BitNoTime:
+        case AIFE_16BitNoTime:
         {
             retVal = 0;
 
             break;
         }
-        case AI16BitWithTime:
+        case AIFE_16BitWithTime:
         {
             retVal = 0;
 
             break;
         }
-        case AI32BitNoTime:
+        case AIFE_32BitNoTime:
         {
             retVal = 0;
 
             break;
         }
-        case AI32BitWithTime:
+        case AIFE_32BitWithTime:
         {
             retVal = 0;
 
             break;
         }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retVal;

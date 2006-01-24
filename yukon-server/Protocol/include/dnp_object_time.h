@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/03/10 21:03:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,8 +42,8 @@ public:
 
     enum Variation
     {
-        TimeAndDate                  = 1,
-        TimeAndDateWithInterval      = 2
+        T_TimeAndDate                  = 1,
+        T_TimeAndDateWithInterval      = 2
     };
 
     enum
@@ -72,8 +72,8 @@ public:
 
     enum Variation
     {
-        TimeAndDateCTO               = 1,
-        TimeAndDateCTOUnsynchronized = 2
+        TC_TimeAndDateCTO               = 1,
+        TC_TimeAndDateCTOUnsynchronized = 2
     };
 
     enum
@@ -99,8 +99,8 @@ public:
 
     enum Variation
     {
-        Coarse = 1,
-        Fine   = 2
+        TD_Coarse = 1,
+        TD_Fine   = 2
     };
 
     enum

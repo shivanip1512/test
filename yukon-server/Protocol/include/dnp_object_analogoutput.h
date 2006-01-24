@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/03/10 21:05:42 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,10 +55,10 @@ protected:
 public:
     AnalogOutput(int variation);
 
-    enum variation
+    enum Variation
     {
-        AO32Bit = 1,
-        AO16Bit = 2
+        AO_32Bit = 1,
+        AO_16Bit = 2
     };
 
     enum group
@@ -94,10 +94,10 @@ int restoreVariation(const unsigned char *buf, int len, int variation);
 public:
     AnalogOutputBlock(int variation);
 
-    enum variation
+    enum Variation
     {
-        AOB32Bit = 1,
-        AOB16Bit = 2
+        AOB_32Bit = 1,
+        AOB_16Bit = 2
     };
 
     enum group

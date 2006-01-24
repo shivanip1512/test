@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/10 21:05:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,8 +51,8 @@ public:
 
     enum Variation
     {
-        SingleBit  = 1,
-        WithStatus = 2
+        BO_SingleBit  = 1,
+        BO_WithStatus = 2
     };
 
     enum
@@ -111,9 +111,9 @@ public:
 
     enum Variation
     {
-        ControlRelayOutputBlock = 1,
-        PatternControlBlock     = 2,
-        PatternMask             = 3
+        BOC_ControlRelayOutputBlock = 1,
+        BOC_PatternControlBlock     = 2,
+        BOC_PatternMask             = 3
     };
 
     enum

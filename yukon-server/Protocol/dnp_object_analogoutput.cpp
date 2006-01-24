@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
     switch(variation)
     {
-        case AO32Bit:
+        case AO_32Bit:
         {
             _flags.raw = buf[pos++];
 
@@ -87,7 +87,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
             break;
         }
 
-        case AO16Bit:
+        case AO_16Bit:
         {
             short tmpValue;
 
@@ -133,7 +133,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
     switch(variation)
     {
-        case AO32Bit:
+        case AO_32Bit:
         {
             buf[pos++] = _flags.raw;
 
@@ -145,7 +145,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
             break;
         }
 
-        case AO16Bit:
+        case AO_16Bit:
         {
             buf[pos++] = _flags.raw;
 
@@ -176,12 +176,12 @@ int AnalogOutput::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case AO32Bit:
+        case AO_32Bit:
         {
             retVal = 5;
             break;
         }
-        case AO16Bit:
+        case AO_16Bit:
         {
             retVal = 3;
             break;
@@ -212,13 +212,8 @@ CtiPointDataMsg *AnalogOutput::getPoint( const TimeCTO *cto ) const
 
     switch(getVariation())
     {
-        case AO32Bit:
-        {
-            val = _value;
-            break;
-        }
-
-        case AO16Bit:
+        case AO_32Bit:
+        case AO_16Bit:
         {
             val = _value;
             break;
@@ -288,16 +283,16 @@ int AnalogOutputBlock::restore(const unsigned char *buf, int len)
 
     switch(getVariation())
     {
-        case AOB32Bit:
+        case AOB_32Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO32Bit);
+            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO_32Bit);
 
             break;
         }
 
-        case AOB16Bit:
+        case AOB_16Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO16Bit);
+            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO_16Bit);
 
             break;
         }
@@ -326,7 +321,7 @@ int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int v
 
     switch(variation)
     {
-        case AOB32Bit:
+        case AOB_32Bit:
         {
             _status = buf[pos++];
 
@@ -341,7 +336,7 @@ int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int v
             break;
         }
 
-        case AOB16Bit:
+        case AOB_16Bit:
         {
             short tmpValue;
 
@@ -381,16 +376,16 @@ int AnalogOutputBlock::serialize(unsigned char *buf) const
 
     switch(getVariation())
     {
-        case AOB32Bit:
+        case AOB_32Bit:
         {
-            pos += serializeVariation(buf, AnalogOutputBlock::AOB32Bit);
+            pos += serializeVariation(buf, AOB_32Bit);
 
             break;
         }
 
-        case AOB16Bit:
+        case AOB_16Bit:
         {
-            pos += serializeVariation(buf, AnalogOutputBlock::AOB16Bit);
+            pos += serializeVariation(buf, AOB_16Bit);
 
             break;
         }
@@ -416,7 +411,7 @@ int AnalogOutputBlock::serializeVariation(unsigned char *buf, int variation) con
 
     switch(variation)
     {
-        case AOB32Bit:
+        case AOB_32Bit:
         {
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -428,7 +423,7 @@ int AnalogOutputBlock::serializeVariation(unsigned char *buf, int variation) con
             break;
         }
 
-        case AOB16Bit:
+        case AOB_16Bit:
         {
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -459,12 +454,12 @@ int AnalogOutputBlock::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case AOB32Bit:
+        case AOB_32Bit:
         {
             retVal = 5;
             break;
         }
-        case AOB16Bit:
+        case AOB_16Bit:
         {
             retVal = 3;
             break;

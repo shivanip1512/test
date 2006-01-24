@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:19:54 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ int BinaryOutput::restore(const unsigned char *buf, int len)
 
     switch( getVariation() )
     {
-        case WithStatus:
+        case BO_WithStatus:
         {
             _bo.raw = buf[pos++];
 
@@ -66,7 +66,7 @@ int BinaryOutput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 
     switch( getVariation() )
     {
-        case SingleBit:
+        case BO_SingleBit:
         {
             _bo.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
 
@@ -97,7 +97,7 @@ int BinaryOutput::serialize(unsigned char *buf) const
 
     switch(getVariation())
     {
-        case WithStatus:
+        case BO_WithStatus:
         {
             buf[pos++] = _bo.raw;
 
@@ -125,7 +125,7 @@ int BinaryOutput::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case WithStatus:
+        case BO_WithStatus:
         {
             retVal = 1;
             break;
@@ -156,11 +156,8 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 
     switch(getVariation())
     {
-        case WithStatus:
-        {
-            //  fall through
-        }
-        case SingleBit:
+        case BO_WithStatus:
+        case BO_SingleBit:
         {
             val = _bo.flags.state;
             break;
@@ -246,8 +243,8 @@ int BinaryOutputControl::restore(const unsigned char *buf, int len)
 
     switch( getVariation() )
     {
-        case ControlRelayOutputBlock:
-        case PatternControlBlock:
+        case BOC_ControlRelayOutputBlock:
+        case BOC_PatternControlBlock:
         {
             for( int i = 0; i < 11; i++ )
             {
@@ -282,7 +279,7 @@ int BinaryOutputControl::restoreBits(const unsigned char *buf, int bitoffset, in
 
     switch( getVariation() )
     {
-        case PatternMask:
+        case BOC_PatternMask:
         {
             _patternMask = (buf[bitpos/8] >> bitpos) & 0x01;
 
@@ -315,8 +312,8 @@ int BinaryOutputControl::serialize(unsigned char *buf) const
 
     switch(getVariation())
     {
-        case ControlRelayOutputBlock:
-        case PatternControlBlock:
+        case BOC_ControlRelayOutputBlock:
+        case BOC_PatternControlBlock:
         {
             for( int i = 0; i < 11; i++ )
             {
@@ -347,8 +344,8 @@ int BinaryOutputControl::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case ControlRelayOutputBlock:
-        case PatternControlBlock:
+        case BOC_ControlRelayOutputBlock:
+        case BOC_PatternControlBlock:
         {
             retVal = 11;
             break;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/20 17:19:54 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,15 +79,15 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
 
     switch( variation )
     {
-        case Binary32Bit:
-        case Delta32Bit:
+        case C_Binary32Bit:
+        case C_Delta32Bit:
         {
             _flag = buf[pos++];
 
             //  fall through
         }
-        case Binary32BitNoFlag:
-        case Delta32BitNoFlag:
+        case C_Binary32BitNoFlag:
+        case C_Delta32BitNoFlag:
         {
             unsigned char *val = (unsigned char *)&_counter;
 
@@ -99,15 +99,15 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
             break;
         }
 
-        case Binary16Bit:
-        case Delta16Bit:
+        case C_Binary16Bit:
+        case C_Delta16Bit:
         {
             _flag = buf[pos++];
 
             //  fall through
         }
-        case Binary16BitNoFlag:
-        case Delta16BitNoFlag:
+        case C_Binary16BitNoFlag:
+        case C_Delta16BitNoFlag:
         {
             unsigned char *val = (unsigned char *)&_counter;
 
@@ -154,19 +154,6 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 
     double val = 0;
     int quality;
-
-/*    switch(getVariation())
-    {
-        case Binary32Bit:
-        case Binary32BitNoFlag:
-        case Binary16Bit:
-        case Binary16BitNoFlag:
-        case Delta32Bit:
-        case Delta32BitNoFlag:
-        case Delta16Bit:
-        case Delta16BitNoFlag:
-        {*/
-
 
     //  this used to be chosen or excluded by the variation...  but every
     //    variation returns the same data, so there's no need to differentiate...
@@ -215,7 +202,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 
 CounterEvent::CounterEvent(int variation) :
     Counter(Group, variation),
-    _toc(Time::TimeAndDate)
+    _toc(Time::T_TimeAndDate)
 {
 
 }
@@ -226,29 +213,29 @@ int CounterEvent::restore(const unsigned char *buf, int len)
 
     switch(getVariation())
     {
-        case Binary32BitNoTime:
-        case Delta32BitNoTime:
+        case CE_Binary32BitNoTime:
+        case CE_Delta32BitNoTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary32Bit);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary32Bit);
             break;
         }
-        case Binary16BitNoTime:
-        case Delta16BitNoTime:
+        case CE_Binary16BitNoTime:
+        case CE_Delta16BitNoTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary16Bit);
             break;
         }
-        case Binary32BitWithTime:
-        case Delta32BitWithTime:
+        case CE_Binary32BitWithTime:
+        case CE_Delta32BitWithTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary16Bit);
             pos += _toc.restore(buf + pos, len - pos);
             break;
         }
-        case Binary16BitWithTime:
-        case Delta16BitWithTime:
+        case CE_Binary16BitWithTime:
+        case CE_Delta16BitWithTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary16Bit);
             pos += _toc.restore(buf + pos, len - pos);
             break;
         }
@@ -300,10 +287,10 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
 
     switch( getVariation() )
     {
-        case Binary16BitWithTime:
-        case Delta16BitWithTime:
-        case Binary32BitWithTime:
-        case Delta32BitWithTime:
+        case CE_Binary16BitWithTime:
+        case CE_Delta16BitWithTime:
+        case CE_Binary32BitWithTime:
+        case CE_Delta32BitWithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
             tmpMsg->setTime(_toc.getSeconds());
@@ -339,14 +326,14 @@ int CounterFrozen::restore(const unsigned char *buf, int len)
 
     switch(getVariation())
     {
-        case Binary16Bit:
+        case CF_Binary16Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary16Bit);
             break;
         }
-        case Binary16BitNoFlag:
+        case CF_Binary16BitNoFlag:
         {
-            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16BitNoFlag);
+            pos += restoreVariation(buf + pos, len - pos, C_Binary16BitNoFlag);
             break;
         }
     }
@@ -395,34 +382,6 @@ CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
     //  inherited types just add on to the parent's values
     tmpMsg = Counter::getPoint(cto);
 
-/*    switch(getVariation())
-    {
-        case Binary32Bit:
-        case Binary32BitNoFlag:
-        case Binary16Bit:
-        case Binary16BitNoFlag:
-        case Delta32Bit:
-        case Delta32BitNoFlag:
-        case Delta16Bit:
-        case Delta16BitNoFlag:
-        {
-            val = _counter;
-
-            break;
-        }
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
-        }
-    }
-*/
-
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
     InitLastKnownQuality,
@@ -446,11 +405,11 @@ CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
 
     }*/
 
-    if( gDNPVerbose )
+    if( gDNPVerbose && tmpMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Counter object, value " << val << endl;
+        dout << "Frozen counter object, value " << tmpMsg->getValue() << endl;
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/03/10 21:05:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,8 +57,8 @@ public:
 
     enum Variation
     {
-        SingleBitPacked = 1,
-        WithStatus      = 2
+        BI_SingleBitPacked = 1,
+        BI_WithStatus      = 2
     };
 
     enum
@@ -85,9 +85,9 @@ public:
 
     enum Variation
     {
-        WithoutTime      =  1,
-        WithTime         =  2,
-        WithRelativeTime =  3
+        BIC_WithoutTime      =  1,
+        BIC_WithTime         =  2,
+        BIC_WithRelativeTime =  3
     };
 
     enum

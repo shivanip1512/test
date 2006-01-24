@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/30 19:42:16 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,14 +42,14 @@ public:
 
     enum Variation
     {
-        Binary32Bit       = 1,
-        Binary16Bit       = 2,
-        Delta32Bit        = 3,
-        Delta16Bit        = 4,
-        Binary32BitNoFlag = 5,
-        Binary16BitNoFlag = 6,
-        Delta32BitNoFlag  = 7,
-        Delta16BitNoFlag  = 8
+        C_Binary32Bit       = 1,
+        C_Binary16Bit       = 2,
+        C_Delta32Bit        = 3,
+        C_Delta16Bit        = 4,
+        C_Binary32BitNoFlag = 5,
+        C_Binary16BitNoFlag = 6,
+        C_Delta32BitNoFlag  = 7,
+        C_Delta16BitNoFlag  = 8
     };
 
     enum
@@ -74,18 +74,18 @@ public:
 
     enum Variation
     {
-        Binary32Bit                 =  1,
-        Binary16Bit                 =  2,
-        Delta32Bit                  =  3,
-        Delta16Bit                  =  4,
-        Binary32BitWithTimeOfFreeze =  5,
-        Binary16BitWithTimeOfFreeze =  6,
-        Delta32BitWithTimeOfFreeze  =  7,
-        Delta16BitWithTimeOfFreeze  =  8,
-        Binary32BitNoFlag           =  9,
-        Binary16BitNoFlag           = 10,
-        Delta32BitNoFlag            = 11,
-        Delta16BitNoFlag            = 12
+        CF_Binary32Bit                 =  1,
+        CF_Binary16Bit                 =  2,
+        CF_Delta32Bit                  =  3,
+        CF_Delta16Bit                  =  4,
+        CF_Binary32BitWithTimeOfFreeze =  5,
+        CF_Binary16BitWithTimeOfFreeze =  6,
+        CF_Delta32BitWithTimeOfFreeze  =  7,
+        CF_Delta16BitWithTimeOfFreeze  =  8,
+        CF_Binary32BitNoFlag           =  9,
+        CF_Binary16BitNoFlag           = 10,
+        CF_Delta32BitNoFlag            = 11,
+        CF_Delta16BitNoFlag            = 12
     };
 
     enum
@@ -112,14 +112,14 @@ public:
 
     enum Variation
     {
-        Binary32BitNoTime   = 1,
-        Binary16BitNoTime   = 2,
-        Delta32BitNoTime    = 3,
-        Delta16BitNoTime    = 4,
-        Binary32BitWithTime = 5,
-        Binary16BitWithTime = 6,
-        Delta32BitWithTime  = 7,
-        Delta16BitWithTime  = 8
+        CE_Binary32BitNoTime   = 1,
+        CE_Binary16BitNoTime   = 2,
+        CE_Delta32BitNoTime    = 3,
+        CE_Delta16BitNoTime    = 4,
+        CE_Binary32BitWithTime = 5,
+        CE_Binary16BitWithTime = 6,
+        CE_Delta32BitWithTime  = 7,
+        CE_Delta16BitWithTime  = 8
     };
 
     enum
@@ -144,14 +144,14 @@ public:
 
     enum Variation
     {
-        Binary32BitNoTime   = 1,
-        Binary16BitNoTime   = 2,
-        Delta32BitNoTime    = 3,
-        Delta16BitNoTime    = 4,
-        Binary32BitWithTime = 5,
-        Binary16BitWithTime = 6,
-        Delta32BitWithTime  = 7,
-        Delta16BitWithTime  = 8
+        CFE_Binary32BitNoTime   = 1,
+        CFE_Binary16BitNoTime   = 2,
+        CFE_Delta32BitNoTime    = 3,
+        CFE_Delta16BitNoTime    = 4,
+        CFE_Binary32BitWithTime = 5,
+        CFE_Binary16BitWithTime = 6,
+        CFE_Delta32BitWithTime  = 7,
+        CFE_Delta16BitWithTime  = 8
     };
 
     enum

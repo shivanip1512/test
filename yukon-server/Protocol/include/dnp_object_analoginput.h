@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/03/10 21:05:42 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,10 +61,10 @@ public:
 
     enum Variation
     {
-        AI32Bit       = 1,
-        AI16Bit       = 2,
-        AI32BitNoFlag = 3,
-        AI16BitNoFlag = 4
+        AI_32Bit       = 1,
+        AI_16Bit       = 2,
+        AI_32BitNoFlag = 3,
+        AI_16BitNoFlag = 4
     };
 
     enum
@@ -91,12 +91,12 @@ public:
 
     enum Variation
     {
-        AI32Bit                 = 1,
-        AI16Bit                 = 2,
-        AI32BitWithTimeOfFreeze = 3,
-        AI16BitWithTimeOfFreeze = 4,
-        AI32BitNoFlag           = 5,
-        AI16BitNoFlag           = 6
+        AIF_32Bit                 = 1,
+        AIF_16Bit                 = 2,
+        AIF_32BitWithTimeOfFreeze = 3,
+        AIF_16BitWithTimeOfFreeze = 4,
+        AIF_32BitNoFlag           = 5,
+        AIF_16BitNoFlag           = 6
     };
 
     enum
@@ -120,10 +120,10 @@ public:
 
     enum Variation
     {
-        AI32BitNoTime   = 1,
-        AI16BitNoTime   = 2,
-        AI32BitWithTime = 3,
-        AI16BitWithTime = 4
+        AIC_32BitNoTime   = 1,
+        AIC_16BitNoTime   = 2,
+        AIC_32BitWithTime = 3,
+        AIC_16BitWithTime = 4
     };
 
     enum
@@ -149,10 +149,10 @@ public:
 
     enum Variation
     {
-        AI32BitNoTime   = 1,
-        AI16BitNoTime   = 2,
-        AI32BitWithTime = 3,
-        AI16BitWithTime = 4
+        AIFE_32BitNoTime   = 1,
+        AIFE_16BitNoTime   = 2,
+        AIFE_32BitWithTime = 3,
+        AIFE_16BitWithTime = 4
     };
 
     enum

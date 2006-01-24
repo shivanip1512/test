@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/01/24 20:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ int Time::restoreVariation(const unsigned char *buf, int len, int variation)
 
     switch(variation)
     {
-        case TimeAndDate:
+        case T_TimeAndDate:
         {
             double tmp = 0.0;
 
@@ -108,10 +108,10 @@ int Time::restoreVariation(const unsigned char *buf, int len, int variation)
             break;
         }
 
-        case TimeAndDateWithInterval:
+        case T_TimeAndDateWithInterval:
         {
             //  restore the time block first
-            pos += restoreVariation(buf, len, Time::TimeAndDate);
+            pos += restoreVariation(buf, len, T_TimeAndDate);
 
             //  then restore the interval
             _interval = 0.0;
@@ -143,7 +143,7 @@ int Time::serializeVariation(unsigned char *buf, int variation) const
 
     switch(variation)
     {
-        case TimeAndDate:
+        case T_TimeAndDate:
         {
             double tmp;
             long tmpHi, tmpLo;
@@ -168,12 +168,12 @@ int Time::serializeVariation(unsigned char *buf, int variation) const
             break;
         }
 
-        case TimeAndDateWithInterval:
+        case T_TimeAndDateWithInterval:
         {
             long tmp;
 
             //  serialize the time block first
-            pos += serializeVariation(buf, Time::TimeAndDate);
+            pos += serializeVariation(buf, T_TimeAndDate);
 
             tmp = _interval;
 
@@ -196,14 +196,14 @@ int Time::getSerializedLen(void) const
 
     switch(getVariation())
     {
-        case TimeAndDate:
+        case T_TimeAndDate:
         {
             retVal = 6;
 
             break;
         }
 
-        case TimeAndDateWithInterval:
+        case T_TimeAndDateWithInterval:
         {
             retVal = 10;
 
@@ -228,10 +228,10 @@ int TimeCTO::restore(const unsigned char *buf, int len)
 
     switch( getVariation() )
     {
-        case TimeAndDateCTO:
-        case TimeAndDateCTOUnsynchronized:
+        case TC_TimeAndDateCTO:
+        case TC_TimeAndDateCTOUnsynchronized:
         {
-            pos += restoreVariation(buf,len,Time::TimeAndDate);
+            pos += restoreVariation(buf,len,T_TimeAndDate);
             break;
         }
 
@@ -256,10 +256,10 @@ int TimeCTO::serialize(unsigned char *buf) const
 
     switch( getVariation() )
     {
-        case TimeAndDateCTO:
-        case TimeAndDateCTOUnsynchronized:
+        case TC_TimeAndDateCTO:
+        case TC_TimeAndDateCTOUnsynchronized:
         {
-            pos += serializeVariation(buf, Time::TimeAndDate);
+            pos += serializeVariation(buf, T_TimeAndDate);
             break;
         }
     }
@@ -273,8 +273,8 @@ int TimeCTO::getSerializedLen(void) const
 
     switch( getVariation() )
     {
-        case TimeAndDateCTO:
-        case TimeAndDateCTOUnsynchronized:
+        case TC_TimeAndDateCTO:
+        case TC_TimeAndDateCTOUnsynchronized:
         {
             retVal = 6;
 
@@ -296,9 +296,9 @@ double TimeDelay::getSeconds() const
 {
     double retVal;
 
-    if( _variation == Fine )
+    if( _variation == TD_Fine )
     {
-        retVal = _delay / 1000;
+        retVal = _delay / 1000.0;
     }
     else
     {
@@ -313,7 +313,7 @@ double TimeDelay::getMilliseconds() const
 {
     double retVal;
 
-    if( _variation == Fine )
+    if( _variation == TD_Fine )
     {
         retVal = _delay % 1000;
     }
