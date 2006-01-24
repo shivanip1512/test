@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/01/24 20:00:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,11 @@ private:
 
     stringlist_t _string_results;
     pointlist_t  _point_results;
+
+    enum
+    {
+        TimeDifferential = 60
+    };
 
     enum Retries
     {
