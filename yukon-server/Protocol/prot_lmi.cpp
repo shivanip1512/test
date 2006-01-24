@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/01/19 20:44:57 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/01/24 19:57:28 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,12 +90,6 @@ void CtiProtocolLMI::setAddress( unsigned char address )
     _address = address;
 
     _seriesv.setAddress(address);
-}
-
-
-void CtiProtocolLMI::setName( const string &name )
-{
-    _name = name;
 }
 
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/01/19 20:44:57 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/01/24 19:57:28 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,8 +195,6 @@ private:
     bool _first_code_block,
          _final_code_block;
 
-    string _name;
-
 protected:
 
 public:
@@ -235,7 +233,6 @@ public:
     };
 
     void setAddress(unsigned char address);
-    void setName(const string &name);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
     void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
     void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
