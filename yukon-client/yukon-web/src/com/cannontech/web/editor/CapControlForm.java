@@ -122,7 +122,7 @@ public class CapControlForm extends DBEditorForm {
 
 	// Boolean to keep track of the disable dual subbus status
 	// by default will be set to true
-	private Boolean enableDualBus = null;
+	private Boolean enableDualBus = Boolean.FALSE;
 
 	//private boolean dualBusEnableClicked = false;
 
@@ -634,9 +634,9 @@ public class CapControlForm extends DBEditorForm {
 		if (getDbPersistent() instanceof CapControlSubBus) {
 			String dualBusEn = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getDualBusEnabled();
-			boolean val = (dualBusEn.equalsIgnoreCase("Y") ? true : false);
+			Boolean val = (dualBusEn.equalsIgnoreCase("Y") ? Boolean.TRUE : Boolean.FALSE);
 			System.out.println("Value of the dualBus AFTER reset - " + val);
-			this.setEnableDualBus(new Boolean(val));
+			this.setEnableDualBus(val);
 		}
 	}
 
@@ -806,12 +806,14 @@ public class CapControlForm extends DBEditorForm {
 			// update the CBC object if we are editing it
 			if (isEditingController()) {
 				updateDBObject(getCBControllerEditor().getPaoCBC(), facesMsg);
+				updateDualBusEnabled();
 
 				// clear out the memory of CBCs structures
 				resetCBCEditor();
 			}
+            
+            
 			//if(this.dualBusEnableClicked)
-			updateDualBusEnabled();
 			updateDBObject(getDbPersistent(), facesMsg);
 			facesMsg.setDetail("Database update was SUCCESSFUL");
 		} catch (TransactionException te) {
@@ -823,8 +825,7 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	private void updateDualBusEnabled() {
-		String dualBusCtl = (getEnableDualBus().booleanValue()) ? new String(
-				"Y") : new String("N");
+		String dualBusCtl = (getEnableDualBus().booleanValue()) ? "Y" : "N";
 		((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
 				.setDualBusEnabled(dualBusCtl);
 
