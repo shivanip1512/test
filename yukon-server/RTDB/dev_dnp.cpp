@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/01/19 20:52:12 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/01/24 19:55:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -928,7 +928,6 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessa
 
         switch( _pil_info.protocol_command )
         {
-            case Protocol::DNPInterface::Command_Class0Read:
             case Protocol::DNPInterface::Command_Class1230Read:
             {
                 setScanFlag(ScanRateIntegrity, false);
@@ -1006,7 +1005,6 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessag
 
     switch( _pil_info.protocol_command )
     {
-        case Protocol::DNPInterface::Command_Class0Read:
         case Protocol::DNPInterface::Command_Class1230Read:
         {
             setScanFlag(ScanRateIntegrity, false);
@@ -1084,6 +1082,7 @@ void DNP::DecodeDatabaseReader(RWDBReader &rdr)
    }
 
    _dnp.setAddresses(_dnp_address.getSlaveAddress(), _dnp_address.getMasterAddress());
+   _dnp.setName(string(getName().data()));
 
    if( getType() == TYPE_DARTRTU )
    {
