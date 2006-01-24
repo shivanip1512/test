@@ -33,8 +33,12 @@ public CapControlSubBus(Integer subBusID)
  */
 public void add() throws java.sql.SQLException 
 {
-	if( getCapControlPAOID() == null )
-		setCapControlPAOID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+	if( getCapControlPAOID() == null ) {
+        setCapControlPAOID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+        
+        // these needs to default to itself
+        getCapControlSubstationBus().setAltSubPAOId(getCapControlPAOID());
+    }
 
 	super.add();
 	getCapControlSubstationBus().add();
