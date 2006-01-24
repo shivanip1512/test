@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:19:55 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/01/24 20:03:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -170,7 +170,7 @@ int DNPInterface::generate( CtiXfer &xfer )
         {
             case Command_WriteTime:
             {
-                DNP::Time *time_now = CTIDBG_new DNP::Time(Time::TimeAndDate);
+                DNP::Time *time_now = CTIDBG_new DNP::Time(Time::T_TimeAndDate);
                 CtiTime Now;
 
                 time_now->setSeconds(Now.seconds() );
@@ -189,7 +189,7 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(Application::RequestRead);
 
-                ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::TimeAndDate);
+                ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate);
 
                 _app_layer.addObjectBlock(dob);
 
@@ -207,27 +207,17 @@ int DNPInterface::generate( CtiXfer &xfer )
 
                 break;
             }
-            case Command_Class0Read:
-            {
-                _app_layer.setCommand(Application::RequestRead);
-
-                ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange);
-
-                dob->addObject(CTIDBG_new Class(Class::Class0));
-
-                _app_layer.addObjectBlock(dob);
-
-                break;
-            }
             case Command_Class1230Read:
             {
                 _app_layer.setCommand(Application::RequestRead);
 
-                ObjectBlock *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
+                ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
+                            *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
                             *dob2 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2),
                             *dob3 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3),
                             *dob0 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0);
 
+                _app_layer.addObjectBlock(time);
                 _app_layer.addObjectBlock(dob1);
                 _app_layer.addObjectBlock(dob2);
                 _app_layer.addObjectBlock(dob3);
@@ -239,10 +229,12 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(Application::RequestRead);
 
-                ObjectBlock *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
+                ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
+                            *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
                             *dob2 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2),
                             *dob3 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3);
 
+                _app_layer.addObjectBlock(time);
                 _app_layer.addObjectBlock(dob1);
                 _app_layer.addObjectBlock(dob2);
                 _app_layer.addObjectBlock(dob3);
@@ -256,7 +248,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                     _app_layer.setCommand(Application::RequestDirectOp);
 
                     ObjectBlock       *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                    AnalogOutputBlock *aout = CTIDBG_new AnalogOutputBlock(AnalogOutputBlock::AOB16Bit);
+                    AnalogOutputBlock *aout = CTIDBG_new AnalogOutputBlock(AnalogOutputBlock::AOB_16Bit);
 
                     aout->setControl(_command_parameters[0].aout.value);
 
@@ -309,7 +301,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                         dob = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ByteQty);
                     }
 
-                    bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::ControlRelayOutputBlock);
+                    bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock);
                     bout->setControlBlock(op.dout.on_time,
                                           op.dout.off_time,
                                           op.dout.count,
@@ -376,7 +368,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     {
         _app_layer.getObjects(_object_blocks);
 
-        //  this block is for commands that return anything besides non-pointdata
+        //  does the command need any special processing, or is it just pointdata?
         switch( _command )
         {
             case Command_SetDigitalOut_Direct:
@@ -390,7 +382,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     (ob = _object_blocks.front()) &&
                     !ob->empty() &&
                     ob->getGroup()     == BinaryOutputControl::Group &&
-                    ob->getVariation() == BinaryOutputControl::ControlRelayOutputBlock )
+                    ob->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
                 {
                     ObjectBlock::object_descriptor od = ob->at(0);
 
@@ -459,36 +451,13 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
             case Command_ReadTime:
             {
-                const ObjectBlock *ob;
-
-                if( !_object_blocks.empty() &&
-                    (ob = _object_blocks.front()) &&
-                    !ob->empty() &&
-                    ob->getGroup()     == DNP::Time::Group &&
-                    ob->getVariation() == DNP::Time::TimeAndDate )
-                {
-                    ObjectBlock::object_descriptor od = ob->at(0);
-
-                    if( od.object )
-                    {
-                        const DNP::Time *time = reinterpret_cast<const DNP::Time *>(od.object);
-                        string s;
-
-                        //  change to ptime
-                        CtiTime t(time->getSeconds());
-
-                        s = "Device time: ";
-                        s.append(t.asString());
-
-                        _string_results.push_back(CTIDBG_new string(s));
-                    }
-                    else
-                    {
-                        _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
-                        retVal = NOTNORMAL;
-                    }
-                }
-                else
+                //  make sure it's there - if not, yelp
+                if( _object_blocks.empty()
+                    || !_object_blocks.front()
+                    || _object_blocks.front()->empty()
+                    || _object_blocks.front()->getGroup()     != DNP::Time::Group
+                    || _object_blocks.front()->getVariation() != DNP::Time::T_TimeAndDate
+                    || !_object_blocks.front()->at(0).object )
                 {
                     _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
                     retVal = NOTNORMAL;
@@ -520,13 +489,48 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
         {
             const ObjectBlock *ob = _object_blocks.front();
 
-            if( ob->getGroup() == TimeCTO::Group && !ob->empty() )
+            if( ob && !ob->empty() )
             {
-                cto = reinterpret_cast<const TimeCTO *>(ob->at(0).object);
-            }
-            else
-            {
-                ob->getPoints(_point_results, cto);
+                if( ob->getGroup() == TimeCTO::Group )
+                {
+                    cto = reinterpret_cast<const TimeCTO *>(ob->at(0).object);
+                }
+                else if( ob->getGroup()     == DNP::Time::Group &&
+                         ob->getVariation() == DNP::Time::T_TimeAndDate )
+                {
+                    ObjectBlock::object_descriptor od = ob->at(0);
+
+                    if( od.object )
+                    {
+                        const DNP::Time *time = reinterpret_cast<const DNP::Time *>(od.object);
+                        string s;
+
+                        CtiTime t(time->getSeconds());
+                        CtiTime now;
+
+                        s = "Device time: ";
+                        s.append(t.asString());
+
+                        if( (t.seconds() - TimeDifferential) > now.seconds() || (t.seconds() + TimeDifferential) < now.seconds() )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - large time differential for device \"" << _name << "\" (" << t << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        _string_results.push_back(CTIDBG_new string(s));
+                    }
+                    else
+                    {
+                        _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                        retVal = NOTNORMAL;
+                    }
+                }
+                else
+                {
+                    ob->getPoints(_point_results, cto);
+                }
             }
 
             _object_blocks.pop();
