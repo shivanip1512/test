@@ -65,7 +65,7 @@ public void add() throws java.sql.SQLException
 		getSubstationBusID(),
 				getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
 				getMapLocationID(), getStrategyID(),
-				getCurrentVoltLoadPointID(), getAltSubPAOId(),
+				getCurrentVoltLoadPointID(), getSubstationBusID(),
 				getSwitchPointID(), getDualBusEnabled()};
 
 	add( TABLE_NAME, addValues );
