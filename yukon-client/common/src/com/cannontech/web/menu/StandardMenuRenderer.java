@@ -42,7 +42,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private String breadCrumbs;
     private final HttpServletRequest httpServletRequest;
     private LiteYukonUser yukonUser;
-    private MenuFeatureSet features;
+    private MenuFeatureSet features = new MenuFeatureSet();
 
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.

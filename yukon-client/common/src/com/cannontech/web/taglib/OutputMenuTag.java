@@ -33,13 +33,12 @@ public class OutputMenuTag extends TagSupport {
             (String) pageContext.getAttribute(StandardPageTag.CTI_BREADCRUMBS, 
                                               PageContext.REQUEST_SCOPE);
         menuRenderer.setBreadCrumb(breadCrumbs);
-        MenuFeatureSet features = new MenuFeatureSet();
-        features.showMainNavigation = showMenu.booleanValue();
-        menuRenderer.setFeatures(features);
-        try {
-            menuRenderer.renderMenu(pageContext.getOut());
-        } catch (IOException e) {
-            throw new JspException("Unable to render standard menu", e);
+        if (showMenu.booleanValue()) {
+            try {
+                menuRenderer.renderMenu(pageContext.getOut());
+            } catch (IOException e) {
+                throw new JspException("Unable to render standard menu", e);
+            }
         }
         return EVAL_PAGE;
     }
