@@ -60,12 +60,13 @@ public CapControlSubstationBus(Integer subID)
  */
 public void add() throws java.sql.SQLException 
 {
+    setAltSubPAOId(getSubstationBusID());
 	Object[] addValues = 
 	{
 		getSubstationBusID(),
 				getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
 				getMapLocationID(), getStrategyID(),
-				getCurrentVoltLoadPointID(), getSubstationBusID(),
+				getCurrentVoltLoadPointID(), getAltSubPAOId(),
 				getSwitchPointID(), getDualBusEnabled()};
 
 	add( TABLE_NAME, addValues );
