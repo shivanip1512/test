@@ -68,5 +68,12 @@ CtiPointStore *CtiPointStore::getInstance()
     return _instance;
 }
 
-
+void CtiPointStore::removeInstance()
+{
+    if ( _instance != NULL )
+    {
+        delete _instance;
+        _instance = NULL;
+    }
+}
 

@@ -624,6 +624,14 @@ void CtiCalcLogicService::Run( )
 
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
         dropDispatchConnection();
+
+        if( calcThread )
+        {
+            delete calcThread;
+            calcThread = 0;
+        }
+
+        CtiPointStore::removeInstance();
     }
     catch( RWxmsg &msg )
     {

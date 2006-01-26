@@ -161,6 +161,7 @@ class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_
 {
 public:
     static CtiPointStore *getInstance();
+    static void          removeInstance();
     CtiPointStoreElement *insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType );
     void                 removePointElement( long pointNum );
 
