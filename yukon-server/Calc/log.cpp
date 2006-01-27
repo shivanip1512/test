@@ -77,8 +77,8 @@ void main(int argc, char **argv)
 
         string regStr = "CalcLogTest";
         
-        Connect.WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
-        Connect.WriteConnQue( new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
+        Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
+        Connect.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
 
         CtiMessage *incomingMsg;
 
@@ -100,7 +100,7 @@ void main(int argc, char **argv)
         }
 
         //  tell Dispatch we're going away, then leave
-        Connect.WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0) );
+        Connect.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0) );
         Connect.ShutdownConnection();
     }
     catch( RWxmsg &msg )

@@ -80,9 +80,9 @@ void main(int argc, char **argv)
 
         CtiConnection Connect(VANGOGHNEXUS, argv[1]);
         
-        Connect.WriteConnQue( new CtiRegistrationMsg("point changer", rwThreadId(), TRUE) );
+        Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", rwThreadId(), TRUE) );
 
-        CtiPointRegistrationMsg *ptReg = new CtiPointRegistrationMsg( 0 );
+        CtiPointRegistrationMsg *ptReg = CTIDBG_new CtiPointRegistrationMsg( 0 );
         ptReg->insert( atol( argv[2] ) );
         Connect.WriteConnQue( ptReg );
 
@@ -97,11 +97,11 @@ void main(int argc, char **argv)
 
         for( int i = 0; i < atoi( argv[4] ); i++ )
         {
-            Connect.WriteConnQue( new CtiPointDataMsg(atoi( argv[2] ), atof( argv[3] ) + i, NormalQuality, ptType, "Individual Point Change") );
+            Connect.WriteConnQue( CTIDBG_new CtiPointDataMsg(atoi( argv[2] ), atof( argv[3] ) + i, NormalQuality, ptType, "Individual Point Change") );
             Sleep( atoi( argv[5] ) );
         }
 
-        Connect.WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0) );
+        Connect.WriteConnQue( CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0) );
         Connect.ShutdownConnection( );
     }
     catch( RWxmsg &msg )

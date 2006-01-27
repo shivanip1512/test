@@ -88,7 +88,7 @@ CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
     for( ; copyIterator( ); )
     {
         CtiCalcComponent *tmp;
-        tmp = new CtiCalcComponent( *((CtiCalcComponent *)copyIterator.key( )) );
+        tmp = CTIDBG_new  CtiCalcComponent( *((CtiCalcComponent *)copyIterator.key( )) );
         this->appendComponent( tmp );
     }
     _updateInterval = toCopy._updateInterval;

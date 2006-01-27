@@ -75,8 +75,8 @@ void main(int argc, char **argv)
 
         string regStr = "Lurker";
         
-        myConnection.WriteConnQue( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
-        myConnection.WriteConnQue( new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
+        myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
+        myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
 
         CtiMessage *incomingMsg;
 
@@ -99,7 +99,7 @@ void main(int argc, char **argv)
         }
 
         //  tell Dispatch we're going away, then leave
-        myConnection.WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+        myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         myConnection.ShutdownConnection();
 
     }

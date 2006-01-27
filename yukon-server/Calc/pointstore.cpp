@@ -11,8 +11,8 @@ CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dep
     if( pointNum == 0 )
         return NULL;
 
-    newElement = new CtiPointStoreElement( pointNum );
-    newHashKey = new CtiHashKey( pointNum );
+    newElement = CTIDBG_new CtiPointStoreElement( pointNum );
+    newHashKey = CTIDBG_new CtiHashKey( pointNum );
 
     //  if the insertion wasn't successful, that means this point is already in the pointstore
     if( !(this->insert( newHashKey, newElement )) )
@@ -39,7 +39,7 @@ void CtiPointStore::removePointElement( long pointNum )
 
     if( pointNum !=0 )
     {
-        hashKey = new CtiHashKey( pointNum );
+        hashKey = CTIDBG_new CtiHashKey( pointNum );
 
         element = (CtiPointStoreElement *)((*this)[hashKey]);
         this->removeAll( hashKey );
@@ -62,7 +62,7 @@ CtiPointStore *CtiPointStore::getInstance()
 {
     if ( _instance == NULL )
     {
-        _instance = new CtiPointStore();
+        _instance = CTIDBG_new CtiPointStore();
     }
 
     return _instance;

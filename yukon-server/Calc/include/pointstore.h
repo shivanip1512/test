@@ -85,7 +85,7 @@ public:
     CtiTime  getPointTime( void )           {   return _pointTime;  };
     long    getNumUpdates( void )          {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
-    RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
+    RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return CTIDBG_new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
 
     CtiTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
     void resize_regession(int data_elements)
