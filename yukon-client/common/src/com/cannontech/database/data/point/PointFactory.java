@@ -144,6 +144,44 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 	return point;	
 }
 
+public static PointBase createAnalogPoint( String pointName, Integer paoID, 
+        Integer pointID, int pointOffset, int pointUnit, double multiplier )
+{
+    com.cannontech.database.data.point.PointBase point =
+        com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
+    
+    point = PointFactory.createNewPoint(        
+            pointID,
+            com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
+            pointName,
+            paoID,
+            new Integer(pointOffset) );
+    
+    point.getPoint().setStateGroupID( 
+        new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
+    
+    //defaults - pointUnit
+    ((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
+        new com.cannontech.database.db.point.PointUnit(
+            pointID,
+            new Integer(pointUnit),
+            new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
+            new Double(0.0),
+            new Double(0.0)));
+    
+    //defaults - pointAnalog
+    ((com.cannontech.database.data.point.AnalogPoint)point).setPointAnalog(
+        new com.cannontech.database.db.point.PointAnalog(
+            pointID,
+            new Double(-1.0),
+            com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
+            multiplier,
+            new Double(0.0)));
+
+    
+    return point;   
+}
+
 
 public static PointBase createDmdAccumPoint( String pointName, Integer paoID, 
       Integer pointID, int pointOffset, int pointUnit, double multiplier )
