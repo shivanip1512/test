@@ -117,7 +117,7 @@ void CtiCalculateThread::periodicThread( void )
                     dout << CtiTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
                 }
 
-                ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::periodicComplain, 0 , 0,  0 ) );
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::periodicComplain, 0 , 0,  0 ) );
             }
 
             //  while it's still the same second /and/ i haven't been interrupted
@@ -139,7 +139,7 @@ void CtiCalculateThread::periodicThread( void )
             CtiCalc *calcPoint;
             double newPointValue, oldPointValue;
 
-            CtiMultiMsg *periodicMultiMsg = new CtiMultiMsg;
+            CtiMultiMsg *periodicMultiMsg = CTIDBG_new CtiMultiMsg;
             char pointDescription[80];
 
             periodicIter.reset( );
@@ -185,7 +185,7 @@ void CtiCalculateThread::periodicThread( void )
 
                 sprintf( pointDescription, "calc point %l update", pointId );
 
-                CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                 pointData->setTime(calcTime);
 
                 periodicMultiMsg->getData( ).insert( pointData );
@@ -230,7 +230,7 @@ void CtiCalculateThread::periodicThread( void )
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalculateThread::onUpdateThread( void )
@@ -263,12 +263,13 @@ void CtiCalculateThread::onUpdateThread( void )
                 if(rwnow > announceTime)
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
                     }
 
-                    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::onUpdateComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::onUpdateComplain, 0 , 0, 0 ) );
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -286,7 +287,7 @@ void CtiCalculateThread::onUpdateThread( void )
             if( interrupted )
                 continue;
 
-            pChg = new CtiMultiMsg;
+            pChg = CTIDBG_new CtiMultiMsg;
             pointsInMulti = FALSE;
 
             //  get the mutex while we're accessing the _auAffectedPoints collection
@@ -364,7 +365,7 @@ void CtiCalculateThread::onUpdateThread( void )
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << CtiTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
                                     }
-                                    pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                                    pData = CTIDBG_new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                                     pData->setTime(calcPointPtr->getPointCalcWindowEndTime());
                                 }
 
@@ -388,7 +389,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     }
                     else
                     {//normal calc point
-                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                        pData = CTIDBG_new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pData->setTime(calcTime);
                     }
 
@@ -439,7 +440,7 @@ void CtiCalculateThread::onUpdateThread( void )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
 }
 
 
@@ -455,13 +456,13 @@ void CtiCalculateThread::calcThread( void )
     {
        if( cnt++ % 300 == 0 )
        {
-           ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::calcComplain, 0 , 0, 0 ) );
+           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::calcComplain, 0 , 0, 0 ) );
        }
 
        _self.sleep( 1000 );
     }
 
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::LogOut ) );
 
     //  scream at the other threads, tell them it's time for dinner
     interruptThreads( CtiCalcThreadInterruptReason::Shutdown );
@@ -577,22 +578,23 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
     bool inserted = false;
 
     CtiCalc *newPoint;
-    newPoint = new CtiCalc( pointid, updatetype, updateinterval );
+    newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval );
     switch( newPoint->getUpdateType( ) )
     {
     case periodic:
-        inserted = _periodicPoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _periodicPoints.insert( CTIDBG_new CtiHashKey(pointid), newPoint );
         break;
     case allUpdate:
     case anyUpdate:
     case periodicPlusUpdate:
-        inserted = _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _onUpdatePoints.insert( CTIDBG_new CtiHashKey(pointid), newPoint );
         break;
     case constant:
-        inserted = _constantPoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _constantPoints.insert( CTIDBG_new CtiHashKey(pointid), newPoint );
         break;
     case historical:
         delete newPoint;
+        newPoint = NULL;
         break;
     default:
         {
@@ -602,7 +604,14 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
         }
 
         delete newPoint;
+        newPoint = NULL;
         break;
+    }
+
+    if( !inserted && newPoint != NULL )
+    {
+        delete newPoint;
+        newPoint = NULL;
     }
     return inserted;
 }
@@ -648,7 +657,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
 
     //  insert parameters are (point, dependent, updatetype)
     tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( componentPointID, pointID, updateType );
-    newComponent = new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
+    newComponent = CTIDBG_new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
     targetCalcPoint->appendComponent( newComponent );
 }
 
@@ -856,7 +865,7 @@ void CtiCalculateThread::sendConstants()
     CtiCalc *calcPoint;
     double pointValue, oldPointValue;
 
-    CtiMultiMsg *pMultiMsg = new CtiMultiMsg;
+    CtiMultiMsg *pMultiMsg = CTIDBG_new CtiMultiMsg;
     char pointDescription[80];
     BOOL messageInMulti = FALSE;
 
@@ -900,7 +909,7 @@ void CtiCalculateThread::sendConstants()
 
             sprintf( pointDescription, "calc point %l update", pointId );
 
-            CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, pointValue, ConstantQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+            CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, pointValue, ConstantQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
 
             pMultiMsg->getData( ).insert( pointData );
 
