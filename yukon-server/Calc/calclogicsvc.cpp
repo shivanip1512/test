@@ -215,13 +215,13 @@ void CtiCalcLogicService::Run( )
                         dout << CtiTime() << " Creating a new connection to dispatch." << endl;
                     }
 
-                    _conxion = new CtiConnection(_dispatchPort, _dispatchMachine);
+                    _conxion = CTIDBG_new  CtiConnection(_dispatchPort, _dispatchMachine);
 
                     //  write the registration message (this is only done once, because if the database changes,
                     //    the program name and such doesn't change - only our requested points do.)
 
                     // USE A SINGLE Simple Name - bdw
-                    _conxion->WriteConnQue( new CtiRegistrationMsg("CalcLogic"+CtiNumStr(conncnt++), rwThreadId( ), FALSE) );
+                    _conxion->WriteConnQue( CTIDBG_new CtiRegistrationMsg("CalcLogic"+CtiNumStr(conncnt++), rwThreadId( ), FALSE) );
                 }
             }
             catch(...)
@@ -304,7 +304,7 @@ void CtiCalcLogicService::Run( )
                     calcThread = 0;
                 }
 
-                tempCalcThread = new CtiCalculateThread;
+                tempCalcThread = CTIDBG_new CtiCalculateThread;
                 if( !readCalcPoints( tempCalcThread ) )
                 {
                     try
@@ -344,7 +344,7 @@ void CtiCalcLogicService::Run( )
                             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         delete tempCalcThread;
-                        calcThread = 0;
+                        tempCalcThread = 0;
                         Sleep(1000);
                         continue;
                     }
@@ -458,7 +458,7 @@ void CtiCalcLogicService::Run( )
                             dout << CtiTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
                         }
 
-                        ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::Action1, 330, &CtiCalcLogicService::mainComplain, 0 , 0, 0 ) );
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::Action1, 330, &CtiCalcLogicService::mainComplain, 0 , 0, 0 ) );
 
                         if(_conxion)
                         {
@@ -485,7 +485,7 @@ void CtiCalcLogicService::Run( )
 
                                 _dispatchPingedFailed = pingTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
 
-                                CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+                                CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
                                 pCmd->setUser(CALCLOGICNAME);
                                 if(_conxion) _conxion->WriteConnQue( pCmd );
                                 else delete pCmd;
@@ -615,10 +615,10 @@ void CtiCalcLogicService::Run( )
         SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
         //  tell Dispatch we're going away, then leave
-        if(_conxion) _conxion->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+        if(_conxion) _conxion->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         if(_conxion) _conxion->ShutdownConnection();
 
-        ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::LogOut ) );
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::LogOut ) );
         ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
         ThreadMonitor.join();
 
@@ -691,7 +691,7 @@ void CtiCalcLogicService::_outputThread( void )
                         dout << CtiTime() << " _outputThread active. TID: " << rwThreadId() << endl;
                     }
 
-                    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::outComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::outComplain, 0 , 0, 0 ) );
                 }
             } while( !entries && !interrupted );
 
@@ -741,7 +741,7 @@ void CtiCalcLogicService::_outputThread( void )
         }
     }
 
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCalcLogicService::_inputThread( void )
@@ -769,7 +769,7 @@ void CtiCalcLogicService::_inputThread( void )
                         rwnow = rwnow.now();
                         if(rwnow > announceTime)
                         {
-                            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                             announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -792,7 +792,7 @@ void CtiCalcLogicService::_inputThread( void )
                 rwnow = rwnow.now();
                 if(rwnow > announceTime)
                 {
-                    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -846,7 +846,7 @@ void CtiCalcLogicService::_inputThread( void )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut ) );
 }
 
 // return is not used at this time
@@ -1063,7 +1063,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
     bool returnBool = true;
 
     // should be collection but not now
-    long pointIdList[2000];
+    long pointIdList[10000];
     long CalcCount = 0;
 
     try
@@ -1117,7 +1117,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
                 }
             }
 
-            if(CalcCount >= 2000)
+            if(CalcCount >= 10000)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1475,7 +1475,7 @@ void CtiCalcLogicService::_registerForPoints()
     //          providing the iterator directly?
     RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> > *depIter;
     depIter = calcThread->getPointDependencyIterator( );
-    CtiPointRegistrationMsg *msgPtReg = new CtiPointRegistrationMsg(0);
+    CtiPointRegistrationMsg *msgPtReg = CTIDBG_new CtiPointRegistrationMsg(0);
     for( ; (*depIter)( ); )
     {
         if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
@@ -1599,4 +1599,8 @@ void CtiCalcLogicService::loadConfigParameters()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+
+    SET_CRT_OUTPUT_MODES;
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
+        ENABLE_CRT_SHUTDOWN_CHECK;
 }
