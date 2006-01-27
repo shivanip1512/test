@@ -1063,7 +1063,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
     bool returnBool = true;
 
     // should be collection but not now
-    long pointIdList[10000];
+    vector<long> pointIdList;
+    pointIdList.reserve(2000);
     long CalcCount = 0;
 
     try
@@ -1103,7 +1104,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             rdr["POINTID"] >> pointid;
             rdr["UPDATETYPE"] >> updatetype;
             rdr["PERIODICRATE"] >> updateinterval;
-            pointIdList[CalcCount] = pointid;
+            pointIdList.push_back(pointid);
+            calcThread->appendCalcPoint( pointid );
 
             // put the collection in the correct collection based on type
             if( calcThread->appendPoint( pointid, updatetype, updateinterval ) )
@@ -1116,84 +1118,58 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
                     dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
                 }
             }
-
-            if(CalcCount >= 10000)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** WARNING:  Too Many Calc Points **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                }
-                break;
-            }
         }
 
+        string componenttype, operationtype, functionname;
+        long pointid, componentpointid;
+        double constantvalue;
 
+        RWDBTable    componentTable     = db.table("CALCCOMPONENT");
+        RWDBSelector componentselector  = db.selector();
+    
+        componentselector << componentTable["POINTID"]
+        << componentTable["COMPONENTTYPE"]
+        << componentTable["COMPONENTPOINTID"]
+        << componentTable["OPERATION"]
+        << componentTable["CONSTANT"]
+        << componentTable["FUNCTIONNAME"];
 
-        for(int i=0; i < CalcCount; i++)
+        componentselector.from( componentTable );
+    
+        // put in order
+        componentselector.orderBy(componentselector["COMPONENTORDER"]);
+
+        //cout << componentselector.asString() << endl;
+    
+        RWDBReader  componentRdr = componentselector.reader( conn );
+    
+        //  iterate through the components
+        while( componentRdr() )
         {
-            calcThread->appendCalcPoint( pointIdList[i] );
+    
+            //  read 'em in, and append to the class
+            componentRdr["POINTID"] >> pointid;
+            componentRdr["COMPONENTTYPE"] >> componenttype;
+            componentRdr["COMPONENTPOINTID"] >> componentpointid;
+            componentRdr["OPERATION"] >> operationtype;
+            componentRdr["CONSTANT"] >> constantvalue;
+            componentRdr["FUNCTIONNAME"] >> functionname;
+    
 
-            long componentPointId;
-            string componenttype, operationtype, functionname;
-            long componentpointid;
-            double constantvalue;
-
-            RWDBTable    componentTable     = db.table("CALCCOMPONENT");
-            RWDBSelector componentselector  = db.selector();
-
-            componentselector << componentTable["COMPONENTTYPE"]
-            << componentTable["COMPONENTPOINTID"]
-            << componentTable["OPERATION"]
-            << componentTable["CONSTANT"]
-            << componentTable["FUNCTIONNAME"];
-
-            componentselector.from( componentTable );
-
-            // use PointID for where
-            componentselector.where(componentselector["POINTID"] == pointIdList[i]);
-
-            // put in order
-            componentselector.orderBy(componentselector["COMPONENTORDER"]);
-
-            //cout << componentselector.asString() << endl;
-
+            //    order is defined externally - by the order that they're selected and appended
+            calcThread->appendPointComponent( pointid, componenttype, componentpointid,
+                                              operationtype, constantvalue, functionname );
             if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Loading Components for Calc Id: " << pointIdList[i] << endl;
+                dout << "Component for calc Id " << pointid <<
+                " CT " << componenttype <<
+                ", CPID " << componentpointid <<
+                ", OP " << operationtype <<
+                ", CONST " << constantvalue <<
+                ", FUNC " << functionname << endl;
             }
-
-            RWDBReader  componentRdr = componentselector.reader( conn );
-
-            //  iterate through the components
-            while( componentRdr() )
-            {
-
-                //  read 'em in, and append to the class
-                componentRdr["COMPONENTTYPE"] >> componenttype;
-                componentRdr["COMPONENTPOINTID"] >> componentpointid;
-                componentRdr["OPERATION"] >> operationtype;
-                componentRdr["CONSTANT"] >> constantvalue;
-                componentRdr["FUNCTIONNAME"] >> functionname;
-
-                //  i'm not including COMPONENTORDER in the internal data structure because the
-                //    order is defined externally - by the order that they're selected and appended
-                calcThread->appendPointComponent( pointIdList[i], componenttype, componentpointid,
-                                                  operationtype, constantvalue, functionname );
-                if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Component for calc Id " << pointIdList[i] <<
-                    " CT " << componenttype <<
-                    ", CPID " << componentpointid <<
-                    ", OP " << operationtype <<
-                    ", CONST " << constantvalue <<
-                    ", FUNC " << functionname << endl;
-                }
-            }
-
-        } // end for loop
+        }
 
     }
     catch( RWxmsg &msg )
