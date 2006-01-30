@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/01/30 20:29:27 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.12  2006/01/30 20:29:27  jotteson
+* Fixed exclusion bug comparing a time and a device id. Removed un-necessary if loop.
+*
 * Revision 1.11  2005/12/20 17:20:21  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -294,7 +297,7 @@ bool CtiDeviceExclusion::isExecutionProhibited(const CtiTime &now, LONG did)
                 {
                     if((*itr).second > now)
                     {
-                        if(!did || (did && (*itr).second == did))
+                        if(!did || (did && (*itr).first == did))
                         {
                             prohibited = true;
                         }
@@ -475,6 +478,7 @@ CtiTime CtiDeviceExclusion::getExecutionGrant() const
 }
 void CtiDeviceExclusion::setExecutionGrant(CtiTime set)
 {
+
     _executionGrant = set;
     return;
 }
@@ -486,8 +490,6 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 
     if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
     {
-        if(_cycleTimeExclusion.getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
-        {
             CtiTime now;
             CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
 
@@ -495,7 +497,6 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
             CtiTime close = open + _cycleTimeExclusion.getTransmitTime() - getMinTimeInSec();
 
             bstatus = (open <= now && now < close);
-        }
     }
 
     return bstatus;
