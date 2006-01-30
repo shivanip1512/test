@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2006/01/16 18:52:33 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2006/01/30 18:06:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -868,7 +868,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
 
     /* Start the verification thread */
-    if(DO_VERIFICATIONTHREAD)
+    if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_START_VERIFICATIONTHREAD", "TRUE"),"true"))
     {
         PorterVerificationThread.start();
     }
@@ -1261,7 +1261,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(DO_VERIFICATIONTHREAD)
+    if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_START_VERIFICATIONTHREAD", "TRUE"),"true"))
     {
         PorterVerificationThread.join();
 
