@@ -31,7 +31,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"LCR 4000       (VERSACOM)",
             "LCR 3100       (EXPRESSCOM)",
             "LCR 3100       (VERSACOM)",
-            "LCR 3100       (EMETCON)",
+//            "LCR 3100       (EMETCON)",
 			"LCR 3000       (VERSACOM)",
 			"LCR 3000       (EMETCON)",
 			"LCR 2000       (VERSACOM)",
