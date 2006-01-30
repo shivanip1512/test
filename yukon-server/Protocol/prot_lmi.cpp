@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/01/24 19:57:28 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/01/30 22:11:48 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -545,13 +545,14 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
         //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
         //    also make sure that we don't infinitely read the statuses
-        if( (!_status_read || _status.c) && (++_status_read_count < MaxConsecutiveStatusScans) )
+        if( (!_status_read || (_status.c & gConfigParms.getValueAsULong("PORTER_LMI_STATUS_RESETMASK", 0x80, 16)))
+            && (++_status_read_count < MaxConsecutiveStatusScans) )
         {
             _status_read = true;  //  set here instead of the decode to prevent looping
 
             _outbound.length  = 3;
             _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
-            _outbound.data[0] = _status.c;
+            _outbound.data[0] = _status.c & gConfigParms.getValueAsULong("PORTER_LMI_STATUS_RESETMASK", 0x80, 16);
             _outbound.data[1] = 0;
             _outbound.data[2] = 0;
         }
