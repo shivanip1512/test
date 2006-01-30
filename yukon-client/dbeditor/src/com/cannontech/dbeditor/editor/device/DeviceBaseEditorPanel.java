@@ -2558,7 +2558,8 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		if( rBase instanceof RTM )
 		{
 			getPhysicalAddressLabel().setVisible(true);
-			getPhysicalAddressLabel().setText("RTM Address:");
+			//getPhysicalAddressLabel().setText("RTM Address:");
+            getPhysicalAddressLabel().setText("Physical Address:");
 			getPhysicalAddressTextField().setVisible(true);
 			ivjPhysicalAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 15) );
 			getPhysicalAddressTextField().setText( ((IEDBase)rBase).getDeviceIED().getSlaveAddress() );
