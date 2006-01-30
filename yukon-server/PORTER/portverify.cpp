@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/01/05 21:05:57 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/01/30 18:06:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,9 +97,13 @@ void CtiPorterVerification::verificationThread( void )
     CtiVerificationWork   *work;
     CtiVerificationReport *report;
 
-    ptime::time_duration_type prune_interval      = hours(24) * gConfigParms.getValueAsInt("DYNAMIC_VERIFICATION_PRUNE_DAYS", 30);
+    ptime::time_duration_type report_interval     = minutes(5);
     ptime::time_duration_type queue_read_interval = seconds(10);
-    ptime last_prune = second_clock::universal_time() - hours(48);  //  two days ago will force it to go right now
+    ptime::time_duration_type prune_interval      = hours(24);
+    ptime::time_duration_type prune_depth         = hours(24) * gConfigParms.getValueAsInt("DYNAMIC_VERIFICATION_PRUNE_DAYS", 30);
+
+    ptime last_prune  = second_clock::universal_time() - hours(48);  //  two days ago will force it to go right now
+    ptime last_report = second_clock::universal_time();  //  we don't need to print right away
 
     int sleep;
 
@@ -107,22 +111,48 @@ void CtiPorterVerification::verificationThread( void )
 
     try
     {
+        //  main loop
         while( !isSet(SHUTDOWN) )
         {
+            //  check if we need to reload...
             if( isSet(RELOAD) )
             {
                 loadAssociations();
             }
 
-            if( (last_prune + hours(24)) <= second_clock::universal_time() )
+            //  ... or prune anything from the DB...
+            if( (last_prune + prune_interval) <= second_clock::universal_time() )
             {
-                pruneEntries(prune_interval);
+                pruneEntries(prune_depth);
 
                 last_prune = second_clock::universal_time();
             }
 
+            //  ... or let the world know we're doing OK
+            if( (last_report + report_interval) <= second_clock::universal_time() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID () << " is running "
+                         << "(INQ: " << _input.size() << ", WQ: " << _work_queue.size();
+
+                    if( _work_queue.top() )
+                    {
+                        dout << ", WQ top: " << to_simple_string(_work_queue.top()->getExpiration()) << ")" << endl;
+                    }
+                    else
+                    {
+                        dout << ", WQ top: [empty])" << endl;
+                    }
+                }
+
+                last_report = second_clock::universal_time();
+            }
+
+            //  set the next DB check time...
             ptime next_db_check = second_clock::universal_time() + queue_read_interval;
 
+            //  ... we'll try to read from the queue until then
             while( !isSet(SHUTDOWN) && second_clock::universal_time() < next_db_check )
             {
                 //  3 seconds, in order to allow reasonable shutdown behavior
