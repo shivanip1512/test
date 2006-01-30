@@ -713,7 +713,7 @@ private void initialize() {
 		constraintsJPanelBaseLine.weighty = 1.0;
 		constraintsJPanelBaseLine.ipadx = -10;
 		constraintsJPanelBaseLine.ipady = -20;
-		constraintsJPanelBaseLine.insets = new java.awt.Insets(16, 16, 19, 17);
+		constraintsJPanelBaseLine.insets = new java.awt.Insets(16, 16, 16, 14);
 		add(getJPanelBaseLine(), constraintsJPanelBaseLine);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
