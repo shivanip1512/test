@@ -86,15 +86,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 {
 	if( currentInputPanel == null )
 	{
-		return getLmControlAreaBasePanel();
+		getLmControlAreaBasePanel().setFirstFocus();
+        return getLmControlAreaBasePanel();
 	}
 	else if( currentInputPanel == getLmControlAreaBasePanel() )
 	{
-		return getLmControlAreaTriggerPanel();
+        getLmControlAreaTriggerPanel().setFirstFocus();
+        return getLmControlAreaTriggerPanel();
 	}
 	else if( currentInputPanel == getLmControlAreaTriggerPanel() )
 	{
-		return getLMControlAreaProgramPanel();
+        getLMControlAreaProgramPanel().setFirstFocus();
+        return getLMControlAreaProgramPanel();
 	}
 
 	return null;

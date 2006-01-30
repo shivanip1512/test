@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import javax.swing.SwingUtilities;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.IGroupRoute;
@@ -842,15 +844,23 @@ private javax.swing.JTextField getJTextFieldKWCapacity() {
 		try {
 			ivjJTextFieldKWCapacity = new javax.swing.JTextField();
 			ivjJTextFieldKWCapacity.setName("JTextFieldKWCapacity");
-			// user code begin {1}
-
-			ivjJTextFieldKWCapacity.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.0, 99999.999, 3) );
+			
+            // user code begin {1}
+            SwingUtilities.invokeLater( new Runnable() 
+            { 
+                public void run() 
+                { 
+                    ivjJTextFieldKWCapacity.setText(String.valueOf(0.0));
+                } 
+            });
+            
+            ivjJTextFieldKWCapacity.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.0, 99999.999, 3) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
+			// user code end 
+			handleException(ivjExc); 
 		}
 	}
 	return ivjJTextFieldKWCapacity;
@@ -1228,6 +1238,18 @@ public void setValue(Object val)
 	
 	//show the needed entry fields only
 	setSwitchType( lmGroup.getPAOType() );	
+}
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getJTextFieldName().requestFocus(); 
+        } 
+    });    
 }
 
 /**

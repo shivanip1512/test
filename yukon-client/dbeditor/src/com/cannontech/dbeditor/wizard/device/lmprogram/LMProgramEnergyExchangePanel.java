@@ -827,6 +827,19 @@ public void setValue(Object o)
 
 	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getEnergyExchangeProgram().getMinNotifyTime().intValue() / 60) );
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getJTextFieldHeading().requestFocus(); 
+        } 
+    });    
+}
+
 /**
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent

@@ -599,6 +599,19 @@ public void setValue(Object o)
 	//we may need to show the LMControlAreaTrigger panel
 	getLMControlAreaTriggerModifyPanel().setVisible( getJComboBoxTrigger().getItemCount() > 0 );
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getJComboBoxTrigger().requestFocus(); 
+        } 
+    });    
+}
+
 /**
  * 
  */

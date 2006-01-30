@@ -83,12 +83,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
-		return getLMPointTypePanel();
+		getLMPointTypePanel().setFirstFocus();
+        return getLMPointTypePanel();
 	}
 	else if( currentInputPanel == getLMPointTypePanel() )
 	{
 		getPointSettingsPanel().setValueLM( null, getDeviceID() );
-			
+		getPointSettingsPanel().setFirstFocus();	
 		return getPointSettingsPanel();
 	}
 	else if( currentInputPanel == getPointSettingsPanel() )
@@ -99,10 +100,12 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		switch( type )
 		{
 			case PointTypes.ANALOG_POINT:
+                getPointAnalogSettingsPanel().setFirstFocus();
 				return getPointAnalogSettingsPanel();
 
 			case PointTypes.STATUS_POINT:
 				getPointStatusSettingsPanel().setValue(null);
+                getPointStatusSettingsPanel().setFirstFocus();
 				return getPointStatusSettingsPanel();
 
 			default:
@@ -112,11 +115,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	else if( currentInputPanel == getPointAnalogSettingsPanel() )
 	{
 		getPointPhysicalSettingsPanel().reinitialize(getPointSettingsPanel().getPointDeviceID(), getLMPointTypePanel().getSelectedType());
+        getPointPhysicalSettingsPanel().setFirstFocus();
 		return getPointPhysicalSettingsPanel();
 	}
 	else if( currentInputPanel == getPointStatusSettingsPanel() )
 	{
 		getPointStatusPhysicalSettingsPanel().reinitialize(getPointSettingsPanel().getPointDeviceID(), getLMPointTypePanel().getSelectedType());
+        getPointStatusPhysicalSettingsPanel().setFirstFocus();
 		return getPointStatusPhysicalSettingsPanel();
 	}
 	else

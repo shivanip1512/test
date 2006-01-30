@@ -176,7 +176,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 {
 	if( currentInputPanel == null )
 	{
-		return getLmProgramTypePanel();
+		getLmProgramTypePanel().setFirstFocus();
+        return getLmProgramTypePanel();
 	}
 	else if( currentInputPanel == getLmProgramTypePanel() )
 	{
@@ -186,42 +187,58 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 			getLmProgramBasePanel().setTriggerThresholdVisible(true);
 		else
 			getLmProgramBasePanel().setTriggerThresholdVisible(false);
-		return getLmProgramBasePanel();
+		getLmProgramBasePanel().setFirstFocus();
+        return getLmProgramBasePanel();
 	}
 	else if( currentInputPanel == getLmProgramBasePanel() )
 	{
 		if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_CURTAIL_PROGRAM )
-			return getLmProgramCurtailmentPanel();
+        {
+            getLmProgramCurtailmentPanel().setFirstFocus();
+            return getLmProgramCurtailmentPanel();
+        }
 		else if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM )
-			return getLmProgramDirectPanel();
+        {
+            getLmProgramDirectPanel().setFirstFocus();
+            return getLmProgramDirectPanel();
+        }
 		else if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
-			return getLmProgramEnergyExchangePanel();		
+        {
+            getLmProgramEnergyExchangePanel().setFirstFocus();
+            return getLmProgramEnergyExchangePanel();
+        }
+					
 	}
 	//Curtailment program begin
 	else if( currentInputPanel == getLmProgramCurtailmentPanel() )
 	{
-		return getLmProgramCurtailListPanel();
+		getLmProgramCurtailListPanel().setFirstFocus();
+        return getLmProgramCurtailListPanel();
 	}
 	// Direct program begin
 	else if( currentInputPanel == getLmProgramDirectPanel() )
 	{
 		getLMProgramControlWindowPanel().setTimedOperationalStateCondition(getLmProgramBasePanel().isTimedOperationalState());
 		getLMProgramControlWindowPanel().getWindowChangePasser().setSelected(getLmProgramBasePanel().isTimedOperationalState());
+        getLMProgramControlWindowPanel().setFirstFocus();
 		return getLMProgramControlWindowPanel();
 	}
 	else if( currentInputPanel == getLMProgramControlWindowPanel() )
 	{		
 		getLmProgramListPanel().initLeftList( !getLmProgramDirectPanel().hasLatchingGear() );
+        getLmProgramListPanel().setFirstFocus();
 		return getLmProgramListPanel();
 	}
 	else if( currentInputPanel == getLmProgramListPanel() )
 	{
-		return getLmProgramDirectCustomerListPanel();
+	    getLmProgramDirectCustomerListPanel().setFirstFocus();
+        return getLmProgramDirectCustomerListPanel();
 	}
 	//EExchange program begin
 	else if( currentInputPanel == getLmProgramEnergyExchangePanel() )
 	{
-		return getLmProgramEnergyExchangeCustomerListPanel();
+		getLmProgramEnergyExchangeCustomerListPanel().setFirstFocus();
+        return getLmProgramEnergyExchangeCustomerListPanel();
 	}
 	
 	return null;

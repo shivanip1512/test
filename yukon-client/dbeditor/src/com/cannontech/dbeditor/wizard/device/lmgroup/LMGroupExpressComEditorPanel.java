@@ -4594,6 +4594,19 @@ public void setValue(Object o)
 
 
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+        { 
+            getJCheckBoxGEO().requestFocus();
+        } 
+    });    
+}
+
 public void showLoadWarning()
 {
 	int confirm = javax.swing.JOptionPane.showConfirmDialog(

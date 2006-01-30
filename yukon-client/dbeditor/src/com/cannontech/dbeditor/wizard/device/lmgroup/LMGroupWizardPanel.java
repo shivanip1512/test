@@ -223,7 +223,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 
 	if (currentInputPanel == null)
 	{
-		return getGroupTypePanel();
+		getGroupTypePanel().setFirstFocus();
+        return getGroupTypePanel();
 	}
 	else if (currentInputPanel == getGroupTypePanel())
 	{
@@ -231,21 +232,23 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			getLMGroupBasePanel().setSwitchType( 
 				com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ));
-			
+			getLMGroupBasePanel().setFirstFocus();
 			return getLMGroupBasePanel();
 		}
 		else
-			return getSwitchTypePanel();
+			getSwitchTypePanel().setFirstFocus();
+            return getSwitchTypePanel();
 	}
 	else if (currentInputPanel == getLMGroupBasePanel() && getGroupTypePanel().isGroupMacro())
 	{
-		return getGroupMacroLoadGroupsPanel();
+		getGroupMacroLoadGroupsPanel().setFirstFocus();
+        return getGroupMacroLoadGroupsPanel();
 	}
 	else if (currentInputPanel == getSwitchTypePanel() )
 	{
 		getLMGroupBasePanel().setSwitchType( getSwitchTypePanel().getTypeOfSwitchSelectedString() );
 		int type = getSwitchTypePanel().getTypeOfSwitchSelected();
-
+		getLMGroupBasePanel().setFirstFocus();
 		return getLMGroupBasePanel();
 	}
 	//Start Ripple specific
@@ -254,62 +257,77 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		//this is specifically for Minnkota
 		if((SPECIAL_RIPPLE & ClientRights.SHOW_SPECIAL_RIPPLE) != 0)
-			return getSpecialRippleMessagePanel();
+        {
+            getSpecialRippleMessagePanel().setFirstFocus();
+            return getSpecialRippleMessagePanel();
+        }
 		else
-			return getRippleMessageShedPanel();
+        {
+            getRippleMessageShedPanel().setFirstFocus();
+            return getRippleMessageShedPanel();
+        }
 	}
 
 	//Start emetcon specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON )
 	{
-		return getLMGroupEmetconPanel();//getGoldOrSilverAddressPanel();
+		getLMGroupEmetconPanel().setFirstFocus();
+        return getLMGroupEmetconPanel();//getGoldOrSilverAddressPanel();
 	}
 	//Start Versacom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 			    && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
 	{
-		return getLmGroupVersacomEditorPanel();
+		getLmGroupVersacomEditorPanel().setFirstFocus();
+        return getLmGroupVersacomEditorPanel();
 	}
 	//Start Expresscom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 			    && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM )
 	{
-		return getLMGroupExpressComEditorPanel();
+		getLMGroupExpressComEditorPanel().setFirstFocus();
+        return getLMGroupExpressComEditorPanel();
 	}
 	//Start LMGroupPoint specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				&& getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT )
 	{
-		return getLmGroupPointEditorPanel();
+		getLmGroupPointEditorPanel().setFirstFocus();
+        return getLmGroupPointEditorPanel();
 	}
 	//Start LMGroupMCT specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT )
 	{
-		return getLMGroupMCTEditorPanel();
+		getLMGroupMCTEditorPanel().setFirstFocus();
+        return getLMGroupMCTEditorPanel();
 	}
 	//Start LMGroupMCT specific
 	//This is currently just demo GUI
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA305 )
 	{
-		return getSA305EditorPanel();
+		getSA305EditorPanel().setFirstFocus();
+        return getSA305EditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SA205 )
 	{
-		return getSA205EditorPanel();
+		getSA205EditorPanel().setFirstFocus();
+        return getSA205EditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_SADIGITAL )
 	{
-		return getSADigitalEditorPanel();
+		getSADigitalEditorPanel().setFirstFocus();
+        return getSADigitalEditorPanel();
 	}
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY )
 	{
-		return getGolayEditorPanel();
+		getGolayEditorPanel().setFirstFocus();
+        return getGolayEditorPanel();
 	}	
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
