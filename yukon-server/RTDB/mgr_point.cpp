@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/20 17:20:27 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/01/31 23:21:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,6 +186,10 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             }
             /* Go after the status points! */
             CtiPointStatus().getSQL( db, keyTable, selector );
+
+            selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("STATUS") ||
+                              rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCSTATUS")) && selector.where());
+
             if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
             if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
@@ -390,7 +394,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "  Is point a pseudo point? " << rwsPseudo << endl;
     }
     std::transform(rwsPseudo.begin(), rwsPseudo.end(), rwsPseudo.begin(), tolower);
-    
+
     PseudoPt = (rwsPseudo == "y" ? TRUE : FALSE );
 
     switch(PtType)
@@ -615,7 +619,7 @@ CtiPoint* CtiPointManager::getEqualByName(LONG pao, string pname)
                 string ptname = p->getName();
                 std::transform(ptname.begin(), ptname.end(), ptname.begin(), tolower);
                 std::transform(pname.begin(), pname.end(), pname.begin(), tolower);
-                
+
                 if(ptname == pname)
                 {
                     if(p->getUpdatedFlag())
