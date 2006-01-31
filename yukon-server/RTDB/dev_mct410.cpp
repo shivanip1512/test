@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/01/31 20:34:18 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/01/31 21:00:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4606,11 +4606,10 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
 
-        int demandlimit = DSt->Message[5] << 8 |
-                          DSt->Message[6];
+        point_info_t pi = getData(DSt->Message + 5, 2);
 
         resultStr += "Disconnect demand threshold: ";
-        resultStr += demandlimit?string(CtiNumStr(demandlimit)):string("disabled");
+        resultStr += pi.value?CtiNumStr(pi.value):"disabled";
         resultStr += "\n";
 
         resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
