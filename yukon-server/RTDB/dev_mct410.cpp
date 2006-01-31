@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/01/23 17:35:46 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/01/31 20:34:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1950,10 +1950,12 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         if( request_channel >  0 &&
             request_channel <= MCT4XX_LPChannels )
         {
-
             month = atoi((*date_tok_iter++).c_str());
             day   = atoi((*date_tok_iter++).c_str());
-            year  = atoi((*date_tok_iter).c_str());
+            year  = atoi((*date_tok_iter++).c_str());
+
+            hour   = atoi((*time_tok_iter++).c_str());
+            minute = atoi((*time_tok_iter++).c_str());
 
             if( year < 100 )
             {
@@ -1974,19 +1976,37 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
 
 // ---
-            block_len    = 6 * interval_len;
+            block_len = 6 * interval_len;
 
             if( !cmd.compare("lp") )
             {
-                function = Emetcon::GetValue_LoadProfile;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                CtiDate parsed_date(day, month, year);
+                CtiTime parsed_time(parsed_date, hour, minute);
+
+                if( year < 2100 && parsed_date.isValid() && parsed_time.isValid() )
+                {
+                    function = Emetcon::GetValue_LoadProfile;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                }
+                else
+                {
+                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                    if( ReturnMsg )
+                    {
+                        ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                        ReturnMsg->setResultString(getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date") + " @ " + parse.getsValue("lp_time") + ")");
+
+                        retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                    }
+                }
 
                 if( found )
                 {
-                    hour   = atoi((*time_tok_iter++).c_str());
-                    minute = atoi((*time_tok_iter).c_str());
+                    //  FIXME:  we must replicate this functionality in the decode portion - right now, _llpInterest.offset
+                    //            is being overwritten, resulting in faulty decodes
 
-                    request_time  = CtiTime(CtiDate(day, month, year), hour, minute).seconds();
+                    request_time  = parsed_time.seconds();
                     request_time -= request_time % interval_len;
                     request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
 
