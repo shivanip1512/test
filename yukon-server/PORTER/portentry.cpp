@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/01/16 21:06:55 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,7 @@
 #include "dev_base.h"
 #include "dev_lcu.h"
 #include "dllbase.h"
+#include "CtiLocalConnect.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -94,6 +95,7 @@ using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
+extern CtiLocalConnect PorterToPil;
 
 namespace Cti { namespace Porter { namespace DNPUDP {
 
@@ -137,6 +139,9 @@ VOID PorterConnectionThread (VOID *Arg)
     }
 
     ::strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
+
+    //Initiate a thread for the porter pil connection
+    _beginthread(ConnectionThread, 0, (VOID*)&PorterToPil);
 
     /*
      *  4/7/99 This is the server side of a CTIDBG_new Port Control Nexus
@@ -215,7 +220,7 @@ VOID PorterConnectionThread (VOID *Arg)
 VOID ConnectionThread (VOID *Arg)
 {
     INT            i;
-    CTINEXUS       *MyNexus = (CTINEXUS*)Arg;     // This is an established connection with a client!
+    CtiConnect        *MyNexus = (CtiConnect*)Arg;     // This is an established connection with a client!
     OUTMESS        *OutMessage = NULL;
 
     ULONG                   BytesRead;
@@ -1115,7 +1120,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     /* Check if this is a queued message */
     if(OutMessage->EventCode & BWORD)
     {
-        CTINEXUS *Nexus = OutMessage->ReturnNexus;
+        CtiConnect *Nexus = OutMessage->ReturnNexus;
 
         /* this is queing so check if this CCU queue is open */
         if(p711Info->QueueHandle == (HCTIQUEUE) NULL)
@@ -1633,7 +1638,7 @@ INT realignNexus(OUTMESS *&OutMessage)
 
     BYTE nextByte;
     ULONG BytesRead = 1;
-    CTINEXUS *MyNexus = OutMessage->ReturnNexus;
+    CtiConnect *MyNexus = OutMessage->ReturnNexus;
 
     // OutMessage->ReturnNexus
     for(loops = sizeof(OUTMESS); loops > 0 && BytesRead > 0; loops--)

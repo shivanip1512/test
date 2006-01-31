@@ -265,8 +265,8 @@ struct QUEENT
 {
     USHORT InUse;
     ULONG TimeSent;
-    CTINEXUS *ReturnNexus;
-    CTINEXUS *SaveNexus;
+    CtiConnect *ReturnNexus;
+    CtiConnect *SaveNexus;
     USHORT OriginalOutMessageSequence;
     USHORT QueueEntrySequence;
     USHORT EventCode;
@@ -342,7 +342,7 @@ struct REMSHAREDSTRUCT
 {
         ULONG WaitSem;
         OUTMESS *OutMessage;
-        CTINEXUS *MyNexusHandle;
+        CtiConnect *MyNexusHandle;
 };
 
 #ifdef OLD_CODE

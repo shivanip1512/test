@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.164 $
-* DATE         :  $Date: 2006/01/16 18:57:08 $
+* REVISION     :  $Revision: 1.165 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2895,8 +2895,8 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
-    extern void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus);
-    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus);
+    extern void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus);
+    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
 
     INT            status = NORMAL;
     ULONG          j, QueueCount;
@@ -3466,7 +3466,7 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *
     aIED->copyLoadProfileData ((BYTE*)&MyInMessage.Buffer.DUPSt.DUPRep.Message, MyInMessage.InLength);
 
     /* send message back to originating process */
-    if(aOutMessage->ReturnNexus->NexusState != CTINEXUS_STATE_NULL)
+    if(aOutMessage->ReturnNexus->CtiGetNexusState() != CTINEXUS_STATE_NULL)
     {
         if(aOutMessage->ReturnNexus->CTINexusWrite(&MyInMessage, sizeof (INMESS), &bytesWritten, 15L))
         {

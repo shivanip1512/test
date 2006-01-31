@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2006/01/17 17:52:36 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ bool findReturnNexusMatch(void *nid, void* d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
 
-void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
+void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -99,7 +99,7 @@ void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
-void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus)
+void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 {
     if(Device->getType() == TYPE_CCU711)
     {

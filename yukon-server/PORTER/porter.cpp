@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2006/01/30 18:06:40 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,6 +132,7 @@
 #include "alarmlog.h"
 #include "drp.h"
 #include "thread_monitor.h"
+#include "CtiLocalConnect.h"
 
 #include "perform.h"
 #include "das08.h"
@@ -220,6 +221,11 @@ CtiDeviceManager   DeviceManager(Application_Porter);
 CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 vector< CtiPortShare * > PortShareManager;
+
+
+//These form the connection between Pil and Porter
+extern DLLIMPORT CtiLocalConnect PilToPorter; //Pil handles this one
+CtiLocalConnect PorterToPil; //Porter handles this one
 
 RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
@@ -811,6 +817,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
+    //Match up the connections
+    PilToPorter.setMatchingConnection(PorterToPil);
+    PorterToPil.setMatchingConnection(PilToPorter);
 
     pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
@@ -899,6 +908,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
         _connThread.start();
     }
+
 
     /* Check if we need to start the filler thread */
     if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").c_str())))
@@ -1061,7 +1071,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     PorterQuit = TRUE;
     SetEvent( hPorterEvents[P_QUIT_EVENT] );
     PorterListenNexus.CTINexusClose();
-
 
     if(PortShareManager.size() > 0)
     {

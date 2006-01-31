@@ -44,6 +44,7 @@ critical_section.obj \
 ctdpcptrq.obj \
 cti_asmc.obj \
 cticalls.obj \
+ctilocalconnect.obj \
 ctinexus.obj \
 dbaccess.obj \
 desolvers.obj \
@@ -195,7 +196,8 @@ ctinexus.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h ctinexus.h netports.h logger.h thread.h mutex.h \
 		guard.h ctitime.h cticalls.h dsm2.h
 ctistring.obj:	yukon.h precompiled.h ctidbgmem.h ctistring.h rwutil.h \
-		ctitime.h dlldefs.h boost_time.h
+		ctitime.h dlldefs.h boost_time.h utility.h dsm2.h mutex.h \
+		guard.h
 ctitime.obj:	yukon.h precompiled.h ctidbgmem.h ctidate.h dlldefs.h \
 		logger.h thread.h mutex.h guard.h ctitime.h
 ctitokenizer.obj:	yukon.h precompiled.h ctidbgmem.h ctitokenizer.h \
@@ -212,7 +214,7 @@ dbaccess.obj:	yukon.h precompiled.h ctidbgmem.h types.h dlldefs.h \
 desolvers.obj:	yukon.h precompiled.h ctidbgmem.h desolvers.h \
 		db_entry_defines.h dlldefs.h types.h pointtypes.h dsm2.h \
 		mutex.h guard.h resolvers.h devicetypes.h logger.h thread.h \
-		ctitime.h rwutil.h boost_time.h
+		ctitime.h utility.h
 dllbase.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h os2_2w32.h types.h cticalls.h configparms.h \
 		cparms.h rwutil.h ctitime.h boost_time.h dbaccess.h dllbase.h \
@@ -292,7 +294,7 @@ repeaterrole.obj:	yukon.h precompiled.h ctidbgmem.h repeaterrole.h \
 resolvers.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h resolvers.h types.h pointtypes.h \
 		db_entry_defines.h devicetypes.h logger.h thread.h ctitime.h \
-		numstr.h rwutil.h boost_time.h
+		numstr.h utility.h
 rtdb.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h rtdb.h hashkey.h \
 		hash_functions.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h
@@ -300,7 +302,8 @@ sema.obj:	yukon.h precompiled.h ctidbgmem.h sema.h dlldefs.h
 statistics.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h dsm2err.h logger.h thread.h ctitime.h \
-		statistics.h counter.h rwutil.h boost_time.h ctidate.h
+		statistics.h counter.h rwutil.h boost_time.h utility.h \
+		ctidate.h
 stdexcepthdlr.obj:	yukon.h precompiled.h ctidbgmem.h stdexcepthdlr.h \
 		dlldefs.h
 test_cmdparse.obj:	test_cmdparse_input.h test_cmdparse_output.h \
@@ -310,7 +313,7 @@ test_ctidate.obj:	ctidate.h dlldefs.h logger.h thread.h mutex.h \
 test_ctitime.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h
 test_rwutil.obj:	rwutil.h yukon.h precompiled.h ctidbgmem.h ctitime.h \
-		dlldefs.h boost_time.h
+		dlldefs.h boost_time.h utility.h dsm2.h mutex.h guard.h
 tfexec.obj:	yukon.h precompiled.h ctidbgmem.h tfexec.h
 thread.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h thread.h

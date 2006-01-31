@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/12/20 17:19:22 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,7 +175,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
                 if(writeResult == BADSOCK)
                 {
-                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus);
+                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
                     CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
                     blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }

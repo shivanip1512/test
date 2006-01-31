@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2006/01/16 21:08:16 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2006/01/31 19:02:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 #include "dev_mct.h"
 #include "dsm2.h"
 #include "ctinexus.h"
+#include "CtiLocalConnect.h"
 #include "porter.h"
 
 #include "cparms.h"
@@ -71,14 +72,11 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
-
 CtiConnection           VanGoghConnection;
 CtiPILExecutorFactory   ExecFactory;
 
 /* Define the return nexus handle */
-/* external dll global */
-DLLIMPORT extern CTINEXUS PorterNexus;
-DLLIMPORT extern VOID PortPipeCleanup (ULONG Reason);
+DLLEXPORT CtiLocalConnect PilToPorter; //Pil handles this one
 
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -755,7 +753,7 @@ void CtiPILServer::nexusThread()
     for( ; !bServerClosing ; )
     {
         /* Wait for the next result to come back from the RTU */
-        while(!PorterNexus.CTINexusValid() && !bServerClosing)
+        while(!PilToPorter.CTINexusValid() && !bServerClosing)
         {
             if(!(++i % 60))
             {
@@ -764,7 +762,7 @@ void CtiPILServer::nexusThread()
                     dout << CtiTime() << " PIL connection to Port Control is inactive" << endl;
                 }
 
-                PortPipeInit(NOWAIT); // defibrillate
+                PilToPorter.CtiLocalConnectOpen();
             }
 
             CTISleep (500L);
@@ -791,16 +789,11 @@ void CtiPILServer::nexusThread()
         ::memset(InMessage, 0, sizeof(*InMessage));
 
         /* get a result off the port pipe */
-        if(PorterNexus.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
+        if(PilToPorter.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " NexusThread : " << rwThreadId() << " just failed to read a full InMessage." << endl;
-            }
-
-            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
-            {
-                PortPipeCleanup(0);
             }
 
             Sleep(500); // No runnaway loops allowed.
@@ -869,14 +862,14 @@ void CtiPILServer::nexusWriteThread()
     for( ; !bServerClosing ; )
     {
         /* Check if we need to reopen the port pipe */
-        if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
+        if(PilToPorter.CtiGetNexusState() == CTINEXUS_STATE_NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow.now() << " PIL lost connection to Port Control " << endl;
             }
 
-            if(!(PortPipeInit(NOWAIT)))
+            if(!(PilToPorter.CtiLocalConnectOpen()))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -894,9 +887,9 @@ void CtiPILServer::nexusWriteThread()
         OutMessage = _porterOMQueue.getQueue(1000);
 
         /* if pipe shut down return the error */
-        if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
+        if(PilToPorter.CtiGetNexusState() == CTINEXUS_STATE_NULL)
         {
-            if(PortPipeInit(NOWAIT))
+            if(PilToPorter.CtiLocalConnectOpen())
             {
                 status = PIPEWASBROKEN;
             }
@@ -904,9 +897,9 @@ void CtiPILServer::nexusWriteThread()
 
         if(OutMessage)
         {
-            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL) /* And send them to porter */
+            if(PilToPorter.CtiGetNexusState() != CTINEXUS_STATE_NULL) /* And send them to porter */
             {
-                if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
+                if(PilToPorter.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -914,9 +907,9 @@ void CtiPILServer::nexusWriteThread()
                     }
                     DumpOutMessage(OutMessage);
 
-                    if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+                    if(PilToPorter.CtiGetNexusState() != CTINEXUS_STATE_NULL)
                     {
-                        PorterNexus.CTINexusClose();
+                        PilToPorter.CTINexusClose();
                     }
                 }
             }
@@ -965,7 +958,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
     RWTPtrSlist< CtiRequestMsg >  execList;
 
-    BASEDLL_IMPORT extern CTINEXUS PorterNexus;
+    extern CtiLocalConnect PilToPorter;
 
     OUTMESS *OutMessage = NULL;
     CtiReturnMsg   *pcRet = NULL;

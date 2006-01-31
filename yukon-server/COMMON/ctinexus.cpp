@@ -718,3 +718,7 @@ INT CTINEXUS::CTINexusFlushInput()
     return(status);
 }
 
+ULONG CTINEXUS::CtiGetNexusState()
+{
+    return NexusState;
+}
