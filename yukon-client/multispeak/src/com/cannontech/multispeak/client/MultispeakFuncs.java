@@ -6,6 +6,7 @@
  */
 package com.cannontech.multispeak.client;
 
+import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -13,9 +14,12 @@ import javax.xml.soap.SOAPException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
+import org.apache.axis.client.Service;
+import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.axis.message.SOAPHeaderElement;
+import java.net.URL;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.DeviceFuncs;
@@ -24,7 +28,14 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.ArrayOfErrorObject;
 import com.cannontech.multispeak.ArrayOfString;
+import com.cannontech.multispeak.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.EA_MRSoap_BindingStub;
 import com.cannontech.multispeak.ErrorObject;
+import com.cannontech.multispeak.MR_CBSoap_BindingStub;
+import com.cannontech.multispeak.MR_EASoap_BindingStub;
+import com.cannontech.multispeak.MultiSpeakMsgHeader;
+import com.cannontech.multispeak.OA_ODSoap_BindingStub;
+import com.cannontech.multispeak.OD_OASoap_BindingStub;
 
 /**
  * @author stacey
@@ -123,6 +134,140 @@ public class MultispeakFuncs
 		MultispeakFuncs.logArrayOfErrorObjects(interfaceName, "pingURL", errorObject);
 		return new ArrayOfErrorObject(errorObject);
 	}
+	
+	/**
+	 * A common declaration of the pingURL method for all services to use.
+	 * @param interfaceName
+	 * @return
+	 */
+	public static ArrayOfErrorObject pingURL(String url, String service, String endpoint)
+	{
+		ArrayOfErrorObject objects = new ArrayOfErrorObject();
+		try
+		{
+			String endpointURL = url + endpoint;			
+			MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader();
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
+			if( service.equalsIgnoreCase("OD_OA"))
+			{
+				OD_OASoap_BindingStub instance = new OD_OASoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else if( service.equalsIgnoreCase("OA_OD"))
+			{
+				OA_ODSoap_BindingStub instance = new OA_ODSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else if( service.equalsIgnoreCase("EA_MR"))
+			{
+				EA_MRSoap_BindingStub instance = new EA_MRSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else if( service.equalsIgnoreCase("MR_EA"))
+			{
+				MR_EASoap_BindingStub instance = new MR_EASoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else if( service.equalsIgnoreCase("MR_CB"))
+			{
+				MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else if( service.equalsIgnoreCase("CB_MR"))
+			{
+				CB_MRSoap_BindingStub instance = new CB_MRSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.pingURL();
+			}
+			else
+			{
+				ErrorObject errorObj = new ErrorObject();
+				errorObj.setErrorString("Unknown service: " + service + ".  Do not know what endpoint to call.");
+				errorObj.setEventTime(new GregorianCalendar());
+				ErrorObject[] errorObjs = new ErrorObject[]{errorObj};
+				objects.setErrorObject(errorObjs);
+			}
+		}catch (AxisFault af)
+		{
+			ErrorObject errorObj = new ErrorObject();
+			errorObj.setErrorString(af.getMessage());
+			errorObj.setEventTime(new GregorianCalendar());
+			ErrorObject[] errorObjs = new ErrorObject[]{errorObj};
+			objects.setErrorObject(errorObjs);
+		} 
+		catch (Exception e) {
+			System.out.println(e.getStackTrace());
+		}
+		finally{
+			return objects;
+		}	
+	}
+	/**
+	 * A common declaration of the pingURL method for all services to use.
+	 * @param interfaceName
+	 * @return
+	 */
+	public static ArrayOfString getMethods(String url, String service, String endpoint)
+	{
+		ArrayOfString objects = new ArrayOfString();
+		try
+		{
+			String endpointURL = url + endpoint;			
+			MultiSpeakMsgHeader msHeader = new YukonMultispeakMsgHeader();
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", msHeader);
+			if( service.equalsIgnoreCase("OD_OA"))
+			{
+				OD_OASoap_BindingStub instance = new OD_OASoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+			else if( service.equalsIgnoreCase("OA_OD"))
+			{
+				OA_ODSoap_BindingStub instance = new OA_ODSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+			else if( service.equalsIgnoreCase("EA_MR"))
+			{
+				EA_MRSoap_BindingStub instance = new EA_MRSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+			else if( service.equalsIgnoreCase("MR_EA"))
+			{
+				MR_EASoap_BindingStub instance = new MR_EASoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+			else if( service.equalsIgnoreCase("MR_CB"))
+			{
+				MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+			else if( service.equalsIgnoreCase("CB_MR"))
+			{
+				CB_MRSoap_BindingStub instance = new CB_MRSoap_BindingStub(new URL(endpointURL), new Service());
+				instance.setHeader(header);
+				objects = instance.getMethods();
+			}
+		}catch (AxisFault af)
+		{
+			CTILogger.error(af.getMessage());
+		} 
+		catch (Exception e) {
+			System.out.println(e.getStackTrace());
+		}
+		finally{
+			return objects;
+		}	
+	}	
+	
 	/**
 	 * A common declaration of the getMethods method for all services to use.
 	 * @param interfaceName
