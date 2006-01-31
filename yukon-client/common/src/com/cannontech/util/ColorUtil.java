@@ -48,7 +48,7 @@ public class ColorUtil
 		if (hex.length() == 6)
 		{
 			char[] c = hex.toCharArray();
-foobar
+
 			for (int i = 0; i < hex.length(); i++)
 			{
 				if (c[i] == 'A')
