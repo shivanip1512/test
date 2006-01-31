@@ -39,6 +39,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -537,16 +538,20 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			//Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>			
 			Map groupMapToRoleMap = (Map)groupRolePropMap.get(AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON));
 			Map roleMapToPropMap = (Map)groupMapToRoleMap.get(AuthFuncs.getRole(MultispeakRole.ROLEID));
-			Collection propValues = roleMapToPropMap.values();
-			String [] x = new String[propValues.size()];
-			propValues.toArray(x);
-			for (int i = 0; i < x.length; i++)
+
+			Collection keySet = roleMapToPropMap.keySet();
+			LiteYukonRoleProperty[] keys = new LiteYukonRoleProperty[keySet.size()];
+			keySet.toArray(keys);
+			
+			for (int i = 0; i < keys.length; i++)
 			{
-				String [] fields = x[i].split(",");
+				LiteYukonRoleProperty lyrp = keys[i];
+				String x = (String)roleMapToPropMap.get(lyrp);
+				String [] fields = x.split(",");
 				
 				if(fields.length >= MultispeakVendor.URL_INDEX)
 				{
-					MultispeakVendor vendor = new MultispeakVendor(fields[MultispeakVendor.COMPANY_NAME_INDEX].trim(),
+					MultispeakVendor vendor = new MultispeakVendor(lyrp.getRolePropertyID(), fields[MultispeakVendor.COMPANY_NAME_INDEX].trim(),
 																fields[MultispeakVendor.USERNAME_INDEX].trim(),
 																fields[MultispeakVendor.PASSWORD_INDEX].trim(),
 																fields[MultispeakVendor.UNIQUE_KEY_INDEX].trim(),

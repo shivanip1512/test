@@ -9,6 +9,7 @@ package com.cannontech.multispeak.client;
 import java.util.HashMap;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 
 /**
  * @author stacey
@@ -26,7 +27,7 @@ public class MultispeakVendor
 	public static final int FIRST_ENDPOINT_INDEX = 5;
 	//The serviceEndpoints are the indexes greater than URL_INDEX values
 	
-	
+	private int rolePropertyID = 0;
 	private String companyName = CtiUtilities.STRING_NONE;
 	private String userName = CtiUtilities.STRING_NONE;
 	private String password = CtiUtilities.STRING_NONE;
@@ -39,9 +40,10 @@ public class MultispeakVendor
 	/**
 	 * 
 	 */
-	public MultispeakVendor(String companyName_, String userName_, String password_, String uniqueKey_, String url_)
+	public MultispeakVendor(int rolePropID, String companyName_, String userName_, String password_, String uniqueKey_, String url_)
 	{
 		super();
+		rolePropertyID = rolePropID; 
 		companyName = companyName_;
 		userName = userName_;
 		password = password_;
@@ -146,5 +148,40 @@ public class MultispeakVendor
 	public void setUserName(String string)
 	{
 		userName = string;
+	}
+	/**
+	 * @return
+	 */
+	public int getRolePropertyID()
+	{
+		return rolePropertyID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setRolePropertyID(int i)
+	{
+		rolePropertyID = i;
+	}
+
+	public static String createRolePropertyValue(String companyName, String username, String password, String uniqueKey, String url, Pair[] serviceEndpoints)
+	{
+		String returnStr = "";
+		returnStr += companyName + ",";
+		returnStr += username + ",";
+		returnStr += password + ",";
+		returnStr += uniqueKey + ",";
+		returnStr += url + ",";
+
+		if( serviceEndpoints.length > 0)
+		{		
+			returnStr += serviceEndpoints[0].getFirst() + "=" +serviceEndpoints[0].getSecond();
+			
+			for(int i = 1; i < serviceEndpoints.length; i++)
+				returnStr += "," + serviceEndpoints[i].getFirst() + "=" +serviceEndpoints[i].getSecond();
+		}
+
+		return returnStr;
 	}
 }
