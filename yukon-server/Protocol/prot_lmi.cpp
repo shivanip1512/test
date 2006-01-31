@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/01/30 22:11:48 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/01/31 02:01:39 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -542,6 +542,20 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         _outbound.src_sat_id   = 0x01;
         _outbound.src_sat_node = 0x01;
         _outbound.body_header.flush_codes  = 0;
+
+        int count = _codes.size();
+        while( !_codes.empty() && _codes.front() && _codes.front()->ExpirationTime && (_codes.front()->ExpirationTime < NowTime.seconds()) )
+        {
+            delete _codes.front();
+
+            _codes.pop();
+        }
+
+        if( count != _codes.size() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << CtiTime() << " LMI device \"" << _name << "\" pruned " << (count - _codes.size()) << " codes this pass" << endl;
+        }
 
         //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
         //    also make sure that we don't infinitely read the statuses
