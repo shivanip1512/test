@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -31,6 +32,10 @@ import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.multispeak.ArrayOfErrorObject;
+import com.cannontech.multispeak.ArrayOfString;
+import com.cannontech.multispeak.client.MultispeakFuncs;
+import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.YukonRoleDefs;
 import com.cannontech.roles.yukon.SystemRole;
@@ -87,6 +92,14 @@ public class SetupServlet extends HttpServlet
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
 	{
 		URLParameters urlParams = new URLParameters();
+		
+		String action = req.getParameter("ACTION");
+		if( action != null)
+		{
+			String retPage = handleMSPAction(action, req);
+			resp.sendRedirect( retPage);
+			return;
+		}
 		
 		//HttpSession session = req.getSession(false);
 		String retPage = req.getContextPath() + "/setup.jsp";
@@ -196,7 +209,133 @@ public class SetupServlet extends HttpServlet
 
 		resp.sendRedirect( retPage + urlParams.toString() );	
 	}
+	
+	private String handleMSPAction(String action, HttpServletRequest req)
+	{
+		java.util.Enumeration enum1 = req.getParameterNames();
+		  while (enum1.hasMoreElements()) {
+			String ele = enum1.nextElement().toString();
+			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
+		  }
 
+//		load all parameters from req
+		String companyName = req.getParameter("mspVendor");
+		String uniqueKey = req.getParameter("mspUniqueKey");
+		String password = req.getParameter("mspPassword");
+		String username = req.getParameter("mspUserName");
+		String mspURL = req.getParameter("mspURL");
+		String[] mspServices = req.getParameterValues("mspService");
+		String[] mspEndpoints = req.getParameterValues("mspEndpoint");
+		Pair[] serviceAndEndpoints = new Pair[mspServices.length]; 
+		for(int i = 0; i < mspServices.length; i++)
+			serviceAndEndpoints[i] = new Pair(mspServices[i], mspEndpoints[i]);
+						
+		String redirect = req.getContextPath() + "/msp_setup.jsp";
+		URLParameters urlParams = new URLParameters();
+		urlParams.put("vendor", req.getParameter("mspVendor"));
+			
+		if( action.equalsIgnoreCase("updateMSP"))
+		{
+			try
+			{
+				LiteYukonGroup yukGrp = AuthFuncs.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+				YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
+				//fill out the DB Persistent with data
+				yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
+
+				DBChangeMsg[] dbChangeMsgs = new DBChangeMsg[0];
+		
+				String param = req.getParameter("rolePropertyID");
+				Integer rolePropertyID = (param != null?Integer.valueOf(param):null);
+				if( rolePropertyID != null) 
+				for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ )
+				{
+					YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
+		
+					if( rolePropertyID.intValue() == grpRole.getRolePropertyID().intValue() )
+					{
+						String newValue = MultispeakVendor.createRolePropertyValue(companyName, username, password, uniqueKey, mspURL, serviceAndEndpoints);
+						if( newValue.compareTo(grpRole.getValue()) != 0)	//there are changes
+						{
+							grpRole.setValue(newValue);
+							//update any changed values in the DB
+							yukGrpPersist = (YukonGroup)Transaction.createTransaction(Transaction.UPDATE, yukGrpPersist ).execute();
+
+							//get the DB change message for this guy
+							dbChangeMsgs = DefaultDatabaseCache.getInstance().createDBChangeMessages( yukGrpPersist, DBChangeMsg.CHANGE_TYPE_UPDATE );
+						}
+						break;
+					}
+				}				
+				if( dbChangeMsgs != null )
+				{
+					Multi multi = new Multi();
+					for( int i = 0; i < dbChangeMsgs.length; i++ )
+					{
+						//handle the DBChangeMsg locally (nulls out our roleproperties, forcing us to reload completely)
+						DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChangeMsgs[i]);
+		
+						multi.getVector().add( dbChangeMsgs[i] );
+					}
+
+					//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+					writeToDispatch( multi );
+//					urlParams.put( "disp", "true" );					
+				}				
+			}
+			catch (Exception e)
+			{
+				urlParams.put( "disp", "false" );
+				CTILogger.error( "Unable to connect to DISPATCH", e );					
+			}
+		}
+		else if( action.equalsIgnoreCase("pingURL"))
+		{
+//			load ping action parameters from req
+			String mspService = req.getParameter("actionService");
+			urlParams.put("mspService", mspService);
+			String mspEndpoint = req.getParameter("actionEndpoint");
+			
+			ArrayOfErrorObject objects = MultispeakFuncs.pingURL(mspURL, mspService, mspEndpoint);
+			if( objects != null && objects.getErrorObject() != null  && objects.getErrorObject().length > 0)
+			{
+				urlParams.put("actionResult", "false");
+				urlParams.put("mspMessage", "* Unsuccessful " + mspService +" pingURL:<br>" + objects.getErrorObject(0).getErrorString());
+			}
+			else
+			{
+				urlParams.put("actionResult", "true");
+				urlParams.put("mspMessage", "* Successful " + mspService +" pingURL");
+			}
+		}
+		else if( action.equalsIgnoreCase("getMethods"))
+		{
+			String mspService = req.getParameter("actionService");
+			urlParams.put("mspService", mspService);
+			String mspEndpoint = req.getParameter("actionEndpoint");
+			
+			ArrayOfString objects = MultispeakFuncs.getMethods(mspURL, mspService, mspEndpoint);
+			if( objects != null && objects.getString() != null)
+			{
+				urlParams.put("actionResult", "true");
+				String resultStr = "* Methods reported for " + mspService + ":<BR>";
+				if( objects.getString().length > 0)
+				{
+					resultStr += objects.getString(0);
+					for (int i = 1; i < objects.getString().length; i++)
+						resultStr += ", " + objects.getString(i);
+				}
+				urlParams.put("mspMessage", resultStr);
+			}
+			else
+			{
+				urlParams.put("actionResult", "false");
+				urlParams.put("mspMessage", "* Not methods reported for " + mspService +" getMethods");
+			}
+		}
+		redirect += urlParams.toString();
+		return redirect;
+	}
 
 	private DBChangeMsg[] writeYukonProperties( final HttpServletRequest req ) throws Exception
 	{
