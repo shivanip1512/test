@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/01/30 18:06:52 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/01/31 21:01:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,7 +136,7 @@ void CtiPorterVerification::verificationThread( void )
                     dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID () << " is running "
                          << "(INQ: " << _input.size() << ", WQ: " << _work_queue.size();
 
-                    if( _work_queue.top() )
+                    if( !_work_queue.empty() && _work_queue.top() )
                     {
                         dout << ", WQ top: " << to_simple_string(_work_queue.top()->getExpiration()) << ")" << endl;
                     }
