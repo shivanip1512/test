@@ -724,15 +724,21 @@ private void initialize() {
 
 	// user code end
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
  */
-public boolean isInputValid() 
-{
-
-	return true;
+public boolean isInputValid() {
+    if( getJTextFieldName().getText().length() > 0 )
+    {
+        setErrorString("The BaseLine Name text field must be filled in");
+        return true;
+    }
+    else
+        return false;
 }
+
 /**
  * Comment
  */
@@ -825,4 +831,5 @@ public void setValue(Object o)
 
 
 }
+
 }
