@@ -9,7 +9,7 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class JdbcTemplateHelper {
 
-    public JdbcOperations getYukonTemplate() {
+    public static JdbcOperations getYukonTemplate() {
         DataSource dataSource = new YukonDataSource(CtiUtilities.getDatabaseAlias());
         JdbcTemplate template = new JdbcTemplate(dataSource);
         return template;
