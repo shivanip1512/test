@@ -540,7 +540,7 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-
+	getJTableHolidays().setFocusable(false);
 	// user code end
 }
 /**
@@ -759,6 +759,19 @@ public void setValue(Object val)
 
 
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getJTextFieldHolidayScName().requestFocus(); 
+        } 
+    });    
+}
+
 /**
  * 
  */
