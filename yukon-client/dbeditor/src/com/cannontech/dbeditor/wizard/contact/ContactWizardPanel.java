@@ -68,11 +68,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 {
 	if( currentInputPanel == null )
 	{
-		return getContactPanel();
+		getContactPanel().setFirstFocus();
+        return getContactPanel();
 	}
 	else if( currentInputPanel == getContactPanel() )
 	{
-		return getAddressPanel();
+		getAddressPanel().setFirstFocus();
+        return getAddressPanel();
 	}
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
