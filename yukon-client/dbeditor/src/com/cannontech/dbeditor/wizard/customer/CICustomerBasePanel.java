@@ -462,7 +462,7 @@ private javax.swing.JLabel getJLabelWebHome() {
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getJTextFieldCompanyName() {
+public javax.swing.JTextField getJTextFieldCompanyName() {
 	if (ivjJTextFieldCompanyName == null) {
 		try {
 			ivjJTextFieldCompanyName = new javax.swing.JTextField();

@@ -769,6 +769,18 @@ public void setValue(Object o)
 	getCICustomerPanel().setVisible( customer instanceof CICustomerBase );
 }
 
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            getCICustomerPanel().getJTextFieldCompanyName().requestFocus(); 
+        } 
+    });    
+}
+
 public void caretUpdate( CaretEvent e )
 {
 	if( e.getSource() == getJTextFieldCustomerNumber() )

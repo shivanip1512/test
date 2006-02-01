@@ -474,7 +474,7 @@ private void initialize() {
 		this.add(getJButtonAdd(), consGridBagConstraints6);
 		this.add(getJLabel(), consGridBagConstraints7);
 		setSize(416, 348);
-
+		getJTableContact().setFocusable(false);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -597,6 +597,27 @@ public void setValue(Object o)
 	}
 
 }
+
+public void setFirstFocus() 
+{
+    // Make sure that when its time to display this panel, the focus starts in the top component
+    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+        { 
+        public void run() 
+            { 
+            
+            if(getJComboBoxContacts().isEnabled())
+            {
+                getJComboBoxContacts().requestFocus();
+            }else
+            {
+                getJButtonAdd().requestFocus();
+            }
+             
+        } 
+    });    
+}
+
 	/**
 	 * This method initializes jLabel
 	 * 

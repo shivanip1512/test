@@ -105,6 +105,7 @@ public class CustomerWizardPanel extends com.cannontech.common.wizard.WizardPane
 		if( currentInputPanel == null )
 		{
 			getCustomerBasePanel().setCustomerType( com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI );
+            getCustomerBasePanel().setFirstFocus();
 			return getCustomerBasePanel();
 		}
 		/*else if( currentInputPanel == getCustomerTypePanel() )
@@ -115,11 +116,13 @@ public class CustomerWizardPanel extends com.cannontech.common.wizard.WizardPane
 		}*/
 		else if( currentInputPanel == getCustomerBasePanel() )
 		{
-			return getCustomerAddressPanel();
+			getCustomerAddressPanel().setFirstFocus();
+            return getCustomerAddressPanel();
 		}
 		else if( currentInputPanel == getCustomerAddressPanel() )
 		{
-			return getCustomerContactPanel();
+			getCustomerContactPanel().setFirstFocus();
+            return getCustomerContactPanel();
 		}
 	
 		return null;
