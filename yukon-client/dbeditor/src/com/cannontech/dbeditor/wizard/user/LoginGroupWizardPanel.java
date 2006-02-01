@@ -65,11 +65,13 @@ public class LoginGroupWizardPanel extends com.cannontech.common.wizard.WizardPa
 	
 		if( currentInputPanel == null )
 		{
-			return getGroupRoleBasePanel();
+			getGroupRoleBasePanel().setFirstFocus();
+            return getGroupRoleBasePanel();
 		}		
 		else if( currentInputPanel == getGroupRoleBasePanel() )
 		{
-			return getUserRolePanel();
+			getUserRolePanel().setFirstFocus();
+            return getUserRolePanel();
 		}
 		else
 			throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
