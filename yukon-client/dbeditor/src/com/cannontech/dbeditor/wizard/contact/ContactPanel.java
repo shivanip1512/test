@@ -1037,6 +1037,9 @@ constraintsJButtonAddress.gridheight = 2;
 		handleException(ivjExc);
 	}
 	// user code begin {2}
+    
+    getJTableEmail().setFocusable(false);
+    
 	// user code end
 }
 
