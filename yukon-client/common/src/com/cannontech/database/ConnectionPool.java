@@ -21,7 +21,7 @@ public class ConnectionPool implements ConnectionPoolMBean
     private int initConns;
     
     private int checkedOut;
-    private List freeConnections = new LinkedList();
+    private List<Connection> freeConnections = new LinkedList<Connection>();
     private int connectionsCreated = 0;
     private int connectionsClosed = 0;
     private int waitCount = 0;
@@ -42,7 +42,7 @@ public class ConnectionPool implements ConnectionPoolMBean
         
         String lf = System.getProperty("line.separator");
         CTILogger.info("Creating new DB connection pool...");
-        CTILogger.debug(lf +
+        CTILogger.info(lf +
                         " url=" + URL + lf +
                         " user=" + user + lf +
                         " initconns=" + initConns + lf +
@@ -151,7 +151,7 @@ public class ConnectionPool implements ConnectionPoolMBean
             {
                 // Pick the first Connection in the Vector
                 // to get round-robin usage
-                conn = (Connection) freeConnections.get(0);		 
+                conn = freeConnections.get(0);		 
                 freeConnections.remove(0);
                 if (!isConnectionOK(conn)) {
                     // the connection had some how gone bad
@@ -240,7 +240,7 @@ public class ConnectionPool implements ConnectionPoolMBean
             connectionsCreated++;
         }
         
-        CTILogger.info("New database connection created" );
+        CTILogger.info("New database connection to " + URL);
         
         
         return conn;
