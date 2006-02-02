@@ -639,22 +639,22 @@ public class CommandDeviceBean
 		if (getPage() == 1)
 			html += "<font color='#CCCCCC'>First</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=1'>First</a>";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=1'>First</a>";
 		html += " | ";
 		if (getPage() == 1)
 			html += "<font color='#CCCCCC'>Previous</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()-1)+ "'>Previous</a>";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + (getPage()-1)+ "'>Previous</a>";
 		html += " | ";
 		if (getPage() == maxPageNo || maxPageNo == 0)
 			html += "<font color='#CCCCCC'>Next</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()+1) + "'>Next</a>";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + (getPage()+1) + "'>Next</a>";
 		html += " | ";
 		if (getPage() == maxPageNo || maxPageNo == 0)
 			html += "<font color='#CCCCCC'>Last</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
         
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "          <td align='right'>Page(" + getPage() + "-" + maxPageNo + "):" + LINE_SEPARATOR;
@@ -708,22 +708,22 @@ public class CommandDeviceBean
 		if (getPage() == 1)
 			html += " <font color='#CCCCCC'>First</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=1'>First</a>|";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=1'>First</a>|";
 		html += " | ";
 		if (getPage() == 1)
 			html += "<font color='#CCCCCC'>Previous</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()-1)+ "'>Previous</a>|";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + (getPage()-1)+ "'>Previous</a>|";
 		html += " | ";
 		if (getPage() == maxPageNo || maxPageNo == 0)
 			html += "<font color='#CCCCCC'>Next</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + (getPage()+1) + "'>Next</a>|";
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + (getPage()+1) + "'>Next</a>|";
 		html += " | ";
 		if (getPage() == maxPageNo || maxPageNo == 0)
 			html += "<font color='#CCCCCC'>Last</font>";
 		else
-			html += "<a class='Link1' href='SelectDevice.jsp?page=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
+			html += "<a class='Link1' href='SelectDevice.jsp?page_=" + maxPageNo + "'>Last</a>" + LINE_SEPARATOR;
         
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
