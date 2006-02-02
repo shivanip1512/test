@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.165 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.166 $
+* DATE         :  $Date: 2006/02/02 16:17:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -326,8 +326,6 @@ VOID PortThread(void *pid)
         {
             continue;
         }
-
-        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
 
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/02 16:17:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,8 +146,6 @@ VOID PortPoolDialoutThread(void *pid)
             }
             lastQueueReportTime = CtiTime() + 300;
         }
-
-        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
 
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {

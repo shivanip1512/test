@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/01/18 15:20:24 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/02/02 16:17:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,7 +371,6 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
                 if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
                 {
                     dStats.incrementAttempts( CtiTime(), result );
-                    dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
                 }
             }
 
@@ -381,7 +380,6 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
             {
                 CtiStatistics &dStats = (*dStatItr).second;
                 dStats.incrementAttempts( CtiTime(), result );
-                dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -392,7 +390,6 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
                 {
                     CtiStatistics &dStats = (*dStatItr).second;
                     dStats.incrementAttempts( CtiTime(), result );
-                    dStats.decrementRequest( CtiTime() );       // Because I don't want it counted to try again.
                 }
             }
         }

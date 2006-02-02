@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/02/02 16:17:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -442,6 +442,9 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     }
 
 #endif
+
+     //This could go after more checking, but I like it here. I think the message has been checked enough?
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
 
     /*
      * Ok, all checks passed so far, so lets operate on this remote
@@ -1206,6 +1209,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             SendError (OutMessage, BADCCU);
             return BADCCU;
         }
+
 
         /* Go ahead and send block to the appropriate ACTIN queue */
         if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
