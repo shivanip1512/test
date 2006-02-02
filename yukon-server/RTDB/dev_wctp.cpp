@@ -589,12 +589,13 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
                                              const CHAR *senderId,
                                              const CHAR *msgPayload,
                                              const CHAR *timeStamp,
+                                             const CHAR *prefix,
                                              const CHAR *securityCode)
 {
     CHAR* xmlMsg = getXMLBuffer();
     xmlMsg[0] = 0;
 
-    if( stringContainsIgnoreCase( gConfigParms.getValueAsString("WCTP_USE_CLIENTMESSAGE", "true"), "true") )
+    if( gConfigParms.isTrue("WCTP_USE_CLIENTMESSAGE") )
     {
         strcat(xmlMsg, "<?xml version=\"1.0\"?>");
         strcat(xmlMsg, "<!DOCTYPE wctp-Operation SYSTEM \"");
@@ -659,7 +660,10 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
         }
         strcat(xmlMsg, "/>");
         strcat(xmlMsg, "<wctp-MessageControl");
-        strcat(xmlMsg, " allowResponse=\"true\"");
+        strcat(xmlMsg, " messageID=\"");
+        strcat(xmlMsg, prefix);
+        strcat(xmlMsg, "\"");
+        strcat(xmlMsg, " allowResponse=\"false\"");
         strcat(xmlMsg, " preformatted=\"true\"");
         strcat(xmlMsg, "/>");
         strcat(xmlMsg, "<wctp-Recipient recipientID=\"");
