@@ -197,7 +197,7 @@ public class LoadGroupModel extends ReportModelBase
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
 					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
 					LMProgramDirectGroup.TABLE_NAME + " DG " +
-					" WHERE us.PaoID = DG.DEVICEID " +
+					" WHERE us.PaoID = DG.LMGROUPDEVICEID " +
 					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
 					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )");					
