@@ -21,7 +21,6 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.xml.utils.IntVector;
 
@@ -37,11 +36,9 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
@@ -65,7 +62,9 @@ import com.cannontech.multispeak.OutageDetectDeviceType;
 import com.cannontech.multispeak.OutageDetectionEvent;
 import com.cannontech.multispeak.OutageEventType;
 import com.cannontech.multispeak.OutageLocation;
-import com.cannontech.multispeak.event.*;
+import com.cannontech.multispeak.event.MeterReadEvent;
+import com.cannontech.multispeak.event.MultispeakEvent;
+import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.roles.yukon.SystemRole;
@@ -164,22 +163,22 @@ public class Multispeak implements MessageListener, DBChangeListener {
 					MultispeakEvent event = (MultispeakEvent)getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 					
 					if( event instanceof ODEvent)
-					    messageReceived_ODEvent((ODEvent)event, returnMsg);
+						messageReceived_ODEvent((ODEvent)event, returnMsg);
 
 					else if( event instanceof MeterReadEvent)
-					    messageReceived_MeterReadEvent((MeterReadEvent)event, returnMsg);
+						messageReceived_MeterReadEvent((MeterReadEvent)event, returnMsg);
 
 				}
 			}
 		}
 	}
 	/**
-     * @param mrEvent
-     * @param returnMsg
-     */
-    private void messageReceived_MeterReadEvent(MeterReadEvent mrEvent, Return returnMsg)
-    {
-        MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
+	 * @param mrEvent
+	 * @param returnMsg
+	 */
+	private void messageReceived_MeterReadEvent(MeterReadEvent mrEvent, Return returnMsg)
+	{
+		MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
 		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
 		String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
 		
@@ -189,15 +188,15 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		meterRead.setObjectID(keyValue);
 		meterRead.setUtility(MultispeakFuncs.AMR_TYPE);
 
-	    if( returnMsg.getStatus() != 0)
+		if( returnMsg.getStatus() != 0)
 		{
-	        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
-	        CTILogger.info(result);
-	        meterRead.setErrorString(result);
+			String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
+			CTILogger.info(result);
+			meterRead.setErrorString(result);
 		}
-	    else
-	    {
-	        if(returnMsg.getVector().size() > 0 )
+		else
+		{
+			if(returnMsg.getVector().size() > 0 )
 			{
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
 				{
@@ -215,8 +214,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 					}
 				}
 			}
-	    }
-	    mrEvent.setMeterRead(meterRead);
+		}
+		mrEvent.setMeterRead(meterRead);
 	}
 
 	/** ERRORCODE								Description
@@ -237,7 +236,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	 * 72 (DLC Read Timeout On CCU Queue Entry)	Essentially the same as an error 20.  No return message received.  The only difference is that a 72 will be the error code during a queued message and 						an error 20 will be the error for a non-queued message.
 	*/
 	private void messageReceived_ODEvent(ODEvent event, Return returnMsg)
-    {
+	{
 		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
 		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
 		String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
@@ -250,26 +249,27 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		ode.setOutageDetectDeviceID(keyValue);
 		ode.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
 		OutageLocation loc = new OutageLocation();
+		loc.setObjectID(keyValue);
 		loc.setMeterNo(keyValue);
 		ode.setOutageLocation(loc);
 	    
 		if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
 		{	//Meter did not respond - outage assumed
-	        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ") " + returnMsg.getResultString());
+			CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ") " + returnMsg.getResultString());
 			ode.setOutageEventType(OutageEventType.Outage);
 			ode.setErrorString("Ping failed: " + returnMsg.getResultString());
 		}
-	    else if( returnMsg.getStatus() == 31 || returnMsg.getStatus() == 32 || returnMsg.getStatus() == 33 || returnMsg.getStatus() == 65)
+		else if( returnMsg.getStatus() == 31 || returnMsg.getStatus() == 32 || returnMsg.getStatus() == 33 || returnMsg.getStatus() == 65)
 		{	//Unknown, but may not be an outage
-	        CTILogger.info("OutageDetectionEvent: Communication Failure (" + keyValue + ") " + returnMsg.getResultString());
+			CTILogger.info("OutageDetectionEvent: Communication Failure (" + keyValue + ") " + returnMsg.getResultString());
 			ode.setOutageEventType(OutageEventType.NoResponse);
 			ode.setErrorString("Communication failure: " + returnMsg.getResultString());
 		}
-	    else if( returnMsg.getStatus() == 1 || returnMsg.getStatus() == 17 || returnMsg.getStatus() == 74 || returnMsg.getStatus() == 0)
-	    {	//Meter responsed in some way or another, 0 status was perfect
-	        CTILogger.info("OutageDetectionEvent: Ping Successful (" + keyValue + ")");
-	    	ode.setOutageEventType(OutageEventType.Restoration);
-	    }
+		else if( returnMsg.getStatus() == 1 || returnMsg.getStatus() == 17 || returnMsg.getStatus() == 74 || returnMsg.getStatus() == 0)
+		{	//Meter responsed in some way or another, 0 status was perfect
+			CTILogger.info("OutageDetectionEvent: Ping Successful (" + keyValue + ")");
+			ode.setOutageEventType(OutageEventType.Restoration);
+		}
 		else 
 		{	//No idea what code this is
 			CTILogger.info("Meter (" + keyValue + ") - Unknown return status from ping: " +returnMsg.getStatus());
@@ -278,13 +278,13 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			ode.setErrorString("Unknown return status: " + returnMsg.getResultString());
 		}
 	    
-	    event.setOutageDetectionEvent(ode);
+		event.setOutageDetectionEvent(ode);
 		ODEventNotification(event);
 
 		getEventsMap().remove(new Long(event.getPilMessageID()));        
-    }
+	}
 
-    /**
+	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @param meterNumbers
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
@@ -294,22 +294,22 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		Vector errorObjects = new Vector();
 		MultispeakVendor vendor = getMultispeakVendor(companyName);
 		
-		String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
+/*		String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
 		String endpointURL = "";			
 		if( endpoint != null)
 			endpointURL = vendor.getUrl() + endpoint;
-        try
-        {
-	 		OA_OD service = new OA_ODLocator();
+		try
+		{
+			OA_OD service = new OA_ODLocator();
 			((OA_ODLocator)service).setOA_ODSoapEndpointAddress(endpointURL);
 			OA_ODSoap_PortType port;
-            port = service.getOA_ODSoap();
-	        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+			port = service.getOA_ODSoap();
+			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 			((OA_ODSoap_BindingStub)port).setHeader(header);
 			((OA_ODSoap_BindingStub)port).setTimeout(10000);	//should respond within 10 seconds, right?
 			//Ping the URL make sure it exists and we aren't reading meters for the fun of it..
 			ArrayOfErrorObject errObjects = port.pingURL();
-	
+*/	
 			Request pilRequest = null;
 			CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + companyName);
 			
@@ -344,7 +344,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 				}
 				
 			}
-        } catch (ServiceException e)
+		/*} catch (ServiceException e)
 		{
 			ErrorObject err = new ErrorObject();
 			err.setEventTime(new GregorianCalendar());
@@ -356,14 +356,14 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			err.setEventTime(new GregorianCalendar());
 			err.setErrorString(e.getFaultReason() + " :  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
 			errorObjects.add(err);
-		    CTILogger.info(err.getErrorString());
+			CTILogger.info(err.getErrorString());
 		}catch (RemoteException e) {
 			ErrorObject err = new ErrorObject();
 			err.setEventTime(new GregorianCalendar());
 			err.setErrorString("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
 			errorObjects.add(err);
-		    CTILogger.info(err.getErrorString());
-		}
+			CTILogger.info(err.getErrorString());
+		}*/
     		
 		if( !errorObjects.isEmpty())
 		{
@@ -400,24 +400,24 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			//TODO Do we need to check if pilConn valid?
 			getPilConn().write(pilRequest);
 
-		    synchronized (event)
-            {
-		        long millisTimeOut = 0;	//
-		        while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 2 minutes
-		        {
-		            try
-                    {
-                        Thread.sleep(1000);
-                        millisTimeOut += 1000;
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-		        }
-		        if( millisTimeOut >= 120000)// this broke the loop, more than likely, have to kill it sometime
-		            event.getMeterRead().setErrorString("Reading Timed out after 2 minutes.");
+			synchronized (event)
+			{
+				long millisTimeOut = 0;	//
+				while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 2 minutes
+				{
+					try
+					{
+						Thread.sleep(1000);
+						millisTimeOut += 1000;
+					} catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
+				}
+				if( millisTimeOut >= 120000)// this broke the loop, more than likely, have to kill it sometime
+					event.getMeterRead().setErrorString("Reading Timed out after 2 minutes.");
 
-            }
+			}
 		}
 
 		return event.getMeterRead();
@@ -429,14 +429,14 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	 */
 	public void ODEventNotification(ODEvent odEvent)
 	{
-    	MultispeakVendor vendor = getMultispeakVendor(odEvent.getVendorName());
+		MultispeakVendor vendor = getMultispeakVendor(odEvent.getVendorName());
 		String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
 		String endpointURL = "";			
 		if( endpoint != null)
 			endpointURL = vendor.getUrl() + endpoint;
 
-	    CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): Meter Number " + odEvent.getOutageDetectionEvent().getObjectID() +" event."); 
-	    try
+		CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): Meter Number " + odEvent.getOutageDetectionEvent().getObjectID() +" event."); 
+		try
 		{
 			
 			OA_OD service = new OA_ODLocator();
@@ -454,15 +454,15 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			
 			ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
 			if( errObjects != null)
-			    MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
-        } catch (ServiceException e)
+				MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
+		} catch (ServiceException e)
 		{	
-            CTILogger.info("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
-            e.printStackTrace();
+			CTILogger.info("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
+			e.printStackTrace();
 		} catch (RemoteException e) {
 			
-		    CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
-		    e.printStackTrace();
+			CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
+			e.printStackTrace();
 		}	
 	}
 	/**
@@ -483,8 +483,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			int port = 1510;
 			try
 			{
-			    host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-			    port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+				port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 			}
 			catch( Exception e)
 			{
@@ -505,7 +505,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			
 			try
 			{
-			    connToDispatch.connectWithoutWait();
+				connToDispatch.connectWithoutWait();
 			}
 			catch( Exception e ) 
 			{
