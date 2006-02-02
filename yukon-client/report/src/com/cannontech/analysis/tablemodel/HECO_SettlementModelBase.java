@@ -43,6 +43,12 @@ import com.cannontech.stars.util.SettlementConfigFuncs;
  */
 public class HECO_SettlementModelBase extends ReportModelBase
 {
+	/*public static final int LM_EVENT_SUMMARY_SETTLEMENT = 0;
+	public static final int MONTHLY_BILLING_SETTLEMENT = 1;
+	public static final int CUSTOMER_MONTHLY_BILLING_SETTLEMENT = 2;
+	public static final int DSMIS_SETTLEMENT = 3;
+	private int settlementReportType = LM_EVENT_SUMMARY_SETTLEMENT;
+	*/
 	private Vector dataObjects = new Vector();
 	
 	/** Map of Integer(customerID) to CICustomerBase object*/
@@ -71,6 +77,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 //	private static final String ATT_ACTION_GROUP_TYPE = "actionGroupType";
 	
 	protected SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+	protected SimpleDateFormat dateFormat_yyyy = new SimpleDateFormat("MM/dd/yyyy");
 	protected SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	protected DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	protected DecimalFormat intFormat = new DecimalFormat("0");
