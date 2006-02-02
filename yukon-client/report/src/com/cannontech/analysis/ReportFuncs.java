@@ -25,6 +25,7 @@ import com.cannontech.analysis.report.DisconnectReport;
 import com.cannontech.analysis.report.ECActivityDetailReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.HECO_CustomerMonthlyBillingSettlementReport;
+import com.cannontech.analysis.report.HECO_DSMISReport;
 import com.cannontech.analysis.report.HECO_LMEventSummaryReport;
 import com.cannontech.analysis.report.HECO_MonthlyBillingSettlementReport;
 import com.cannontech.analysis.report.LGAccountingReport;
@@ -55,6 +56,7 @@ import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
+import com.cannontech.analysis.tablemodel.HECO_DSMISModel;
 import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
 import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
@@ -151,7 +153,9 @@ public class ReportFuncs
 		else if( model instanceof HECO_MonthlyBillingSettlementModel)
 			returnVal = new HECO_MonthlyBillingSettlementReport();
 		else if( model instanceof HECO_CustomerMonthlyBillingSettlementModel)
-			returnVal= new HECO_CustomerMonthlyBillingSettlementReport();	        
+			returnVal = new HECO_CustomerMonthlyBillingSettlementReport();
+		else if( model instanceof HECO_DSMISModel)
+			returnVal = new HECO_DSMISReport(); 	        
 	    else
 	        return null;
 
@@ -181,8 +185,9 @@ public class ReportFuncs
 		}
 		else if (ext.equalsIgnoreCase("csv"))
 		{
-			CSVQuoter quoter = new CSVQuoter(","); 
-
+			out.write(((ReportModelBase)report.getData()).buildByteStream());
+/*			CSVQuoter quoter = new CSVQuoter(","); 
+		
 			//Write column headers
 			for (int r = 0; r < report.getData().getColumnCount(); r++) 
 			{
@@ -206,7 +211,7 @@ public class ReportFuncs
 					out.write(quoter.doQuoting(rawValue).getBytes()); 
 				} 
 				out.write(new String("\r\n").getBytes());
-			} 
+			}*/ 
 		}
 		/*else if (ext.equalsIgnoreCase("jpeg"))
 		{
