@@ -1526,7 +1526,20 @@ public void setValue(Object val)
 			getChannel2CheckBox().setEnabled(true);
 			getChannel3CheckBox().setEnabled(true);
 			
-			getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
+            if(deviceType == PAOGroups.MCT470)
+            {
+                getLoadProfileDemandRateLabel().setText("Load Profile Rate #1: ");
+                getJLabelVoltDmdRate().setText("Load Profile Rate #2: ");
+                getJLabelVoltIntervalDmdRate().setEnabled(false);
+                getJLabelVoltIntervalDmdRate().setVisible(false);
+                getJComboBoxlVoltInterval().setEnabled(false);
+                getJComboBoxlVoltInterval().setVisible(false);
+                
+            }else
+            {
+                getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
+            }
+			
 			getJComboBoxlVoltRate().removeAllItems();
 			getJComboBoxlVoltRate().addItem("5 minute");
 			getJComboBoxlVoltRate().addItem("15 minute");
