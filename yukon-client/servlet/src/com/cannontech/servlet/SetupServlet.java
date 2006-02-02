@@ -323,14 +323,14 @@ public class SetupServlet extends HttpServlet
 				{
 					resultStr += objects.getString(0);
 					for (int i = 1; i < objects.getString().length; i++)
-						resultStr += ", " + objects.getString(i);
+						resultStr += "<BR>" + objects.getString(i);
 				}
 				urlParams.put("mspMessage", resultStr);
 			}
 			else
 			{
 				urlParams.put("actionResult", "false");
-				urlParams.put("mspMessage", "* Not methods reported for " + mspService +" getMethods");
+				urlParams.put("mspMessage", "* No methods reported for " + mspService +" getMethods");
 			}
 		}
 		redirect += urlParams.toString();
