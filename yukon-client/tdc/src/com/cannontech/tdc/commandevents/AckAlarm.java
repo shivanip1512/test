@@ -8,7 +8,7 @@ package com.cannontech.tdc.commandevents;
  */
 import java.util.Vector;
 
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
 
 public class AckAlarm 

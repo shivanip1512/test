@@ -9,7 +9,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 

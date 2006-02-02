@@ -11,7 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;

@@ -7,7 +7,7 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -84,8 +84,7 @@ public void destroyConnection()
 			comm.setPriority(15);
 			comm.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 			
-			comm.setOperation( 
-				com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
 			sendCommandMsg( comm );
 			

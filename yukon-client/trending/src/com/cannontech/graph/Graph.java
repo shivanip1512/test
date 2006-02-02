@@ -40,7 +40,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.Registration;

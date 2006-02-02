@@ -31,6 +31,7 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.*;
+import com.cannontech.message.util.Command;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.*;
