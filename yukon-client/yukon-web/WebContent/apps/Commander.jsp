@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
 <%@ page import="com.cannontech.database.cache.functions.CommandFuncs"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%
 //set the deviceID of the YC_BEAN
 YC_BEAN.setDeviceID(deviceID);
@@ -51,6 +52,12 @@ else
 			    <td align="center" class="TitleHeader"><%= header %></td>
 			  </tr>
 			</table>
+		    <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
+		      <input type="hidden" name="deviceID" value="<%=deviceID%>">
+		      <input type="hidden" name="timeOut" value="8000">
+		      <%--The jsp wrapping this page needs to tell us "redirect"s value --%>
+			  <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
+			  <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
 
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <table width="600" border="0" cellspacing="0" cellpadding="3" class="TableCell">
@@ -74,13 +81,6 @@ else
                 <td width="30%" class="SubtitleHeader" align="right">Type:</td>
                 <td width="50%" class="TableCell"><%=YC_BEAN.getDeviceType()%></td>
               </tr>
- 			  <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
-   			    <input type="hidden" name="deviceID" value="<%=deviceID%>">
-   			    <input type="hidden" name="timeOut" value="8000">
-   			    <%--The jsp wrapping this page needs to tell us "redirect"s value --%>
-				<input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
-				<input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
-
 			  <% if( serialType.length() > 0) {%>
 			  <tr> 
                 <td width="30%" class="SubtitleHeader" align="right">Serial Number:</td>
@@ -116,9 +116,11 @@ else
                   	{
 						LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
 						LiteCommand lc = CommandFuncs.getCommand(ldtc.getCommandID());
+						if( ldtc.isVisible() ) {
 						%>
                   		<option value='<%=lc.getCommand()%>' <%=(lc.getCommand().equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>
-                 	<%}%>
+                 		<%}
+                 	}%>
 				  </select>
                 </td>
               </tr>
@@ -170,9 +172,9 @@ else
               </table>
               </td>
               </tr>
-              <br>
-              </form>
             </table>
+            <br>
+            </form>
             <br>
             </div>
           </td>
