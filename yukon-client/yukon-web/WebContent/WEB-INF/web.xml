@@ -259,6 +259,12 @@
 		<description>Customer accounts importing management.</description>
 		<servlet-class>com.cannontech.servlet.ImportManager</servlet-class>
 	</servlet>
+    <servlet>
+        <servlet-name>HomeServlet</servlet-name>
+        <display-name>HomeServlet</display-name>
+        <description>Redirect to HOME_URL</description>
+        <servlet-class>com.cannontech.servlet.HomeServlet</servlet-class>
+    </servlet>
 	<!-- STARS specific configs -->
 	<!-- CapControl specific configs -->
 	<servlet>
@@ -374,6 +380,10 @@
 		<servlet-name>CttpServlet</servlet-name>
 		<url-pattern>/cttp/</url-pattern>
 	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomeServlet</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
 
 	<servlet-mapping>
 	    <servlet-name>DynamicJNLPServlet</servlet-name>

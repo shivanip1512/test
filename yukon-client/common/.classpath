@@ -26,18 +26,19 @@
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="lib" path="/third-party/mx4j.jar"/>
     <classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/lang-2.1-src.zip" kind="lib" path="/third-party/commons-lang-2.1.jar"/>
     <classpathentry sourcepath="Z:/java/Third-Party Sources/commons-collections-3.1-src.zip" kind="lib" path="/third-party/commons-collections-3.1.jar"/>
     <classpathentry kind="lib" path="/third-party/elemental-construction-set/ecs-1.4.2.jar"/>
     <classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" kind="lib" path="/third-party/jdom.jar"/>
     <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
     <classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-beans.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-context.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-core.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-dao.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-jdbc.jar"/>
-    <classpathentry sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-web.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-beans.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-context.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-core.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-dao.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-jdbc.jar"/>
+    <classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-web.jar"/>
+	<classpathentry exported="true" sourcepath="Z:/java/Third-Party Sources/spring-framework-1.2.6.zip" kind="lib" path="/third-party/spring-orm.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
