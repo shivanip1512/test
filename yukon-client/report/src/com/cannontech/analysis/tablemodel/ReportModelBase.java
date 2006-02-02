@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.jfree.report.util.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
@@ -45,6 +49,8 @@ import com.cannontech.util.ServletUtil;
 public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private String fieldSeparator = ",";
+	
 	public String NULL_STRING = "---";
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
 	protected String columnDateTimeFormat = "MM/dd/yyyy HH:mm:ss";
@@ -759,5 +765,49 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		int sec = temp % 60; 
 			
 		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
-	}	
+	}
+	
+	public byte[] buildByteStream()
+	{
+		String outString = "";
+		//Write column headers
+		for (int r = 0; r < getColumnCount(); r++) 
+		{
+			if( r != 0 )
+				outString += getFieldSeparator();
+					
+			outString += getColumnName(r);
+		}
+		outString += LINE_SEPARATOR;
+		
+		//Write data
+		for (int r = 0; r < getRowCount(); r++) 
+		{
+			for (int c = 0; c < getColumnCount(); c++) 
+			{ 
+				if (c != 0) 
+					outString += getFieldSeparator(); 
+					
+				outString += String.valueOf(getValueAt(r,c));
+			} 
+			outString += LINE_SEPARATOR;
+		} 
+		return outString.getBytes();
+	}
+	/**
+	 * @return
+	 */
+	public String getFieldSeparator()
+	{
+		return fieldSeparator;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setFieldSeparator(String string)
+	{
+		fieldSeparator = string;
+	}
+
 }
