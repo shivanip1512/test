@@ -65,6 +65,8 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	private String collGroup = "";
 	
 	private int numDevices = 0;
+	
+	private String searchStr = "Revision H";
 	/**
 	 * logfile = the filename and path of the log file to be parsed
 	 * coll[group] = the collection group to read the model from
@@ -83,6 +85,8 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 			{
 				// Check the delimiter of '=', if not found check ':'
 				int startIndex = args[i].indexOf(':');
+				if( startIndex < 0)
+					startIndex = args[i].indexOf('=');
 				String key = args[i].substring(0, startIndex).toLowerCase();
 				startIndex += 1;
 				String value = args[i].substring(startIndex);
@@ -102,6 +106,10 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				else if( key.startsWith("report"))
 				{
 					finder.reportFile = value;
+				}
+				else if( key.startsWith("search"))
+				{
+					finder.searchStr = value;
 				}
 			}
 		}
@@ -254,7 +262,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				e2.printStackTrace();//sometin is up
 			}	
 		}
-		com.cannontech.clientutils.CTILogger.info("Revision H Meter Data Collection : Took " + (System.currentTimeMillis() - timer));
+		com.cannontech.clientutils.CTILogger.info("Search: " + searchStr +" - Meter Data Collection : Took " + (System.currentTimeMillis() - timer));
 		return returnVector;
 	}
 
@@ -263,7 +271,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	 */
 	public void retrieveFromLogFile()
 	{
-		CTILogger.info("Attempting to parse Revision H meters from log file: " + logFileName);
+		CTILogger.info("Attempting to parse " + searchStr + " meters from log file: " + logFileName);
 		File file = new File(logFileName);	
 		java.io.RandomAccessFile raFile = null;
 		try
@@ -300,7 +308,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 					{
 						deviceIDLine = line;
 					}
-					else if(line.indexOf("Revision H") >= 0)
+					else if(line.indexOf(searchStr) >= 0)
 					{
 						writing = true;
 						tempValue = deviceIDLine;
@@ -426,6 +434,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 		numDevices = deviceIDs.size();
 		//remove all previously missed deviceIds...this is new life
 		missedIDs.clear();
+		getPilConn().isValid();
 		for(int i = 0; i < deviceIDs.size(); i++)
 		{
 			porterRequest = new Request( ((Integer)deviceIDs.get(i)).intValue(), "getconfig model", currentUserMessageID );
@@ -538,7 +547,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 					writer.write(sqlData.get(i) + endline);
 			}
 			
-			writer.write(endline + "Revision H Meter Data From Return Message."+ endline);
+			writer.write(endline + " " + searchStr + " Meter Data From Return Message."+ endline);
 			writer.write("------------------------------------------"+ endline);
 			if( revHReads != null)
 			{
