@@ -29,7 +29,6 @@ import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.gui.PreviewPanel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
@@ -88,17 +87,6 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		dialog.setModal(true);
 		dialog.pack();
 		dialog.setVisible(true);
-	}
-	
-	public PreviewPanel getPreviewPanel(ReportModelBase model_) throws Exception
-	{
-//		Boot.start();
-		model = model_;
-		model.collectData();
-		JFreeReport report = createReport();
-		report.setData(model);
-		final PreviewPanel pPanel = new PreviewPanel(report);
-		return pPanel;
 	}
 	
 	public PreviewInternalFrame getPreviewFrame(ReportModelBase model_) throws Exception
