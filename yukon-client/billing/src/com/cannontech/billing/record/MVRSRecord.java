@@ -65,6 +65,7 @@ public MVRSRecord()
 {
 	super();
 	meterRecord = new MeterRecord();
+	customerRecord = new CustomerRecord();
 }
 /**
  * dataToString method comment.
@@ -126,8 +127,8 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
     {
         deviceNameToRPHMap = new HashMap();
         
-		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, DCS.ADDRESS, P.POINTOFFSET " + 
-		        		" FROM RAWPOINTHISTORY RPH1, POINT P, DEVICECARRIERSETTINGS DCS " + 
+		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, DCS.ADDRESS, P.POINTOFFSET, PAO.PAONAME " + 
+		        		" FROM RAWPOINTHISTORY RPH1, POINT P, DEVICECARRIERSETTINGS DCS, YUKONPAOBJECT PAO " + 
 		        		" WHERE RPH1.TIMESTAMP = ( " + 
 		        		" SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2, POINT P2 " + 
 		        		" WHERE RPH2.POINTID = RPH1.POINTID " + 
@@ -136,7 +137,8 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 		        		" OR P2.POINTOFFSET = 2) " + 	//Added WRTCFT (water in cubic feet) offset for Estes Park, per JeffW.
 		        		" AND P2.POINTTYPE = 'PulseAccumulator' ) " + 
 		        		" AND P.POINTID = RPH1.POINTID " +
-		        		" AND P.PAOBJECTID = DCS.DEVICEID";
+		        		" AND P.PAOBJECTID = PAO.PAOBJECTID" +
+		        		" AND PAO.PAOBJECTID = DCS.DEVICEID";
 		        
 	//	        "SELECT TO_CHAR(TIMESTAMP, 'MMDDYYYY') FROM RAWPOINTHISTORY WHERE POINTID = "+
 	//					"(SELECT POINTID FROM POINT WHERE PAOBJECTID = (SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE "+
@@ -180,11 +182,12 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 					short millis = rset.getShort(6);
 					RawPointHistory dummyRPH = new RawPointHistory(new Integer(changeID), new Integer(pointID), tsCal, new Integer(quality), new Double(value));
 					
-					String name = rset.getString(7);	//key value
-					String ptOffset = String.valueOf(rset.getInt(8));	//additional info for key value 
-					String keyValue = name + ptOffset; 
+//					String address = rset.getString(7);	//key value
+					String ptOffset = String.valueOf(rset.getInt(8));	//additional info for key value
+					String paoName = rset.getString(9);	//Account number!
+					String keyValue = paoName + ptOffset; 
 					deviceNameToRPHMap.put(keyValue, dummyRPH);
-					CTILogger.info("Added Address to RPH: " + name + " (offset:" + ptOffset +")");
+					CTILogger.info("Added PaoName (AcctNumber) to RPH: " + paoName + " (offset:" + ptOffset +")");
 				}
 			}
 		}
@@ -291,6 +294,13 @@ public final String processCustomerRecord(String buffer) {
 	storage.append(buffer.substring(124, 125));	//A/N1 Customer Flag
 	storage.append(buffer.substring(97, 117));	//A/N20 Addition Customer information
 	storage.append("\r\n");
+
+	//The account number is set to be only the last 6 digits of the customerrecord accountnumber string (which is actually 20 chars).
+	//JEFF W.  20060123 - The acct # is located in bytes 15-34.  As we discussed, using the right most 6 digits/chars should do the trick.  
+	customerRecord.accountNumber = null;
+	String actNumTemp = buffer.substring(14, 34).trim();
+	customerRecord.accountNumber = actNumTemp.substring(actNumTemp.length() - 5);  //the rightmost 56digits of the accountnumber field
+	
 	numberCustomers++;
 	return storage.toString();
 }
@@ -451,10 +461,11 @@ public final String processReadingRecord(String buffer) {
 	{
 	    String ptOffsetStr = buffer.substring(11,15);	
 	    int ptOffset = getPointOffset(ptOffsetStr);//numeric value for ptOffsetStr
-	    String keyLookupValue = meterRecord.meterNumber.toString() + String.valueOf(ptOffset);
+//	    String keyLookupValue = meterRecord.meterNumber.toString() + String.valueOf(ptOffset);
+	    String keyLookupValue = customerRecord.accountNumber.toString() + String.valueOf(ptOffset);
 		dummyRPH = (RawPointHistory)getDeviceNameToRPHMap().get(keyLookupValue);
 		
-		CTILogger.info("METERNUMBER LOOKUP: " + meterRecord.meterNumber + "  " + "PointName: " + ptOffset + " " + 
+		CTILogger.info("PAONAME LOOKUP: " + customerRecord.accountNumber + "  " + "PointName: " + ptOffset + " " + 
 		        (dummyRPH == null ? " NOT FOUND - " : dummyRPH.getValue() + " @ " + DATE_FORMAT.format(dummyRPH.getTimeStamp().getTime()) + " " + TIME_FORMAT.format(dummyRPH.getTimeStamp().getTime())));
 	}
 	catch (SQLException e1)	{ }
@@ -507,7 +518,8 @@ private int getPointOffset(String ptOffsetStr)
 {
     if( ptOffsetStr.trim().equalsIgnoreCase("kwh"))
         return 1;
-    else if ( ptOffsetStr.trim().equalsIgnoreCase("hgal"))
+    else if ( ptOffsetStr.trim().toLowerCase().endsWith("gal") )
+//    else if ( ptOffsetStr.trim().equalsIgnoreCase("hgal") ||  ptOffsetStr.trim().equalsIgnoreCase("tgal"))
         return 2;
     return 1;	//default?
 }
