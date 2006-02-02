@@ -11,3 +11,4 @@ Class-Path: ./
  spring-dao.jar 
  spring-jdbc.jar 
  spring-web.jar 
+ spring-orm.jar
