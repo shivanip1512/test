@@ -10,7 +10,6 @@ public class CollectableMappings {
 
 	private static DefineCollectable[] mappings =
 	{		
-		new com.cannontech.message.dispatch.message.DefineCollectableCommand(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		new com.cannontech.message.dispatch.message.DefineCollectablePointRegistration(),
 		new com.cannontech.message.dispatch.message.DefineCollectableRegistration(),

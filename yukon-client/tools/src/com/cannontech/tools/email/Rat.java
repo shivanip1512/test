@@ -12,7 +12,7 @@ import javax.mail.internet.InternetAddress;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.util.MessageEvent;
@@ -251,10 +251,9 @@ private boolean executeCheckDispatchConnection()
 		if( connection.isValid() )
 		{	
 			CTILogger.info("Connection & Registration to Server Established.");
-			com.cannontech.message.dispatch.message.Command cmd = 
-					new com.cannontech.message.dispatch.message.Command();
+			Command cmd = new Command();
 
-			cmd.setOperation( com.cannontech.message.dispatch.message.Command.LOOP_CLIENT );
+			cmd.setOperation( Command.LOOP_CLIENT );
 			cmd.setPriority(15);
 			connection.write( cmd );
 
@@ -263,8 +262,7 @@ private boolean executeCheckDispatchConnection()
 			CTILogger.info("Loopback returned = " + ret.toString() );
 
 
-			com.cannontech.message.dispatch.message.Command cmd1 = 
-					new com.cannontech.message.dispatch.message.Command();
+			Command cmd1 = new Command();
 
 			cmd1.setOperation( Command.CLIENT_APP_SHUTDOWN );
 			connection.write( cmd1 );

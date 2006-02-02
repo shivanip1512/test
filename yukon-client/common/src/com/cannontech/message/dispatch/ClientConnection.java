@@ -8,7 +8,7 @@ import java.io.IOException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.Message;
 import com.cannontech.roles.yukon.SystemRole;

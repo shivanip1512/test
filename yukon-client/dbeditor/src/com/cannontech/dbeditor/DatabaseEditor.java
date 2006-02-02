@@ -38,6 +38,7 @@ import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.*;
 import com.cannontech.roles.yukon.BillingRole;
 import com.cannontech.database.data.point.PointTypes;
@@ -1374,11 +1375,10 @@ private void exit()
 	{
 		if ( getConnToDispatch() != null && getConnToDispatch().isValid() )  // free up Dispatchs resources
 		{
-			com.cannontech.message.dispatch.message.Command comm = new com.cannontech.message.dispatch.message.Command();
+			Command comm = new Command();
 			comm.setPriority(15);
 			
-			comm.setOperation( 
-				com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
 			getConnToDispatch().write( comm );
 

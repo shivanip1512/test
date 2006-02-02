@@ -7,6 +7,7 @@ package com.cannontech.tools.msg;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.Command;
 
 public class SignalGenerator {
 /**
@@ -68,8 +69,8 @@ public static void main(String[] args)
 
 	//Do a loopback
 	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
-	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
-	cmd.setOperation( com.cannontech.message.dispatch.message.Command.LOOP_CLIENT );
+	Command cmd = new Command();
+	cmd.setOperation( Command.LOOP_CLIENT );
 	cmd.setTimeStamp( new java.util.Date() );
 	conn.write( cmd );
 

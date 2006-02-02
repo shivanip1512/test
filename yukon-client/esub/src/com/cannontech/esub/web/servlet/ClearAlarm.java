@@ -17,7 +17,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**

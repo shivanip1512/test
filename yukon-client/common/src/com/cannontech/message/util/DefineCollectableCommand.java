@@ -1,4 +1,4 @@
-package com.cannontech.message.dispatch.message;
+package com.cannontech.message.util;
 
 /**
  * This type was created in VisualAge.

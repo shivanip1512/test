@@ -42,6 +42,7 @@ import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -504,9 +505,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
 			{
-				com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
+				Command command = new Command();
 				command.setPriority(15);
-				command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+				command.setOperation( Command.CLIENT_APP_SHUTDOWN );
 	
 				getClientConnection().write( command );
 				getClientConnection().disconnect();

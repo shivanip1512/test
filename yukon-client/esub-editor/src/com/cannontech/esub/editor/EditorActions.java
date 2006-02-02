@@ -22,6 +22,7 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.Command;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -177,10 +178,9 @@ class EditorActions {
 				try {	
 				ClientConnection conn = Util.getConnToDispatch();
 				if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources		
-					com.cannontech.message.dispatch.message.Command comm = new com.cannontech.message.dispatch.message.Command();
+					Command comm = new Command();
 					comm.setPriority(15);				
-					comm.setOperation( 
-						com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+					comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
 					conn.write( comm );
 					conn.disconnect();

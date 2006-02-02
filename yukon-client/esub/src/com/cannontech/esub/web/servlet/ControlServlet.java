@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.UpdateUtil;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Command;
 import com.cannontech.roles.operator.EsubDrawingsRole;
 
 /**

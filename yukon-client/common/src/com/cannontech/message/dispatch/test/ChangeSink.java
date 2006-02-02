@@ -4,6 +4,7 @@ package com.cannontech.message.dispatch.test;
  * This type was created in VisualAge.
  */
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.Command;
 
 public class ChangeSink {
 /**
@@ -39,8 +40,8 @@ public static void main(String[] args) {
 
 	//Do a loopback
 	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
-	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
-	cmd.setOperation( com.cannontech.message.dispatch.message.Command.NO_OP );
+	Command cmd = new Command();
+	cmd.setOperation( Command.NO_OP );
 	conn.write( cmd );
 
 	//Expect the message back

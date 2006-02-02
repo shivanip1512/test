@@ -42,7 +42,6 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableCBCSubstationBuses(),
 		new DefineCollectableCBCMessage(), // not used except as a superclass
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
-		new com.cannontech.message.dispatch.message.DefineCollectableCommand(),
 		new DefineCollectableCBCTempMoveCapBank()
 	};
 	

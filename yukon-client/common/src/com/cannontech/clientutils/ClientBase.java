@@ -9,11 +9,11 @@ package com.cannontech.clientutils;
 
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -229,8 +229,7 @@ public void stop()
 			Command comm = new Command();
 			comm.setPriority(15);
 			
-			comm.setOperation( 
-				com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+			comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 
 			getConnection().write( comm );
 

@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.message.dispatch.message.Command;
 
 /**
  * @author rneuharth

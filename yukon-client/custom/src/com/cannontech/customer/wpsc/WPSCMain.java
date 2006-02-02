@@ -1,6 +1,7 @@
 package com.cannontech.customer.wpsc;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.message.util.Command;
 
 /**
  * This is the entry point for Wisconsin Public Service Co's custom app
@@ -100,10 +101,10 @@ public void exit()
 	// Send a shutdown message to Dispatch
 	try
 	{
-		com.cannontech.message.dispatch.message.Command comm = new com.cannontech.message.dispatch.message.Command();
+		Command comm = new Command();
 		comm.setPriority(15);
 
-		comm.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+		comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
 		dispatchConn.write( comm );
 		dispatchConn.disconnect();
 	}

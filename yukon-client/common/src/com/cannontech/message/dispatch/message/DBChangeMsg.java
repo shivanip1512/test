@@ -53,7 +53,9 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TOU_SCHEDULE_DB = 24;
 	public static final int CHANGE_CBC_STRATEGY_DB = 25;
 	public static final int CHANGE_PAO_SCHEDULE_DB = 26;
-	public static final int CHANGE_SETTLEMENT_DB = 27;	
+	public static final int CHANGE_SETTLEMENT_DB = 27;
+	public static final int CHANGE_SERVICE_COMPANY_DB = 28;
+	public static final int CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB = 29;
 
 
 	public static final String CAT_POINT = "Point";
@@ -88,6 +90,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_LM_HARDWARE = "LMHardware";
 	public static final String CAT_APPLIANCE = "Appliance";
 	public static final String CAT_CUSTOMER_LOGIN = "CustomerLogin";
+	public static final String CAT_SERVICE_COMPANY = "ServiceCompany";
+	public static final String CAT_SERVICE_COMPANY_DESIGNATION_CODE = "ServiceCompany";
 
 	
 	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!
