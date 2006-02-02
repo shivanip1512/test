@@ -621,7 +621,7 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-
+	getJTableSeasons().setFocusable(false);
 	// user code end
 }
 /**

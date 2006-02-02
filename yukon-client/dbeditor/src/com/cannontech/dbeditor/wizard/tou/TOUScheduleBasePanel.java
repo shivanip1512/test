@@ -368,6 +368,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
         
         initConnections();
 		handleWeekEvents(Calendar.SUNDAY);
+        getJTableMadTOUDisease().setFocusable(false);
 		
 	}
 	/* (non-Javadoc)
