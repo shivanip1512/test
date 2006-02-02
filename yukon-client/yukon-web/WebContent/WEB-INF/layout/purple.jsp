@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
     <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
     <link rel="stylesheet" href="../../WebConfig/yukon/PurpleHeaderBar.css" type="text/css">
-    <cti:outputOtherCss/>
+    <cti:outputHeadContent/>
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000" onload="init()">

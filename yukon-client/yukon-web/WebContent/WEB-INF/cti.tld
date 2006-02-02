@@ -205,6 +205,16 @@
   </tag>
   
   <tag>
+    <name>includeScript</name>
+    <tagclass>com.cannontech.web.taglib.IncludeScriptTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>link</name>
+      <required>true</required>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>outputContent</name>
     <tagclass>com.cannontech.web.taglib.OutputContent</tagclass>
     <bodycontent>empty</bodycontent>
@@ -219,9 +229,9 @@
   </tag>
   
   <tag>
-    <name>outputOtherCss</name>
-    <tagclass>com.cannontech.web.taglib.OutputOtherCss</tagclass>
-    <bodycontent>empty</bodycontent>
+    <name>outputHeadContent</name>
+    <tagclass>com.cannontech.web.taglib.OutputHeadContentTag</tagclass>
+    <bodycontent>JSP</bodycontent>
     <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
   </tag>
   

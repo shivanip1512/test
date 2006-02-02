@@ -91,6 +91,11 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element cssElement = (Element) iter.next();
             moduleBase.addCssFiles(cssElement.getAttributeValue("file"));
         }
+        List scriptElements = moduleElement.getChildren("script");
+        for (Iterator iter = scriptElements.iterator(); iter.hasNext();) {
+            Element scriptElement = (Element) iter.next();
+            moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
+        }
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
 

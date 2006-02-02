@@ -25,6 +25,7 @@ import com.cannontech.web.template.TemplateReslover;
 public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_MAIN_CONTENT = "ctiMainContent";
     public static final String CTI_CSS_FILES = "ctiCssFiles";
+    public static final String CTI_SCRIPT_FILES = "ctiScriptFiles";
     public static final String CTI_DOCTYPE_LEVEL = "ctiDoctypeLevel";
     public static final String CTI_MODULE_BASE = "ctiMenuModule";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
@@ -37,23 +38,21 @@ public class StandardPageTag extends BodyTagSupport {
     
     private String title = "";
     private String htmlLevel = HTML_TRANSITIONAL;
-    private List cssFiles = new ArrayList();
+    private List cssFiles;
+    private List scriptFiles;
     private String module = "";
     private String breadCrumbData = "";
     private boolean debugMode = true;
     private boolean showMenu = false;
     
-    public void cleanup() {
+    public int doStartTag() throws JspException {
         title = "";
         htmlLevel = HTML_TRANSITIONAL;
         module = "";
         breadCrumbData = "";
         showMenu = false;
-        //super.release();
-    }
-    
-    public int doStartTag() throws JspException {
-        cssFiles = new ArrayList(4);
+        cssFiles = new ArrayList();
+        scriptFiles = new ArrayList();
         return EVAL_BODY_BUFFERED;
     }
     
@@ -69,6 +68,7 @@ public class StandardPageTag extends BodyTagSupport {
             ModuleBase moduleBase = menuBuilder.getModuleBase(getModule());
             
             pageContext.setAttribute(CTI_CSS_FILES, cssFiles, PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_SCRIPT_FILES, scriptFiles, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MAIN_CONTENT, getBodyContent(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_DOCTYPE_LEVEL, getHtmlLevel(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MODULE_BASE, moduleBase, PageContext.REQUEST_SCOPE);
@@ -86,7 +86,6 @@ public class StandardPageTag extends BodyTagSupport {
         } catch (Exception e) {
             throw new JspException("Can't build standard page.", e);
         }
-        cleanup();
         return EVAL_PAGE;
     }
 
@@ -103,6 +102,10 @@ public class StandardPageTag extends BodyTagSupport {
         cssFiles.add(path);
     }
 
+    public void addScriptFile(String link) {
+        scriptFiles.add(link);
+    }
+    
     public String getHtmlLevel() {
         return htmlLevel;
     }
@@ -128,13 +131,14 @@ public class StandardPageTag extends BodyTagSupport {
     }
 
     private ModuleBuilder getModuleBuilder() throws MalformedURLException, CommonMenuException {
+        final String menuBuilderName = "ctiMenuBuilder";
         CommonModuleBuilder menuBuilder = 
-            (CommonModuleBuilder) pageContext.getAttribute("ctiMenuBuilder",
+            (CommonModuleBuilder) pageContext.getAttribute(menuBuilderName,
                                                          PageContext.APPLICATION_SCOPE);
         if (menuBuilder == null || debugMode ) {
             URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/module_config.xml");
             menuBuilder = new CommonModuleBuilder(menuConfigFile);
-            pageContext.setAttribute("ctiMenuBuilder",
+            pageContext.setAttribute(menuBuilderName,
                                      menuBuilder,
                                      PageContext.APPLICATION_SCOPE);
         }
@@ -148,6 +152,7 @@ public class StandardPageTag extends BodyTagSupport {
     public void setShowMenu(boolean showMenu) {
         this.showMenu = showMenu;
     }
+
 
     
 }

@@ -22,6 +22,7 @@ public class ModuleBase {
     private String searchMethod;
     private List quickLinks;
     private List cssFiles = new LinkedList();
+    private List scriptFiles = new LinkedList();
     private String skin;
     private MenuBase menuBase;
     
@@ -95,5 +96,13 @@ public class ModuleBase {
 
     public void addCssFiles(String cssFile) {
         cssFiles.add(cssFile);
+    }
+    
+    public List getScriptFiles() {
+        return scriptFiles;
+    }
+    
+    public void addScriptFiles(String scriptFile) {
+        scriptFiles.add(scriptFile);
     }
 }

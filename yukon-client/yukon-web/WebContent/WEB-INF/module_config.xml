@@ -3,13 +3,17 @@
 <!-- 
      If you need to add functionality to the menu, please see the following classes:
        com.cannontech.web.menu.CommonMenuBuilder
-       com.cannontech.web.menu.MenuRenderer
+       com.cannontech.web.menu.StandardMenuRenderer
        
      If you need to add a new "permissions" type (like requireProperty) see:
        com.cannontech.web.menu.OptionPropertyChecker
 
      Be sure to use <link> for normal URLs (context path will be added)
      and <action> to call a JavaScript function via the javascript: protocol.
+     
+     CSS and JS files that should be included on every page of the module 
+     can be declared with the <css file=""/> and <script file=""/> tags
+     respectively.
 -->
   <quicklinks>
     <option name="CapControl">
@@ -114,6 +118,7 @@
   </module> 
   
   <module name="capcontrol_internal">
+    <!-- The module is used for the inner frames that are used on the cap control pages. -->
     <skin name="inner"/>
     <css file="css/base.css"/> <!-- normally this should be an absolute path -->
   </module>
@@ -125,6 +130,9 @@
           <option name="Programs">
             <link>/cc/programList.jsf</link>
           </option>
+          <option name="Groups">
+            <link>/cc/groupList.jsf</link>
+          </option>
         </sublinks>
       </option>
     </toplinks>
@@ -134,43 +142,7 @@
   <module name="stars">
     <skin name="purple"/>
   </module>
-  
-  <module name="bulk">
-    <toplinks>
-      <option name="Create">
-        <sublinks>
-          <option name="Sub">
-            <link>something3.jsp</link>
-          </option>
-          <option name="Area">
-            <link>something4.jsp</link>
-          </option>
-        </sublinks>
-      </option>
-      <option name="Edit">
-        <script>someJsEvent()</script>
-      </option>
-      <option name="Modify">
-        <link>whatever.jsp</link>
-      </option>
-      <option name="Dinner">
-        <sublinks>
-          <option name="McDonalds">
-            <link>javascript:myFunc();</link>
-          </option>
-          <option name="Burger King">
-            <link>something4.jsp</link>
-          </option>
-          <option name="Wendy's">
-            <link>something4.jsp</link>
-          </option>
-        </sublinks>
-      </option>
-    </toplinks>
-    <search action="results.jsp" method="post"/>
-  </module> 
-  
-  
+    
    <module name="blank">
   </module>
 </mainmenu>
