@@ -15,6 +15,7 @@ import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
+import com.cannontech.analysis.tablemodel.HECO_DSMISModel;
 import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
 import com.cannontech.analysis.tablemodel.HECO_MonthlyBillingSettlementModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
@@ -95,6 +96,7 @@ public class ReportTypes
 	public static final int HECO_LMEVENT_SUMMARY_DATA = 28;
 	public static final int HECO_MONTHLY_BILLING_DATA = 29;
 	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 30;
+	public static final int HECO_DSMIS_DATA = 31;
 	
 	private static Class[] typeToClassMap =
 	{
@@ -135,7 +137,8 @@ public class ReportTypes
 		
 		HECO_LMEventSummaryModel.class,
 		HECO_MonthlyBillingSettlementModel.class,
-		HECO_CustomerMonthlyBillingSettlementModel.class	
+		HECO_CustomerMonthlyBillingSettlementModel.class,
+		HECO_DSMISModel.class,	
 	};
 		
 	/** String names for report types */
@@ -180,6 +183,7 @@ public class ReportTypes
 	public static final String HECO_LMEVENT_SUMMARY_STRING = "LM Event Summary";
 	public static final String HECO_MONTHLY_BILLING_STRING = "Monthly Billing Settlement";
 	public static final String HECO_CUSTOMER_MONTHLY_BILLING_STRING = "Customer Monthly Billing Settlement";
+	public static final String HECO_DSMIS_STRING = "DSMIS Settlement";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -223,7 +227,8 @@ public class ReportTypes
 		
 		HECO_LMEVENT_SUMMARY_STRING,
 		HECO_MONTHLY_BILLING_STRING,
-		HECO_CUSTOMER_MONTHLY_BILLING_STRING
+		HECO_CUSTOMER_MONTHLY_BILLING_STRING,
+		HECO_DSMIS_STRING,
 	};
 
 
@@ -288,7 +293,8 @@ public class ReportTypes
 			{
 				return new int[]{HECO_LMEVENT_SUMMARY_DATA,
 										HECO_MONTHLY_BILLING_DATA,
-										HECO_CUSTOMER_MONTHLY_BILLING_DATA										
+										HECO_CUSTOMER_MONTHLY_BILLING_DATA,
+										HECO_DSMIS_DATA
 										};
 			}
 //			case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_XCEL_ISOC:	//TODO
