@@ -22,7 +22,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	//some variables for the dual bus support
 	private Integer altSubPAOId = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer switchPointID =   new Integer(CtiUtilities.NONE_ZERO_ID);
-	private String dualBusEnabled = "Y";
+	private String dualBusEnabled = "N";
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
