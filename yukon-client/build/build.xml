@@ -1,12 +1,6 @@
 <?xml version="1.0" ?>
 <project name="Yukon Clients" default="targets" basedir=".">
 
-    <!-- Removed castor source gen until it is needed, was 
-         just slowing down builds -ACL -->
-    <!-- Define new tasks -->
-    <!--	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>-->
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-
     <property environment="env"/> 	 	 
     <property file="build.properties"/>
 	 	      	     	     
@@ -22,26 +16,34 @@
         <echo message=" sign jars - sign all jars"/>
     </target>
             
-    <target name="all">
+    <target name="all" depends="init, cleanlib">
         <antcall target="callall">
             <param name="dotarget" value="all"/>
         </antcall>
     </target>
           
-    <target name="clean">
-        <delete>
-            <fileset dir="${yukon.lib}" includes="*"/>
-        </delete>
+    <target name="clean" depends="init, cleanlib">
         <antcall target="callall" inheritAll="true" >
             <param name="dotarget" value="clean"/>
         </antcall>
     </target>
 
-    <target name="build">
+    <target name="build" depends="init">
         <antcall target="callall" inheritAll="true">
             <param name="dotarget" value="build"/>
         </antcall>
     </target>
+	
+	<target name="init">
+        <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
+        <echo message="target=${yukon.javac.target}"/>
+	</target>
+	
+	<target name="cleanlib">
+        <delete quiet="true">
+            <fileset dir="${yukon.lib}" includes="*"/>
+        </delete>
+	</target>
     
     <target name="install">    	
     	<mkdir dir="${yukon.client.home}"/>
@@ -194,5 +196,7 @@
 			</fileset>
 		</signjar>
 	</target>
+	
+	
 
 </project>
