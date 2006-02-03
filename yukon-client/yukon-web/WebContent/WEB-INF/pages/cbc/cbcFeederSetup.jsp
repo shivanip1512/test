@@ -4,9 +4,16 @@
 
 
 <f:subview id="feederSetup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >
-
-
     <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >    
+    <f:verbatim>
+    <script type="text/javascript">
+        addSmartScrolling('feederVarHiden', 'feederVarDiv', null, null);
+        addSmartScrolling('feederWattHiden', 'feederWattDiv', null,null);
+        addSmartScrolling('feederVoltHiden', 'feederVoltDiv', null,null);
+    </script>
+
+
+</f:verbatim>
     <h:panelGrid id="fdrBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
     
 		<h:column>
@@ -25,7 +32,7 @@
         	value="(none)" styleClass="medLabel"/>
 
 
-    	<x:div styleClass="scrollSmall">
+    	<x:div forceId="true" id="feederVarDiv" styleClass="scrollSmall">
 		<x:tree2 id="varPaoListTree" value="#{capControlForm.varTreeData}" var="node"
 				showRootNode="false" varNodeToggler="t"
 				preserveToggle="true" clientSideToggle="false" >
@@ -74,7 +81,7 @@
         <x:outputText id="wattPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == 0}"
         	value="(none)" styleClass="medLabel"/>
 
-    	<x:div styleClass="scrollSmall">
+    	<x:div forceId="true" id="feederWattDiv" styleClass="scrollSmall">
 		<x:tree2 id="paoWattListTree" value="#{capControlForm.wattTreeData}" var="node"
 				showRootNode="false" varNodeToggler="t"
 				preserveToggle="true" clientSideToggle="false" >
@@ -121,7 +128,7 @@
         <x:outputText id="voltPoint_none" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == 0}"
         	value="(none)" styleClass="medLabel"/>
 
-    	<x:div styleClass="scrollSmall">
+    	<x:div forceId="true" id="feederVoltDiv" styleClass="scrollSmall">
 		<x:tree2 id="voltPaoListTree" value="#{capControlForm.voltTreeData}" var="node"
 				showRootNode="false" varNodeToggler="t"
 				preserveToggle="true" clientSideToggle="false" >
@@ -166,6 +173,8 @@
 		
     </f:subview>
     
-
+	<x:inputHidden id="feederVarHiden" forceId="true" value="#{capControlForm.offsetMap['feederVarHiden']}" />
+	<x:inputHidden id="feederWattHiden" forceId="true" value="#{capControlForm.offsetMap['feederWattHiden']}" />
+	<x:inputHidden id="feederVoltHiden" forceId="true" value="#{capControlForm.offsetMap['feederVoltHiden']}" />
 
 </f:subview>

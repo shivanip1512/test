@@ -1,43 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <f:verbatim>
-	<script type="text/javascript">
+<script type="text/javascript">
 
-function radioButtonClick(type, radioObj) {
-//make sure that all the radio buttons are unchecked
-//radio buttons are inside a table, therefore get the name of the table
-var sb_table_id  		= "editorForm:altDualBusSetup:altDualBus:altSubBusData";
-var switch_p_table_id  	= "editorForm:altDualBusSetup:altDualBus:altSwitchPointData";
-
-var switch_p_hidden_id 	= "editorForm:altDualBusSetup:selectedSwitchPoint";
-var sb_hidden_id 		= "editorForm:altDualBusSetup:selectedSubBus";
-
-var			table_el = null;
-var			hidden_el = null;
-switch (type) {
-		//init the elements based on type of call
-		case 'SubBus':			
-			table_el = document.getElementById(sb_table_id);
-			hidden_el = document.getElementById(sb_hidden_id);
-		break;
-		case 'SwitchPoint':
-			table_el = document.getElementById(switch_p_table_id);
-			hidden_el = document.getElementById(switch_p_hidden_id);
-		break;	
-		}
-		var inputElements = table_el.getElementsByTagName("input");
-		for (var i=0; i < inputElements.length; i++) {
-			inputElements[i].checked = false;
-			}
-		radioObj.checked = true;
-		hidden_el.value = radioObj.value;
-
-	
-}
-//Event.observe(window, 'load', function() { new CtiNonScrollTable('editorForm:altDualBusSetup:altDualBus:altSubBusData','AltSubHTable');    });
-//Event.observe(window, 'load', function() { new CtiNonScrollTable('editorForm:altDualBusSetup:altDualBus:altSwitchPointData','SwitchPointHTable');    });
+addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedSubBus', 'AltSubBusList');
+addSmartScrolling('currentTwoWayPointDivOffset', 'TwoWayPointScrollableDiv', 'selectedSwitchPoint','editorForm:altDualBusSetup:altDualBus:TwoWayPointsPaoListTree');
 
 </script>
 </f:verbatim>
@@ -50,18 +20,18 @@ switch (type) {
 					Dual Bus
 				</legend>
 		</f:verbatim>
-
-		<h:selectBooleanCheckbox styleClass="lAlign" id="enableDualBus" 
-		title="Disable Dual Bus" 
-		value="#{capControlForm.enableDualBus}" >
+	
+		<x:selectBooleanCheckbox forceId="true"  valueChangeListener="#{capControlForm.dualBusEnabledClick}" styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
+		value="#{capControlForm.enableDualBus}" onclick="toggleDivs();">
 			<h:outputText value="Enable Dual Bus" />
-		</h:selectBooleanCheckbox>
-		<h:panelGrid  id="subBody" columns="2" 
-		styleClass="gridLayout" 
-		rowClasses="gridCellSmall" 
-		columnClasses="gridColumn">
+		</x:selectBooleanCheckbox>
+		<x:panelGrid forceId="true" id="subBody" columns="2" styleClass="gridLayout" rowClasses="gridCellSmall" columnClasses="gridColumn">
 			<x:panelGroup>
-				<h:outputText styleClass="tableHeader" value="#{capControlForm.selectedSubBusFormatString}"/>
+								
+				<h:outputText styleClass="tableHeader" value="Selected Alternative SubBus: " />
+				<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" >
+				<h:outputText value="#{capControlForm.selectedSubBusFormatString}" />
+				</x:commandLink>
 				<f:verbatim>
 					<br />
 					<fieldset>
@@ -69,21 +39,24 @@ switch (type) {
 							Alternative Substation Bus
 						</legend>
 				</f:verbatim>
-				<x:div styleClass="scrollSmallWidthSet" >
-					<x:dataList var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="dataList">
-						
-							<x:panelGroup>
-								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
-								<x:commandLink id="ptLink" value="#{item.paoName}" actionListener="#{capControlForm.subBusPAOsClick}">
-									<f:param name="ptID" value="#{item.liteID}" />
-								</x:commandLink>
-							</x:panelGroup>
-						
+				<x:div forceId="true" id = "AltSubBusScrollableDiv" styleClass="scrollSmallWidthSet">
+					<x:dataList forceId="true" id="AltSubBusList" var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="listWithNoBullets">
+					
+						<x:panelGroup>
+							<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
+							<x:commandLink id="ptLink" value="#{item.paoName}" actionListener="#{capControlForm.subBusPAOsClick}">
+								<f:param name="ptID" value="#{item.liteID}" />
+							</x:commandLink>
+						</x:panelGroup>
+
 					</x:dataList>
 				</x:div>
 			</x:panelGroup>
 			<x:panelGroup>
-				<h:outputText styleClass="tableHeader" value="#{capControlForm.selectedTwoWayPointsFormatString}"/>
+				<h:outputText styleClass="tableHeader" value="Selected Switch Point:" />
+				<x:commandLink actionListener="#{capControlForm.selectedTwoWayPointClick}">
+				<h:outputText value="#{capControlForm.selectedTwoWayPointsFormatString}" />
+				</x:commandLink>
 				<f:verbatim>
 					<br />
 					<fieldset>
@@ -91,10 +64,9 @@ switch (type) {
 							Switch Point
 						</legend>
 				</f:verbatim>
-				
-				<x:div id="TwoWayPointScrollableDiv" styleClass="scrollSmallWidthSet">
+				<x:div forceId="true" id="TwoWayPointScrollableDiv" styleClass="scrollSmallWidthSet">
 
-					<x:tree2 id="TwoWayPointsPaoListTree" value="#{capControlForm.switchPointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
+					<x:tree2 binding="#{capControlForm.dualBusSwitchPointTree}" id="TwoWayPointsPaoListTree" value="#{capControlForm.switchPointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">
 							<x:panelGroup>
@@ -110,7 +82,7 @@ switch (type) {
 							<x:panelGroup>
 								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.switchPointID == node.identifier}" />
 
-								<x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.twoWayPtsTeeClick}">
+								<x:commandLink  id="ptLink" value="#{node.description}" actionListener="#{capControlForm.twoWayPtsTeeClick}">
 									<f:param name="ptID" value="#{node.identifier}" />
 								</x:commandLink>
 							</x:panelGroup>
@@ -124,9 +96,13 @@ switch (type) {
 
 
 
-		</h:panelGrid>
+		</x:panelGrid>
 
 	</f:subview>
-	<h:inputHidden id="selectedSubBus" value="#{capControlForm.selectedSubBus}" />
-	<h:inputHidden id="selectedSwitchPoint" value="#{capControlForm.selectedSwitchPoint}" />
+	<x:inputHidden forceId="true" id="selectedSubBus" value="#{capControlForm.offsetMap['selectedSubBus']}" />
+	<x:inputHidden forceId="true" id="selectedSwitchPoint" value="#{capControlForm.offsetMap['selectedSwitchPoint']}"/>
+	<x:inputHidden forceId="true" id="currentTwoWayPointDivOffset" value="#{capControlForm.offsetMap['currentTwoWayPointDivOffset']}" />
+	<x:inputHidden forceId="true" id="currentAltSubDivOffset" value="#{capControlForm.offsetMap['currentAltSubDivOffset']}" />
+	
 </f:subview>
+

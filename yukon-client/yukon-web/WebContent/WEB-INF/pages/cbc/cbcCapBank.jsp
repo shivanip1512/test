@@ -4,6 +4,16 @@
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
 
+<f:verbatim>
+
+<script type="text/javascript">
+
+addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
+
+</script>
+
+</f:verbatim>
+
 	<h:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
 		<h:column>
@@ -34,7 +44,7 @@
 
 
 			<f:verbatim><br/><br/></f:verbatim>
-	    	<x:div styleClass="scrollSmall" 
+	    	<x:div id="capbankDiv" forceId="true" styleClass="scrollSmall" 
 				rendered="#{capControlForm.bankControlPtVisible}" >
 
 			<x:outputLabel for="cntrlPoint" value="Control Point: " title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" styleClass="medStaticLabel"/>
@@ -333,7 +343,7 @@
 	
 	</h:panelGrid>
 		
-    
+    <x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
 
 
 </f:subview>

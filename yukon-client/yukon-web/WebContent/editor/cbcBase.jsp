@@ -10,7 +10,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-
+<cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject
@@ -27,7 +27,21 @@
     }
 %>
 
-
+<f:verbatim>
+<script type="text/JavaScript">
+function lock_buttons(el){
+var button_ids = ["reset_button","submit_button","return_button"];
+for (var i=0; i < button_ids.length; i++)
+{
+ var current_button = document.getElementById(button_ids[i]);
+ if (current_button.id != el.id)
+	current_button.disabled = true;
+ else
+	current_button.style.visibility = "hidden";
+}
+}
+</script>
+</f:verbatim>
     <x:saveState id="capControlForm" value="#{capControlForm}" />
 
 

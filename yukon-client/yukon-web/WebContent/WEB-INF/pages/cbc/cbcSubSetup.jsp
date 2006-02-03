@@ -1,67 +1,12 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
-
 <f:verbatim>
-<script type="text/JavaScript">
-<!--
-window.onload = init;
-
-//function that will set the scroll bar offset value to 0 on start up
-function init() {
-
-var div_var    = document.getElementById("editorForm:subSetup:paoSubBus:VARscrollable_div"); 
-var hidden_var = document.getElementById("editorForm:subSetup:paoSubBus:VARscrollOffsetTop");
-
-var div_watt    = document.getElementById("editorForm:subSetup:paoSubBus:WATTscrollable_div"); 
-var hidden_watt = document.getElementById("editorForm:subSetup:paoSubBus:WATTscrollOffsetTop");
-
-var div_volt    = document.getElementById("editorForm:subSetup:paoSubBus:VOLTscrollable_div"); 
-var hidden_volt = document.getElementById("editorForm:subSetup:paoSubBus:VOLTscrollOffsetTop");
-
-
-if (hidden_var.value != 0)
-	setScrollBarOffset(div_var, hidden_var);
-	
-if (hidden_watt.value != 0)
-	setScrollBarOffset(div_watt, hidden_watt);
-	
-if (hidden_volt.value != 0)
-	setScrollBarOffset(div_volt, hidden_volt);	
-	
-div_var.onscroll = 		function () {setHiddenOffsetValue(div_var, hidden_var); };
-div_watt.onscroll = 	function () {setHiddenOffsetValue(div_watt, hidden_watt); };
-div_volt.onscroll = 	function () {setHiddenOffsetValue(div_volt, hidden_volt); };
-
-//Event.observe(div_var, 'onscroll', function() { new CtiPositionAwareScrollbar(div_var, hidden_var);    }, false);
-//Event.observe(div_watt, 'onscroll', function() { new CtiPositionAwareScrollbar(div_watt, hidden_watt);    }, false);
-//Event.observe(div_volt, 'onscroll', function() { new CtiPositionAwareScrollbar(div_volt, hidden_volt);    }, false);
-
-
-//doesn't really belong here but needs to be untill
-//figure out a way to call functions from a file
-//focus users attention on the table data scroller element
-document.getElementById("editorForm:altDualBusSetup:altDualBus:scrollButtonsAltSubIdfirst").scrollIntoView(true);	
-
-}	
-//helper functions for initSubBus()
-function setHiddenOffsetValue(div_el, hidden_el) {
-
-hidden_el.value = div_el.scrollTop;
-
-}
-
-function setScrollBarOffset(div_el, hidden_el) {
-div_el.scrollIntoView(true);
-div_el.scrollTop = hidden_el.value;
-
-}
-//-->
-</script>
-
-
-
-
+    <script type="text/javascript">
+        addSmartScrolling('VARscrollOffsetTop', 'VARscrollable_div', null, null);
+        addSmartScrolling('WATTscrollOffsetTop', 'WATTscrollable_div', null, null);
+        addSmartScrolling('VOLTscrollOffsetTop', 'VOLTscrollable_div', null, null);
+    </script>
 </f:verbatim>
 
 <f:subview id="subSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
@@ -109,17 +54,17 @@ div_el.scrollTop = hidden_el.value;
 
 
 
-				<x:div id="VARscrollable_div" styleClass="scrollSmall">
-							
-					<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false" >
-					
+				<x:div forceId="true" id="VARscrollable_div" styleClass="scrollSmall">
+
+					<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
+
 						<f:facet name="root">
 							<x:panelGroup>
 								<x:outputText id="rootLink" value="#{node.description}" />
 							</x:panelGroup>
 						</f:facet>
-			
-						
+
+
 						<f:facet name="paos">
 							<x:panelGroup>
 								<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
@@ -129,7 +74,7 @@ div_el.scrollTop = hidden_el.value;
 						<f:facet name="points">
 							<x:panelGroup>
 								<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" />
-								
+
 								<x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.varPtTeeClick}">
 									<f:param name="ptID" value="#{node.identifier}" />
 								</x:commandLink>
@@ -166,7 +111,7 @@ div_el.scrollTop = hidden_el.value;
 					styleClass="medLabel" />
 				<x:outputText id="subWattPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
-				<x:div id="WATTscrollable_div" styleClass="scrollSmall" >
+				<x:div forceId="true" id="WATTscrollable_div" styleClass="scrollSmall">
 					<x:tree2 id="subWattListTree" value="#{capControlForm.wattTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">
@@ -193,9 +138,11 @@ div_el.scrollTop = hidden_el.value;
 
 					</x:tree2>
 				</x:div>
-				<h:inputHidden id="VARscrollOffsetTop" value="#{capControlForm.VARscrollOffsetTop}"/>
-				<h:inputHidden id="WATTscrollOffsetTop" value="#{capControlForm.WATTscrollOffsetTop}"/>		
-				<h:inputHidden id="VOLTscrollOffsetTop" value="#{capControlForm.VOLTscrollOffsetTop}"/>
+				<x:inputHidden forceId="true" id="VARscrollOffsetTop" value="#{capControlForm.offsetMap['VARscrollOffsetTop']}" />
+				<x:inputHidden forceId="true" id="WATTscrollOffsetTop" value="#{capControlForm.offsetMap['WATTscrollOffsetTop']}" />
+				<x:inputHidden forceId="true" id="VOLTscrollOffsetTop" value="#{capControlForm.offsetMap['VOLTscrollOffsetTop']}" />
+
+				
 				
 				<h:inputHidden id="varTreeExp" value="0" />
 				<x:commandLink id="subWattPoint_setNone" title="Do not use a point for the Watt value" styleClass="medStaticLabel" value="No Watt Point" actionListener="#{capControlForm.wattPtTeeClick}">
@@ -222,7 +169,7 @@ div_el.scrollTop = hidden_el.value;
 					styleClass="medLabel" />
 				<x:outputText id="subVoltPoint_none" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == 0}" value="(none)" styleClass="medLabel" />
 
-				<x:div id="VOLTscrollable_div" styleClass="scrollSmall">
+				<x:div forceId="true" id="VOLTscrollable_div" styleClass="scrollSmall">
 					<x:tree2 id="subVoltPaoListTree" value="#{capControlForm.voltTreeData}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
 
 						<f:facet name="root">

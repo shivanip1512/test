@@ -167,7 +167,7 @@ legend {
 
 .gridColumn{
 	width: 	40%;
-	padding-right: 205px;
+	padding-right: 105px;
 }
 .gridCellMedium {
 	width: 30%;
@@ -223,7 +223,7 @@ legend {
 
 
 
-.dataList { 
+.listWithNoBullets { 
 	list-style-type: none;
 	margin: 0;
 	padding: 0;

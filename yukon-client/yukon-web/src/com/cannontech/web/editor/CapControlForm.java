@@ -2,34 +2,33 @@ package com.cannontech.web.editor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
 
+import org.apache.myfaces.custom.tree2.HtmlTree;
+import org.apache.myfaces.custom.tree2.TreeModel;
 import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.web.CapControlCache;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
@@ -39,6 +38,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
@@ -56,12 +56,12 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.servlet.nav.*;
+import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
-import com.cannontech.web.editor.point.*;
+import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.util.CBCSelectionLists;
-import com.cannontech.web.wizard.*;
+import com.cannontech.web.util.JSFTreeUtils;
+import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.cbc.SubBus;
 
 /**
@@ -79,12 +79,7 @@ public class CapControlForm extends DBEditorForm {
 
 	private int itemID = -1;
 
-	private String VARscrollOffsetTop = "";
-
-	private String WATTscrollOffsetTop = "";
-
-	private String VOLTscrollOffsetTop = "";
-
+    
 	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap cbcStrategiesMap = null;
 
@@ -111,29 +106,31 @@ public class CapControlForm extends DBEditorForm {
 
 	// variables that hold sub bus info
 	protected List subBusList = null;
-
-	// variables that hold the selection state info for
-	// the alt subbus and switch point
-	private Integer selectedSubBus = null;
-
-	private Integer selectedSwitchPoint = null;
-
-	//private String selectedSubBusName = "";
+    
+    private Integer oldSubBus = null;
+    //contains the offset variables
+    private Map offsetMap = new HashMap();
 
 	// Boolean to keep track of the disable dual subbus status
 	// by default will be set to true
-	private Boolean enableDualBus = Boolean.FALSE;
+    private Boolean enableDualBus = Boolean.FALSE;
 
-	//private boolean dualBusEnableClicked = false;
+	private HtmlTree dualBusSwitchPointTree;
+	
+
+    
+	private boolean isDualSubBusEdited;
 
 	/**
 	 * default constructor
 	 */
 	public CapControlForm() {
 		super();
-	}
+        //initOffsetMap();
+    }
 
-	/**
+
+    /**
 	 * Hold all the CBCStrategies in memory for quicker access.
 	 */
 	public SelectItem[] getCbcStrategies() {
@@ -451,29 +448,59 @@ public class CapControlForm extends DBEditorForm {
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
 					.setSwitchPointID(Integer.valueOf(val));
 
+		setDualSubBusEdited(true);
 	}
 
+	public void selectedTwoWayPointClick(ActionEvent ae) {
+        
+	    //for some reason that works better then doin them separately
+        selectedAltSubBusClick(ae);
+    }
+
+	public void selectedAltSubBusClick(ActionEvent ae){
+        
+	    resetCurrentDivOffset();
+	    getSelectedTwoWayPointsFormatString();
+        
+        resetCurrentAltSubDivOffset(); 
+        getSelectedSubBusFormatString();
+    }
+	
 	/**
 	 * Event fired when the Dual Bus sub bus pao selection has changed
 	 * 
 	 */
 	public void subBusPAOsClick(ActionEvent ae) {
 
-		String val = (String) FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("ptID");
-		if (val == null)
-			return;
-		if (getDbPersistent() instanceof CapControlSubBus)
-			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
-					.setAltSubPAOId(Integer.valueOf(val));
+        String val = (String) FacesContext.getCurrentInstance()
+                                          .getExternalContext()
+                                          .getRequestParameterMap()
+                                          .get("ptID");
+        if (val == null)
+            return;
+        if (getDbPersistent() instanceof CapControlSubBus) {
+            // save the old value
+            setOldSubBus(((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+                                                               .getSubstationBusID());
+            // set the new value
+            ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+                                                  .setAltSubPAOId(Integer.valueOf(val));
+        }
+        //The user fiddled around ...
+        setDualSubBusEdited(true);
+    }
+    
+    public void dualBusEnabledClick(ValueChangeEvent vce){
+        
+        setDualSubBusEdited(true);
+        updateDualBusEnabled();
+    }
 
-	}
-
-	public void setVARscrollOffsetTop(String rscrollOffsetTop) {
+/*	public void setVARscrollOffsetTop(String rscrollOffsetTop) {
 
 		this.VARscrollOffsetTop = rscrollOffsetTop;
 
-	}
+	}*/
 
 	/**
 	 * Event fired when the Watt Point selection has changed
@@ -615,6 +642,9 @@ public class CapControlForm extends DBEditorForm {
 
 		resetStrategies();
 		resetCBCEditor();
+		resetCurrentDivOffset();
+		resetCurrentAltSubDivOffset(); 
+		isDualSubBusEdited = false;
 		editingCBCStrategy = false;
 		unassignedBanks = null;
 		unassignedFeeders = null;
@@ -635,7 +665,6 @@ public class CapControlForm extends DBEditorForm {
 			String dualBusEn = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getDualBusEnabled();
 			Boolean val = (dualBusEn.equalsIgnoreCase("Y") ? Boolean.TRUE : Boolean.FALSE);
-			System.out.println("Value of the dualBus AFTER reset - " + val);
 			this.setEnableDualBus(val);
 		}
 	}
@@ -804,18 +833,37 @@ public class CapControlForm extends DBEditorForm {
 			}
 
 			// update the CBC object if we are editing it
+			String successfulUpdateMsg = "Database update was SUCCESSFUL";
+			facesMsg.setDetail(successfulUpdateMsg);
 			if (isEditingController()) {
+				
 				updateDBObject(getCBControllerEditor().getPaoCBC(), facesMsg);
-				updateDualBusEnabled();
+				
 
 				// clear out the memory of CBCs structures
 				resetCBCEditor();
 			}
+			
+            if (isDualSubBusEdited()) {
+
+                if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
+                    // inform the user they need to have a point picked
+
+                    facesMsg.setDetail("ERROR: alternative sub bus needs to have a switch point");
+
+                    // save the old value
+                    // reset the model bean to the old value
+                    if (getOldSubBus() != null) {
+                        ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+                                                              .setAltSubPAOId(getOldSubBus());
+                        setOldSubBus(null);
+                    }
+
+                }
+            }
             
+            updateDBObject(getDbPersistent(), facesMsg);
             
-			//if(this.dualBusEnableClicked)
-			updateDBObject(getDbPersistent(), facesMsg);
-			facesMsg.setDetail("Database update was SUCCESSFUL");
 		} catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
 		} finally {
@@ -823,6 +871,28 @@ public class CapControlForm extends DBEditorForm {
 					facesMsg);
 		}
 	}
+
+    private boolean checkIfDualBusHasValidPoint() {
+        // Integer altSubPAOId;
+        Integer switchPointId;
+        // get the sub bus currently selected
+        if (getDbPersistent() instanceof CapControlSubBus) {
+            switchPointId = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
+                                                                  .getSwitchPointID();
+
+            LitePoint litePoint = PointFuncs.getLitePoint(switchPointId);
+            if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+                int stateGrpId = litePoint.getStateGroupID();
+                LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
+                if (liteStateGroup.getStatesList().size() == 2) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
 
 	private void updateDualBusEnabled() {
 		String dualBusCtl = (getEnableDualBus().booleanValue()) ? "Y" : "N";
@@ -930,6 +1000,7 @@ public class CapControlForm extends DBEditorForm {
 				addDBObject(dbObj, facesMsg);
 				itemID = ((YukonPAObject) dbObj).getPAObjectID().intValue();
 				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
+
 			}
 
 			// creates any extra db objects if need be
@@ -1518,104 +1589,8 @@ public class CapControlForm extends DBEditorForm {
 			return false;
 	}
 
-	public String getVARscrollOffsetTop() {
+	
 
-		return VARscrollOffsetTop;
-	}
-
-	public String getWATTscrollOffsetTop() {
-		return WATTscrollOffsetTop;
-	}
-
-	public void setWATTscrollOffsetTop(String tscrollOffsetTop) {
-		WATTscrollOffsetTop = tscrollOffsetTop;
-	}
-
-	public String getVOLTscrollOffsetTop() {
-		return VOLTscrollOffsetTop;
-	}
-
-	public void setVOLTscrollOffsetTop(String tscrollOffsetTop) {
-		VOLTscrollOffsetTop = tscrollOffsetTop;
-	}
-
-	//public Collection getSubBusList() {
-	//	return subBusList;
-	//}
-
-	//public Collection getSwitchPointList() {
-	//	return switchPointList;
-	//}
-
-	public Integer getSelectedSubBus() {
-
-		return selectedSubBus;
-	}
-
-	public void setSelectedSubBus(Integer selectedSubBus) {
-		// System.out.println("The selected sub bus ID: - " + selectedSubBus);
-		this.selectedSubBus = selectedSubBus;
-	}
-
-	public Integer getSelectedSwitchPoint() {
-
-		return selectedSwitchPoint;
-	}
-
-	public void setSelectedSwitchPoint(Integer selectedSwitchPoint) {
-		this.selectedSwitchPoint = selectedSwitchPoint;
-
-	}
-
-	public Boolean getEnableDualBus() {
-		return enableDualBus;
-	}
-
-	public void setEnableDualBus(Boolean enableDualBus) {
-
-		this.enableDualBus = enableDualBus;
-	}
-
-	/**
-	 * method that is used to display the curent switch point selected
-	 * 
-	 * @return String name of the selected point
-	 * 
-	 */
-	/*
-	 public String getSelectedSwitchPointName() {
-	 Object[] objarr = getSwitchPointList().toArray();
-	 for (int i = 0; i < objarr.length; i++) {
-
-	 LitePoint point = (LitePoint) objarr[i];
-	 if (point.getPointID() == (this.getSelectedSwitchPoint().intValue()))
-	 this.selectedSwitchPointName = point.getPointName();
-	 }
-	 return this.selectedSwitchPointName;
-
-	 }
-	 */
-	/**
-	 * method that is used to display the curent subbus selected
-	 * @return String name of the selected point
-	 * 
-	 */
-	/*	public String getSelectedSubBusName() {
-	 Object[] objarr = this.getSubBusList().toArray();
-	 for (int i = 0; i < objarr.length; i++) {
-	 SelectItem si = (SelectItem) objarr[i];
-	 if (si.getValue().equals(this.getSelectedSubBus()))
-	 this.selectedSubBusName = si.getLabel();
-	 }
-	 return selectedSubBusName;
-	 }*/
-
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
 	public LiteYukonPAObject[] getSubBusList() {
 		// the plan is to get the list from capcontrolcache
 		CapControlCache capControlCache = (CapControlCache) FacesContext
@@ -1641,96 +1616,163 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	public TreeNode getSwitchPointList() {
+	    TreeNode rootData;
+        Set points = PointLists.getAllTwoStateStatusPoints();
+        rootData = JSFTreeUtils.createPAOTreeFromPointList(points);
+        
+        return rootData;
+    }
+    
+	public String getSelectedSubBusFormatString() {
 
-		TreeNode rootData = new TreeNodeBase("root", "2-Way Status Points",
-				false);
-	
-		PointLists pLists = new PointLists();
-		LiteYukonPAObject[] lPaos = pLists.getPAOsForTwoStateStatusPoints();
-		TreeNodeBase[] paos = new TreeNodeBase[lPaos.length];
-		for (int i = 0; i < lPaos.length; i++) {
-
-			paos[i] = new TreeNodeBase( // type, description, leaf
-					"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i]
-							.getYukonID()), false);
-
-			LitePoint[] lPoints = pLists.getAllTwoStateStatusPoints(lPaos[i]
-					.getYukonID());
-			for (int j = 0; j < lPoints.length; j++) {
-				paos[i].getChildren().add(
-						new TreeNodeBase("points", lPoints[j].getPointName(),
-								String.valueOf(lPoints[j].getPointID()), true));
-			}
-
-			rootData.getChildren().add(paos[i]);
-		}
-
-		return rootData;
-	}
-
-
-	public String getSelectedSubBusFormatString(){
-		
 		String retString = new String();
+		Integer subPAOid = null;
 		if (getDbPersistent() instanceof CapControlSubBus) {
-			
-			Integer subPAOid = ((CapControlSubBus) getDbPersistent())
+
+			subPAOid = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getAltSubPAOId();
-			//get the pao name
-		
-			LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO( subPAOid.intValue() );
-		
-			retString = new String("Selected Alternative SubBus: " + liteDevice.getPaoName());
+			// get the pao name
+
+			LiteYukonPAObject liteDevice = PAOFuncs.getLiteYukonPAO(subPAOid
+					.intValue());
+
+			retString = new String(liteDevice.getPaoName());
 		}
+		// Every time the page loads we need to keep track of the
+		// currently selected value. We index the current value
+		// from the total list
+		if (this.subBusList != null && subPAOid != null) {
+			for (int i = 0; i < this.subBusList.size(); i++) {
+				LiteYukonPAObject device = (LiteYukonPAObject) 
+				this.subBusList.get(i);
+				if (device.getLiteID() == subPAOid.intValue())
+				    
+				    offsetMap.put("selectedSubBus", "" + i);
+            }
+		}
+
 		return retString;
 	}
-	
-	public String getSelectedTwoWayPointsFormatString(){
-		String retString = new String("Selected Switch Point: ");
+
+    
+    public String getSelectedTwoWayPointsFormatString() {
+		String retString = new String(" ");
 		Integer pointId = null;
-		
+
+		//variables to hold state info to expand the nodes
+		TreeModelBase model = (TreeModelBase) getTreeModelData();
+		TreeStateBase state = (TreeStateBase) model.getTreeState();
 
 		if (getDbPersistent() instanceof CapControlSubBus) {
 
 			pointId = ((CapControlSubBus) getDbPersistent())
 					.getCapControlSubstationBus().getSwitchPointID();
 
-		}	
+		}
 		TreeNode tn = this.getSwitchPointList();
 		List paos = tn.getChildren();
-		for (int i=0; i < paos.size(); i++){
-			TreeNodeBase pao = (TreeNodeBase)paos.get(i); 
+      
+		for (int i = 0; i < paos.size(); i++) {
+			TreeNodeBase pao = (TreeNodeBase) paos.get(i);
 			String paoName = pao.getDescription();
 			List points = pao.getChildren();
-			for(int j=0; j<points.size(); j++){
-				TreeNodeBase point = (TreeNodeBase)points.get(j);
-				if (pointId.equals(new Integer(point.getIdentifier()))){
-					retString = retString + paoName + "/" + point.getDescription();
-				}
+			for (int j = 0; j < points.size(); j++) {
+				TreeNodeBase point = (TreeNodeBase) points.get(j);
+				if (pointId.equals(new Integer(point.getIdentifier()))) {
+					retString = retString + paoName + "/"
+							+ point.getDescription();
+					//code to expand the selected node
+                    //currently TreeModelBase class accepts colon delimited
+                    //string as the node path. 0 would be the root and the
+                    //rest of the nodes would be realtive to the root such as
+                    //0:1: 0:0 would be identify 2 leaf nodes in the binary tree
+					String nodeId = "0:" + i;
+					state.expandPath(model.getPathInformation(nodeId));
+					model.setTreeState(state);
+					
+                    //set the index of the switch point selected
+					offsetMap.put("selectedSwitchPoint", "" + i);
+					
+                }
+
 			}
+
 		}
-		
+
 		return retString;
 	}
 
-//method to expand the tree to the selected switch point
-	public void expandToSelectedSwitchPoint() {
-	Integer pointId = null;
-	
-	TreeNode tn = this.getSwitchPointList();		
-	TreeStateBase state = new TreeStateBase();
-	TreeModelBase tree = new TreeModelBase (tn);
-	tree.setTreeState(state); 
+	//binding to the tree model. used to expand selected node 
+    private TreeModel getTreeModelData() {
+		TreeModelBase tree = (TreeModelBase) getDualBusSwitchPointTree().getDataModel();
+		return tree;
 
-	if (getDbPersistent() instanceof CapControlSubBus) {
-
-		pointId = ((CapControlSubBus) getDbPersistent())
-				.getCapControlSubstationBus().getSwitchPointID();
-
-	}	
-	
-	
-	
 	}
 
+	public HtmlTree getDualBusSwitchPointTree() {
+		return dualBusSwitchPointTree;
+	}
+
+	public void setDualBusSwitchPointTree(HtmlTree tree) {
+		this.dualBusSwitchPointTree = tree;
+	}
+
+
+
+
+
+    public Boolean getEnableDualBus() {
+        return enableDualBus;
+    }
+
+    public void setEnableDualBus(Boolean enableDualBus) {
+
+        this.enableDualBus = enableDualBus;
+    }
+
+    
+ 
+	private void resetCurrentDivOffset() {
+
+        offsetMap.put("currentTwoWayPointDivOffset","0");
+	}
+
+	
+	
+	private void resetCurrentAltSubDivOffset ()  {
+
+		offsetMap.put("currentAltSubDivOffset","0");
+	}
+	
+
+	public boolean isDualSubBusEdited() {
+		return isDualSubBusEdited;
+	}
+
+	public void setDualSubBusEdited(boolean isDualSubBusEdited) {
+		this.isDualSubBusEdited = isDualSubBusEdited;
+	}
+
+    /**
+     * getters and setters for the smart scrolling functionality on the front end
+     * @return
+     */
+    
+
+    public Integer getOldSubBus() {
+        return oldSubBus;
+    }
+
+    public void setOldSubBus(Integer oldSubBus) {
+        this.oldSubBus = oldSubBus;
+    }
+
+    public Map getOffsetMap() {
+        return offsetMap;
+    }
+
+    public void setOffsetMap(Map offsetMap) {
+        this.offsetMap = offsetMap;
+    }
+    
 }
