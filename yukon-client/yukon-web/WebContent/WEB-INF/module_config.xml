@@ -25,7 +25,7 @@
       <requireRole value="com.cannontech.roles.application.CommanderRole.ROLEID"/>
     </option>
     <option name="Home">
-      <link>/operator/Operations.jsp</link>
+      <link>/home</link>
     </option>
     <option name="Reporting">
       <link>/analysis/Reports.jsp</link>
