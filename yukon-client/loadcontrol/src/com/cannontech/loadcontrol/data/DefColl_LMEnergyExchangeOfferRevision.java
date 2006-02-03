@@ -7,6 +7,8 @@ package com.cannontech.loadcontrol.data;
 import java.util.Date;
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -107,7 +109,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	rev.setNotificationDateTime( (Date) vstr.restoreObject( SimpleMappings.Time ));
 	rev.setOfferExpirationDateTime( (Date) vstr.restoreObject( SimpleMappings.Time ));
 	rev.setAdditionalInfo( (String) vstr.restoreObject( SimpleMappings.CString ));
-	rev.setEnergyExchangeHourlyOffers( (Vector) vstr.restoreObject(  polystr ) );	
+	//rev.setEnergyExchangeHourlyOffers( (Vector) vstr.restoreObject(  polystr ) );
+    rev.setEnergyExchangeHourlyOffers( VectorExtract.extractVector(vstr, polystr) );
 }
  /**
 	* This method will be called by CollectableStreamer to save the guts,
@@ -125,6 +128,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( rev.getNotificationDateTime(), SimpleMappings.Time );
 	vstr.saveObject( rev.getOfferExpirationDateTime(), SimpleMappings.Time );
 	vstr.saveObject( rev.getAdditionalInfo(), SimpleMappings.CString );
-	vstr.saveObject( rev.getEnergyExchangeHourlyOffers(), polystr );	
+	//vstr.saveObject( rev.getEnergyExchangeHourlyOffers(), polystr );	
+    VectorInsert.insertVector(rev.getEnergyExchangeHourlyOffers(), vstr, polystr);
 }
 }

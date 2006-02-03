@@ -4,6 +4,8 @@ package com.cannontech.message.dispatch.message;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -60,7 +62,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts(obj, vstr, polystr);
 	
 	Multi multi = (Multi) obj;
-	multi.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
+	//multi.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
+    multi.setVector( VectorExtract.extractVector(vstr, polystr) );
 }
 /**
  * saveGuts method comment.
@@ -69,6 +72,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	super.saveGuts( obj, vstr, polystr );
 
 	Multi multi = (Multi) obj;
-	vstr.saveObject( multi.getVector(), polystr);
+	//vstr.saveObject( multi.getVector(), polystr);
+    VectorInsert.insertVector(multi.getVector(), vstr, polystr);
 }
 }

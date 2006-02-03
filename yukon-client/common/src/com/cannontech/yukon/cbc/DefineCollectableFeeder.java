@@ -5,6 +5,8 @@ package com.cannontech.yukon.cbc;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -106,21 +108,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setOffPkLead( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentVoltLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentVoltLoadPointValue( new Double( vstr.extractDouble() ) );
-
-
-
-
-
-
-	/*	we have to do this manually because the new Rogue Wave object in the server
-			doesn't stream correctly */
-	int numberOfCapBanks = (int)vstr.extractUnsignedInt();
-	java.util.Vector capBanksVector = new java.util.Vector();
-	for(int i=0;i<numberOfCapBanks;i++)
-	{
-		capBanksVector.addElement(vstr.restoreObject(polystr));
-	}
-	feeder.setCcCapBanks(capBanksVector);		
+    
+    feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
 
 /**
@@ -192,10 +181,13 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
-	vstr.insertUnsignedInt( feeder.getCcCapBanks().size() );
-	for(int i=0;i<feeder.getCcCapBanks().size();i++)
-	{
-		vstr.saveObject( ((java.util.Vector)feeder.getCcCapBanks()).get(i), polystr );
-	}
+//	vstr.insertUnsignedInt( feeder.getCcCapBanks().size() );
+//	for(int i=0;i<feeder.getCcCapBanks().size();i++)
+//	{
+//		vstr.saveObject( ((java.util.Vector)feeder.getCcCapBanks()).get(i), polystr );
+//	}
+    
+    VectorInsert.insertVector(feeder.getCcCapBanks(), vstr, polystr);
+    
 }
 }

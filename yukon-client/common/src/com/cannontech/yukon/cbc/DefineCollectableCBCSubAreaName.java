@@ -3,6 +3,9 @@ package com.cannontech.yukon.cbc;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Vector;
+
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCSubAreaName extends DefineCollectableCBCMessage
@@ -53,7 +56,9 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 
 	super.restoreGuts( obj, vstr, polystr );
-	java.util.Vector areaNames = (java.util.Vector)vstr.restoreObject( polystr );
+	//java.util.Vector areaNames = (java.util.Vector)vstr.restoreObject( polystr );
+    
+    Vector areaNames = VectorExtract.extractVector(vstr,polystr);
 
 	((CBCSubAreaNames)obj).setAreaNames( areaNames );
 }

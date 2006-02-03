@@ -5,6 +5,8 @@ package com.cannontech.yukon.cbc;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -129,10 +131,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
 
-
-
-
-	subBus.setCcFeeders( (java.util.Vector)vstr.restoreObject(polystr) );
+	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 /**
  * saveGuts method comment.
@@ -219,7 +218,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 		(subBus.getVerificationFlag().booleanValue() == true)
 		? 1 : 0 );
 
-   
-	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
+	VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
+	//vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }
 }

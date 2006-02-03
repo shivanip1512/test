@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -97,7 +98,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	java.util.GregorianCalendar lastControlSent = new java.util.GregorianCalendar();
 	lastControlSent.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	int manualControlReceivedFlag = (int)vstr.extractUnsignedInt();
-	java.util.Vector controlWindowVector = (java.util.Vector) vstr.restoreObject( polystr );
+	//java.util.Vector controlWindowVector = (java.util.Vector) vstr.restoreObject( polystr );
+    java.util.Vector controlWindowVector = VectorExtract.extractVector(vstr, polystr);
 
 	lmProgramBase.setYukonID(yukonID);
 	lmProgramBase.setYukonCategory(yukonCategory);

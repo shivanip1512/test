@@ -7,6 +7,8 @@ package com.cannontech.loadcontrol.data;
 import java.util.Date;
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -99,7 +101,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	reply.setUserIDName( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setNameOfAcceptPerson( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setEnergyExchangeNotes( (String) vstr.restoreObject(SimpleMappings.CString));
-	reply.setEnergyExchangeHourlyCustomer( (Vector) vstr.restoreObject(polystr));
+    reply.setEnergyExchangeHourlyCustomer( VectorExtract.extractVector(vstr, polystr) );
+	//reply.setEnergyExchangeHourlyCustomer( (Vector) vstr.restoreObject(polystr));
 }
  /**
 	* This method will be called by CollectableStreamer to save the guts,
@@ -120,6 +123,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( reply.getUserIDName(), SimpleMappings.CString );
 	vstr.saveObject( reply.getNameOfAcceptPerson(), SimpleMappings.CString );
 	vstr.saveObject( reply.getEnergyExchangeNotes(), SimpleMappings.CString );
-	vstr.saveObject( reply.getEnergyExchangeHourlyCustomer(), polystr );
+	//vstr.saveObject( reply.getEnergyExchangeHourlyCustomer(), polystr );
+    VectorInsert.insertVector(reply.getEnergyExchangeHourlyCustomer(), vstr, polystr);
+    
 }
 }

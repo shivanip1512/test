@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.messages;
  */
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -67,7 +68,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;
 	int programID = (int) vstr.extractUnsignedInt();
-	Vector v = (Vector) vstr.restoreObject(polystr);
+	//Vector v = (Vector) vstr.restoreObject(polystr);
+    Vector v = VectorExtract.extractVector(vstr,polystr);
 	String bestFitAction = (String) vstr.restoreObject( SimpleMappings.CString );
 	
 	lmManualControlResponse.setConstraintViolations(v);

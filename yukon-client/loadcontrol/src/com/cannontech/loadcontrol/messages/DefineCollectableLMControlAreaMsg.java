@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableLMControlAreaMsg extends DefineCollectableLMMessage
@@ -59,7 +61,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
 
 	lmControlAreaMsg.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
-	java.util.Vector controlAreaVector = (java.util.Vector)vstr.restoreObject( polystr );
+	//java.util.Vector controlAreaVector = (java.util.Vector)vstr.restoreObject( polystr );
+    java.util.Vector controlAreaVector = VectorExtract.extractVector(vstr,polystr);
 
 	((LMControlAreaMsg)obj).setLMControlAreaVector(controlAreaVector);
 }
@@ -74,6 +77,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertUnsignedInt( lmControlAreaMsg.getMsgInfoBitMask().intValue() );
 	java.util.Vector areaVector = lmControlAreaMsg.getLMControlAreaVector();
-	vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
+	//vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
+    VectorInsert.insertVector(areaVector, vstr, polystr);
 }
 }

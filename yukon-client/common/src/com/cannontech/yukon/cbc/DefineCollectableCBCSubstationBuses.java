@@ -4,6 +4,8 @@ package com.cannontech.yukon.cbc;
  * This type was created in VisualAge.
  */
 import com.roguewave.tools.v2_0.Comparator;
+import java.util.Vector;
+import com.cannontech.message.util.VectorExtract;
 
 public class DefineCollectableCBCSubstationBuses extends DefineCollectableCBCMessage 
 {
@@ -56,7 +58,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	CBCSubstationBuses cbcSubBuses = (CBCSubstationBuses) obj;
 
 	cbcSubBuses.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
-	java.util.Vector strategyStore = (java.util.Vector)vstr.restoreObject( polystr );
+	//java.util.Vector strategyStore = (java.util.Vector)vstr.restoreObject( polystr );
+    
+    Vector strategyStore = VectorExtract.extractVector(vstr,polystr);
 
 	cbcSubBuses.setSubBuses( strategyStore );
 }

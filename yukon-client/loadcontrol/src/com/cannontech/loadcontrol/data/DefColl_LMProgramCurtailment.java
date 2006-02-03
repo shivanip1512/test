@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -73,7 +74,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	curtailmentStopTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	String runStatus = (String) vstr.restoreObject( SimpleMappings.CString );
 	String additionalInfo = (String) vstr.restoreObject( SimpleMappings.CString );
-	java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
+	//java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
+    java.util.Vector groupVector = VectorExtract.extractVector(vstr, polystr);
 
 	lmProgramCurtailment.setMinNotifyTime(minNotifyTime);
 	lmProgramCurtailment.setHeading(heading);

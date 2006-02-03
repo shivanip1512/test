@@ -7,6 +7,8 @@ package com.cannontech.loadcontrol.data;
 import java.util.Date;
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -93,7 +95,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	offer.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
 	offer.setRunStatus( (String) vstr.restoreObject(SimpleMappings.CString) );
 	offer.setOfferDate( (Date) vstr.restoreObject(SimpleMappings.Time) );
-	offer.setEnergyExchangeOfferRevisions( (Vector) vstr.restoreObject(polystr) );
+	//offer.setEnergyExchangeOfferRevisions( (Vector) vstr.restoreObject(polystr) );
+    offer.setEnergyExchangeOfferRevisions( VectorExtract.extractVector(vstr,polystr) );
 }
 
  /**
@@ -110,6 +113,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedLong( offer.getOfferID().longValue() );
 	vstr.saveObject( offer.getRunStatus(), SimpleMappings.CString );
 	vstr.saveObject( offer.getOfferDate(), SimpleMappings.Time );
-	vstr.saveObject( offer.getEnergyExchangeOfferRevisions(), polystr );	
+	//vstr.saveObject( offer.getEnergyExchangeOfferRevisions(), polystr );
+    VectorInsert.insertVector(offer.getEnergyExchangeOfferRevisions(), vstr, polystr);
 }
 }

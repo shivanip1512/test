@@ -3,6 +3,9 @@ package com.cannontech.yukon.cbc;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Vector;
+
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCStateGroupMessage extends DefineCollectableCBCMessage
@@ -52,7 +55,9 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 
 	super.restoreGuts( obj, vstr, polystr );
-	java.util.Vector stateStore = (java.util.Vector)vstr.restoreObject( polystr );
+	//java.util.Vector stateStore = (java.util.Vector)vstr.restoreObject( polystr );
+    
+    Vector stateStore = VectorExtract.extractVector(vstr,polystr);
 
 	((CBCStates) obj).setStates( stateStore );
 }

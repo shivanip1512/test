@@ -6,6 +6,7 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Vector;
 
+import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -87,7 +88,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts(obj,vstr,polystr);
 	
 	LMEnergyExchangeCustomer cust = (LMEnergyExchangeCustomer) obj;
-	cust.setEnergyExchangeCustomerReplies( (Vector) vstr.restoreObject(polystr) );
+	//cust.setEnergyExchangeCustomerReplies( (Vector) vstr.restoreObject(polystr) );
+    cust.setEnergyExchangeCustomerReplies( VectorExtract.extractVector(vstr, polystr) );
 }
 
  /**
