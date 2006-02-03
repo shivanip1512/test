@@ -144,17 +144,17 @@ void CtiLMCommandExecutor::ChangeThreshold()
     LONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
-            RWOrdered& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.entries();j++)
+            vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
+            for(LONG j=0;j<triggers.size();j++)
             {
-                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers[j];
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
                 {
                     currentLMControlAreaTrigger->setThreshold(_command->getValue());
@@ -197,17 +197,17 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
     LONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
-            RWOrdered& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.entries();j++)
+            vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
+            for(LONG j=0;j<triggers.size();j++)
             {
-                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers[j];
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
                 {
                     currentLMControlAreaTrigger->setMinRestoreOffset(_command->getValue());
@@ -256,9 +256,9 @@ void CtiLMCommandExecutor::EnableControlArea()
     LONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -293,9 +293,9 @@ void CtiLMCommandExecutor::DisableControlArea()
     LONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -315,10 +315,10 @@ void CtiLMCommandExecutor::DisableControlArea()
                 }
             }
             currentLMControlArea->setDisableFlag(TRUE);
-            RWOrdered& lmPrograms = currentLMControlArea->getLMPrograms();
-            for(LONG j=0;j<lmPrograms.entries();j++)
+            vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+            for(LONG j=0;j<lmPrograms.size();j++)
             {
-                CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+                CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
@@ -360,14 +360,14 @@ void CtiLMCommandExecutor::EnableProgram()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( commandPAOID == currentLMProgramBase->getPAOId() )
             {
                 currentLMProgramBase->setDisableFlag(FALSE);
@@ -408,14 +408,14 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( commandPAOID == currentLMProgramBase->getPAOId() )
             {
                 currentLMProgramBase->setDisableFlag(TRUE);
@@ -518,11 +518,11 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
     LONG newStartTime = (LONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
     if( newStartTime >= 0 )
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        for(LONG i=0;i<controlAreas.size();i++)
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
             if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -566,11 +566,11 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
     LONG newStopTime = (LONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
     if( newStopTime >= 0 )
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        for(LONG i=0;i<controlAreas.size();i++)
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
             if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -613,14 +613,14 @@ void CtiLMCommandExecutor::ShedGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
@@ -692,14 +692,14 @@ void CtiLMCommandExecutor::CycleGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
@@ -774,14 +774,14 @@ void CtiLMCommandExecutor::RestoreGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = ((CtiLMProgramDirect*) currentLMProgramBase)->getLMProgramDirectGroups();
@@ -846,14 +846,14 @@ void CtiLMCommandExecutor::EnableGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
@@ -901,14 +901,14 @@ void CtiLMCommandExecutor::DisableGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
@@ -993,14 +993,14 @@ void CtiLMCommandExecutor::ConfirmGroup()
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        RWOrdered& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.entries();j++)
+        vector<CtiLMProgramBase*>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgramBase)->getLMProgramDirectGroups();
@@ -1089,17 +1089,17 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
     LONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
+    vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
-            RWOrdered& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.entries();j++)
+            vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
+            for(LONG j=0;j<triggers.size();j++)
             {
-                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers[j];
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
                 {
                     currentLMControlAreaTrigger->setPeakPointValue(0.0);
@@ -1590,14 +1590,14 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBase* pr
     LONG startSecondsFromBeginningOfDay = (start.hour() * 3600) + (start.minute() * 60) + start.second();
     LONG stopSecondsFromBeginningOfDay = (stop.hour() * 3600) + (stop.minute() * 60) + start.second();
     
-    RWOrdered& control_windows = program->getLMProgramControlWindows();
-    if(control_windows.entries() == 0)
+    std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
+    if(control_windows.size() == 0)
     {   // no control windows, nothing to do
         return;
     }
 
     bool found_cw = false;
-    for(int i = 0; i < control_windows.entries() && !found_cw; i++)
+    for(int i = 0; i < control_windows.size() && !found_cw; i++)
     {
         // Do the start, stop times fit into this control window?  if not maybe the next one 
         CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
@@ -1699,84 +1699,79 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
     LONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
+                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    lmProgramEnergyExchange->setProgramState(CtiLMProgramBase::ManualActiveState);
+                    std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
                     {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                        CtiLMEnergyExchangeOffer* newOffer = new CtiLMEnergyExchangeOffer();
+                        newOffer->setPAOId(energyExchangeProgramID);
+                        newOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
+                        newOffer->setOfferId(0);// This forces the program to create a new ref id
+                        newOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
+                        newOffer->addLMEnergyExchangeProgramOfferTable();
+                        energyExchangeOffers.push_back(newOffer);
+
+                        std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = newOffer->getLMEnergyExchangeOfferRevisions();
+                        CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
+
+                        newRevision->setOfferId(newOffer->getOfferId());// This forces the program to create a new ref id
+                        newRevision->setRevisionNumber(0);
+                        newRevision->setActionDateTime(CtiTime());
+                        newRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
+                        newRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
+                        if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
                         {
-                            CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                            lmProgramEnergyExchange->setProgramState(CtiLMProgramBase::ManualActiveState);
-                            RWOrdered& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
-                            {
-                                CtiLMEnergyExchangeOffer* newOffer = new CtiLMEnergyExchangeOffer();
-                                newOffer->setPAOId(energyExchangeProgramID);
-                                newOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
-                                newOffer->setOfferId(0);// This forces the program to create a new ref id
-                                newOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
-                                newOffer->addLMEnergyExchangeProgramOfferTable();
-                                energyExchangeOffers.insert(newOffer);
-
-                                RWOrdered& offerRevisions = newOffer->getLMEnergyExchangeOfferRevisions();
-                                CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
-
-                                newRevision->setOfferId(newOffer->getOfferId());// This forces the program to create a new ref id
-                                newRevision->setRevisionNumber(0);
-                                newRevision->setActionDateTime(CtiTime());
-                                newRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
-                                newRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
-                                if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
-                                {
-                                    newRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
-                                }
-                                else
-                                {
-                                    newRevision->setAdditionalInfo("none");
-                                }
-                                newRevision->addLMEnergyExchangeOfferRevisionTable();
-                                offerRevisions.insert(newRevision);
-
-                                RWOrdered& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
-                                for(LONG k=0;k<HOURS_IN_DAY;k++)
-                                {
-                                    CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
-                                    newHourlyOffer->setOfferId(newRevision->getOfferId());
-                                    newHourlyOffer->setRevisionNumber(0);
-                                    newHourlyOffer->setHour(k);
-                                    newHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
-                                    newHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
-                                    newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
-                                    hourlyOffers.insert(newHourlyOffer);
-                                }
-                                lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                                currentControlArea->setUpdatedFlag(TRUE);
-                            }
+                            newRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            newRevision->setAdditionalInfo("none");
                         }
-                        found = TRUE;
-                        break;
+                        newRevision->addLMEnergyExchangeOfferRevisionTable();
+                        offerRevisions.push_back(newRevision);
+
+                        vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
+                        for(LONG k=0;k<HOURS_IN_DAY;k++)
+                        {
+                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                            newHourlyOffer->setOfferId(newRevision->getOfferId());
+                            newHourlyOffer->setRevisionNumber(0);
+                            newHourlyOffer->setHour(k);
+                            newHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
+                            newHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
+                            newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
+                            hourlyOffers.push_back(newHourlyOffer);
+                        }
+                        lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                        currentControlArea->setUpdatedFlag(TRUE);
                     }
                 }
-            }
-            if( found )
-            {
+                else
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+                found = TRUE;
                 break;
             }
+        }
+    
+        if( found )
+        {
+            break;
         }
     }
 }
@@ -1805,94 +1800,90 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
     LONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
+                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
+                    if( energyExchangeOffers.size() > 0 )
                     {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                        if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
                         {
-                            CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                            RWOrdered& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
-                            if( energyExchangeOffers.entries() > 0 )
+                            lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
+                            CtiLMEnergyExchangeOffer* updateOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
+                            //updateOffer->setPAOId(energyExchangeProgramID);
+                            //updateOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
+                            //updateOffer->setOfferId(0);// This forces the program to create a new ref id
+                            //updateOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
+
+                            std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = updateOffer->getLMEnergyExchangeOfferRevisions();
+                            CtiLMEnergyExchangeOfferRevision* updateRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.size()-1];
+
+                            //updateRevision->setOfferId(0);// This forces the program to create a new ref id
+                            //updateRevision->setRevisionNumber(0);
+                            updateRevision->setActionDateTime(CtiTime());
+                            updateRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
+                            updateRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
+                            if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
                             {
-                                if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
-                                {
-                                    lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
-                                    CtiLMEnergyExchangeOffer* updateOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
-                                    //updateOffer->setPAOId(energyExchangeProgramID);
-                                    //updateOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
-                                    //updateOffer->setOfferId(0);// This forces the program to create a new ref id
-                                    //updateOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
-
-                                    RWOrdered& offerRevisions = updateOffer->getLMEnergyExchangeOfferRevisions();
-                                    CtiLMEnergyExchangeOfferRevision* updateRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.entries()-1];
-
-                                    //updateRevision->setOfferId(0);// This forces the program to create a new ref id
-                                    //updateRevision->setRevisionNumber(0);
-                                    updateRevision->setActionDateTime(CtiTime());
-                                    updateRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
-                                    updateRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
-                                    if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        updateRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
-                                    }
-                                    else if( updateRevision->getAdditionalInfo().length() == 0 )
-                                    {
-                                        updateRevision->setAdditionalInfo("none");
-                                    }
-                                    updateRevision->updateLMEnergyExchangeOfferRevisionTable();
-
-                                    RWOrdered& hourlyOffers = updateRevision->getLMEnergyExchangeHourlyOffers();
-                                    for(LONG k=0;k<HOURS_IN_DAY;k++)
-                                    {
-                                        CtiLMEnergyExchangeHourlyOffer* updateHourlyOffer = (CtiLMEnergyExchangeHourlyOffer*)hourlyOffers[k];
-                                        //updateHourlyOffer->setOfferId(0);
-                                        //updateHourlyOffer->setRevisionNumber(0);
-                                        //updateHourlyOffer->setHour(k);
-                                        updateHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
-                                        updateHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
-                                        updateHourlyOffer->updateLMEnergyExchangeHourlyOfferTable();
-                                    }
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offer to update for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
+                                updateRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
                             }
-                            else
+                            else if( updateRevision->getAdditionalInfo().length() == 0 )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offers to update in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                                updateRevision->setAdditionalInfo("none");
                             }
-                            lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
+                            updateRevision->updateLMEnergyExchangeOfferRevisionTable();
+
+                            vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = updateRevision->getLMEnergyExchangeHourlyOffers();
+                            for(LONG k=0;k<HOURS_IN_DAY;k++)
+                            {
+                                CtiLMEnergyExchangeHourlyOffer* updateHourlyOffer = (CtiLMEnergyExchangeHourlyOffer*)hourlyOffers[k];
+                                //updateHourlyOffer->setOfferId(0);
+                                //updateHourlyOffer->setRevisionNumber(0);
+                                //updateHourlyOffer->setHour(k);
+                                updateHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
+                                updateHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
+                                updateHourlyOffer->updateLMEnergyExchangeHourlyOfferTable();
+                            }
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offer to update for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        found = TRUE;
-                        break;
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offers to update in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    }
+                    lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                    currentControlArea->setUpdatedFlag(TRUE);
                 }
-            }
-            if( found )
-            {
+                else
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+                found = TRUE;
                 break;
             }
+        }
+       
+        if( found )
+        {
+            break;
         }
     }
 }
@@ -1921,105 +1912,100 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
     LONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
+                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
+                    if( energyExchangeOffers.size() > 0 )
                     {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                        if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
                         {
-                            CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                            RWOrdered& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
-                            if( energyExchangeOffers.entries() > 0 )
+                            lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
+                            CtiLMEnergyExchangeOffer* revisionOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
+                            //revisionOffer->setPAOId(energyExchangeProgramID);
+                            //revisionOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
+                            //revisionOffer->setOfferId(0);// This forces the program to create a new ref id
+
+                            CtiLMEnergyExchangeOfferRevision* currentRevision = revisionOffer->getCurrentOfferRevision();
+                            if( currentRevision->getOfferExpirationDateTime() > CtiTime() )
                             {
-                                if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
-                                {
-                                    lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
-                                    CtiLMEnergyExchangeOffer* revisionOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
-                                    //revisionOffer->setPAOId(energyExchangeProgramID);
-                                    //revisionOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
-                                    //revisionOffer->setOfferId(0);// This forces the program to create a new ref id
-
-                                    CtiLMEnergyExchangeOfferRevision* currentRevision = revisionOffer->getCurrentOfferRevision();
-                                    if( currentRevision->getOfferExpirationDateTime() > CtiTime() )
-                                    {
-                                        currentRevision->setOfferExpirationDateTime(CtiTime());
-                                        currentRevision->updateLMEnergyExchangeOfferRevisionTable();
-                                    }
-                                    RWOrdered& offerRevisions = revisionOffer->getLMEnergyExchangeOfferRevisions();
-                                    CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
-
-                                    newRevision->setOfferId(revisionOffer->getOfferId());
-                                    newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
-                                    newRevision->setActionDateTime(CtiTime());
-                                    newRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
-                                    newRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
-                                    if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        newRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
-                                    }
-                                    else if( newRevision->getAdditionalInfo().length() == 0 )
-                                    {
-                                        newRevision->setAdditionalInfo("none");
-                                    }
-                                    newRevision->addLMEnergyExchangeOfferRevisionTable();
-                                    offerRevisions.insert(newRevision);
-
-                                    RWOrdered& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
-                                    for(LONG k=0;k<HOURS_IN_DAY;k++)
-                                    {
-                                        CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
-                                        newHourlyOffer->setOfferId(newRevision->getOfferId());
-                                        newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
-                                        newHourlyOffer->setHour(k);
-                                        newHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
-                                        newHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
-                                        newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
-                                        hourlyOffers.insert(newHourlyOffer);
-                                    }
-
-                                    //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
-                                    //lmProgramEnergyExchange->dumpDynamicData();
-                                    revisionOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevision no offer to revise for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
+                                currentRevision->setOfferExpirationDateTime(CtiTime());
+                                currentRevision->updateLMEnergyExchangeOfferRevisionTable();
                             }
-                            else
+                            std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = revisionOffer->getLMEnergyExchangeOfferRevisions();
+                            CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
+
+                            newRevision->setOfferId(revisionOffer->getOfferId());
+                            newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
+                            newRevision->setActionDateTime(CtiTime());
+                            newRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
+                            newRevision->setOfferExpirationDateTime(_energyExchangeMsg->getExpirationDateTime());
+                            if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevison no offers to revise in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                                newRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
                             }
-                            lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
+                            else if( newRevision->getAdditionalInfo().length() == 0 )
+                            {
+                                newRevision->setAdditionalInfo("none");
+                            }
+                            newRevision->addLMEnergyExchangeOfferRevisionTable();
+                            offerRevisions.push_back(newRevision);
+
+                            vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
+                            for(LONG k=0;k<HOURS_IN_DAY;k++)
+                            {
+                                CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                                newHourlyOffer->setOfferId(newRevision->getOfferId());
+                                newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
+                                newHourlyOffer->setHour(k);
+                                newHourlyOffer->setPrice(_energyExchangeMsg->getPriceOffered(k));
+                                newHourlyOffer->setAmountRequested(_energyExchangeMsg->getAmountRequested(k));
+                                newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
+                                hourlyOffers.push_back(newHourlyOffer);
+                            }
+
+                            //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
+                            //lmProgramEnergyExchange->dumpDynamicData();
+                            revisionOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevision no offer to revise for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        found = TRUE;
-                        break;
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevison no offers to revise in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    }
+                    lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                    currentControlArea->setUpdatedFlag(TRUE);
                 }
-            }
-            if( found )
-            {
+                else
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+                found = TRUE;
                 break;
             }
+        }
+    
+        if( found )
+        {
+            break;
         }
     }
 }
@@ -2048,81 +2034,76 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
     LONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
+                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
+                    if( energyExchangeOffers.size() > 0 )
                     {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                        if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
                         {
-                            CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                            RWOrdered& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
-                            if( energyExchangeOffers.entries() > 0 )
-                            {
-                                if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
-                                {
-                                    lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
-                                    CtiLMEnergyExchangeOffer* closeOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
-                                    //closeOffer->setPAOId(energyExchangeProgramID);
-                                    //closeOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
-                                    //closeOffer->setOfferId(0);// This forces the program to create a new ref id
+                            lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
+                            CtiLMEnergyExchangeOffer* closeOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
+                            //closeOffer->setPAOId(energyExchangeProgramID);
+                            //closeOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
+                            //closeOffer->setOfferId(0);// This forces the program to create a new ref id
 
-                                    RWOrdered& offerRevisions = closeOffer->getLMEnergyExchangeOfferRevisions();
-                                    CtiLMEnergyExchangeOfferRevision* closeRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.entries()-1];
+                            std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = closeOffer->getLMEnergyExchangeOfferRevisions();
+                            CtiLMEnergyExchangeOfferRevision* closeRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.size()-1];
 
-                                    //closeRevision->setOfferId(0);// This forces the program to create a new ref id
-                                    //closeRevision->setRevisionNumber(0);
-                                    //closeRevision->setActionDateTime(CtiTime());
-                                    //closeRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
-                                    closeRevision->setOfferExpirationDateTime(CtiTime());
-                                    if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        closeRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
-                                    }
-                                    else if( closeRevision->getAdditionalInfo().length() == 0 )
-                                    {
-                                        closeRevision->setAdditionalInfo("none");
-                                    }
-                                    closeOffer->setRunStatus(CtiLMEnergyExchangeOffer::ClosingRunStatus);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
-                            }
-                            else
+                            //closeRevision->setOfferId(0);// This forces the program to create a new ref id
+                            //closeRevision->setRevisionNumber(0);
+                            //closeRevision->setActionDateTime(CtiTime());
+                            //closeRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
+                            closeRevision->setOfferExpirationDateTime(CtiTime());
+                            if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                                closeRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
                             }
-                            lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
+                            else if( closeRevision->getAdditionalInfo().length() == 0 )
+                            {
+                                closeRevision->setAdditionalInfo("none");
+                            }
+                            closeOffer->setRunStatus(CtiLMEnergyExchangeOffer::ClosingRunStatus);
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        found = TRUE;
-                        break;
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    }
+                    lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                    currentControlArea->setUpdatedFlag(TRUE);
                 }
-            }
-            if( found )
-            {
+                else
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+                found = TRUE;
                 break;
             }
+        }
+    
+        if( found )
+        {
+            break;
         }
     }
 }
@@ -2151,84 +2132,79 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
     LONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
+                    CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                    std::vector<CtiLMEnergyExchangeOffer*>& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
+                    if( energyExchangeOffers.size() > 0 )
                     {
-                        if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                        if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
                         {
-                            CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                            RWOrdered& energyExchangeOffers = lmProgramEnergyExchange->getLMEnergyExchangeOffers();
-                            if( energyExchangeOffers.entries() > 0 )
+                            lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
+                            CtiLMEnergyExchangeOffer* cancelOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
+                            //cancelOffer->setPAOId(energyExchangeProgramID);
+                            //cancelOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
+                            //cancelOffer->setOfferId(0);// This forces the program to create a new ref id
+
+                            std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = cancelOffer->getLMEnergyExchangeOfferRevisions();
+                            CtiLMEnergyExchangeOfferRevision* cancelRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.size()-1];
+
+                            //cancelRevision->setOfferId(0);// This forces the program to create a new ref id
+                            //cancelRevision->setRevisionNumber(0);
+                            //cancelRevision->setActionDateTime(CtiTime());
+                            //cancelRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
+                            cancelRevision->setOfferExpirationDateTime(CtiTime());
+                            if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
                             {
-                                if( lmProgramEnergyExchange->isOfferWithId(_energyExchangeMsg->getOfferId()) )
-                                {
-                                    lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
-                                    CtiLMEnergyExchangeOffer* cancelOffer = lmProgramEnergyExchange->getOfferWithId(_energyExchangeMsg->getOfferId());
-                                    //cancelOffer->setPAOId(energyExchangeProgramID);
-                                    //cancelOffer->setOfferDate(_energyExchangeMsg->getOfferDate());
-                                    //cancelOffer->setOfferId(0);// This forces the program to create a new ref id
-
-                                    RWOrdered& offerRevisions = cancelOffer->getLMEnergyExchangeOfferRevisions();
-                                    CtiLMEnergyExchangeOfferRevision* cancelRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[offerRevisions.entries()-1];
-
-                                    //cancelRevision->setOfferId(0);// This forces the program to create a new ref id
-                                    //cancelRevision->setRevisionNumber(0);
-                                    //cancelRevision->setActionDateTime(CtiTime());
-                                    //cancelRevision->setNotificationDateTime(_energyExchangeMsg->getNotificationDateTime());
-                                    cancelRevision->setOfferExpirationDateTime(CtiTime());
-                                    if( _energyExchangeMsg->getAdditionalInfo().length() > 0 )
-                                    {
-                                        cancelRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
-                                    }
-                                    else if( cancelRevision->getAdditionalInfo().length() == 0 )
-                                    {
-                                        cancelRevision->setAdditionalInfo("none");
-                                    }
-
-                                    //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
-                                    //lmProgramEnergyExchange->dumpDynamicData();
-                                    cancelOffer->setRunStatus(CtiLMEnergyExchangeOffer::CanceledRunStatus);
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
+                                cancelRevision->setAdditionalInfo(_energyExchangeMsg->getAdditionalInfo());
                             }
-                            else
+                            else if( cancelRevision->getAdditionalInfo().length() == 0 )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                                cancelRevision->setAdditionalInfo("none");
                             }
-                            lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                            currentControlArea->setUpdatedFlag(TRUE);
+
+                            //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
+                            //lmProgramEnergyExchange->dumpDynamicData();
+                            cancelOffer->setRunStatus(CtiLMEnergyExchangeOffer::CanceledRunStatus);
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        found = TRUE;
-                        break;
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    }
+                    lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                    currentControlArea->setUpdatedFlag(TRUE);
                 }
-            }
-            if( found )
-            {
+                else
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+                found = TRUE;
                 break;
             }
+        }
+    
+        if( found )
+        {
+            break;
         }
     }
 }
@@ -2278,91 +2254,88 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
     LONG curtailReferenceID = _curtailAckMsg->getCurtailReferenceId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    if( controlAreas.entries() > 0 )
+    BOOL found = FALSE;
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        BOOL found = FALSE;
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
+                vector<CtiLMCurtailCustomer*>& lmCurtailmentCustomers = lmProgramCurtailment->getLMProgramCurtailmentCustomers();
+
+                for(LONG k=0;k<lmCurtailmentCustomers.size();k++)
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
+                    CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailmentCustomers[k];
+
+                    if( (curtailmentCustomerID == currentLMCurtailCustomer->getCustomerId()) &&
+                        (curtailReferenceID == currentLMCurtailCustomer->getCurtailReferenceId()) )
                     {
-                        CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgramBase;
-                        RWOrdered& lmCurtailmentCustomers = lmProgramCurtailment->getLMProgramCurtailmentCustomers();
-                        if( lmCurtailmentCustomers.entries() > 0 )
-                        {
-                            for(LONG k=0;k<lmCurtailmentCustomers.entries();k++)
-                            {
-                                CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailmentCustomers[k];
+                        currentLMCurtailCustomer->setAcknowledgeStatus(_curtailAckMsg->getAcknowledgeStatus());
+                        currentLMCurtailCustomer->setIPAddressOfAckUser(_curtailAckMsg->getIPAddressOfAckUser());
+                        currentLMCurtailCustomer->setUserIdName(_curtailAckMsg->getUserIdName());
+                        currentLMCurtailCustomer->setNameOfAckPerson(_curtailAckMsg->getNameOfAckPerson());
+                        currentLMCurtailCustomer->setCurtailmentNotes(_curtailAckMsg->getCurtailmentNotes());
+                        currentLMCurtailCustomer->setAckDateTime(currentDateTime);
 
-                                if( (curtailmentCustomerID == currentLMCurtailCustomer->getCustomerId()) &&
-                                    (curtailReferenceID == currentLMCurtailCustomer->getCurtailReferenceId()) )
-                                {
-                                    currentLMCurtailCustomer->setAcknowledgeStatus(_curtailAckMsg->getAcknowledgeStatus());
-                                    currentLMCurtailCustomer->setIPAddressOfAckUser(_curtailAckMsg->getIPAddressOfAckUser());
-                                    currentLMCurtailCustomer->setUserIdName(_curtailAckMsg->getUserIdName());
-                                    currentLMCurtailCustomer->setNameOfAckPerson(_curtailAckMsg->getNameOfAckPerson());
-                                    currentLMCurtailCustomer->setCurtailmentNotes(_curtailAckMsg->getCurtailmentNotes());
-                                    currentLMCurtailCustomer->setAckDateTime(currentDateTime);
-
-                                    if( currentDateTime.seconds() > (lmProgramCurtailment->getCurtailmentStartTime().seconds() + lmProgramCurtailment->getAckTimeLimit()) )
-                                    {
-                                        currentLMCurtailCustomer->setAckLateFlag(TRUE);
-                                    }
-                                    else
-                                    {
-                                        currentLMCurtailCustomer->setAckLateFlag(FALSE);
-                                    }
-                                    currentLMCurtailCustomer->dumpDynamicData();
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                    //currentLMCurtailCustomer->dumpDynamicData();
-                                    found = TRUE;
-                                    break;
-                                }
-                            }
-                        }
-                        if(found)
+                        if( currentDateTime.seconds() > (lmProgramCurtailment->getCurtailmentStartTime().seconds() + lmProgramCurtailment->getAckTimeLimit()) )
                         {
-                            break;
+                            currentLMCurtailCustomer->setAckLateFlag(TRUE);
                         }
+                        else
+                        {
+                            currentLMCurtailCustomer->setAckLateFlag(FALSE);
+                        }
+                        currentLMCurtailCustomer->dumpDynamicData();
+                        currentControlArea->setUpdatedFlag(TRUE);
+                        //currentLMCurtailCustomer->dumpDynamicData();
+                        found = TRUE;
+                        break;
                     }
                 }
-            }
-            if(found)
-            {
-                break;
+            
+                if(found)
+                {
+                    break;
+                }
             }
         }
+    
         if(found)
         {
-            //store->dumpAllDynamicData();
+            break;
         }
     }
+#if 0  // Pointless?
+    if(found)
+    {
+        //store->dumpAllDynamicData();
+    }
+#endif
 }
 
 
-void figureHourlyCommittedForOfferId(LONG offerId, const RWOrdered& lmEnergyExchangeCustomers, DOUBLE committedArray[ ])
+void figureHourlyCommittedForOfferId(LONG offerId, const std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers, DOUBLE committedArray[ ])
 {
-    for(LONG i=0;i<lmEnergyExchangeCustomers.entries();i++)
+    for(LONG i=0;i<lmEnergyExchangeCustomers.size();i++)
     {
         CtiLMEnergyExchangeCustomer* currentEECustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[i];
-        RWOrdered& customerReplies = currentEECustomer->getLMEnergyExchangeCustomerReplies();
-        for(LONG j=0;j<customerReplies.entries();j++)
+        vector<CtiLMEnergyExchangeCustomerReply*>& customerReplies = currentEECustomer->getLMEnergyExchangeCustomerReplies();
+        for(LONG j=0;j<customerReplies.size();j++)
         {
             CtiLMEnergyExchangeCustomerReply* currentLMEECustomerReply = (CtiLMEnergyExchangeCustomerReply*)customerReplies[j];
             if( currentLMEECustomerReply->getOfferId() == offerId &&
                 !stringCompareIgnoreCase(currentLMEECustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
             {
-                RWOrdered& hourlyCustomers = currentLMEECustomerReply->getLMEnergyExchangeHourlyCustomers();
+                vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentLMEECustomerReply->getLMEnergyExchangeHourlyCustomers();
 
-                for(LONG k=0;k<hourlyCustomers.entries();k++)
+                for(LONG k=0;k<hourlyCustomers.size();k++)
                 {
                     committedArray[k] += ((CtiLMEnergyExchangeHourlyCustomer*)hourlyCustomers[k])->getAmountCommitted();
                 }
@@ -2407,171 +2380,160 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
     LONG revisionNumber = _energyExchangeAcceptMsg->getRevisionNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& controlAreas = *store->getControlAreas(CtiTime().seconds());
+    vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
     LONG numberOfHoursOverCommitted = 0;
     LONG overCommittedArray[HOURS_IN_DAY];
 
-    if( controlAreas.entries() > 0 )
+    BOOL found = FALSE;
+    for(LONG i=0;i<controlAreas.size();i++)
     {
-        BOOL found = FALSE;
-        for(LONG i=0;i<controlAreas.entries();i++)
+        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
+
+        for(LONG j=0;j<lmPrograms.size();j++)
         {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
+            if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
+                std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = lmProgramEnergyExchange->getLMEnergyExchangeCustomers();
+               
+                for(LONG k=0;k<lmEnergyExchangeCustomers.size();k++)
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
-                    if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
+                    CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[k];
+
+                    if( customerID == currentLMEnergyExchangeCustomer->getCustomerId() )
                     {
-                        CtiLMProgramEnergyExchange* lmProgramEnergyExchange = (CtiLMProgramEnergyExchange*)currentLMProgramBase;
-                        RWOrdered& lmEnergyExchangeCustomers = lmProgramEnergyExchange->getLMEnergyExchangeCustomers();
-                        if( lmEnergyExchangeCustomers.entries() > 0 )
+                        DOUBLE committedArray[HOURS_IN_DAY] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+                        figureHourlyCommittedForOfferId(offerID, lmEnergyExchangeCustomers, committedArray);
+
+                        vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
+                        for(long l=lmEnergyExchangeCustomerReplies.size()-1;l>=0;l--)
                         {
-                            for(LONG k=0;k<lmEnergyExchangeCustomers.entries();k++)
+                            CtiLMEnergyExchangeCustomerReply* currentLMEnergyExchangeCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[l];
+
+                            if( offerID == currentLMEnergyExchangeCustomerReply->getOfferId() &&
+                                revisionNumber == currentLMEnergyExchangeCustomerReply->getRevisionNumber() )
                             {
-                                CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[k];
-
-                                if( customerID == currentLMEnergyExchangeCustomer->getCustomerId() )
+                                if( lmProgramEnergyExchange->isOfferRevisionOpen(offerID, revisionNumber) )
                                 {
-                                    DOUBLE committedArray[HOURS_IN_DAY] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-                                    figureHourlyCommittedForOfferId(offerID, lmEnergyExchangeCustomers, committedArray);
-
-                                    RWOrdered& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
-                                    for(long l=lmEnergyExchangeCustomerReplies.entries()-1;l>=0;l--)
+                                    currentLMEnergyExchangeCustomerReply->setAcceptStatus(_energyExchangeAcceptMsg->getAcceptStatus());
+                                    currentLMEnergyExchangeCustomerReply->setAcceptDateTime(currentDateTime);
+                                    currentLMEnergyExchangeCustomerReply->setIPAddressOfAcceptUser(_energyExchangeAcceptMsg->getIPAddressOfAcceptUser());
+                                    currentLMEnergyExchangeCustomerReply->setUserIdName(_energyExchangeAcceptMsg->getUserIdName());
+                                    currentLMEnergyExchangeCustomerReply->setNameOfAcceptPerson(_energyExchangeAcceptMsg->getNameOfAcceptPerson());
+                                    if( _energyExchangeAcceptMsg->getEnergyExchangeNotes().length() > 0 )
                                     {
-                                        CtiLMEnergyExchangeCustomerReply* currentLMEnergyExchangeCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[l];
+                                        currentLMEnergyExchangeCustomerReply->setEnergyExchangeNotes(_energyExchangeAcceptMsg->getEnergyExchangeNotes());
+                                    }
+                                    else
+                                    {
+                                        currentLMEnergyExchangeCustomerReply->setEnergyExchangeNotes("(none)");
+                                    }
+                                    currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
 
-                                        if( offerID == currentLMEnergyExchangeCustomerReply->getOfferId() &&
-                                            revisionNumber == currentLMEnergyExchangeCustomerReply->getRevisionNumber() )
+                                    vector<CtiLMEnergyExchangeHourlyCustomer*>& lmHourlyCustomers = currentLMEnergyExchangeCustomerReply->getLMEnergyExchangeHourlyCustomers();
+                                    CtiLMEnergyExchangeOffer* currentOffer = lmProgramEnergyExchange->getOfferWithId(offerID);
+                                    CtiLMEnergyExchangeOfferRevision* currentRevision = currentOffer->getCurrentOfferRevision();
+                                    vector<CtiLMEnergyExchangeHourlyOffer*>& revisionHourlyOffers = currentRevision->getLMEnergyExchangeHourlyOffers();
+
+                                    if( !stringCompareIgnoreCase(currentLMEnergyExchangeCustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
+                                    {
+                                        if( lmHourlyCustomers.size() == 0 )
                                         {
-                                            if( lmProgramEnergyExchange->isOfferRevisionOpen(offerID, revisionNumber) )
+                                            currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
+                                            for(LONG m=0;m<HOURS_IN_DAY;m++)
                                             {
-                                                currentLMEnergyExchangeCustomerReply->setAcceptStatus(_energyExchangeAcceptMsg->getAcceptStatus());
-                                                currentLMEnergyExchangeCustomerReply->setAcceptDateTime(currentDateTime);
-                                                currentLMEnergyExchangeCustomerReply->setIPAddressOfAcceptUser(_energyExchangeAcceptMsg->getIPAddressOfAcceptUser());
-                                                currentLMEnergyExchangeCustomerReply->setUserIdName(_energyExchangeAcceptMsg->getUserIdName());
-                                                currentLMEnergyExchangeCustomerReply->setNameOfAcceptPerson(_energyExchangeAcceptMsg->getNameOfAcceptPerson());
-                                                if( _energyExchangeAcceptMsg->getEnergyExchangeNotes().length() > 0 )
+                                                CtiLMEnergyExchangeHourlyCustomer* newHourlyCustomer = new CtiLMEnergyExchangeHourlyCustomer();
+                                                newHourlyCustomer->setCustomerId(customerID);
+                                                newHourlyCustomer->setOfferId(offerID);
+                                                newHourlyCustomer->setRevisionNumber(revisionNumber);
+                                                newHourlyCustomer->setHour(m);
+                                                newHourlyCustomer->setAmountCommitted(_energyExchangeAcceptMsg->getAmountCommitted(m));
+                                                newHourlyCustomer->addLMEnergyExchangeHourlyCustomerTable();
+                                                lmHourlyCustomers.push_back(newHourlyCustomer);
+
+                                                DOUBLE amountRequested = ((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[m])->getAmountRequested();
+                                                DOUBLE oldAmountCommitted = committedArray[m];
+                                                DOUBLE newAmountCommitted = newHourlyCustomer->getAmountCommitted();
+                                                if( amountRequested > 0.0 &&
+                                                    (oldAmountCommitted + newAmountCommitted) >= amountRequested )
                                                 {
-                                                    currentLMEnergyExchangeCustomerReply->setEnergyExchangeNotes(_energyExchangeAcceptMsg->getEnergyExchangeNotes());
+                                                    overCommittedArray[numberOfHoursOverCommitted] = m;
+                                                    numberOfHoursOverCommitted++;
                                                 }
-                                                else
-                                                {
-                                                    currentLMEnergyExchangeCustomerReply->setEnergyExchangeNotes("(none)");
-                                                }
-                                                currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << CtiTime() << " - Accept for offer revision that already contains hourly commitments, in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                        }
+                                    }
+                                    //currentLMCurtailCustomer->dumpDynamicData();
 
-                                                RWOrdered& lmHourlyCustomers = currentLMEnergyExchangeCustomerReply->getLMEnergyExchangeHourlyCustomers();
-                                                CtiLMEnergyExchangeOffer* currentOffer = lmProgramEnergyExchange->getOfferWithId(offerID);
-                                                CtiLMEnergyExchangeOfferRevision* currentRevision = currentOffer->getCurrentOfferRevision();
-                                                RWOrdered& revisionHourlyOffers = currentRevision->getLMEnergyExchangeHourlyOffers();
+                                    if( numberOfHoursOverCommitted > 0 )
+                                    {//this block is to close overcommitted hours if there are any
+                                        //create a new revision
+                                        lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
 
-                                                if( !stringCompareIgnoreCase(currentLMEnergyExchangeCustomerReply->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) )
-                                                {
-                                                    if( lmHourlyCustomers.entries() == 0 )
-                                                    {
-                                                        currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
-                                                        for(LONG m=0;m<HOURS_IN_DAY;m++)
-                                                        {
-                                                            CtiLMEnergyExchangeHourlyCustomer* newHourlyCustomer = new CtiLMEnergyExchangeHourlyCustomer();
-                                                            newHourlyCustomer->setCustomerId(customerID);
-                                                            newHourlyCustomer->setOfferId(offerID);
-                                                            newHourlyCustomer->setRevisionNumber(revisionNumber);
-                                                            newHourlyCustomer->setHour(m);
-                                                            newHourlyCustomer->setAmountCommitted(_energyExchangeAcceptMsg->getAmountCommitted(m));
-                                                            newHourlyCustomer->addLMEnergyExchangeHourlyCustomerTable();
-                                                            lmHourlyCustomers.insert(newHourlyCustomer);
+                                        std::vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentOffer->getLMEnergyExchangeOfferRevisions();
+                                        CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
 
-                                                            DOUBLE amountRequested = ((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[m])->getAmountRequested();
-                                                            DOUBLE oldAmountCommitted = committedArray[m];
-                                                            DOUBLE newAmountCommitted = newHourlyCustomer->getAmountCommitted();
-                                                            if( amountRequested > 0.0 &&
-                                                                (oldAmountCommitted + newAmountCommitted) >= amountRequested )
-                                                            {
-                                                                overCommittedArray[numberOfHoursOverCommitted] = m;
-                                                                numberOfHoursOverCommitted++;
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                        dout << CtiTime() << " - Accept for offer revision that already contains hourly commitments, in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                                    }
-                                                }
-                                                //currentLMCurtailCustomer->dumpDynamicData();
+                                        newRevision->setOfferId(currentOffer->getOfferId());
+                                        newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
+                                        newRevision->setActionDateTime(CtiTime());
+                                        newRevision->setNotificationDateTime(CtiTime());
+                                        newRevision->setOfferExpirationDateTime(currentRevision->getOfferExpirationDateTime());
+                                        newRevision->setAdditionalInfo("Offer was revised automatically due to the over committed hours.");
+                                        if( currentRevision->getOfferExpirationDateTime() > CtiTime() )
+                                        {
+                                            currentRevision->setOfferExpirationDateTime(CtiTime());
+                                            currentRevision->updateLMEnergyExchangeOfferRevisionTable();
+                                        }
 
-                                                if( numberOfHoursOverCommitted > 0 )
-                                                {//this block is to close overcommitted hours if there are any
-                                                    //create a new revision
-                                                    lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
+                                        newRevision->addLMEnergyExchangeOfferRevisionTable();
+                                        offerRevisions.push_back(newRevision);
 
-                                                    RWOrdered& offerRevisions = currentOffer->getLMEnergyExchangeOfferRevisions();
-                                                    CtiLMEnergyExchangeOfferRevision* newRevision = new CtiLMEnergyExchangeOfferRevision();
-
-                                                    newRevision->setOfferId(currentOffer->getOfferId());
-                                                    newRevision->setRevisionNumber( currentRevision->getRevisionNumber() + 1 );
-                                                    newRevision->setActionDateTime(CtiTime());
-                                                    newRevision->setNotificationDateTime(CtiTime());
-                                                    newRevision->setOfferExpirationDateTime(currentRevision->getOfferExpirationDateTime());
-                                                    newRevision->setAdditionalInfo("Offer was revised automatically due to the over committed hours.");
-                                                    if( currentRevision->getOfferExpirationDateTime() > CtiTime() )
-                                                    {
-                                                        currentRevision->setOfferExpirationDateTime(CtiTime());
-                                                        currentRevision->updateLMEnergyExchangeOfferRevisionTable();
-                                                    }
-
-                                                    newRevision->addLMEnergyExchangeOfferRevisionTable();
-                                                    offerRevisions.insert(newRevision);
-
-                                                    RWOrdered& newHourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
-                                                    LONG currentOverCommittedHourPosition = 0;
-                                                    for(LONG y=0;y<HOURS_IN_DAY;y++)
-                                                    {
-                                                        CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
-                                                        newHourlyOffer->setOfferId(newRevision->getOfferId());
-                                                        newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
-                                                        newHourlyOffer->setHour(y);
-                                                        if( currentOverCommittedHourPosition < numberOfHoursOverCommitted &&
-                                                            overCommittedArray[currentOverCommittedHourPosition] == y )
-                                                        {//zero out over committed hour
-                                                            newHourlyOffer->setPrice(0.0);
-                                                            newHourlyOffer->setAmountRequested(0.0);
-                                                            currentOverCommittedHourPosition++;
-                                                        }
-                                                        else
-                                                        {
-                                                            newHourlyOffer->setPrice(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getPrice());
-                                                            newHourlyOffer->setAmountRequested(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getAmountRequested());
-                                                        }
-                                                        newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
-                                                        newHourlyOffers.insert(newHourlyOffer);
-                                                    }
-
-                                                    //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
-                                                    //lmProgramEnergyExchange->dumpDynamicData();
-                                                    currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
-                                                    lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
-                                                }//this block is to close overcommitted hours if there are any
-                                                currentControlArea->setUpdatedFlag(TRUE);
+                                        vector<CtiLMEnergyExchangeHourlyOffer*>& newHourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
+                                        LONG currentOverCommittedHourPosition = 0;
+                                        for(LONG y=0;y<HOURS_IN_DAY;y++)
+                                        {
+                                            CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = new CtiLMEnergyExchangeHourlyOffer();
+                                            newHourlyOffer->setOfferId(newRevision->getOfferId());
+                                            newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
+                                            newHourlyOffer->setHour(y);
+                                            if( currentOverCommittedHourPosition < numberOfHoursOverCommitted &&
+                                                overCommittedArray[currentOverCommittedHourPosition] == y )
+                                            {//zero out over committed hour
+                                                newHourlyOffer->setPrice(0.0);
+                                                newHourlyOffer->setAmountRequested(0.0);
+                                                currentOverCommittedHourPosition++;
                                             }
                                             else
                                             {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " - Accept for offer revision that has expired, in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                                newHourlyOffer->setPrice(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getPrice());
+                                                newHourlyOffer->setAmountRequested(((CtiLMEnergyExchangeHourlyOffer*)revisionHourlyOffers[y])->getAmountRequested());
                                             }
-                                            found = TRUE;
-                                            break;
+                                            newHourlyOffer->addLMEnergyExchangeHourlyOfferTable();
+                                            newHourlyOffers.push_back(newHourlyOffer);
                                         }
-                                    }
-                                    if(found)
-                                    {
-                                        break;
-                                    }
+
+                                        //lmProgramEnergyExchange->addLMCurtailProgramActivityTable();
+                                        //lmProgramEnergyExchange->dumpDynamicData();
+                                        currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::ScheduledRunStatus);
+                                        lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
+                                    }//this block is to close overcommitted hours if there are any
+                                    currentControlArea->setUpdatedFlag(TRUE);
                                 }
+                                else
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Accept for offer revision that has expired, in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                                found = TRUE;
+                                break;
                             }
                         }
                         if(found)
@@ -2580,17 +2542,25 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                         }
                     }
                 }
-            }
-            if(found)
-            {
-                break;
+                
+                if(found)
+                {
+                    break;
+                }
             }
         }
+    
         if(found)
         {
-            //store->dumpAllDynamicData();
+            break;
         }
     }
+#if 0 // TS
+    if(found)
+    {
+        //store->dumpAllDynamicData();
+    }
+#endif
 }
 
 

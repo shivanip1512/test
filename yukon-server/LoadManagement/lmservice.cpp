@@ -222,10 +222,10 @@ void CtiLMService::Run()
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            RWOrdered* controlAreas = store->getControlAreas(CtiTime().seconds());
+            vector<CtiLMControlArea*>* controlAreas = store->getControlAreas(CtiTime().seconds());
 
 
-            if ( controlAreas == NULL || controlAreas->entries() == 0 )
+            if ( controlAreas == NULL || controlAreas->empty() )
             {
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);

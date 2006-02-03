@@ -76,7 +76,7 @@ private:
 	
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
-    void registerForPoints(const RWOrdered& controlAreas);
+    void registerForPoints(const vector<CtiLMControlArea*>& controlAreas);
     void parseMessage( RWCollectable *message, ULONG secondsFrom1901 );
     void pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 );
     void porterReturnMsg( long deviceId, string commandString, int status, string resultString, ULONG secondsFrom1901 );

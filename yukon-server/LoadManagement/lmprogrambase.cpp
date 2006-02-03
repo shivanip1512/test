@@ -25,6 +25,7 @@
 #include "resolvers.h"
 #include "mgr_holiday.h"
 #include "mgr_season.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -52,7 +53,8 @@ CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::~CtiLMProgramBase()
 {
-    _lmprogramcontrolwindows.clearAndDestroy();
+    delete_vector(_lmprogramcontrolwindows);
+    _lmprogramcontrolwindows.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -352,7 +354,7 @@ const CtiTime& CtiLMProgramBase::getLastControlSent() const
 
     Returns the list of control windows for this program
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
+std::vector<CtiLMProgramControlWindow*>& CtiLMProgramBase::getLMProgramControlWindows()
 {
     return _lmprogramcontrolwindows;
 }
@@ -753,7 +755,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay)
 {
-    if( _lmprogramcontrolwindows.entries() == 0 )
+    if( _lmprogramcontrolwindows.size() == 0 )
         return TRUE; // No control windows defined, so anytime is inside our control window
 
     // Try to find the control window we are in
@@ -923,10 +925,11 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _lastcontrolsent = right._lastcontrolsent;
         _manualcontrolreceivedflag = right._manualcontrolreceivedflag;
 
-        _lmprogramcontrolwindows.clearAndDestroy();
-        for(LONG i=0;i<right._lmprogramcontrolwindows.entries();i++)
+        delete_vector(_lmprogramcontrolwindows);
+        _lmprogramcontrolwindows.clear();
+        for(LONG i=0;i<right._lmprogramcontrolwindows.size();i++)
         {
-            _lmprogramcontrolwindows.insert(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
+            _lmprogramcontrolwindows.push_back(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
         }
     }
     return *this;
@@ -1147,7 +1150,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
     //So add 24 hours worth of seconds and do an additional test
     LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;
     
-    for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
+    for(LONG i=0;i<_lmprogramcontrolwindows.size();i++)
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
 
@@ -1168,23 +1171,23 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
 ----------------------------------------------------------------------------*/  
 CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFromBeginningOfDay)
 {
-    if(_lmprogramcontrolwindows.entries() == 0)
+    if(_lmprogramcontrolwindows.size() == 0)
     {
         return 0;
     }
-    if(_lmprogramcontrolwindows.entries() == 1)
+    if(_lmprogramcontrolwindows.size() == 1)
     {  //only 1 control window, it must always be the next one
         return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[0];
     }
     CtiLMProgramControlWindow* cw = getControlWindow(secondsFromBeginningOfDay);
     if(cw != 0)
     {  // we are in a control window now, return the next one
-        return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[cw->getWindowNumber()+1 % _lmprogramcontrolwindows.entries()];
+        return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[cw->getWindowNumber()+1 % _lmprogramcontrolwindows.size()];
     }
     else
     {
         //not in a control window now, figure which is the next one
-        for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
+        for(LONG i=0;i<_lmprogramcontrolwindows.size();i++)
         {
             cw = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
             if(cw->getAvailableStartTime() > secondsFromBeginningOfDay)

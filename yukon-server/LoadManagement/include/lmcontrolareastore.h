@@ -89,7 +89,7 @@ class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
-    RWOrdered* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
+    vector<CtiLMControlArea*>* getControlAreas(ULONG secondsFrom1901 = CtiTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
     
     CtiLMGroupPtr findGroupByPointID(long point_id);
@@ -134,7 +134,7 @@ private:
 
     bool checkMidnightDefaultsForReset();
 
-    RWOrdered* _controlAreas;
+    vector<CtiLMControlArea*>* _controlAreas;
     map< long, CtiLMGroupPtr > _point_group_map;
     map< long, CtiLMGroupPtr > _all_group_map;
     

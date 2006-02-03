@@ -51,9 +51,9 @@ CtiTime timeSaver;
 CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)), _wassubbusdeletedflag(FALSE)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    _ccSubstationBuses = new RWOrdered();
-    _ccCapBankStates = new RWOrdered(8);
-    _ccGeoAreas = new RWOrdered();
+    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    _ccCapBankStates = new CtiCCState_vec;
+    _ccGeoAreas = new CtiCCGeoArea_vec;
 
     _paobject_subbus_map.clear();
     _paobject_feeder_map.clear();
@@ -108,7 +108,7 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 
     Returns a RWOrdered of CtiCCSubstationBuses
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
+CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -135,7 +135,7 @@ RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
 
     Returns a RWOrdered of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
+CtiCCGeoArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -152,7 +152,7 @@ RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 
     Returns a RWOrdered of CtiCCStates
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom1901)
+CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -288,7 +288,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
     }*/
     try
     {
-        if( _ccSubstationBuses->entries() > 0 )
+        if( _ccSubstationBuses->size() > 0 )
         {
             CtiTime currentDateTime = CtiTime();
             string dynamicCapControl("dynamicCapControl");
@@ -297,9 +297,9 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 
             conn.beginTransaction(string2RWCString(dynamicCapControl));
 
-            for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+            for(LONG i=0;i<_ccSubstationBuses->size();i++)
             {
-                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
                 if( currentCCSubstationBus->isDirty() )
                 {
                     /*{
@@ -317,12 +317,12 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                     }
                 }
 
-                RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-                if( ccFeeders.entries() > 0 )
+                CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+                if( ccFeeders.size() > 0 )
                 {
-                    for(LONG j=0;j<ccFeeders.entries();j++)
+                    for(LONG j=0;j<ccFeeders.size();j++)
                     {
-                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
                         if( currentFeeder->isDirty() )
                         {
                             /*{
@@ -340,10 +340,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                             }
                         }
 
-                        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                        if( ccCapBanks.entries() > 0 )
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                        if( ccCapBanks.size() > 0 )
                         {
-                            for(LONG k=0;k<ccCapBanks.entries();k++)
+                            for(LONG k=0;k<ccCapBanks.size();k++)
                             {
                                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                                 if( currentCapBank->isDirty() )
@@ -393,7 +393,7 @@ void CtiCCSubstationBusStore::reset()
     bool wasAlreadyRunning = false;
     try
     {                                
-        RWOrdered tempCCSubstationBuses;
+        CtiCCSubstationBus_vec tempCCSubstationBuses;
 
         map< long, CtiCCSubstationBusPtr > temp_paobject_subbus_map;
         map< long, CtiCCFeederPtr > temp_paobject_feeder_map;
@@ -436,19 +436,21 @@ void CtiCCSubstationBusStore::reset()
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
                     
-                        if ( _ccSubstationBuses->entries() > 0 )
+                        if ( _ccSubstationBuses->size() > 0 )
                         {
                             dumpAllDynamicData();
 
                             wasAlreadyRunning = true;
                         }
-                        if ( _ccCapBankStates->entries() > 0 )
+                        if ( _ccCapBankStates->size() > 0 )
                         {
-                            _ccCapBankStates->clearAndDestroy();
+                            delete_vector( _ccCapBankStates );
+                            _ccCapBankStates->clear();
                         }
-                        if ( _ccGeoAreas->entries() > 0 )
+                        if ( _ccGeoAreas->size() > 0 )
                         {
-                            _ccGeoAreas->clearAndDestroy();
+                            delete_vector(_ccGeoAreas);
+                            _ccGeoAreas->clear();
                         }
                     }
 
@@ -488,7 +490,7 @@ void CtiCCSubstationBusStore::reset()
                     RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
                     RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
                     
-                    if (tempCCSubstationBuses.entries() > 0)
+                    if (tempCCSubstationBuses.size() > 0)
                     {
                         {   
                             reloadFeederFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_feeder_map,
@@ -550,10 +552,11 @@ void CtiCCSubstationBusStore::reset()
                         try
                         {   
                             //THIS IS WHERE CAPCONTROL IS BREAKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            if (_ccSubstationBuses->entries() > 0)
+                            if (_ccSubstationBuses->size() > 0)
                             {                                   
-                                _ccSubstationBuses->clearAndDestroy();
-                            }
+                                _ccSubstationBuses->clear();
+								delete_vector(_ccSubstationBuses);
+							}
                         }
                         catch (...)
                         {
@@ -1121,199 +1124,197 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
     //LONG capacitor_id = atol(capacitor_id_string);
 
     BOOL found = FALSE;
-    if( _ccSubstationBuses->entries() > 0 )
+    if( _ccSubstationBuses->size() > 0 )
     {
-        for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+        for(LONG i=0;i<_ccSubstationBuses->size();i++)
         {
-            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
 
-            RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-            if( ccFeeders.entries() > 0 )
+            CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+            if( ccFeeders.size() > 0 )
             {
-                for(LONG j=0;j<ccFeeders.entries();j++)
+                for(LONG j=0;j<ccFeeders.size();j++)
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                    if( ccCapBanks.entries() > 0 )
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                    for(LONG k=0;k<ccCapBanks.size();k++)
                     {
-                        for(LONG k=0;k<ccCapBanks.entries();k++)
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        //LONG capMapId;
+                        //if( (capMapId = atol(currentCapBank->getMapLocationId())) == capacitor_id )
+                        if( currentCapBank->getMapLocationId() == capacitor_id_string )
                         {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            //LONG capMapId;
-                            //if( (capMapId = atol(currentCapBank->getMapLocationId())) == capacitor_id )
-                            if( currentCapBank->getMapLocationId() == capacitor_id_string )
+                            LONG capswitchingorder = atol(switching_seq.c_str());
+                            LONG feedMapId;
+                            if( (feedMapId = atol( currentFeeder->getMapLocationId().c_str() ) ) != circt_id_current )
                             {
-                                LONG capswitchingorder = atol(switching_seq.c_str());
-                                LONG feedMapId;
-                                if( (feedMapId = atol( currentFeeder->getMapLocationId().c_str() ) ) != circt_id_current )
-                                {
-                                    capBankMovedToDifferentFeeder(currentFeeder, currentCapBank, circt_id_current, capswitchingorder);
-                                    currentCCSubstationBus->setBusUpdatedFlag(TRUE);
-                                }
-                                else if( currentCapBank->getControlOrder() != capswitchingorder &&
-                                         capswitchingorder < 11 )
-                                {// if capswitchingorder 11-99 and on the same feeder ignore
-                                 // the amfm switching order according to a conversation with
-                                 // Peter Schuster and Steve Fischer of MidAmerican
-                                    capBankDifferentOrderSameFeeder(currentFeeder, currentCapBank, capswitchingorder);
-                                    currentCCSubstationBus->setBusUpdatedFlag(TRUE);
-                                }
+                                capBankMovedToDifferentFeeder(currentFeeder, currentCapBank, circt_id_current, capswitchingorder);
+                                currentCCSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
+                            else if( currentCapBank->getControlOrder() != capswitchingorder &&
+                                     capswitchingorder < 11 )
+                            {// if capswitchingorder 11-99 and on the same feeder ignore
+                             // the amfm switching order according to a conversation with
+                             // Peter Schuster and Steve Fischer of MidAmerican
+                                capBankDifferentOrderSameFeeder(currentFeeder, currentCapBank, capswitchingorder);
+                                currentCCSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
 
-                                string tempOperationalState = currentCapBank->getOperationalState();
-                                
-                                std::transform(tempOperationalState.begin(),tempOperationalState.end(),tempOperationalState.begin(), ::toupper);
-                                std::transform(cap_fs.begin(),cap_fs.end(),cap_fs.begin(), ::toupper);
-                                std::transform(cap_disable_flag.begin(),cap_disable_flag.end(),cap_disable_flag.begin(), ::toupper);                                
-                                LONG kvarrating = atol(kvar_rating.c_str());
-                                bool updateCapBankFlag = false;
+                            string tempOperationalState = currentCapBank->getOperationalState();
+                            
+                            std::transform(tempOperationalState.begin(),tempOperationalState.end(),tempOperationalState.begin(), ::toupper);
+                            std::transform(cap_fs.begin(),cap_fs.end(),cap_fs.begin(), ::toupper);
+                            std::transform(cap_disable_flag.begin(),cap_disable_flag.end(),cap_disable_flag.begin(), ::toupper);                                
+                            LONG kvarrating = atol(kvar_rating.c_str());
+                            bool updateCapBankFlag = false;
 
-                                if( currentCapBank->getBankSize() != kvarrating )
+                            if( currentCapBank->getBankSize() != kvarrating )
+                            {
                                 {
-                                    {
-                                        char tempchar[64] = "";
-                                        string text = string("M3i Change, Cap Bank Bank Size: ");
-                                        text += currentCapBank->getPAOName();
-                                        text += ", PAO Id: ";
-                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
-                                        text += tempchar;
-                                        string additional = string("Was: ");
-                                        _ltoa(currentCapBank->getBankSize(),tempchar,10);
-                                        additional += tempchar;
-                                        additional += ", Now: ";
-                                        _ltoa(kvarrating,tempchar,10);
-                                        additional += tempchar;
-                                        additional += ", on Feeder: ";
-                                        additional += currentFeeder->getPAOName();
-                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    currentCapBank->setBankSize(kvarrating);
-                                    updateCapBankFlag = true;
-                                }
-                                if( tempOperationalState != cap_fs )
-                                {
-                                    string tempFixedOperationalStateString = CtiCCCapBank::FixedOperationalState;
-                                    std::transform(tempOperationalState.begin(),tempOperationalState.end(),tempOperationalState.begin(), ::toupper);
-                                    {
-                                        char tempchar[64] = "";
-                                        string text = string("M3i Change, Cap Bank Op State: ");
-                                        text += currentCapBank->getPAOName();
-                                        text += ", PAO Id: ";
-                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
-                                        text += tempchar;
-                                        string additional = string("Was: ");
-                                        additional += currentCapBank->getOperationalState();
-                                        additional += ", Now: ";
-                                        additional += tempFixedOperationalStateString;
-                                        additional += ", on Feeder: ";
-                                        additional += currentFeeder->getPAOName();
-                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    currentCapBank->setOperationalState(!stringCompareIgnoreCase(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
-                                    updateCapBankFlag = true;
-                                }
-                                if( (bool)currentCapBank->getDisableFlag() != (!stringCompareIgnoreCase(cap_disable_flag,m3iAMFMDisabledString)) )
-                                {
-                                    {
-                                        char tempchar[64] = "";
-                                        string text = string("M3i Change, Cap Bank Disable Flag: ");
-                                        text += currentCapBank->getPAOName();
-                                        text += ", PAO Id: ";
-                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
-                                        text += tempchar;
-                                        string additional = string("Was: ");
-                                        additional += (currentCapBank->getDisableFlag()?m3iAMFMDisabledString:m3iAMFMEnabledString);
-                                        additional += ", Now: ";
-                                        additional += cap_disable_flag;
-                                        additional += ", on Feeder: ";
-                                        additional += currentFeeder->getPAOName();
-                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    currentCapBank->setDisableFlag(!stringCompareIgnoreCase(cap_disable_flag,m3iAMFMDisabledString));
-                                    updateCapBankFlag = true;
-                                }
-                                if( !stringCompareIgnoreCase(currentCapBank->getControllerType(),translateCBCModelToControllerType(cbc_model)) )
-                                {
-                                    {
-                                        char tempchar[64] = "";
-                                        string text = string("M3i Change, Cap Bank Controller Type: ");
-                                        text += currentCapBank->getPAOName();
-                                        text += ", PAO Id: ";
-                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
-                                        text += tempchar;
-                                        string additional = string("Was: ");
-                                        additional += currentCapBank->getControllerType();
-                                        additional += ", Now: ";
-                                        additional += translateCBCModelToControllerType(cbc_model);
-                                        additional += ", on Feeder: ";
-                                        additional += currentFeeder->getPAOName();
-                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
-                                    updateCapBankFlag = true;
-                                }
-                                if( !stringCompareIgnoreCase(currentCapBank->getPAODescription(),location) )
-                                {
-                                    {
-                                        char tempchar[64] = "";
-                                        string text = string("M3i Change, Cap Bank Location: ");
-                                        text += currentCapBank->getPAOName();
-                                        text += ", PAO Id: ";
-                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
-                                        text += tempchar;
-                                        string additional("Was: ");
-                                        additional += currentCapBank->getPAODescription();
-                                        additional += ", Now: ";
-                                        additional += location;
-                                        additional += ", on Feeder: ";
-                                        additional += currentFeeder->getPAOName();
-                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                        }
-                                    }
-                                    currentCapBank->setPAODescription(location);
-                                    updateCapBankFlag = true;
-                                }
-                                if( updateCapBankFlag )
-                                {
-                                    UpdateCapBankInDB(currentCapBank);
-                                    currentCCSubstationBus->setBusUpdatedFlag(TRUE);
-                                }
-                                /*{
+                                    char tempchar[64] = "";
+                                    string text = string("M3i Change, Cap Bank Bank Size: ");
+                                    text += currentCapBank->getPAOName();
+                                    text += ", PAO Id: ";
+                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    text += tempchar;
+                                    string additional = string("Was: ");
+                                    _ltoa(currentCapBank->getBankSize(),tempchar,10);
+                                    additional += tempchar;
+                                    additional += ", Now: ";
+                                    _ltoa(kvarrating,tempchar,10);
+                                    additional += tempchar;
+                                    additional += ", on Feeder: ";
+                                    additional += currentFeeder->getPAOName();
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
-                                             << currentCapBank->getPAOId() << ", name: "
-                                             << currentCapBank->getPAOName()
-                                             << ", was updated in database with bank size: "
-                                             << currentCapBank->getBankSize() << ", operational state: "
-                                             << currentCapBank->getOperationalState() << ", and was "
-                                             << cap_disable_flag << endl;
+                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
                                     }
-                                }*/
-                                found = TRUE;
-                                break;
+                                }
+                                currentCapBank->setBankSize(kvarrating);
+                                updateCapBankFlag = true;
                             }
+                            if( tempOperationalState != cap_fs )
+                            {
+                                string tempFixedOperationalStateString = CtiCCCapBank::FixedOperationalState;
+                                std::transform(tempOperationalState.begin(),tempOperationalState.end(),tempOperationalState.begin(), ::toupper);
+                                {
+                                    char tempchar[64] = "";
+                                    string text = string("M3i Change, Cap Bank Op State: ");
+                                    text += currentCapBank->getPAOName();
+                                    text += ", PAO Id: ";
+                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    text += tempchar;
+                                    string additional = string("Was: ");
+                                    additional += currentCapBank->getOperationalState();
+                                    additional += ", Now: ";
+                                    additional += tempFixedOperationalStateString;
+                                    additional += ", on Feeder: ";
+                                    additional += currentFeeder->getPAOName();
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                    }
+                                }
+                                currentCapBank->setOperationalState(!stringCompareIgnoreCase(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
+                                updateCapBankFlag = true;
+                            }
+                            if( (bool)currentCapBank->getDisableFlag() != (!stringCompareIgnoreCase(cap_disable_flag,m3iAMFMDisabledString)) )
+                            {
+                                {
+                                    char tempchar[64] = "";
+                                    string text = string("M3i Change, Cap Bank Disable Flag: ");
+                                    text += currentCapBank->getPAOName();
+                                    text += ", PAO Id: ";
+                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    text += tempchar;
+                                    string additional = string("Was: ");
+                                    additional += (currentCapBank->getDisableFlag()?m3iAMFMDisabledString:m3iAMFMEnabledString);
+                                    additional += ", Now: ";
+                                    additional += cap_disable_flag;
+                                    additional += ", on Feeder: ";
+                                    additional += currentFeeder->getPAOName();
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                    }
+                                }
+                                currentCapBank->setDisableFlag(!stringCompareIgnoreCase(cap_disable_flag,m3iAMFMDisabledString));
+                                updateCapBankFlag = true;
+                            }
+                            if( !stringCompareIgnoreCase(currentCapBank->getControllerType(),translateCBCModelToControllerType(cbc_model)) )
+                            {
+                                {
+                                    char tempchar[64] = "";
+                                    string text = string("M3i Change, Cap Bank Controller Type: ");
+                                    text += currentCapBank->getPAOName();
+                                    text += ", PAO Id: ";
+                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    text += tempchar;
+                                    string additional = string("Was: ");
+                                    additional += currentCapBank->getControllerType();
+                                    additional += ", Now: ";
+                                    additional += translateCBCModelToControllerType(cbc_model);
+                                    additional += ", on Feeder: ";
+                                    additional += currentFeeder->getPAOName();
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                    }
+                                }
+                                currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
+                                updateCapBankFlag = true;
+                            }
+                            if( !stringCompareIgnoreCase(currentCapBank->getPAODescription(),location) )
+                            {
+                                {
+                                    char tempchar[64] = "";
+                                    string text = string("M3i Change, Cap Bank Location: ");
+                                    text += currentCapBank->getPAOName();
+                                    text += ", PAO Id: ";
+                                    _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                    text += tempchar;
+                                    string additional("Was: ");
+                                    additional += currentCapBank->getPAODescription();
+                                    additional += ", Now: ";
+                                    additional += location;
+                                    additional += ", on Feeder: ";
+                                    additional += currentFeeder->getPAOName();
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                                    }
+                                }
+                                currentCapBank->setPAODescription(location);
+                                updateCapBankFlag = true;
+                            }
+                            if( updateCapBankFlag )
+                            {
+                                UpdateCapBankInDB(currentCapBank);
+                                currentCCSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
+                            /*{
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
+                                         << currentCapBank->getPAOId() << ", name: "
+                                         << currentCapBank->getPAOName()
+                                         << ", was updated in database with bank size: "
+                                         << currentCapBank->getBankSize() << ", operational state: "
+                                         << currentCapBank->getOperationalState() << ", and was "
+                                         << cap_disable_flag << endl;
+                                }
+                            }*/
+                            found = TRUE;
+                            break;
                         }
                     }
+                
                     if( found )
                     {
                         break;
@@ -1343,105 +1344,108 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    RWSortedVector& oldFeederCapBanks = oldFeeder->getCCCapBanks();
+    CtiCCCapBank_SVector& oldFeederCapBanks = oldFeeder->getCCCapBanks();
 
     BOOL found = FALSE;
-    for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+    for(LONG i=0;i<_ccSubstationBuses->size();i++)
     {
-        CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+        CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
 
-        RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-        if( ccFeeders.entries() > 0 )
+        CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            for(LONG j=0;j<ccFeeders.entries();j++)
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+            LONG feedMapId;
+            if( (feedMapId = atol( currentFeeder->getMapLocationId().c_str() ) ) == feederid )
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-
-                LONG feedMapId;
-                if( (feedMapId = atol( currentFeeder->getMapLocationId().c_str() ) ) == feederid )
+                for( CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin(); 
+                     itr != oldFeederCapBanks.end(); 
+                     itr++)
                 {
-                    oldFeederCapBanks.remove(movedCapBank);
+                    if( *itr == movedCapBank)//if address itr is pointing to matches the address passed in.
+                        oldFeederCapBanks.erase(movedCapBank);
+                }
+                CtiCCCapBank_SVector& newFeederCapBanks = currentFeeder->getCCCapBanks();
 
-                    RWSortedVector& newFeederCapBanks = currentFeeder->getCCCapBanks();
-
-                    if( newFeederCapBanks.entries() > 0 )
+                if( newFeederCapBanks.size() > 0 )
+                {
+                    //search through the list to see if there is a cap bank in the
+                    //list that already has the switching order
+                    if( capswitchingorder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
                     {
-                        //search through the list to see if there is a cap bank in the
-                        //list that already has the switching order
-                        if( capswitchingorder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() )
-                        {
-                            movedCapBank->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() + 1 );
-                        }
-                        else
-                        {
-                            for(LONG k=0;k<newFeederCapBanks.entries();k++)
-                            {
-                                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
-                                if( capswitchingorder == currentCapBank->getControlOrder() )
-                                {
-                                    //if the new switching order matches a current control
-                                    //order, then insert at the end of the cap bank list
-                                    movedCapBank->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() + 1 );
-                                    break;
-                                }
-                                else if( currentCapBank->getControlOrder() > capswitchingorder )
-                                {
-                                    movedCapBank->setControlOrder(capswitchingorder);
-                                    break;
-                                }
-                            }
-                        }
+                        movedCapBank->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
                     }
                     else
                     {
-                        movedCapBank->setControlOrder(1);
-                    }
-
-                    newFeederCapBanks.insert(movedCapBank);
-
-                    UpdateFeederBankListInDB(oldFeeder);
-                    UpdateFeederBankListInDB(currentFeeder);
-
-                    {
-                        char tempchar[64] = "";
-                        string text = string("M3i Change, Cap Bank moved feeders: ");
-                        text += movedCapBank->getPAOName();
-                        text += ", PAO Id: ";
-                        _ltoa(movedCapBank->getPAOId(),tempchar,10);
-                        text += tempchar;
-                        string additional = string("Moved from: ");
-                        additional += oldFeeder->getPAOName();
-                        additional += ", id: ";
-                        _ltoa(oldFeeder->getPAOId(),tempchar,10);
-                        additional += tempchar;
-                        additional += " To: ";
-                        additional += currentFeeder->getPAOName();
-                        additional += ", id: ";
-                        _ltoa(currentFeeder->getPAOId(),tempchar,10);
-                        additional += tempchar;
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                        for(LONG k=0;k<newFeederCapBanks.size();k++)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
+                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
+                            if( capswitchingorder == currentCapBank->getControlOrder() )
+                            {
+                                //if the new switching order matches a current control
+                                //order, then insert at the end of the cap bank list
+                                movedCapBank->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
+                                break;
+                            }
+                            else if( currentCapBank->getControlOrder() > capswitchingorder )
+                            {
+                                movedCapBank->setControlOrder(capswitchingorder);
+                                break;
+                            }
                         }
                     }
-                    /*{
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
-                             << movedCapBank->getPAOId() << ", name: "
-                             << movedCapBank->getPAOName()
-                             << ", was moved from feeder PAO Id: "
-                             << oldFeeder->getPAOId() << ", name: "
-                             << oldFeeder->getPAOName() << ", to feeder PAO Id: "
-                             << currentFeeder->getPAOId() << ", name: "
-                             << currentFeeder->getPAOName() << ", with order: "
-                             << movedCapBank->getControlOrder() << endl;
-                    }*/
-                    found = TRUE;
-                    break;
                 }
+                else
+                {
+                    movedCapBank->setControlOrder(1);
+                }
+
+                newFeederCapBanks.insert(movedCapBank);
+
+                UpdateFeederBankListInDB(oldFeeder);
+                UpdateFeederBankListInDB(currentFeeder);
+
+                {
+                    char tempchar[64] = "";
+                    string text = string("M3i Change, Cap Bank moved feeders: ");
+                    text += movedCapBank->getPAOName();
+                    text += ", PAO Id: ";
+                    _ltoa(movedCapBank->getPAOId(),tempchar,10);
+                    text += tempchar;
+                    string additional = string("Moved from: ");
+                    additional += oldFeeder->getPAOName();
+                    additional += ", id: ";
+                    _ltoa(oldFeeder->getPAOId(),tempchar,10);
+                    additional += tempchar;
+                    additional += " To: ";
+                    additional += currentFeeder->getPAOName();
+                    additional += ", id: ";
+                    _ltoa(currentFeeder->getPAOId(),tempchar,10);
+                    additional += tempchar;
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << text << ", " << additional << endl;
+                    }
+                }
+                /*{
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
+                         << movedCapBank->getPAOId() << ", name: "
+                         << movedCapBank->getPAOName()
+                         << ", was moved from feeder PAO Id: "
+                         << oldFeeder->getPAOId() << ", name: "
+                         << oldFeeder->getPAOName() << ", to feeder PAO Id: "
+                         << currentFeeder->getPAOId() << ", name: "
+                         << currentFeeder->getPAOName() << ", with order: "
+                         << movedCapBank->getControlOrder() << endl;
+                }*/
+                found = TRUE;
+                break;
             }
         }
+    
         if( found )
         {
             break;
@@ -1466,7 +1470,14 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 
     LONG oldControlOrder = currentCapBank->getControlOrder();
 
-    currentFeeder->getCCCapBanks().remove(currentCapBank);
+    for( CtiCCCapBank_SVector::iterator itr = currentFeeder->getCCCapBanks().begin(); 
+         itr != currentFeeder->getCCCapBanks().end(); 
+         itr++)
+    {
+        if( *itr == currentCapBank)//if address itr is pointing to matches the address passed in.
+            currentFeeder->getCCCapBanks().erase(itr);
+    }
+    
     currentCapBank->setControlOrder(capswitchingorder);
     currentFeeder->getCCCapBanks().insert(currentCapBank);
     UpdateFeederBankListInDB(currentFeeder);
@@ -1514,47 +1525,45 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     BOOL found = FALSE;
-    if( _ccSubstationBuses->entries() > 0 )
+    if( _ccSubstationBuses->size() > 0 )
     {
-        for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+        for(LONG i=0;i<_ccSubstationBuses->size();i++)
         {
-            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
 
-            RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-            if( ccFeeders.entries() > 0 )
+            CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+            if( ccFeeders.size() > 0 )
             {
-                for(LONG j=0;j<ccFeeders.entries();j++)
+                for(LONG j=0;j<ccFeeders.size();j++)
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                    if( ccCapBanks.entries() > 0 )
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                    for(LONG k=0;k<ccCapBanks.size();k++)
                     {
-                        for(LONG k=0;k<ccCapBanks.entries();k++)
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        LONG capMapId;
+                        if( (capMapId = atol(currentCapBank->getMapLocationId().c_str() )) == capid )
                         {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            LONG capMapId;
-                            if( (capMapId = atol(currentCapBank->getMapLocationId().c_str() )) == capid )
+                            std::transform(enableddisabled.begin(),enableddisabled.end(),enableddisabled.begin(), ::toupper);
+                          if( (bool)currentCapBank->getDisableFlag() != (!stringCompareIgnoreCase(enableddisabled,m3iAMFMDisabledString)) )
                             {
-                                std::transform(enableddisabled.begin(),enableddisabled.end(),enableddisabled.begin(), ::toupper);
-                              if( (bool)currentCapBank->getDisableFlag() != (!stringCompareIgnoreCase(enableddisabled,m3iAMFMDisabledString)) )
+                                currentCapBank->setDisableFlag(!stringCompareIgnoreCase(enableddisabled,m3iAMFMDisabledString));
+                                UpdateCapBankDisableFlagInDB(currentCapBank);
+                                currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                                 {
-                                    currentCapBank->setDisableFlag(!stringCompareIgnoreCase(enableddisabled,m3iAMFMDisabledString));
-                                    UpdateCapBankDisableFlagInDB(currentCapBank);
-                                    currentCCSubstationBus->setBusUpdatedFlag(TRUE);
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - M3I change, 'Cap Out of Service' PAO Id: "
-                                             << currentCapBank->getPAOId() << ", name: "
-                                             << currentCapBank->getPAOName() << ", was "
-                                             << enableddisabled << endl;
-                                    }
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - M3I change, 'Cap Out of Service' PAO Id: "
+                                         << currentCapBank->getPAOId() << ", name: "
+                                         << currentCapBank->getPAOName() << ", was "
+                                         << enableddisabled << endl;
                                 }
-                                found = TRUE;
-                                break;
                             }
+                            found = TRUE;
+                            break;
                         }
                     }
+                
                     if( found )
                     {
                         break;
@@ -1584,18 +1593,18 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, string& f
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     BOOL found = FALSE;
-    if( _ccSubstationBuses->entries() > 0 )
+    if( _ccSubstationBuses->size() > 0 )
     {
-        for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+        for(LONG i=0;i<_ccSubstationBuses->size();i++)
         {
-            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(i);
 
-            RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-            if( ccFeeders.entries() > 0 )
+            CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
+            if( ccFeeders.size() > 0 )
             {
-                for(LONG j=0;j<ccFeeders.entries();j++)
+                for(LONG j=0;j<ccFeeders.size();j++)
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
                     LONG feedMapId;
                     if( (feedMapId = atol(currentFeeder->getMapLocationId().c_str() )) == feederid )
@@ -1643,11 +1652,14 @@ void CtiCCSubstationBusStore::shutdown()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     dumpAllDynamicData();
-    _ccSubstationBuses->clearAndDestroy();
+    delete_vector(_ccSubstationBuses);
+    _ccSubstationBuses->clear();
     delete _ccSubstationBuses;
-    _ccCapBankStates->clearAndDestroy();
+    delete_vector(_ccCapBankStates);
+    _ccCapBankStates->clear();
     delete _ccCapBankStates;
-    _ccGeoAreas->clearAndDestroy();
+    delete_vector(_ccGeoAreas);
+    _ccGeoAreas->clear();
     delete _ccGeoAreas;
 }
 
@@ -1994,26 +2006,26 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    for(int i=0;i<_ccSubstationBuses->entries();i++)
+    for(int i=0;i<_ccSubstationBuses->size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[i]);
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses).at(i));
 
         LONG numberOfFeedersRecentlyControlled = 0;
         LONG numberOfCapBanksPending = 0;
 
         if( currentSubstationBus->getRecentlyControlledFlag() )
         {
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.entries();j++)
+            for(int j=0;j<ccFeeders.size();j++)
             {
                 numberOfCapBanksPending = 0;
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
                 if( currentFeeder->getRecentlyControlledFlag() )
                 {
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                    for(int k=0;k<ccCapBanks.entries();k++)
+                    for(int k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2038,7 +2050,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Multiple cap banks pending in Feeder: " << currentFeeder->getPAOName() << ", setting status to questionable in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        for(int k=0;k<ccCapBanks.entries();k++)
+                        for(int k=0;k<ccCapBanks.size();k++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2067,9 +2079,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                 }
                 else
                 {
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                    for(int k=0;k<ccCapBanks.entries();k++)
+                    for(int k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2101,12 +2113,12 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
         }
         else//sub bus not recently controlled
         {
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.entries();j++)
+            for(int j=0;j<ccFeeders.size();j++)
             {
                 numberOfCapBanksPending = 0;
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
                 if( currentFeeder->getRecentlyControlledFlag() )
                 {
@@ -2117,9 +2129,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                     }
                 }
 
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                for(int k=0;k<ccCapBanks.entries();k++)
+                for(int k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2155,9 +2167,9 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    for(int i=0;i<_ccSubstationBuses->entries();i++)
+    for(int i=0;i<_ccSubstationBuses->size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[i]);
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses).at(i));
         {
             char tempchar[64] = "";
             string text("Daily Operations were ");
@@ -2173,11 +2185,11 @@ void CtiCCSubstationBusStore::resetDailyOperations()
         }
         currentSubstationBus->setCurrentDailyOperations(0);
 
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(int j=0;j<ccFeeders.entries();j++)
+        for(int j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             /*{
                 char tempchar[64] = "";
                 string text("Daily Operations were ");
@@ -2189,12 +2201,12 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             }*/
             currentFeeder->setCurrentDailyOperations(0);
 
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
             //**********************************************************************
             //The operation count on a cap bank is actually a total not a daily, doh
             //**********************************************************************
-            for(int k=0;k<ccCapBanks.entries();k++)
+            for(int k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 /*{
@@ -2419,8 +2431,8 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
         RWDBInserter inserter = ccFeederBankListTable.inserter();
 
-        RWOrdered& ccCapBanks = feeder->getCCCapBanks();
-        for(LONG i=0;i<ccCapBanks.entries();i++)
+        CtiCCCapBank_SVector& ccCapBanks = feeder->getCCCapBanks();
+        for(LONG i=0;i<ccCapBanks.size();i++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[i];
 
@@ -2597,7 +2609,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
 void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                                        multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
-                                                       RWOrdered *cCSubstationBuses )
+                                                       CtiCCSubstationBus_vec *cCSubstationBuses )
 {
     CtiCCSubstationBusPtr subBusToUpdate = NULL;
 
@@ -2706,7 +2718,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             }
 
                             //if (currentCCSubstationBus->getStrategyId() > 0)
-                                cCSubstationBuses->insert(currentCCSubstationBus);
+                                cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
                     }
@@ -3151,14 +3163,14 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                             }
                         }
 
-                        RWOrdered& tempFeeders = currentCCSubstationBus->getCCFeeders();
+                        CtiFeeder_vec& tempFeeders = currentCCSubstationBus->getCCFeeders();
                         CtiCCFeederPtr tempFeeder;
-                        int insertPoint = tempFeeders.entries();
+                        int insertPoint = tempFeeders.size();
                         int j = insertPoint;
 
                         while (j > 0)
                         {
-                            tempFeeder = (CtiCCFeeder*)tempFeeders[j-1];
+                            tempFeeder = (CtiCCFeeder*)tempFeeders.at(j-1);
                             if (displayOrder <= tempFeeder->getDisplayOrder())
                             {
                                 insertPoint =  j - 1;
@@ -3166,8 +3178,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
 
                             j--;
                         }
-
-                        currentCCSubstationBus->getCCFeeders().insertAt( insertPoint,currentCCFeeder );
+                        CtiFeeder_vec& ccF = currentCCSubstationBus->getCCFeeders();
+                        ccF.insert( ccF.begin()+insertPoint, currentCCFeeder );
                         feeder_subbus_map->insert(make_pair(currentFeederId, currentSubBusId));
                     }
                 }
@@ -3776,10 +3788,11 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
             {
                 if ( conn.isValid() )
                 {   
-                    if ( _ccCapBankStates->entries() > 0 )
+                    if ( _ccCapBankStates->size() > 0 )
                     {
-                        _ccCapBankStates->clearAndDestroy();
-                        if (_ccCapBankStates->entries() > 0)
+                        delete_vector(_ccCapBankStates);
+                        _ccCapBankStates->clear();
+                        if (_ccCapBankStates->size() > 0)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " _ccCapBankStates did NOT get destroyed " << endl;
@@ -3811,7 +3824,7 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
                     while ( rdr() )
                     {
                         CtiCCState* ccState = new CtiCCState(rdr);
-                        _ccCapBankStates->insert( ccState );
+                        _ccCapBankStates->push_back( ccState );
                     }
                 }
             }
@@ -3836,10 +3849,11 @@ void CtiCCSubstationBusStore::reloadGeoAreasFromDatabase()
             {
                 if ( conn.isValid() )
                 {   
-                    if ( _ccGeoAreas->entries() > 0 )
+                    if ( _ccGeoAreas->size() > 0 )
                     {
-                        _ccGeoAreas->clearAndDestroy();
-                        if (_ccGeoAreas->entries() > 0)
+                        delete_vector(_ccGeoAreas );
+                        _ccGeoAreas->clear();
+                        if (_ccGeoAreas->size() > 0)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " _ccGeoAreas did NOT get destroyed " << endl;
@@ -3875,7 +3889,7 @@ void CtiCCSubstationBusStore::reloadGeoAreasFromDatabase()
                         string tempStr;
                         rdr["description"] >> tempStr;
                         areaString = new RWCollectableString( string2RWCString(tempStr) );
-                        _ccGeoAreas->insert( areaString );
+                        _ccGeoAreas->push_back( areaString );
                     }
                 }
             }
@@ -3976,16 +3990,16 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         {
             //subToDelete->dumpDynamicData();
 
-            RWOrdered& ccFeeders = subToDelete->getCCFeeders();
-            long feedCount = ccFeeders.entries();
+            CtiFeeder_vec& ccFeeders = subToDelete->getCCFeeders();
+            long feedCount = ccFeeders.size();
             for(LONG i=0;i<feedCount;i++)
             {
-                CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.first();
-                RWOrdered& ccCapBanks = feederToDelete->getCCCapBanks();
-                long capCount = ccCapBanks.entries();
+                CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.begin();
+                CtiCCCapBank_SVector& ccCapBanks = feederToDelete->getCCCapBanks();
+                long capCount = ccCapBanks.size();
                 for (LONG j = 0; j < capCount; j++)
                 {
-                    CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.first();
+                    CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
 
                     deleteCapBank(capBankToDelete->getPAOId());
                 }
@@ -4005,12 +4019,12 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 string subBusName = subToDelete->getPAOName();
                 _paobject_subbus_map.erase(subToDelete->getPAOId());
                 //_ccSubstationBuses->removeAndDestroy(subToDelete);
-                for (LONG j = 0; j < _ccSubstationBuses->entries(); j++)
+                for (LONG j = 0; j < _ccSubstationBuses->size(); j++)
                 {
-                    CtiCCSubstationBus *subBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[j];
+                    CtiCCSubstationBus *subBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(j);
                     if (subBus->getPAOId() == subBusId)
                     {
-                        _ccSubstationBuses->removeAt(j);
+                        _ccSubstationBuses->erase(_ccSubstationBuses->begin()+j,_ccSubstationBuses->begin()+j+1);
                         break;
                     }
 
@@ -4047,11 +4061,11 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
         {
             //feederToDelete->dumpDynamicData();
 
-            RWOrdered &ccCapBanks = feederToDelete->getCCCapBanks();
-            long capCount = ccCapBanks.entries();
+            CtiCCCapBank_SVector &ccCapBanks = feederToDelete->getCCCapBanks();
+            long capCount = ccCapBanks.size();
             for (LONG j = 0; j < capCount; j++)
             {
-                CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.first();
+                CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
 
                 deleteCapBank(capBankToDelete->getPAOId());
             }

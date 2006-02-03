@@ -23,6 +23,7 @@
 #include "lmprogrambase.h"
 #include "observe.h"
 #include "lmenergyexchangeoffer.h"
+#include "lmenergyexchangecustomer.h"
 
 class CtiLMProgramEnergyExchange : public CtiLMProgramBase
 {
@@ -43,8 +44,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     const string& getMessageFooter() const;
     const string& getCanceledMsg() const;
     const string& getStoppedEarlyMsg() const;
-    RWOrdered& getLMEnergyExchangeOffers();
-    RWOrdered& getLMEnergyExchangeCustomers();
+    std::vector<CtiLMEnergyExchangeOffer*>& getLMEnergyExchangeOffers();
+    std::vector<CtiLMEnergyExchangeCustomer*>& getLMEnergyExchangeCustomers();
 
     CtiLMProgramEnergyExchange& setMinNotifyTime(LONG notifytime);
     CtiLMProgramEnergyExchange& setHeading(const string& head);
@@ -64,7 +65,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
@@ -91,9 +92,9 @@ private:
     string _canceledmsg;
     string _stoppedearlymsg;
 
-    RWOrdered _lmenergyexchangeoffers;
-    RWOrdered _lmenergyexchangecustomers;
-
+    std::vector<CtiLMEnergyExchangeOffer*>     _lmenergyexchangeoffers;
+    std::vector<CtiLMEnergyExchangeCustomer*>  _lmenergyexchangecustomers;
+                                               
     void restore(RWDBReader& rdr);
 };
 #endif

@@ -17,6 +17,8 @@
 
 extern ULONG _LM_DEBUG;
 
+using std::vector;
+
 CtiLMProgramConstraintChecker::CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901)
     : _lm_program(lm_program), _seconds_from_1901(seconds_from_1901)
 {
@@ -404,7 +406,7 @@ bool CtiLMProgramConstraintChecker::checkMaxActivateTime(ULONG proposed_start_fr
 bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901)
 {
     CtiLMProgramBase& lm_base = (CtiLMProgramBase&) _lm_program;
-    if(lm_base.getLMProgramControlWindows().entries() == 0 )// ||
+    if(lm_base.getLMProgramControlWindows().size() == 0 )// ||
 //        lm_program.getControlType() == CtiLMProgramBase::TimedType)
     {  // No control windows so don't consider control windows
         return true;
@@ -764,7 +766,7 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursAnnually(LONG& control_duration, 
 bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_duration, bool adjust_duration)
 {
     // If there are no control windows then i guess you can't violate any of them
-    if(_lm_program.getLMProgramControlWindows().entries() == 0 )
+    if(_lm_program.getLMProgramControlWindows().size() == 0 )
     {
         return true;
     }

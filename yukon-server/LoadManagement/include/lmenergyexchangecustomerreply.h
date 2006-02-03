@@ -22,7 +22,10 @@
 #include "ctitime.h"
 
 #include "observe.h"
-                
+#include "lmenergyexchangehourlycustomer.h"
+
+using std::vector;
+
 class CtiLMEnergyExchangeCustomerReply : public RWCollectable
 {
 
@@ -45,7 +48,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
     const string& getUserIdName() const;
     const string& getNameOfAcceptPerson() const;
     const string& getEnergyExchangeNotes() const;
-    RWOrdered& getLMEnergyExchangeHourlyCustomers();
+    vector<CtiLMEnergyExchangeHourlyCustomer*>& getLMEnergyExchangeHourlyCustomers();
 
     CtiLMEnergyExchangeCustomerReply& setCustomerId(LONG custid);
     CtiLMEnergyExchangeCustomerReply& setOfferId(LONG offid);
@@ -96,7 +99,7 @@ private:
     string _nameofacceptperson;
     string _energyexchangenotes;
 
-    RWOrdered _lmenergyexchangehourlycustomers;
+    vector<CtiLMEnergyExchangeHourlyCustomer*> _lmenergyexchangehourlycustomers;
 };
 #endif
 

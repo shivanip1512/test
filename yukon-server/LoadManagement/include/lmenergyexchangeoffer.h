@@ -40,7 +40,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     LONG getOfferId() const;
     const string& getRunStatus() const;
     const CtiTime& getOfferDate() const;
-    RWOrdered& getLMEnergyExchangeOfferRevisions();
+    std::vector<CtiLMEnergyExchangeOfferRevision*>& getLMEnergyExchangeOfferRevisions();
 
     CtiLMEnergyExchangeOffer& setPAOId(LONG paoid);
     CtiLMEnergyExchangeOffer& setOfferId(LONG offid);
@@ -88,7 +88,7 @@ private:
     string _runstatus;
     CtiTime _offerdate;
 
-    RWOrdered _lmenergyexchangeofferrevisions;
+    std::vector<CtiLMEnergyExchangeOfferRevision*> _lmenergyexchangeofferrevisions;
 
     void restore(RWDBReader& rdr);
 };

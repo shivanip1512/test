@@ -30,6 +30,17 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "ccstrategy.h"
+#include "sorted_vector.h"
+
+
+//For Sorted Vector, the vector will use this to determine position in the vector.
+struct CtiCCCapBank_less 
+{
+    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+        { return ( _X->getControlOrder() < _Y->getControlOrder() ); }
+};
+//Typedef for Sanity using sorted vectors
+typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_less> CtiCCCapBank_SVector;
 
 template<class T>
 struct FeederVARComparison
@@ -54,6 +65,9 @@ struct FeederVARComparison
         return returnBoolean;
 	}
 };
+
+
+
 
 class CtiCCFeeder : public RWCollectable
 {
@@ -128,7 +142,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getDecimalPlaces() const;
     BOOL getPeakTimeFlag() const;
     
-    RWSortedVector& getCCCapBanks();
+    CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
 
@@ -317,7 +331,7 @@ private:
     LONG _decimalPlaces;
     BOOL _peakTimeFlag;
 
-    RWSortedVector _cccapbanks;
+    CtiCCCapBank_SVector _cccapbanks;
 
     //verification info
     string _additionalFlags;

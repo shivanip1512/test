@@ -194,7 +194,7 @@ void CtiLoadManager::controlLoop()
 
 
     CtiTime currentDateTime;
-    RWOrdered controlAreaChanges;
+    vector<CtiLMControlArea*> controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
     CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();    
@@ -251,7 +251,7 @@ void CtiLoadManager::controlLoop()
 
         rwRunnable().serviceCancellation();
 
-        RWOrdered& controlAreas = *store->getControlAreas(secondsFrom1901);
+        vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(secondsFrom1901);
 
         try
         {
@@ -279,154 +279,152 @@ void CtiLoadManager::controlLoop()
         }
 
         BOOL examinedControlAreaForControlNeededFlag = FALSE;
-        if( controlAreas.entries() > 0 )
+
+        for(LONG i=0;i<controlAreas.size();i++)
         {
-            for(LONG i=0;i<controlAreas.entries();i++)
+            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+
+            try
             {
-                CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+                currentControlArea->handleNotification(secondsFrom1901, multiNotifMsg);
 
-                try
+                if( currentControlArea->isManualControlReceived() )
                 {
-                    currentControlArea->handleNotification(secondsFrom1901, multiNotifMsg);
-
-                    if( currentControlArea->isManualControlReceived() )
-                    {
-                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                    }
-
-                if( !currentControlArea->getDisableFlag() ) // how about control area windows?
-                {
-                    currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
-                    currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg, multiNotifMsg);
+                    currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
                 }
 
-                    if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
+            if( !currentControlArea->getDisableFlag() ) // how about control area windows?
+            {
+                currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
+                currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg, multiNotifMsg);
+            }
+
+                if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
+                {
+                    if( currentControlArea->isTriggerCheckNeeded(secondsFrom1901) )
                     {
-                        if( currentControlArea->isTriggerCheckNeeded(secondsFrom1901) )
+                        // Do we need to reduce load?
+                        DOUBLE loadReductionNeeded = currentControlArea->calculateLoadReductionNeeded();
+                        if( loadReductionNeeded > 0.0 &&
+                            currentControlArea->isPastMinResponseTime(secondsFrom1901) )
                         {
-                            // Do we need to reduce load?
-                            DOUBLE loadReductionNeeded = currentControlArea->calculateLoadReductionNeeded();
-                            if( loadReductionNeeded > 0.0 &&
-                                currentControlArea->isPastMinResponseTime(secondsFrom1901) )
+                            if( currentControlArea->getControlAreaState() != CtiLMControlArea::FullyActiveState )
                             {
-                                if( currentControlArea->getControlAreaState() != CtiLMControlArea::FullyActiveState )
-                                {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                }
-                                if( currentControlArea->getControlInterval() != 0 ||
-                                    currentControlArea->isThresholdTriggerTripped() )
-                                {
-                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                }
-                                else
-                                {
-                                    //Special Case: if only a status trigger is tripped and the control interval is 0,
-                                    //then we need to start all the programs as if they were started manually.
-                                    currentControlArea->manuallyStartAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                    // Potentially this control area is ready for manual control
-                                    // If so lets do it now otherwise we have to wait for the top
-                                    // of the main loop which could be a while
-                                    if( currentControlArea->isManualControlReceived() )
-                                    {
-                                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                    }                                                                                               
-                                }                                    
-                                
-                                currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                                else if( currentControlArea->isThresholdTriggerTripped() )
-                                {
-                                    //all load reducing programs are currently running
-                                    //can not reduce any more demand
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
-                                }
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
                             }
-
-                            // See if we can restore some load
-                            // The idea here is to stop some control
-                            // First, if any programs are below their program restore offset take them first
-                            // Second, if none of the programs stopped because of their restore offsets, go by stop priorities
-                            if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
-                               currentControlArea->isPastMinResponseTime(secondsFrom1901) )
+                            if( currentControlArea->getControlInterval() != 0 ||
+                                currentControlArea->isThresholdTriggerTripped() )
                             {
-                                if(currentControlArea->stopProgramsBelowThreshold(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg))
-                                {
-                                    //don't have to do anything, just don't take any stop priorities
-                                }
-                                else if(currentControlArea->hasStatusTrigger() &&
-                                        !currentControlArea->isStatusTriggerTripped() &&
-                                        (!currentControlArea->hasThresholdTrigger() || (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
-                                        currentControlArea->getControlInterval() == 0)
-                                {   // Only stop them manually if there is no control interval!
-                                    currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg); 
-                                    // Potentially this control area is ready for manual control
-                                    // If so lets do it now otherwise we have to wait for the top
-                                    // of the main loop which could be a while
-                                    if( currentControlArea->isManualControlReceived() )
-                                    {
-                                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                    }                                                               
-                                }
-                                else if(currentControlArea->shouldReduceControl())
-                                {
-                                    currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
-                                }
-                            }
-
-                            if( currentControlArea->getControlInterval() == 0 )
-                            {
-                                currentControlArea->setNewPointDataReceivedFlag(FALSE);
+                                currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
                             }
                             else
                             {
-                                currentControlArea->figureNextCheckTime(secondsFrom1901);
+                                //Special Case: if only a status trigger is tripped and the control interval is 0,
+                                //then we need to start all the programs as if they were started manually.
+                                currentControlArea->manuallyStartAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                // Potentially this control area is ready for manual control
+                                // If so lets do it now otherwise we have to wait for the top
+                                // of the main loop which could be a while
+                                if( currentControlArea->isManualControlReceived() )
+                                {
+                                    currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                }                                                                                               
+                            }                                    
+                            
+                            currentControlArea->setUpdatedFlag(TRUE);
                             }
-                            examinedControlAreaForControlNeededFlag = TRUE;
-                        }
-
-                        //This ends up refreshing any control necessary
-                        if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                            currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
-                        {
-//                            if( currentControlArea->isControlStillNeeded() )
-                        {
-                            //CtiLockGuard<CtiLogger> logger_guard(dout);
-                            //dout << CtiTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-                            if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
+                            else if( currentControlArea->isThresholdTriggerTripped() )
                             {
-                                currentControlArea->setUpdatedFlag(TRUE);
+                                //all load reducing programs are currently running
+                                //can not reduce any more demand
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
                             }
                         }
 
+                        // See if we can restore some load
+                        // The idea here is to stop some control
+                        // First, if any programs are below their program restore offset take them first
+                        // Second, if none of the programs stopped because of their restore offsets, go by stop priorities
+                        if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
+                           currentControlArea->isPastMinResponseTime(secondsFrom1901) )
+                        {
+                            if(currentControlArea->stopProgramsBelowThreshold(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg))
+                            {
+                                //don't have to do anything, just don't take any stop priorities
+                            }
+                            else if(currentControlArea->hasStatusTrigger() &&
+                                    !currentControlArea->isStatusTriggerTripped() &&
+                                    (!currentControlArea->hasThresholdTrigger() || (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
+                                    currentControlArea->getControlInterval() == 0)
+                            {   // Only stop them manually if there is no control interval!
+                                currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg); 
+                                // Potentially this control area is ready for manual control
+                                // If so lets do it now otherwise we have to wait for the top
+                                // of the main loop which could be a while
+                                if( currentControlArea->isManualControlReceived() )
+                                {
+                                    currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                }                                                               
+                            }
+                            else if(currentControlArea->shouldReduceControl())
+                            {
+                                currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
+                            }
                         }
 
-                        if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
-                            !currentControlArea->isControlStillNeeded() )
+                        if( currentControlArea->getControlInterval() == 0 )
                         {
-                            currentControlArea->setControlAreaState(CtiLMControlArea::InactiveState);
+                            currentControlArea->setNewPointDataReceivedFlag(FALSE);
                         }
-                        examinedControlAreaForControlNeededFlag = FALSE;
-                    }
-                    else if( !currentControlArea->isControlTime(secondsFromBeginningOfDay) &&
-                             (currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
-                              currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState) )
-                    {
-                        if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
+                        else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
+                            currentControlArea->figureNextCheckTime(secondsFrom1901);
+                        }
+                        examinedControlAreaForControlNeededFlag = TRUE;
+                    }
+
+                    //This ends up refreshing any control necessary
+                    if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
+                        currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
+                    {
+//                            if( currentControlArea->isControlStillNeeded() )
+                    {
+                        //CtiLockGuard<CtiLogger> logger_guard(dout);
+                        //dout << CtiTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
+                        if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
+                        {
                             currentControlArea->setUpdatedFlag(TRUE);
                         }
                     }
+
+                    }
+
+                    if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
+                        !currentControlArea->isControlStillNeeded() )
+                    {
+                        currentControlArea->setControlAreaState(CtiLMControlArea::InactiveState);
+                    }
+                    examinedControlAreaForControlNeededFlag = FALSE;
                 }
-                catch(...)
+                else if( !currentControlArea->isControlTime(secondsFromBeginningOfDay) &&
+                         (currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
+                          currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState) )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
+                        currentControlArea->setUpdatedFlag(TRUE);
+                    }
                 }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
 
@@ -484,14 +482,14 @@ void CtiLoadManager::controlLoop()
             time_t now = time(NULL);
             if(received_message || now > (last_ca_msg_sent + (control_loop_outmsg_delay/1000.0))) /* delay is in millis */
             {
-                for(LONG i=0;i<controlAreas.entries();i++)
+                for(LONG i=0;i<controlAreas.size();i++)
                 {
                     CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         
                     if( currentControlArea->getUpdatedFlag() )
                     {
                         currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
-                        controlAreaChanges.insert(currentControlArea);
+                        controlAreaChanges.push_back(currentControlArea);
                         currentControlArea->setUpdatedFlag(FALSE);
                     }
                 }
@@ -499,10 +497,10 @@ void CtiLoadManager::controlLoop()
                 if( _LM_DEBUG & LM_DEBUG_CLIENT )
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << "Found " << controlAreaChanges.entries() << " dirty control areas to send to clients" << endl;
+                    dout << CtiTime() << "Found " << controlAreaChanges.size() << " dirty control areas to send to clients" << endl;
                 }
         
-                if(controlAreaChanges.entries() > 0)
+                if(controlAreaChanges.size() > 0)
                 {
                     CtiLMExecutorFactory f;
                     CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
@@ -520,7 +518,7 @@ void CtiLoadManager::controlLoop()
                 
                     store->dumpAllDynamicData();
                     last_ca_msg_sent = now;
-                    controlAreaChanges.clear();
+                    controlAreaChanges.clear();// TS Add Destroy? was not there before
                 }
             }
         }
@@ -818,7 +816,7 @@ void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
 
   Registers for all points of the control areas.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
+void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlAreas)
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -837,15 +835,15 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
     { //register for each point specifically
         regMsg = new CtiPointRegistrationMsg();
 
-        for(LONG i=0;i<controlAreas.entries();i++)
+        for(LONG i=0;i<controlAreas.size();i++)
         {
             CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
-            RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
+            vector<CtiLMControlAreaTrigger*>& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
 
-            for(LONG j=0;j<controlAreaTriggers.entries();j++)
+            for(LONG j=0;j<controlAreaTriggers.size();j++)
             {
-                CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
+                CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers.at(j);
 
                 if( currentTrigger->getPointId() > 0 )
                 {
@@ -857,11 +855,11 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
                 }
             }
 
-            RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
+            vector<CtiLMProgramBase*>& lmPrograms = currentControlArea->getLMPrograms();
 
-            for(LONG k=0;k<lmPrograms.entries();k++)
+            for(LONG k=0;k<lmPrograms.size();k++)
             {
-                CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
+                CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms.at(k);
                 if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
                     CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
@@ -1053,16 +1051,16 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
 
-    RWOrdered& controlAreas = (*store->getControlAreas(secondsFrom1901));
-    for(LONG i=0;i<controlAreas.entries();i++)
+    vector<CtiLMControlArea*>& controlAreas = (*store->getControlAreas(secondsFrom1901));
+    for(LONG i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
-        RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
+        vector<CtiLMControlAreaTrigger*>& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
 
-        for(LONG j=0;j<controlAreaTriggers.entries();j++)
+        for(LONG j=0;j<controlAreaTriggers.size();j++)
         {
-            CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
+            CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers.at(j);
 
             if( currentTrigger->getPointId() == pointID )
             {

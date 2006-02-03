@@ -143,14 +143,23 @@ void CtiCCState::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::operator=(const CtiCCState& right)
 {
-    if( this != &right )
-    {
-        _text = right._text;
-        _foregroundcolor = right._foregroundcolor;
-        _backgroundcolor = right._backgroundcolor;
-    }
 
-    return *this;
+	if ( &right != NULL )
+	{
+		if( this != &right )
+		{
+			_text = right.getText();
+			_foregroundcolor = right.getForegroundColor();
+			_backgroundcolor = right.getBackgroundColor();
+		}
+	}
+	else
+	{
+		CtiLockGuard<CtiLogger> logger_guard(dout);
+		dout << CtiTime() << " - Error: state == NULL " << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+	}
+	return *this;
+
 }
 
 /*---------------------------------------------------------------------------

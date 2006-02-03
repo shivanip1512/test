@@ -18,6 +18,9 @@
 #include "logger.h"
 #include "lmenergyexchangeoffer.h"
 #include "rwutil.h"
+#include "utility.h"
+
+using std::vector;
 
 extern ULONG _LM_DEBUG;
 
@@ -46,7 +49,8 @@ CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(const CtiLMEnergyExchangeOffe
 CtiLMEnergyExchangeOffer::~CtiLMEnergyExchangeOffer()
 {
 
-    _lmenergyexchangeofferrevisions.clearAndDestroy();
+    delete_vector(_lmenergyexchangeofferrevisions);
+    _lmenergyexchangeofferrevisions.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -99,7 +103,7 @@ const CtiTime& CtiLMEnergyExchangeOffer::getOfferDate() const
 
     Returns a list of offer revisions for this energy exchange offer.
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
+vector<CtiLMEnergyExchangeOfferRevision*>& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
 {
 
     return _lmenergyexchangeofferrevisions;
@@ -170,9 +174,9 @@ CtiLMEnergyExchangeOfferRevision* CtiLMEnergyExchangeOffer::getCurrentOfferRevis
 
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = NULL;
 
-    if( _lmenergyexchangeofferrevisions.entries() > 0 )
+    if( _lmenergyexchangeofferrevisions.size() > 0 )
     {
-        currentOfferRevision = (CtiLMEnergyExchangeOfferRevision*)_lmenergyexchangeofferrevisions[_lmenergyexchangeofferrevisions.entries()-1];
+        currentOfferRevision = (CtiLMEnergyExchangeOfferRevision*)_lmenergyexchangeofferrevisions[_lmenergyexchangeofferrevisions.size()-1];
     }
 
     return currentOfferRevision;
@@ -435,10 +439,11 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyE
         _runstatus = right._runstatus;
         _offerdate = right._offerdate;
 
-        _lmenergyexchangeofferrevisions.clearAndDestroy();
-        for(LONG i=0;i<right._lmenergyexchangeofferrevisions.entries();i++)
+        delete_vector(_lmenergyexchangeofferrevisions);
+        _lmenergyexchangeofferrevisions.clear();
+        for(LONG i=0;i<right._lmenergyexchangeofferrevisions.size();i++)
         {
-            _lmenergyexchangeofferrevisions.insert(((CtiLMEnergyExchangeOfferRevision*)right._lmenergyexchangeofferrevisions[i])->replicate());
+            _lmenergyexchangeofferrevisions.push_back(((CtiLMEnergyExchangeOfferRevision*)right._lmenergyexchangeofferrevisions[i])->replicate());
         }
     }
 

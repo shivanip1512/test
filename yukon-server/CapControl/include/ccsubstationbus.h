@@ -24,6 +24,7 @@ using std::list;
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>  
 #include <list> 
+#include <vector>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -40,6 +41,8 @@ using std::list;
 #define FAILEDANDQUESTIONABLEBANKS 3
 #define SELECTEDFORVERIFICATIONBANKS 4
 #define BANKSINACTIVEFORXTIME 5
+
+typedef std::vector<CtiCCFeeder*> CtiFeeder_vec;
 
 class CtiCCSubstationBus : public RWCollectable
 {
@@ -119,7 +122,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getOverlappingVerificationFlag() const;
 
 
-    RWOrdered& getCCFeeders();
+    CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setPAOId(LONG id);
@@ -330,7 +333,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
     LONG _currentVerificationFeederId; 
-    RWOrdered _ccfeeders;
+    std:: vector <CtiCCFeeder*> _ccfeeders;
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;

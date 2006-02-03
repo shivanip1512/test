@@ -51,8 +51,8 @@ CtiLMProgramCurtailment::CtiLMProgramCurtailment(const CtiLMProgramCurtailment& 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment::~CtiLMProgramCurtailment()
 {
-
-    _lmprogramcurtailmentcustomers.clearAndDestroy();
+    delete_vector(_lmprogramcurtailmentcustomers);
+    _lmprogramcurtailmentcustomers.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -221,7 +221,7 @@ const string& CtiLMProgramCurtailment::getAdditionalInfo() const
 
     Returns a list of customers for this curtailment program
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers()
+vector<CtiLMCurtailCustomer*>& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers()
 {
 
     return _lmprogramcurtailmentcustomers;
@@ -422,7 +422,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const string
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
 
@@ -466,7 +466,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setCurtailmentStartTime(gInvalidCtiTime);
             //setStartedControlling(gInvalidCtiTime);
             setCurtailmentStopTime(gInvalidCtiTime);
-            for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+            for(LONG i=0;i<_lmprogramcurtailmentcustomers.size();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
             }
@@ -482,7 +482,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setCurtailmentStartTime(gInvalidCtiTime);
             //setStartedControlling(gInvalidCtiTime);
             setCurtailmentStopTime(gInvalidCtiTime);
-            for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+            for(LONG i=0;i<_lmprogramcurtailmentcustomers.size();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
             }
@@ -581,64 +581,62 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
 {
-    if( _lmprogramcurtailmentcustomers.entries() > 0 )
+    for(LONG i=0;i<_lmprogramcurtailmentcustomers.size();i++)
     {
-        for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+        CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
+        currentCustomer->setCurtailReferenceId(getCurtailReferenceId());
+        if( currentCustomer->getRequireAck() )
         {
-            CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
-            currentCustomer->setCurtailReferenceId(getCurtailReferenceId());
-            if( currentCustomer->getRequireAck() )
-            {
-                currentCustomer->setAcknowledgeStatus(CtiLMCurtailCustomer::UnAcknowledgedAckStatus);
-            }
-            else
-            {
-                currentCustomer->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
-            }
-            currentCustomer->addLMCurtailCustomerActivityTable();
-
-            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
-	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
-            emailMsg->setSubject(getHeading());
-
-            string emailBody = getMessageHeader();
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Facility:  ";
-            emailBody += currentCustomer->getCompanyName();
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Scheduled Start:  ";
-            emailBody += getCurtailmentStartTime().asString();
-            emailBody += " ";
-            emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Scheduled Duration:  ";
-            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
-            char tempchar[64];
-            if( (durationInSeconds/3600) > 0 )
-            {
-                _ultoa(durationInSeconds/3600,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " hours ";
-            }
-            if( ((durationInSeconds%3600)/60) > 0 )
-            {
-                _ultoa((durationInSeconds%3600)/60,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " minutes ";
-            }
-            if( ((durationInSeconds%3600)%60) > 0 )
-            {
-                _ultoa((durationInSeconds%3600)%60,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " seconds ";
-            }
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += getMessageFooter();
-
-            emailMsg->setBody(emailBody);
-            multiNotificationMsg->insert(emailMsg);
+            currentCustomer->setAcknowledgeStatus(CtiLMCurtailCustomer::UnAcknowledgedAckStatus);
         }
+        else
+        {
+            currentCustomer->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
+        }
+        currentCustomer->addLMCurtailCustomerActivityTable();
+
+        CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+    emailMsg->setCustomerId(currentCustomer->getCustomerId());
+        emailMsg->setSubject(getHeading());
+
+        string emailBody = getMessageHeader();
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Facility:  ";
+        emailBody += currentCustomer->getCompanyName();
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Scheduled Start:  ";
+        emailBody += getCurtailmentStartTime().asString();
+        emailBody += " ";
+        emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Scheduled Duration:  ";
+        ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+        char tempchar[64];
+        if( (durationInSeconds/3600) > 0 )
+        {
+            _ultoa(durationInSeconds/3600,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " hours ";
+        }
+        if( ((durationInSeconds%3600)/60) > 0 )
+        {
+            _ultoa((durationInSeconds%3600)/60,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " minutes ";
+        }
+        if( ((durationInSeconds%3600)%60) > 0 )
+        {
+            _ultoa((durationInSeconds%3600)%60,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " seconds ";
+        }
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += getMessageFooter();
+
+        emailMsg->setBody(emailBody);
+        multiNotificationMsg->insert(emailMsg);
     }
+
 }
 
 /*---------------------------------------------------------------------------
@@ -648,70 +646,67 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificationMsg)
 {
-    if( _lmprogramcurtailmentcustomers.entries() > 0 )
+    for(LONG i=0;i<_lmprogramcurtailmentcustomers.size();i++)
     {
-        for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+        CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
+        currentCustomer->dumpDynamicData();
+
+        CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+    emailMsg->setCustomerId(currentCustomer->getCustomerId());
+        emailMsg->setSubject(getHeading());
+
+        string emailBody;
+        if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::CanceledRunStatus) )
         {
-            CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
-            currentCustomer->dumpDynamicData();
-
-            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
-	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
-            emailMsg->setSubject(getHeading());
-
-            string emailBody;
-            if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::CanceledRunStatus) )
-            {
-                emailBody = getCanceledMsg();
-            }
-            else if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::StoppedEarlyRunStatus) )
-            {
-                emailBody = getStoppedEarlyMsg();
-            }
-            else
-            {
-                emailBody = "THIS CURTAILMENT HAS BEEN CANCELED";
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += getMessageHeader();
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Facility:  ";
-            emailBody += currentCustomer->getCompanyName();
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Scheduled Start:  ";
-            emailBody += getCurtailmentStartTime().asString();
-            emailBody += " ";
-            emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += "Scheduled Duration:  ";
-            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
-            char tempchar[64];
-            if( (durationInSeconds/3600) > 0 )
-            {
-                _ultoa(durationInSeconds/3600,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " hours ";
-            }
-            if( ((durationInSeconds%3600)/60) > 0 )
-            {
-                _ultoa((durationInSeconds%3600)/60,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " minutes ";
-            }
-            if( ((durationInSeconds%3600)%60) > 0 )
-            {
-                _ultoa((durationInSeconds%3600)%60,tempchar,10);
-                emailBody += tempchar;
-                emailBody += " seconds ";
-            }
-            emailBody += "\r\n\r\n";// 2 return lines
-            emailBody += getMessageFooter();
-
-            emailMsg->setBody(emailBody);
-            multiNotificationMsg->insert(emailMsg);
+            emailBody = getCanceledMsg();
         }
+        else if( !stringCompareIgnoreCase(getRunStatus(), CtiLMProgramCurtailment::StoppedEarlyRunStatus) )
+        {
+            emailBody = getStoppedEarlyMsg();
+        }
+        else
+        {
+            emailBody = "THIS CURTAILMENT HAS BEEN CANCELED";
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += getMessageHeader();
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Facility:  ";
+        emailBody += currentCustomer->getCompanyName();
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Scheduled Start:  ";
+        emailBody += getCurtailmentStartTime().asString();
+        emailBody += " ";
+        emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += "Scheduled Duration:  ";
+        ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+        char tempchar[64];
+        if( (durationInSeconds/3600) > 0 )
+        {
+            _ultoa(durationInSeconds/3600,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " hours ";
+        }
+        if( ((durationInSeconds%3600)/60) > 0 )
+        {
+            _ultoa((durationInSeconds%3600)/60,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " minutes ";
+        }
+        if( ((durationInSeconds%3600)%60) > 0 )
+        {
+            _ultoa((durationInSeconds%3600)%60,tempchar,10);
+            emailBody += tempchar;
+            emailBody += " seconds ";
+        }
+        emailBody += "\r\n\r\n";// 2 return lines
+        emailBody += getMessageFooter();
+
+        emailMsg->setBody(emailBody);
+        multiNotificationMsg->insert(emailMsg);
     }
 }
 
@@ -1027,10 +1022,11 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::operator=(const CtiLMProgramCu
         _runstatus = right._runstatus;
         _additionalinfo = right._additionalinfo;
 
-        _lmprogramcurtailmentcustomers.clearAndDestroy();
-        for(LONG i=0;i<right._lmprogramcurtailmentcustomers.entries();i++)
+        delete_vector(_lmprogramcurtailmentcustomers);
+        _lmprogramcurtailmentcustomers.clear();
+        for(LONG i=0;i<right._lmprogramcurtailmentcustomers.size();i++)
         {
-            _lmprogramcurtailmentcustomers.insert(((CtiLMCurtailCustomer*)right._lmprogramcurtailmentcustomers[i])->replicate());
+            _lmprogramcurtailmentcustomers.push_back(((CtiLMCurtailCustomer*)right._lmprogramcurtailmentcustomers[i])->replicate());
         }
     }
 

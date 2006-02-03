@@ -276,7 +276,7 @@ void CtiCCService::Run()
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+            CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
             if ( !store->isValid() )
             {
                 trouble = true;

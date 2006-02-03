@@ -80,7 +80,8 @@ CtiLMProgramDirect::CtiLMProgramDirect(const CtiLMProgramDirect& directprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::~CtiLMProgramDirect()
 {
-    _lmprogramdirectgears.clearAndDestroy();
+    delete_vector(_lmprogramdirectgears);
+    _lmprogramdirectgears.clear();
 }
 
 /*----------------------------------------------------------------------------
@@ -312,7 +313,7 @@ bool CtiLMProgramDirect::getIsRampingOut()
 
     Returns the pointer to a list of gears for this direct program
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMProgramDirect::getLMProgramDirectGears()
+vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears()
 {
     return _lmprogramdirectgears;
 }
@@ -527,14 +528,14 @@ CtiLMProgramDirect& CtiLMProgramDirect::setConstraintOverride(BOOL override)
 
     Sets the group selection method of the direct program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
     DOUBLE expectedLoadReduced = 0.0;
 
-    if( _lmprogramdirectgears.entries() > 0 && _lmprogramdirectgroups.size() > 0 )
+    if( _lmprogramdirectgears.size() > 0 && _lmprogramdirectgroups.size() > 0 )
     {
         CtiLMProgramDirectGear* currentGearObject = NULL;
-        if( _currentgearnumber < _lmprogramdirectgears.entries() )
+        if( _currentgearnumber < _lmprogramdirectgears.size() )
         {
             LONG previousGearNumber = _currentgearnumber;
             BOOL gearChangeBoolean = hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
@@ -975,7 +976,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
             dout << CtiTime() << " - Invalid current gear number: " << _currentgearnumber << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
-    else if( _lmprogramdirectgears.entries() <= 0 )
+    else if( _lmprogramdirectgears.size() <= 0 )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Program: " << getPAOName() << " doesn't have any gears in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1019,10 +1020,10 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
 {
     DOUBLE expectedLoadReduced = 0.0;
 
-    if( _lmprogramdirectgears.entries() > 0 && _lmprogramdirectgroups.size() > 0)
+    if( _lmprogramdirectgears.size() > 0 && _lmprogramdirectgroups.size() > 0)
     {
         CtiLMProgramDirectGear* currentGearObject = NULL;
-        if( _currentgearnumber < _lmprogramdirectgears.entries() )
+        if( _currentgearnumber < _lmprogramdirectgears.size() )
         {
             currentGearObject = getCurrentGearObject();
 
@@ -1577,7 +1578,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
             dout << CtiTime() << " - Invalid current gear number: " << _currentgearnumber << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
-    else if( _lmprogramdirectgears.entries() <= 0 )
+    else if( _lmprogramdirectgears.size() <= 0 )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Program: " << getPAOName() << " doesn't have any gears in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1908,12 +1909,12 @@ CtiLMGroupPtr CtiLMProgramDirect::findGroupToRampOut(CtiLMProgramDirectGear* lm_
     Returns a boolean that represents if the current gear for the program
     has changed because of duration, priority, or trigger offset.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded)
+BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded)
 {
     BOOL returnBoolean = FALSE;
 
     //The below block sees if the program needs to shift to a higher gear
-    if( _currentgearnumber < (_lmprogramdirectgears.entries()-1) )
+    if( _currentgearnumber < (_lmprogramdirectgears.size()-1) )
     {
         CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
         CtiLMProgramDirectGear* prevGearObject = 0;
@@ -1932,7 +1933,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
             LONG secondsControlling = secondsFrom1901 - getStartedControlling().seconds();
             if( getProgramState() != CtiLMProgramBase::InactiveState &&
                 secondsControlling >= currentGearObject->getChangeDuration() &&
-                _currentgearnumber+1 < _lmprogramdirectgears.entries() )
+                _currentgearnumber+1 < _lmprogramdirectgears.size() )
             {
                 _currentgearnumber++;
                 {
@@ -1957,7 +1958,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
         else if( !stringCompareIgnoreCase(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::PriorityChangeCondition) )
         {
             if( currentPriority >= currentGearObject->getChangePriority() &&
-                _currentgearnumber+1 < _lmprogramdirectgears.entries() )
+                _currentgearnumber+1 < _lmprogramdirectgears.size() )
             {
                 _currentgearnumber++;
                 {
@@ -1982,7 +1983,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
         else if( !stringCompareIgnoreCase(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
         {
             if( currentGearObject->getChangeTriggerNumber() > 0 &&
-                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.entries() )
+                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
             {
                 CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[currentGearObject->getChangeTriggerNumber()-1];
 
@@ -1990,7 +1991,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
 
                     if((trigger->getPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ||
                       trigger->getProjectedPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ) &&
-                    _currentgearnumber+1 < _lmprogramdirectgears.entries() )
+                    _currentgearnumber+1 < _lmprogramdirectgears.size() )
                 {
                     _currentgearnumber++;
                     {
@@ -2048,7 +2049,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
             dout << CtiTime() << " - Invalid current gear change condition: " << currentGearObject->getChangeCondition() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
-    else if( _currentgearnumber == (_lmprogramdirectgears.entries()-1) )
+    else if( _currentgearnumber == (_lmprogramdirectgears.size()-1) )
     {
         //Already at highest gear!!!
     }
@@ -2068,7 +2069,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
     if( !returnBoolean )
     {
         if( _currentgearnumber > 0 &&
-            _currentgearnumber <= (_lmprogramdirectgears.entries()-1) )
+            _currentgearnumber <= (_lmprogramdirectgears.size()-1) )
         {
             CtiLMProgramDirectGear* previousGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
 
@@ -2105,7 +2106,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
             else if( !stringCompareIgnoreCase(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
             {
                 if( previousGearObject->getChangeTriggerNumber() > 0 &&
-                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.entries() )
+                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
                 {
                     CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[previousGearObject->getChangeTriggerNumber()-1];
                     if( isTriggerCheckNeeded && 
@@ -2172,7 +2173,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
     Maintains control on the program by going through all groups that are
     active and sending refresh pil requests if needed.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded)
+BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded)
 {
     BOOL returnBoolean = FALSE;
     LONG previousGearNumber = _currentgearnumber;
@@ -2225,7 +2226,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
     CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
     CtiLMProgramDirectGear* previousGearObject = NULL;
 
-    if( previousGearNumber < _lmprogramdirectgears.entries() )
+    if( previousGearNumber < _lmprogramdirectgears.size() )
     {
         previousGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[previousGearNumber];
     }
@@ -4153,7 +4154,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
                     text += getPAOName();
                     text += ", a timed program, was scheduled to start but did not due to constraint violations";
                     string additional = "";
-                    const std::vector<string>& cons_results = con_checker.getViolations();
+                    const vector<string>& cons_results = con_checker.getViolations();
                     for(std::vector<string>::const_iterator iter = cons_results.begin(); iter != cons_results.end(); iter++)
                     {
                         additional += *iter;
@@ -4364,7 +4365,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 
     CtiLMProgramDirectGear* returnGearObject = NULL;
 
-    if( _currentgearnumber < _lmprogramdirectgears.entries() )
+    if( _currentgearnumber < _lmprogramdirectgears.size() )
     {
         returnGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber];
     }
@@ -4385,7 +4386,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 {
     CtiLMProgramBase::restoreGuts( istrm );
-
+    //TS FLAG
     RWOrdered* rw_groups = new RWOrdered();
     for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
     {
@@ -4422,6 +4423,7 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     {
         _currentgearnumber = _currentgearnumber - 1;
     }
+    //TS delete_vector before this?
     delete rw_groups;
 }
 
@@ -4435,7 +4437,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
     CtiLMProgramBase::saveGuts( ostrm );
 
     // Only send active master/subordinate programs
-    std::vector<CtiLMProgramDirect*> active_masters(_master_programs.size());
+    vector<CtiLMProgramDirect*> active_masters(_master_programs.size());
     for(std::set<CtiLMProgramDirect*>::const_iterator m_iter = _master_programs.begin();
         m_iter != _master_programs.end();
         m_iter++)
@@ -4446,7 +4448,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         }
     }
     
-    std::vector<CtiLMProgramDirect*> active_subordinates(_subordinate_programs.size());
+    vector<CtiLMProgramDirect*> active_subordinates(_subordinate_programs.size());
     for(std::set<CtiLMProgramDirect*>::const_iterator s_iter = _subordinate_programs.begin();
         s_iter != _subordinate_programs.end();
         s_iter++)
@@ -4518,9 +4520,9 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _constraint_override = right._constraint_override;
         _announced_program_constraint_violation = right._announced_program_constraint_violation;
 
-         for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
+         for(LONG i=0;i<right._lmprogramdirectgears.size();i++)
          {
-                _lmprogramdirectgears.insert(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
+                _lmprogramdirectgears.push_back(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
          }
 
          _lmprogramdirectgroups = right._lmprogramdirectgroups;
@@ -4720,7 +4722,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
 
 ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULONG stop) 
 {
-    RWOrdered lm_gears = getLMProgramDirectGears();
+    vector<CtiLMProgramDirectGear*> lm_gears = getLMProgramDirectGears();
     CtiLMProgramDirectGear* cur_gear = (CtiLMProgramDirectGear*) lm_gears[proposed_gear];
     
     string method = cur_gear->getControlMethod();

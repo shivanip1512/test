@@ -60,7 +60,8 @@ CtiCCFeeder::~CtiCCFeeder()
     _pointIds.clear();
     try
     {
-        _cccapbanks.clearAndDestroy();
+        delete_vector(_cccapbanks);
+        _cccapbanks.clear();
     }
     catch (...)
     {
@@ -645,7 +646,7 @@ BOOL CtiCCFeeder::getPeakTimeFlag() const
 
     Returns the list of cap banks in the feeder
 ---------------------------------------------------------------------------*/
-RWSortedVector& CtiCCFeeder::getCCCapBanks()
+CtiCCCapBank_SVector& CtiCCFeeder::getCCCapBanks()
 {
     return _cccapbanks;
 }
@@ -1409,7 +1410,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
 
     if( kvarSolution < 0.0 )
     {
-        for(int i=0;i<_cccapbanks.entries();i++)
+        for(int i=0;i<_cccapbanks.size();i++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
 
@@ -1451,7 +1452,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
     }
     else if( kvarSolution > 0.0 )
     {
-        for(int i=_cccapbanks.entries()-1;i>=0;i--)
+        for(int i=_cccapbanks.size()-1;i>=0;i--)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
             if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
@@ -1742,7 +1743,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
         else
             tempValue = getCurrentVarLoadPointValue();
 
-        for(LONG i=0;i<_cccapbanks.entries();i++)
+        for(LONG i=0;i<_cccapbanks.size();i++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
             if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -1883,7 +1884,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                                 << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
 
                                 CtiCCCapBank* currentCapBank = NULL;
-                                for(int i=0;i<_cccapbanks.entries();i++)
+                                for(int i=0;i<_cccapbanks.size();i++)
                                 {
                                     currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                                     dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
@@ -1921,7 +1922,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
     
                             CtiCCCapBank* currentCapBank = NULL;
-                            for(int i=0;i<_cccapbanks.entries();i++)
+                            for(int i=0;i<_cccapbanks.size();i++)
                             {
                                 currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                                 dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
@@ -1998,7 +1999,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     try
                     {
                         CtiCCCapBank* currentCapBank = NULL;
-                        for(int j=0;j<_cccapbanks.entries();j++)
+                        for(int j=0;j<_cccapbanks.size();j++)
                         {
                             currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
                             dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
@@ -2044,7 +2045,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     try
                     {
                         CtiCCCapBank* currentCapBank = NULL;
-                        for(int j=0;j<_cccapbanks.entries();j++)
+                        for(int j=0;j<_cccapbanks.size();j++)
                         {
                             currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
                             dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
@@ -2094,7 +2095,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
               additional += " /Feeder: ";
               additional += getPAOName();;
 
-    for(LONG i=0;i<_cccapbanks.entries();i++)
+    for(LONG i=0;i<_cccapbanks.size();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
@@ -2310,7 +2311,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
         {
             DOUBLE oldVarValue = getVarValueBeforeControl();
             DOUBLE newVarValue = getCurrentVarLoadPointValue();
-            for(LONG i=0;i<_cccapbanks.entries();i++)
+            for(LONG i=0;i<_cccapbanks.size();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                 if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
@@ -2383,7 +2384,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, RWOrder
 {
     BOOL returnBoolean = FALSE;
 
-    for(LONG i=0;i<_cccapbanks.entries();i++)
+    for(LONG i=0;i<_cccapbanks.size();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() &&
@@ -2890,8 +2891,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _currentvoltloadpointid
     << _currentvoltloadpointvalue;
 
-    ostrm << _cccapbanks.entries();
-    for(LONG i=0;i<_cccapbanks.entries();i++)
+    ostrm << _cccapbanks.size();
+    for(LONG i=0;i<_cccapbanks.size();i++)
     {
         ostrm << (CtiCCCapBank*)_cccapbanks[i];
     }
@@ -2963,8 +2964,9 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _decimalPlaces = right._decimalPlaces;
         _peakTimeFlag = right._peakTimeFlag;
 
-        _cccapbanks.clearAndDestroy();
-        for(LONG i=0;i<right._cccapbanks.entries();i++)
+        delete_vector(_cccapbanks);
+        _cccapbanks.clear();
+        for(LONG i=0;i<right._cccapbanks.size();i++)
         {
             _cccapbanks.insert(((CtiCCCapBank*)right._cccapbanks[i])->replicate());
         }
@@ -3182,13 +3184,15 @@ string CtiCCFeeder::doubleToString(DOUBLE doubleVal, LONG decimalPlaces)
 
 void CtiCCFeeder::deleteCCCapBank(long capBankId)
 {
-    RWOrdered& ccCapBanks = getCCCapBanks();
-    for (LONG j = 0; j < ccCapBanks.entries(); j++)
+    CtiCCCapBank_SVector& ccCapBanks = getCCCapBanks();
+    
+    for (CtiCCCapBank_SVector::iterator itr = ccCapBanks.begin(); itr != ccCapBanks.end(); itr++)
     {
-        CtiCCCapBank *capBank = (CtiCCCapBank*)ccCapBanks[j];
+        CtiCCCapBank *capBank = *itr;
         if (capBank->getPAOId() == capBankId)
         {
-            getCCCapBanks().removeAt(j);
+            delete *itr;
+            getCCCapBanks().erase(itr);
             break;
         }
 

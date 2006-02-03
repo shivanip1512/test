@@ -29,6 +29,7 @@
 #include "lmprogrambase.h"
 #include "observe.h"
 #include "lmprogramdirectgear.h"
+#include "lmcontrolarea.h"
 
 using std::set;
 using std::vector;
@@ -68,7 +69,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     bool getIsRampingIn();
     bool getIsRampingOut();
     
-    RWOrdered& getLMProgramDirectGears();
+    vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
     CtiLMGroupVec& getLMProgramDirectGroups();
         
     set<CtiLMProgramDirect*>& getMasterPrograms();
@@ -99,8 +100,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
     
-    BOOL maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
-    BOOL hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
+    BOOL maintainProgramControl(LONG currentPriority, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
+    BOOL hasGearChanged(LONG currentPriority,         vector<CtiLMControlAreaTrigger*> controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
     DOUBLE updateProgramControlForGearChange(ULONG secondsFrom1901, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -117,7 +118,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual bool stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);    
@@ -181,7 +182,7 @@ private:
     //When the dynamic data was last saved
     CtiTime  _dynamictimestamp;
     
-    RWOrdered _lmprogramdirectgears;
+    vector<CtiLMProgramDirectGear*> _lmprogramdirectgears;
     CtiLMGroupVec  _lmprogramdirectgroups;
 
     set<CtiLMProgramDirect*> _master_programs;

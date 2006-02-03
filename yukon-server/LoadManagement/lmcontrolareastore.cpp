@@ -80,7 +80,7 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidCtiTime), _wascontrolareadeletedflag(false)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    _controlAreas = new RWOrdered();
+    _controlAreas = new vector<CtiLMControlArea*>;
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiLMControlAreaStore::doResetThr );
     _resetthr = func;
@@ -115,7 +115,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 
     Returns a RWOrdered of CtiLMControlAreas
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
+vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -141,14 +141,14 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** program, CtiLMControlArea** controlArea)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    RWOrdered* controlAreas = getControlAreas(CtiTime().seconds());
-    for(LONG i=0; i < controlAreas->entries(); i++)
+    vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime().seconds());
+    for(LONG i=0; i < controlAreas->size(); i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
-        RWOrdered lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0; j < lmPrograms.entries(); j++)
+        vector<CtiLMProgramBase*> lmPrograms = currentControlArea->getLMPrograms();
+        for(LONG j=0; j < lmPrograms.size(); j++)
         {
-            CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*) lmPrograms[j];
+            CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*) lmPrograms.at(j);
             if(programID == currentLMProgram->getPAOId())
             {
                 if(controlArea != NULL)
@@ -195,7 +195,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Begin writing dynamic data to the database..." << endl;
     }*/
-    if( _controlAreas->entries() > 0 )
+    if( _controlAreas->size() > 0 )
     {
         CtiTime currentDateTime = CtiTime();
         string dynamicLoadManagement("dynamicLoadManagement");
@@ -204,27 +204,27 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
         conn.beginTransaction(dynamicLoadManagement.c_str());
 
-        for(LONG i=0;i<_controlAreas->entries();i++)
+        for(LONG i=0;i<_controlAreas->size();i++)
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
             currentLMControlArea->dumpDynamicData(conn,currentDateTime);
 
-            RWOrdered& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
-            if( lmControlAreaTriggers.entries() > 0 )
+            vector<CtiLMControlAreaTrigger*>& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
+            if( lmControlAreaTriggers.size() > 0 )
             {
-                for(LONG x=0;x<lmControlAreaTriggers.entries();x++)
+                for(LONG x=0;x<lmControlAreaTriggers.size();x++)
                 {
-                    CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[x];
+                    CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(x);
                     currentLMControlAreaTrigger->dumpDynamicData(conn,currentDateTime);
                 }
             }
 
-            RWOrdered& lmPrograms = currentLMControlArea->getLMPrograms();
-            if( lmPrograms.entries() > 0 )
+            vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+            if( lmPrograms.size() > 0 )
             {
-                for(LONG j=0;j<lmPrograms.entries();j++)
+                for(LONG j=0;j<lmPrograms.size();j++)
                 {
-                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
+                    CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms.at(j);
                     currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
 
                     if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
@@ -247,15 +247,14 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                         {
                             currentLMProgramCurtailment->dumpDynamicData(conn,currentDateTime);
 
-                            RWOrdered& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
-                            if( lmCurtailCustomers.entries() > 0 )
+                            vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
+
+                            for(LONG k=0;k<lmCurtailCustomers.size();k++)
                             {
-                                for(LONG k=0;k<lmCurtailCustomers.entries();k++)
-                                {
-                                    CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
-                                    currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
-                                }
+                                CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
+                                currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
                             }
+                        
                         }
                     }
                     else
@@ -287,7 +286,7 @@ void CtiLMControlAreaStore::reset()
 {
     try
     {
-        RWOrdered temp_control_areas;
+        vector<CtiLMControlArea*> temp_control_areas;
         std::map<long, CtiLMGroupPtr > temp_all_group_map;
         std::map<long, CtiLMGroupPtr > temp_point_group_map;
 
@@ -313,7 +312,7 @@ void CtiLMControlAreaStore::reset()
                 {
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-                    if( _controlAreas->entries() > 0 )
+                    if( _controlAreas->size() > 0 )
                     {   //Save off current data to database so that if can be loaded by new objects on reload
                         dumpAllDynamicData();
                         saveAnyProjectionData();
@@ -726,14 +725,14 @@ void CtiLMControlAreaStore::reset()
                     cur_iter = all_program_group_map.find(program_id);
                     if(cur_iter == all_program_group_map.end())
                     {
-                        std::vector<CtiLMGroupPtr> group_vec;
+                        vector<CtiLMGroupPtr> group_vec;
                         CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
 
                         std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
                         { //must be a macro group
-                            std::vector<long> macro_vec = macro_iter->second;
-                            for(std::vector<long>::iterator iter = macro_vec.begin();
+                            vector<long> macro_vec = macro_iter->second;
+                            for(vector<long>::iterator iter = macro_vec.begin();
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
@@ -759,8 +758,8 @@ void CtiLMControlAreaStore::reset()
                         std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
                         { //must be a macro group
-                            std::vector<long> macro_vec = macro_iter->second;
-                            for(std::vector<long>::iterator iter = macro_vec.begin();
+                            vector<long> macro_vec = macro_iter->second;
+                            for(vector<long>::iterator iter = macro_vec.begin();
                                 iter != macro_vec.end();
                                 iter++)
                             { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
@@ -1058,8 +1057,8 @@ void CtiLMControlAreaStore::reset()
                                 CtiLMProgramBase* programToPutGearIn = NULL;
                                 if( directProgramHashMap.findValue(newDirectGear->getPAOId(),programToPutGearIn) )
                                 {
-                                    RWOrdered& lmProgramDirectGearList = ((CtiLMProgramDirect*)programToPutGearIn)->getLMProgramDirectGears();
-                                    lmProgramDirectGearList.insert(newDirectGear);
+                                    vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = ((CtiLMProgramDirect*)programToPutGearIn)->getLMProgramDirectGears();
+                                    lmProgramDirectGearList.push_back(newDirectGear);
                                 }
                             }
                         }
@@ -1258,16 +1257,16 @@ void CtiLMControlAreaStore::reset()
                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
                             }
 
-                            RWOrdered& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
+                            vector<CtiLMCurtailCustomer*>& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
                             RWDBReader rdr = selector.reader(conn);
                             while( rdr() )
                             {
-                                lmProgramCurtailmentCustomers.insert(new CtiLMCurtailCustomer(rdr));
+                                lmProgramCurtailmentCustomers.push_back(new CtiLMCurtailCustomer(rdr));
                             }
 
-                            if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.entries() > 0 )
+                            if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.size() > 0 )
                             {
-                                for(LONG temp=0;temp<lmProgramCurtailmentCustomers.entries();temp++)
+                                for(LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++)
                                 {
                                     ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData(rdr);
                                 }
@@ -1416,13 +1415,13 @@ void CtiLMControlAreaStore::reset()
                                 }
 
                                 RWDBReader rdr = selector.reader(conn);
-                                RWOrdered& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
+                                std::vector<CtiLMEnergyExchangeOffer*>& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
                                 while( rdr() )
                                 {
-                                    offers.insert(new CtiLMEnergyExchangeOffer(rdr));
+                                    offers.push_back(new CtiLMEnergyExchangeOffer(rdr));
                                 }
 
-                                for(LONG r=0;r<offers.entries();r++)
+                                for(LONG r=0;r<offers.size();r++)
                                 {
                                     CtiLMEnergyExchangeOffer* currentLMEnergyExchangeOffer = (CtiLMEnergyExchangeOffer*)offers[r];
                                     RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
@@ -1448,13 +1447,13 @@ void CtiLMControlAreaStore::reset()
                                     }
 
                                     RWDBReader rdr = selector.reader(conn);
-                                    RWOrdered& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
+                                    vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
                                     while( rdr() )
                                     {
-                                        offerRevisions.insert(new CtiLMEnergyExchangeOfferRevision(rdr));
+                                        offerRevisions.push_back(new CtiLMEnergyExchangeOfferRevision(rdr));
                                     }
 
-                                    for(LONG s=0;s<offerRevisions.entries();s++)
+                                    for(LONG s=0;s<offerRevisions.size();s++)
                                     {
                                         CtiLMEnergyExchangeOfferRevision* currentLMEnergyExchangeOfferRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[s];
                                         RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
@@ -1480,10 +1479,10 @@ void CtiLMControlAreaStore::reset()
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
-                                        RWOrdered& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
+                                        vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
                                         while( rdr() )
                                         {
-                                            hourlyOffers.insert(new CtiLMEnergyExchangeHourlyOffer(rdr));
+                                            hourlyOffers.push_back(new CtiLMEnergyExchangeHourlyOffer(rdr));
                                         }
                                     }
                                 }
@@ -1519,16 +1518,16 @@ void CtiLMControlAreaStore::reset()
                                     dout << CtiTime() << " - " << selector.asString().data() << endl;
                                 }
 
-                                RWOrdered& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
+                                std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
                                 RWDBReader rdr = selector.reader(conn);
                                 while( rdr() )
                                 {
-                                    lmEnergyExchangeCustomers.insert(new CtiLMEnergyExchangeCustomer(rdr));
+                                    lmEnergyExchangeCustomers.push_back(new CtiLMEnergyExchangeCustomer(rdr));
                                 }
 
-                                if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.entries() > 0 )
+                                if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.size() > 0 )
                                 {
-                                    for(LONG a=0;a<lmEnergyExchangeCustomers.entries();a++)
+                                    for(LONG a=0;a<lmEnergyExchangeCustomers.size();a++)
                                     {
                                         CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
                                         CtiTime currentDateTime;
@@ -1565,13 +1564,13 @@ void CtiLMControlAreaStore::reset()
                                         }
 
                                         RWDBReader rdr = selector.reader(conn);
-                                        RWOrdered& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
+                                        vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
                                         while( rdr() )
                                         {
-                                            lmEnergyExchangeCustomerReplies.insert(new CtiLMEnergyExchangeCustomerReply(rdr));
+                                            lmEnergyExchangeCustomerReplies.push_back(new CtiLMEnergyExchangeCustomerReply(rdr));
                                         }
 
-                                        for(LONG b=0;b<lmEnergyExchangeCustomerReplies.entries();b++)
+                                        for(LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++)
                                         {
                                             CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
                                             CtiTime currentDateTime;
@@ -1607,10 +1606,10 @@ void CtiLMControlAreaStore::reset()
                                             }
 
                                             RWDBReader rdr = selector.reader(conn);
-                                            RWOrdered& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
+                                            vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
                                             while( rdr() )
                                             {
-                                                hourlyCustomers.insert(new CtiLMEnergyExchangeHourlyCustomer(rdr));
+                                                hourlyCustomers.push_back(new CtiLMEnergyExchangeHourlyCustomer(rdr));
                                             }
                                         }
                                     }
@@ -1657,8 +1656,8 @@ void CtiLMControlAreaStore::reset()
                                 curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
                                 energyExchangeProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) )
                             {
-                                RWOrdered& lmProgramControlWindowList = programToPutWindowIn->getLMProgramControlWindows();
-                                lmProgramControlWindowList.insert(newWindow);
+                                std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindowList = programToPutWindowIn->getLMProgramControlWindows();
+                                lmProgramControlWindowList.push_back(newWindow);
                             }
                             else
                             {
@@ -1748,7 +1747,7 @@ void CtiLMControlAreaStore::reset()
                                 tempControlAreaId != currentLMControlArea->getPAOId() )
                             {
                                 currentLMControlArea = new CtiLMControlArea(rdr);
-                                temp_control_areas.insert(currentLMControlArea);
+                                temp_control_areas.push_back(currentLMControlArea);
                             }
 
                             rdr["lmprogramdeviceid"] >> isNull;
@@ -1766,27 +1765,27 @@ void CtiLMControlAreaStore::reset()
                                     ( currentLMProgramBase != NULL &&
                                       currentLMProgramBase->getPAOId() != tempProgramId ) )
                                 {
-                                    RWOrdered& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
+                                    vector<CtiLMProgramBase*>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
 
                                     if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
-                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         directProgramHashMap.remove(tempProgramId);
                                     }
                                     else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
-                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         curtailmentProgramHashMap.remove(tempProgramId);
                                     }
                                     else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
-                                        lmControlAreaProgramList.insert(currentLMProgramBase);
+                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         energyExchangeProgramHashMap.remove(tempProgramId);
                                     }
                                     else
@@ -1885,12 +1884,12 @@ void CtiLMControlAreaStore::reset()
                             ****************************************************************/
                             LONG tempControlAreaId = 0;
                             rdr["deviceid"] >> tempControlAreaId;
-                            for(LONG i=0;i<temp_control_areas.entries();i++)
+                            for(LONG i=0;i<temp_control_areas.size();i++)
                             {
                                 CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(temp_control_areas[i]);
                                 if( currentLMControlArea->getPAOId() == tempControlAreaId )
                                 {
-                                    currentLMControlArea->getLMControlAreaTriggers().insert(newTrigger);
+                                    currentLMControlArea->getLMControlAreaTriggers().push_back(newTrigger);
                                     break;
                                 }
                             }
@@ -1922,7 +1921,8 @@ void CtiLMControlAreaStore::reset()
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
         // Clear out our old working objects
-        _controlAreas->clearAndDestroy(); //89
+        delete_vector(_controlAreas);
+        _controlAreas->clear(); //89
         _all_group_map.clear();
         _point_group_map.clear();
 
@@ -1994,7 +1994,8 @@ void CtiLMControlAreaStore::shutdown()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Done with dumpAllDynamicData()" << endl;
     }*/
-    _controlAreas->clearAndDestroy();
+    delete_vector(_controlAreas);
+    _controlAreas->clear();
     delete _controlAreas;
 }
 
@@ -2347,8 +2348,8 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     bool returnBool = false;
-    RWOrdered& controlAreas = *getControlAreas(CtiTime().seconds());
-    for(long i=0;i<controlAreas.entries();i++)
+    vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime().seconds());
+    for(long i=0;i<controlAreas.size();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         // not equal, so no "!" on the compareTo()
@@ -2459,16 +2460,16 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
     if( _projectionQueues.entries() > 0 )
         _projectionQueues.clear();
 
-    for(LONG i=0;i<_controlAreas->entries();i++)
+    for(LONG i=0;i<_controlAreas->size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
 
-        RWOrdered& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
-        if( lmControlAreaTriggers.entries() > 0 )
+        vector<CtiLMControlAreaTrigger*>& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
+        if( lmControlAreaTriggers.size() > 0 )
         {
-            for(LONG j=0;j<lmControlAreaTriggers.entries();j++)
+            for(LONG j=0;j<lmControlAreaTriggers.size();j++)
             {
-                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[j];
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(j);
                 if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
                     stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )
                 {// don't need "!" on compareTo() because supposed to be !=
@@ -2528,16 +2529,16 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
     if( _controlStrings.entries() > 0 )
         _controlStrings.clear();
 
-    for(LONG i=0;i<_controlAreas->entries();i++)
+    for(LONG i=0;i<_controlAreas->size();i++)
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
 
-        RWOrdered& lmPrograms = currentLMControlArea->getLMPrograms();
-        if( lmPrograms.entries() > 0 )
+        vector<CtiLMProgramBase*>& lmPrograms = currentLMControlArea->getLMPrograms();
+        if( lmPrograms.size() > 0 )
         {
-            for(LONG j=0;j<lmPrograms.entries();j++)
+            for(LONG j=0;j<lmPrograms.size();j++)
             {
-                CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)lmPrograms[j];
+                CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)lmPrograms.at(j);
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
                     CtiLMGroupVec groups  = ((CtiLMProgramDirect*)currentLMProgram)->getLMProgramDirectGroups();

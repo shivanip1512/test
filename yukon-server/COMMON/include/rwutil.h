@@ -29,7 +29,6 @@
 #include "boost_time.h"
 #include <boost/tokenizer.hpp>
 
-
 /*
  * for RWDBDateTime
  */
@@ -150,8 +149,32 @@ RWvostream& operator<< ( RWvostream& strm, std::vector<T> v )
 {
     std::vector<T>::iterator iter;
     strm << v.size();
-    for(iter = v.begin;iter != v.end();iter++)
+    for(iter = v.begin();iter != v.end();iter++)
         strm << *iter;
+    return strm;
+}
+template <class T> 
+RWvostream& operator<< ( RWvostream& strm, std::vector<T>* v )
+{
+    std::vector<T>::iterator iter;
+    strm << v->size();
+    for(iter = v->begin();iter != v->end();iter++)
+        strm << *iter;
+    return strm;
+}
+//Needed to types of this, one for pointer vector's and one for normal vectors
+template <class T>
+RWvistream& operator >> ( RWvistream &strm, std::vector<T>* v )
+{
+    int num_elements;
+    T elem;
+    strm >> num_elements;
+
+    for(int iter = 0; iter < num_elements; iter++)
+    {
+        strm >> elem;
+        v->push_back(elem);
+    }
     return strm;
 }
 
@@ -169,6 +192,7 @@ RWvistream& operator >> ( RWvistream &strm, std::vector<T> v )
     }
     return strm;
 }
+
 inline RWvostream& operator<<(RWvostream& strm, const CtiTime &ct)
 {
     if(!ct.isValid())

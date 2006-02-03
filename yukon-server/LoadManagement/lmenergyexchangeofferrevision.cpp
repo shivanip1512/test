@@ -21,6 +21,9 @@
 #include "loadmanager.h"
 #include "device.h"
 #include "resolvers.h"
+#include "utility.h"
+
+using std::vector;
 
 extern ULONG _LM_DEBUG;
 
@@ -49,7 +52,8 @@ CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(const CtiLMEn
 CtiLMEnergyExchangeOfferRevision::~CtiLMEnergyExchangeOfferRevision()
 {
 
-    _lmenergyexchangehourlyoffers.clearAndDestroy();
+    delete_vector(_lmenergyexchangehourlyoffers);
+    _lmenergyexchangehourlyoffers.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -129,7 +133,7 @@ const string& CtiLMEnergyExchangeOfferRevision::getAdditionalInfo() const
 
     Returns a list of the price offers for each hour in the revision.
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
+vector<CtiLMEnergyExchangeHourlyOffer*>& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
 {
 
     return _lmenergyexchangehourlyoffers;
@@ -229,7 +233,7 @@ LONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
 {
     LONG returnLONG = 0;
 
-    for(long i=0;i<_lmenergyexchangehourlyoffers.entries();i++)
+    for(long i=0;i<_lmenergyexchangehourlyoffers.size();i++)
     {
         CtiLMEnergyExchangeHourlyOffer* currentHourlyOffer = (CtiLMEnergyExchangeHourlyOffer*)_lmenergyexchangehourlyoffers[i];
         if( currentHourlyOffer->getAmountRequested() > 0.0 &&
@@ -252,7 +256,7 @@ LONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
 {
     LONG returnLONG = 0;
 
-    for(long i=_lmenergyexchangehourlyoffers.entries()-1;i>=0;i--)
+    for(long i=_lmenergyexchangehourlyoffers.size()-1;i>=0;i--)
     {
         CtiLMEnergyExchangeHourlyOffer* currentHourlyOffer = (CtiLMEnergyExchangeHourlyOffer*)_lmenergyexchangehourlyoffers[i];
         if( currentHourlyOffer->getAmountRequested() > 0.0 &&
@@ -344,10 +348,11 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::operator=(co
         _offerexpirationdatetime = right._offerexpirationdatetime;
         _additionalinfo = right._additionalinfo;
 
-        _lmenergyexchangehourlyoffers.clearAndDestroy();
-        for(LONG i=0;i<right._lmenergyexchangehourlyoffers.entries();i++)
+        delete_vector(_lmenergyexchangehourlyoffers);
+        _lmenergyexchangehourlyoffers.clear();
+        for(LONG i=0;i<right._lmenergyexchangehourlyoffers.size();i++)
         {
-            _lmenergyexchangehourlyoffers.insert(((CtiLMEnergyExchangeHourlyOffer*)right._lmenergyexchangehourlyoffers[i])->replicate());
+            _lmenergyexchangehourlyoffers.push_back(((CtiLMEnergyExchangeHourlyOffer*)right._lmenergyexchangehourlyoffers[i])->replicate());
         }
     }
 

@@ -21,6 +21,7 @@
 #include "loadmanager.h"
 #include "device.h"
 #include "resolvers.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -48,8 +49,8 @@ CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(const CtiLMEn
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply::~CtiLMEnergyExchangeCustomerReply()
 {
-
-    _lmenergyexchangehourlycustomers.clearAndDestroy();
+    delete_vector( _lmenergyexchangehourlycustomers );
+    _lmenergyexchangehourlycustomers.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -157,7 +158,7 @@ const string& CtiLMEnergyExchangeCustomerReply::getEnergyExchangeNotes() const
 
     Returns a list of each hours offer for the customer reply
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMEnergyExchangeCustomerReply::getLMEnergyExchangeHourlyCustomers()
+vector<CtiLMEnergyExchangeHourlyCustomer*>& CtiLMEnergyExchangeCustomerReply::getLMEnergyExchangeHourlyCustomers()
 {
 
     return _lmenergyexchangehourlycustomers;
@@ -355,10 +356,11 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::operator=(co
         _nameofacceptperson = right._nameofacceptperson;
         _energyexchangenotes = right._energyexchangenotes;
 
-        _lmenergyexchangehourlycustomers.clearAndDestroy();
-        for(LONG i=0;i<right._lmenergyexchangehourlycustomers.entries();i++)
+        delete_vector( _lmenergyexchangehourlycustomers );
+        _lmenergyexchangehourlycustomers.clear();
+        for(LONG i=0;i<right._lmenergyexchangehourlycustomers.size();i++)
         {
-            _lmenergyexchangehourlycustomers.insert(((CtiLMEnergyExchangeHourlyCustomer*)right._lmenergyexchangehourlycustomers[i])->replicate());
+            _lmenergyexchangehourlycustomers.push_back(((CtiLMEnergyExchangeHourlyCustomer*)right._lmenergyexchangehourlycustomers[i])->replicate());
         }
     }
 

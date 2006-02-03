@@ -16,6 +16,8 @@
 
 #include <rw/collstr.h>
 #include <time.h>
+#include "rwutil.h"
+#include "utility.h"
 
 /*===========================================================================
     CtiCCMessage
@@ -346,12 +348,12 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
-    _ccSubstationBuses = new RWOrdered(buses.entries());
-    for(int i=0;i<buses.entries();i++)
+    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    for(int i=0;i<buses.size();i++)
     {
-        _ccSubstationBuses->insert(((CtiCCSubstationBus*)buses[i])->replicate());
+        _ccSubstationBuses->push_back(((CtiCCSubstationBus*)buses.at(i))->replicate());
     }
 }
 
@@ -366,9 +368,10 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substa
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
     if( _ccSubstationBuses != NULL &&
-        _ccSubstationBuses->entries() > 0 )
+        _ccSubstationBuses->size() > 0 )
     {
-        _ccSubstationBuses->clearAndDestroy();
+        delete_vector(_ccSubstationBuses);
+        _ccSubstationBuses->clear();
         delete _ccSubstationBuses;
     }
 }
@@ -390,15 +393,17 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
     {
         _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccSubstationBuses != NULL &&
-            _ccSubstationBuses->entries() > 0 )
+            _ccSubstationBuses->size() > 0 )
         {
-            _ccSubstationBuses->clearAndDestroy();
+            delete_vector(_ccSubstationBuses);
+            _ccSubstationBuses->clear();
             delete _ccSubstationBuses;
         }
-        _ccSubstationBuses = new RWOrdered((right.getCCSubstationBuses())->entries());
-        for(int i=0;i<(right.getCCSubstationBuses())->entries();i++)
+		if ( _ccSubstationBuses == NULL )
+			_ccSubstationBuses = new CtiCCSubstationBus_vec;
+        for(int i=0;i<(right.getCCSubstationBuses())->size();i++)
         {
-            _ccSubstationBuses->insert(((CtiCCSubstationBus*)(*right.getCCSubstationBuses())[i])->replicate());
+            _ccSubstationBuses->push_back(((CtiCCSubstationBus*)(*right.getCCSubstationBuses()).at(i))->replicate());
         }
     }
 
@@ -444,12 +449,13 @@ RWDEFINE_COLLECTABLE( CtiCCCapBankStatesMsg, CTICCCAPBANKSTATES_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(RWOrdered& ccCapBankStates) : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL)
+CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(CtiCCState_vec& ccCapBankStates) : CtiCCMessage("CCCapBankStates"), _ccCapBankStates(NULL)
 {
-    _ccCapBankStates = new RWOrdered(ccCapBankStates.entries());
-    for(int i=0;i<ccCapBankStates.entries();i++)
+    _ccCapBankStates = new CtiCCState_vec;
+    int y = ccCapBankStates.size();
+	for(int i=0;i<y;i++)
     {
-        _ccCapBankStates->insert(((CtiCCState*)ccCapBankStates[i])->replicate());
+        _ccCapBankStates->push_back(((CtiCCState*)ccCapBankStates.at(i))->replicate());
     }
 }
 
@@ -464,9 +470,10 @@ CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapB
 CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
 {
     if( _ccCapBankStates != NULL &&
-            _ccCapBankStates->entries() > 0 )
+            _ccCapBankStates->size() > 0 )
         {
-            _ccCapBankStates->clearAndDestroy();
+            delete_vector(_ccCapBankStates);
+            _ccCapBankStates->clear();
             delete _ccCapBankStates;
         }
 
@@ -491,15 +498,21 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
     if( this != &right )
     {
         if( _ccCapBankStates != NULL &&
-            _ccCapBankStates->entries() > 0 )
+            _ccCapBankStates->size() > 0 )
         {
-            _ccCapBankStates->clearAndDestroy();
+            delete_vector(_ccCapBankStates);
+            _ccCapBankStates->clear();
             delete _ccCapBankStates;
         }
-        _ccCapBankStates = new RWOrdered((right.getCCCapBankStates())->entries());
-        for(int i=0;i<(right.getCCCapBankStates())->entries();i++)
+		
+		int y = (right.getCCCapBankStates())->size();
+		
+		if ( _ccCapBankStates == NULL )
+			_ccCapBankStates = new CtiCCState_vec;
+		
+		for(int i=0;i < y;i++)
         {
-            _ccCapBankStates->insert(((CtiCCState*)(*right.getCCCapBankStates())[i])->replicate());
+            _ccCapBankStates->push_back(((CtiCCState*)(*right.getCCCapBankStates()).at(i))->replicate());
         }
     }
 
@@ -538,15 +551,15 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(RWOrdered& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCGeoArea_vec& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
-    _ccGeoAreas = new RWOrdered(ccGeoAreas.entries());
-    for(int i=0;i<ccGeoAreas.entries();i++)
+    _ccGeoAreas = new CtiCCGeoArea_vec;
+    for(int i=0;i<ccGeoAreas.size();i++)
     {
         RWCollectableString* tempStringPtr = new RWCollectableString();
-        RWCollectableString* tempStringPtr2 = (RWCollectableString*)(ccGeoAreas[i]);
+        RWCollectableString* tempStringPtr2 = (RWCollectableString*)(ccGeoAreas.at(i));
         *tempStringPtr = *tempStringPtr2;
-        _ccGeoAreas->insert(tempStringPtr);
+        _ccGeoAreas->push_back(tempStringPtr);
     }
 }
 
@@ -561,9 +574,10 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiC
 CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 {
     if( _ccGeoAreas != NULL &&
-            _ccGeoAreas->entries() > 0 )
+            _ccGeoAreas->size() > 0 )
         {
-            _ccGeoAreas->clearAndDestroy();
+            delete_vector(_ccGeoAreas);
+            _ccGeoAreas->clear();
             delete _ccGeoAreas;
         }
 }
@@ -587,18 +601,23 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
     if( this != &right )
     {
         if( _ccGeoAreas != NULL &&
-            _ccGeoAreas->entries() > 0 )
+            _ccGeoAreas->size() > 0 )
         {
-            _ccGeoAreas->clearAndDestroy();
+            delete_vector(_ccGeoAreas);
+            _ccGeoAreas->clear();
             delete _ccGeoAreas;
         }
-        _ccGeoAreas = new RWOrdered((right.getCCGeoAreas())->entries());
-        for(int i=0;i<(right.getCCGeoAreas())->entries();i++)
+		if ( _ccGeoAreas == NULL )
+			_ccGeoAreas = new CtiCCGeoArea_vec;
+        //for(int i=0;i<(right.getCCGeoAreas())->size();i++)
+		for(CtiCCGeoArea_vec::iterator itr = right.getCCGeoAreas()->begin(); 
+		    itr != right.getCCGeoAreas()->end(); 
+			itr++ )
         {
             RWCollectableString* tempStringPtr = new RWCollectableString();
-            RWCollectableString* tempStringPtr2 = (RWCollectableString*)((*right.getCCGeoAreas())[i]);
+            RWCollectableString* tempStringPtr2 = *itr;
             *tempStringPtr = *tempStringPtr2;
-            _ccGeoAreas->insert(tempStringPtr);
+            _ccGeoAreas->push_back(tempStringPtr);
         }
     }
 

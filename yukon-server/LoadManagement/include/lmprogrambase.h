@@ -25,6 +25,7 @@
 #include "observe.h"
 #include "msg_multi.h"
 #include "lmgroupbase.h"
+#include "lmcontrolareatrigger.h"
 
 class CtiLMProgramControlWindow;
 
@@ -32,6 +33,7 @@ class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
+
 #ifdef _DEBUG_MEMORY    
     static LONG numberOfReferences;
 #endif
@@ -71,7 +73,7 @@ public:
     const CtiTime& getStartedControlling() const;
     const CtiTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
-    RWOrdered& getLMProgramControlWindows();
+    std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows();
     
     CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const string& category);
@@ -112,7 +114,7 @@ public:
 
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
     
     virtual BOOL hasControlHoursAvailable() = 0;
@@ -190,7 +192,7 @@ private:
     CtiTime _lastcontrolsent;
     BOOL _manualcontrolreceivedflag;
 
-    RWOrdered _lmprogramcontrolwindows;
+    std::vector<CtiLMProgramControlWindow*> _lmprogramcontrolwindows;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

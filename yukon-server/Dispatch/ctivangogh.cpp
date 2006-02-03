@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2006/01/05 19:30:10 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2006/02/03 19:55:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2649,7 +2649,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
     static UINT  dumpCounter = 0;
 
 
-    RWOrdered      postList;
+    std::vector<CtiSignalMsg*>      postList;
 
     try
     {
@@ -2684,7 +2684,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                                 if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
                                 {
-                                    postList.insert(sigMsg);
+                                    postList.push_back(sigMsg);
                                 }
                                 else
                                 {
@@ -2728,8 +2728,10 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
         }
 
         {
-            for(;NULL != (sigMsg = (CtiSignalMsg*)postList.pop());)
+            while(!postList.empty())
             {
+                sigMsg = (CtiSignalMsg*)postList.back();
+                postList.pop_back();
                 bool done = _signalMsgPostQueue.putQueue(sigMsg, 5000);           // Place them on the email queue and let him clean them up!
                 if(!done)
                 {

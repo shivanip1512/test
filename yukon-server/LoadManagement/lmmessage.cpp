@@ -14,7 +14,7 @@
 #include "lmmessage.h"
 #include "lmid.h"
 #include "rwutil.h"
-
+#include "utility.h"
 #include <rw/collstr.h>
 #include <time.h>
 
@@ -461,15 +461,15 @@ CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    RWOrdered* rw_ordered;
+    vector<RWCollectableString*>* rw_ordered = new vector<RWCollectableString*>;
 
     strm >> _paoid;
     strm >> rw_ordered;
     strm >> _best_fit_action;
     
-    for(int i = 0; i < rw_ordered->entries(); i++)
+    for(int i = 0; i < rw_ordered->size(); i++)
     {
-	_constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
+        _constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
     }
     return;
 }
@@ -481,18 +481,21 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 {
-    CtiLMMessage::saveGuts(strm);
-    RWOrdered* rw_ordered = new RWOrdered();
+
+/* NEW */
+   CtiLMMessage::saveGuts(strm);
+    vector<RWCollectableString*>* vect = new vector<RWCollectableString*>;
     for(std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
 	iter != _constraintViolations.end();
 	iter++)
     {
-	rw_ordered->insert(new RWCollectableString(iter->data()));
+	vect->push_back(new RWCollectableString(iter->c_str()));
     }
     strm << _paoid;
-    strm << rw_ordered;
+    strm << vect;
     strm << _best_fit_action;
     return;
+
 }
 
 /*---------------------------------------------------------------------------
@@ -997,12 +1000,12 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaMsg::CtiLMControlAreaMsg(RWOrdered& contAreas, ULONG bitMask) : CtiLMMessage("ControlArea"), _controlAreas(NULL), _msgInfoBitMask(bitMask)
+CtiLMControlAreaMsg::CtiLMControlAreaMsg(vector<CtiLMControlArea*>& contAreas, ULONG bitMask) : CtiLMMessage("ControlArea"), _controlAreas(NULL), _msgInfoBitMask(bitMask)
 {
-    _controlAreas = new RWOrdered(contAreas.entries());
-    for(int i=0;i<contAreas.entries();i++)
+    _controlAreas = new vector<CtiLMControlArea*>;
+    for(int i=0;i<contAreas.size();i++)
     {
-        _controlAreas->insert(((CtiLMControlArea*)contAreas[i])->replicate());
+        _controlAreas->push_back(((CtiLMControlArea*)contAreas[i])->replicate());
     }
 }
 
@@ -1016,7 +1019,8 @@ CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 {
-    _controlAreas->clearAndDestroy();
+    delete_vector(_controlAreas);
+    _controlAreas->clear();
     delete _controlAreas;
 }
 
@@ -1037,15 +1041,16 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
     {
         _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _controlAreas != NULL &&
-            _controlAreas->entries() > 0 )
+            _controlAreas->size() > 0 )
         {
-            _controlAreas->clearAndDestroy();
+            delete_vector(_controlAreas);
+            _controlAreas->clear();
             delete _controlAreas;
         }
-        _controlAreas = new RWOrdered((right.getControlAreas())->entries());
-        for(int i=0;i<(right.getControlAreas())->entries();i++)
+        _controlAreas = new vector<CtiLMControlArea*>;
+        for(int i=0;i<(right.getControlAreas())->size();i++)
         {
-            _controlAreas->insert(((CtiLMControlArea*)(*right.getControlAreas())[i])->replicate());
+            _controlAreas->push_back(((CtiLMControlArea*)(*right.getControlAreas())[i])->replicate());
         }
     }
 

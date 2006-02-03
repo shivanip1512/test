@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/01/03 20:48:08 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/02/03 19:54:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,8 @@ using std::string;
 
 #include "dsm2.h"
 #include "dlldefs.h"
-
+#include "sorted_vector.h"
+using std::vector;
 
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
@@ -205,6 +206,47 @@ inline string char2string(char c)
     s = c;
     return s;
 }
+//This is for a vector of pointers. It will have compiler errors if used on a vector of none pointers
+//It was written to replace  rwordered.clearAndDestroy
+template < class T >
+inline void delete_vector( std::vector<T> V )
+{
 
+   for (std::vector<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+        delete *itr;
+   }
+}
+//For Standard Vectors, this will go through and release the memory in a vector of pointers
+template < class T >
+inline void delete_vector( std::vector<T> *V )
+{
+
+   for (std::vector<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
+        delete *itr;
+   }
+}
+//For Sorted Vectors
+template<class K, bool bNoDuplicates,class Pr, class A >
+inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> V )
+{
+
+   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V.begin(); 
+        itr != V.end(); 
+        itr++) 
+   {
+        delete *itr;
+   }
+}
+template<class K, bool bNoDuplicates,class Pr, class A >
+inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> *V )
+{
+
+   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V->begin(); 
+        itr != V->end(); 
+        itr++) 
+   {
+        delete *itr;
+   }
+}
 
 #endif // #ifndef __UTILITY_H__

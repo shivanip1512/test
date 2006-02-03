@@ -49,11 +49,11 @@ CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchan
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer::~CtiLMEnergyExchangeCustomer()
 {
-
-    _lmenergyexchangecustomerreplies.clearAndDestroy();
+    delete_vector( _lmenergyexchangecustomerreplies );
+    _lmenergyexchangecustomerreplies.clear();
 }
 
-RWOrdered& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies()
+vector<CtiLMEnergyExchangeCustomerReply*>& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies()
 {
     return _lmenergyexchangecustomerreplies;
 }
@@ -69,17 +69,15 @@ BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(LONG offerid) const
 {
     BOOL returnBoolean = FALSE;
 
-    if( _lmenergyexchangecustomerreplies.entries() > 0 )
+
+    for(LONG i=0;i<_lmenergyexchangecustomerreplies.size();i++)
     {
-        for(LONG i=0;i<_lmenergyexchangecustomerreplies.entries();i++)
+        if( ((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getOfferId() == offerid )
         {
-            if( ((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getOfferId() == offerid )
+            if( !stringCompareIgnoreCase(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) ) 
             {
-                if( !stringCompareIgnoreCase(((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getAcceptStatus(), CtiLMEnergyExchangeCustomerReply::AcceptedAcceptStatus) ) 
-                {
-                    returnBoolean = TRUE;
-                    break;
-                }
+                returnBoolean = TRUE;
+                break;
             }
         }
     }
@@ -131,11 +129,12 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
     if( this != &right )
     {
         CtiLMCICustomerBase::operator=(right);
-        
-        _lmenergyexchangecustomerreplies.clearAndDestroy();
-        for(LONG i=0;i<right._lmenergyexchangecustomerreplies.entries();i++)
+
+        delete_vector(_lmenergyexchangecustomerreplies );
+        _lmenergyexchangecustomerreplies.clear();
+        for(LONG i=0;i<right._lmenergyexchangecustomerreplies.size();i++)
         {
-            _lmenergyexchangecustomerreplies.insert(((CtiLMEnergyExchangeCustomerReply*)right._lmenergyexchangecustomerreplies[i])->replicate());
+            _lmenergyexchangecustomerreplies.push_back(((CtiLMEnergyExchangeCustomerReply*)right._lmenergyexchangecustomerreplies[i])->replicate());
         }
     }
 

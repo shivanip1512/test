@@ -24,10 +24,14 @@
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>
+#include <rw/collstr.h>
 
 #include "observe.h"
 #include "ccsubstationbus.h"
 #include "ccid.h"
+#include "ccstate.h"
+#include "ccmessage.h"
+
 
 using std::multimap;
 
@@ -68,9 +72,9 @@ public:
 
     } CtiCapControlMapType;
 
-    RWOrdered* getCCSubstationBuses(ULONG secondsFrom1901);
-    RWOrdered* getCCCapBankStates(ULONG secondsFrom1901);
-    RWOrdered* getCCGeoAreas(ULONG secondsFrom1901);
+    CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
+    CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
+    CtiCCGeoArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();
@@ -134,7 +138,7 @@ public:
     void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
-                                  RWOrdered *cCSubstationBuses );
+                                  CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
@@ -183,10 +187,9 @@ private:
     void doResetThr();
     void doAMFMThr();
 
-
-    RWOrdered* _ccSubstationBuses;
-    RWOrdered* _ccCapBankStates;
-    RWOrdered* _ccGeoAreas;
+    CtiCCSubstationBus_vec  *_ccSubstationBuses;
+    CtiCCState_vec  *_ccCapBankStates;
+    CtiCCGeoArea_vec *_ccGeoAreas;
 
     RWThread _resetthr;
     RWThread _amfmthr;

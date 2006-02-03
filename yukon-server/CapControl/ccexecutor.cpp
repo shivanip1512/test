@@ -144,11 +144,11 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             if (!currentSubstationBus->getDisableFlag())
@@ -197,11 +197,11 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             currentSubstationBus->setVerificationFlag(FALSE);
@@ -210,19 +210,19 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
 
             currentSubstationBus->setBusUpdatedFlag(TRUE);
 
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(LONG j=0;j<ccFeeders.entries();j++)
+            for(LONG j=0;j<ccFeeders.size();j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
 
                 currentFeeder->setVerificationFlag(FALSE);
                 currentFeeder->setPerformingVerificationFlag(FALSE);
                 currentFeeder->setVerificationDoneFlag(FALSE);
 
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                 
-                for(LONG k=0;k<ccCapBanks.entries();k++)
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -252,11 +252,11 @@ void CtiCCCommandExecutor::EnableSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             currentSubstationBus->setDisableFlag(FALSE);
@@ -280,11 +280,11 @@ void CtiCCCommandExecutor::DisableSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             currentSubstationBus->setDisableFlag(TRUE);
@@ -309,15 +309,15 @@ void CtiCCCommandExecutor::EnableFeeder()
 
     LONG feederID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( feederID == currentFeeder->getPAOId() )
             {
                 if (!currentSubstationBus->getVerificationFlag())
@@ -355,15 +355,15 @@ void CtiCCCommandExecutor::DisableFeeder()
 
     LONG feederID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( feederID == currentFeeder->getPAOId() )
             {
                 if (!currentSubstationBus->getVerificationFlag())
@@ -401,17 +401,17 @@ void CtiCCCommandExecutor::EnableCapBank()
 
     LONG capBankID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            RWOrdered& ccCapBanks = ((CtiCCFeeder*)ccFeeders[j])->getCCCapBanks();
+            CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( capBankID == currentCapBank->getPAOId() )
@@ -466,17 +466,17 @@ void CtiCCCommandExecutor::DisableCapBank()
 
     LONG capBankID = _command->getId();
     BOOL found = FALSE;
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            RWOrdered& ccCapBanks = ((CtiCCFeeder*)ccFeeders[j])->getCCCapBanks();
+            CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( capBankID == currentCapBank->getPAOId() )
@@ -536,19 +536,19 @@ void CtiCCCommandExecutor::EnableOvUv()
     CtiMultiMsg* multi = new CtiMultiMsg();
    // RWOrdered& pointChanges = multi->getData();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -604,19 +604,19 @@ void CtiCCCommandExecutor::DisableOvUv()
     CtiMultiMsg* multi = new CtiMultiMsg();
     //RWOrdered& pointChanges = multi->getData();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -685,18 +685,18 @@ void CtiCCCommandExecutor::OpenCapBank()
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -880,19 +880,19 @@ void CtiCCCommandExecutor::CloseCapBank()
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -1081,19 +1081,19 @@ void CtiCCCommandExecutor::ConfirmOpen()
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -1290,19 +1290,19 @@ void CtiCCCommandExecutor::ConfirmClose()
     LONG savedControlStatus = -10;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
@@ -1488,14 +1488,14 @@ void CtiCCCommandExecutor::ConfirmClose()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges)
 {
-    RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[currentSubstationBus->getLastFeederControlledPosition()];
 
     if( currentFeeder->getPAOId() == currentSubstationBus->getLastFeederControlledPAOId() )
     {
-        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-        for(LONG k=0;k<ccCapBanks.entries();k++)
+        for(LONG k=0;k<ccCapBanks.size();k++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
             if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -1534,7 +1534,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
 
         if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
         {
-            for(LONG x=0;x<ccFeeders.entries();x++)
+            for(LONG x=0;x<ccFeeders.size();x++)
             {
                 if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
                 {
@@ -1546,14 +1546,14 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
     }
     else
     {
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( currentFeeder->getPAOId() == currentSubstationBus->getLastFeederControlledPAOId() )
             {
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                for(LONG k=0;k<ccCapBanks.entries();k++)
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                     if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -1592,7 +1592,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
 
                 if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                 {
-                    for(LONG x=0;x<ccFeeders.entries();x++)
+                    for(LONG x=0;x<ccFeeders.size();x++)
                     {
                         if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
                         {
@@ -1643,19 +1643,19 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     LONG originalFeederId = 0;
     LONG capSwitchingOrder = 0;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(LONG k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankId == currentCapBank->getPAOId() )
@@ -1732,22 +1732,22 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     LONG paoId = _command->getId();
     BOOL found = FALSE;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
 
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
         if( currentSubstationBus->getPAOId() == paoId )
         {
-            for(LONG j=0;j<ccFeeders.entries();j++)
+            for(LONG j=0;j<ccFeeders.size();j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                for(LONG k=0;k<ccCapBanks.entries();k++)
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                     if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -1768,15 +1768,15 @@ void CtiCCCommandExecutor::ResetDailyOperations()
         }
         else
         {
-            for(LONG j=0;j<ccFeeders.entries();j++)
+            for(LONG j=0;j<ccFeeders.size();j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
                 if( currentFeeder->getPAOId() == paoId )
                 {
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                    for(LONG k=0;k<ccCapBanks.entries();k++)
+                    for(LONG k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -1796,9 +1796,9 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                 }
                 else
                 {
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                    for(LONG k=0;k<ccCapBanks.entries();k++)
+                    for(LONG k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         
@@ -1861,11 +1861,11 @@ void CtiCCCommandExecutor::WaiveSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             if (!currentSubstationBus->getVerificationFlag())
@@ -1897,11 +1897,11 @@ void CtiCCCommandExecutor::UnwaiveSubstationBus()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
             if (!currentSubstationBus->getVerificationFlag())
@@ -1933,16 +1933,16 @@ void CtiCCCommandExecutor::WaiveFeeder()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG feederID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( feederID == currentFeeder->getPAOId() )
             {
                 if (!currentSubstationBus->getVerificationFlag())
@@ -1976,16 +1976,16 @@ void CtiCCCommandExecutor::UnwaiveFeeder()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG feederID = _command->getId();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( feederID == currentFeeder->getPAOId() )
             {
                 if (!currentSubstationBus->getVerificationFlag())
@@ -2063,19 +2063,19 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     CtiCCFeeder* newFeederPtr = NULL;
     CtiCCCapBank* movedCapBankPtr = NULL;
     
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     BOOL found = FALSE;
     BOOL verificationFlag = FALSE;
 
-    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(LONG j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
             if( oldFeederPtr==NULL && currentFeeder->getPAOId()==oldFeederId )
             {
                 if ( currentSubstationBus->getVerificationFlag() )
@@ -2115,8 +2115,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
             if( movedCapBankPtr==NULL )
             {
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                for(LONG k=0;k<ccCapBanks.entries();k++)
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2157,9 +2157,16 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
     {
         {
-            RWSortedVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
+            CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
 
-            oldFeederCapBanks.remove(movedCapBankPtr);
+            for( CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
+                 itr != oldFeederCapBanks.end();
+                 itr++)
+            {
+                if (*itr == movedCapBankPtr) {
+                    oldFeederCapBanks.erase(movedCapBankPtr);
+                }
+            }
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
 
@@ -2178,42 +2185,48 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
             movedCapBankPtr->setParentId(newFeederId);
 
-            if( oldFeederCapBanks.entries() > 0 )
+            if( oldFeederCapBanks.size() > 0 )
             {
                 //reshuffle the cap bank control orders so they are still in sequence and start at 1
                 LONG shuffledOrder = 1;
-                RWOrdered tempShufflingCapBankList;
-                while(oldFeederCapBanks.entries()>0)
+
+                
+                CtiCCCapBank_SVector tempShufflingCapBankList;
+
+
+                while(!oldFeederCapBanks.empty())
                 {
                     //have to remove due to change in sorting field in a sorted vector
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)oldFeederCapBanks.removeAt(0);
+                    CtiCCCapBank* currentCapBank = *(oldFeederCapBanks.begin());
+                    oldFeederCapBanks.erase(oldFeederCapBanks.begin());
                     currentCapBank->setControlOrder(shuffledOrder);
                     tempShufflingCapBankList.insert(currentCapBank);
                     shuffledOrder++;
                 }
-                while(tempShufflingCapBankList.entries()>0)
+                while(tempShufflingCapBankList.size()>0)
                 {
-                    oldFeederCapBanks.insert(tempShufflingCapBankList.removeAt(0));
+                    oldFeederCapBanks.push_back(tempShufflingCapBankList.at(0));
+                    tempShufflingCapBankList.erase(oldFeederCapBanks.begin());
                 }
             }
         }
 
         {
-            RWSortedVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
+            CtiCCCapBank_SVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
 
-            if( newFeederCapBanks.entries() > 0 )
+            if( newFeederCapBanks.size() > 0 )
             {
                 //search through the list to see if there is a cap bank in the
                 //list that already has the switching order
-                if( capSwitchingOrder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() )
+                if( capSwitchingOrder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
                 {
-                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.entries()-1])->getControlOrder() + 1 );
+                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
                 }
                 else
                 {
                     BOOL shuffling = FALSE;
                     movedCapBankPtr->setControlOrder(capSwitchingOrder);
-                    for(LONG k=0;k<newFeederCapBanks.entries();k++)
+                    for(LONG k=0;k<newFeederCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
                         if( capSwitchingOrder == currentCapBank->getControlOrder() )
@@ -2231,23 +2244,25 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     }
                     //reshuffle the cap bank control orders so they are still in sequence and start at 1
                     LONG shuffledOrder = 1;
-                    RWOrdered tempShufflingCapBankList;
-                    while(newFeederCapBanks.entries()>0)
+                    CtiCCCapBank_SVector tempShufflingCapBankList;
+                    while(newFeederCapBanks.size()>0)
                     {
                         //have to remove due to change in sorting field in a sorted vector
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.removeAt(0);
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.front();
+                        newFeederCapBanks.erase(newFeederCapBanks.begin());
                         if( capSwitchingOrder == currentCapBank->getControlOrder() )
                         {
                             //have to make room for the movedCapBank
                             shuffledOrder++;
                         }
                         currentCapBank->setControlOrder(shuffledOrder);
-                        tempShufflingCapBankList.insert(currentCapBank);
+                        tempShufflingCapBankList.push_back(currentCapBank);
                         shuffledOrder++;
                     }
-                    while(tempShufflingCapBankList.entries()>0)
+                    while(tempShufflingCapBankList.size()>0)
                     {
-                        newFeederCapBanks.insert(tempShufflingCapBankList.removeAt(0));
+                        newFeederCapBanks.push_back(tempShufflingCapBankList.at(0));
+                        tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
                     }
                 }
             }
@@ -2256,7 +2271,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 movedCapBankPtr->setControlOrder(1);
             }
 
-            newFeederCapBanks.insert(movedCapBankPtr);
+            newFeederCapBanks.push_back(movedCapBankPtr);
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
             long subBusId = store->findSubBusIDbyFeederID(newFeederId);
             if (subBusId != NULL)
@@ -2372,11 +2387,11 @@ void CtiCCPointDataMsgExecutor::Execute()
 
     BOOL found = FALSE;
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(int i=0;i<ccSubstationBuses.entries();i++)
+    for(int i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
 
         if( !found )
         {
@@ -2387,14 +2402,14 @@ void CtiCCPointDataMsgExecutor::Execute()
                 break;
             }
 
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.entries();j++)
+            for(int j=0;j<ccFeeders.size();j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                for(int k=0;k<ccCapBanks.entries();k++)
+                for(int k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -2409,7 +2424,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
                                 if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                 {
-                                    for(LONG x=0;x<ccFeeders.entries();x++)
+                                    for(LONG x=0;x<ccFeeders.size();x++)
                                     {
                                         if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
                                         {

@@ -50,6 +50,8 @@
 extern ULONG _CC_DEBUG;
 extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
+#include <vector>
+using std::vector;
 
 /* The singleton instance of CtiCapController */
 CtiCapController* CtiCapController::_instance = NULL;
@@ -193,7 +195,7 @@ void CtiCapController::controlLoop()
         loadControlLoopCParms();
 
         CtiTime currentDateTime;
-        RWOrdered substationBusChanges;
+        CtiCCSubstationBus_vec substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
@@ -228,7 +230,7 @@ void CtiCapController::controlLoop()
 
                 rwRunnable().serviceCancellation();
 
-                RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+                CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
                 try
                 {
@@ -258,7 +260,7 @@ void CtiCapController::controlLoop()
                 RWOrdered& pointChanges = multiDispatchMsg->getData();
                 RWOrdered& pilMessages = multiPilMsg->getData();
 
-                for(LONG i=0;i<ccSubstationBuses.entries();i++)
+                for(LONG i=0;i<ccSubstationBuses.size();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
 
@@ -455,7 +457,7 @@ void CtiCapController::controlLoop()
                         //accumulate all buses with any changes into msg for all clients
                         if( currentSubstationBus->getBusUpdatedFlag() )
                         {
-                            substationBusChanges.insert(currentSubstationBus);
+                            substationBusChanges.push_back(currentSubstationBus);
                             currentSubstationBus->setBusUpdatedFlag(FALSE);
                         }
                     }
@@ -500,7 +502,7 @@ void CtiCapController::controlLoop()
                 /*******************************************************************/
                 try
                 {
-                    if( substationBusChanges.entries() > 0 )
+                    if( substationBusChanges.size() > 0 )
                     {
                         //send the substation bus changes to all cap control clients
                         try
@@ -534,7 +536,7 @@ void CtiCapController::controlLoop()
                         }
                         try
                         {
-                            substationBusChanges.clear();
+                            substationBusChanges.clear();//TS//DO NOT DESTROY
                         }
                         catch(...)
                         {
@@ -893,7 +895,7 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
 
     Registers for all points of the substations buses.
 ---------------------------------------------------------------------------*/
-void CtiCapController::registerForPoints(const RWOrdered& subBuses)
+void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -912,9 +914,9 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         //register for each point specifically
         regMsg = new CtiPointRegistrationMsg();
 
-        for(LONG i=0;i<subBuses.entries();i++)
+        for(LONG i=0;i<subBuses.size();i++)
         {
-            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses[i];
+            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses.at(i);
 
             if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
             {
@@ -945,11 +947,11 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
                 regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
             }
             
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(LONG j=0;j<ccFeeders.entries();j++)
+            for(LONG j=0; j < ccFeeders.size(); j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
 
                 if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                 {
@@ -980,9 +982,9 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
                     regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
                 }                
 
-                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                for(LONG k=0;k<ccCapBanks.entries();k++)
+                for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
 
@@ -1249,6 +1251,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    //CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+
 
     try
     {   CtiCCSubstationBus* currentSubstationBus = NULL;
@@ -1496,7 +1500,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                     if (currentSubstationBus != NULL && currentFeeder != NULL)
                     {                                                        
-                        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+                        vector<CtiCCFeeder*>& ccFeeders = currentSubstationBus->getCCFeeders();
 
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
@@ -1586,21 +1590,21 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     BOOL found = FALSE;
-    for(int i=0;i<ccSubstationBuses.entries();i++)
+    for(int i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
 
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+        vector<CtiCCFeeder*>& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(int j=0;j<ccFeeders.entries();j++)
+        for(int j=0;j<ccFeeders.size();j++)
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(int k=0;k<ccCapBanks.entries();k++)
+            for(int k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
@@ -1671,7 +1675,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                 if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                 {
-                    for(j=0;j<ccFeeders.entries();j++)
+                    for(j=0;j<ccFeeders.size();j++)
                     {
                         if (((CtiCCFeeder*)ccFeeders[j])->getRecentlyControlledFlag())
                         {
@@ -1710,19 +1714,19 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, const string& tex
     /*BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
-    for(int i=0;i<ccSubstationBuses.entries();i++)
+    for(int i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
 
         if( !found )
         {
-            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.entries();j++)
+            for(int j=0;j<ccFeeders.size();j++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
                 RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
                 for(int k=0;k<ccCapBanks.entries();k++)

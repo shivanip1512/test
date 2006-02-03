@@ -21,7 +21,8 @@
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
-                
+using std::vector;
+
 class CtiLMEnergyExchangeHourlyOffer : public RWCollectable
 {
 

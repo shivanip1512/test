@@ -67,9 +67,9 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     int getCurrentStopPriority();
     LONG getCurrentDailyStartTime() const;
     LONG getCurrentDailyStopTime() const;
-    RWOrdered& getLMControlAreaTriggers();
+    vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
-    RWOrdered& getLMPrograms();
+    vector<CtiLMProgramBase*>& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);
     CtiLMControlArea& setPAOCategory(const string& category);
@@ -172,8 +172,8 @@ private:
     LONG _currentdailystarttime;
     LONG _currentdailystoptime;
 
-    RWOrdered _lmcontrolareatriggers;
-    RWOrdered _lmprograms;
+    vector<CtiLMControlAreaTrigger*> _lmcontrolareatriggers;
+    vector<CtiLMProgramBase*> _lmprograms;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

@@ -53,9 +53,10 @@ CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(const CtiLMProgramEnergyE
 ---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
 {
-
-    _lmenergyexchangeoffers.clearAndDestroy();
-    _lmenergyexchangecustomers.clearAndDestroy();
+    delete_vector(_lmenergyexchangeoffers);
+    _lmenergyexchangeoffers.clear();
+    delete_vector(_lmenergyexchangecustomers);
+    _lmenergyexchangecustomers.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -129,7 +130,7 @@ const string& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
     
     Returns a list of offer revisions for this energy exchange program
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
+std::vector<CtiLMEnergyExchangeOffer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
 {
 
     return _lmenergyexchangeoffers;
@@ -140,7 +141,7 @@ RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
     
     Returns a list of customers for this energy exchange program
 ---------------------------------------------------------------------------*/
-RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
+std::vector<CtiLMEnergyExchangeCustomer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
 {
 
     return _lmenergyexchangecustomers;
@@ -230,7 +231,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
     
     Sets the group selection method of the energy exchange program
 ---------------------------------------------------------------------------*/    
-DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
 
@@ -269,7 +270,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 
     LONG numberOfCompletedOrCanceledOffers = 0;
     const CtiTime currentDateTime;
-    for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+    for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
     {
         CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
         CtiLMEnergyExchangeOfferRevision* currentOfferRevision = currentOffer->getCurrentOfferRevision();
@@ -374,7 +375,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
         }
     }
 
-    if( numberOfCompletedOrCanceledOffers == _lmenergyexchangeoffers.entries() )
+    if( numberOfCompletedOrCanceledOffers == _lmenergyexchangeoffers.size() )
     {
         setManualControlReceivedFlag(FALSE);
         setProgramState(CtiLMProgramBase::InactiveState);
@@ -392,62 +393,60 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 {
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
-    if( _lmenergyexchangecustomers.entries() > 0 )
+    for(LONG i=0;i<_lmenergyexchangecustomers.size();i++)
     {
-        for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
+        if( !currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
         {
-            CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
-            if( !currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
-            {
-                RWOrdered& customerReplies = currentCustomer->getLMEnergyExchangeCustomerReplies();
+            vector<CtiLMEnergyExchangeCustomerReply*>& customerReplies = currentCustomer->getLMEnergyExchangeCustomerReplies();
 
-                CtiLMEnergyExchangeCustomerReply* newCustomerReply = new CtiLMEnergyExchangeCustomerReply();
+            CtiLMEnergyExchangeCustomerReply* newCustomerReply = new CtiLMEnergyExchangeCustomerReply();
 
-                newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
-                newCustomerReply->setOfferId(offer->getOfferId());
-                newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
-                newCustomerReply->setAcceptDateTime(gInvalidCtiTime);
-                newCustomerReply->setRevisionNumber(currentOfferRevision->getRevisionNumber());
-                newCustomerReply->setIPAddressOfAcceptUser("(none)");
-                newCustomerReply->setUserIdName("(none)");
-                newCustomerReply->setNameOfAcceptPerson("(none)");
-                newCustomerReply->setEnergyExchangeNotes("(none)");
-                newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
-                customerReplies.insert(newCustomerReply);
+            newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
+            newCustomerReply->setOfferId(offer->getOfferId());
+            newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
+            newCustomerReply->setAcceptDateTime(gInvalidCtiTime);
+            newCustomerReply->setRevisionNumber(currentOfferRevision->getRevisionNumber());
+            newCustomerReply->setIPAddressOfAcceptUser("(none)");
+            newCustomerReply->setUserIdName("(none)");
+            newCustomerReply->setNameOfAcceptPerson("(none)");
+            newCustomerReply->setEnergyExchangeNotes("(none)");
+            newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
+            customerReplies.push_back(newCustomerReply);
 
-                CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
-		emailMsg->setCustomerId(currentCustomer->getCustomerId());
-                emailMsg->setSubject(getHeading());
+            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+    emailMsg->setCustomerId(currentCustomer->getCustomerId());
+            emailMsg->setSubject(getHeading());
 
-                string emailBody = getMessageHeader();
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += "Facility:  ";
-                emailBody += currentCustomer->getCompanyName();
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += "Offer Date:  ";
-                emailBody += offer->getOfferDate().date().asString();
-                emailBody += "\r\n\r\n";// 2 return lines
-                char tempchar[64];
-                emailBody += "Offer ID:  ";
-                _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
-                emailBody += tempchar;
-                emailBody += "-";
-                _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
-                emailBody += tempchar;
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += "Offer Expires:  ";
-                emailBody += currentOfferRevision->getOfferExpirationDateTime().asString();
-                emailBody += " ";
-                emailBody += (currentOfferRevision->getOfferExpirationDateTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
-                emailBody += "\r\n\r\n";// 2 return lines
+            string emailBody = getMessageHeader();
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += "Facility:  ";
+            emailBody += currentCustomer->getCompanyName();
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += "Offer Date:  ";
+            emailBody += offer->getOfferDate().date().asString();
+            emailBody += "\r\n\r\n";// 2 return lines
+            char tempchar[64];
+            emailBody += "Offer ID:  ";
+            _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
+            emailBody += tempchar;
+            emailBody += "-";
+            _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+            emailBody += tempchar;
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += "Offer Expires:  ";
+            emailBody += currentOfferRevision->getOfferExpirationDateTime().asString();
+            emailBody += " ";
+            emailBody += (currentOfferRevision->getOfferExpirationDateTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+            emailBody += "\r\n\r\n";// 2 return lines
 
-                emailBody += getMessageFooter();
+            emailBody += getMessageFooter();
 
-                emailMsg->setBody(emailBody);
-                multiNotifMsg->insert(emailMsg);
-            }
+            emailMsg->setBody(emailBody);
+            multiNotifMsg->insert(emailMsg);
         }
     }
+
 }
 
 /*---------------------------------------------------------------------------
@@ -459,42 +458,40 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
 {
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
-    if( _lmenergyexchangecustomers.entries() > 0 )
+    for(LONG i=0;i<_lmenergyexchangecustomers.size();i++)
     {
-        for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
+        if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
         {
-            CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
-            if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
-            {
-                CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
-		emailMsg->setCustomerId(currentCustomer->getCustomerId());
-                emailMsg->setSubject(getHeading());
+            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+    emailMsg->setCustomerId(currentCustomer->getCustomerId());
+            emailMsg->setSubject(getHeading());
 
-                string emailBody = getCanceledMsg();
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += getMessageHeader();
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += "Facility:  ";
-                emailBody += currentCustomer->getCompanyName();
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += "Offer Date:  ";
-                emailBody += offer->getOfferDate().date().asString();
-                emailBody += "\r\n\r\n";// 2 return lines
-                char tempchar[64];
-                emailBody += "Offer ID:  ";
-                _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
-                emailBody += tempchar;
-                emailBody += "-";
-                _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
-                emailBody += tempchar;
-                emailBody += "\r\n\r\n";// 2 return lines
-                emailBody += getMessageFooter();
+            string emailBody = getCanceledMsg();
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += getMessageHeader();
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += "Facility:  ";
+            emailBody += currentCustomer->getCompanyName();
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += "Offer Date:  ";
+            emailBody += offer->getOfferDate().date().asString();
+            emailBody += "\r\n\r\n";// 2 return lines
+            char tempchar[64];
+            emailBody += "Offer ID:  ";
+            _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
+            emailBody += tempchar;
+            emailBody += "-";
+            _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+            emailBody += tempchar;
+            emailBody += "\r\n\r\n";// 2 return lines
+            emailBody += getMessageFooter();
 
-                emailMsg->setBody(emailBody);
-                multiNotifMsg->insert(emailMsg);
-            }
+            emailMsg->setBody(emailBody);
+            multiNotifMsg->insert(emailMsg);
         }
     }
+
 }
 
 /*---------------------------------------------------------------------------
@@ -573,16 +570,18 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMPro
         _canceledmsg = right._canceledmsg;
         _stoppedearlymsg = right._stoppedearlymsg;
 
-        _lmenergyexchangeoffers.clearAndDestroy();
-        for(LONG i=0;i<right._lmenergyexchangeoffers.entries();i++)
+        delete_vector(_lmenergyexchangeoffers);
+        _lmenergyexchangeoffers.clear();
+        for(LONG i=0;i<right._lmenergyexchangeoffers.size();i++)
         {
-            _lmenergyexchangeoffers.insert(((CtiLMEnergyExchangeOffer*)right._lmenergyexchangeoffers[i])->replicate());
+            _lmenergyexchangeoffers.push_back(((CtiLMEnergyExchangeOffer*)right._lmenergyexchangeoffers[i])->replicate());
         }
 
-        _lmenergyexchangecustomers.clearAndDestroy();
-        for(LONG j=0;j<right._lmenergyexchangecustomers.entries();j++)
+        delete_vector(_lmenergyexchangecustomers);
+        _lmenergyexchangecustomers.clear();
+        for(LONG j=0;j<right._lmenergyexchangecustomers.size();j++)
         {
-            _lmenergyexchangecustomers.insert(((CtiLMEnergyExchangeCustomer*)right._lmenergyexchangecustomers[j])->replicate());
+            _lmenergyexchangecustomers.push_back(((CtiLMEnergyExchangeCustomer*)right._lmenergyexchangecustomers[j])->replicate());
         }
     }
 
@@ -616,9 +615,9 @@ BOOL CtiLMProgramEnergyExchange::isOfferWithId(LONG offerid)
 {
     BOOL returnBoolean = FALSE;
 
-    if( _lmenergyexchangeoffers.entries() > 0 )
+    if( _lmenergyexchangeoffers.size() > 0 )
     {
-        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
         {
             if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
             {
@@ -641,34 +640,33 @@ BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(LONG offerID, LONG revision
     BOOL returnBoolean = FALSE;
 
     CtiTime currentDateTime;
-    if( _lmenergyexchangeoffers.entries() > 0 )
+
+    for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
     {
-        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
+        if( currentOffer->getOfferId() == offerID  )
         {
-            CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
-            if( currentOffer->getOfferId() == offerID  )
+            if( currentOffer->getLMEnergyExchangeOfferRevisions().size() > 0 )
             {
-                if( currentOffer->getLMEnergyExchangeOfferRevisions().entries() > 0 )
+                vector<CtiLMEnergyExchangeOfferRevision*>& revisions = currentOffer->getLMEnergyExchangeOfferRevisions();
+                for(LONG j=0;j<revisions.size();j++)
                 {
-                    RWOrdered& revisions = currentOffer->getLMEnergyExchangeOfferRevisions();
-                    for(LONG j=0;j<revisions.entries();j++)
+                    CtiLMEnergyExchangeOfferRevision* currentRevision = (CtiLMEnergyExchangeOfferRevision*)revisions[j];
+                    if( currentRevision->getRevisionNumber() == revisionNumber )
                     {
-                        CtiLMEnergyExchangeOfferRevision* currentRevision = (CtiLMEnergyExchangeOfferRevision*)revisions[j];
-                        if( currentRevision->getRevisionNumber() == revisionNumber )
+                        if( currentDateTime >= currentRevision->getNotificationDateTime() &&
+                            currentDateTime < currentRevision->getOfferExpirationDateTime() )
                         {
-                            if( currentDateTime >= currentRevision->getNotificationDateTime() &&
-                                currentDateTime < currentRevision->getOfferExpirationDateTime() )
-                            {
-                                returnBoolean = TRUE;
-                            }
-                            break;
+                            returnBoolean = TRUE;
                         }
+                        break;
                     }
                 }
-                break;
             }
+            break;
         }
     }
+
 
     return returnBoolean;
 }
@@ -682,9 +680,9 @@ CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offeri
 {
     CtiLMEnergyExchangeOffer* returnOffer = NULL;
 
-    if( _lmenergyexchangeoffers.entries() > 0 )
+    if( _lmenergyexchangeoffers.size() > 0 )
     {
-        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
         {
             if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
             {
@@ -770,7 +768,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, CtiTime& 
 {
     if( getManualControlReceivedFlag() )
     {
-        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
         {
             ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->dumpDynamicData(conn, currentDateTime);
         }

@@ -22,6 +22,8 @@
 
 #include "observe.h"
 #include "lmcicustomerbase.h"
+#include "lmenergyexchangecustomerreply.h"
+using std::vector;
 
 class CtiLMEnergyExchangeCustomer : public CtiLMCICustomerBase
 {
@@ -36,7 +38,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
     virtual ~CtiLMEnergyExchangeCustomer();
     
-    RWOrdered& getLMEnergyExchangeCustomerReplies();
+    vector<CtiLMEnergyExchangeCustomerReply*>& getLMEnergyExchangeCustomerReplies();
 
     BOOL hasAcceptedOffer(LONG offerid) const;
     CtiLMEnergyExchangeCustomer* replicate() const;
@@ -60,7 +62,7 @@ protected:
 
 private:
 
-    RWOrdered _lmenergyexchangecustomerreplies;
+    vector<CtiLMEnergyExchangeCustomerReply*> _lmenergyexchangecustomerreplies;
 };
 #endif
 

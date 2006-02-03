@@ -20,8 +20,11 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "lmcurtailcustomer.h"
 #include "lmprogrambase.h"
 #include "observe.h"
+
+using std::vector;
 
 class CtiLMProgramCurtailment : public CtiLMProgramBase
 {
@@ -50,7 +53,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     const CtiTime& getCurtailmentStopTime() const;
     const string& getRunStatus() const;
     const string& getAdditionalInfo() const;
-    RWOrdered& getLMProgramCurtailmentCustomers();
+    vector<CtiLMCurtailCustomer*>& getLMProgramCurtailmentCustomers();
 
     CtiLMProgramCurtailment& setMinNotifyTime(LONG notifytime);
     CtiLMProgramCurtailment& setHeading(const string& head);
@@ -79,7 +82,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
@@ -121,7 +124,7 @@ private:
     string _runstatus;
     string _additionalinfo;
 
-    RWOrdered _lmprogramcurtailmentcustomers;
+    vector<CtiLMCurtailCustomer*> _lmprogramcurtailmentcustomers;
 
     void restore(RWDBReader& rdr);
 };

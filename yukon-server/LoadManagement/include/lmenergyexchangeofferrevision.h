@@ -20,7 +20,7 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include "ctitime.h"
-
+#include "lmenergyexchangehourlyoffer.h"
 #include "observe.h"
                 
 class CtiLMEnergyExchangeOfferRevision : public RWCollectable
@@ -42,7 +42,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
     const CtiTime& getNotificationDateTime() const;
     const CtiTime& getOfferExpirationDateTime() const;
     const string& getAdditionalInfo() const;
-    RWOrdered& getLMEnergyExchangeHourlyOffers();
+    vector<CtiLMEnergyExchangeHourlyOffer*>& getLMEnergyExchangeHourlyOffers();
 
     CtiLMEnergyExchangeOfferRevision& setOfferId(LONG offid);
     CtiLMEnergyExchangeOfferRevision& setRevisionNumber(LONG revnum);
@@ -86,7 +86,7 @@ private:
     CtiTime _offerexpirationdatetime;
     string _additionalinfo;
 
-    RWOrdered _lmenergyexchangehourlyoffers;
+    vector<CtiLMEnergyExchangeHourlyOffer*> _lmenergyexchangehourlyoffers;
 };
 #endif
 
