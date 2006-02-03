@@ -46,11 +46,6 @@ public class StandardPageTag extends BodyTagSupport {
     private boolean showMenu = false;
     
     public int doStartTag() throws JspException {
-        title = "";
-        htmlLevel = HTML_TRANSITIONAL;
-        module = "";
-        breadCrumbData = "";
-        showMenu = false;
         cssFiles = new ArrayList();
         scriptFiles = new ArrayList();
         return EVAL_BODY_BUFFERED;
@@ -83,10 +78,20 @@ public class StandardPageTag extends BodyTagSupport {
             // handling very difficult.
             RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher(wrapperPage);
             requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
+            return EVAL_PAGE;
         } catch (Exception e) {
             throw new JspException("Can't build standard page.", e);
+        } finally {
+            cleanup();
         }
-        return EVAL_PAGE;
+    }
+    
+    private void cleanup() {
+        title = "";
+        htmlLevel = HTML_TRANSITIONAL;
+        module = "";
+        breadCrumbData = "";
+        showMenu = false;
     }
 
     public String getTitle() {
