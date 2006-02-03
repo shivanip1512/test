@@ -594,6 +594,30 @@ public void messageReceived( MessageEvent e )
 	}
 
 }
+/**
+ * 
+ * @param id - Point Id
+ * @return String containing parent names for Point Id
+ * @comments the fact that it is a point is checked on the front end    
+ */
+
+public String getParentNames(int id){
+    if (isCapBank(id)){
+        CapBankDevice cb = getCapBankDevice(new Integer(id));
+        return getParentNames(cb.getParentID()) + ":" + cb.getCcName();
+    }
+    else if (isFeeder(id)){
+        Feeder f = getFeeder(new Integer(id));
+        return getParentNames(f.getParentID()) + ":" + f.getCcName();
+    }
+    else if (isSubBus(id)){
+        SubBus sb = getSubBus(new Integer(id));
+        return sb.getCcName();
+    }
+    else {
+        return "Invalid device id passed - CapControl Search"; 
+    }
+ }
 
 
 

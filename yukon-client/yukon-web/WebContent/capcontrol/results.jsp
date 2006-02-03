@@ -86,9 +86,14 @@ for( int i = 0; i < items.length; i++ )
 				<td><%=item.getDescription()%></td>
 				<td>
 	<% 
+		
 		int parID = item.getParentID();
-		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>
-				<%=item.getParent()%>
+		
+		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>				<%if (capControlCache.isCapBank(parID)) { //check to see if point has a parent%>
+				<%=capControlCache.getParentNames(parID)%>
+				<% }else { %>
+				<%= item.getParent()%>
+				<%}%>
 	<% } else {
 			parID = capControlCache.getParentSubBusID(item.getItemID());
 				
