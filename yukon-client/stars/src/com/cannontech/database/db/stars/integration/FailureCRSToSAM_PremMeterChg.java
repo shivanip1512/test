@@ -34,7 +34,7 @@ public class FailureCRSToSAM_PremMeterChg extends DBPersistent {
                                                     "HomePhone", "WorkPhone", "OldMeterNumber", "NewMeterNumber",
                                                     "ErrorMsg", "Datetime"};
 
-    public static final String TABLE_NAME = "CRSToSAM_PremiseMeterChange";
+    public static final String TABLE_NAME = "FailureCRSToSAM_PremMeterChg";
 
 
 public FailureCRSToSAM_PremMeterChg() {
