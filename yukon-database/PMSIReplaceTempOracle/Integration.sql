@@ -2,30 +2,30 @@
 /* Table CRSToSAM_PTJ	                                        */
 /*==============================================================*/
 create table CRSToSAM_PTJ  (
-   PTJID		NUMBER				null,
-   PremiseNumber        NUMBER		                null,
-   DebtorNumber         VARCHAR2(10)			null,
-   PTJType		VARCHAR2(3)			null,
-   Timestamp		DATE				null,
-   ConsumptionType	VARCHAR2(5)			null,
-   ServUtilityType	CHAR()				null,
-   Notes		VARCHAR2(300)			null,
-   StreetAddress	VARCHAR2(60)			null,
-   CityName		VARCHAR2(32)			null,
-   StateCode		VARCHAR2(2)			null,
-   ZipCode		VARCHAR2(12)			null,
-   FirstName		VARCHAR2(20)			null,
-   LastName		VARCHAR2(32)			null,
-   HomePhone		VARCHAR2(14)			null,
-   WorkPhone		VARCHAR2(14)			null,
-   CRSContactPhone	VARCHAR2(14)			null,
-   CRSLoggedUser	VARCHAR2(12)			null,
-   PresenceRequired	CHAR()				null,
-   AirConditioner	CHAR()				null,
-   WaterHeater		CHAR()				null,
-   ServiceNumber	VARCHAR2(3)			null,
-   MeterNumber	        VARCHAR2(12)			null,
-   MeterMfg		VARCHAR2(2)			null,  
+  PTJID             NUMBER,
+  PREMISENUMBER     NUMBER,
+  DEBTORNUMBER      VARCHAR2(10 BYTE),
+  PTJTYPE           VARCHAR2(5 BYTE),
+  TIMESTAMP         DATE,
+  CONSUMPTIONTYPE   VARCHAR2(5 BYTE),
+  SERVUTILITYTYPE   CHAR(1 BYTE),
+  NOTES             VARCHAR2(300 BYTE),
+  STREETADDRESS1    VARCHAR2(40 BYTE),
+  STREETADDRESS2    VARCHAR2(40 BYTE),
+  CITYNAME          VARCHAR2(32 BYTE),
+  STATECODE         VARCHAR2(2 BYTE),
+  ZIPCODE           VARCHAR2(12 BYTE),
+  FIRSTNAME         VARCHAR2(20 BYTE),
+  LASTNAME          VARCHAR2(32 BYTE),
+  HOMEPHONE         VARCHAR2(14 BYTE),
+  WORKPHONE         VARCHAR2(14 BYTE),
+  CRSCONTACTPHONE   VARCHAR2(14 BYTE),
+  CRSLOGGEDUSER     VARCHAR2(12 BYTE),
+  PRESENCEREQUIRED  CHAR(1 BYTE),
+  AIRCONDITIONER    CHAR(1 BYTE),
+  WATERHEATER       CHAR(1 BYTE),
+  SERVICENUMBER     VARCHAR2(3 BYTE),
+  METERNUMBER       VARCHAR2(14 BYTE)
 );
 
 alter table CRSToSAM_PTJ
@@ -35,32 +35,32 @@ alter table CRSToSAM_PTJ
 /* Table: FailureCRSToSAM_PTJ	                                */
 /*==============================================================*/
 create table FailureCRSToSAM_PTJ  (
-   PTJID		NUMBER				null,
-   PremiseNumber        NUMBER		                null,
-   DebtorNumber         VARCHAR2(10)			null,
-   PTJType		VARCHAR2(3)			null,
-   Timestamp		DATE				null,
-   ConsumptionType	VARCHAR2(5)			null,
-   ServUtilityType	CHAR()				null,
-   Notes		VARCHAR2(300)			null,
-   StreetAddress	VARCHAR2(60)			null,
-   CityName		VARCHAR2(32)			null,
-   StateCode		VARCHAR2(2)			null,
-   ZipCode		VARCHAR2(12)			null,
-   FirstName		VARCHAR2(20)			null,
-   LastName		VARCHAR2(32)			null,
-   HomePhone		VARCHAR2(14)			null,
-   WorkPhone		VARCHAR2(14)			null,
-   CRSContactPhone	VARCHAR2(14)			null,
-   CRSLoggedUser	VARCHAR2(12)			null,
-   PresenceRequired	CHAR()				null,
-   AirConditioner	CHAR()				null,
-   WaterHeater		CHAR()				null,
-   ServiceNumber	VARCHAR2(3)			null,
-   MeterNumber	        VARCHAR2(12)			null,
-   MeterMfg		VARCHAR2(2)			null,
-   ErrorMsg		VARCHAR2(1024)			null,
-   DateTime		DATETIME			null	   
+  PTJID             NUMBER,
+  PREMISENUMBER     NUMBER,
+  DEBTORNUMBER      VARCHAR2(10 BYTE),
+  PTJTYPE           VARCHAR2(5 BYTE),
+  TIMESTAMP         DATE,
+  CONSUMPTIONTYPE   VARCHAR2(5 BYTE),
+  SERVUTILITYTYPE   CHAR(1 BYTE),
+  NOTES             VARCHAR2(300 BYTE),
+  STREETADDRESS1    VARCHAR2(40 BYTE),
+  STREETADDRESS2    VARCHAR2(40 BYTE),
+  CITYNAME          VARCHAR2(32 BYTE),
+  STATECODE         VARCHAR2(2 BYTE),
+  ZIPCODE           VARCHAR2(12 BYTE),
+  FIRSTNAME         VARCHAR2(20 BYTE),
+  LASTNAME          VARCHAR2(32 BYTE),
+  HOMEPHONE         VARCHAR2(14 BYTE),
+  WORKPHONE         VARCHAR2(14 BYTE),
+  CRSCONTACTPHONE   VARCHAR2(14 BYTE),
+  CRSLOGGEDUSER     VARCHAR2(12 BYTE),
+  PRESENCEREQUIRED  CHAR(1 BYTE),
+  AIRCONDITIONER    CHAR(1 BYTE),
+  WATERHEATER       CHAR(1 BYTE),
+  SERVICENUMBER     VARCHAR2(3 BYTE),
+  METERNUMBER       VARCHAR2(14 BYTE),
+  ERRORMSG          VARCHAR2(1024 BYTE),
+  DATETIME          DATE
 );
 
 alter table FailureCRSToSAM_PTJ
@@ -87,69 +87,67 @@ alter table SAMToCRS_PTJ
 /* Table: CRSToSAM_PremiseMeterChange                           */
 /*==============================================================*/
 create table CRSToSAM_PremiseMeterChange  (   
-   ChangeID		NUMBER				null,
-   PremiseNumber	NUMBER		                null,
-   NewDebtorNumber	VARCHAR2(10)			null,
-   TransID		VARCHAR2(4)			null,
-   StreetAddress	VARCHAR2(60)			null,
-   CityName		VARCHAR2(32)			null,
-   StateCode		VARCHAR2(2)			null,
-   ZipCode		VARCHAR2(12)			null,
-   FirstName		VARCHAR2(20)			null,
-   LastName		VARCHAR2(32)			null,
-   HomePhone		VARCHAR2(14)			null,
-   WorkPhone		VARCHAR2(14)			null,
-   OldMeterNumber	VARCHAR2(12)			null,
-   OldMeterMfg		VARCHAR2(2)			null,
-   NewMeterNumber	VARCHAR2(12)			null,
-   NewMeterMfg		VARCHAR2(2)			null
+  CHANGEID         NUMBER,
+  PREMISENUMBER    NUMBER,
+  NEWDEBTORNUMBER  VARCHAR2(10 BYTE),
+  TRANSID          VARCHAR2(4 BYTE),
+  STREETADDRESS1   VARCHAR2(40 BYTE),
+  STREETADDRESS2   VARCHAR2(40 BYTE),
+  CITYNAME         VARCHAR2(32 BYTE),
+  STATECODE        VARCHAR2(2 BYTE),
+  ZIPCODE          VARCHAR2(12 BYTE),
+  FIRSTNAME        VARCHAR2(20 BYTE),
+  LASTNAME         VARCHAR2(32 BYTE),
+  HOMEPHONE        VARCHAR2(14 BYTE),
+  WORKPHONE        VARCHAR2(14 BYTE),
+  OLDMETERNUMBER   VARCHAR2(14 BYTE),
+  NEWMETERNUMBER   VARCHAR2(14 BYTE)
 );
 
 alter table CRSToSAM_PremiseMeterChange
    add constraint PK_CRSTOSAMPRMMTRCHG primary key (ChangeID);
 
 /*==============================================================*/
-/* Table: FailureCRSToSAM_PremiseMeterChange                    */
-/*==============================================================*/
-create table FailureCRSToSAM_PremiseMeterChange  (   
-   ChangeID		NUMBER				null,
-   PremiseNumber	NUMBER		                null,
-   NewDebtorNumber	VARCHAR2(10)			null,
-   TransID		VARCHAR2(4)			null,
-   StreetAddress	VARCHAR2(60)			null,
-   CityName		VARCHAR2(32)			null,
-   StateCode		VARCHAR2(2)			null,
-   ZipCode		VARCHAR2(12)			null,
-   FirstName		VARCHAR2(20)			null,
-   LastName		VARCHAR2(32)			null,
-   HomePhone		VARCHAR2(14)			null,
-   WorkPhone		VARCHAR2(14)			null,
-   OldMeterNumber	VARCHAR2(12)			null,
-   OldMeterMfg		VARCHAR2(2)			null,
-   NewMeterNumber	VARCHAR2(12)			null,
-   NewMeterMfg		VARCHAR2(2)			null,
-   ErrorMsg		VARCHAR2(1024)			null,
-   DateTime		DATETIME			null	
+/* Table: FailureCRSToSAM_PremMeterChg                          */
+/*==============================================================*/ 
+  CREATE TABLE FAILURECRSTOSAM_PREMMETERCHG
+(
+  CHANGEID         NUMBER,
+  PREMISENUMBER    NUMBER,
+  NEWDEBTORNUMBER  VARCHAR2(10 BYTE),
+  TRANSID          VARCHAR2(4 BYTE),
+  STREETADDRESS1   VARCHAR2(40 BYTE),
+  STREETADDRESS2   VARCHAR2(40 BYTE),
+  CITYNAME         VARCHAR2(32 BYTE),
+  STATECODE        VARCHAR2(2 BYTE),
+  ZIPCODE          VARCHAR2(12 BYTE),
+  FIRSTNAME        VARCHAR2(20 BYTE),
+  LASTNAME         VARCHAR2(32 BYTE),
+  HOMEPHONE        VARCHAR2(14 BYTE),
+  WORKPHONE        VARCHAR2(14 BYTE),
+  OLDMETERNUMBER   VARCHAR2(14 BYTE),
+  NEWMETERNUMBER   VARCHAR2(14 BYTE),
+  ERRORMSG         VARCHAR2(1024 BYTE),
+  DATETIME         DATE
 );
 
-alter table FailureCRSToSAM_PremiseMeterChange
+alter table FailureCRSToSAM_PremMeterChg
    add constraint PK_FAILCRSTOSAMPRMMTRCHG primary key (ChangeID);
 
 
 /*==============================================================*/
-/* Table: CRSToSAM_PTJAdditionalMeterInstalls                   */
+/* Table: CRSToSAM_PTJAdditionalMeters                           */
 /*==============================================================*/
-create table CRSToSAM_PTJAdditionalMeterInstalls  ( 
+create table CRSToSAM_PTJAdditionalMeters    ( 
    PTJID		NUMBER				null,
-   MeterNumber	        VARCHAR2(12)			null,
-   MeterMfg		VARCHAR2(2)			null,
+   MeterNumber	        VARCHAR2(14)			null
 );	
 
-alter table FailureCRSToSAM_PremiseMeterChange
-   add constraint PK_CRSTOSAMPTJADDMTRINSTLLS primary key (PTJID, MeterNumber);
+alter table CRSToSAM_PTJAdditionalMeters
+   add constraint PK_CRSTOSAMPTJADDMTRS primary key (PTJID, MeterNumber);
 
-alter table MeterHardwareBase
-   add constraint FK_PTJADDMTRINSTLLS_REF_CSTLS_CRSTOSAMPTJ foreign key (PTJID)
+alter table CRSToSAM_PTJAdditionalMeters
+   add constraint FK_PTJADDMTRS_CRSTOSAMPTJ foreign key (PTJID)
       references CRSToSAM_PTJ (PTJID)
 
 
@@ -161,7 +159,7 @@ create table SAM_MassSwitchChangeout (
    OldSerialNumber	VARCHAR2(30)			null,
    NewSerialNumber	VARCHAR2(30)			null,
    ServiceCompanyID	NUMBER				null,
-   InstallDate		DATETIME			null,
+   InstallDate		DATE    			null,
    ApplianceTypeID	NUMBER				null
 );
 
@@ -177,10 +175,10 @@ create table FailureSAM_MassSwitchChangeout (
    OldSerialNumber	VARCHAR2(30)			null,
    NewSerialNumber	VARCHAR2(30)			null,
    ServiceCompanyID	NUMBER				null,
-   InstallDate		DATETIME			null,
+   InstallDate		DATE    			null,
    ApplianceTypeID	NUMBER				null,
    ErrorMsg		VARCHAR2(1024)			null,
-   DateTime		DATETIME			null	
+   DateTime		DATE    			null	
 );
 
 alter table SAM_MassSwitchChangeout
