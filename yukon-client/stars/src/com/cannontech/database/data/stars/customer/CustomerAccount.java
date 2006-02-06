@@ -2,6 +2,7 @@ package com.cannontech.database.data.stars.customer;
 
 import java.util.Vector;
 
+import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -32,8 +33,27 @@ public class CustomerAccount extends DBPersistent {
 
     public void setAccountID(Integer newID) {
         getCustomerAccount().setAccountID(newID);
+        getAccountSite().setAccountSiteID(newID);
     }
 
+    public void setAddressID(Integer addressID)
+    {
+    	getCustomerAccount().setBillingAddressID(addressID);
+    	getBillingAddress().setAddressID(addressID);
+    }
+    
+    public void setCustomerID(Integer customerID)
+    {
+    	getCustomer().setCustomerID(customerID);
+    	getCustomerAccount().setCustomerID(customerID);
+    }
+    
+    public void setAccountSiteID(Integer accountSiteID)
+    {
+    	getCustomerAccount().setAccountSiteID(accountSiteID);
+    	getAccountSite().setAccountSiteID(accountSiteID);
+    }
+    
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getCustomerAccount().setDbConnection(conn);
@@ -199,6 +219,8 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public com.cannontech.database.data.customer.Customer getCustomer() {
+    	if( customer == null)
+    		customer = new Customer();
         return customer;
     }
 
