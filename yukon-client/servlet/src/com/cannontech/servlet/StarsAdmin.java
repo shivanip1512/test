@@ -49,6 +49,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -994,7 +995,6 @@ public class StarsAdmin extends HttpServlet {
 			
 			com.cannontech.database.data.stars.report.ServiceCompany company =
 					new com.cannontech.database.data.stars.report.ServiceCompany();
-			com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
 			
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
@@ -1006,16 +1006,16 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (!newCompany) {
 				liteCompany = energyCompany.getServiceCompany( companyID );
-				StarsLiteFactory.setServiceCompany( companyDB, liteCompany );
+				StarsLiteFactory.setServiceCompany( company, liteCompany );
 				liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
 				StarsLiteFactory.setContact( contact, liteContact );
 				liteAddr = energyCompany.getAddress( liteCompany.getAddressID() );
 			}
         	
-			companyDB.setCompanyName( req.getParameter("CompanyName") );
-			companyDB.setMainPhoneNumber( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
-			companyDB.setMainFaxNumber( ServletUtils.formatPhoneNumber(req.getParameter("FaxNo")) );
-			companyDB.setHIType( req.getParameter("Type") );
+			company.getServiceCompany().setCompanyName( req.getParameter("CompanyName") );
+			company.getServiceCompany().setMainPhoneNumber( ServletUtils.formatPhoneNumber(req.getParameter("PhoneNo")) );
+			company.getServiceCompany().setMainFaxNumber( ServletUtils.formatPhoneNumber(req.getParameter("FaxNo")) );
+			company.getServiceCompany().setHIType( req.getParameter("Type") );
 			contactDB.setContLastName( req.getParameter("ContactLastName") );
 			contactDB.setContFirstName( req.getParameter("ContactFirstName") );
 			
@@ -1081,13 +1081,12 @@ public class StarsAdmin extends HttpServlet {
 				StarsLiteFactory.setLiteContact( liteContact, contact );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 				
-				companyDB = (com.cannontech.database.db.stars.report.ServiceCompany)
-						Transaction.createTransaction( Transaction.UPDATE, companyDB ).execute();
-				StarsLiteFactory.setLiteServiceCompany( liteCompany, companyDB );
+				company = (com.cannontech.database.data.stars.report.ServiceCompany) Transaction.createTransaction( Transaction.UPDATE, company ).execute();
+				StarsLiteFactory.setLiteServiceCompany( liteCompany, company );
                 
                 if (req.getParameter("hasCodes").length() > 0) 
                 { 
-                    ArrayList oldCodeList = ServiceCompanyDesignationCode.getAllCodesForServiceCompany(companyID);
+                    ArrayList oldCodeList = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID);
                                         
                     for(int j = 0; j < oldCodeList.size(); j++)
                     {
@@ -1096,11 +1095,13 @@ public class StarsAdmin extends HttpServlet {
                         if(codeToUpdateString != null && codeToUpdateString.length() > 0)
                         {
                             currentCode.setDesignationCodeValue(codeToUpdateString);
-                            Transaction.createTransaction( Transaction.UPDATE, currentCode).execute();
+                            currentCode = (ServiceCompanyDesignationCode)Transaction.createTransaction( Transaction.UPDATE, currentCode).execute();
+                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DBChangeMsg.CHANGE_TYPE_UPDATE);
                         }
                         else if(codeToUpdateString != null && codeToUpdateString.length() <= 0)
                         {
-                            Transaction.createTransaction(Transaction.DELETE, currentCode).execute();
+                            currentCode = (ServiceCompanyDesignationCode)Transaction.createTransaction(Transaction.DELETE, currentCode).execute();
+                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DBChangeMsg.CHANGE_TYPE_DELETE);
                         }
                     }
                 }
@@ -2113,9 +2114,17 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
     
+	private void insertContractorCode(String code, int servCompanyID, int minLength) throws TransactionException
+	{
+        if(code.length() >= minLength)
+        {
+            ServiceCompanyDesignationCode newCode = new ServiceCompanyDesignationCode(code, new Integer(servCompanyID));
+            Transaction.createTransaction(Transaction.INSERT, newCode).execute();
+            ServerUtils.handleDBChange(StarsLiteFactory.createLite(newCode), DBChangeMsg.CHANGE_TYPE_ADD);
+        }
+	}
     private void addContractorCodes(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {
-        
         try 
         {
             String referer = req.getParameter( "REFERER" );
@@ -2123,39 +2132,19 @@ public class StarsAdmin extends HttpServlet {
             StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
             
             String newCodeString = req.getParameter("NewCode1");
-            if(newCodeString.length() > 4)
-            {
-                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
-                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            }
+            insertContractorCode(newCodeString, scTemp.getCompanyID(), 5);
             
             newCodeString = req.getParameter("NewCode2");
-            if(newCodeString.length() > 4)
-            {
-                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
-                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            }
+            insertContractorCode(newCodeString, scTemp.getCompanyID(), 5);
             
             newCodeString = req.getParameter("NewCode3");
-            if(newCodeString.length() > 4)
-            {
-                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
-                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            }
+            insertContractorCode(newCodeString, scTemp.getCompanyID(), 5);
             
             newCodeString = req.getParameter("NewCode4");
-            if(newCodeString.length() > 4)
-            {
-                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
-                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            }
+            insertContractorCode(newCodeString, scTemp.getCompanyID(), 5);
             
             newCodeString = req.getParameter("NewCode5");
-            if(newCodeString.length() > 4)
-            {
-                newCode = new ServiceCompanyDesignationCode(newCodeString, new Integer(scTemp.getCompanyID()));
-                Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            }
+            insertContractorCode(newCodeString, scTemp.getCompanyID(), 5);
             
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Zip codes successfully assigned to contractor.");
             
