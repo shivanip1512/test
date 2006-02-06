@@ -27,6 +27,7 @@ public ServiceCompanyDesignationCode() {
 public ServiceCompanyDesignationCode(String codeValue, Integer companyID) {
     super();
     
+    int nextID = 1;
     SqlStatement stmt = new SqlStatement("SELECT MAX(DESIGNATIONCODEID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     
     try
@@ -35,7 +36,7 @@ public ServiceCompanyDesignationCode(String codeValue, Integer companyID) {
         
         if( stmt.getRowCount() > 0 )
         {
-            designationCodeID = (new Integer(stmt.getRow(0)[0].toString()));
+            nextID = (new Integer(stmt.getRow(0)[0].toString())).intValue();
         }
     }
     catch( Exception e )
@@ -43,6 +44,7 @@ public ServiceCompanyDesignationCode(String codeValue, Integer companyID) {
         e.printStackTrace();
     }
     
+    designationCodeID = new Integer(nextID);
     designationCodeValue = codeValue;
     serviceCompanyID = companyID;
 }
@@ -117,7 +119,7 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCodesForServiceCompany(int companyID)
+public static ArrayList getServiceCompanyDesignationCodes(int companyID)
 {
     ArrayList codes = new ArrayList();
     
@@ -148,6 +150,62 @@ public static ArrayList getAllCodesForServiceCompany(int companyID)
     return codes;
 }
 
+public static ArrayList retrieveAllServiceCompanyCodes()
+{
+    ArrayList codes = new ArrayList();
+    
+    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " ORDER BY DESIGNATIONCODEVALUE", CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                ServiceCompanyDesignationCode newCode = new ServiceCompanyDesignationCode();
+                newCode.setDesignationCodeID(new Integer(stmt.getRow(i)[0].toString()));
+                newCode.setDesignationCodeValue(stmt.getRow(i)[1].toString());
+                newCode.setServiceCompanyID(new Integer(stmt.getRow(i)[2].toString()));
+                
+                codes.add(newCode);
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return codes;
+}
 
+/**
+ * @param customerID
+ * @param conn
+ * @return
+ */
+public static synchronized boolean deleteDesignationCode(Integer companyID, java.sql.Connection conn )
+{
+	try
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
 
+		java.sql.Statement stat = conn.createStatement();
+		
+		stat.execute( "DELETE FROM " + TABLE_NAME + 
+				" WHERE SERVICECOMPANYID =" + companyID);
+
+		if( stat != null )
+			stat.close();
+	}
+	catch(Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		return false;
+	}
+	return true;
+}
 }
