@@ -26,7 +26,13 @@ public class InventoryBase extends DBPersistent {
     public void setInventoryID(Integer newID) {
         getInventoryBase().setInventoryID(newID);
     }
-
+    
+    public void setAccountID(Integer accountID)
+    {
+    	getCustomerAccount().getCustomerAccount().setAccountID(accountID);
+    	getInventoryBase().setAccountID(accountID);
+    }
+    
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getInventoryBase().setDbConnection(conn);
