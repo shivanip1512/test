@@ -63,11 +63,13 @@ public class MeterHardwareBase extends InventoryBase {
 		this.meterHardwareBase = meterHardwareBase;
 	}
 
-    public static com.cannontech.database.db.stars.hardware.MeterHardwareBase retrieveMeterHardwareBase(int accountID, String meterNumber, int energyCompanyID)
+    public static MeterHardwareBase retrieveMeterHardwareBase(int accountID, String meterNumber, int energyCompanyID)
     {
-		com.cannontech.database.db.stars.hardware.MeterHardwareBase meterHardwareBase = null;
+		MeterHardwareBase meterHardwareBase = null;
 		
-    	String sql = "SELECT MHB.INVENTORYID, MHB.METERNUMBER, MHB.METERTYPEID " +
+    	String sql = "SELECT IB.INVENTORYID, IB.ACCOUNTID, IB.INSTALLATIONCOMPANYID, IB.CATEGORYID, IB.RECEIVEDATE, IB.INSTALLDATE, " +
+    			" IB.REMOVEDATE, IB.ALTERNATETRACKINGNUMBER, IB.VOLTAGEID, IB.NOTES, IB.DEVICEID, IB.DEVICELABEL, " + 
+    			" MHB.METERNUMBER, MHB.METERTYPEID " +
     			" FROM " + com.cannontech.database.db.stars.hardware.MeterHardwareBase.TABLE_NAME + " MHB, " +
     			com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " IB, ECTOINVENTORYMAPPING MAP " +
     			" WHERE MHB.INVENTORYID = IB.INVENTORYID " +
@@ -91,10 +93,21 @@ public class MeterHardwareBase extends InventoryBase {
 			rset = stmt.executeQuery();
     		
 			while (rset.next()) {
-				meterHardwareBase = new com.cannontech.database.db.stars.hardware.MeterHardwareBase();
+				meterHardwareBase = new MeterHardwareBase();
 				meterHardwareBase.setInventoryID(new Integer(rset.getInt(1)) );
-				meterHardwareBase.setMeterNumber( rset.getString(2) );
-				meterHardwareBase.setMeterTypeID( new Integer(rset.getInt(3)) );
+				meterHardwareBase.getInventoryBase().setAccountID( new Integer(rset.getInt(2)) );
+				meterHardwareBase.getInventoryBase().setInstallationCompanyID( new Integer(rset.getInt(3)) );
+				meterHardwareBase.getInventoryBase().setCategoryID(  new Integer(rset.getInt(4)) );
+				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getDate(5));
+				meterHardwareBase.getInventoryBase().setInstallDate(rset.getDate(6));
+				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getDate(7));
+				meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(rset.getString(8));
+				meterHardwareBase.getInventoryBase().setVoltageID( new Integer(rset.getInt(9)) );
+				meterHardwareBase.getInventoryBase().setNotes(rset.getString(10));
+				meterHardwareBase.getInventoryBase().setDeviceID( new Integer(rset.getInt(11)) );
+				meterHardwareBase.getInventoryBase().setDeviceLabel(rset.getString(12));
+				meterHardwareBase.getMeterHardwareBase().setMeterNumber( rset.getString(13) );
+				meterHardwareBase.getMeterHardwareBase().setMeterTypeID( new Integer(rset.getInt(14)) );
 				break;
 			}
     	}
@@ -117,7 +130,9 @@ public class MeterHardwareBase extends InventoryBase {
     {
 		java.util.ArrayList meterList = new java.util.ArrayList();
 		
-    	String sql = "SELECT MHB.INVENTORYID, MHB.METERNUMBER, MHB.METERTYPEID " +
+    	String sql = "SELECT IB.INVENTORYID, IB.ACCOUNTID, IB.INSTALLATIONCOMPANYID, IB.CATEGORYID, IB.RECEIVEDATE, IB.INSTALLDATE, " +
+				" IB.REMOVEDATE, IB.ALTERNATETRACKINGNUMBER, IB.VOLTAGEID, IB.NOTES, IB.DEVICEID, IB.DEVICELABEL, " + 
+				" MHB.METERNUMBER, MHB.METERTYPEID " +
     			" FROM " + com.cannontech.database.db.stars.hardware.MeterHardwareBase.TABLE_NAME + " MHB, " +
     			com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " IB, ECTOINVENTORYMAPPING MAP " +
     			" WHERE MHB.INVENTORYID = IB.INVENTORYID " +
@@ -139,10 +154,22 @@ public class MeterHardwareBase extends InventoryBase {
 			rset = stmt.executeQuery();
     		
 			while (rset.next()) {
-				com.cannontech.database.db.stars.hardware.MeterHardwareBase meterHardwareBase = new com.cannontech.database.db.stars.hardware.MeterHardwareBase();
+				MeterHardwareBase meterHardwareBase = new MeterHardwareBase();
+				meterHardwareBase = new MeterHardwareBase();
 				meterHardwareBase.setInventoryID(new Integer(rset.getInt(1)) );
-				meterHardwareBase.setMeterNumber( rset.getString(2) );
-				meterHardwareBase.setMeterTypeID( new Integer(rset.getInt(3)) );
+				meterHardwareBase.getInventoryBase().setAccountID( new Integer(rset.getInt(2)) );
+				meterHardwareBase.getInventoryBase().setInstallationCompanyID( new Integer(rset.getInt(3)) );
+				meterHardwareBase.getInventoryBase().setCategoryID(  new Integer(rset.getInt(4)) );
+				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getDate(5));
+				meterHardwareBase.getInventoryBase().setInstallDate(rset.getDate(6));
+				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getDate(7));
+				meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(rset.getString(8));
+				meterHardwareBase.getInventoryBase().setVoltageID( new Integer(rset.getInt(9)) );
+				meterHardwareBase.getInventoryBase().setNotes(rset.getString(10));
+				meterHardwareBase.getInventoryBase().setDeviceID( new Integer(rset.getInt(11)) );
+				meterHardwareBase.getInventoryBase().setDeviceLabel(rset.getString(12));
+				meterHardwareBase.getMeterHardwareBase().setMeterNumber( rset.getString(13) );
+				meterHardwareBase.getMeterHardwareBase().setMeterTypeID( new Integer(rset.getInt(14)) );
 				meterList.add( meterHardwareBase );
 			}
     	}
