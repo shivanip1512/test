@@ -1,7 +1,11 @@
 package com.cannontech.database.db.stars.report;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.data.lite.stars.LiteServiceCompanyDesignationCode;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.ECToGenericMapping;
 
 
 /**
@@ -114,45 +118,6 @@ public class ServiceCompany extends DBPersistent {
 
         return new Integer( nextCompanyID );
     }
-    
-    public static ServiceCompany[] getAllServiceCompanies(Integer energyCompanyID) {
-    	com.cannontech.database.db.stars.ECToGenericMapping[] items =
-    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
-    	if (items == null || items.length == 0)
-    		return new ServiceCompany[0];
-    			
-    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE CompanyID = " + items[0].getItemID().toString() );
-    	for (int i = 1; i < items.length; i++)
-    		sql.append( " OR CompanyID = " ).append( items[i].getItemID() );
-    			   
-    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-    			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    			
-    	try {
-    		stmt.execute();
-    		ServiceCompany[] companies = new ServiceCompany[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < stmt.getRowCount(); i++) {
-    			Object[] row = stmt.getRow(i);
-    			companies[i] = new ServiceCompany();
-    			
-    			companies[i].setCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-    			companies[i].setCompanyName( (String) row[1] );
-    			companies[i].setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-    			companies[i].setMainPhoneNumber( (String) row[3] );
-    			companies[i].setMainFaxNumber( (String) row[4] );
-    			companies[i].setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-    			companies[i].setHIType( (String) row[6] );
-    		}
-    		
-    		return companies;
-    	}
-    	catch (Exception e) {
-    		CTILogger.error( e.getMessage(), e );
-    	}
-    	
-    	return null;
-    }
 
     public Integer getCompanyID() {
         return companyID;
@@ -216,5 +181,15 @@ public class ServiceCompany extends DBPersistent {
 	public void setHIType(String hiType) {
 		this.hiType = hiType;
 	}
+
+	/*public ArrayList getDesignationCodes() {
+		if( designationCodes == null)
+			designationCodes = new ArrayList();
+		return designationCodes;
+	}
+
+	public void setDesignationCodes(ArrayList designationCodes) {
+		this.designationCodes = designationCodes;
+	}*/
 
 }
