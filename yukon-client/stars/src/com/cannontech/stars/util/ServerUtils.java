@@ -154,7 +154,16 @@ public class ServerUtils {
 				typeOfChange
 				);
 		}
-		
+		else if( lite.getLiteType() == LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE){
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
+				DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+				DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+				typeOfChange
+				);
+		}
+
 		handleDBChangeMsg( msg );
 	}
 	
