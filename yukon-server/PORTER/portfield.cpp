@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.166 $
-* DATE         :  $Date: 2006/02/02 16:17:00 $
+* REVISION     :  $Revision: 1.167 $
+* DATE         :  $Date: 2006/02/06 15:49:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1370,6 +1370,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                         status = ds->decode(trx, comm_status);
                                     }
+
+                                    processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
 
                                     // Prepare for tracing
                                     if(trx.doTrace(comm_status))
