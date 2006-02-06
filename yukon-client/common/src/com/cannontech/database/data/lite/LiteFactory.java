@@ -70,6 +70,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((Customer)returnObject).setCustomerID( new Integer(((LiteCustomer)liteObject).getCustomerID()) );
 			((Customer)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCustomer)liteObject).getPrimaryContactID()) );
 			((Customer)returnObject).getCustomer().setTimeZone( ((LiteCustomer)liteObject).getTimeZone() );
+			((Customer)returnObject).getCustomer().setAltTrackingNumber( ((LiteCustomer)liteObject).getAltTrackingNumber() );
+			((Customer)returnObject).getCustomer().setCustomerNumber( ((LiteCustomer)liteObject).getCustomerNumber() );
+			((Customer)returnObject).getCustomer().setCustomerTypeID( new Integer(((LiteCustomer)liteObject).getCustomerTypeID() ));
+			((Customer)returnObject).getCustomer().setRateScheduleID( new Integer(((LiteCustomer)liteObject).getRateScheduleID() ));
+			((Customer)returnObject).getCustomer().setTemperatureUnit( ((LiteCustomer)liteObject).getTemperatureUnit() );
 			break;
 		case LiteTypes.POINT:
 			returnObject = com.cannontech.database.data.point.PointFactory.createPoint(((LitePoint)liteObject).getPointType());
