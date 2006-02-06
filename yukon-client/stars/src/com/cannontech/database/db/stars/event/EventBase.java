@@ -16,10 +16,6 @@ public class EventBase extends DBPersistent {
     private Integer actionID;
     private Date eventTimestamp;
     
-    EventAccount eventAccount = null;
-    EventInventory eventInventory = null;
-    EventWorkOrder eventWorkOrder = null;
-
     public static final String CONSTRAINT_COLUMNS[] = { "EventID" };
 
     public static final String SETTER_COLUMNS[] = { "UserID", "SystemCategoryID", "ActionID", "EventTimestamp" };
@@ -40,25 +36,6 @@ public void add() throws java.sql.SQLException
             getActionID(), getEventTimestamp() };
 
     add( TABLE_NAME, setValues );
-    
-    if(eventAccount != null)
-    {
-        eventAccount.setEventID(eventID);
-        eventAccount.setDbConnection(this.getDbConnection());
-        eventAccount.add();
-    }
-    if(eventInventory != null)
-    {    
-        eventInventory.setEventID(eventID);
-        eventInventory.setDbConnection(this.getDbConnection());
-        eventInventory.add();
-    }
-    if(eventWorkOrder != null)
-    {
-        eventWorkOrder.setEventID(eventID);
-        eventWorkOrder.setDbConnection(this.getDbConnection());
-        eventWorkOrder.add();
-    }
 }
 
 public void delete() throws java.sql.SQLException {}
@@ -110,21 +87,6 @@ public Date getEventTimestamp()
     return eventTimestamp;
 }
 
-public EventAccount getEventAccount()
-{
-    return eventAccount;
-}
-
-public EventInventory getEventInventory()
-{
-    return eventInventory;
-}
-
-public EventWorkOrder getEventWorkOrder()
-{
-    return eventWorkOrder;
-}
-
 public void retrieve() throws java.sql.SQLException {}
 
 public void setEventID(Integer newID) 
@@ -150,21 +112,6 @@ public void setActionID(Integer newID)
 public void setEventTimestamp(Date now)
 {
     eventTimestamp = now;
-}
-
-public void setEventAccount(EventAccount newEvent)
-{
-    eventAccount = newEvent;
-}
-
-public void setEventInventory(EventInventory newEvent)
-{
-    eventInventory = newEvent;
-}
-
-public void setEventWorkOrder(EventWorkOrder newEvent)
-{
-    eventWorkOrder = newEvent;
 }
 
 public void update() throws java.sql.SQLException {}
