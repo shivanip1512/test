@@ -784,6 +784,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             INT   sendCnt = 0;
             CHAR  msgPayload[256];
             CHAR  temp[8];
+            CHAR  prefix[8] = { 0,0,0,0,0,0,0,0};
 
             if( gDoPrefix && allowPrefix() )
             {
@@ -795,6 +796,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
                 for(i = 0; i < 5; i++)
                 {
                     msgPayload[sendCnt++] = temp[i] & 0x7f;
+                    prefix[i] = temp[i] & 0x7f;
                 }
             }
 
@@ -806,6 +808,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
                                            getWctp().getSenderID().c_str(),      // "yukonserver@cannontech.com",
                                            msgPayload,
                                            timeStamp,
+                                           prefix,
                                            getWctp().getSecurityCode().c_str());
 
             CHAR* out = getOutBuffer();
