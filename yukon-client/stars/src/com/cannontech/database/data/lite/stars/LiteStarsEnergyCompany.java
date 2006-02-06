@@ -900,8 +900,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized ArrayList getServiceCompanies() {
 		if (serviceCompanies == null) {
-			com.cannontech.database.db.stars.report.ServiceCompany[] companies =
-					com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
+			com.cannontech.database.data.stars.report.ServiceCompany[] companies =
+					com.cannontech.database.data.stars.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyID() );
 			
 			serviceCompanies = new ArrayList();
 			for (int i = 0; i < companies.length; i++)
