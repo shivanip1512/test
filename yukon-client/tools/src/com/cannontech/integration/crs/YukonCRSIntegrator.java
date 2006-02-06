@@ -11,13 +11,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
@@ -26,11 +24,7 @@ import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
-import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeterInstalls;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
@@ -41,7 +35,6 @@ import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.InventoryUtils;
 
 public final class YukonCRSIntegrator 
 {
@@ -223,27 +216,27 @@ public final class YukonCRSIntegrator
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
                 String newMeterNumber = currentEntry.getNewMeterNumber();
                 
-                updateContact(currentContact, firstName, lastName);
+                YukonToCRSFuncs.updateContact(currentContact, firstName, lastName);
 /*                if(lastName.length() > 0)
                     currentContact.setContLastName(lastName);
                 if(firstName.length() > 0)
                     currentContact.setContFirstName(firstName);
 */
-                updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
+                YukonToCRSFuncs.updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
 /*                if(homePhone.length() > 0)
                 {
                     homeNotify = YukonToCRSFuncs.getHomePhoneFromContactID(currentContact.getContactID());
                     homeNotify.setNotification(homePhone);
                 }
 */
-                updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
+                YukonToCRSFuncs.updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
 /*                if(workPhone.length() > 0)
                 {
                     workNotify = YukonToCRSFuncs.getWorkPhoneFromContactID(currentContact.getContactID());
                     workNotify.setNotification(workPhone);
                 }
 */
-                updateAddress(currentContact.getAddressID(), streetAddress, cityName, state, zipCode);
+                YukonToCRSFuncs.updateAddress(currentContact.getAddressID(), streetAddress, cityName, state, zipCode);
 /*                if(streetAddress.length() > 0 || cityName.length() > 0 || state.length() > 0
                         || zipCode.length() > 0)
                 {
@@ -336,29 +329,30 @@ public final class YukonCRSIntegrator
         	CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
         	if( customerAccount == null)
         	{
-        		if( ptjType.equalsIgnoreCase("INSTL") || ptjType.equalsIgnoreCase("OTHER"))	//Xcel Energy 5 char code for install or other ptjtype
+        		if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) ||
+       				ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
+        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))
             	{
         			try{
         				//Create new Contact data object and ContactNotification objects
 	        			com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
-	        			contact = createNewContact(contact, firstName, lastName, homePhone, workPhone, crsContactPhone);
+	        			contact = YukonToCRSFuncs.createNewContact(contact, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	        			
 	        			//Create a new CustomerAccount data object
 	        			customerAccount = new CustomerAccount();
-	        			customerAccount = createNewCustomerAccount(customerAccount, accountNumber, contact.getContact().getContactID(), debtorNumber, 
+	        			customerAccount = YukonToCRSFuncs.createNewCustomerAccount(customerAccount, accountNumber, contact.getContact().getContactID(), debtorNumber, 
 	        														presenceReq, streetAddress, cityName, stateCode, zipCode, ecID_workOrder);
 	        			//Create new ApplianceBase (and extension of) objects
-	        			createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater);
+	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater);
 	        			
-	        			createMeterHardware (customerAccount.getCustomerAccount().getAccountID(), meterNumber, currentEntry.getAdditionalMeters());
+	        			//Create New Inventory for meterNumbers
+	        			YukonToCRSFuncs.createMeterHardwares(customerAccount.getCustomerAccount().getAccountID(), customerAccount.getEnergyCompanyID(), meterNumber, currentEntry.getAdditionalMeters());
 	            		
 					} catch (TransactionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
             	}
-        		else
-        			errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
         	}
         	else	//CustomerAccount already exists....lets update it!
         	{
@@ -368,13 +362,13 @@ public final class YukonCRSIntegrator
                     Contact contactDB = new Contact();
                     contactDB.setContactID(customerDB.getPrimaryContactID());
     				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
-    	            contactDB = updateContact(contactDB, firstName, lastName);
+    	            contactDB = YukonToCRSFuncs.updateContact(contactDB, firstName, lastName);
     	            
-    	            updateAddress(customerAccount.getBillingAddress().getAddressID(), streetAddress, cityName, stateCode, zipCode);
-    	            updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
-    	            updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
-    	            updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone);
-    	            updateCustomer(customerDB, debtorNumber);
+    	            YukonToCRSFuncs.updateAddress(customerAccount.getBillingAddress().getAddressID(), streetAddress, cityName, stateCode, zipCode);
+    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
+    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
+    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone);
+    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
     				
     			} catch (TransactionException e1) {
     				errorMsg.append("Updating of Contact, Address, or ContactNotification(s) failed; ");
@@ -393,14 +387,27 @@ public final class YukonCRSIntegrator
         		errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
         	
         	
-        	if( ptjType.equalsIgnoreCase("ACT"))
+        	if( ptjType.equalsIgnoreCase("ACT") || 
+        		ptjType.equalsIgnoreCase("DEACT") ||
+        		ptjType.equalsIgnoreCase("REMVE"))
         	{
-//        		mete
+        		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
+        		if( meterHardwareBase == null)
+        			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+            	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
+            	{
+            		CRSToSAM_PTJAdditionalMeterInstalls additionalMeter = (CRSToSAM_PTJAdditionalMeterInstalls)currentEntry.getAdditionalMeters().get(i);
+            		meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
+        			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+            	}
+            	
+            	//TODO verify controllable device attached to the service
         	}
+        	
           	//Get the energyCompany from the zip code
         	LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany( ecID_workOrder);
         	YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
-        	YukonListEntry workTypeEntry = getServiceTypeEntry(serviceTypeList, ptjType);
+        	YukonListEntry workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
         	if( workTypeEntry == null)
         		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
         	
@@ -418,9 +425,9 @@ public final class YukonCRSIntegrator
         		break;
         	}
 
-        	
+        	//No errors, create work order!
         	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
-        	YukonListEntry workStatusEntry = getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
+        	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
 
             WorkOrderBase workOrderDB = new WorkOrderBase();
             workOrderDB.setOrderID(workOrderDB.getNextOrderID());
@@ -439,7 +446,7 @@ public final class YukonCRSIntegrator
             	workOrder.setEnergyCompanyID(new Integer(ecID_workOrder));
 				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 				//Need to have a pending AND an assigned entry, but no need to insert and then update the work order, just create the extra event!
-            	workStatusEntry = getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
+            	workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
                 EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
                 EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue());
 			} catch (TransactionException e) {
@@ -451,267 +458,6 @@ public final class YukonCRSIntegrator
         }
     }
 
-    private void createMeterHardware(Integer accountID, String meterNumber, ArrayList additionalMeters) throws TransactionException
-    {
-    	if( meterNumber != null && meterNumber.length() > 0)
-    	{
-			MeterHardwareBase meterHardwareBase = new MeterHardwareBase();
-			meterHardwareBase.setAccountID(accountID);
-			meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
-	//		meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
-			meterHardwareBase.getInventoryBase().setCategoryID(new Integer(CtiUtilities.NONE_ZERO_ID));	//TODO ? correct type
-			Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
-    	}
-    	for (int i = 0; i < additionalMeters.size(); i++)
-    	{
-    		CRSToSAM_PTJAdditionalMeterInstalls additionalMeter = (CRSToSAM_PTJAdditionalMeterInstalls)additionalMeters.get(i);
-			MeterHardwareBase meterHardwareBase = new MeterHardwareBase();
-			meterHardwareBase.setAccountID(accountID);
-			meterHardwareBase.getMeterHardwareBase().setMeterNumber(additionalMeter.getMeterNumber());
-	//		meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
-			meterHardwareBase.getInventoryBase().setCategoryID(new Integer(CtiUtilities.NONE_ZERO_ID));	//TODO ? correct type
-			Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
-    	}
-	}
-
-	private void createNewAppliances(Integer accountID, Character airCond, Character waterHeater) throws TransactionException {
-		if( airCond.charValue() == 'Y')
-		{
-			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.setAccountID(accountID);
-			ApplianceAirConditioner applianceAirCond = new ApplianceAirConditioner();
-			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
-			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceAirCond).execute();
-		}
-		if (waterHeater.charValue() == 'Y')
-		{
-			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.setAccountID(accountID);
-			ApplianceWaterHeater applianceWaterHeater = new ApplianceWaterHeater();
-			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
-			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceWaterHeater).execute();
-		}
-	}
-
-	private CustomerAccount createNewCustomerAccount(CustomerAccount customerAccount, String accountNumber, 
-    													Integer contactID, String debtorNumber,
-    													Character presenceReq, String streetAddress, String cityName, String stateCode, String zipCode,
-    													int ecID_workOrder) throws TransactionException
-    {
-		
-    	com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
-		customer.getCustomer().setPrimaryContactID(contactID);
-		customer.getCustomer().setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL));
-		customer.getCustomer().setAltTrackingNumber(debtorNumber);
-		
-		//Create a new customeraccount
-		customerAccount = new CustomerAccount();
-		customerAccount.getCustomerAccount().setAccountNumber(accountNumber);
-		customerAccount.setCustomer(customer);
-		customerAccount.getAccountSite().getAccountSite().setCustAtHome(presenceReq.toString());
-		customerAccount.getAccountSite().getStreetAddress().setLocationAddress1(streetAddress);
-		customerAccount.getAccountSite().getStreetAddress().setCityName(cityName);
-		customerAccount.getAccountSite().getStreetAddress().setStateCode(stateCode);
-		customerAccount.getAccountSite().getStreetAddress().setZipCode(zipCode);
-		customerAccount.setEnergyCompanyID(new Integer(ecID_workOrder));
-		customerAccount = (CustomerAccount)Transaction.createTransaction(Transaction.INSERT, customerAccount).execute();
-		return customerAccount;
-	}
-
-	private com.cannontech.database.data.customer.Contact createNewContact(com.cannontech.database.data.customer.Contact contact, String firstName, String lastName, String homePhone, String workPhone, String crsContactPhone) throws TransactionException
-    {
-		contact.getContact().setContactID(Contact.getNextContactID());
-		contact.getContact().setContFirstName(firstName);
-		contact.getContact().setContLastName(lastName);
-		
-		if( homePhone.length() > 0)
-		{
-			ContactNotification homeNotif = new ContactNotification();
-			homeNotif.setContactID(contact.getContact().getContactID());
-			homeNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-			homeNotif.setNotification(homePhone);
-			contact.getContactNotifVect().add(homeNotif);
-		}
-		if( workPhone.length() > 0)
-		{
-			ContactNotification workNotif = new ContactNotification();
-			workNotif.setContactID(contact.getContact().getContactID());
-			workNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
-			workNotif.setNotification(workPhone);
-			contact.getContactNotifVect().add(workNotif);
-		}
-		if( crsContactPhone.length() > 0)
-		{
-			ContactNotification crsNotif = new ContactNotification();
-			crsNotif.setContactID(contact.getContact().getContactID());
-			crsNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE));
-			crsNotif.setNotification(crsContactPhone);
-			contact.getContactNotifVect().add(crsNotif);
-		}
-		contact = (com.cannontech.database.data.customer.Contact)Transaction.createTransaction(Transaction.INSERT, contact).execute();
-		return contact;
-	}
-
-	private YukonListEntry getServiceTypeEntry(YukonSelectionList selectionList, String entryText)
-    {
-    	//These codes are Xcel Energy defined, 5 char codes.
-    	int lookupDefID =  0;
-    	if( entryText.equalsIgnoreCase("INSTL"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_INSTALL;
-    	else if( entryText.equalsIgnoreCase("ACT"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION;
-    	else if( entryText.equalsIgnoreCase("DEACT"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_DEACTIVATION;
-    	else if( entryText.equalsIgnoreCase("REMVE"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REMOVAL;
-    	else if( entryText.equalsIgnoreCase("RPAIR"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REPAIR;
-    	else if( entryText.equalsIgnoreCase("OTHER"))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
-    	
-    	ArrayList listEntries = selectionList.getYukonListEntries();
-    	for( int i = 0; i < listEntries.size(); i++)
-    	{
-    		YukonListEntry listEntry = (YukonListEntry) listEntries.get(i);
-    		if( listEntry.getYukonDefID() == lookupDefID)
-    			return listEntry;
-    	}
-    	return null;
-    }
-
-    private YukonListEntry getEntryByYukonDefID(YukonSelectionList selectionList, int defID)
-    {
-    	ArrayList listEntries = selectionList.getYukonListEntries();
-    	for( int i = 0; i < listEntries.size(); i++)
-    	{
-    		YukonListEntry listEntry = (YukonListEntry) listEntries.get(i);
-    		if( listEntry.getYukonDefID() == defID)
-    			return listEntry;
-    	}
-    	return null;
-    }
-
-    private void updateAddress(Integer addressID, String newStreet, String newCity, String newState, String newZipCode)
-    {
-    	//TODO add support for bad entry
-    	boolean isChanged = false;
-    	Address address = new Address();
-    	address.setAddressID(addressID);
-
-    	try {
-    		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, address);			    
-			address = (Address)t.execute();
-		} catch (TransactionException e) {
-			e.printStackTrace();
-		}
-
-    	if( newStreet.length() > 0 && !newStreet.equalsIgnoreCase(address.getLocationAddress1()))
-    	{
-    		address.setLocationAddress1(newStreet);
-    		isChanged = true;
-    	}
-    	if( newCity.length() > 0 && !newCity.equalsIgnoreCase(address.getCityName()))
-    	{
-    		address.setCityName(newCity);
-    		isChanged = true;
-    	}
-    	if( newState.length() > 0 && !newState.equalsIgnoreCase(address.getStateCode()))
-    	{
-    		address.setStateCode(newState);
-    		isChanged = true;
-    	}
-    	if( newZipCode.length() > 0 && !newZipCode.equalsIgnoreCase(address.getZipCode()))
-    	{
-    		address.setZipCode(newZipCode);
-    		isChanged = true;
-    	}
-
-    	if( isChanged)
-    	{
-	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, address);
-	    		address = (Address)t.execute();
-			} catch (TransactionException e) {
-				e.printStackTrace();
-			}
-    	}
-    }
-	
-    private Customer updateCustomer(Customer customer, String debtorNumber)
-    {
-    	//TODO add support for bad entry
-        boolean isChanged = false;
-
-        if(debtorNumber.length() > 0 && !debtorNumber.equalsIgnoreCase(customer.getAltTrackingNumber()))
-        {
-            customer.setAltTrackingNumber(debtorNumber);
-            isChanged = true;
-        }
-
-        if( isChanged)
-    	{
-	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, customer);
-	    		customer = (Customer)t.execute();
-			} catch (TransactionException e) {
-				e.printStackTrace();
-			}
-    	}
-    	return customer;
-    }
-
-    private Contact updateContact(Contact contact, String newFirstName, String newLastName)
-    {
-    	//TODO add support for bad entry
-        boolean isChanged = false;
-
-        if(newLastName.length() > 0 && !newLastName.equalsIgnoreCase(contact.getContLastName()))
-        {
-            contact.setContLastName(newLastName);
-            isChanged = true;
-        }
-        if(newFirstName.length() > 0 && !newFirstName.equalsIgnoreCase(contact.getContFirstName()))
-        {
-            contact.setContFirstName(newFirstName);
-            isChanged = true;
-        }
-    	if( isChanged)
-    	{
-	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, contact);
-	    		contact = (Contact)t.execute();
-			} catch (TransactionException e) {
-				e.printStackTrace();
-			}
-    	}
-    	return contact;
-    }
-    
-    private void updateContactNotification(Integer contactID, int notifCatID, String newValue)
-    {
-    	//TODO add support for bad entry
-        ContactNotification contNotif = YukonToCRSFuncs.retrieveContactNotification(contactID, notifCatID);
-        if( contNotif != null)
-        {
-            if(newValue.length() > 0 && !newValue.equalsIgnoreCase(contNotif.getNotification()))
-            {
-            	try{
-    				contNotif.setNotification(newValue);
-					Transaction.createTransaction(Transaction.UPDATE, contNotif).execute();
-        		} catch (TransactionException e) {
-        			e.printStackTrace();
-        		}
-            }
-        }
-        else
-        {
-        	//TODO create new contact notification
-        }
-    }
     		/*
     		//validation
     		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
