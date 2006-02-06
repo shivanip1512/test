@@ -2,6 +2,15 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create   index Indx_CntNotif_CntId on ContactNotification (
+ContactID
+)
+go
+
+create   index Indx_Cstmr_PcId on Customer (
+PrimaryContactID
+)
+go
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

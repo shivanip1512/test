@@ -2,6 +2,13 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+create index Indx_CntNotif_CntId on ContactNotification (
+   ContactID ASC
+);
+
+create index Indx_Cstmr_PcId on Customer (
+   PrimaryContactID ASC
+);
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
