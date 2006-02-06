@@ -108,30 +108,24 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public final Integer getNextOrderID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextOrderID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_ORDER_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextOrderID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-				if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
+    	
+        int nextID = 1;
+        SqlStatement stmt = new SqlStatement(GET_NEXT_ORDER_ID_SQL, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
             }
-            catch (java.sql.SQLException e2) {}
         }
-
-        return new Integer( nextOrderID );
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        return new Integer( nextID );
     }
     
 	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID) {

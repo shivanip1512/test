@@ -130,32 +130,25 @@ public class ApplianceBase extends DBPersistent {
 			throw new Error(getClass() + " - Incorrect number of results retrieved");
 	}
 
-	public final Integer getNextApplianceID() {
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		int nextApplianceID = 1;
-
-		try {
-			pstmt = getDbConnection().prepareStatement( GET_NEXT_APPLIANCE_ID_SQL );
-			rset = pstmt.executeQuery();
-
-			if (rset.next())
-				nextApplianceID = rset.getInt(1) + 1;
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if( rset != null ) rset.close();
-				if (pstmt != null) pstmt.close();
-			}
-			catch (java.sql.SQLException e2) {}
-		}
-
-		return new Integer( nextApplianceID );
-	}
+	public static final Integer getNextApplianceID() {
+        int nextID = 1;
+        SqlStatement stmt = new SqlStatement(GET_NEXT_APPLIANCE_ID_SQL, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        return new Integer( nextID );
+    }
 	
 	public static void deleteAppliancesByCategory(int appCatID) {
 		String cond = "FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
