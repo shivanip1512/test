@@ -47,7 +47,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	{
 		//be sure all DB objects have this ID set
 		if( getContact().getContactID() == null )
-			setContactID( com.cannontech.database.db.contact.Contact.getNextContactID(getDbConnection()) ); 
+			setContactID( com.cannontech.database.db.contact.Contact.getNextContactID() ); 
 
 		//be sure all or our objects share the same contactID 
 		setContactID( getContact().getContactID() ); 

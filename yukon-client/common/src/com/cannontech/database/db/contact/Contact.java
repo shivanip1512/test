@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.user.UserUtils;
@@ -48,7 +49,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	public void add() throws java.sql.SQLException 
 	{
 		if (getContactID() == null)
-			setContactID( getNextContactID(getDbConnection()) );
+			setContactID( getNextContactID() );
 			
 		Object addValues[] = 
 		{ 
@@ -316,44 +317,26 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (12/14/99 10:31:33 AM)
 	 * @return java.lang.Integer
 	 */
-	public static synchronized Integer getNextContactID( java.sql.Connection conn )
-	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-	
-		
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try 
-		{		
-		    stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(ContactID)+1 FROM " + TABLE_NAME );	
-				
-			 //get the first returned result
-			 rset.next();
-		    return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) 
-		{
-		    e.printStackTrace();
-		}
-		finally 
-		{
-		    try 
-		    {
-				if ( stmt != null) stmt.close();
-		    }
-		    catch (java.sql.SQLException e2) 
-		    {
-				e2.printStackTrace();
-		    }
-		}
-		
-		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ZERO_ID);
-	}
-
+    public static final Integer getNextContactID() {
+    	
+        int nextID = 1;
+        SqlStatement stmt = new SqlStatement("SELECT Max(ContactID) FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        return new Integer( nextID );
+    }	
 
 	/**
 	 * Returns YukonUsers IDs that are not used by a contact. Also the

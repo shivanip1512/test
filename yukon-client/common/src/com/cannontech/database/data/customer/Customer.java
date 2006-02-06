@@ -85,7 +85,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	{
 		if( getCustomerID() == null )
 			setCustomerID( 
-				com.cannontech.database.db.customer.Customer.getNextCustomerID(getDbConnection()) );
+				com.cannontech.database.db.customer.Customer.getNextCustomerID() );
 				
 		getCustomer().add();
 		
