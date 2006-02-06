@@ -1,17 +1,15 @@
 package com.cannontech.stars.util;
 
-import com.cannontech.database.db.stars.event.EventBase;
-import com.cannontech.database.db.stars.event.EventAccount;
-import com.cannontech.database.db.stars.event.EventInventory;
-import com.cannontech.database.db.stars.event.EventWorkOrder;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import java.util.Date;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.stars.event.EventAccount;
+import com.cannontech.database.data.stars.event.EventBase;
+import com.cannontech.database.data.stars.event.EventInventory;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 
 
 public class EventUtils 
@@ -22,39 +20,35 @@ public class EventUtils
         
     public static void logSTARSEvent(int userID, String sysCategory, int actionID, int objectID)
     {
-        EventBase event = new EventBase();
-             
-        event.setUserID(new Integer(userID));
+        EventBase eventBase;
         if(sysCategory.compareTo(EVENT_CATEGORY_ACCOUNT) == 0)
         {
-            event.setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_ACCOUNT));
-            EventAccount account = new EventAccount();
-            account.setAccountID(new Integer(objectID));
-            event.setEventAccount(account);
+        	eventBase = new EventAccount();
+            eventBase.getEventBase().setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_ACCOUNT));
+            ((EventAccount)eventBase).getEventAccount().setAccountID(new Integer(objectID));
         }
-        if(sysCategory.compareTo(EVENT_CATEGORY_INVENTORY) == 0)
+        else if(sysCategory.compareTo(EVENT_CATEGORY_INVENTORY) == 0)
         {
-            event.setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_INVENTORY));
-            EventInventory inven = new EventInventory();
-            inven.setInventoryID(new Integer(objectID));
-            event.setEventInventory(inven);
+        	eventBase = new EventInventory();
+            eventBase.getEventBase().setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_INVENTORY));
+            ((EventInventory)eventBase).getEventInventory().setInventoryID(new Integer(objectID));
         }
-        if(sysCategory.compareTo(EVENT_CATEGORY_WORKORDER) == 0)
+        else if(sysCategory.compareTo(EVENT_CATEGORY_WORKORDER) == 0)
         {
-            event.setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_WORKORDER));
-            EventWorkOrder order = new EventWorkOrder();
-            order.setWorkOrderID(new Integer(objectID));
-            event.setEventWorkOrder(order);
+        	eventBase = new EventWorkOrder();
+            eventBase.getEventBase().setSystemCategoryID(new Integer(YukonListEntryTypes.EVENT_SYS_CAT_WORKORDER));
+            ((EventWorkOrder)eventBase).getEventWorkOrder().setWorkOrderID(new Integer(objectID));
         }
-
-        event.setActionID(new Integer(actionID));
+        else	//TODO this is a bad catch all
+        	eventBase = new EventBase();
         
-        GregorianCalendar tempImp = new GregorianCalendar();
-        long nowInMilliSeconds = tempImp.getTime().getTime();
-        event.setEventTimestamp(new Date(nowInMilliSeconds));
+        eventBase.getEventBase().setUserID(new Integer(userID));
+        eventBase.getEventBase().setActionID(new Integer(actionID));
+        eventBase.getEventBase().setEventTimestamp(new Date());
+        
         try
         {
-            Transaction.createTransaction(Transaction.INSERT, event).execute(); 
+            Transaction.createTransaction(Transaction.INSERT, eventBase).execute(); 
         }
         catch( TransactionException e )
         {
