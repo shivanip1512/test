@@ -1,24 +1,24 @@
 package com.cannontech.integration.crs;
 
 import java.util.ArrayList;
-import java.sql.Connection;
 import java.util.Date;
-import java.text.DateFormat;
 import java.util.GregorianCalendar;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.stars.CustomerFAQ;
-import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
+import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 
 /**
@@ -43,12 +43,7 @@ public class YukonToCRSFuncs
      */
     public static ArrayList readCRSToSAM_PTJ()
     {
-        //NOT YET IMPLEMENTED
-        return new ArrayList();
-        /*
-         *Don't forget that we will also want to bring in extra meter entries for each
-         *account from the CRSToSAM_PTJAdditionalMeters table, if those entries exist.
-         */
+        return CRSToSAM_PTJ.getAllCurrentPTJEntries();
     }
     
     /**
@@ -59,7 +54,15 @@ public class YukonToCRSFuncs
 	{
 		return FailureCRSToSAM_PremMeterChg.getAllCurrentPremiseMeterChangeEntries();
 	}
-	
+
+    /**
+     * This method will bring in the contents of the FailureCRSToSAM_PTJ
+     * table in the form of FailureCRSToSAM_PTJ (DBPersistent) objects
+     */
+	public static ArrayList readFailureCRSToSAM_PTJ()
+	{
+		return FailureCRSToSAM_PTJ.getAllCurrentFailurePTJEntries();
+	}
 	/**
 	 * This method is called to log every event; it dutifully logs each entry to an 
 	 * external log file location.  The parameter importStatus is a char that indicates
@@ -132,11 +135,13 @@ public class YukonToCRSFuncs
 		return logger;
 	}
 	
-	public static Contact getContactFromPremiseNumber(Integer premNum)
+	public static Contact getContactFromAccountNumber(String acctNumber)
     {
-        SqlStatement stmt = new SqlStatement("SELECT * FROM " + Contact.TABLE_NAME + " WHERE CONTACTID IN " +
-                "SELECT PRIMARYCONTACTID FROM " + Customer.TABLE_NAME + " WHERE CUSTOMERID IN " + 
-                "(SELECT CUSTOMERID FROM " + CustomerAccount.TABLE_NAME + " WHERE ACCOUNTNUMBER = '" + premNum.toString() + "'", CtiUtilities.getDatabaseAlias());
+        SqlStatement stmt = new SqlStatement("SELECT CONT.* " + 
+        				" FROM " + Contact.TABLE_NAME + " CONT, " + Customer.TABLE_NAME + " CUST, " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " CA " +
+        				" WHERE CONT.CONTACTID = CUST.PRIMARYCONTACTID " +
+        				" AND CUST.CUSTOMERID = CA.CUSTOMERID " +
+        				" AND ACCOUNTNUMBER = '" + acctNumber + "'", CtiUtilities.getDatabaseAlias());
         
         try
         {
@@ -164,10 +169,17 @@ public class YukonToCRSFuncs
         return null;
     }
     
-    public static ContactNotification getWorkPhoneFromContactID(Integer contactID)
+	/**
+	 * Returns CustomerAccount with acctNumber loaded from database.
+	 * @param acctNumber
+	 * @return
+	 */
+	public static CustomerAccount retrieveCustomerAccount(String acctNumber)
     {
-        SqlStatement stmt = new SqlStatement("SELECT * FROM " + ContactNotification.TABLE_NAME + " WHERE CONTACTID = " + 
-                                             contactID + " AND NOTIFICATIONCATEGORYID = " + YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, CtiUtilities.getDatabaseAlias());
+        SqlStatement stmt = new SqlStatement("SELECT CA.ACCOUNTID, ACCOUNTSITEID, ACCOUNTNUMBER, CUSTOMERID, BILLINGADDRESSID, ACCOUNTNOTES, ENERGYCOMPANYID " + 
+        				" FROM " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " CA, ECTOACCOUNTMAPPING MAP " +
+        				" WHERE CA.ACCOUNTID = MAP.ACCOUNTID " +
+        				" AND ACCOUNTNUMBER = '" + acctNumber + "'", CtiUtilities.getDatabaseAlias());
         
         try
         {
@@ -178,28 +190,32 @@ public class YukonToCRSFuncs
                 if(stmt.getRowCount() > 1)
                     throw new Exception("More than one value retrieved.  Should only be one.");
                     
-                ContactNotification workPhone = new ContactNotification();
-                workPhone.setContactNotifID(new Integer(stmt.getRow(0)[0].toString()));
-                workPhone.setContactID(new Integer(stmt.getRow(0)[1].toString()));
-                workPhone.setNotificationCatID(new Integer(stmt.getRow(0)[2].toString()));
-                workPhone.setDisableFlag(stmt.getRow(0)[3].toString());
-                workPhone.setNotification(stmt.getRow(0)[4].toString());
-                workPhone.setOrdering(new Integer(stmt.getRow(0)[5].toString()));
-                return workPhone;
+                CustomerAccount custAccount = new CustomerAccount();
+                custAccount.setAccountID(new Integer(stmt.getRow(0)[0].toString()));
+                custAccount.setAccountSiteID(new Integer(stmt.getRow(0)[1].toString()));
+                custAccount.getCustomerAccount().setAccountNumber(stmt.getRow(0)[2].toString());
+                custAccount.setCustomerID(new Integer(stmt.getRow(0)[3].toString()));
+                custAccount.setAddressID(new Integer(stmt.getRow(0)[4].toString()));
+                custAccount.getCustomerAccount().setAccountNotes(stmt.getRow(0)[5].toString());
+                custAccount.setEnergyCompanyID(new Integer(stmt.getRow(0)[6].toString()));
+                
+                //Load the other pieces we care about, todate (no need to load the other vectors, we'll worry about that later.
+                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getBillingAddress());
+                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getCustomer().getCustomer());
+                return custAccount;
             }
         }
         catch( Exception e )
         {
             e.printStackTrace();
         }
-        
         return null;
     }
-    
-    public static ContactNotification getHomePhoneFromContactID(Integer contactID)
+
+    public static ContactNotification retrieveContactNotification(Integer contactID, int notifCatID)
     {
         SqlStatement stmt = new SqlStatement("SELECT * FROM " + ContactNotification.TABLE_NAME + " WHERE CONTACTID = " + 
-                                             contactID + " AND NOTIFICATIONCATEGORYID = " + YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, CtiUtilities.getDatabaseAlias());
+                                             contactID + " AND NOTIFICATIONCATEGORYID = " + notifCatID, CtiUtilities.getDatabaseAlias());
         
         try
         {
@@ -218,6 +234,44 @@ public class YukonToCRSFuncs
                 homePhone.setNotification(stmt.getRow(0)[4].toString());
                 homePhone.setOrdering(new Integer(stmt.getRow(0)[5].toString()));
                 return homePhone;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    public static ServiceCompany retrieveServiceCompany(String code)
+    {
+        SqlStatement stmt = new SqlStatement("SELECT COMPANYID, COMPANYNAME, ADDRESSID, MAINPHONENUMBER, MAINFAXNUMBER, PRIMARYCONTACTID, HITYPE, ENERGYCOMPANYID " +
+        									" FROM " + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + " SC, " + 
+        									ServiceCompanyDesignationCode.TABLE_NAME + " SCDC, " +
+        									ECToGenericMapping.TABLE_NAME + " MAP " +
+        									" WHERE SC.COMPANYID = SCDC.SERVICECOMPANYID " +
+        									" AND MAP.MAPPINGCATEGORY = '" + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + "' " +
+        									" AND SC.COMPANYID = MAP.ITEMID " + 
+        									" AND DESIGNATIONCODEVALUE = '" + code + "'", CtiUtilities.getDatabaseAlias());
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                if(stmt.getRowCount() > 1)
+                    throw new Exception("More than one value retrieved.  Should only be one.");
+                    
+                ServiceCompany serviceCompany = new ServiceCompany();
+                serviceCompany.setCompanyID(new Integer(stmt.getRow(0)[0].toString()));
+                serviceCompany.getServiceCompany().setCompanyName(stmt.getRow(0)[1].toString());
+                serviceCompany.setAddressID(new Integer(stmt.getRow(0)[2].toString()));
+                serviceCompany.getServiceCompany().setMainPhoneNumber(stmt.getRow(0)[3].toString());
+                serviceCompany.getServiceCompany().setMainFaxNumber(stmt.getRow(0)[4].toString());
+                serviceCompany.setContactID(new Integer(stmt.getRow(0)[5].toString()));
+                serviceCompany.getServiceCompany().setHIType(stmt.getRow(0)[6].toString());
+                serviceCompany.setEnergyCompanyID(new Integer(stmt.getRow(0)[7].toString()));
+                return serviceCompany;
             }
         }
         catch( Exception e )
