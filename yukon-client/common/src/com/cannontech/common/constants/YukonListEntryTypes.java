@@ -8,7 +8,7 @@ package com.cannontech.common.constants;
  */
 public interface YukonListEntryTypes 
 {
-	//standard EntryIDs that should be in every DB
+	//standard EntryIDs that should be in every DB, These are also notificationCategoryIDs
 	public static final int YUK_ENTRY_ID_EMAIL = 1;
 	public static final int YUK_ENTRY_ID_PHONE = 2;
 	public static final int YUK_ENTRY_ID_EMAIL_PAGER = 3;	
@@ -18,11 +18,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_ENTRY_ID_PIN = 7;
 	public static final int YUK_ENTRY_ID_CELL_PHONE = 8;
 	public static final int YUK_ENTRY_ID_EMAIL_CELL = 9;
-
-    //entryIDs for EventLogging in STARS
-    public static final int EVENT_SYS_CAT_ACCOUNT = 10101;
-    public static final int EVENT_SYS_CAT_INVENTORY = 10102;
-    public static final int EVENT_SYS_CAT_WORKORDER = 10103;
+	public static final int YUK_ENTRY_ID_CALL_BACK_PHONE = 10;
         
     //standard YukonDefinitionIDs that should be in every DB
 	public static final int YUK_DEF_ID_EMAIL = 1;
@@ -75,6 +71,19 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SERV_STAT_SCHEDULED			= 1502;
 	public static final int YUK_DEF_ID_SERV_STAT_COMPLETED			= 1503;
 	public static final int YUK_DEF_ID_SERV_STAT_CANCELLED			= 1504;
+	public static final int YUK_DEF_ID_SERV_STAT_ASSIGNED			= 1505;
+	public static final int YUK_DEF_ID_SERV_STAT_RELEASED			= 1506;
+	public static final int YUK_DEF_ID_SERV_STAT_PROCESSED			= 1507;
+	public static final int YUK_DEF_ID_SERV_STAT_HOLD				= 1508;
+
+	public static final int YUK_DEF_ID_SERV_TYPE_SERVICE_CALL		= 1550;
+	public static final int YUK_DEF_ID_SERV_TYPE_INSTALL			= 1551;
+	public static final int YUK_DEF_ID_SERV_TYPE_ACTIVATION			= 1552;
+	public static final int YUK_DEF_ID_SERV_TYPE_DEACTIVATION		= 1553;
+	public static final int YUK_DEF_ID_SERV_TYPE_REMOVAL			= 1554;
+	public static final int YUK_DEF_ID_SERV_TYPE_REPAIR				= 1555;
+	public static final int YUK_DEF_ID_SERV_TYPE_OTHER				= 1556;
+	
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ACCT_NO			= 1601;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_PHONE_NO			= 1602;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_LAST_NAME		= 1603;
@@ -198,5 +207,26 @@ public interface YukonListEntryTypes
 //	public static final int YUK_DEF_ID_SETTLEMENT_XCEL_ISOC				= 3652;
 //	public static final int YUK_DEF_ID_SETTLEMENT_XCEL_PDP				= 3653;
 	
-
+    //entryIDs for EventLogging in STARS
+    public static final int EVENT_SYS_CAT_ACCOUNT = 10101;
+    public static final int EVENT_SYS_CAT_INVENTORY = 10102;
+    public static final int EVENT_SYS_CAT_WORKORDER = 10103;
+    
+    //entryIDS for EventLogging in STARS - Actions (for CustomerAccount Events)
+    public static final int EVENT_ACTION_CUST_ACCT_CREATED = 10201;
+    public static final int EVENT_ACTION_CUST_ACCT_UPDATED = 10202;
+    
+    //entryIDS for EventLogging in STARS - Actions (for Inventory Events)
+    public static final int EVENT_ACTION_INV_ORDERED = 10301;
+    public static final int EVENT_ACTION_INV_SHIPPED = 10302;
+    public static final int EVENT_ACTION_INV_RECEIVED = 10303;
+    public static final int EVENT_ACTION_INV_ISSUED = 10304;
+    public static final int EVENT_ACTION_INV_INSTALLED = 10305;
+    public static final int EVENT_ACTION_INV_INSTALLED_ACT = 10306;
+    public static final int EVENT_ACTION_INV_INSTALLED_DEACT = 10307;
+    public static final int EVENT_ACTION_INV_REMOVED = 10308;
+    public static final int EVENT_ACTION_INV_RETIRED = 10309;
+    public static final int EVENT_ACTION_INV_SCRAPPED = 10310;
+    public static final int EVENT_ACTION_INV_RETURNED = 10311;
+    public static final int EVENT_ACTION_INV_LOST = 10312;
 }
