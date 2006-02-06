@@ -12,7 +12,7 @@ public class ServiceCompanyBean
     {
         if(serviceCompanyID != null)
         {
-            designationCodes = ServiceCompanyDesignationCode.getAllCodesForServiceCompany(serviceCompanyID.intValue());
+            designationCodes = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(serviceCompanyID.intValue());
             return designationCodes;
         }
         
