@@ -410,7 +410,7 @@ public class StarsAdminUtil {
         /**
          * Needed to delete any zip codes if they exist
          */
-        ArrayList codes = ServiceCompanyDesignationCode.getAllCodesForServiceCompany(companyID);
+        ArrayList codes = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID);
         for(int x = 0; x < codes.size(); x++)
         {
             Transaction.createTransaction(Transaction.DELETE, (ServiceCompanyDesignationCode)codes.get(x)).execute();
@@ -420,7 +420,7 @@ public class StarsAdminUtil {
 		
 		com.cannontech.database.data.stars.report.ServiceCompany servCompany =
 				new com.cannontech.database.data.stars.report.ServiceCompany();
-		StarsLiteFactory.setServiceCompany( servCompany.getServiceCompany(), liteCompany );
+		StarsLiteFactory.setServiceCompany( servCompany, liteCompany );
 		
 		Transaction.createTransaction( Transaction.DELETE, servCompany ).execute();
 		

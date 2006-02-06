@@ -243,7 +243,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				LiteServiceCompany liteCompany = (LiteServiceCompany) energyCompany.getServiceCompanies().get(i);
 				com.cannontech.database.data.stars.report.ServiceCompany company =
 						new com.cannontech.database.data.stars.report.ServiceCompany();
-				StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );
+				StarsLiteFactory.setServiceCompany( company, liteCompany );
 				
 				Transaction.createTransaction( Transaction.DELETE, company ).execute();
 			}
