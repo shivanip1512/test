@@ -33,6 +33,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
@@ -119,9 +120,13 @@ public class StarsLiteFactory {
 			lite = new LiteApplianceCategory();
 			setLiteApplianceCategory( (LiteApplianceCategory) lite, (com.cannontech.database.db.stars.appliance.ApplianceCategory) db );
 		}
-		else if (db instanceof com.cannontech.database.db.stars.report.ServiceCompany) {
+		else if (db instanceof com.cannontech.database.data.stars.report.ServiceCompany) {
 			lite = new LiteServiceCompany();
-			setLiteServiceCompany( (LiteServiceCompany) lite, (com.cannontech.database.db.stars.report.ServiceCompany) db );
+			setLiteServiceCompany( (LiteServiceCompany) lite, (com.cannontech.database.data.stars.report.ServiceCompany) db );
+		}
+		else if (db instanceof ServiceCompanyDesignationCode) {
+			lite = new LiteServiceCompanyDesignationCode();
+			setLiteServiceCompanyDesignationCode( (LiteServiceCompanyDesignationCode) lite, (ServiceCompanyDesignationCode) db );
 		}
 		else if (db instanceof com.cannontech.database.db.stars.Substation) {
 			lite = new LiteSubstation();
@@ -603,16 +608,28 @@ public class StarsLiteFactory {
 		liteAppCat.setWebConfigurationID( appCat.getWebConfigurationID().intValue() );
 	}
 	
-	public static void setLiteServiceCompany(LiteServiceCompany liteCompany, com.cannontech.database.db.stars.report.ServiceCompany company) {
-		liteCompany.setCompanyID( company.getCompanyID().intValue() );
-		liteCompany.setCompanyName( company.getCompanyName() );
-		liteCompany.setAddressID( company.getAddressID().intValue() );
-		liteCompany.setMainPhoneNumber( company.getMainPhoneNumber() );
-		liteCompany.setMainFaxNumber( company.getMainFaxNumber() );
-		liteCompany.setPrimaryContactID( company.getPrimaryContactID().intValue() );
-		liteCompany.setHiType( company.getHIType() );
+	public static void setLiteServiceCompany(LiteServiceCompany liteCompany, com.cannontech.database.data.stars.report.ServiceCompany company) {
+		liteCompany.setCompanyID( company.getServiceCompany().getCompanyID().intValue() );
+		liteCompany.setCompanyName( company.getServiceCompany().getCompanyName() );
+		liteCompany.setAddressID( company.getServiceCompany().getAddressID().intValue() );
+		liteCompany.setMainPhoneNumber( company.getServiceCompany().getMainPhoneNumber() );
+		liteCompany.setMainFaxNumber( company.getServiceCompany().getMainFaxNumber() );
+		liteCompany.setPrimaryContactID( company.getServiceCompany().getPrimaryContactID().intValue() );
+		liteCompany.setHiType( company.getServiceCompany().getHIType() );
+		/*for (int i = 0; i < company.getDesignationCodes().size(); i++)
+		{
+			LiteServiceCompanyDesignationCode lscdc = new LiteServiceCompanyDesignationCode();
+			setLiteServiceCompanyDesignationCode(lscdc, (ServiceCompanyDesignationCode)company.getDesignationCodes().get(i));
+			liteCompany.getDesignationCodes().add(lscdc);
+		}*/
 	}
-	
+
+	public static void setLiteServiceCompanyDesignationCode(LiteServiceCompanyDesignationCode liteCompanyDesignCode, ServiceCompanyDesignationCode servCompDesignCode) {
+		liteCompanyDesignCode.setDesignationCodeID(servCompDesignCode.getDesignationCodeID().intValue());
+		liteCompanyDesignCode.setDesignationCodeValue(servCompDesignCode.getDesignationCodeValue());
+		liteCompanyDesignCode.setServiceCompanyID(servCompDesignCode.getServiceCompanyID().intValue());
+	}
+
 	public static void setLiteSubstation(LiteSubstation liteSub, com.cannontech.database.db.stars.Substation sub) {
 		liteSub.setSubstationID( sub.getSubstationID().intValue() );
 		liteSub.setSubstationName( sub.getSubstationName() );
@@ -739,8 +756,12 @@ public class StarsLiteFactory {
 				setApplianceCategory( (com.cannontech.database.db.stars.appliance.ApplianceCategory) db, (LiteApplianceCategory) lite );
 				break;
 			case LiteTypes.STARS_SERVICE_COMPANY:
-				db = new com.cannontech.database.db.stars.report.ServiceCompany();
-				setServiceCompany( (com.cannontech.database.db.stars.report.ServiceCompany) db, (LiteServiceCompany) lite );
+				db = new com.cannontech.database.data.stars.report.ServiceCompany();
+				setServiceCompany( (com.cannontech.database.data.stars.report.ServiceCompany) db, (LiteServiceCompany) lite );
+				break;
+			case LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE:
+				db = new ServiceCompanyDesignationCode();
+				setServiceCompanyDesignationCode( (ServiceCompanyDesignationCode) db, (LiteServiceCompanyDesignationCode) lite );
 				break;
 			case LiteTypes.STARS_SUBSTATION:
 				db = new com.cannontech.database.db.stars.Substation();
@@ -1054,14 +1075,28 @@ public class StarsLiteFactory {
 		appCat.setWebConfigurationID( new Integer(liteAppCat.getWebConfigurationID()) );
 	}
 	
-	public static void setServiceCompany(com.cannontech.database.db.stars.report.ServiceCompany company, LiteServiceCompany liteCompany) {
+	public static void setServiceCompany(com.cannontech.database.data.stars.report.ServiceCompany company, LiteServiceCompany liteCompany) {
 		company.setCompanyID( new Integer(liteCompany.getCompanyID()) );
-		company.setCompanyName( liteCompany.getCompanyName() );
-		company.setAddressID( new Integer(liteCompany.getAddressID()) );
-		company.setMainPhoneNumber( liteCompany.getMainPhoneNumber() );
-		company.setMainFaxNumber( liteCompany.getMainFaxNumber() );
-		company.setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
-		company.setHIType( liteCompany.getHiType() );
+		company.getServiceCompany().setCompanyName( liteCompany.getCompanyName() );
+		company.getServiceCompany().setAddressID( new Integer(liteCompany.getAddressID()) );
+		company.getServiceCompany().setMainPhoneNumber( liteCompany.getMainPhoneNumber() );
+		company.getServiceCompany().setMainFaxNumber( liteCompany.getMainFaxNumber() );
+		company.getServiceCompany().setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
+		company.getServiceCompany().setHIType( liteCompany.getHiType() );
+
+/*		for (int i = 0; i < liteCompany.getDesignationCodes().size(); i++)
+		{
+			ServiceCompanyDesignationCode scdc = new ServiceCompanyDesignationCode();
+			setServiceCompanyDesignationCode(scdc, (LiteServiceCompanyDesignationCode)liteCompany.getDesignationCodes().get(i));
+			company.getDesignationCodes().add(scdc);
+		}
+*/
+	}
+
+	public static void setServiceCompanyDesignationCode(ServiceCompanyDesignationCode servCompDesignCode, LiteServiceCompanyDesignationCode liteServCompDesignCode) {
+		servCompDesignCode.setDesignationCodeID( new Integer(liteServCompDesignCode.getDesignationCodeID()) );
+		servCompDesignCode.setDesignationCodeValue( liteServCompDesignCode.getDesignationCodeValue() );
+		servCompDesignCode.setServiceCompanyID( new Integer(liteServCompDesignCode.getServiceCompanyID()) );
 	}
 	
 	public static void setSubstation(com.cannontech.database.db.stars.Substation sub, LiteSubstation liteSub) {
