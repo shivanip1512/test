@@ -1,6 +1,14 @@
 package com.cannontech.database.data.stars.report;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 
 /**
@@ -27,7 +35,16 @@ public class ServiceCompany extends DBPersistent {
     public void setCompanyID(Integer newID) {
         getServiceCompany().setCompanyID(newID);
     }
-
+    
+    public void setAddressID(Integer newID) {
+        getServiceCompany().setAddressID(newID);
+        getAddress().setAddressID(newID);
+    }
+    
+    public void setContactID(Integer newID) {
+        getServiceCompany().setPrimaryContactID(newID);
+        getPrimaryContact().setContactID(newID);
+    }
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getServiceCompany().setDbConnection(conn);
@@ -162,4 +179,40 @@ public class ServiceCompany extends DBPersistent {
 		this.energyCompanyID = energyCompanyID;
 	}
 
+	public static ServiceCompany[] retrieveAllServiceCompanies(Integer energyCompanyID) {
+    	ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( energyCompanyID, com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME );
+    	if (items == null || items.length == 0)
+    		return new ServiceCompany[0];
+    			
+    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + " WHERE CompanyID = " + items[0].getItemID().toString() );
+    	for (int i = 1; i < items.length; i++)
+    		sql.append( " OR CompanyID = " ).append( items[i].getItemID() );
+    			   
+    	SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
+    			
+    	try {
+    		stmt.execute();
+    		ServiceCompany[] companies = new ServiceCompany[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < stmt.getRowCount(); i++) {
+    			Object[] row = stmt.getRow(i);
+    			companies[i] = new ServiceCompany();
+    			
+    			companies[i].setCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    			companies[i].getServiceCompany().setCompanyName( (String) row[1] );
+    			companies[i].getServiceCompany().setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    			companies[i].getServiceCompany().setMainPhoneNumber( (String) row[3] );
+    			companies[i].getServiceCompany().setMainFaxNumber( (String) row[4] );
+    			companies[i].getServiceCompany().setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    			companies[i].getServiceCompany().setHIType( (String) row[6] );
+    			companies[i].setEnergyCompanyID(energyCompanyID);
+    		}
+    		return companies;
+    	}
+    	catch (Exception e) {
+    		CTILogger.error( e.getMessage(), e );
+    	}
+    	
+    	return null;
+    }
 }
