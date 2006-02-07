@@ -14,7 +14,8 @@ public class FailureCRSToSAM_PremMeterChg extends DBPersistent {
     private Integer premiseNumber;
     private String newDebtorNumber;
     private String transID;     
-    private String streetAddress;   
+    private String streetAddress1;   
+    private String streetAddress2;
     private String cityName;       
     private String stateCode;       
     private String zipCode;     
@@ -29,7 +30,7 @@ public class FailureCRSToSAM_PremMeterChg extends DBPersistent {
 
     public static final String CONSTRAINT_COLUMNS[] = { "ChangeID" };
 
-    public static final String SETTER_COLUMNS[] = { "PremiseNumber","NewDebtorNumber", "TransID", "StreetAddress",
+    public static final String SETTER_COLUMNS[] = { "PremiseNumber","NewDebtorNumber", "TransID", "StreetAddress1", "StreetAddress2",
                                                     "CityName", "StateCode", "ZipCode", "FirstName", "LastName",
                                                     "HomePhone", "WorkPhone", "OldMeterNumber", "NewMeterNumber",
                                                     "ErrorMsg", "Datetime"};
@@ -43,9 +44,9 @@ public FailureCRSToSAM_PremMeterChg() {
 
 public void add() throws java.sql.SQLException 
 {
-    Object setValues[] = { getChangeID(), getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress(),
-        getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), getWorkPhone(),
-        getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime()};
+    Object setValues[] = { getChangeID(), getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(),
+    	getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), 
+    	getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime()};
 
     add( TABLE_NAME, setValues );
 }
@@ -77,9 +78,14 @@ public String getTransID()
     return transID;
 }
 
-public String getStreetAddress()
+public String getStreetAddress1()
 {
-    return streetAddress;
+    return streetAddress1;
+}
+
+public String getStreetAddress2()
+{
+    return streetAddress2;
 }
 
 public String getCityName()
@@ -148,18 +154,19 @@ public void retrieve() throws java.sql.SQLException
         setPremiseNumber( (Integer) results[0] );
         setNewDebtorNumber( (String) results[1] );
         setTransID( (String) results[2] );    
-        setStreetAddress( (String) results[3] );  
-        setCityName( (String) results[4] );      
-        setStateCode( (String) results[5] );      
-        setZipCode( (String) results[6] );      
-        setFirstName( (String) results[7] );       
-        setLastName( (String) results[8] );        
-        setHomePhone( (String) results[9] );       
-        setWorkPhone( (String) results[9] );        
-        setOldMeterNumber( (String) results[10] );  
-        setNewMeterNumber( (String) results[11] );
-        setErrorMsg( (String) results[12] );
-        setDatetime( (Date) results[13] );
+        setStreetAddress1( (String) results[3] );  
+        setStreetAddress2( (String) results[4] );
+        setCityName( (String) results[5] );      
+        setStateCode( (String) results[6] );      
+        setZipCode( (String) results[7] );      
+        setFirstName( (String) results[8] );       
+        setLastName( (String) results[9] );        
+        setHomePhone( (String) results[10] );       
+        setWorkPhone( (String) results[11] );        
+        setOldMeterNumber( (String) results[12] );  
+        setNewMeterNumber( (String) results[13] );
+        setErrorMsg( (String) results[14] );
+        setDatetime( (Date) results[15] );
         
     }
     else
@@ -186,9 +193,14 @@ public void setTransID(String newValue)
     transID = newValue;
 }
 
-public void setStreetAddress(String newValue)
+public void setStreetAddress1(String newValue)
 {
-    streetAddress = newValue;
+    streetAddress1 = newValue;
+}
+
+public void setStreetAddress2(String newValue)
+{
+    streetAddress2 = newValue;
 }
 
 public void setCityName(String newValue)
@@ -248,7 +260,7 @@ public void setDatetime(Date newDate)
 
 public void update() throws java.sql.SQLException 
 {
-    Object setValues[] = { getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress(),
+    Object setValues[] = { getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(), getStreetAddress2(),
             getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), 
             getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime()};
     
@@ -276,18 +288,19 @@ public static ArrayList getAllCurrentPremiseMeterChangeEntries()
                 currentEntry.setPremiseNumber(new Integer(stmt.getRow(i)[1].toString()));
                 currentEntry.setNewDebtorNumber(stmt.getRow(i)[2].toString());
                 currentEntry.setTransID(stmt.getRow(i)[3].toString());
-                currentEntry.setStreetAddress(stmt.getRow(i)[4].toString());
-                currentEntry.setCityName(stmt.getRow(i)[5].toString());
-                currentEntry.setStateCode(stmt.getRow(i)[6].toString());
-                currentEntry.setZipCode(stmt.getRow(i)[7].toString());
-                currentEntry.setFirstName(stmt.getRow(i)[8].toString());
-                currentEntry.setLastName(stmt.getRow(i)[9].toString());
-                currentEntry.setHomePhone(stmt.getRow(i)[10].toString());
-                currentEntry.setWorkPhone(stmt.getRow(i)[11].toString());
-                currentEntry.setOldMeterNumber(stmt.getRow(i)[12].toString());
-                currentEntry.setNewMeterNumber(stmt.getRow(i)[13].toString());
-                currentEntry.setErrorMsg(stmt.getRow(i)[14].toString());
-                currentEntry.setDatetime(new Date(((java.sql.Timestamp)stmt.getRow(i)[15]).getTime()));
+                currentEntry.setStreetAddress1(stmt.getRow(i)[4].toString());
+                currentEntry.setStreetAddress2(stmt.getRow(i)[5].toString());
+                currentEntry.setCityName(stmt.getRow(i)[6].toString());
+                currentEntry.setStateCode(stmt.getRow(i)[7].toString());
+                currentEntry.setZipCode(stmt.getRow(i)[8].toString());
+                currentEntry.setFirstName(stmt.getRow(i)[9].toString());
+                currentEntry.setLastName(stmt.getRow(i)[10].toString());
+                currentEntry.setHomePhone(stmt.getRow(i)[11].toString());
+                currentEntry.setWorkPhone(stmt.getRow(i)[12].toString());
+                currentEntry.setOldMeterNumber(stmt.getRow(i)[13].toString());
+                currentEntry.setNewMeterNumber(stmt.getRow(i)[14].toString());
+                currentEntry.setErrorMsg(stmt.getRow(i)[15].toString());
+                currentEntry.setDatetime(new Date(((java.sql.Timestamp)stmt.getRow(i)[16]).getTime()));
                 
                 changes.add(currentEntry);
             }

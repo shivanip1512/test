@@ -18,7 +18,8 @@ public class FailureCRSToSAM_PTJ extends DBPersistent {
     private String consumptionType;
     private Character servUtilityType;
     private String notes;       
-    private String streetAddress;       
+    private String streetAddress1;
+    private String streetAddress2;
     private String cityName;       
     private String stateCode;       
     private String zipCode;     
@@ -39,7 +40,7 @@ public class FailureCRSToSAM_PTJ extends DBPersistent {
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
     public static final String SETTER_COLUMNS[] = { "PTJID", "PremiseNumber", "DebtorNumber", "PTJType", "Timestamp",
-    												"ConsumptionType", "ServUtilityType", "Notes", "StreetAddress", "CityName",
+    												"ConsumptionType", "ServUtilityType", "Notes", "StreetAddress1", "StreetAddress2", "CityName",
     												"StateCode", "ZipCode", "FirstName", "LastName", "HomePhone", "WorkPhone", 
     												"CRSContactPhone", "CRSLoggedUser", "PresenceRequired", "AirConditioner",
     												"WaterHeater", "ServiceNumber", "MeterNumber", "ErrorMsg", "DateTime"};
@@ -61,7 +62,8 @@ public FailureCRSToSAM_PTJ(CRSToSAM_PTJ crsToSam_ptj) {
     setConsumptionType( crsToSam_ptj.getConsumptionType());
     setServUtilityType( crsToSam_ptj.getServUtilityType());
     setNotes( crsToSam_ptj.getNotes());
-    setStreetAddress( crsToSam_ptj.getStreetAddress() );
+    setStreetAddress1( crsToSam_ptj.getStreetAddress1() );
+    setStreetAddress2( crsToSam_ptj.getStreetAddress2() );
     setCityName( crsToSam_ptj.getCityName());
     setStateCode( crsToSam_ptj.getStateCode() );
     setZipCode( crsToSam_ptj.getZipCode() );
@@ -81,7 +83,7 @@ public FailureCRSToSAM_PTJ(CRSToSAM_PTJ crsToSam_ptj) {
 public void add() throws java.sql.SQLException 
 {
 	Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
-    		getServUtilityType(), getNotes(), getStreetAddress(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
+    		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
     		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime()};
 
@@ -110,21 +112,22 @@ public void retrieve() throws java.sql.SQLException
         setConsumptionType( (String) results[4] );
         setServUtilityType( (Character) results[5] );
         setNotes( (String) results[6] );
-        setStreetAddress( (String) results[7] );  
-        setCityName( (String) results[8] );      
-        setStateCode( (String) results[9] );      
-        setZipCode( (String) results[10] );      
-        setFirstName( (String) results[11] );       
-        setLastName( (String) results[12] );        
-        setHomePhone( (String) results[13] );       
-        setWorkPhone( (String) results[14] );
-        setCRSContactPhone( (String) results[15] );
-        setCRSLoggedUser( (String) results[16] );
-        setPresenceRequired( (Character) results[17] );
-        setAirConditioner( (Character) results[18] );
-        setWaterHeater( (Character) results[19] );
-        setServiceNumber( (String) results[20] );
-        setMeterNumber( (String) results[21] );
+        setStreetAddress1( (String) results[7] );
+        setStreetAddress2( (String) results[8] );
+        setCityName( (String) results[9] );      
+        setStateCode( (String) results[10] );      
+        setZipCode( (String) results[11] );      
+        setFirstName( (String) results[12] );       
+        setLastName( (String) results[13] );        
+        setHomePhone( (String) results[14] );       
+        setWorkPhone( (String) results[15] );
+        setCRSContactPhone( (String) results[16] );
+        setCRSLoggedUser( (String) results[17] );
+        setPresenceRequired( (Character) results[18] );
+        setAirConditioner( (Character) results[19] );
+        setWaterHeater( (Character) results[20] );
+        setServiceNumber( (String) results[21] );
+        setMeterNumber( (String) results[22] );
         setErrorMsg( (String) results[23] );
         setDatetime( (Date) results[24] );            
     }
@@ -134,7 +137,7 @@ public void retrieve() throws java.sql.SQLException
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
-    		getServUtilityType(), getNotes(), getStreetAddress(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
+    		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
     		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime()};
     
@@ -166,21 +169,22 @@ public static ArrayList getAllCurrentFailurePTJEntries()
                 currentEntry.setConsumptionType( stmt.getRow(i)[5].toString());
                 currentEntry.setServUtilityType( new Character(stmt.getRow(i)[6].toString().charAt(0)) );
                 currentEntry.setNotes( stmt.getRow(i)[7].toString());
-                currentEntry.setStreetAddress( stmt.getRow(i)[8].toString());  
-                currentEntry.setCityName( stmt.getRow(i)[9].toString());      
-                currentEntry.setStateCode( stmt.getRow(i)[10].toString());
-                currentEntry.setZipCode( stmt.getRow(i)[11].toString());
-                currentEntry.setFirstName( stmt.getRow(i)[12].toString());  
-                currentEntry.setLastName( stmt.getRow(i)[13].toString());
-                currentEntry.setHomePhone( stmt.getRow(i)[14].toString());
-                currentEntry.setWorkPhone( stmt.getRow(i)[15].toString());
-                currentEntry.setCRSContactPhone( stmt.getRow(i)[16].toString());
-                currentEntry.setCRSLoggedUser( stmt.getRow(i)[17].toString());
-                currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[18].toString().charAt(0)) );
-                currentEntry.setAirConditioner( new Character(stmt.getRow(i)[19].toString().charAt(0)) );
-                currentEntry.setWaterHeater( new Character(stmt.getRow(i)[20].toString().charAt(0)) );
-                currentEntry.setServiceNumber( stmt.getRow(i)[21].toString());
-                currentEntry.setMeterNumber( stmt.getRow(i)[22].toString());
+                currentEntry.setStreetAddress1( stmt.getRow(i)[8].toString());  
+                currentEntry.setStreetAddress2( stmt.getRow(i)[9].toString());
+                currentEntry.setCityName( stmt.getRow(i)[10].toString());      
+                currentEntry.setStateCode( stmt.getRow(i)[11].toString());
+                currentEntry.setZipCode( stmt.getRow(i)[12].toString());
+                currentEntry.setFirstName( stmt.getRow(i)[13].toString());  
+                currentEntry.setLastName( stmt.getRow(i)[14].toString());
+                currentEntry.setHomePhone( stmt.getRow(i)[15].toString());
+                currentEntry.setWorkPhone( stmt.getRow(i)[16].toString());
+                currentEntry.setCRSContactPhone( stmt.getRow(i)[17].toString());
+                currentEntry.setCRSLoggedUser( stmt.getRow(i)[18].toString());
+                currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[19].toString().charAt(0)) );
+                currentEntry.setAirConditioner( new Character(stmt.getRow(i)[20].toString().charAt(0)) );
+                currentEntry.setWaterHeater( new Character(stmt.getRow(i)[21].toString().charAt(0)) );
+                currentEntry.setServiceNumber( stmt.getRow(i)[22].toString());
+                currentEntry.setMeterNumber( stmt.getRow(i)[23].toString());
                 currentEntry.setErrorMsg(stmt.getRow(i)[24].toString());
                 currentEntry.setDatetime(new Date(((java.sql.Timestamp)stmt.getRow(i)[25]).getTime()));
                 
@@ -356,12 +360,20 @@ public void setStateCode(String stateCode) {
 	this.stateCode = stateCode;
 }
 
-public String getStreetAddress() {
-	return streetAddress;
+public String getStreetAddress1() {
+	return streetAddress1;
 }
 
-public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
+public void setStreetAddress1(String streetAddress) {
+	this.streetAddress1 = streetAddress;
+}
+
+public String getStreetAddress2() {
+	return streetAddress2;
+}
+
+public void setStreetAddress2(String streetAddress) {
+	this.streetAddress2 = streetAddress;
 }
 
 public Date getTimestamp() {
