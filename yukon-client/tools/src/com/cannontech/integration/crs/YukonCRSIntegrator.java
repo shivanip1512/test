@@ -199,7 +199,8 @@ public final class YukonCRSIntegrator
             
             if(accountNumber.length() > 0)
             {
-                Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
+                CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
+//                Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
                 ContactNotification workNotify = null;
                 ContactNotification homeNotify = null;
                 
@@ -207,7 +208,8 @@ public final class YukonCRSIntegrator
                 String firstName = currentEntry.getFirstName();
                 String homePhone = currentEntry.getHomePhone();
                 String workPhone = currentEntry.getWorkPhone();
-                String streetAddress = currentEntry.getStreetAddress();
+                String streetAddress1 = currentEntry.getStreetAddress1();
+                String streetAddress2 = currentEntry.getStreetAddress2();
                 String cityName = currentEntry.getCityName();
                 String state = currentEntry.getStateCode();
                 String zipCode = currentEntry.getZipCode();
@@ -216,35 +218,21 @@ public final class YukonCRSIntegrator
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
                 String newMeterNumber = currentEntry.getNewMeterNumber();
                 
-                YukonToCRSFuncs.updateContact(currentContact, firstName, lastName);
-/*                if(lastName.length() > 0)
-                    currentContact.setContLastName(lastName);
-                if(firstName.length() > 0)
-                    currentContact.setContFirstName(firstName);
-*/
-                YukonToCRSFuncs.updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
-/*                if(homePhone.length() > 0)
-                {
-                    homeNotify = YukonToCRSFuncs.getHomePhoneFromContactID(currentContact.getContactID());
-                    homeNotify.setNotification(homePhone);
-                }
-*/
-                YukonToCRSFuncs.updateContactNotification(currentContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
-/*                if(workPhone.length() > 0)
-                {
-                    workNotify = YukonToCRSFuncs.getWorkPhoneFromContactID(currentContact.getContactID());
-                    workNotify.setNotification(workPhone);
-                }
-*/
-                YukonToCRSFuncs.updateAddress(currentContact.getAddressID(), streetAddress, cityName, state, zipCode);
-/*                if(streetAddress.length() > 0 || cityName.length() > 0 || state.length() > 0
-                        || zipCode.length() > 0)
-                {
-                    Address changingAddress = new Address();
-                    changingAddress.setAddressID(currentContact.getAddressID());
-                    //Transaction.createTransaction( Transaction.RETRIEVE, changingAddress).execute();
-                }
-*/                
+				try {
+                
+					Contact contactDB = new Contact();
+					contactDB.setContactID(customerAccount.getCustomer().getCustomer().getPrimaryContactID());
+					contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
+               
+					YukonToCRSFuncs.updateContact(contactDB, firstName, lastName);
+					YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
+                	YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
+                	YukonToCRSFuncs.updateAccountSite(customerAccount.getAccountSite(), streetAddress1, streetAddress2, cityName, state, zipCode, null);
+//              	YukonToCRSFuncs.updateAddress(currentContact.getAddressID(), streetAddress1, streetAddress2, cityName, state, zipCode);
+				} catch (TransactionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                
                 /*ONE TRANSACTION FAILURE SHOULD FAIL THE WHOLE THING
                 com.cannontech.database.db.*/
@@ -289,7 +277,8 @@ public final class YukonCRSIntegrator
             String consumType = currentEntry.getConsumptionType();
             Character servUtilType = currentEntry.getServUtilityType();
             String notes = currentEntry.getNotes( );
-            String streetAddress = currentEntry.getStreetAddress( );  
+            String streetAddress1 = currentEntry.getStreetAddress1( );  
+            String streetAddress2 = currentEntry.getStreetAddress2( );
             String cityName = currentEntry.getCityName( );      
             String stateCode = currentEntry.getStateCode( );
             String zipCode = currentEntry.getZipCode( );
@@ -341,7 +330,7 @@ public final class YukonCRSIntegrator
 	        			//Create a new CustomerAccount data object
 	        			customerAccount = new CustomerAccount();
 	        			customerAccount = YukonToCRSFuncs.createNewCustomerAccount(customerAccount, accountNumber, contact.getContact().getContactID(), debtorNumber, 
-	        														presenceReq, streetAddress, cityName, stateCode, zipCode, ecID_workOrder);
+	        														presenceReq, streetAddress1, streetAddress2, cityName, stateCode, zipCode, ecID_workOrder);
 	        			//Create new ApplianceBase (and extension of) objects
 	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater);
 	        			
@@ -364,7 +353,7 @@ public final class YukonCRSIntegrator
     				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
     	            contactDB = YukonToCRSFuncs.updateContact(contactDB, firstName, lastName);
     	            
-    	            YukonToCRSFuncs.updateAddress(customerAccount.getBillingAddress().getAddressID(), streetAddress, cityName, stateCode, zipCode);
+    	            YukonToCRSFuncs.updateAccountSite(customerAccount.getAccountSite(), streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
     	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
     	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
     	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone);
@@ -421,6 +410,7 @@ public final class YukonCRSIntegrator
         		FailureCRSToSAM_PTJ failureCrsToSam = new FailureCRSToSAM_PTJ(currentEntry);
         		failureCrsToSam.setErrorMsg(errorMsg.toString());
         		failureCrsToSam.setDatetime(new Date());
+        		CTILogger.info(errorMsg.toString());
         		failures.add(failureCrsToSam);
         		break;
         	}
