@@ -118,6 +118,7 @@ public class LoadInventoryTask extends TimeConsumingTask {
 				}
 			}
 			
+            rset.close();
 			energyCompany.setInventoryLoaded( true );
 			status = STATUS_FINISHED;
 			
@@ -169,9 +170,12 @@ public class LoadInventoryTask extends TimeConsumingTask {
 		liteInv.setAccountID( rset.getInt("AccountID") );
 		liteInv.setInstallationCompanyID( rset.getInt("InstallationCompanyID") );
 		liteInv.setCategoryID( rset.getInt("CategoryID") );
-		liteInv.setReceiveDate( rset.getTimestamp("ReceiveDate").getTime() );
-		liteInv.setInstallDate( rset.getTimestamp("InstallDate").getTime() );
-		liteInv.setRemoveDate( rset.getTimestamp("RemoveDate").getTime() );
+		if(rset.getTimestamp("ReceiveDate") != null)
+            liteInv.setReceiveDate( rset.getTimestamp("ReceiveDate").getTime() );
+		if(rset.getTimestamp("InstallDate") != null)
+            liteInv.setInstallDate( rset.getTimestamp("InstallDate").getTime() );
+        if(rset.getTimestamp("RemoveDate") != null)
+            liteInv.setRemoveDate( rset.getTimestamp("RemoveDate").getTime() );
 		liteInv.setAlternateTrackingNumber( rset.getString("AlternateTrackingNumber") );
 		liteInv.setVoltageID( rset.getInt("VoltageID") );
 		liteInv.setNotes( rset.getString("Notes") );
