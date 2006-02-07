@@ -920,6 +920,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return companies;
 	}
+    
+    public ArrayList getAllServiceCompaniesDownward() 
+    {
+        ArrayList companies = getAllServiceCompanies();
+        
+        if(getChildren() != null)
+        {
+            for(int j = 0; j < getChildren().size(); j++)
+            {
+                companies.addAll( 0, ((LiteStarsEnergyCompany)getChildren().get(j)).getServiceCompanies());
+            }
+        }
+        
+        return companies;
+    }
 	
 	public synchronized ArrayList getSubstations() {
 		if (substations == null) {

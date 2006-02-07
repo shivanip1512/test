@@ -87,7 +87,7 @@ public class FilterBean
     public ArrayList getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
-            availableServiceCompanies = energyCompany.getServiceCompanies();
+            availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
         return availableServiceCompanies;
     }
     
