@@ -19,6 +19,7 @@ import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.data.stars.customer.AccountSite;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
@@ -217,7 +218,7 @@ public class YukonToCRSFuncs
                 custAccount.setEnergyCompanyID(new Integer(stmt.getRow(0)[6].toString()));
                 
                 //Load the other pieces we care about, todate (no need to load the other vectors, we'll worry about that later.
-                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getBillingAddress()).execute();
+                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getAccountSite()).execute();
                 Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getCustomer().getCustomer()).execute();
                 return custAccount;
             }
@@ -311,52 +312,6 @@ public class YukonToCRSFuncs
     	return null;
     }
 
-    public static void updateAddress(Integer addressID, String newStreet, String newCity, String newState, String newZipCode)
-    {
-    	//TODO add support for bad entry
-    	boolean isChanged = false;
-    	Address address = new Address();
-    	address.setAddressID(addressID);
-
-    	try {
-    		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, address);			    
-			address = (Address)t.execute();
-		} catch (TransactionException e) {
-			e.printStackTrace();
-		}
-
-    	if( newStreet.length() > 0 && !newStreet.equalsIgnoreCase(address.getLocationAddress1()))
-    	{
-    		address.setLocationAddress1(newStreet);
-    		isChanged = true;
-    	}
-    	if( newCity.length() > 0 && !newCity.equalsIgnoreCase(address.getCityName()))
-    	{
-    		address.setCityName(newCity);
-    		isChanged = true;
-    	}
-    	if( newState.length() > 0 && !newState.equalsIgnoreCase(address.getStateCode()))
-    	{
-    		address.setStateCode(newState);
-    		isChanged = true;
-    	}
-    	if( newZipCode.length() > 0 && !newZipCode.equalsIgnoreCase(address.getZipCode()))
-    	{
-    		address.setZipCode(newZipCode);
-    		isChanged = true;
-    	}
-
-    	if( isChanged)
-    	{
-	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, address);
-	    		address = (Address)t.execute();
-			} catch (TransactionException e) {
-				e.printStackTrace();
-			}
-    	}
-    }
-	
     public static Customer updateCustomer(Customer customer, String debtorNumber)
     {
     	//TODO add support for bad entry
@@ -506,7 +461,7 @@ public class YukonToCRSFuncs
 
 	public static CustomerAccount createNewCustomerAccount(CustomerAccount customerAccount, String accountNumber, 
     													Integer contactID, String debtorNumber,
-    													Character presenceReq, String streetAddress, String cityName, String stateCode, String zipCode,
+    													Character presenceReq, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode,
     													int ecID_workOrder) throws TransactionException
     {
 		
@@ -520,7 +475,8 @@ public class YukonToCRSFuncs
 		customerAccount.getCustomerAccount().setAccountNumber(accountNumber);
 		customerAccount.setCustomer(customer);
 		customerAccount.getAccountSite().getAccountSite().setCustAtHome(presenceReq.toString());
-		customerAccount.getAccountSite().getStreetAddress().setLocationAddress1(streetAddress);
+		customerAccount.getAccountSite().getStreetAddress().setLocationAddress1(streetAddress1);
+		customerAccount.getAccountSite().getStreetAddress().setLocationAddress2(streetAddress2);
 		customerAccount.getAccountSite().getStreetAddress().setCityName(cityName);
 		customerAccount.getAccountSite().getStreetAddress().setStateCode(stateCode);
 		customerAccount.getAccountSite().getStreetAddress().setZipCode(zipCode);
@@ -589,4 +545,45 @@ public class YukonToCRSFuncs
     	}
     	return null;
     }
+
+	public static AccountSite updateAccountSite(AccountSite accountSite, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode, Character presenceReq) {
+//		TODO add support for bad entry
+    	boolean isChanged = false;
+
+    	if( streetAddress1.length() > 0 && !streetAddress1.equalsIgnoreCase(accountSite.getStreetAddress().getLocationAddress1()))
+    	{
+    		accountSite.getStreetAddress().setLocationAddress1(streetAddress1);
+    		isChanged = true;
+    	}
+    	if( cityName.length() > 0 && !cityName.equalsIgnoreCase(accountSite.getStreetAddress().getCityName()))
+    	{
+    		accountSite.getStreetAddress().setCityName(cityName);
+    		isChanged = true;
+    	}
+    	if( stateCode.length() > 0 && !stateCode.equalsIgnoreCase(accountSite.getStreetAddress().getStateCode()))
+    	{
+    		accountSite.getStreetAddress().setStateCode(stateCode);
+    		isChanged = true;
+    	}
+    	if( zipCode.length() > 0 && !zipCode.equalsIgnoreCase(accountSite.getStreetAddress().getZipCode()))
+    	{
+    		accountSite.getStreetAddress().setZipCode(zipCode);
+    		isChanged = true;
+    	}
+    	if( presenceReq != null && presenceReq.toString().length() > 0 && !presenceReq.toString().equalsIgnoreCase(accountSite.getAccountSite().getCustAtHome()))
+    	{
+    		accountSite.getAccountSite().setCustAtHome(presenceReq.toString());
+    		isChanged = true;
+    	}
+    	if( isChanged)
+    	{
+	    	try {
+	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, accountSite);
+	    		accountSite = (AccountSite)t.execute();
+			} catch (TransactionException e) {
+				e.printStackTrace();
+			}
+    	}
+    	return accountSite;
+	}
 }
