@@ -217,8 +217,8 @@ public class YukonToCRSFuncs
                 custAccount.setEnergyCompanyID(new Integer(stmt.getRow(0)[6].toString()));
                 
                 //Load the other pieces we care about, todate (no need to load the other vectors, we'll worry about that later.
-                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getBillingAddress());
-                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getCustomer().getCustomer());
+                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getBillingAddress()).execute();
+                Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getCustomer().getCustomer()).execute();
                 return custAccount;
             }
         }
