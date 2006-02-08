@@ -119,7 +119,7 @@ public class SQLStringBuilder
 	}
 	private String buildSelectClause( String [] columns)
 	{
-		String selectString = "SELECT " + columns[0];
+		String selectString = "SELECT DISTINCT " + columns[0];
 		for ( int i = 1; i < columns.length; i++)
 		{
 			selectString += ", " + columns[i];
