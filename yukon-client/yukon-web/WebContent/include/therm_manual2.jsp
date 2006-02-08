@@ -1,5 +1,7 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 <%
 /* Required predefined variables:
  * thermoSettings: StarsThermostatSettings
@@ -7,6 +9,7 @@
  * invIDs: int[]
  * allTherm: boolean
  * thermNoStr: String
+ * accountInfo: StarsCustAccountInformation
  */
 	boolean isOperator = StarsUtils.isOperator(user);
 	
@@ -53,11 +56,14 @@
 	}
         
     
-    String tempUnit = user.getCustomer().getTemperatureUnit();
+    int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
+    LiteCustomer customer = CustomerFuncs.getLiteCustomer(customerId);
+    String tempUnit = customer.getTemperatureUnit();
+    
     if (request.getParameter("tempUnit") != null) {
         String tempTemperatureUnit = request.getParameter("tempUnit");
         // update database
-        ServletUtils.updateCustomerTemperatureUnit(user.getCustomer(), tempTemperatureUnit);
+        ServletUtils.updateCustomerTemperatureUnit(customer, tempTemperatureUnit);
         tempUnit = tempTemperatureUnit;
     }
     

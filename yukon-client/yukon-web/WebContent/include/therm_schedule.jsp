@@ -1,4 +1,7 @@
 <%@ page import="com.cannontech.database.data.customer.CustomerFactory" %>
+<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
+
 <%
 /* Required predefined variables:
  * thermoProgram: StarsThermostatProgram
@@ -6,6 +9,7 @@
  * invIDs: int[]
  * allTherm: boolean
  * thermNoStr: String
+ * accountInfo: StarsCustAccountInformation
  */
 	boolean isOperator = StarsUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
@@ -48,11 +52,14 @@
 	String visibleC = isCooling ? "visible" : "hidden";
 	String visibleH = isCooling ? "hidden" : "visible";
     
-	String tempUnit = user.getCustomer().getTemperatureUnit();
+    int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
+    LiteCustomer customer = CustomerFuncs.getLiteCustomer(customerId);
+    String tempUnit = customer.getTemperatureUnit();
+    
     if (request.getParameter("tempUnit") != null) {
         String tempTemperatureUnit = request.getParameter("tempUnit");
         // update database
-        ServletUtils.updateCustomerTemperatureUnit(user.getCustomer(), tempTemperatureUnit);
+        ServletUtils.updateCustomerTemperatureUnit(customer, tempTemperatureUnit);
         tempUnit = tempTemperatureUnit;
     }
 	
@@ -442,7 +449,7 @@ function init() {
                       <table width="100%" border="0" height="27">
                         <tr>
 					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TableCell" align = "left" width="15%"><span class = SubtitleHeader>Wake (W)</span></td>
+                          <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Wake (W)</span></td>
                           <td width="10%">&nbsp;</td>
 						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Leave (L)</span></td>
                           <td width="10%">&nbsp;</td>
