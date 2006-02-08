@@ -137,8 +137,8 @@ public class LoadGroupModel extends ReportModelBase
 		try
 		{
 		    //Only keep the most recent entry (order by startTime asc, soe_tag desc.
-			Integer soeTag = new Integer(rset.getInt(12));
-			if(isShowAllActiveRestore() || soeTag.intValue() != lastSoeTag )
+//			Integer soeTag = new Integer(rset.getInt(12));
+//			if(isShowAllActiveRestore() || soeTag.intValue() != lastSoeTag )
 			{
 			    Integer ctrlHistID = new Integer(rset.getInt(1));
 				Integer paoID = new Integer(rset.getInt(2));
@@ -165,7 +165,7 @@ public class LoadGroupModel extends ReportModelBase
 				lmControlHist.setActiveRestore(activeRestore); 
 				getData().add(lmControlHist);
 			}
-			lastSoeTag = soeTag.intValue();
+//			lastSoeTag = soeTag.intValue();
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -184,8 +184,12 @@ public class LoadGroupModel extends ReportModelBase
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
 				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE, SOE_TAG "+
 				" FROM LMCONTROLHISTORY LMCH " + 
-				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? " +
-				" AND LMCH.ACTIVERESTORE NOT IN ('C', 'L') ");
+				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
+				if(!isShowAllActiveRestore())
+					sql.append(" AND LMCH.ACTIVERESTORE IN ('R', 'T', 'O', 'M') ");
+//				20060110 - SN Doing this again, sorting data using the SOE tag did not work...back to R, T, O, M records!
+//				" AND LMCH.ACTIVERESTORE NOT IN ('C', 'L') ");
+				
 //				NOT DOING THIS HERE ANYMORE, Parsing the data in addDataRow instead!!! 
 //				DAVID - 7/29/04 I think the only records you need are the ones with a T, M, O or R.  The N or C (which are the other options I think) aren't necessary				
 //				if(!isShowAllActiveRestore())
