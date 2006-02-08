@@ -78,6 +78,7 @@ public class InventoryBean {
     
     private HttpServletRequest internalRequest;
     private String filterInventoryHTML;
+    private String numberOfRecords = "0";
 	
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -193,6 +194,11 @@ public class InventoryBean {
 		return energyCompany;
 	}
 	
+    public ArrayList getInventoryList()
+    {
+        return inventoryList;
+    }
+    
 	private ArrayList getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null) return inventoryList;
 		
@@ -1001,7 +1007,13 @@ public class InventoryBean {
         setFilterByList((ArrayList) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
         String hardwareNum = getHTML(internalRequest);
         setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
+        numberOfRecords = hardwareNum;
         return hardwareNum;
+    }
+    
+    public String getNumberOfRecords()
+    {
+        return numberOfRecords;
     }
     
     public void setInternalRequest(HttpServletRequest req)
