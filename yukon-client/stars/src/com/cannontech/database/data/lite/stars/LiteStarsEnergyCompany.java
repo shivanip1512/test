@@ -918,7 +918,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public List<ServiceCompany> getAllServiceCompaniesDownward() 
     {
-        ArrayList companies = getAllServiceCompanies();
+        List<ServiceCompany> companies = new ArrayList( getAllServiceCompanies() );
         
         if(getChildren() != null)
         {
@@ -931,9 +931,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return companies;
     }
     
-    public List<ServiceCompany> getAllWarehousesDownward() 
+    public List<Warehouse> getAllWarehousesDownward() 
     {
-        ArrayList warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID());
+        List<Warehouse> warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID());
         
         if(getChildren() != null)
         {
