@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/12/20 17:17:13 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/02/08 20:12:23 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.10  2006/02/08 20:12:23  jrichter
+      BUG:  Fixed getSubtractValue to compare stopTime seconds format instead of the mistaken startTime.
+
       Revision 1.9  2005/12/20 17:17:13  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -272,7 +275,7 @@ const CHAR * CtiFDR_EnhancedLodeStar::getKeyRenameSave()
 }
 int CtiFDR_EnhancedLodeStar::getSubtractValue()
 {
-    if (_lsStartTime.second() == 0)
+    if (_lsStopTime.second() == 0)
     {
         return 60;
     }
