@@ -1,13 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.TimeZone;
-import java.util.Vector;
+import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -36,6 +29,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
+import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -75,6 +69,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 
 /**
  * @author yao
@@ -921,7 +916,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return companies;
 	}
     
-    public ArrayList getAllServiceCompaniesDownward() 
+    public List<ServiceCompany> getAllServiceCompaniesDownward() 
     {
         ArrayList companies = getAllServiceCompanies();
         
@@ -934,6 +929,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         return companies;
+    }
+    
+    public List<ServiceCompany> getAllWarehousesDownward() 
+    {
+        ArrayList warehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID());
+        
+        if(getChildren() != null)
+        {
+            for(int j = 0; j < getChildren().size(); j++)
+            {
+                warehouses.addAll( 0, Warehouse.getAllWarehousesForEnergyCompany(((LiteStarsEnergyCompany)getChildren().get(j)).getLiteID()));
+            }
+        }
+        
+        return warehouses;
     }
 	
 	public synchronized ArrayList getSubstations() {
