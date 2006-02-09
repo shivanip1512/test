@@ -56,6 +56,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_SETTLEMENT_DB = 27;
 	public static final int CHANGE_SERVICE_COMPANY_DB = 28;
 	public static final int CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB = 29;
+	public static final int CHANGE_WORK_ORDER_DB = 30;
 
 
 	public static final String CAT_POINT = "Point";
@@ -92,6 +93,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_CUSTOMER_LOGIN = "CustomerLogin";
 	public static final String CAT_SERVICE_COMPANY = "ServiceCompany";
 	public static final String CAT_SERVICE_COMPANY_DESIGNATION_CODE = "ServiceCompany";
+	public static final String CAT_WORK_ORDER = "WorkOrder";
 
 	
 	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!
