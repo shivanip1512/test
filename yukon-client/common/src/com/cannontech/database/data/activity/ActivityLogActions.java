@@ -43,6 +43,7 @@ public interface ActivityLogActions
 	
 	public static final String INVENTORY_ADD_RANGE = "Inventory Add Range";
 	public static final String INVENTORY_UPDATE_RANGE = "Inventory Update Range";
+    public static final String INVENTORY_MASS_SELECTION = "Inventory Mass Selection Update";
 	public static final String INVENTORY_CONFIG_RANGE = "Inventory Config Range";
 	public static final String INVENTORY_DELETE_RANGE = "Inventory Delete Range";
 	
