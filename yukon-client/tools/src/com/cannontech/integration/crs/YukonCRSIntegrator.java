@@ -14,10 +14,15 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.data.stars.report.ServiceCompany;
@@ -32,9 +37,11 @@ import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.ServerUtils;
 
 public final class YukonCRSIntegrator 
 {
@@ -224,11 +231,9 @@ public final class YukonCRSIntegrator
 					contactDB.setContactID(customerAccount.getCustomer().getCustomer().getPrimaryContactID());
 					contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
                
-					YukonToCRSFuncs.updateContact(contactDB, firstName, lastName);
-					YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
-                	YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
-                	YukonToCRSFuncs.updateAccountSite(customerAccount.getAccountSite(), streetAddress1, streetAddress2, cityName, state, zipCode, null);
-//              	YukonToCRSFuncs.updateAddress(currentContact.getAddressID(), streetAddress1, streetAddress2, cityName, state, zipCode);
+					YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
+                	YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
+
 				} catch (TransactionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -351,15 +356,12 @@ public final class YukonCRSIntegrator
                     Contact contactDB = new Contact();
                     contactDB.setContactID(customerDB.getPrimaryContactID());
     				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
-    	            contactDB = YukonToCRSFuncs.updateContact(contactDB, firstName, lastName);
-    	            
-    	            YukonToCRSFuncs.updateAccountSite(customerAccount.getAccountSite(), streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
-    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone);
-    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone);
-    	            YukonToCRSFuncs.updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone);
+
+    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
+    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
     	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
-    				
-    			} catch (TransactionException e1) {
+
+                } catch (TransactionException e1) {
     				errorMsg.append("Updating of Contact, Address, or ContactNotification(s) failed; ");
     				//TODO handle error message
     				e1.printStackTrace();
@@ -434,7 +436,17 @@ public final class YukonCRSIntegrator
             	com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             	workOrder.setWorkOrderBase(workOrderDB);
             	workOrder.setEnergyCompanyID(new Integer(ecID_workOrder));
-				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+				workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+
+	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+    				workOrderDB.getOrderID(),
+    				DBChangeMsg.CHANGE_WORK_ORDER_DB,
+    				DBChangeMsg.CAT_WORK_ORDER,
+    				DBChangeMsg.CAT_WORK_ORDER,
+    				DBChangeMsg.CHANGE_TYPE_ADD
+    			);
+                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+                
 				//Need to have a pending AND an assigned entry, but no need to insert and then update the work order, just create the extra event!
             	workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
                 EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());

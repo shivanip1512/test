@@ -12,7 +12,9 @@ import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -31,6 +33,8 @@ import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.ServerUtils;
 
 
 /**
@@ -328,6 +332,16 @@ public class YukonToCRSFuncs
 	    	try {
 	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, customer);
 	    		customer = (Customer)t.execute();
+
+	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
+    					customer.getCustomerID().intValue(),
+    					DBChangeMsg.CHANGE_CUSTOMER_DB,
+    					DBChangeMsg.CAT_CUSTOMER,
+    					DBChangeMsg.CAT_CUSTOMER,
+    					DBChangeMsg.CHANGE_TYPE_UPDATE
+    					);
+                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+	    		
 			} catch (TransactionException e) {
 				e.printStackTrace();
 			}
@@ -335,7 +349,7 @@ public class YukonToCRSFuncs
     	return customer;
     }
 
-    public static Contact updateContact(Contact contact, String newFirstName, String newLastName)
+    private static boolean updateContact(Contact contact, String newFirstName, String newLastName)
     {
     	//TODO add support for bad entry
         boolean isChanged = false;
@@ -353,35 +367,43 @@ public class YukonToCRSFuncs
     	if( isChanged)
     	{
 	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, contact);
-	    		contact = (Contact)t.execute();
-			} catch (TransactionException e) {
+	    		contact = (Contact)Transaction.createTransaction(Transaction.UPDATE, contact).execute();
+	    		//DBChange message is handled in public parent method: updateAllContactInfo
+	    	} catch (TransactionException e) {
 				e.printStackTrace();
 			}
     	}
-    	return contact;
+    	return isChanged;
     }
     
-    public static void updateContactNotification(Integer contactID, int notifCatID, String newValue)
+    private static boolean updateContactNotification(Integer contactID, int notifCatID, String newValue)
     {
     	//TODO add support for bad entry
+    	boolean isChanged = false;
         ContactNotification contNotif = YukonToCRSFuncs.retrieveContactNotification(contactID, notifCatID);
         if( contNotif != null)
         {
-            if(newValue.length() > 0 && !newValue.equalsIgnoreCase(contNotif.getNotification()))
+            if(newValue != null && newValue.length() > 0 && !newValue.equalsIgnoreCase(contNotif.getNotification()))
+            {
+            	contNotif.setNotification(newValue);
+            	isChanged = true;
+            }
+            if( isChanged)
             {
             	try{
-    				contNotif.setNotification(newValue);
-					Transaction.createTransaction(Transaction.UPDATE, contNotif).execute();
+					contNotif = (ContactNotification)Transaction.createTransaction(Transaction.UPDATE, contNotif).execute();
+		    		//DBChange message is handled in public parent method: updateAllContactInfo
         		} catch (TransactionException e) {
         			e.printStackTrace();
         		}
             }
+            	
         }
         else
         {
         	//TODO create new contact notification
         }
+        return isChanged;
     }
     
     public static void createMeterHardwares(Integer accountID, Integer energyCompanyID, String meterNumber, ArrayList additionalMeters) throws TransactionException
@@ -389,13 +411,13 @@ public class YukonToCRSFuncs
     	if( meterNumber != null && meterNumber.length() > 0)
     	{
     		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), meterNumber, energyCompanyID.intValue());
-    		updateMeterHardware(meterHardwareBase, accountID, meterNumber);
+    		updateMeterHardware(meterHardwareBase, accountID, energyCompanyID, meterNumber);
     	}
     	for (int i = 0; i < additionalMeters.size(); i++)
     	{
     		CRSToSAM_PTJAdditionalMeterInstalls additionalMeter = (CRSToSAM_PTJAdditionalMeterInstalls)additionalMeters.get(i);
     		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), energyCompanyID.intValue());
-    		updateMeterHardware(meterHardwareBase, accountID, meterNumber);
+    		updateMeterHardware(meterHardwareBase, accountID, energyCompanyID, additionalMeter.getMeterNumber());
     	}
 	}
     /**
@@ -406,7 +428,7 @@ public class YukonToCRSFuncs
      * @return
      * @throws TransactionException
      */
-    public static MeterHardwareBase updateMeterHardware( MeterHardwareBase meterHardwareBase, Integer accountID, String meterNumber) throws TransactionException
+    private static MeterHardwareBase updateMeterHardware( MeterHardwareBase meterHardwareBase, Integer accountID, Integer energyCompanyID, String meterNumber) throws TransactionException
     {
     	if(meterHardwareBase == null)
 		{	//MeterNumber inventory does not exist yet, add it.
@@ -415,7 +437,9 @@ public class YukonToCRSFuncs
 			meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
 //			meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
 			meterHardwareBase.getInventoryBase().setCategoryID(new Integer(CtiUtilities.NONE_ZERO_ID));	//TODO ? correct type
+			meterHardwareBase.setEnergyCompanyID(energyCompanyID);
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
+			//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205
 		}
 		else{
 			boolean isChanged = false;
@@ -429,33 +453,60 @@ public class YukonToCRSFuncs
 				meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
 				isChanged = true;
 			}
+			/*This can't be a good thing to do!
+			 * if( meterHardwareBase.getEnergyCompanyID().intValue() != energyCompanyID.intValue())
+			{
+				meterHardwareBase.setEnergyCompanyID(energyCompanyID);
+				isChanged = true;
+			}*/
 			if( isChanged)
+			{
 				meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
+				//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205 
+			}
 		}
 		
 		return meterHardwareBase;
     }
 
 	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater) throws TransactionException {
+		boolean isAdded = false;
+		
 		if( airCond.charValue() == 'Y')
 		{
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.setAccountID(accountID);
+			applianceBase.setApplianceCategoryID(0);	//TODO this is not a valid Category, it doesn't  belong to an EC
+			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			ApplianceAirConditioner applianceAirCond = new ApplianceAirConditioner();
 			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
 			Transaction.createTransaction(Transaction.INSERT, applianceAirCond).execute();
+			isAdded = true;
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.setAccountID(accountID);
+			applianceBase.setApplianceCategoryID(0);	//TODO this is not a valid Category, it doesn't  belong to an EC
+			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			
 			ApplianceWaterHeater applianceWaterHeater = new ApplianceWaterHeater();
 			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
 			Transaction.createTransaction(Transaction.INSERT, applianceWaterHeater).execute();
+			isAdded = true;
+		}
+		if( isAdded )
+		{
+	        DBChangeMsg dbChangeMessage = new DBChangeMsg(
+    			accountID.intValue(),
+    			DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+    			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+    			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+    			DBChangeMsg.CHANGE_TYPE_ADD
+    		);
+            ServerUtils.handleDBChangeMsg(dbChangeMessage);
 		}
 	}
 
@@ -482,6 +533,16 @@ public class YukonToCRSFuncs
 		customerAccount.getAccountSite().getStreetAddress().setZipCode(zipCode);
 		customerAccount.setEnergyCompanyID(new Integer(ecID_workOrder));
 		customerAccount = (CustomerAccount)Transaction.createTransaction(Transaction.INSERT, customerAccount).execute();
+		
+        DBChangeMsg dbChangeMessage = new DBChangeMsg(
+			customerAccount.getCustomerAccount().getAccountID().intValue(),
+			DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+			DBChangeMsg.CHANGE_TYPE_ADD
+		);
+        ServerUtils.handleDBChangeMsg(dbChangeMessage);
+        
 		return customerAccount;
 	}
 
@@ -516,6 +577,14 @@ public class YukonToCRSFuncs
 			contact.getContactNotifVect().add(crsNotif);
 		}
 		contact = (com.cannontech.database.data.customer.Contact)Transaction.createTransaction(Transaction.INSERT, contact).execute();
+        DBChangeMsg dbChangeMessage = new DBChangeMsg(
+			contact.getContact().getContactID().intValue(),
+			DBChangeMsg.CHANGE_CONTACT_DB,
+			DBChangeMsg.CAT_CUSTOMERCONTACT,
+			DBChangeMsg.CAT_CUSTOMERCONTACT,
+			DBChangeMsg.CHANGE_TYPE_ADD
+		);
+        ServerUtils.handleDBChangeMsg(dbChangeMessage);
 		return contact;
 	}
 
@@ -546,10 +615,11 @@ public class YukonToCRSFuncs
     	return null;
     }
 
-	public static AccountSite updateAccountSite(AccountSite accountSite, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode, Character presenceReq) {
+	public static AccountSite updateAccountSite(CustomerAccount customerAccount, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode, Character presenceReq) {
 //		TODO add support for bad entry
     	boolean isChanged = false;
 
+    	AccountSite accountSite = customerAccount.getAccountSite();
     	if( streetAddress1.length() > 0 && !streetAddress1.equalsIgnoreCase(accountSite.getStreetAddress().getLocationAddress1()))
     	{
     		accountSite.getStreetAddress().setLocationAddress1(streetAddress1);
@@ -578,12 +648,38 @@ public class YukonToCRSFuncs
     	if( isChanged)
     	{
 	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, accountSite);
-	    		accountSite = (AccountSite)t.execute();
+	    		accountSite = (AccountSite)Transaction.createTransaction(Transaction.UPDATE, accountSite).execute();
+	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
+					customerAccount.getCustomerAccount().getAccountID().intValue(),
+					DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+					DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+					DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+					DBChangeMsg.CHANGE_TYPE_UPDATE
+				);
+  	            ServerUtils.handleDBChangeMsg(dbChangeMessage);
 			} catch (TransactionException e) {
 				e.printStackTrace();
 			}
     	}
     	return accountSite;
+	}
+
+	public static void updateAllContactInfo(Contact contactDB, String firstName, String lastName, String homePhone, String workPhone, String crsContactPhone) {
+		boolean isChanged = updateContact(contactDB, firstName, lastName);
+		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone) || isChanged;
+		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone) || isChanged;
+		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone) || isChanged;
+
+		if( isChanged)
+		{
+            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+				contactDB.getContactID().intValue(),
+				DBChangeMsg.CHANGE_CONTACT_DB,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
+				DBChangeMsg.CHANGE_TYPE_UPDATE
+			);
+            ServerUtils.handleDBChangeMsg(dbChangeMessage);
+		}
 	}
 }
