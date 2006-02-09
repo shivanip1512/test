@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.SqlStatement;
@@ -15,7 +16,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -471,14 +474,15 @@ public class YukonToCRSFuncs
 		return meterHardwareBase;
     }
 
-	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater) throws TransactionException {
+	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException {
 		boolean isAdded = false;
 		
 		if( airCond.charValue() == 'Y')
 		{
+			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, liteStarsEnergyCompany);
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.setAccountID(accountID);
-			applianceBase.setApplianceCategoryID(0);	//TODO this is not a valid Category, it doesn't  belong to an EC
+			applianceBase.setApplianceCategoryID(applCatID);
 			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			ApplianceAirConditioner applianceAirCond = new ApplianceAirConditioner();
 			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
@@ -488,9 +492,10 @@ public class YukonToCRSFuncs
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
+			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, liteStarsEnergyCompany);
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.setAccountID(accountID);
-			applianceBase.setApplianceCategoryID(0);	//TODO this is not a valid Category, it doesn't  belong to an EC
+			applianceBase.setApplianceCategoryID(applCatID);
 			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			
 			ApplianceWaterHeater applianceWaterHeater = new ApplianceWaterHeater();
@@ -510,6 +515,25 @@ public class YukonToCRSFuncs
     		);
             ServerUtils.handleDBChangeMsg(dbChangeMessage);
 		}
+	}
+
+	private static int getApplianceCategoryID(int appDefID, LiteStarsEnergyCompany liteStarsEnergyCompany) {
+		int applCatID = 0;
+		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
+		if( appCatEntry != null)
+		{
+			for (int i = 0; i < liteStarsEnergyCompany.getApplianceCategories().size(); i++)
+			{
+				LiteApplianceCategory liteAppCat = (LiteApplianceCategory)liteStarsEnergyCompany.getApplianceCategories().get(i);
+				if(liteAppCat.getCategoryID() == appCatEntry.getEntryID())
+				{
+					applCatID = liteAppCat.getApplianceCategoryID();
+					break;
+				}
+			}
+		}
+		return applCatID;
 	}
 
 	public static CustomerAccount createNewCustomerAccount(CustomerAccount customerAccount, String accountNumber, 
