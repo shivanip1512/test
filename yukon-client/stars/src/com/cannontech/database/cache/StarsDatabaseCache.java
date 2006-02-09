@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -525,6 +526,25 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				}
 			}
 		}
+		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
+			//TODO Decide if all changes types should simply be retrieved and then updated or if we should loop through the energy companies still
+			if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
+			{
+				LiteWorkOrderBase liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
+				liteWorkOrderBase.retrieve();
+				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany)getEnergyCompany(liteWorkOrderBase.getEnergyCompanyID());
+				handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );;
+			}
+			for (int i = 0; i < companies.size(); i++) {
+				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				
+				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
+				if (liteWorkOrderBase != null) {
+					handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+					return;
+				}
+			}
+		}
 	}
 	
 	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
@@ -742,7 +762,34 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				break;
 		}
 	}
-	
+
+	private void handleWorkOrderChange(DBChangeMsg msg, LiteStarsEnergyCompany liteStarsEnergyCompany, LiteWorkOrderBase liteWorkOrderBase)
+	{
+		LiteStarsCustAccountInformation liteStarsCustAcctInfo;
+		
+		switch( msg.getTypeOfChange() ) {
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
+				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, liteWorkOrderBase.getOrderID());
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
+				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
+				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				liteStarsCustAcctInfo.getServiceRequestHistory().remove(liteWorkOrderBase.getOrderID());
+				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, liteWorkOrderBase.getOrderID());
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE:
+				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
+				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				liteStarsCustAcctInfo.getServiceRequestHistory().remove(liteWorkOrderBase.getOrderID());
+				break;
+		}
+	}
+
 	private void handleRouteChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany) {
 		switch( msg.getTypeOfChange() ) {
 			case DBChangeMsg.CHANGE_TYPE_ADD:
