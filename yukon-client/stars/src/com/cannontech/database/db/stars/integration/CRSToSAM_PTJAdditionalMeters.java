@@ -7,7 +7,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
-public class CRSToSAM_PTJAdditionalMeterInstalls extends DBPersistent {
+public class CRSToSAM_PTJAdditionalMeters extends DBPersistent {
 
     private Integer ptjID; 
     private String meterNumber;
@@ -16,10 +16,10 @@ public class CRSToSAM_PTJAdditionalMeterInstalls extends DBPersistent {
 
     public static final String SETTER_COLUMNS[] = { "PTJID", "MeterNumber"};
 
-    public static final String TABLE_NAME = "CRSToSAM_PTJAdditionalMeterInstalls";
+    public static final String TABLE_NAME = "CRSToSAM_PTJAdditionalMeters";
 
 
-public CRSToSAM_PTJAdditionalMeterInstalls() {
+public CRSToSAM_PTJAdditionalMeters() {
     super();
 }
 
@@ -76,7 +76,7 @@ public static ArrayList getAllCurrentPTJAdditionalMeterEntries()
         {
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
-                CRSToSAM_PTJAdditionalMeterInstalls currentEntry = new CRSToSAM_PTJAdditionalMeterInstalls();
+                CRSToSAM_PTJAdditionalMeters currentEntry = new CRSToSAM_PTJAdditionalMeters();
                 currentEntry.setPTJID( new Integer(stmt.getRow(i)[0].toString()));
                 currentEntry.setMeterNumber( stmt.getRow(i)[1].toString());
                 
@@ -111,10 +111,10 @@ public static HashMap retrieveAllCurrentPTJAdditionalMeterEntriesMap()
         if( stmt.getRowCount() > 0 )
         {
         	int lastPTJID = -1;
-        	CRSToSAM_PTJAdditionalMeterInstalls currentEntry = null;
+        	CRSToSAM_PTJAdditionalMeters currentEntry = null;
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
-        		currentEntry = new CRSToSAM_PTJAdditionalMeterInstalls();
+        		currentEntry = new CRSToSAM_PTJAdditionalMeters();
         		currentEntry.setPTJID( new Integer(stmt.getRow(i)[0].toString()));
         		currentEntry.setMeterNumber( stmt.getRow(i)[1].toString());
                 changes.add(currentEntry);
