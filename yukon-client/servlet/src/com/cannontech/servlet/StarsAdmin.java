@@ -1064,7 +1064,7 @@ public class StarsAdmin extends HttpServlet {
 				liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 				
-				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
+				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company );
 				energyCompany.addServiceCompany( liteCompany );
 				
 				PrimaryContact starsContact = new PrimaryContact();
