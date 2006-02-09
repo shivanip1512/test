@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.integration;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,8 +62,21 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
+
+public void setDbConnection(Connection newValue) {
+	super.setDbConnection(newValue);
+	for (int i = 0; i < getAdditionalMeters().size(); i++)
+	{
+		CRSToSAM_PTJAdditionalMeters addtlMeter = (CRSToSAM_PTJAdditionalMeters)getAdditionalMeters().get(i);
+		addtlMeter.setDbConnection(newValue);
+	}
+
+}
 public void delete() throws java.sql.SQLException 
 {
+	for (int i = 0; i < getAdditionalMeters().size(); i++)
+		((CRSToSAM_PTJAdditionalMeters)getAdditionalMeters().get(i)).delete();
+
     Object constraintValues[] = { getPTJID() };
 
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -131,7 +145,7 @@ public static ArrayList getAllCurrentPTJEntries()
         
         if( stmt.getRowCount() > 0 )
         {
-        	HashMap ptjToAddtlMetersMap = CRSToSAM_PTJAdditionalMeterInstalls.retrieveAllCurrentPTJAdditionalMeterEntriesMap();
+        	HashMap ptjToAddtlMetersMap = CRSToSAM_PTJAdditionalMeters.retrieveAllCurrentPTJAdditionalMeterEntriesMap();
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
             	CRSToSAM_PTJ currentEntry = new CRSToSAM_PTJ();
