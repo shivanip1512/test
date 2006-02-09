@@ -1379,7 +1379,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return appCat;
 		}
 		
-		return null;
+		return new LiteApplianceCategory();
 	}
 	
 	public void addApplianceCategory(LiteApplianceCategory appCat) {
@@ -2040,19 +2040,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteWorkOrderBase getWorkOrderBase(int orderID, boolean autoLoad) {
-		LiteWorkOrderBase workOrder = (LiteWorkOrderBase) getWorkOrderMap().get( new Integer(orderID) );
-		if (workOrder != null) return workOrder;
+		LiteWorkOrderBase liteWorkOrder = (LiteWorkOrderBase) getWorkOrderMap().get( new Integer(orderID) );
+		if (liteWorkOrder != null) return liteWorkOrder;
         
 		if (autoLoad) {
 			try {
-				com.cannontech.database.db.stars.report.WorkOrderBase order = new com.cannontech.database.db.stars.report.WorkOrderBase();
+				com.cannontech.database.data.stars.report.WorkOrderBase order = new com.cannontech.database.data.stars.report.WorkOrderBase();
 				order.setOrderID( new Integer(orderID) );
-				order = (com.cannontech.database.db.stars.report.WorkOrderBase)
+				order = (com.cannontech.database.data.stars.report.WorkOrderBase)
 						Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
-				workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
+				liteWorkOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
         		
-				addWorkOrderBase( workOrder );
-				return workOrder;
+				addWorkOrderBase( liteWorkOrder );
+				return liteWorkOrder;
 			}
 			catch (Exception e) {
 				CTILogger.error( e.getMessage(), e );
