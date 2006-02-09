@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -28,7 +29,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeterInstalls;
+import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
@@ -415,7 +416,7 @@ public class YukonToCRSFuncs
     	}
     	for (int i = 0; i < additionalMeters.size(); i++)
     	{
-    		CRSToSAM_PTJAdditionalMeterInstalls additionalMeter = (CRSToSAM_PTJAdditionalMeterInstalls)additionalMeters.get(i);
+    		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)additionalMeters.get(i);
     		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), energyCompanyID.intValue());
     		updateMeterHardware(meterHardwareBase, accountID, energyCompanyID, additionalMeter.getMeterNumber());
     	}
@@ -437,6 +438,7 @@ public class YukonToCRSFuncs
 			meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
 //			meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
 			meterHardwareBase.getInventoryBase().setCategoryID(new Integer(CtiUtilities.NONE_ZERO_ID));	//TODO ? correct type
+			meterHardwareBase.getInventoryBase().setDeviceLabel(meterNumber);
 			meterHardwareBase.setEnergyCompanyID(energyCompanyID);
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205
@@ -682,4 +684,20 @@ public class YukonToCRSFuncs
             ServerUtils.handleDBChangeMsg(dbChangeMessage);
 		}
 	}
+	
+	public static void moveToFailureCRSToSAM_PTJ(CRSToSAM_PTJ ptjEntry, String errorMessage)
+	{
+		FailureCRSToSAM_PTJ failureCrsToSam = new FailureCRSToSAM_PTJ(ptjEntry);
+		failureCrsToSam.setErrorMsg(errorMessage);
+		failureCrsToSam.setDatetime(new Date());
+		try {
+			Transaction.createTransaction(Transaction.INSERT, failureCrsToSam).execute();
+			Transaction.createTransaction(Transaction.DELETE, ptjEntry).execute();
+		} catch (TransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		CTILogger.info(errorMessage);
+	}
+
 }
