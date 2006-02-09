@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,6 +10,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
@@ -22,7 +24,7 @@ public class FilterBean
     private YukonSelectionList availableFilters;
     private ArrayList availableMembers;
     private YukonSelectionList availableDeviceTypes;
-    private ArrayList availableServiceCompanies;
+    private List<ServiceCompany> availableServiceCompanies;
     private YukonSelectionList availableDeviceStates;
     boolean hasAssignedFilters = false;
     private ArrayList assignedFilters = new ArrayList();
@@ -84,7 +86,7 @@ public class FilterBean
         return availableDeviceTypes;
     }
     
-    public ArrayList getAvailableServiceCompanies()
+    public List<ServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
