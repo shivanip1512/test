@@ -1929,8 +1929,20 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleSettlementConfigChange(dbType, id);
 	}
+	else if( database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DB ||
+			database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB )
+	{
+		//Do nothing, there is no cache for service Companies, but please do not release all cache!
+	}
+	else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB )
+	{
+		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
+	}	
 	else  //let it all go!!
+	{
+		CTILogger.error(" ***** Releasing all Cache!  Unhandled Category:" + dbCategory + ")!");
 		releaseAllCache();
+	}
 
 	return retLBase;
 }
