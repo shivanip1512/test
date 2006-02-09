@@ -59,6 +59,16 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void retrieve() throws java.sql.SQLException {
+    	
+    	String[] SETTER_COLUMNS = {"EnergyCompanyID"};
+    	String[] CONSTRAINT_COLUMNS = { "WorkOrderID" };
+    	Object[] constraintValues = { getWorkOrderBase().getOrderID() };
+
+        Object[] results = retrieve( SETTER_COLUMNS, "ECToWorkOrderMapping", CONSTRAINT_COLUMNS, constraintValues );
+        if (results.length == SETTER_COLUMNS.length) {
+            setEnergyCompanyID( (Integer) results[0] );
+        }
+
         getWorkOrderBase().retrieve();
     }
     
