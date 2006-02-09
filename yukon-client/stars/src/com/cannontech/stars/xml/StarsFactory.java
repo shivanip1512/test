@@ -545,28 +545,28 @@ public class StarsFactory {
 	
 	/* StarsSrvReq factory methods */
 	
-	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsSrvReq order) {
+	public static void setWorkOrderBase(com.cannontech.database.data.stars.report.WorkOrderBase workOrderBase, StarsSrvReq order) {
 		//orderDB.setOrderID( new Integer(order.getOrderID()) );
 		if (order.hasAccountID())
-			orderDB.setAccountID( new Integer(order.getAccountID()) );
+			workOrderBase.getWorkOrderBase().setAccountID( new Integer(order.getAccountID()) );
 		if (order.getOrderNumber() != null)
-			orderDB.setOrderNumber( order.getOrderNumber() );
-		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
+			workOrderBase.getWorkOrderBase().setOrderNumber( order.getOrderNumber() );
+		workOrderBase.getWorkOrderBase().setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
 		if (order.getCurrentState() != null)
-			orderDB.setCurrentStateID( new Integer(order.getCurrentState().getEntryID()) );
-		orderDB.setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );
+			workOrderBase.getWorkOrderBase().setCurrentStateID( new Integer(order.getCurrentState().getEntryID()) );
+		workOrderBase.getWorkOrderBase().setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );
 		if (order.getDateReported() != null)
-			orderDB.setDateReported( order.getDateReported() );
+			workOrderBase.getWorkOrderBase().setDateReported( order.getDateReported() );
 		if (order.getOrderedBy() != null)
-			orderDB.setOrderedBy( order.getOrderedBy() );
+			workOrderBase.getWorkOrderBase().setOrderedBy( order.getOrderedBy() );
 		if (order.getDescription() != null)
-			orderDB.setDescription( order.getDescription() );
+			workOrderBase.getWorkOrderBase().setDescription( order.getDescription() );
 		if (order.getDateScheduled() != null)
-			orderDB.setDateScheduled( order.getDateScheduled() );
+			workOrderBase.getWorkOrderBase().setDateScheduled( order.getDateScheduled() );
 		if (order.getDateCompleted() != null)
-			orderDB.setDateCompleted( order.getDateCompleted() );
+			workOrderBase.getWorkOrderBase().setDateCompleted( order.getDateCompleted() );
 		if (order.getActionTaken() != null)
-			orderDB.setActionTaken( order.getActionTaken() );
+			workOrderBase.getWorkOrderBase().setActionTaken( order.getActionTaken() );
 	}
 	
 	
