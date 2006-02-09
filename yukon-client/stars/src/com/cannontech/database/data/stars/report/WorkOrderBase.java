@@ -3,6 +3,7 @@ package com.cannontech.database.data.stars.report;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.ECToGenericMapping;
 
 
 /**
@@ -40,14 +41,14 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-    	if (energyCompanyID == null)
+    	if (getEnergyCompanyID() == null)
     		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
         getWorkOrderBase().add();
         
         // add to mapping table
         Object[] addValues = {
-            energyCompanyID,
+            getEnergyCompanyID(),
             getWorkOrderBase().getOrderID()
         };
         add( "ECToWorkOrderMapping", addValues );
@@ -91,6 +92,10 @@ public class WorkOrderBase extends DBPersistent {
 
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
+	}
+
+	public Integer getEnergyCompanyID() {
+		return energyCompanyID;
 	}
 
 }
