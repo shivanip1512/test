@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/09 20:42:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,8 @@ protected:
 
 public:
     TimeCTO(int variation);
+
+    TimeCTO(const TimeCTO &src);
 
     enum Variation
     {

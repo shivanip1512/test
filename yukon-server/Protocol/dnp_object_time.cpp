@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/02/09 20:42:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,6 +220,14 @@ TimeCTO::TimeCTO(int variation) : Time(Group, variation)
 
 }
 
+
+TimeCTO::TimeCTO(const TimeCTO &src) : Time(Group, src.getVariation())
+{
+    setSeconds(src.getSeconds());
+    setMilliseconds(src.getMilliseconds());
+}
+
+
 int TimeCTO::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
@@ -231,7 +239,7 @@ int TimeCTO::restore(const unsigned char *buf, int len)
         case TC_TimeAndDateCTO:
         case TC_TimeAndDateCTOUnsynchronized:
         {
-            pos += restoreVariation(buf,len,T_TimeAndDate);
+            pos += restoreVariation(buf, len, T_TimeAndDate);
             break;
         }
 
