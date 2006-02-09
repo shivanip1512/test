@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/01/24 20:03:02 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/02/09 20:47:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -493,7 +493,19 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             {
                 if( ob->getGroup() == TimeCTO::Group )
                 {
-                    cto = reinterpret_cast<const TimeCTO *>(ob->at(0).object);
+                    if( cto )
+                    {
+                        delete cto;
+                    }
+
+                    cto = CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object)));
+
+                    CtiTime t(cto->getSeconds());
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - found CTO object in stream for device \"" << _name << "\" (" << t << ", " << cto->getMilliseconds() << "ms) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
                 else if( ob->getGroup()     == DNP::Time::Group &&
                          ob->getVariation() == DNP::Time::T_TimeAndDate )
@@ -510,6 +522,8 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
                         s = "Device time: ";
                         s.append(t.asString());
+                        s.append(".");
+                        s.append(CtiNumStr(time->getMilliseconds()).zpad(3));
 
                         if( (t.seconds() - TimeDifferential) > now.seconds() || (t.seconds() + TimeDifferential) < now.seconds() )
                         {
@@ -542,6 +556,11 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             //  set final = false in the above switch statement if you want to do anything crazy (like SBO)
             setCommand(Command_Complete);
         }
+    }
+
+    if( cto )
+    {
+        delete cto;
     }
 
     return retVal;
