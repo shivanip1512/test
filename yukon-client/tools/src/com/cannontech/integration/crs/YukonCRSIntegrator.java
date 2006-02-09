@@ -31,7 +31,7 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeterInstalls;
+import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
@@ -256,19 +256,10 @@ public final class YukonCRSIntegrator
     public void runCRSToSAM_PTJ(ArrayList entries)
     {
         CRSToSAM_PTJ currentEntry = null;
-    	FailureCRSToSAM_PTJ currentFailure = null;
-    	
-        ArrayList failures = new ArrayList();
-    	ArrayList successArrayList = new ArrayList();
-//    	boolean badEntry = false;
-    	int successCounter = 0;
-    	Connection conn = null;
-        
+
         for(int j = 0; j < entries.size(); j++)
     	{
         	StringBuffer errorMsg = new StringBuffer("");
-//    		badEntry = false;
-            
             currentEntry = (CRSToSAM_PTJ)entries.get(j);
 
             String accountNumber = currentEntry.getPremiseNumber().toString();
@@ -313,20 +304,41 @@ public final class YukonCRSIntegrator
         	int ecID_workOrder = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;            	
 
         	//Get the serviceCompany from the zipcode
+        	LiteStarsEnergyCompany liteStarsEnergyCompany = null;
+        	LiteYukonUser liteYukonUser = null;
+        	YukonListEntry workTypeEntry = null;
         	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(currentEntry.getZipCode());
         	if( serviceCompany == null)
         		errorMsg.append("No serviceCompany found for zipcode " + currentEntry.getZipCode() + "; ");
         	else
+        	{
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
-       	
+        		//Get the energyCompany from the zip code
+        		liteStarsEnergyCompany = new LiteStarsEnergyCompany( ecID_workOrder);
+        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
+	        	if( workTypeEntry == null)
+	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
+	        	
+	        	liteYukonUser = YukonUserFuncs.getLiteYukonUser(crsLoggedUser);
+	        	if( liteYukonUser == null)
+	        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
+        	}
+			//Stop here, too many error to update anything data.
+			if( errorMsg.length() > 0)//we have error messages to handle, don't go any further!
+        	{
+				YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
+        		continue;
+        	}
         	//Get the customer account from accountNumber
         	CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
-        	if( customerAccount == null)
-        	{
-        		if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) ||
+    		if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) ||
        				ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
         			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))
-            	{
+            {
+    			
+    			if( customerAccount == null)
+    			{
         			try{
         				//Create new Contact data object and ContactNotification objects
 	        			com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
@@ -347,76 +359,90 @@ public final class YukonCRSIntegrator
 						e.printStackTrace();
 					}
             	}
-        	}
-        	else	//CustomerAccount already exists....lets update it!
-        	{
-        		try
-                {
-                    Customer customerDB = customerAccount.getCustomer().getCustomer();
-                    Contact contactDB = new Contact();
-                    contactDB.setContactID(customerDB.getPrimaryContactID());
-    				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
-
-    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
-    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
-    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
-
-                } catch (TransactionException e1) {
-    				errorMsg.append("Updating of Contact, Address, or ContactNotification(s) failed; ");
-    				//TODO handle error message
-    				e1.printStackTrace();
-    			}
-        	}
-
-        	if( customerAccount != null)//we should have found an existing one or loaded a new one by now.
-        	{
-        		ecID_customer = customerAccount.getEnergyCompanyID().intValue();
-	        	if( ecID_customer != ecID_workOrder)
-	        		errorMsg.append("Customer EnergyCompany (" + ecID_customer+") does not match Service Company Energy Company ("+ecID_workOrder+");");
-        	}
-        	else
-        		errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
-        	
-        	
-        	if( ptjType.equalsIgnoreCase("ACT") || 
-        		ptjType.equalsIgnoreCase("DEACT") ||
-        		ptjType.equalsIgnoreCase("REMVE"))
-        	{
-        		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
+	        	else	//CustomerAccount already exists....lets update it!
+	        	{
+	        		try
+	                {
+	                    Customer customerDB = customerAccount.getCustomer().getCustomer();
+	                    Contact contactDB = new Contact();
+	                    contactDB.setContactID(customerDB.getPrimaryContactID());
+	    				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
+	
+	    				if(ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
+	    	        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))
+	    				{
+		    				MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
+		            		if( meterHardwareBase == null)
+		            			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+		                	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
+		                	{
+		                		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
+		                		meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
+		            			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+		                	}
+	    				}
+	    				//Stop here, too many error to update anything data.
+	    				if( errorMsg.length() > 0)//we have error messages to handle, don't go any further!
+	                	{
+	    					YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
+	    					continue;
+	                	}
+	                	
+	    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
+	    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
+	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
+	    	            //TODO create new appliance if they don't exist?
+	    	            //TODO create new meternumbers if they don't exist?
+	    	            
+	                } catch (TransactionException e1) {
+	    				errorMsg.append("Updating of Contact, Address, or ContactNotification(s) failed; ");
+	    				//TODO handle error message
+	    				e1.printStackTrace();
+	    			}
+	        	}
+            }
+    		else if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) || 
+            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING) ||
+            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REMOVE_STRING))
+    		{
+    			if( customerAccount == null)
+    			{
+	        		errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
+					YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
+					continue;
+    			}	        		
+    			else
+	        	{
+	        		ecID_customer = customerAccount.getEnergyCompanyID().intValue();
+		        	if( ecID_customer != ecID_workOrder)
+		        		errorMsg.append("Customer EnergyCompany (" + ecID_customer+") does not match Service Company Energy Company ("+ecID_workOrder+");");
+	        	}
+	        	
+    			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
         		if( meterHardwareBase == null)
         			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
             	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
             	{
-            		CRSToSAM_PTJAdditionalMeterInstalls additionalMeter = (CRSToSAM_PTJAdditionalMeterInstalls)currentEntry.getAdditionalMeters().get(i);
+            		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
             		meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
-        			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+        			errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
             	}
             	
-            	//TODO verify controllable device attached to the service
-        	}
-        	
-          	//Get the energyCompany from the zip code
-        	LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany( ecID_workOrder);
-        	YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
-        	YukonListEntry workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
-        	if( workTypeEntry == null)
-        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
-        	
-        	LiteYukonUser liteYukonUser = YukonUserFuncs.getLiteYukonUser(crsLoggedUser);
-        	if( liteYukonUser == null)
-        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
-        	
-        	if( errorMsg.length() > 0)//we have error messages to handle, don't go any further!
-        	{
-        		//TODO Add to failures
-        		FailureCRSToSAM_PTJ failureCrsToSam = new FailureCRSToSAM_PTJ(currentEntry);
-        		failureCrsToSam.setErrorMsg(errorMsg.toString());
-        		failureCrsToSam.setDatetime(new Date());
-        		CTILogger.info(errorMsg.toString());
-        		failures.add(failureCrsToSam);
-        		break;
-        	}
+				//Stop here, too many error to update anything data.
+				if( errorMsg.length() > 0)//we have error messages to handle, don't go any further!
+            	{
+					YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
+					continue;
+            	}
 
+            	//TODO verify controllable device attached to the service
+            	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
+            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
+            	{
+            		//Need to update this order to the Processed state and write as in service entry to the batch proc file
+            	}
+    		}
+        	
         	//No errors, create work order!
         	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
@@ -451,12 +477,14 @@ public final class YukonCRSIntegrator
             	workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
                 EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
                 EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue());
+
+    			//We made it...remove currentEntry from CRSToSAM_PTJ table
+    			Transaction.createTransaction(Transaction.DELETE, currentEntry).execute();
+
 			} catch (TransactionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-            /*ONE TRANSACTION FAILURE SHOULD FAIL THE WHOLE THING
-            com.cannontech.database.db.*/
         }
     }
 
