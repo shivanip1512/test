@@ -1379,7 +1379,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return appCat;
 		}
 		
-		return new LiteApplianceCategory();
+		return null;
 	}
 	
 	public void addApplianceCategory(LiteApplianceCategory appCat) {
