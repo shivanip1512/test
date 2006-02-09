@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.hardware;
 
+import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -91,6 +92,8 @@ public class InventoryBase extends DBPersistent {
     }
 
     public com.cannontech.database.data.stars.customer.CustomerAccount getCustomerAccount() {
+    	if(customerAccount == null)
+    		customerAccount = new CustomerAccount();
         return customerAccount;
     }
 
