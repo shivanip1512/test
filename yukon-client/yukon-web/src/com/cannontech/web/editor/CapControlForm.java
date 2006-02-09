@@ -860,6 +860,7 @@ public class CapControlForm extends DBEditorForm {
                     }
 
                 }
+                updateDBObject(((CapControlSubBus) getDbPersistent()), facesMsg);
             }
             
             updateDBObject(getDbPersistent(), facesMsg);
