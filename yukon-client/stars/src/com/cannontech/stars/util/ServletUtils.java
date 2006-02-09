@@ -45,6 +45,10 @@ public class ServletUtils {
 	public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;
 	public static final String ATT_REFERRER2 = ServletUtil.ATT_REFERRER2;
 	
+    public static final int ACTION_CHANGEDEVICE = 1;
+    public static final int ACTION_CHANGESTATE = 2;
+    public static final int ACTION_TOSERVICECOMPANY = 3;
+    public static final int ACTION_TOWAREHOUSE = 4;
 	/**
 	 * When used in session, the attribute with this name should be passed a CtiNavObject
 	 */

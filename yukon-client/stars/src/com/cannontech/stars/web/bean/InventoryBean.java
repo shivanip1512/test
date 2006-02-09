@@ -79,6 +79,7 @@ public class InventoryBean {
     private HttpServletRequest internalRequest;
     private String filterInventoryHTML;
     private String numberOfRecords = "0";
+    private boolean viewResults = false;
 	
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -792,7 +793,7 @@ public class InventoryBean {
 			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 			htmlBuf.append("}").append(LINE_SEPARATOR);
 		}
-		
+        
 		htmlBuf.append("</script>").append(LINE_SEPARATOR);
         
 		return htmlBuf.toString();
@@ -1025,4 +1026,13 @@ public class InventoryBean {
         this.showAll = showAll;
     }
 
+    public boolean getViewResults()
+    {
+        return viewResults;
+    }
+    
+    public void setViewResults(boolean truth)
+    {
+        viewResults = truth;
+    }
 }
