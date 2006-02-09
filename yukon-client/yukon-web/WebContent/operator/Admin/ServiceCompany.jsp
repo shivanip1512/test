@@ -3,7 +3,7 @@
 <jsp:useBean id="servComp" scope="page" class="com.cannontech.stars.web.bean.ServiceCompanyBean" />
 <%
 	StarsServiceCompany company = null;
-	int compIdx = Integer.parseInt( request.getParameter("Company") );
+	int compIdx = Integer.parseInt( request.getParameter("CompanyID") );
 	if (compIdx >= 0 && compIdx < companies.getStarsServiceCompanyCount()) {
 		company = companies.getStarsServiceCompany(compIdx);
 	}
@@ -56,13 +56,13 @@
 		
 		if(action.equalsIgnoreCase("EditAddress"))
 		{	
-			response.sendRedirect("Address.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
+			response.sendRedirect("Address.jsp?referer=ServiceCompany.jsp&CompanyID=" + compIdx);
 			return;
 		}
 		
 		if(action.equalsIgnoreCase("NewCode"))
 		{	
-			response.sendRedirect("NewCodes.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
+			response.sendRedirect("NewCodes.jsp?referer=ServiceCompany.jsp&CompanyID=" + compIdx);
 			return;
 		}
 	}

@@ -6,8 +6,8 @@
 	}
 	
 	if (referer.equalsIgnoreCase("ServiceCompany.jsp")) {
-		int compIdx = Integer.parseInt( request.getParameter("Company") );
-		referer += "?Company=" + compIdx;
+		int compIdx = Integer.parseInt( request.getParameter("CompanyID") );
+		referer += "?CompanyID=" + compIdx;
 	}
 %>
 <html>

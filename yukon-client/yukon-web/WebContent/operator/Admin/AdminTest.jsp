@@ -72,7 +72,7 @@ function confirmDeleteAllAppCats() {
 }
 
 function editServiceCompany(form, compIdx) {
-	form.attributes["action"].value = "ServiceCompany.jsp?Company=" + compIdx;
+	form.attributes["action"].value = "ServiceCompany.jsp?CompanyID=" + compIdx;
 	form.action.value = "init";
 	form.submit();
 }
@@ -737,7 +737,7 @@ function confirmDeleteAllWarehouses() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td width="20%"> 
-                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.WarehouseID.value=-1; return confirmDeleteAllWarehouses);">
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.WarehouseID.value=-1; return confirmDeleteAllWarehouses();">
                               </td>
                               <td width="80%"> 
                                 <input type="button" name="New" value="New" onclick="editWarehouse(this.form, 0)">
