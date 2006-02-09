@@ -213,22 +213,21 @@ public class CreateServiceRequestAction implements ActionBase {
 		}
         
 		com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
-		com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
         
-		StarsFactory.setWorkOrderBase( workOrderDB, createOrder );
+		StarsFactory.setWorkOrderBase( workOrder, createOrder );
         
 		if (createOrder.getCurrentState() == null) {
-			workOrderDB.setCurrentStateID( new Integer(
+			workOrder.getWorkOrderBase().setCurrentStateID( new Integer(
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
 		}
 		if (!createOrder.hasAccountID())
-			workOrderDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
+			workOrder.getWorkOrderBase().setAccountID( new Integer(liteAcctInfo.getAccountID()) );
 		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         
 		workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
 				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
-		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
+		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrder );
 		energyCompany.addWorkOrderBase( liteOrder );
 		if (liteAcctInfo != null)
 			liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );

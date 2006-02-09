@@ -117,10 +117,10 @@ public class UpdateServiceRequestAction implements ActionBase {
 				updateOrder.getCurrentState().setEntryID( liteOrder.getCurrentStateID() );
 			}
         	
-			WorkOrderBase order = (WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
+			com.cannontech.database.data.stars.report.WorkOrderBase order = (com.cannontech.database.data.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
 			StarsFactory.setWorkOrderBase( order, updateOrder );
         	
-        	order = (WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
+        	order = (com.cannontech.database.data.stars.report.WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
         	StarsLiteFactory.setLiteWorkOrderBase( liteOrder, order );
         	
         	if (updateOrder.hasAccountID()) {
