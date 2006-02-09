@@ -1,7 +1,18 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceRoutes;
 
 /**
  * @author yao
@@ -23,7 +34,10 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String description = null;
 	private String actionTaken = null;
 	private String orderedBy = null;
+	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
+	
+	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
 		super();
@@ -219,4 +233,56 @@ public class LiteWorkOrderBase extends LiteBase {
 		this.accountID = accountID;
 	}
 
+	public int getEnergyCompanyID() {
+		return energyCompanyID;
+	}
+
+	public void setEnergyCompanyID(int energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
+	}
+
+	public void retrieve()
+	{
+		try
+		{
+			SqlStatement stat = new SqlStatement( "SELECT ORDERNUMBER, WORKTYPEID, CURRENTSTATEID, SERVICECOMPANYID, DATEREPORTED, " +
+												" ORDEREDBY, DESCRIPTION, DATESCHEDULED, DATECOMPLETED, ACTIONTAKEN, ACCOUNTID, ADDITIONALORDERNUMBER, ENERGYCOMPANYID " +
+												" FROM " + com.cannontech.database.db.stars.report.WorkOrderBase.TABLE_NAME + " WOB, ECTOWORKORDERMAPPING MAP " +
+												" WHERE WOB.ORDERID = MAP.WORKORDERID " + 
+												" AND WOB.ORDERID = " + getLiteID(), CtiUtilities.getDatabaseAlias());
+
+			stat.execute();
+
+			if (stat.getRowCount() <= 0)
+				throw new IllegalStateException(
+					"Unable to find the WorkOrderBase with OrderID = " + getLiteID());
+
+			Object[] results = stat.getRow(0);
+            setOrderNumber( (String) results[0] );
+            setWorkTypeID(( (java.math.BigDecimal) results[1] ).intValue());
+            setCurrentStateID(( (java.math.BigDecimal) results[2] ).intValue());
+            setServiceCompanyID(( (java.math.BigDecimal) results[3] ).intValue());
+            setDateReported( new java.util.Date(((java.sql.Timestamp) results[4]).getTime()).getTime() );
+            setOrderedBy( (String) results[5] );
+            setDescription( (String) results[6] );
+            setDateScheduled( new java.util.Date(((java.sql.Timestamp) results[7]).getTime()).getTime() );
+            setDateCompleted( new java.util.Date(((java.sql.Timestamp) results[8]).getTime()).getTime() );
+            setActionTaken( (String) results[9] );
+            setAccountID(( (java.math.BigDecimal) results[10] ).intValue());
+            setAdditionalOrderNumber( (String) results[11]);
+            setEnergyCompanyID(( (java.math.BigDecimal) results[12]).intValue());
+		}
+		catch (Exception e)
+		{
+			CTILogger.error(e.getMessage(), e);
+		}
+	}
+
+	public String getAdditionalOrderNumber() {
+		return additionalOrderNumber;
+	}
+
+	public void setAdditionalOrderNumber(String additionalOrderNumber) {
+		this.additionalOrderNumber = additionalOrderNumber;
+	}
 }
