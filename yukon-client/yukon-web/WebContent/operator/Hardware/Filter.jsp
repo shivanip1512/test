@@ -3,7 +3,7 @@
 <jsp:useBean id="filterBean" class="com.cannontech.stars.web.bean.FilterBean" scope="page"/>
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 
-<cti:standardPage title="Energy Services Operations Center" module="stars">
+<cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
 	
 	<!-- FILTER TYPES (will be accessible with JSTL tags after they are declared) -->
  	<%pageContext.setAttribute("filterDeviceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE).toString());%>
@@ -31,6 +31,8 @@
  	<c:set target="${filterBean}" property="assignedFilters" value="${sessionScope.InventoryFilters}" />
  	
 	<div class="standardpurplesidebox"> 
+		<% String pageName = "Filter.jsp"; %>
+		<%@ include file="include/Nav.jsp" %>
 	</div>
 
 	<div class="standardcentralwhitebody">
@@ -147,27 +149,6 @@
               	</tr>
         	</table>
         	<br>
-        	<c:if test="${param.Record != null}">
-				<c:set target="${inventoryBean}" property="internalRequest" value="${pageContext.request}" />
-				<table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
-					<tr>
-						<td width="100%" class="headeremphasis"> INVENTORY RESULTS: 
-							<c:out value="${inventoryBean.filterInventoryHTML}"/>
-							hardware records match these requirements.
-						</td>
-					</tr>
-				</table>
-				<table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
-					<tr>
-						<td width="100" align="right"> 
-	                    	<input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
-	                  	</td>
-	                  	<td width="500"> 
-	                    	<input type="button" name="Manipulate" value="Manipulate Results" onclick="manipulateAll(this.form)">
-	                  	</td>
-	                </tr>
-				</table>
-			</c:if>
 		</form>
     </div>
     
@@ -305,7 +286,6 @@
 				selectionIDs.splice(idx, 1);
 				yukonDefIDs.splice(idx, 1);
 				filters.selectedIndex = filters.options.length;
-				showEntry(form);
 				setContentChanged(true);
 			}
 		}
@@ -319,10 +299,9 @@
 				for (idx = filters.options.length; idx >= 0; idx--)
 					filters.options.remove(idx);
 				filterTexts.splice(0, filterTexts.length);
-				selectionIDs.splice(idx, selectionsIDs.length);
+				selectionIDs.splice(idx, selectionIDs.length);
 				yukonDefIDs.splice(idx, yukonDefIDs.length);
 				filters.selectedIndex = 0;
-				showEntry(form);
 				setContentChanged(true);
 			}
 		}
@@ -338,18 +317,6 @@
 				html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
 				form.insertAdjacentHTML("beforeEnd", html);
 			}
-		}
-		
-		function viewAll(form)
-		{
-			form.action.value = "ViewInventoryResults";
-			form.submit();
-		}
-		
-		function manipulateAll(form)
-		{
-			form.action.value = "ManipulateInventoryResults";
-			form.submit();
 		}
 	</script>
 </cti:standardPage>          
