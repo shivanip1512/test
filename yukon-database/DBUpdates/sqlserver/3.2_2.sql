@@ -7,7 +7,7 @@ if exists (select 1
             from  sysobjects
            where  id = object_id('SettlementConfig')
             and   type = 'U')
-   drop table SettlementConfig
+   drop table SettlementConfig;
 go
 
 
@@ -20,7 +20,7 @@ create table SettlementConfig (
    Description		varchar(128)		not null,
    EntryID			numeric				not null,
    RefEntryID		numeric				not null
-)
+);
 go
 
 insert into SettlementConfig values (-1, 'CDI Rate', '0', 'HECO', '3651', 'Controlled Demand Incentive, Dollars per kW.', 0, 0);
