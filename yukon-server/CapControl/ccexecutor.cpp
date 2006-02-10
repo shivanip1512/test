@@ -151,7 +151,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
-            if (!currentSubstationBus->getDisableFlag())
+            //if (!currentSubstationBus->getDisableFlag())
             {    
                 if (!currentSubstationBus->getVerificationFlag())
                 {
@@ -160,10 +160,23 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                    //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                    string text("Substation Bus Verification Enabled");
+                    //string text("Substation Bus Verification Enabled");
+                    string text = currentSubstationBus->getVerificationString();
+                    text += " Enabled";
                     string additional("Bus: ");
                     additional += currentSubstationBus->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+                    currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+                    //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+
+                    CtiCCExecutorFactory f;
+                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+                    executor->Execute();
+                    delete executor;
+
+
                 }
                 else
                 {
@@ -175,10 +188,20 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                         currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                        //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-                        string text("Substation Bus Verification Enabled");
+                        string text = currentSubstationBus->getVerificationString();
+;
+                        text += " Enabled";
                         string additional("Bus: ");
                         additional += currentSubstationBus->getPAOName();
                         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+                        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+                        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+                        //currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+
+                        CtiCCExecutorFactory f;
+                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+                        executor->Execute();
                     }
                 }
             }
@@ -233,10 +256,16 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
             }
 
             //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
-            string text("Substation Bus Verification Disabled");
+            //string text("Substation Bus Verification Disabled");
+            string text = currentSubstationBus->getVerificationString();
+            text += " Disabled";
             string additional("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
+
+            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+            currentSubstationBus->setEventSequence(0);
             break;
         }
     }
@@ -266,6 +295,9 @@ void CtiCCCommandExecutor::EnableSubstationBus()
             string additional = string("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnable, 1, 1, text, _command->getUser()));
+            currentSubstationBus->setEventSequence(0);
             break;
         }
     }
@@ -294,6 +326,11 @@ void CtiCCCommandExecutor::DisableSubstationBus()
             string additional = string("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() + 1);
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, text, _command->getUser()));
+            if (!currentSubstationBus->getVerificationFlag())
+                currentSubstationBus->setEventSequence(0);
             break;
         }
     }
@@ -329,6 +366,8 @@ void CtiCCCommandExecutor::EnableFeeder()
                     string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnable, 1, 1, text, _command->getUser()));
                 }
                 else
                 {
@@ -375,6 +414,8 @@ void CtiCCCommandExecutor::DisableFeeder()
                     string additional("Feeder: ");
                     additional += currentFeeder->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlDisable, 1, 0, text, _command->getUser()));
                 }
                 else
                 {
@@ -407,6 +448,7 @@ void CtiCCCommandExecutor::EnableCapBank()
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[i];
         for(LONG j=0;j<ccFeeders.size();j++)
         {
             CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
@@ -427,6 +469,10 @@ void CtiCCCommandExecutor::EnableCapBank()
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                            //setEventSequence(getEventSequence() + 1);
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnable, 1, 1, text, _command->getUser()));
+                            //setEventSequence(0);
                         }
                         else
                         {
@@ -472,6 +518,7 @@ void CtiCCCommandExecutor::DisableCapBank()
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+        CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[i];
         for(LONG j=0;j<ccFeeders.size();j++)
         {
             CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)ccFeeders.at(j))->getCCCapBanks();
@@ -492,6 +539,8 @@ void CtiCCCommandExecutor::DisableCapBank()
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
+
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlDisable, 1, 0, text, _command->getUser()));
                         }
                         else
                         {
@@ -684,7 +733,9 @@ void CtiCCCommandExecutor::OpenCapBank()
     CtiTime savedBusLastOperationTime = gInvalidCtiTime;
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
+    RWOrdered& ccEvents = eventMulti->getData();
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -750,6 +801,9 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
+
+                                currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                                ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentFeeder->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
                         }
                         else
@@ -763,6 +817,10 @@ void CtiCCCommandExecutor::OpenCapBank()
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+
+
+                            currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                            ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                         }
 
 
@@ -815,13 +873,12 @@ void CtiCCCommandExecutor::OpenCapBank()
                         }
                         else if (confirmImmediately)
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
                         }
                         break;
                     }
                     else
                     {
-
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -879,7 +936,9 @@ void CtiCCCommandExecutor::CloseCapBank()
     CtiTime savedBusLastOperationTime = gInvalidCtiTime;
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
+    RWOrdered& ccEvents = eventMulti->getData();
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -946,6 +1005,10 @@ void CtiCCCommandExecutor::CloseCapBank()
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
+
+
+                                currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                                ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentFeeder->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
                         }
                         else
@@ -959,6 +1022,10 @@ void CtiCCCommandExecutor::CloseCapBank()
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+
+                            currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                            ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
+
                         }
 
 
@@ -1016,13 +1083,12 @@ void CtiCCCommandExecutor::CloseCapBank()
                         }
                         else if (confirmImmediately)
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
                         }
                         break;
                     }
                     else
                     {
-
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1055,6 +1121,8 @@ void CtiCCCommandExecutor::CloseCapBank()
         CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control close");
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        //CtiCapController::getInstance()->eventThing( eventMulti );
     }
     else
     {
@@ -1080,7 +1148,9 @@ void CtiCCCommandExecutor::ConfirmOpen()
     CtiTime savedBusLastOperationTime = gInvalidCtiTime;
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
+    RWOrdered& ccEvents = eventMulti->getData();
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -1147,6 +1217,10 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
+
+
+                                currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                                ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentFeeder->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
                         }
                         else
@@ -1160,6 +1234,10 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+
+
+                            currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                            ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                         }
 
                         BOOL confirmImmediately = FALSE;
@@ -1224,13 +1302,12 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         }
                         else
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
                         }
                         break;
                     }
                     else
                     {
-
                         if (currentSubstationBus->getVerificationFlag())
                         {                                              
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1243,7 +1320,6 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
                         }
-
                     }
                     break;
                 }
@@ -1289,7 +1365,9 @@ void CtiCCCommandExecutor::ConfirmClose()
     CtiTime savedFeederLastOperationTime = gInvalidCtiTime;
     LONG savedControlStatus = -10;
     CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
+    RWOrdered& ccEvents = eventMulti->getData();
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
@@ -1356,6 +1434,9 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
+
+                                currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                                ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentFeeder->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
                             }
                         }
                         else
@@ -1369,6 +1450,10 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+
+
+                            currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                            ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                         }
 
                         BOOL confirmImmediately = FALSE;
@@ -1437,7 +1522,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else
                         {
-                            doConfirmImmediately(currentSubstationBus,pointChanges);
+                            doConfirmImmediately(currentSubstationBus,pointChanges, bankID);
                         }
                         break;
                     }
@@ -1486,7 +1571,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 /*---------------------------------------------------------------------------
     doConfirmImmediately
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges)
+void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges, LONG bankId)
 {
     CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[currentSubstationBus->getLastFeederControlledPosition()];
@@ -1498,39 +1583,60 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
         for(LONG k=0;k<ccCapBanks.size();k++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-            if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-            {
-                currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                if( currentCapBank->getStatusPointId() > 0 )
+            if (bankId == currentCapBank->getControlDeviceId())
+            {       
+                currentFeeder->setRecentlyControlledFlag(FALSE);
+                if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                 {
-                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                    ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                    if( currentCapBank->getStatusPointId() > 0 )
+                    {
+                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                        ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    }
                 }
-                else
+                else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                                  << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
-                }
-            }
-            else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-            {
-                currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                if( currentCapBank->getStatusPointId() > 0 )
-                {
-                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                    ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                                  << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                    if( currentCapBank->getStatusPointId() > 0 )
+                    {
+                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                        ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    }
                 }
             }
         }
         currentSubstationBus->setRecentlyControlledFlag(FALSE);
-        currentFeeder->setRecentlyControlledFlag(FALSE);
+
+        for(int j=0;j<ccFeeders.size();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(int k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+
+                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                {
+                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                    currentFeeder->setRecentlyControlledFlag(TRUE);
+                }
+            }
+        }
 
         if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
         {
@@ -1556,34 +1662,37 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                    {
-                        currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                        if( currentCapBank->getStatusPointId() > 0 )
+                    if (bankId == currentCapBank->getControlDeviceId())
+                    {             
+                        if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                            currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                            if( currentCapBank->getStatusPointId() > 0 )
+                            {
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                                              << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                            }
                         }
-                        else
+                        else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                                          << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
-                        }
-                    }
-                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-                    {
-                        currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                        if( currentCapBank->getStatusPointId() > 0 )
-                        {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
-                                          << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                            currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                            if( currentCapBank->getStatusPointId() > 0 )
+                            {
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                                ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                                              << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                            }
                         }
                     }
                 }
@@ -1728,6 +1837,9 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     RWOrdered& pointChanges = multiDispatchMsg->getData();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    RWOrdered& ccEvents = eventMulti->getData();
+
 
     LONG paoId = _command->getId();
     BOOL found = FALSE;
@@ -1753,6 +1865,10 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     if( currentCapBank->getOperationAnalogPointId() > 0 )
                     {
                         pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+
+
+                        //currentFeeder->setEventSequence(currentFeeder->getEventSequence() + 1);
+                        ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                     }
                     else
                     {
@@ -1782,6 +1898,8 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+
+                            ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                         }
                         else
                         {
@@ -1807,6 +1925,8 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
                             {
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+
+                                ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentFeeder->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
                             }
                             else
                             {
@@ -1844,6 +1964,10 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 		{
 			CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
 		}
+        if (ccEvents.entries() > 0)                                                  
+        {
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
     }
     else
     {

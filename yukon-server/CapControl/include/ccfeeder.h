@@ -142,6 +142,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getDecimalPlaces() const;
     BOOL getPeakTimeFlag() const;
     
+    BOOL getPorterRetFailFlag() const;
+    LONG getEventSequence() const;
+    
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
@@ -205,21 +208,23 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setParentName(const string& parentName);
     CtiCCFeeder& setDecimalPlaces(LONG decimalPlaces);
     CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
+    CtiCCFeeder& setPorterRetFailFlag(BOOL flag);
+    CtiCCFeeder& setEventSequence(LONG eventSeq);
 
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, string textInfo);
-    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
+    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
-    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
+    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    BOOL attemptToResendControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
+    BOOL attemptToResendControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages, LONG maxConfirmTime);
     BOOL checkMaxDailyOpCountExceeded();
 
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
@@ -228,8 +233,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
 
-    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
-    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
+    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
@@ -239,7 +244,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
 
-    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -339,6 +344,8 @@ private:
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
+    BOOL _porterRetFailFlag;
+    LONG   _eventSeq;
 
 
     //don't stream

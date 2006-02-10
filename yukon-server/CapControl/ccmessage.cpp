@@ -339,6 +339,102 @@ CtiMessage* CtiCCSubstationVerificationMsg::replicateMessage() const
 }
 
 
+
+/*===========================================================================
+    CtiCCEventLogMsg
+
+
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCEventLogMsg, CTICCEVENTLOG_ID )
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCEventLogMsg::~CtiCCEventLogMsg()
+{
+}
+
+/*LONG CtiCCEventLogMsg::getStrategy() const
+{
+    return _strategy;
+} */
+   
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> _logId
+         >> _timeStamp
+         >> _pointId
+         >> _subId
+         >> _feederId
+         >> _eventType
+         >> _seqId
+         >> _value
+         >> _text
+         >> _userName;
+
+      return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm << _logId    
+         << _timeStamp
+         << _pointId  
+         << _subId    
+         << _feederId 
+         << _eventType
+         << _seqId    
+         << _value    
+         << _text     
+         << _userName;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
+{
+    if( this != &right )
+    {
+        _logId     = right._logId;    
+        _timeStamp = right._timeStamp;
+        _pointId   = right._pointId;  
+        _subId     = right._subId;    
+        _feederId  = right._feederId; 
+        _eventType = right._eventType;
+        _seqId     = right._seqId;    
+        _value     = right._value;    
+        _text      = right._text;     
+        _userName  = right._userName;
+
+    }
+
+    return *this;
+}
+
+
+CtiMessage* CtiCCEventLogMsg::replicateMessage() const
+{
+    return new CtiCCEventLogMsg(*this);
+}
+
+
 /*===========================================================================
     CtiCCSubstationBusMsg
 ===========================================================================*/

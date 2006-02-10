@@ -223,6 +223,10 @@ int CtiCCSubstationBusStore::getNbrOfSubBusesWithPointID(long point_id)
 {
     return _pointid_subbus_map.count(point_id);
 }
+int CtiCCSubstationBusStore::getNbrOfSubsWithAltSubID(long altSubId)
+{
+    return _altsub_sub_idmap.count(altSubId);
+}
 int CtiCCSubstationBusStore::getNbrOfFeedersWithPointID(long point_id)
 {
     return _pointid_feeder_map.count(point_id);
@@ -271,6 +275,13 @@ long CtiCCSubstationBusStore::findFeederIDbyCapBankID(long capBankId)
 {
     map< long, long >::iterator iter = _capbank_feeder_map.find(capBankId);
     return (iter == _capbank_feeder_map.end() ? NULL : iter->second);
+}
+
+long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId)
+{ 
+    multimap< long, long >::iterator iter = _altsub_sub_idmap.find(altSubId);
+    return (iter == _altsub_sub_idmap.end() ? NULL : iter->second);
+
 }
 
 /*---------------------------------------------------------------------------
@@ -408,6 +419,8 @@ void CtiCCSubstationBusStore::reset()
         map< long, long > temp_capbank_feeder_map;
         map< long, long > temp_feeder_subbus_map;
 
+        multimap<long, long> temp_altsub_sub_idmap;
+
         list <long> orphanCaps;
         list <long> orphanFeeders;
 
@@ -479,7 +492,7 @@ void CtiCCSubstationBusStore::reset()
                     *******  Loading SubBuses                            *******
                     ************************************************************/
 
-                    reloadSubBusFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_subbus_map, &temp_point_subbus_map, &tempCCSubstationBuses);
+                    reloadSubBusFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_subbus_map, &temp_point_subbus_map, &temp_altsub_sub_idmap, &tempCCSubstationBuses);
 
                     /***********************************************************
                     *******  Loading Feeders                             *******
@@ -652,11 +665,22 @@ void CtiCCSubstationBusStore::reset()
                         if (!_capbank_feeder_map.empty())
                             _capbank_feeder_map.clear();
 
+                        if (!_altsub_sub_idmap.empty())
+                            _altsub_sub_idmap.clear();
 
-                        _paobject_subbus_map = temp_paobject_subbus_map;
-                        _paobject_feeder_map = temp_paobject_feeder_map;
-                        _paobject_capbank_map = temp_paobject_capbank_map;
 
+                        try
+                        {
+                            _altsub_sub_idmap = temp_altsub_sub_idmap;
+                            _paobject_subbus_map = temp_paobject_subbus_map;
+                            _paobject_feeder_map = temp_paobject_feeder_map;
+                            _paobject_capbank_map = temp_paobject_capbank_map;
+                         }
+                        catch (...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
                         try
                         {
                             _strategyid_strategy_map = temp_strategyid_strategy_map;
@@ -666,9 +690,17 @@ void CtiCCSubstationBusStore::reset()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        _pointid_subbus_map = temp_point_subbus_map;
-                        _pointid_feeder_map = temp_point_feeder_map;
-                        _pointid_capbank_map = temp_point_capbank_map;
+                        try
+                        {
+                            _pointid_subbus_map = temp_point_subbus_map;
+                            _pointid_feeder_map = temp_point_feeder_map;
+                            _pointid_capbank_map = temp_point_capbank_map;
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
                         try
                         {
                             _feeder_subbus_map = temp_feeder_subbus_map;
@@ -2182,6 +2214,9 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
+
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+              
         }
         currentSubstationBus->setCurrentDailyOperations(0);
 
@@ -2454,6 +2489,62 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
     }
 }
 
+
+
+
+/*---------------------------------------------------------------------------
+    UpdateCapBankInDB
+
+    Updates multiple fields in tables associated with cap banks in the
+    database.
+---------------------------------------------------------------------------*/
+bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    {
+        INT logId = CCEventLogIdGen();
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+
+
+                RWDBTable ccEventLogTable = getDatabase().table("cceventlog");
+               RWDBInserter inserter = ccEventLogTable.inserter();
+
+                inserter << logId
+                         << msg->getPointId()
+                         << CtiTime(msg->getTimeStamp())
+                         << msg->getSubId()
+                         << msg->getFeederId()
+                         << msg->getEventType()
+                         << msg->getSeqId()
+                         << msg->getValue()
+                         << msg->getText()
+                         << msg->getUserName();
+
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+            }
+           
+            inserter.execute( conn );
+
+            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+            }
+
+            return inserter.status().isValid();
+        }
+    }
+}
+
+
+
+
+
+
+
 /*---------------------------------------------------------------------------
     reloadStrategyFromDataBase
 
@@ -2609,6 +2700,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
 void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                                        multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
+                                                       multimap<long, long> *altsub_sub_idmap,
                                                        CtiCCSubstationBus_vec *cCSubstationBuses )
 {
     CtiCCSubstationBusPtr subBusToUpdate = NULL;
@@ -2655,7 +2747,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["currentwattloadpointid"]
                         << capControlSubstationBusTable["maplocationid"]
                         << capControlSubstationBusTable["strategyid"]
-                        << capControlSubstationBusTable["currentvoltloadpointid"];
+                        << capControlSubstationBusTable["currentvoltloadpointid"]
+                        << capControlSubstationBusTable["AltSubID"] 
+                        << capControlSubstationBusTable["SwitchPointID"] 
+                        << capControlSubstationBusTable["DualBusEnabled"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
@@ -2696,6 +2791,17 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentVoltLoadPointId(), currentCCSubstationBus));
                                 currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getCurrentVoltLoadPointId());
                             }
+                            if (currentCCSubstationBus->getSwitchOverPointId() > 0 )
+                            {
+                                pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getSwitchOverPointId(), currentCCSubstationBus));
+                                currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getSwitchOverPointId());
+                            }
+
+                            if (currentCCSubstationBus->getDualBusEnable() && 
+                                currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPAOId())
+                            {
+                                altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPAOId()));
+                            }
 
                             if (subBusId > 0)
                             {               
@@ -2721,6 +2827,55 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
+                        //while (!dualBusEnabledSubs.empty())
+                        if (!altsub_sub_idmap->empty())
+                        {
+                            multimap <long, long>::iterator iter = altsub_sub_idmap->begin();
+                            while (iter != altsub_sub_idmap->end())
+                            {
+                                long dualBusId  = iter->second;
+                                iter++;
+
+                                if (paobject_subbus_map->find(dualBusId) != paobject_subbus_map->end())
+                                {
+                                    CtiCCSubstationBusPtr dualBus = NULL;
+                                    currentCCSubstationBus = paobject_subbus_map->find(dualBusId)->second;
+                                    if (paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId()) != paobject_subbus_map->end())
+                                    {
+                                        dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
+                                        if (!stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                                        {
+                                            if (dualBus->getCurrentVarLoadPointId() > 0)
+                                            {
+                                                pointid_subbus_map->insert(make_pair(dualBus->getCurrentVarLoadPointId(), currentCCSubstationBus ));
+                                                currentCCSubstationBus->getPointIds()->push_back(dualBus->getCurrentVarLoadPointId());
+                                            }
+                                            else
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPAOName()<<" will NOT operate in Dual Mode."<<endl;
+                                                dout << "   Alternate Sub: "<<dualBus->getPAOName()<<" does not have a VAR Point ID attached."<< endl;
+                                            }
+                                        }
+                                        else if(!stringCompareIgnoreCase(currentCCSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits) )
+                                        {   
+                                            if (dualBus->getCurrentVoltLoadPointId() > 0)
+                                            {
+                                                pointid_subbus_map->insert(make_pair(dualBus->getCurrentVoltLoadPointId(), currentCCSubstationBus));
+                                                currentCCSubstationBus->getPointIds()->push_back(dualBus->getCurrentVoltLoadPointId());
+                                            }
+                                            else
+                                            {
+                                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                 dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPAOName()<<" will NOT operate in Dual Mode."<<endl;
+                                                 dout << "   Alternate Sub: "<<dualBus->getPAOName()<<" does not have a Volt Point ID attached."<< endl;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                     {
                         RWDBSelector selector = db.selector();
@@ -2789,7 +2944,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["currverifycborigstate"]
                         << dynamicCCSubstationBusTable["verificationstrategy"]
                         << dynamicCCSubstationBusTable["cbinactivitytime"]
-                        << dynamicCCSubstationBusTable["currentvoltpointvalue"];
+                        << dynamicCCSubstationBusTable["currentvoltpointvalue"]
+                        << dynamicCCSubstationBusTable["switchPointStatus"]
+                        << dynamicCCSubstationBusTable["altSubControlValue"]
+                        << dynamicCCSubstationBusTable["eventSeq"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -3144,7 +3302,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                 currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
                         }
 
-                        if (currentCCFeeder->getStrategyId() == 0 && currentCCSubstationBus != NULL)
+                        if (/*currentCCFeeder->getStrategyId() == 0 && */currentCCSubstationBus != NULL)
                         {
 
                             CtiCCStrategyPtr newStrategy = NULL;
@@ -3274,7 +3432,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["currentvarpointquality"]
                     << dynamicCCFeederTable["waivecontrolflag"]
                     << dynamicCCFeederTable["additionalflags"] 
-                    << dynamicCCFeederTable["currentvoltpointvalue"];
+                    << dynamicCCFeederTable["currentvoltpointvalue"]
+                    << dynamicCCFeederTable["eventSeq"];
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);
@@ -4014,6 +4173,54 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 _pointid_subbus_map.erase(pointid);
             }
             subToDelete->getPointIds()->clear();
+
+            //DUAL BUS Alt Sub deletion...
+            try
+            {
+                //Deleting subs that have this sub as altSub
+                while (_altsub_sub_idmap.find(subBusId) != _altsub_sub_idmap.end())
+                {
+                    long tempSubId = _altsub_sub_idmap.find(subBusId)->second;
+                    CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
+                    if (tempSub != NULL)
+                    {
+                        if (!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::KVARControlUnits))
+                        {
+                            LONG pointid = subToDelete->getCurrentVarLoadPointId();
+                            _pointid_subbus_map.erase(pointid);
+                            tempSub->getPointIds()->remove(pointid);
+                        }
+                        else if (!!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::VoltControlUnits))
+                        {
+                            LONG pointid = subToDelete->getCurrentVoltLoadPointId();
+                            _pointid_subbus_map.erase(pointid);
+                            tempSub->getPointIds()->remove(pointid);
+                        }
+                    }
+                    _altsub_sub_idmap.erase(subBusId);
+                }
+                //Deleting this sub from altSubMap
+                if (subToDelete->getAltDualSubId() != subToDelete->getPAOId())
+                {
+                    multimap <long, long>::iterator iter = _altsub_sub_idmap.begin();
+                    while (iter != _altsub_sub_idmap.end())
+                    {
+                        if (iter->second == subToDelete->getPAOId())
+                        {
+                            _altsub_sub_idmap.erase(iter);
+                            iter = _altsub_sub_idmap.end();
+                        }
+                        iter++;
+                    }
+               
+                }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
             try
             {
                 string subBusName = subToDelete->getPAOName();
@@ -4260,7 +4467,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         }
                         else  // ChangeTypeAdd, ChangeTypeUpdate
                         {
-                            reloadSubBusFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, &_paobject_subbus_map, &_pointid_subbus_map, _ccSubstationBuses);
+                            reloadSubBusFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, &_paobject_subbus_map, &_pointid_subbus_map, &_altsub_sub_idmap, _ccSubstationBuses);
                             
                         }
                         break;

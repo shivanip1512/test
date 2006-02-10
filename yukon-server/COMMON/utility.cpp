@@ -386,6 +386,39 @@ INT PAOIdGen()
     return ++id;
 }
 
+
+INT CCEventLogIdGen()
+{
+    static BOOL init_id = FALSE;
+    static INT id = 0;
+    static RWMutexLock   mux;
+    static const CHAR sql[] = "SELECT MAX(LOGID) FROM CCEVENTLOG";
+
+
+    if(!init_id)
+    {   // Make sure all objects that that store results
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        // are out of scope when the release is called
+        RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+        if(rdr() && rdr.isValid())
+        {
+            rdr >> id;
+        }
+        else
+        {
+            RWMutexLock::LockGuard  guard(coutMux);
+            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        init_id = TRUE;
+    }   // Temporary results are destroyed to free the connection
+
+    RWMutexLock::LockGuard guard(mux);
+    return(++id);
+}
+
 /* Routine to calculate time a VHF shed will take */
 INT VCUTime (OUTMESS *OutMessage, PULONG Seconds)
 {

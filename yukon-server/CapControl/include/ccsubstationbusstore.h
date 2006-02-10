@@ -99,10 +99,13 @@ public:
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
 
+    bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
+
     CtiCCSubstationBusPtr findSubBusByPointID(long point_id, int index);
     CtiCCFeederPtr findFeederByPointID(long point_id, int index);
     CtiCCCapBankPtr findCapBankByPointID(long point_id, int index);
     int getNbrOfSubBusesWithPointID(long point_id);
+    int getNbrOfSubsWithAltSubID(long altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
@@ -114,6 +117,7 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
 
+    long findSubIDbyAltSubID(long altSubId);
 
     void insertItemsIntoMap(int mapType, long* first, long* second);
     void removeItemsFromMap(int mapType, long first);
@@ -138,6 +142,7 @@ public:
     void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
+                                  multimap<long, long> *altsub_sub_idmap, 
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
@@ -149,11 +154,9 @@ public:
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
 
-
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
-
 
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
@@ -234,6 +237,8 @@ private:
     map< long, long > _feeder_subbus_map; 
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
+
+    multimap< long, long > _altsub_sub_idmap;
 
     list <CC_DBRELOAD_INFO> _reloadList;
     list <long> _orphanedCapBanks;

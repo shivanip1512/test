@@ -57,6 +57,7 @@ public:
     void confirmCapBankControl(CtiRequestMsg* pilRequest);
     RWPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
     RWPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
+    RWPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
 
     void loadControlLoopCParms();
     
@@ -66,6 +67,8 @@ private:
     virtual ~CtiCapController();
 
     void controlLoop();
+    //void processCCEventMsgs(CtiMultiMsg* msgMulti);
+    void processCCEventMsgs();
 
     CtiConnection* getPILConnection();
     CtiConnection* getDispatchConnection();
@@ -79,6 +82,7 @@ private:
 
     static CtiCapController* _instance;
     RWThread _substationBusThread;
+    RWThread _ccEventMsgThread;
 
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;
@@ -86,6 +90,8 @@ private:
 
     RWPCPtrQueue< RWCollectable > _inClientMsgQueue;
     RWPCPtrQueue< RWCollectable > _outClientMsgQueue;
+
+    RWPCPtrQueue< RWCollectable > _ccEventMsgQueue;
 
     int control_loop_delay;
     int control_loop_inmsg_delay;

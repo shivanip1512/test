@@ -25,8 +25,21 @@
 #include "rwutil.h"
 
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
-typedef std::vector<CtiCCState*> CtiCCState_vec;
 typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
+typedef std::vector<CtiCCState*> CtiCCState_vec;
+enum CtiCCEventType_t
+{
+    capBankStateUpdate = 0,
+    capControlCommandSent,
+    capControlManualCommand,
+    capControlPointOutsideOperatingLimits,
+    capControlSetOperationCount,
+    capControlEnable,
+    capControlDisable,
+    capControlEnableVerification,
+    capControlDisableVerification,
+};
+
 
 class CtiCCMessage : public CtiMessage
 {
@@ -169,6 +182,56 @@ private:
     LONG _strategy;
     LONG _cbInactivityTime;
 
+};
+
+
+
+class CtiCCEventLogMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCEventLogMsg )
+
+public:
+
+    virtual ~CtiCCEventLogMsg();
+
+    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, string text, string userName ) : 
+        _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
+        _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName) { }; //provided for polymorphic persitence only
+
+    LONG getLogId() const { return _logId; };
+    CtiTime getTimeStamp() const { return _timeStamp; };
+    LONG getPointId() const {return _pointId; };
+    LONG getSubId() const { return _subId; };
+    LONG getFeederId() const { return _feederId; };
+    LONG getEventType() const { return _eventType; };
+    LONG getSeqId() const { return _seqId; };
+    LONG getValue() const { return _value; };
+    string getText() const { return _text; };
+    string getUserName() const { return _userName; };
+
+    void setLogId(LONG id) { _logId = id; return;};
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    virtual CtiMessage* replicateMessage() const;
+
+    CtiCCEventLogMsg& operator=(const CtiCCEventLogMsg& right);
+private:
+
+    CtiCCEventLogMsg() { }; //provided for polymorphic persitence only
+
+    LONG _logId; 
+    CtiTime _timeStamp; 
+    LONG _pointId;
+    LONG _subId;
+    LONG _feederId;
+    LONG _eventType;
+    LONG _seqId;
+    LONG _value;
+    string _text;
+    string _userName;
+    
 };
 
 
