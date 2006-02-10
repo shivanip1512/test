@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/05 21:05:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/10 16:18:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,8 @@ class IM_EX_MSG CtiConnection
 {
 public:
 
-    typedef  CtiFIFOQueue<CtiMessage> Que_t;
+    typedef  CtiQueue<CtiMessage, less<CtiMessage> > Que_t;
+    // typedef  CtiFIFOQueue<CtiMessage> Que_t;
 
 protected:
 
