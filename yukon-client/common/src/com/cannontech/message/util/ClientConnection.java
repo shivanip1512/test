@@ -122,7 +122,7 @@ public void connect() throws java.io.IOException
 /**
  * This method was created in VisualAge.
  */
-public void connect( long millis )
+public void connect( long millis ) throws java.io.IOException 
 {
 	connectWithoutWait();
 
@@ -528,6 +528,15 @@ public void removeMessageListener(MessageListener l) {
  * @param msg
  */
 protected void fireMessageEvent(Message msg) {
+
+	if( msg instanceof Command && ((Command)msg).getOperation() == Command.ARE_YOU_THERE )
+	{
+		// Only instances of com.cannontech.message.util.Command should
+		// get here and it should have a ARE_YOU_THERE operation
+		// echo it back so servers don't time out on us
+		write( msg );
+	}
+
 	MessageEvent e = new MessageEvent(this, msg);	
 	for(int i = messageListeners.size()-1; i >= 0; i--) {
 		MessageListener ml = (MessageListener) messageListeners.get(i);
