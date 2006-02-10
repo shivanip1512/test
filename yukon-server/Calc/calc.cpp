@@ -123,7 +123,7 @@ void CtiCalc::clearComponentDependencies( void )
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
 
         if ( componentPointPtr )
-		{
+        {
             if( componentPointPtr->removeDependent(_pointId) == 0 )
             {//There are no dependents left, no one cares about this guy!
                 pointStore->removePointElement( tmpComponent->getComponentPointId() );
@@ -156,8 +156,8 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
 
         bool solidTime = false;             // If time is "solid" all components are the same time stamp.
         int componentQuality, qualityFlag = 0;
-        CtiTime componentTime, 
-            minTime = CtiTime(YUKONEOT), 
+        CtiTime componentTime,
+            minTime = CtiTime(YUKONEOT),
             maxTime = rwEpoch;//TS FLAG
 
         /*
@@ -409,11 +409,13 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
         qualityFlag &= ~(1 << ManualQuality);
     }
 
+    /* 20060210 CGP - A constant component does not imply a constant result.
     if(qualityFlag & (1 << ConstantQuality) )
     {
         component_quality = ConstantQuality;
         qualityFlag &= ~(1 << ConstantQuality);
     }
+    */
 
     if(qualityFlag & (1 << NonUpdatedQuality) )
     {
