@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2006/01/16 18:45:14 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2006/02/13 17:24:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -556,7 +556,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPECBC7010;
     }
-    else if(rwsTemp == "cbc 7020")
+    else if(rwsTemp == "cbc 7020" || rwsTemp == "cbc 7022" || rwsTemp == "cbc 7023" || rwsTemp == "cbc 7024" || rwsTemp == "cbc 7030")
     {
         nRet = TYPECBC7020;
     }
