@@ -1,10 +1,6 @@
 package com.cannontech.stars.web.bean;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
@@ -59,7 +56,7 @@ public class InventoryBean {
 	public static final int HTML_STYLE_INVENTORY_SET = 8;
     public static final int HTML_STYLE_FILTERED_INVENTORY_SUMMARY = 9;
 	
-	private static final int DEFAULT_PAGE_SIZE = 20;
+	private static final int DEFAULT_PAGE_SIZE = 1000;
 	
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -277,8 +274,10 @@ public class InventoryBean {
     				}
     			}
     		}
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) {
-    			for (int i = 0; i < hardwares.size(); i++) {
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) 
+            {
+    			for (int i = 0; i < hardwares.size(); i++) 
+                {
     				LiteInventoryBase liteInv = (LiteInventoryBase)
     						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
     				
@@ -286,8 +285,52 @@ public class InventoryBean {
     					filteredHardwares.add( hardwares.get(i) );
     			}
     		}
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) {
-    			for (int i = 0; i < hardwares.size(); i++) {
+            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
+            {
+                List<Integer> warehousedInventory = new ArrayList();
+                
+                for (int i = 0; i < hardwares.size(); i++) 
+                {
+                    LiteInventoryBase liteInv = (LiteInventoryBase)
+                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                    
+                    warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
+                    
+                    for(int j = 0; j < warehousedInventory.size(); j++)
+                        if(liteInv.compareTo(warehousedInventory.get(j).intValue()) == 0)
+                            filteredHardwares.add( hardwares.get(i) );
+                }
+            }
+            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN)
+            {
+                for (int i = 0; i < hardwares.size(); i++) 
+                {
+                    LiteInventoryBase liteInv = (LiteInventoryBase)
+                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                    
+                    Integer serial = new Integer(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber());
+
+                    if(serial.intValue() >= specificFilterID.intValue())
+                        filteredHardwares.add( hardwares.get(i) );
+                }
+            }
+            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX)
+            {
+                for (int i = 0; i < hardwares.size(); i++) 
+                {
+                    LiteInventoryBase liteInv = (LiteInventoryBase)
+                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+               
+                Integer serial = new Integer(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber());
+
+                if(serial.intValue() <= specificFilterID.intValue())
+                    filteredHardwares.add( hardwares.get(i) );
+                }
+            }
+    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) 
+            {
+    			for (int i = 0; i < hardwares.size(); i++) 
+                {
     				LiteInventoryBase liteInv = (LiteInventoryBase)
     						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
     				
@@ -684,14 +727,14 @@ public class InventoryBean {
             htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
             htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='CheckAll' value='Check All (On Page)' onclick='checkAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='CheckAll' value='Check All On Page' onclick='checkAll()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All (On Page)' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All On Page' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
-            htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeAll(this.form)>").append(LINE_SEPARATOR);
-            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            /*htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeSelected()>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);*/
             htmlBuf.append("    <td>").append(LINE_SEPARATOR);
             if (referer != null)
                 htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
@@ -767,6 +810,11 @@ public class InventoryBean {
 		htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
         
+        //htmlBuf.append("function changeSelected() {").append(LINE_SEPARATOR);
+        //htmlBuf.append("  form.action.value = 'ManipulateInventoryResults';").append(LINE_SEPARATOR);
+        //htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
+        //htmlBuf.append("}").append(LINE_SEPARATOR);
+
         if((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
         {
             htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
