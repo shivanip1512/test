@@ -13,8 +13,8 @@
  	<%pageContext.setAttribute("filterDeviceConfig", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG).toString());%>
  	<%pageContext.setAttribute("filterDeviceMember", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER).toString());%>
  	<%pageContext.setAttribute("filterDeviceWarehouse", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE).toString());%>
- 	<%pageContext.setAttribute("filterDeviceZipCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ZIP_CODE).toString());%>
- 	<%pageContext.setAttribute("filterDeviceSerialRange", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE).toString());%>
+ 	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
+ 	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -39,6 +39,7 @@
 		<div align="center"> <br>
             <% String header = "FILTER CHOICES"; %>
             <%@ include file="include/SearchBar.jsp" %>
+    		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
     		<br clear="all">
     	</div>
     	
@@ -99,11 +100,12 @@
 	                            <option value="0"> <c:out value="(none)"/> </option>
 							</select>
 	                    </div>
-	                    <div id='<c:out value="${filterDeviceZipCode}"/>' style="display:none"> 
-	                    	<select id='<c:out value="${filterDeviceZipCode}"/>1' name='<c:out value="${filterDeviceZipCode}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
-							</select>
-	                    </div>
+	                    <div id='<c:out value="${filterDeviceSerialRangeMin}"/>' style="display:none"> 
+		                    <input id='<c:out value="${filterDeviceSerialRangeMin}"/>1' type="text" name='<c:out value="${filterDeviceSerialRangeMin}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
+	               		</div>
+	               		<div id='<c:out value="${filterDeviceSerialRangeMax}"/>' style="display:none"> 
+		                    <input id='<c:out value="${filterDeviceSerialRangeMax}"/>1' type="text" name='<c:out value="${filterDeviceSerialRangeMax}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
+	               		</div>
 	                </td>
 	           	</tr>
 			</table>
@@ -138,9 +140,9 @@
         	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
             	<tr>
                 	<td width="290" align="right"> 
-                    	<input type="submit" name="Submit" value="Submit To Inventory">
+                    	<input type="button" name="Submit" value="Submit To Inventory" onclick="prepareSubmit(this.form)">
                   	</td>
-                  	<td width="205"> 
+                  	<td width="205">  
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   	</td>
                   	<td width="75" align="right"> 
@@ -177,7 +179,6 @@
 			
 			selectedFilterType = '<c:out value="${filterDeviceType}"/>';
 			selectedFilter = "Device type: ";
-			selectedFilter += ": ";
 			selectedFilter += '<c:out value="${filterBean.defaultFilterSelection.entryText}"/>';
 			selectedFilterID = '<c:out value="${filterBean.defaultFilterSelection.entryID}"/>';
 		}
@@ -193,13 +194,33 @@
 			document.getElementById('<c:out value="${filterDeviceConfig}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceMember}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceWarehouse}"/>').style.display = "none";
- 			document.getElementById('<c:out value="${filterDeviceZipCode}"/>').style.display = "none";
+ 			document.getElementById('<c:out value="${filterDeviceSerialRangeMin}"/>').style.display = "none";
+ 			document.getElementById('<c:out value="${filterDeviceSerialRangeMax}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
-			filterBy += 1;
+			var comboID = filterBy + 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
-			selectedFilter += document.getElementById(filterBy).options[0].text;
+			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>')
+			{
+				selectedFilter += document.getElementById(comboID).value;
+			}
+			else
+			{
+				selectedFilter += document.getElementById(comboID).options[0].text;
+			}
 			
+		}
+		
+		function storeSerial(serialNum)
+		{
+			selectedFilterID = serialNum;
+			var type = document.MForm.FilterType;
+			var filterBy = selectedFilterType;
+			filterBy += 1;
+			var textField = document.getElementById(filterBy);
+			selectedFilter = type.options[type.selectedIndex].text;  
+			selectedFilter += ": ";
+			selectedFilter += textField.value;
 		}
 		
 		function selectFilter(filterID)
@@ -288,34 +309,47 @@
 				filters.selectedIndex = filters.options.length;
 				setContentChanged(true);
 			}
+			
+			curIdx = filterTexts.length;
 		}
 		
 		function deleteAllEntries(form) 
 		{
 			var filters = form.AssignedFilters;
-			if (filters.options.length > 1) 
+			if (filters.options.length > 0) 
 			{
 				if (!confirm("Are you sure you want to remove all filters?")) return;
 				for (idx = filters.options.length; idx >= 0; idx--)
 					filters.options.remove(idx);
 				filterTexts.splice(0, filterTexts.length);
-				selectionIDs.splice(idx, selectionIDs.length);
-				yukonDefIDs.splice(idx, yukonDefIDs.length);
+				selectionIDs.splice(0, selectionIDs.length);
+				yukonDefIDs.splice(0, yukonDefIDs.length);
 				filters.selectedIndex = 0;
 				setContentChanged(true);
 			}
+			
+			curIdx = filterTexts.length;
 		}
 		
 		function prepareSubmit(form) 
 		{
-			for (idx = 0; idx < filterTexts.length; idx++) 
+			if(filterTexts.length < 1)
 			{
-				var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
-				form.insertAdjacentHTML("beforeEnd", html);
-				html = '<input type="hidden" name="FilterTexts" value="' + filterTexts[idx] + '">';
-				form.insertAdjacentHTML("beforeEnd", html);
-				html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
-				form.insertAdjacentHTML("beforeEnd", html);
+				if(!confirm("You have not defined any filters!")) return;
+			}
+			else
+			{
+				
+				for (idx = 0; idx < filterTexts.length; idx++) 
+				{
+					var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
+					form.insertAdjacentHTML("beforeEnd", html);
+					html = '<input type="hidden" name="FilterTexts" value="' + filterTexts[idx] + '">';
+					form.insertAdjacentHTML("beforeEnd", html);
+					html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
+					form.insertAdjacentHTML("beforeEnd", html);
+				}
+				form.submit();
 			}
 		}
 	</script>
