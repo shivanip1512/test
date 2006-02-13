@@ -28,13 +28,14 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     _valid = TRUE;
     _pointId = pointId;
 
-    if( !stringCompareIgnoreCase(qualityFlag, "n") )
+    if( !stringCompareIgnoreCase(qualityFlag, "y") )
     {
+        //if "Y" do not calculate, always return NORMAL.
         _calculateQuality = false;
     }
     else
     {
-        _calculateQuality = true;//calc unless set to n or N
+        _calculateQuality = true;
     }
 
     if( (!stringCompareIgnoreCase(updateType,UpdateType_Periodic))
