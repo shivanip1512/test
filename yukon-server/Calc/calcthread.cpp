@@ -573,12 +573,12 @@ void CtiCalculateThread::appendCalcPoint( long pointID )
     tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
 }
 
-bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval )
+bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval, string &qualityFlag )
 {
     bool inserted = false;
 
     CtiCalc *newPoint;
-    newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval );
+    newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval, qualityFlag );
     switch( newPoint->getUpdateType( ) )
     {
     case periodic:

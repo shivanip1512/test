@@ -65,7 +65,7 @@ public:
     RWMutexLock outboxMux;
 
     void calcThread( void );
-    bool appendPoint( long pointID, string &updateType, int updateInterval );
+    bool appendPoint( long pointID, string &updateType, int updateInterval, string &qualityFlag );
     void appendPointComponent( long pointID, string &componentType, long componentPointID,
                                string &operationType, double constantValue, string &functionName );
     void appendCalcPoint( long pointID );

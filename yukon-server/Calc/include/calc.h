@@ -20,7 +20,8 @@ private:
     int                  _updateInterval;
     long                 _pointId;
     BOOL                 _valid;
-    CtiTime               _pointCalcWindowEndTime;
+    bool                 _calculateQuality;
+    CtiTime              _pointCalcWindowEndTime;
 
     // text from the database
     static const CHAR * UpdateType_Periodic;
@@ -39,10 +40,10 @@ public:
     CtiCalc( ) :
     _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
 
-    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) )
+    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true)
     {}
 
-    CtiCalc( long pointId, const string &updateType, int updateInterval );
+    CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag );
 
     ~CtiCalc( )  
     {  

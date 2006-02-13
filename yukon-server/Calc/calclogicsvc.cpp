@@ -1082,7 +1082,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
         selector << calcBaseTable["POINTID"]
         << calcBaseTable["UPDATETYPE"]
-        << calcBaseTable["PERIODICRATE"];
+        << calcBaseTable["PERIODICRATE"]
+        << calcBaseTable["QUALITYFLAG"];
 
         selector.from( calcBaseTable );
 
@@ -1099,16 +1100,18 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             int updateinterval;
             long pointid;
             string updatetype;
+            string qualityflag;
 
             //  grab the point information from the database and stuff it into our class
             rdr["POINTID"] >> pointid;
             rdr["UPDATETYPE"] >> updatetype;
             rdr["PERIODICRATE"] >> updateinterval;
+            rdr["QUALITYFLAG"] >> qualityflag;
             pointIdList.push_back(pointid);
             calcThread->appendCalcPoint( pointid );
 
             // put the collection in the correct collection based on type
-            if( calcThread->appendPoint( pointid, updatetype, updateinterval ) )
+            if( calcThread->appendPoint( pointid, updatetype, updateinterval, qualityflag ) )
             {
                 ++CalcCount;
 

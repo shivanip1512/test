@@ -23,10 +23,19 @@ const CHAR * CtiCalc::UpdateType_Historical = "Historical";
 const CHAR * CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
 const CHAR * CtiCalc::UpdateType_Constant   = "Constant";
 
-CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval )
+CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag )
 {
     _valid = TRUE;
     _pointId = pointId;
+
+    if( !stringCompareIgnoreCase(qualityFlag, "n") )
+    {
+        _calculateQuality = false;
+    }
+    else
+    {
+        _calculateQuality = true;//calc unless set to n or N
+    }
 
     if( (!stringCompareIgnoreCase(updateType,UpdateType_Periodic))
         && (updateInterval > 0) )
@@ -403,34 +412,37 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
 {
     int component_quality = NormalQuality;
 
-    if(qualityFlag & (1 << ManualQuality) )
+    if( _calculateQuality )
     {
-        component_quality = ManualQuality;
-        qualityFlag &= ~(1 << ManualQuality);
-    }
-
-    /* 20060210 CGP - A constant component does not imply a constant result.
-    if(qualityFlag & (1 << ConstantQuality) )
-    {
-        component_quality = ConstantQuality;
-        qualityFlag &= ~(1 << ConstantQuality);
-    }
-    */
-
-    if(qualityFlag & (1 << NonUpdatedQuality) )
-    {
-        component_quality = NonUpdatedQuality;
-    }
-    else if(qualityFlag & ~(1 << NormalQuality))    // There is a bit set other than Normal or NonUpdated.
-    {
-        component_quality = QuestionableQuality;
-    }
-
-    if(getUpdateType() == periodicPlusUpdate)
-    {
-        if(component_quality == NormalQuality && maxTime.seconds() - minTime.seconds() > getUpdateInterval())
+        if(qualityFlag & (1 << ManualQuality) )
+        {
+            component_quality = ManualQuality;
+            qualityFlag &= ~(1 << ManualQuality);
+        }
+    
+        /* 20060210 CGP - A constant component does not imply a constant result.
+        if(qualityFlag & (1 << ConstantQuality) )
+        {
+            component_quality = ConstantQuality;
+            qualityFlag &= ~(1 << ConstantQuality);
+        }
+        */
+    
+        if(qualityFlag & (1 << NonUpdatedQuality) )
+        {
+            component_quality = NonUpdatedQuality;
+        }
+        else if(qualityFlag & ~(1 << NormalQuality))    // There is a bit set other than Normal or NonUpdated.
         {
             component_quality = QuestionableQuality;
+        }
+    
+        if(getUpdateType() == periodicPlusUpdate)
+        {
+            if(component_quality == NormalQuality && maxTime.seconds() - minTime.seconds() > getUpdateInterval())
+            {
+                component_quality = QuestionableQuality;
+            }
         }
     }
 
