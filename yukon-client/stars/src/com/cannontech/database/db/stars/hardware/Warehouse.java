@@ -5,6 +5,8 @@ import com.cannontech.database.db.DBPersistent;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.common.util.CtiUtilities;
 
 public class Warehouse extends DBPersistent {
@@ -175,6 +177,30 @@ public static ArrayList getAllWarehousesForEnergyCompany(int ecID)
     return warehouses;
 }
 
-
+public static List<Integer> getAllInventoryInAWarehouse(int warehouseID)
+{
+    List<Integer> inventory = new ArrayList();
+    
+    SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM INVENTORYTOWAREHOUSEMAPPING WHERE WAREHOUSEID = " + warehouseID, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                inventory.add((new Integer(stmt.getRow(i)[0].toString())));
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return inventory;
+}
 
 }
