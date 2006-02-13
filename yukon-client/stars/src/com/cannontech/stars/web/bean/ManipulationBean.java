@@ -27,6 +27,12 @@ public class ManipulationBean
     private List<ServiceCompany> availableServiceCompanies;
     private YukonSelectionList availableDeviceStates;
     private List<Warehouse> availableWarehouses;
+    private YukonListEntry defaultActionSelection;
+    
+    private int failures = 0;
+    private ArrayList failedSerialNumbers = null;
+    private int successes = 0;
+    private List<String> actionsApplied = null;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -87,4 +93,41 @@ public class ManipulationBean
             availableWarehouses = energyCompany.getAllWarehousesDownward();
         return availableWarehouses;
     }   
+    
+    public YukonListEntry getDefaultActionSelection() {
+        defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+        return defaultActionSelection;
+    }
+
+    public List<String> getActionsApplied() {
+        return actionsApplied;
+    }
+
+    public void setActionsApplied(List<String> actionsApplied) {
+        this.actionsApplied = actionsApplied;
+    }
+
+    public List<String> getFailedSerialNumbers() {
+        return failedSerialNumbers;
+    }
+
+    public void setFailedSerialNumbers(ArrayList failedSerialNumbers) {
+        this.failedSerialNumbers = failedSerialNumbers;
+    }
+
+    public int getFailures() {
+        return failures;
+    }
+
+    public void setFailures(int failures) {
+        this.failures = failures;
+    }
+
+    public int getSuccesses() {
+        return successes;
+    }
+
+    public void setSuccesses(int successes) {
+        this.successes = successes;
+    }
 }
