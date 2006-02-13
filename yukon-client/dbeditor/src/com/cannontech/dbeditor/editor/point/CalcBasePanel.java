@@ -21,6 +21,7 @@ public class CalcBasePanel extends com.cannontech.common.gui.util.DataInputPanel
 	private javax.swing.JLabel ivjJLabelDecimalPositons = null;
 	private javax.swing.JPanel ivjJPanelArchive = null;
 	private javax.swing.JPanel ivjJPanelHolder = null;
+    private javax.swing.JCheckBox ivjJCheckboxCalcQual = null;
 /**
  * Constructor
  */
@@ -541,6 +542,32 @@ private javax.swing.JLabel getUpdateTypeLabel() {
 	}
 	return ivjUpdateTypeLabel;
 }
+
+/**
+ * Return the Calculate Qualities property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getJCheckboxCalcQual() {
+    if (ivjJCheckboxCalcQual == null) {
+        try {
+            ivjJCheckboxCalcQual = new javax.swing.JCheckBox();
+            ivjJCheckboxCalcQual.setName("CalcQualCheckbox");
+            ivjJCheckboxCalcQual.setFont(new java.awt.Font("dialog", 0, 14));
+            ivjJCheckboxCalcQual.setText("Force Quality Normal");
+            ivjJCheckboxCalcQual.setSelected(false);
+            
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjJCheckboxCalcQual;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -562,6 +589,14 @@ public Object getValue(Object val)
 
 	calcPoint.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
 	calcPoint.getCalcBase().setPeriodicRate(CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
+    
+    if( getJCheckboxCalcQual().isSelected() )
+    {
+        calcPoint.getCalcBase().setCalculateQuality('Y');
+    }else 
+    {
+        calcPoint.getCalcBase().setCalculateQuality('N');
+    }
 
 	calcPoint.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
 	calcPoint.getPointUnit().setUomID( new Integer(uOfMeasureID) );
@@ -624,7 +659,7 @@ private void initialize() {
 		constraintsUpdateTypeLabel.gridx = 1; constraintsUpdateTypeLabel.gridy = 3;
 		constraintsUpdateTypeLabel.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsUpdateTypeLabel.ipadx = 1;
-		constraintsUpdateTypeLabel.insets = new java.awt.Insets(5, 6, 34, 3);
+		constraintsUpdateTypeLabel.insets = new java.awt.Insets(5, 6, 9, 3);
 		add(getUpdateTypeLabel(), constraintsUpdateTypeLabel);
 
 		java.awt.GridBagConstraints constraintsUpdateTypeComboBox = new java.awt.GridBagConstraints();
@@ -633,14 +668,14 @@ private void initialize() {
 		constraintsUpdateTypeComboBox.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsUpdateTypeComboBox.weightx = 1.0;
 		constraintsUpdateTypeComboBox.ipadx = -2;
-		constraintsUpdateTypeComboBox.insets = new java.awt.Insets(2, 4, 31, 5);
+		constraintsUpdateTypeComboBox.insets = new java.awt.Insets(2, 4, 6, 5);
 		add(getUpdateTypeComboBox(), constraintsUpdateTypeComboBox);
 
 		java.awt.GridBagConstraints constraintsPeriodicRateLabel = new java.awt.GridBagConstraints();
 		constraintsPeriodicRateLabel.gridx = 3; constraintsPeriodicRateLabel.gridy = 3;
 		constraintsPeriodicRateLabel.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsPeriodicRateLabel.ipadx = 6;
-		constraintsPeriodicRateLabel.insets = new java.awt.Insets(5, 5, 34, 1);
+		constraintsPeriodicRateLabel.insets = new java.awt.Insets(5, 5, 9, 1);
 		add(getPeriodicRateLabel(), constraintsPeriodicRateLabel);
 
 		java.awt.GridBagConstraints constraintsPeriodicRateComboBox = new java.awt.GridBagConstraints();
@@ -649,18 +684,29 @@ private void initialize() {
 		constraintsPeriodicRateComboBox.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsPeriodicRateComboBox.weightx = 1.0;
 		constraintsPeriodicRateComboBox.ipadx = -13;
-		constraintsPeriodicRateComboBox.insets = new java.awt.Insets(2, 1, 31, 4);
+		constraintsPeriodicRateComboBox.insets = new java.awt.Insets(2, 1, 6, 4);
 		add(getPeriodicRateComboBox(), constraintsPeriodicRateComboBox);
 
 		java.awt.GridBagConstraints constraintsJPanelHolder = new java.awt.GridBagConstraints();
 		constraintsJPanelHolder.gridx = 1; constraintsJPanelHolder.gridy = 1;
-		constraintsJPanelHolder.gridwidth = 4;
+        constraintsJPanelHolder.gridwidth = 4;
 		constraintsJPanelHolder.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelHolder.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelHolder.weightx = 1.0;
 		constraintsJPanelHolder.weighty = 1.0;
 		constraintsJPanelHolder.insets = new java.awt.Insets(3, 4, 2, 6);
 		add(getJPanelHolder(), constraintsJPanelHolder);
+        
+        java.awt.GridBagConstraints constraintsJCheckboxCalcQaul = new java.awt.GridBagConstraints();
+        constraintsJCheckboxCalcQaul.gridx = 1; constraintsJCheckboxCalcQaul.gridy = 4;
+        constraintsJCheckboxCalcQaul.gridwidth = 4;
+        constraintsJCheckboxCalcQaul.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsJCheckboxCalcQaul.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsJCheckboxCalcQaul.weightx = 1.0;
+        constraintsJCheckboxCalcQaul.weighty = 1.0;
+        constraintsJCheckboxCalcQaul.insets = new java.awt.Insets(0, 0, 0, 0);
+        add(getJCheckboxCalcQual(), constraintsJCheckboxCalcQaul);
+        
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -830,7 +876,15 @@ public void setValue(Object val) {
 	}
 
 	getDecimalPlacesSpinner().setValue( calcPoint.getPointUnit().getDecimalPlaces() );
-
+    if( calcPoint.getCalcBase().getCalculateQuality() == 'Y' || 
+            calcPoint.getCalcBase().getCalculateQuality() == 'y')
+    {
+        getJCheckboxCalcQual().setSelected(true);
+    }else
+    {
+        getJCheckboxCalcQual().setSelected(false);
+    }
+    
 }
 /**
  * Comment

@@ -8,6 +8,7 @@ public class CalcBase extends com.cannontech.database.db.DBPersistent {
 	private Integer pointID = null;
 	private String updateType = null;
 	private Integer periodicRate = null;
+    private char calculateQuality = 'N';
 
 	private static final String tableName = "CalcBase";
 /**
@@ -15,22 +16,31 @@ public class CalcBase extends com.cannontech.database.db.DBPersistent {
  */
 public CalcBase() {
 	super();
-	initialize( null, null, null );
+	initialize( null, null, null, 'N' );
 }
 /**
  * Point constructor comment.
  */
 public CalcBase(Integer pointID) {
 	super();
-	initialize(pointID, null, null );
+	initialize(pointID, null, null, 'N' );
 }
 /**
  * Point constructor comment.
  */
 public CalcBase(Integer pointID, String updateType, Integer periodicRate ) {
 	super();
-	initialize(pointID, updateType, periodicRate);
+	initialize(pointID, updateType, periodicRate, 'N');
 }
+
+/**
+ * Point constructor comment.
+ */
+public CalcBase(Integer pointID, String updateType, Integer periodicRate, char calcQual ) {
+    super();
+    initialize(pointID, updateType, periodicRate, calcQual);
+}
+
 /**
  * add method comment.
  */
@@ -66,6 +76,11 @@ public Integer getPointID() {
 public String getUpdateType() {
 	return updateType;
 }
+
+public char getCalculateQuality() {
+    return calculateQuality;
+}
+
 /**
  * This method was created in VisualAge.
  * @param pointType java.lang.String
@@ -78,17 +93,18 @@ public String getUpdateType() {
  * @param alarmClass java.lang.Integer
  * @param pseudoFlag java.lang.Character
  */
-public void initialize(Integer pointID, String updateType, Integer periodicRate ) {
+public void initialize(Integer pointID, String updateType, Integer periodicRate, char calcQaul ) {
 
 	setPointID( pointID ) ;
 	setUpdateType( updateType );
 	setPeriodicRate( periodicRate );
+    setCalculateQuality( calcQaul );
 }
 /**
  * retrieve method comment.
  */
 public void retrieve() throws java.sql.SQLException {
-	String selectColumns[] = { "UPDATETYPE", "PERIODICRATE" };
+	String selectColumns[] = { "UPDATETYPE", "PERIODICRATE", "QUALITYFLAG" };
 
 	String constraintColumns[] = { "POINTID" };
 	Object constraintValues[] = { getPointID() };
@@ -125,12 +141,17 @@ public void setPointID(Integer newValue) {
 public void setUpdateType(String newValue) {
 	this.updateType = newValue;
 }
+
+public void setCalculateQuality(char newValue){
+    this.calculateQuality = newValue;
+}
+
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
-	String setColumns[] = { "UPDATETYPE", "PERIODICRATE" };
-	Object setValues[]= { getUpdateType(), getPeriodicRate() };
+	String setColumns[] = { "UPDATETYPE", "PERIODICRATE", "QUALITYFLAG" };
+	Object setValues[]= { getUpdateType(), getPeriodicRate(), getCalculateQuality() };
 
 	String constraintColumns[] = { "POINTID" };
 	Object constraintValues[] = { getPointID() };
