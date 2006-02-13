@@ -21,6 +21,7 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -46,6 +47,8 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	ArrayList hardwareSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
+    
+    ArrayList failedSerialNumbers = new ArrayList();
 	
     public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, ArrayList selectedInventory, Integer newDevTypeID,
         Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, HttpServletRequest request)
@@ -80,18 +83,18 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
-			if (status == STATUS_FINISHED && numFailure == 0) {
-				if (invenStatus != null)
-					invenStatus = "Failures detected.  The remainder of the hardware entries";
-				else
+            if (status == STATUS_FINISHED && numFailure == 0) {
+                if (invenStatus != null)
+                    invenStatus = "Selected hardware entries";
+                else
                     invenStatus = "All hardware entries";
-				return invenStatus + " have been updated successfully.";
-			}
-			else
-				return numSuccess + " of " + numToBeUpdated + " hardware entries have been updated.";
-		}
-		else
-			return "Updating hardware entries in selected inventory...";
+                return invenStatus + " have been updated successfully.";
+            }
+            else
+                return numSuccess + " of " + numToBeUpdated + " hardware entries have been updated.";
+        }
+        else
+            return "Updating hardware entries in inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -103,8 +106,9 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 		
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		
-		ArrayList descendants = ECUtils.getAllDescendants( currentCompany );
+        ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean"); 
+        
+        ArrayList descendants = ECUtils.getAllDescendants( currentCompany );
         ArrayList hwList = selectedInventory;
         /*boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();*/
@@ -161,7 +165,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
 				StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
 				
-                if(newDevTypeID != null && hwDB.getLMHardwareTypeID().intValue() == newDevTypeID)
+                if(newDevTypeID != null && hwDB.getLMHardwareTypeID().intValue() != newDevTypeID)
                     devTypeChanged = true;
                 else
                     devTypeChanged = false;
@@ -215,6 +219,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 			catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
 				hardwareSet.add( liteHw );
+                failedSerialNumbers.add(liteHw.getManufacturerSerialNumber());
 				numFailure++;
 			}
 			
@@ -224,21 +229,25 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 			}
 		}
 		
-		if (invenStatus == null) invenStatus = "all selected inventory entries";
+		if (invenStatus == null) invenStatus = "Selected inventory entries";
 		String logMsg = "Inventory Altered:" + invenStatus + "updated.";
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_MASS_SELECTION, logMsg );
 		
 		status = STATUS_FINISHED;
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
+        mBean.setFailures(numFailure);
+        mBean.setSuccesses(numSuccess);
+        mBean.setFailedSerialNumbers(failedSerialNumbers);
+        session.setAttribute("manipBean", mBean);
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries updated successfully.</span><br>" +
 					"<span class='ErrorMsg'>" + numFailure + " hardware entries failed (listed below).<br>" +
-					"Those serial numbers may already exist with existing settings.</span><br>";
+					"Those serial numbers may already exist with specified settings.</span><br>";
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
+			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/InvenResultSet.jsp");
 			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}

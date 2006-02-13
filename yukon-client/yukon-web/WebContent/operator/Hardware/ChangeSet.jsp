@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<jsp:useBean id="manipBean" class="com.cannontech.stars.web.bean.ManipulationBean" scope="page"/>
+<jsp:useBean id="manipBean" class="com.cannontech.stars.web.bean.ManipulationBean" scope="session"/>
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -17,7 +17,7 @@
 	<c:set target="${manipBean}" property="currentUser" value="${currentUser}" />
  	
 	<div class="standardpurplesidebox"> 
-		<% String pageName = "Filter.jsp"; %>
+		<% String pageName = "ChangeSet.jsp"; %>
 		<%@ include file="include/Nav.jsp" %>
 	</div>
 
@@ -25,6 +25,8 @@
 		<div align="center"> <br>
             <% String header = "APPLY ACTIONS TO INVENTORY"; %>
             <%@ include file="include/SearchBar.jsp" %>
+            <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
     		<br clear="all">
     	</div>
     	
@@ -97,8 +99,9 @@
         	<br>
         	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
             	<tr>
-                	<td width="290" align="right"> 
-                    	<input type="submit" name="Submit" value="Apply to Selected Inventory">
+                	<td width="320" class="headeremphasis"> 
+                    	<c:out value="${inventoryBean.numberOfRecords}"/>
+						records selected from inventory.
                   	</td>
                   	<td width="205"> 
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
@@ -109,8 +112,7 @@
               	</tr>
               	<tr>
 					<td width="100%" class="headeremphasis">  
-						<c:out value="${inventoryBean.numberOfRecords}"/>
-						hardware records will be updated.
+						<input type="submit" name="Submit" value="Apply to Selected Inventory">
 					</td>
 				</tr>
         	</table>
@@ -129,6 +131,9 @@
 		
 		function init()
 		{
+			selectedAction = "Change Device Type: ";
+			selectedAction += '<c:out value="${manipBean.defaultActionSelection.entryText}"/>';
+			selectedActionID = '<c:out value="${manipBean.defaultActionSelection.entryID}"/>';
 		}
 		
 		function changeActionType(action) 
@@ -187,6 +192,8 @@
 				actions.selectedIndex = actions.options.length;
 				setContentChanged(true);
 			}
+			
+			curIdx = actionTexts.length;
 		}
 		
 		function deleteAllEntries(form) 
@@ -203,6 +210,8 @@
 				actions.selectedIndex = 0;
 				setContentChanged(true);
 			}
+			
+			curIdx = actionTexts.length;
 		}
 		
 		function prepareSubmit(form) 
