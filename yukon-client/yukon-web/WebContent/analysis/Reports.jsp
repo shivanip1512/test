@@ -310,7 +310,8 @@ function enableDates(value)
 				  		  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? 
 						  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
 					  </td>
-			   		  <% if(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel) {%>
+			   		  <% if( (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
+			   		  		  REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="startHour" id="startHourID">
 					    <% for (int i = 0; i < 24; i++) {
@@ -342,7 +343,9 @@ function enableDates(value)
 						  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? 
         		          "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
                 	  </td>
-					  <% if(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel) {%>
+					  <% if( (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
+			   		  		  REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
+
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="stopHour" id="stopHourID">
 					    <% for (int i = 0; i < 24; i++) {
