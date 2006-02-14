@@ -207,10 +207,12 @@
 			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>')
 			{
 				selectedFilter += document.getElementById(comboID).value;
+				selectedFilterID = 0; 
 			}
 			else
 			{
 				selectedFilter += document.getElementById(comboID).options[0].text;
+				selectedFilterID = document.getElementById(comboID).options[0].value; 
 			}
 			
 		}
