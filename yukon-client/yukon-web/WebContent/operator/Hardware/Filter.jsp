@@ -92,12 +92,16 @@
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceMember}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceMember}"/>1' name='<c:out value="${filterDeviceMember}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
+	                            <c:forEach var="energyCo" items="${filterBean.availableMembers}">
+									<option value='<c:out value="${energyCo.energyCompanyID}"/>'> <c:out value="${energyCo.name}"/> </option>
+								</c:forEach>
 							</select>
 	                    </div>
 	                   	<div id='<c:out value="${filterDeviceWarehouse}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceWarehouse}"/>1' name='<c:out value="${filterDeviceWarehouse}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
+	                            <c:forEach var="warehouse" items="${filterBean.availableWarehouses}">
+									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.WarehouseName}"/> </option>
+								</c:forEach>
 							</select>
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceSerialRangeMin}"/>' style="display:none"> 
