@@ -52,12 +52,15 @@
             <td style="padding:1"><%= ((String[]) links.get("Filter.jsp"))[1] %></td>
           </tr>
 		  <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
-          <% if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) != null && ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() > 1) { %>
           <tr> 
-            <td width="10"><%= ((String[]) links.get("Inventory.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
+            <% if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { %>
+	            <td width="10"><%= ((String[]) links.get("Filter.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
+            <% } else {%>
+            	<td width="10"><%= ((String[]) links.get("Inventory.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
+	        <% } %>
           </tr>
-          <% } %>
 		  </cti:checkProperty>
         </table>
       </div>
