@@ -203,4 +203,30 @@ public static List<Integer> getAllInventoryInAWarehouse(int warehouseID)
     return inventory;
 }
 
+public static Integer getWarehouseFromInventoryID(int invenID)
+{
+    Integer warehouseID = new Integer(-1);
+    
+    SqlStatement stmt = new SqlStatement("SELECT WAREHOUSEID FROM INVENTORYTOWAREHOUSEMAPPING WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                warehouseID = (new Integer(stmt.getRow(i)[0].toString()));
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return warehouseID;
+}
+
 }
