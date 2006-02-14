@@ -35,7 +35,7 @@ public class FilterBean
     /**
      * Need further filters:
      * --Appliances
-     * --General location
+     * --General location (need to figure out how to work new Warehouse idea into this)
      * --Addressing groups
      */
             
