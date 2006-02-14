@@ -58,6 +58,7 @@ import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.util.FilterWrapper;
+import com.cannontech.util.ServletUtil;
 
 
 /**
@@ -1345,7 +1346,10 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, new Pair(liteInv, member));
 		}
 		
-		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+		if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) 
+        {
+            redirect = req.getContextPath() + "/operator/Hardware/Filter.jsp";
+        }
 	}
 	
 	/**

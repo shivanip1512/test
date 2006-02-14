@@ -159,4 +159,86 @@ public class InventoryUtils {
 		
 		return hwList;
 	}
+    
+    public static boolean isSerialWithPossibleCharsGreaterThan(String serial, String minimumVal)
+    {
+        Long serialToCompare = null;
+        try 
+        {
+            serialToCompare = Long.valueOf( serial );
+        }
+        catch (NumberFormatException e) {}
+        
+        Long requiredMin = null;
+        try 
+        {
+            requiredMin = Long.valueOf( minimumVal );
+        }
+        catch (NumberFormatException e) {}
+        
+        if (serialToCompare != null && requiredMin != null) 
+        {
+            int result = serialToCompare.compareTo( requiredMin );
+            if(result >= 0) 
+                return true;
+            return false;
+        }
+        else if(requiredMin == null && serialToCompare == null)
+        {
+            int result = serial.compareTo(minimumVal);
+            if(result >= 0)
+                return true;
+            return false;
+        }
+        else
+            return false;
+       
+    }
+    
+    public static boolean isSerialWithPossibleCharsLessThan(String serial, String maximumVal)
+    {
+        Long serialToCompare = null;
+        try 
+        {
+            serialToCompare = Long.valueOf( serial );
+        }
+        catch (NumberFormatException e) {}
+        
+        Long requiredMax = null;
+        try 
+        {
+            requiredMax = Long.valueOf( maximumVal );
+        }
+        catch (NumberFormatException e) {}
+        
+        if (serialToCompare != null && requiredMax != null) 
+        {
+            int result = serialToCompare.compareTo( requiredMax );
+            if(result <= 0) 
+                return true;
+            return false;
+        }
+        else if(requiredMax == null && serialToCompare == null)
+        {
+            int result = serial.compareTo( maximumVal );
+            if(result <= 0)
+                return true;
+            return false;
+        }
+        else
+            return false;
+       
+    }
+    
+    public static Integer returnIntegerIfPossible(String specificString)
+    {
+        Integer convert = new Integer(-999999);
+        try 
+        {
+            convert = Integer.valueOf( specificString );
+        }
+        catch (NumberFormatException e) {}
+        
+        return convert;
+    }
 }
