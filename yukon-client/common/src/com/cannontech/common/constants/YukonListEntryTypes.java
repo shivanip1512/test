@@ -138,8 +138,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS		= 2905;
     public static final int YUK_DEF_ID_INV_FILTER_BY_MEMBER         = 2906;
     public static final int YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE      = 2907;
-    public static final int YUK_DEF_ID_INV_FILTER_BY_ZIP_CODE       = 2908;
-    public static final int YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE   = 2909;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN   = 2908;
+    public static final int YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX   = 2909;
 	
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;
