@@ -1,10 +1,7 @@
 package com.cannontech.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -1370,6 +1367,17 @@ public class InventoryManager extends HttpServlet {
         String[] filterTexts = req.getParameterValues("FilterTexts");
         String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
         ArrayList filters = new ArrayList();
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+       
+        if(filterTexts == null)
+        {
+            iBean.setFilterByList(filters);
+            session.setAttribute("inventoryBean", iBean);
+            session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no filters defined.");
+            redirect = referer;
+            return;
+        }
         
         for(int j = 0; j < filterTexts.length; j++)
         {
@@ -1377,6 +1385,8 @@ public class InventoryManager extends HttpServlet {
             filters.add(wrapper);
         }
         
+        iBean.setViewResults(false);
+        session.setAttribute("inventoryBean", iBean);
         session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
         redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
     };
@@ -1388,6 +1398,7 @@ public class InventoryManager extends HttpServlet {
         String[] selectionIDs = req.getParameterValues("SelectionIDs");
         String[] actionTexts = req.getParameterValues("ActionTexts");
         String[] actionTypeIDs = req.getParameterValues("ActionTypeIDs");
+        List<String> appliedActions = new ArrayList();
         
         Integer newDevTypeID = null;
         Integer newServiceCompanyID = null;
@@ -1395,7 +1406,7 @@ public class InventoryManager extends HttpServlet {
         Integer newDevStateID = null;
         Integer newEnergyCompanyID = null;
         
-        if(selectionIDs.length > 0 && selectionIDs.length == actionTypeIDs.length)
+        if(selectionIDs != null && selectionIDs.length > 0 && selectionIDs.length == actionTypeIDs.length)
         {
             for(int j = 0; j < selectionIDs.length; j++)
             {
@@ -1407,6 +1418,8 @@ public class InventoryManager extends HttpServlet {
                     newWarehouseID = new Integer(selectionIDs[j]);    
                 else if(new Integer(actionTypeIDs[j]).intValue() == ServletUtils.ACTION_CHANGESTATE)
                     newDevStateID = new Integer(selectionIDs[j]);
+                
+                appliedActions.add(actionTexts[j]);
             }
             
             InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
@@ -1422,25 +1435,26 @@ public class InventoryManager extends HttpServlet {
             session.removeAttribute( ServletUtils.ATT_REDIRECT );
             TimeConsumingTask task = new ManipulateInventoryTask( mBean.getEnergyCompany(), newEnergyCompanyID, theWares, newDevTypeID, newDevStateID, newServiceCompanyID, newWarehouseID, req );
             long id = ProgressChecker.addTask( task );
+            String redir = req.getContextPath() + "/operator/Hardware/InvenResultSet.jsp";
             
-            // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-            for (int i = 0; i < 5; i++) {
+            //Wait 2 seconds for the task to finish (or error out), if not, then go to the progress page
+            for (int i = 0; i < 2; i++) 
+            {
                 try {
                     Thread.sleep(1000);
                 }
                 catch (InterruptedException e) {}
                 
                 task = ProgressChecker.getTask(id);
-                String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
                 
-                if (task.getStatus() == ManipulateInventoryTask.STATUS_FINISHED) {
+                if (task.getStatus() == UpdateSNRangeTask.STATUS_FINISHED) {
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
                     ProgressChecker.removeTask( id );
                     if (redir != null) redirect = redir;
                     return;
                 }
                 
-                if (task.getStatus() == ManipulateInventoryTask.STATUS_ERROR) {
+                if (task.getStatus() == UpdateSNRangeTask.STATUS_ERROR) {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
                     ProgressChecker.removeTask( id );
                     redirect = referer;
@@ -1448,21 +1462,13 @@ public class InventoryManager extends HttpServlet {
                 }
             }
             
-            session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-            session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+            mBean.setActionsApplied(appliedActions);
+            session.setAttribute("manipBean", mBean);
+            session.setAttribute(ServletUtils.ATT_REDIRECT, redir);
+            session.setAttribute(ServletUtils.ATT_REFERRER, redir);
             redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
         }
-        else
-        {
-            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "No actions have been selected.");
-            redirect = referer;
-            return;
-        }
-
-        
-        
-        redirect = req.getContextPath() + "/operator/Hardware/ChangeSet.jsp";
-    };
+    }
 	
     private void viewInventoryResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {

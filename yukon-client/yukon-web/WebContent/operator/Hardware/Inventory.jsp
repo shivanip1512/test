@@ -21,13 +21,6 @@
 <script language="JavaScript">
 function showAll(form) 
 {
-	
-	form.submit();
-}
-
-function changeAll(form) 
-{
-	form.action.value = "ManipulateInventoryResults";
 	form.submit();
 }
 
@@ -133,6 +126,7 @@ function manipulateAll(form)
 					               	</td>
 				                </tr>
 							</table>
+				      		<br>
 				      		<c:if test="${inventoryBean.viewResults}">
 					      		<table width="80%" border="0" cellspacing="0" cellpadding="0">
 						      		<tr>
