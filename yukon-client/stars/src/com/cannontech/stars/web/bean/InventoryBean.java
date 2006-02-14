@@ -253,168 +253,181 @@ public class InventoryBean {
         /*
          * Now that we have potentially n filters instead of one, we need to iterate through.
          */
-        for(int x = 0; x < getFilterByList().size(); x++)
+        if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET)
         {
-            ArrayList filteredHardwares = new ArrayList();
-            Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
-            Integer specificFilterID = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterID());
-            if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) 
+            for(int x = 0; x < getFilterByList().size(); x++)
             {
-    			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
-    			
-    			for (int i = 0; i < hardwares.size(); i++) {
-    				LiteInventoryBase liteInv = (LiteInventoryBase)
-    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-    				
-    				if (liteInv instanceof LiteStarsLMHardware &&
-    					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
-    					|| specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
-    				{
-    					filteredHardwares.add( hardwares.get(i) );
-    				}
-    			}
-    		}
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) 
-            {
-    			for (int i = 0; i < hardwares.size(); i++) 
-                {
-    				LiteInventoryBase liteInv = (LiteInventoryBase)
-    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-    				
-    				if (liteInv.getInstallationCompanyID() == specificFilterID.intValue())
-    					filteredHardwares.add( hardwares.get(i) );
-    			}
-    		}
-            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
-            {
-                List<Integer> warehousedInventory = new ArrayList();
+                ArrayList filteredHardwares = new ArrayList();
+                Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
+                String specificFilterString = ((FilterWrapper)getFilterByList().get(x)).getFilterID(); 
+                Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
                 
-                for (int i = 0; i < hardwares.size(); i++) 
+                if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) 
                 {
-                    LiteInventoryBase liteInv = (LiteInventoryBase)
-                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
+        			
+        			for (int i = 0; i < hardwares.size(); i++) {
+        				LiteInventoryBase liteInv = (LiteInventoryBase)
+        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        				
+        				if (liteInv instanceof LiteStarsLMHardware &&
+        					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
+        					|| specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
+        				{
+        					filteredHardwares.add( hardwares.get(i) );
+        				}
+        			}
+        		}
+        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) 
+                {
+        			for (int i = 0; i < hardwares.size(); i++) 
+                    {
+        				LiteInventoryBase liteInv = (LiteInventoryBase)
+        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        				
+        				if (liteInv.getInstallationCompanyID() == specificFilterID.intValue())
+        					filteredHardwares.add( hardwares.get(i) );
+        			}
+        		}
+                else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
+                {
+                    List<Integer> warehousedInventory = new ArrayList();
                     
-                    warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
-                    
-                    for(int j = 0; j < warehousedInventory.size(); j++)
-                        if(liteInv.compareTo(warehousedInventory.get(j).intValue()) == 0)
-                            filteredHardwares.add( hardwares.get(i) );
+                    for (int i = 0; i < hardwares.size(); i++) 
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                        
+                        warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
+                        
+                        for(int j = 0; j < warehousedInventory.size(); j++)
+                        {
+                            if(liteInv.compareTo(warehousedInventory.get(j).intValue()) == 0)
+                                filteredHardwares.add( hardwares.get(i) );
+                        }
+                    }
                 }
-            }
-            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN)
-            {
-                for (int i = 0; i < hardwares.size(); i++) 
+                else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN)
                 {
-                    LiteInventoryBase liteInv = (LiteInventoryBase)
-                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-                    
-                    Integer serial = new Integer(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber());
-
-                    if(serial.intValue() >= specificFilterID.intValue())
-                        filteredHardwares.add( hardwares.get(i) );
+                    for (int i = 0; i < hardwares.size(); i++) 
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                        
+                        if (liteInv instanceof LiteStarsLMHardware) 
+                        {
+                            String serial = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
+    
+                            if(InventoryUtils.isSerialWithPossibleCharsGreaterThan(serial, specificFilterString))
+                                filteredHardwares.add( hardwares.get(i) );
+                        }
+                    }
                 }
-            }
-            else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX)
-            {
-                for (int i = 0; i < hardwares.size(); i++) 
+                else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX)
                 {
-                    LiteInventoryBase liteInv = (LiteInventoryBase)
-                        (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-               
-                Integer serial = new Integer(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber());
-
-                if(serial.intValue() <= specificFilterID.intValue())
-                    filteredHardwares.add( hardwares.get(i) );
+                    for (int i = 0; i < hardwares.size(); i++) 
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+                   
+                        if (liteInv instanceof LiteStarsLMHardware) 
+                        {
+                            String serial = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
+        
+                            if(InventoryUtils.isSerialWithPossibleCharsLessThan(serial, specificFilterString))
+                                filteredHardwares.add( hardwares.get(i) );
+                        }
+                    }
                 }
-            }
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) 
-            {
-    			for (int i = 0; i < hardwares.size(); i++) 
+        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) 
                 {
-    				LiteInventoryBase liteInv = (LiteInventoryBase)
-    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-    				
-    				if (specificFilterID.intValue() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
-    					|| specificFilterID.intValue() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
-    				{
-    					filteredHardwares.add( hardwares.get(i) );
-    				}
-    			}
-    		}
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
-    			Hashtable ecHwCfgMap = new Hashtable();
-    			
-    			for (int i = 0; i < hardwares.size(); i++) {
-    				LiteInventoryBase liteInv = (LiteInventoryBase)
-    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-    				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID)
-    					continue;
-    				
-    				LiteStarsEnergyCompany company = (showEnergyCompany)?
-    						(LiteStarsEnergyCompany) ((Pair)hardwares.get(i)).getSecond() : getEnergyCompany();
-    				
-    				if (company.isAccountsLoaded()) {
-    					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-    							company.getCustAccountInformation( liteInv.getAccountID(), false );
-    					
-    					if (liteAcctInfo != null) {
-    						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-    							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-    							if (liteApp.getInventoryID() == liteInv.getInventoryID()
-    								&& liteApp.getAddressingGroupID() == specificFilterID.intValue())
-    							{
-    								filteredHardwares.add( hardwares.get(i) );
-    								break;
-    							}
-    						}
-    					}
-    				}
-    				else {
-    					Hashtable hwCfgMap = (Hashtable) ecHwCfgMap.get( company.getEnergyCompanyID() );
-    					if (hwCfgMap == null) {
-    						hwCfgMap = new Hashtable();
-    						
-    						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] hwConfig =
-    								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getAllLMHardwareConfiguration( company.getLiteID() );
-    						
-    						for (int j = 0; j < hwConfig.length; j++) {
-    							ArrayList cfgList = (ArrayList) hwCfgMap.get( hwConfig[j].getInventoryID() );
-    							if (cfgList == null) {
-    								cfgList = new ArrayList();
-    								hwCfgMap.put( hwConfig[j].getInventoryID(), cfgList );
-    							}
-    							cfgList.add( hwConfig[j].getAddressingGroupID() );
-    						}
-    						
-    						ecHwCfgMap.put( company.getEnergyCompanyID(), hwCfgMap );
-    					}
-    					
-    					ArrayList cfgList = (ArrayList) hwCfgMap.get( new Integer(liteInv.getInventoryID()) );
-    					if (cfgList != null) {
-    						for (int j = 0; j < cfgList.size(); j++) {
-    							if (((Integer)cfgList.get(j)).intValue() == specificFilterID.intValue()) {
-    								filteredHardwares.add( hardwares.get(i) );
-    								break;
-    							}
-    						}
-    					}
-    				}
-    			}
-    		}
-    		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
-    			for (int i = 0; i < hardwares.size(); i++) {
-    				LiteInventoryBase liteInv = (LiteInventoryBase)
-    						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
-    				
-    				if (liteInv.getDeviceStatus() == specificFilterID.intValue())
-    					filteredHardwares.add( hardwares.get(i) );
-    			}
-    		}
-    		else {
-    			filteredHardwares.addAll( hardwares );
-    		}
-            
-            hardwares = filteredHardwares;
+        			for (int i = 0; i < hardwares.size(); i++) 
+                    {
+        				LiteInventoryBase liteInv = (LiteInventoryBase)
+        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        				
+        				if (specificFilterID.intValue() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
+        					|| specificFilterID.intValue() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
+        				{
+        					filteredHardwares.add( hardwares.get(i) );
+        				}
+        			}
+        		}
+        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
+        			Hashtable ecHwCfgMap = new Hashtable();
+        			
+        			for (int i = 0; i < hardwares.size(); i++) {
+        				LiteInventoryBase liteInv = (LiteInventoryBase)
+        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID)
+        					continue;
+        				
+        				LiteStarsEnergyCompany company = (showEnergyCompany)?
+        						(LiteStarsEnergyCompany) ((Pair)hardwares.get(i)).getSecond() : getEnergyCompany();
+        				
+        				if (company.isAccountsLoaded()) {
+        					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+        							company.getCustAccountInformation( liteInv.getAccountID(), false );
+        					
+        					if (liteAcctInfo != null) {
+        						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+        							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+        							if (liteApp.getInventoryID() == liteInv.getInventoryID()
+        								&& liteApp.getAddressingGroupID() == specificFilterID.intValue())
+        							{
+        								filteredHardwares.add( hardwares.get(i) );
+        								break;
+        							}
+        						}
+        					}
+        				}
+        				else {
+        					Hashtable hwCfgMap = (Hashtable) ecHwCfgMap.get( company.getEnergyCompanyID() );
+        					if (hwCfgMap == null) {
+        						hwCfgMap = new Hashtable();
+        						
+        						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] hwConfig =
+        								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getAllLMHardwareConfiguration( company.getLiteID() );
+        						
+        						for (int j = 0; j < hwConfig.length; j++) {
+        							ArrayList cfgList = (ArrayList) hwCfgMap.get( hwConfig[j].getInventoryID() );
+        							if (cfgList == null) {
+        								cfgList = new ArrayList();
+        								hwCfgMap.put( hwConfig[j].getInventoryID(), cfgList );
+        							}
+        							cfgList.add( hwConfig[j].getAddressingGroupID() );
+        						}
+        						
+        						ecHwCfgMap.put( company.getEnergyCompanyID(), hwCfgMap );
+        					}
+        					
+        					ArrayList cfgList = (ArrayList) hwCfgMap.get( new Integer(liteInv.getInventoryID()) );
+        					if (cfgList != null) {
+        						for (int j = 0; j < cfgList.size(); j++) {
+        							if (((Integer)cfgList.get(j)).intValue() == specificFilterID.intValue()) {
+        								filteredHardwares.add( hardwares.get(i) );
+        								break;
+        							}
+        						}
+        					}
+        				}
+        			}
+        		}
+        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
+        			for (int i = 0; i < hardwares.size(); i++) {
+        				LiteInventoryBase liteInv = (LiteInventoryBase)
+        						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+        				
+        				if (liteInv.getDeviceStatus() == specificFilterID.intValue())
+        					filteredHardwares.add( hardwares.get(i) );
+        			}
+        		}
+        		else {
+        			filteredHardwares.addAll( hardwares );
+        		}
+                
+                hardwares = filteredHardwares;
+            }
         }
             
         java.util.TreeSet sortedInvs = null;
@@ -868,6 +881,7 @@ public class InventoryBean {
     {
 	    ArrayList oldFilters = filterByList;
         filterByList = newFilters;
+        boolean memberSpecified = false;
         
         /**
          * Because of the size of Xcel, we need to handle members as the first part of
@@ -884,10 +898,14 @@ public class InventoryBean {
         for(int j = 0; j < filterByList.size(); j++)
         {
             Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(j)).getFilterTypeID());
-            Integer specificFilterID = new Integer(((FilterWrapper)filterByList.get(j)).getFilterID());
+            String specificFilterString = ((FilterWrapper)filterByList.get(j)).getFilterID();
+            Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
             if(filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER)
+            {
                 setMember(specificFilterID.intValue());
-                        
+                memberSpecified = true;
+            }
+            
             if(inventoryList != null)
             {
                 boolean found = false;
@@ -903,6 +921,9 @@ public class InventoryBean {
                     inventoryList = null;
             }
         }
+        
+        if(!memberSpecified)
+            setMember(-1);
 	}
 
 	/**
