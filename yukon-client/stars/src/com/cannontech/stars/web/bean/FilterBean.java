@@ -15,6 +15,7 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 
 
 public class FilterBean 
@@ -25,6 +26,7 @@ public class FilterBean
     private ArrayList availableMembers;
     private YukonSelectionList availableDeviceTypes;
     private List<ServiceCompany> availableServiceCompanies;
+    private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
     boolean hasAssignedFilters = false;
     private ArrayList assignedFilters = new ArrayList();
@@ -35,9 +37,6 @@ public class FilterBean
      * --Appliances
      * --General location
      * --Addressing groups
-     * --Warehouse
-     * --Zip code
-     * --Serial range
      */
             
     public LiteStarsEnergyCompany getEnergyCompany()
@@ -91,6 +90,13 @@ public class FilterBean
         if(availableServiceCompanies == null)
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
         return availableServiceCompanies;
+    }
+    
+    public List<Warehouse> getAvailableWarehouses()
+    {
+        if(availableWarehouses == null)
+            availableWarehouses = energyCompany.getAllWarehousesDownward();
+        return availableWarehouses;
     }
     
     public YukonSelectionList getAvailableDeviceStates()
