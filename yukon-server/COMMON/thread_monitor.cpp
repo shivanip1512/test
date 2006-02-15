@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/01/04 17:27:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/02/15 18:42:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -131,18 +131,19 @@ long CtiThreadMonitor::checkForExpriration( void )
 {
     ptime current_time( second_clock::local_time() );
     time_duration td( 0, 0, 3, 0 );
+    time_duration tempTD( 0, 0, 3, 0 );
 
-    if( _threadData.size() != 0 )
+    if( _threadData.entries() != 0 )
     {
-        for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
+        for( ThreadData::spiterator i = _threadData.getMap().begin(); i != _threadData.getMap().end(); i++ )
         {
-            CtiThreadRegData temp = i->second;
+            CtiThreadRegDataSPtr temp = i->second;
 
-            ptime check_time = temp.getTickledTime() + seconds( temp.getTickleFreq() );  //needs validation
+            ptime check_time = temp->getTickledTime() + seconds( temp->getTickleFreq() );  //needs validation
 
             if( current_time > check_time )
             {
-                i->second.setReported( false );
+                temp->setReported( false );
             }
             else
             {
@@ -150,7 +151,11 @@ long CtiThreadMonitor::checkForExpriration( void )
                 //we want to sleep as long as possible, so find the shortest
                 //time to the next possible report failure
                 //
-                td = check_time - current_time;
+                tempTD = check_time - current_time;
+                if( tempTD < td )
+                {
+                    td = tempTD;
+                }
             }
         }
     }
@@ -175,34 +180,23 @@ void CtiThreadMonitor::processQueue( void )
 
         int tempId = temp->getId();
 
-        ThreadData::iterator i = _threadData.find( tempId );
+        ThreadData::ptr_type i = _threadData.find( tempId );
 
         //Note that currently you are set critical or not at initialization and never again.
-        if( i != _threadData.end() )
+        if( i )
         {
-            //update the reg data
-            i->second.setBehaviour( temp->getBehaviour() );
-            i->second.setTickleFreq( temp->getTickleFreq() );
-            i->second.setShutdownFunc( temp->getShutdownFunc() );
-            i->second.setShutdownArgs( temp->getShutdownArgs() );
+            _threadData.remove(tempId);//smart pointer will delete reg data item!
         }
 
-        pair< ThreadData::iterator, bool > insertpair;
+        ThreadData::insert_pair insertpair;
 
         //we try to put the element from the queue into the map
-        insertpair = _threadData.insert( ThreadData::value_type( tempId, *temp ) );
+        insertpair = _threadData.insert( tempId, temp );
 
-        //note that we heard from a particular thread
-        (*insertpair.first).second.setReported( true );
-
-        (*insertpair.first).second.setActionTaken( false );
-
-        (*insertpair.first).second.setTickledTime( temp->getTickledTime() );
-        //(*insertpair.first).second.setTickledTime( second_clock::local_time() ); //I dont think this is a good idea (JESS)
-
-        (*insertpair.first).second.setUnreportedCount(0);
-
-        delete temp;
+        if( !insertpair.second )
+        {   //failed insert, delete the temp. This should be safe.
+            delete temp;
+        }
     }
 }
 
@@ -216,21 +210,23 @@ void CtiThreadMonitor::processExpired( void )
     string nextOutput = "Thread running correctly.";
     try
     {
-        for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end();i++ )
+        for( ThreadData::spiterator i = _threadData.getMap().begin(); i != _threadData.getMap().end(); i++ )
         {
-            if( !i->second.getReported())
+            if( !i->second->getReported())
             {
-                if( !i->second.getActionTaken() || 
-                    (i->second.getTickledTime() + seconds(TEN_MINUTES_IN_SECONDS*i->second.getUnreportedCount())) < ptime(second_clock::local_time()) )
+                CtiThreadRegDataSPtr regData = i->second;
+
+                if( !regData->getActionTaken() || 
+                    (regData->getTickledTime() + seconds(TEN_MINUTES_IN_SECONDS*regData->getUnreportedCount())) < ptime(second_clock::local_time()) )
                 {
-                    i->second.setUnreportedCount(i->second.getUnreportedCount() + 1); 
+                    regData->setUnreportedCount(regData->getUnreportedCount() + 1); 
 
-                    i->second.setActionTaken(true);//trying to ensure we dont act twice on an object that does not go away
+                    regData->setActionTaken(true);//trying to ensure we dont act twice on an object that does not go away
 
-                    messageOut( "tsisvs", "Thread W/ID", i->first, "", i->second.getName(), "Is UNREPORTED" );
-                    messageOut( "tsisvs", "Thread W/ID", i->first, " Last heard from: ", timeString( i->second.getTickledTime() ),"");
+                    messageOut( "tsisvs", "Thread W/ID", i->first, "", regData->getName(), "Is UNREPORTED" );
+                    messageOut( "tsisvs", "Thread W/ID", i->first, " Last heard from: ", timeString( regData->getTickledTime() ),"");
 
-                    int reaction_type = i->second.getBehaviour();
+                    int reaction_type = regData->getBehaviour();
 
                     switch( reaction_type )
                     {
@@ -240,28 +236,15 @@ void CtiThreadMonitor::processExpired( void )
                             }
                             break;
 
-                        case CtiThreadRegData::Action1:
+                        case CtiThreadRegData::Action:
                             {
-                                CtiThreadRegData::behaviourFuncPtr action1 = i->second.getAlternateFunc();
-                                void* action1_args = i->second.getAlternateArgs();
+                                CtiThreadRegData::behaviourFuncPtr action1 = regData->getActionFunc();
+                                void* action1_args = regData->getActionArgs();
 
                                 if( action1 )
                                 {
                                     //it doesn't matter if the args are null
                                     action1( action1_args );
-                                }
-                            }
-                            break;
-
-                        case CtiThreadRegData::Action2:
-                            {
-                                CtiThreadRegData::behaviourFuncPtr action2 = i->second.getShutdownFunc();
-                                void* action2_args = i->second.getShutdownArgs();
-
-                                if( action2 )
-                                {
-                                    //it doesn't matter if the args are null
-                                    action2( action2_args );
                                 }
                             }
                             break;
@@ -274,19 +257,19 @@ void CtiThreadMonitor::processExpired( void )
                     }
                 }
 
-                if(i->second.getCritical())
+                if(regData->getCritical())
                 {
                     //messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is Critical!" ); //Used for testing
                     nextState = CriticalFailure;
 
                     nextOutput = "Failure in thread named ";
-                    nextOutput.append(i->second.getName());
+                    nextOutput.append(regData->getName());
                     nextOutput.append(" (Critical)\n");
                 }
                 else
                 {
                     nextOutput = "Failure in thread named ";
-                    nextOutput.append(i->second.getName());
+                    nextOutput.append(regData->getName());
                     nextOutput.append(" (Non-Critical)\n");
 
                     if(nextState != CriticalFailure)
@@ -295,7 +278,7 @@ void CtiThreadMonitor::processExpired( void )
                 }
 
                 if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
-                    messageOut( "tsisv", "Removing Thread ID", i->first, " ", i->second.getName() );
+                    messageOut( "tsisv", "Removing Thread ID", regData->getId(), " ", regData->getName() );
             }
         }
         if(nextOutput.length()>1)
@@ -318,14 +301,14 @@ void CtiThreadMonitor::processExtraCommands( void )
 {
     try
     {
-        for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); )
+        for( ThreadData::spiterator i = _threadData.getMap().begin(); i != _threadData.getMap().end(); )
         {
-            if( i->second.getBehaviour() == CtiThreadRegData::LogOut )
+            if( i->second->getBehaviour() == CtiThreadRegData::LogOut )
             {
                 if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
                     messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
 
-                i = _threadData.erase( i );
+                i = _threadData.getMap().erase( i );
             }
             else
             {
@@ -348,18 +331,18 @@ void CtiThreadMonitor::dump( void )
     //if we only operate on a copy, we can't explode if someone changes the map
     ThreadData temp_map = _threadData;
 
-    for( std::map < int, CtiThreadRegData >::iterator i = temp_map.begin(); i != temp_map.end(); i++ )
+    for( ThreadData::spiterator i = temp_map.getMap().begin(); i != temp_map.getMap().end(); i++ )
     {
-       CtiThreadRegData temp = i->second;
+       CtiThreadRegDataSPtr temp = i->second;
 
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
          messageOut( "" );
-         messageOut( "sv", "Thread name             : ", temp.getName() );
-         messageOut( "si", "Thread id               : ", temp.getId() );
-         messageOut( "si", "Thread behaviour type   : ", temp.getBehaviour() );
-         messageOut( "si", "Thread tickle frequency : ", temp.getTickleFreq() );
-         messageOut( "sv", "Thread tickle time      : ", timeString( temp.getTickledTime() ) );
+         messageOut( "sv", "Thread name             : ", temp->getName() );
+         messageOut( "si", "Thread id               : ", temp->getId() );
+         messageOut( "si", "Thread behaviour type   : ", temp->getBehaviour() );
+         messageOut( "si", "Thread tickle frequency : ", temp->getTickleFreq() );
+         messageOut( "sv", "Thread tickle time      : ", timeString( temp->getTickledTime() ) );
          messageOut( "" );
       }
    }

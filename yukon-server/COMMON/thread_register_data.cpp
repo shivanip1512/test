@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/01/04 17:22:47 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/15 18:42:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -25,23 +25,20 @@ CtiThreadRegData::CtiThreadRegData( int id,
                                      string name,
                                      Behaviours type,
                                      int tickle_freq_sec,
-                                     behaviourFuncPtr ptr1,
-                                     void *args1,
-                                     behaviourFuncPtr ptr2,
-                                     void *args2 ) :
+                                     behaviourFuncPtr ptr,
+                                     void *args ) :
     _tickledTime( second_clock::local_time() ),
     _critical(true),
     _actionTaken(false),
-	_unreportedCount(0)
+	_unreportedCount(0),
+    _reported(true)
 {
    _id = id;
    _name = name;
    _behaviourType = type;
    _tickleFreq = tickle_freq_sec;
-   _action_one = ptr1;
-   _action_one_args = args1;
-   _action_two = ptr2;
-   _action_two_args = args2;
+   _action = ptr;
+   _action_args = args;
 
    if(( !_id ) || ( _name == "default" ))
       setReported(  false );
@@ -52,6 +49,11 @@ CtiThreadRegData::CtiThreadRegData( int id,
 
 CtiThreadRegData::~CtiThreadRegData()
 {
+    if( _action_args )
+    {
+        delete _action_args;
+        _action_args = NULL;
+    }
 }
 
 //===========================================================================================================
@@ -97,33 +99,38 @@ ptime CtiThreadRegData::getTickledTime( void )
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getShutdownFunc( void )
+CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getActionFunc( void )
 {
-   return( _action_one );
+   return( _action );
+}
+
+//===========================================================================================================
+// this should be a function that causes the death of whatever thread has gone awry
+//===========================================================================================================
+
+void CtiThreadRegData::setActionFunc( behaviourFuncPtr in )
+{
+   _action = in;
 }
 
 //===========================================================================================================
 //===========================================================================================================
 
-void* CtiThreadRegData::getShutdownArgs( void )
+void* CtiThreadRegData::getActionArgs( void )
 {
-   return( _action_one_args );
+   return( _action_args );
 }
 
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getAlternateFunc( void )
+void CtiThreadRegData::setActionArgs( void* args )
 {
-   return( _action_two );
-}
-
-//===========================================================================================================
-//===========================================================================================================
-
-void* CtiThreadRegData::getAlternateArgs( void )
-{
-   return( _action_two_args );
+    if( _action_args )
+    {
+        delete _action_args;
+    }
+   _action_args = args;
 }
 
 //===========================================================================================================
@@ -194,43 +201,9 @@ void CtiThreadRegData::setTickledTime( ptime in )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setAlternateArgs( void* args )
-{
-   _action_one_args = args;
-}
-
-//===========================================================================================================
-//===========================================================================================================
-
 void CtiThreadRegData::setTickleFreq( ULONG seconds )
 {
    _tickleFreq = seconds;
-}
-
-//===========================================================================================================
-// this could be a restart function or whatever else seems like a good idea
-//===========================================================================================================
-
-void CtiThreadRegData::setAlternateFunc( behaviourFuncPtr in )
-{
-   _action_two = in;
-}
-
-//===========================================================================================================
-//===========================================================================================================
-
-void CtiThreadRegData::setShutdownArgs( void* args )
-{
-   _action_one_args = args;
-}
-
-//===========================================================================================================
-// this should be a function that causes the death of whatever thread has gone awry
-//===========================================================================================================
-
-void CtiThreadRegData::setShutdownFunc( behaviourFuncPtr in )
-{
-   _action_one = in;
 }
 
 //===========================================================================================================

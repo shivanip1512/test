@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/04 17:22:47 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/15 18:42:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -25,6 +25,9 @@
 
 #include "boost_time.h"
 #include "cticalls.h"
+#include "boost/shared_ptr.hpp"
+
+using boost::shared_ptr;
 
 using std::string;
 
@@ -35,8 +38,7 @@ public:
    enum Behaviours   //absence detect behaviour type
    {
       None,
-      Action1,
-      Action2,
+      Action,        //Function call
       LogOut
    };
 
@@ -46,10 +48,8 @@ public:
                       string name = "default",
                       Behaviours type = None,
                       int tickle_freq_sec = 0,
-                      behaviourFuncPtr ptr1 = 0,
-                      void *args1 = 0,
-                      behaviourFuncPtr ptr2 = 0,
-                      void *args2 = 0 );
+                      behaviourFuncPtr ptr = 0,
+                      void *args = 0 );
 
    virtual ~CtiThreadRegData();
 
@@ -73,17 +73,11 @@ public:
    ptime getTickledTime( void );
    void setTickledTime( ptime in );
 
-   behaviourFuncPtr getShutdownFunc( void );
-   void setShutdownFunc( behaviourFuncPtr in );
+   behaviourFuncPtr getActionFunc( void );
+   void setActionFunc( behaviourFuncPtr in );
 
-   void* getShutdownArgs( void );
-   void setShutdownArgs( void *in );
-
-   behaviourFuncPtr getAlternateFunc( void );
-   void setAlternateFunc( behaviourFuncPtr in );
-
-   void* getAlternateArgs( void );
-   void setAlternateArgs( void *in );
+   void* getActionArgs( void );
+   void setActionArgs( void *in );
 
    bool getReported( void );
    void setReported( const bool in );
@@ -117,10 +111,14 @@ private:
    //
    //registeration: optionals
    //
-   behaviourFuncPtr     _action_one;
-   behaviourFuncPtr     _action_two;
-   void*                _action_one_args;
-   void*                _action_two_args;
+   behaviourFuncPtr     _action;
+   void*                _action_args;
 };
+
+#ifdef VSLICK_TAG_WORKAROUND
+typedef CtiThreadRegData * CtiThreadRegDataSPtr;
+#else
+typedef shared_ptr< CtiThreadRegData > CtiThreadRegDataSPtr;
+#endif
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__

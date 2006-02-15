@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/12/20 17:25:50 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/15 18:42:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #define __THREAD_MONITOR_H__
 
 #include <map>
+#include "smartmap.h"
 
 
 #include "queue.h"
@@ -34,7 +35,7 @@ class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 
 public:
 
-   typedef std::map < int, CtiThreadRegData > ThreadData;
+   typedef CtiSmartMap<CtiThreadRegData> ThreadData;
    typedef std::vector < int > PointIDList;
 
    CtiThreadMonitor();
@@ -65,6 +66,12 @@ public:
        FDR = 1005,
        Macs = 1006,
        LastPoint
+   };
+
+   enum TickleTiming
+   {
+       StandardTickleTime =  300,
+       StandardMonitorTime = 380
    };
 
    State getState(void);
