@@ -458,7 +458,7 @@ void CtiCalcLogicService::Run( )
                             dout << CtiTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
                         }
 
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::Action1, 330, &CtiCalcLogicService::mainComplain, 0 , 0, 0 ) );
+                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::Action, 330, &CtiCalcLogicService::mainComplain, 0) );
 
                         if(_conxion)
                         {
@@ -691,7 +691,7 @@ void CtiCalcLogicService::_outputThread( void )
                         dout << CtiTime() << " _outputThread active. TID: " << rwThreadId() << endl;
                     }
 
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::outComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action, 960, &CtiCalcLogicService::outComplain, 0) );
                 }
             } while( !entries && !interrupted );
 
@@ -769,7 +769,7 @@ void CtiCalcLogicService::_inputThread( void )
                         rwnow = rwnow.now();
                         if(rwnow > announceTime)
                         {
-                            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, 960, &CtiCalcLogicService::inComplain, 0) );
                             announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -792,7 +792,7 @@ void CtiCalcLogicService::_inputThread( void )
                 rwnow = rwnow.now();
                 if(rwnow > announceTime)
                 {
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, 960, &CtiCalcLogicService::inComplain, 0) );
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

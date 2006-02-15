@@ -117,7 +117,7 @@ void CtiCalculateThread::periodicThread( void )
                     dout << CtiTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
                 }
 
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::periodicComplain, 0 , 0,  0 ) );
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action, 350, &CtiCalculateThread::periodicComplain, 0) );
             }
 
             //  while it's still the same second /and/ i haven't been interrupted
@@ -269,7 +269,7 @@ void CtiCalculateThread::onUpdateThread( void )
                         dout << CtiTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
                     }
 
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::onUpdateComplain, 0 , 0, 0 ) );
+                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, 350, &CtiCalculateThread::onUpdateComplain, 0) );
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -456,7 +456,7 @@ void CtiCalculateThread::calcThread( void )
     {
        if( cnt++ % 300 == 0 )
        {
-           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action1, 350, &CtiCalculateThread::calcComplain, 0 , 0, 0 ) );
+           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::Action, 350, &CtiCalculateThread::calcComplain, 0) );
        }
 
        _self.sleep( 1000 );
