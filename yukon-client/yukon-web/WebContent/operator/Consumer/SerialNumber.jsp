@@ -99,7 +99,15 @@ function validate(form) {
 }
 
 function selectInventory(form) {
-	form.attributes["action"].value = "SelectInv.jsp";
+	<%  if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) 
+        { %>
+       		form.attributes["action"].value = "SelectInvFilter.jsp";
+    <%  }
+    	else
+    	{
+    %>
+		form.attributes["action"].value = "SelectInv.jsp";
+	<% 	} %>
 	form.submit();
 }
 

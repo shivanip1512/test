@@ -97,7 +97,7 @@ public class InventoryManager extends HttpServlet {
 		if (referer == null) referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
-		
+		 
 		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
 			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, redirect );
@@ -166,7 +166,9 @@ public class InventoryManager extends HttpServlet {
 		else if (action.equalsIgnoreCase("SelectDevice"))
 			selectDevice( user, req, session );
         else if (action.equalsIgnoreCase("FiltersUpdated"))
-            updateFilters( user, req, session );
+            updateFilters( user, req, session, false );
+        else if (action.equalsIgnoreCase("FiltersUpdatedForSelection"))
+            updateFilters( user, req, session, true );
         else if (action.equalsIgnoreCase("ApplyActions"))
             applyActions( user, req, session );
         else if (action.equalsIgnoreCase("ViewInventoryResults"))
@@ -1345,11 +1347,6 @@ public class InventoryManager extends HttpServlet {
 			LiteInventoryBase liteInv = member.getInventoryBrief( invID, true );
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, new Pair(liteInv, member));
 		}
-		
-		if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) 
-        {
-            redirect = req.getContextPath() + "/operator/Hardware/Filter.jsp";
-        }
 	}
 	
 	/**
@@ -1363,7 +1360,7 @@ public class InventoryManager extends HttpServlet {
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 	}
     
-    private void updateFilters(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    private void updateFilters(StarsYukonUser user, HttpServletRequest req, HttpSession session, boolean hwSelection) 
     {
         LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         
@@ -1392,7 +1389,10 @@ public class InventoryManager extends HttpServlet {
         iBean.setViewResults(false);
         session.setAttribute("inventoryBean", iBean);
         session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
-        redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
+        if(hwSelection)
+            redirect = req.getContextPath() + "/operator/Consumer/SelectInv.jsp";
+        else    
+            redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
     };
     
     private void applyActions(StarsYukonUser user, HttpServletRequest req, HttpSession session) 

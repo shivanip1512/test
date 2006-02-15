@@ -804,6 +804,7 @@ public class InventoryBean {
         htmlBuf.append("function selectInventory(invID, memberID) {").append(LINE_SEPARATOR);
         htmlBuf.append("  var form = document.InventoryBeanForm;").append(LINE_SEPARATOR);
         htmlBuf.append("  form.InvID.value = invID;").append(LINE_SEPARATOR);
+        htmlBuf.append("  form.action.value = InsertInventory;").append(LINE_SEPARATOR);
         if (showEnergyCompany)
             htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);
         htmlBuf.append("}").append(LINE_SEPARATOR);
