@@ -11,7 +11,9 @@
 #define NOTIF_VOICE_MSG_ID                704
 #define NOTIF_ALARM_MSG_ID                706
 #define NOTIF_LMCONTROL_MSG_ID            707
-
+#define NOTIF_VOICEDATA_REQUEST_ID        708
+#define NOTIF_VOICEDATA_RESPONESE_ID      709
+#define NOTIF_CURTAILMENTEVENT_ID         710
 
 
 #define MSG_BASE                          1500
