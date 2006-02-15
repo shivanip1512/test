@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/01/05 21:05:14 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/02/15 18:41:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,6 +128,7 @@ private:
     CtiTagManager              _tagManager;
 
     CtiConnection* _notificationConnection;
+    bool ShutdownOnThreadTimeout;
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
 
@@ -153,6 +154,7 @@ private:
     bool processInputFunction(CHAR Char);
     void queueSignalToSystemLog( CtiSignalMsg *&pSig );
     void stopDispatch();
+    static void sendbGCtrlC(void *who);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 

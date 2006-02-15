@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2006/02/03 19:55:21 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2006/02/15 18:41:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -259,6 +259,7 @@ void CtiVanGogh::VGMainThread()
     UINT sanity = 0;
     ULONG MessageCount = 0;
     ULONG MessageLog = 0;
+    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
 
     LARGE_INTEGER completeTime, missqueueTime, dequeueTime, getQTime, loopDoneTime;
 
@@ -322,6 +323,8 @@ void CtiVanGogh::VGMainThread()
 
         QueryPerformanceFrequency(&perfFrequency);
 
+        ThreadMonitor.start();
+
         _pendingOpThread.setMainQueue( &MainQueue_ );
         _pendingOpThread.start();
 
@@ -349,8 +352,6 @@ void CtiVanGogh::VGMainThread()
         // all that is good and ready has been started, open up for business from clients
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
         ConnThread_.start();
-
-        ThreadMonitor.start();
 
         // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
         CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -511,20 +512,17 @@ void CtiVanGogh::VGMainThread()
                 }
             }
 
-
-            if(!(++sanity % SANITY_RATE))
+            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
             {
-                reportOnThreads();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " VG Main Thread Active. TID:  " << rwThreadId() << endl;
                 }
 
-                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::None, 300 );
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
                 ThreadMonitor.tickle( data );
+                lastTickleTime = lastTickleTime.now();
             }
-
-
 
             Count = 0;
             if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count) && (Count > 0))     // There is something there if we succeed.
@@ -594,6 +592,7 @@ void CtiVanGogh::VGMainThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " *********** Exiting Dispatch MAIN ***********  " << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::LogOut ) );
     }
     catch(RWxmsg& msg )
     {
@@ -1356,6 +1355,7 @@ void CtiVanGogh::VGArchiverThread()
     UINT     sleepTime;
     CtiTime   NextTime;
     CtiTime   TimeNow;
+    CtiTime  lastTickleTime((unsigned long) 0);
 
     UINT sanity = 0;
 
@@ -1402,27 +1402,37 @@ void CtiVanGogh::VGArchiverThread()
 
             for(int i = sleepTime; !bGCtrlC && sleepTime > 0; sleepTime--)
             {
-                if(!(++sanity % SANITY_RATE))
+                if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
                 {
-                    reportOnThreads();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
                     }
 
-                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::None, 900 );
+                    CtiThreadRegData *data;
+                    if( ShutdownOnThreadTimeout )
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::Action,
+                                                                              CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("RTDB Archiver Thread") );
+                    }
+                    else
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    }
                     ThreadMonitor.tickle( data );
+                    lastTickleTime = lastTickleTime.now();
                 }
-
                 // This should be an WaitForSync API call.
                 rwSleep(1000);
             }
+
         }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Dispatch RTDB Archiver Thread shutting down" << endl;
         }
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::LogOut ) );
     }
     catch(RWxmsg& msg )
     {
@@ -1443,6 +1453,7 @@ void CtiVanGogh::VGTimedOperationThread()
 {
     UINT sanity = 0;
     CtiMultiMsg *pMulti = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1455,16 +1466,25 @@ void CtiVanGogh::VGTimedOperationThread()
     {
         for(;!bGCtrlC;)
         {
-            if(!(++sanity % SANITY_RATE))
+            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Dispatch Timed Operation Thread Active. TID:  " << rwThreadId() << endl;
                 }
-                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::None, 900 );
+                CtiThreadRegData *data;
+                if( ShutdownOnThreadTimeout )
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::Action,
+                                                        CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("Timed Operation Thread") );
+                }
+                else
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                }
                 ThreadMonitor.tickle( data );
+                lastTickleTime = lastTickleTime.now();
 
-                reportOnThreads();
             }
 
             rwSleep(1000);
@@ -1499,7 +1519,8 @@ void CtiVanGogh::VGTimedOperationThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch Timed Operation Thread shutting down" << endl;
     }
-
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
+        
     return;
 }
 
@@ -3052,6 +3073,16 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
         {
             CntlStopInterval = 60;
             if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_CNTL_STOP_REPORT_INTERVAL default : " << CntlStopInterval << endl;
+        }
+
+        if( !stringCompareIgnoreCase(gConfigParms.getValueAsString("DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT"),"true") )
+        {
+            ShutdownOnThreadTimeout = true;
+        }
+        else
+        {
+            ShutdownOnThreadTimeout = false;
+            if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_SHUTDOWN_ON_THREAD_TIMEOUT default : " << ShutdownOnThreadTimeout << endl;
         }
     }
     catch(RWxmsg& msg )
@@ -4919,6 +4950,7 @@ void  CtiVanGogh::shutdown()
 void CtiVanGogh::VGRPHWriterThread()
 {
     UINT sanity = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4932,15 +4964,24 @@ void CtiVanGogh::VGRPHWriterThread()
     {
         for(;!bGCtrlC;)
         {
-            if(!(++sanity % SANITY_RATE))
+            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Dispatch RawPointHistory Writer Thread Active. TID:  " << rwThreadId() << endl;
                 }
-                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "RawPointHistory Writer Thread", CtiThreadRegData::None, 900 );
+                CtiThreadRegData *data;
+                if( ShutdownOnThreadTimeout )
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RawPointHistory Writer Thread", CtiThreadRegData::Action,
+                                                                          CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("RawPointHistory Writer Thread") );
+                }
+                else
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RawPointHistory Writer Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                }
                 ThreadMonitor.tickle( data );
-                reportOnThreads();
+                lastTickleTime = lastTickleTime.now();
             }
 
             rwSleep(1000);
@@ -4968,6 +5009,7 @@ void CtiVanGogh::VGRPHWriterThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch RawPointHistory Writer Thread shutting down" << endl;
     }
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RawPointHistory Writer Thread", CtiThreadRegData::LogOut ) );
 
     return;
 }
@@ -4975,6 +5017,7 @@ void CtiVanGogh::VGRPHWriterThread()
 void CtiVanGogh::VGDBWriterThread()
 {
     UINT sanity = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4989,15 +5032,24 @@ void CtiVanGogh::VGDBWriterThread()
         {
             try
             {
-                if(!(++sanity % SANITY_RATE))
+                if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Dispatch DB Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
-                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Writer Thread", CtiThreadRegData::None, 900 );
+                    CtiThreadRegData *data;
+                    if( ShutdownOnThreadTimeout )
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Writer Thread", CtiThreadRegData::Action,
+                                                                              CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("DB Writer Thread") );
+                    }
+                    else
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Writer Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    }
                     ThreadMonitor.tickle( data );
-                    reportOnThreads();
+                    lastTickleTime = lastTickleTime.now();
                 }
 
                 rwSleep(1000);
@@ -5034,6 +5086,7 @@ void CtiVanGogh::VGDBWriterThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch DB Writer Thread shutting down" << endl;
     }
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Writer Thread", CtiThreadRegData::LogOut ) );
 
     return;
 }
@@ -6433,6 +6486,7 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 void CtiVanGogh::VGDBSignalWriterThread()
 {
     UINT sanity = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6447,15 +6501,24 @@ void CtiVanGogh::VGDBSignalWriterThread()
         {
             try
             {
-                if(!(++sanity % SANITY_RATE))
+                if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Dispatch DB Signal Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
-                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Writer Thread", CtiThreadRegData::None, 900 );
+                    CtiThreadRegData *data;
+                    if( ShutdownOnThreadTimeout )
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Writer Thread", CtiThreadRegData::Action,
+                                                                              CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("DB Signal Writer Thread") );
+                    }
+                    else
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Writer Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    }
                     ThreadMonitor.tickle( data );
-                    reportOnThreads();
+                    lastTickleTime = lastTickleTime.now();
                 }
 
                 rwSleep(1000);
@@ -6490,6 +6553,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch DB Signal Writer Thread shutting down" << endl;
     }
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Writer Thread", CtiThreadRegData::LogOut ) );
 
     return;
 }
@@ -6497,6 +6561,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
 void CtiVanGogh::VGDBSignalEmailThread()
 {
     UINT sanity = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6511,15 +6576,24 @@ void CtiVanGogh::VGDBSignalEmailThread()
         {
             try
             {
-                if(!(++sanity % SANITY_RATE))
+                if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Dispatch DB Signal Email Thread Active. TID:  " << rwThreadId() << endl;
                     }
-                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Email Thread", CtiThreadRegData::None, 900 );
+                    CtiThreadRegData *data;
+                    if( ShutdownOnThreadTimeout )
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Email Thread", CtiThreadRegData::Action,
+                                                                              CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("DB Signal Email Thread") );
+                    }
+                    else
+                    {
+                        data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Email Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    }
                     ThreadMonitor.tickle( data );
-                    reportOnThreads();
+                    lastTickleTime = lastTickleTime.now();
                 }
 
                 CtiSignalMsg *sigMsg = 0;
@@ -6557,6 +6631,7 @@ void CtiVanGogh::VGDBSignalEmailThread()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch DB Signal Email Thread shutting down" << endl;
     }
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Email Thread", CtiThreadRegData::LogOut ) );
 
     return;
 }
@@ -7205,4 +7280,14 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
     }
 
     return pMulti;
+}
+
+void CtiVanGogh::sendbGCtrlC(void *who)
+{
+    string *strPtr = (string *) who;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
+    }
+    bGCtrlC = TRUE;
 }
