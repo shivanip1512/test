@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/15 18:42:38 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/02/16 22:16:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -185,9 +185,14 @@ void CtiThreadMonitor::processQueue( void )
         //Note that currently you are set critical or not at initialization and never again.
         if( i )
         {
+            if( !i->getReported() )
+            {
+                messageOut( "tsisvs", "Thread W/ID", i->getId(), "", i->getName(), "has reported" );
+                messageOut( "tsisvs", "Thread W/ID", i->getId(), " Last heard from: ", timeString( i->getTickledTime() ),"");
+            }
             _threadData.remove(tempId);//smart pointer will delete reg data item!
         }
-
+            
         ThreadData::insert_pair insertpair;
 
         //we try to put the element from the queue into the map
@@ -426,7 +431,7 @@ void CtiThreadMonitor::messageOut( const char *fmt, ... )
         }
         else if( *p == 't' )
         {
-            dout << now();
+            dout << CtiTime();
         }
         else if( *p == 's' )
         {
