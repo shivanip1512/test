@@ -42,6 +42,25 @@ public FailureCRSToSAM_PremMeterChg() {
     super();
 }
 
+public FailureCRSToSAM_PremMeterChg(CRSToSAM_PremiseMeterChange premMeterChange) {
+    this();
+    this.changeID = premMeterChange.getChangeID();
+    this.premiseNumber = premMeterChange.getPremiseNumber();
+    this.newDebtorNumber = premMeterChange.getNewDebtorNumber();
+    this.transID = premMeterChange.getTransID();
+    this.streetAddress1 = premMeterChange.getStreetAddress1();
+    this.streetAddress2 = premMeterChange.getStreetAddress2();
+    this.cityName = premMeterChange.getCityName();
+    this.stateCode = premMeterChange.getStateCode();
+    this.zipCode = premMeterChange.getZipCode();
+    this.firstName = premMeterChange.getFirstName();
+    this.lastName = premMeterChange.getLastName();
+    this.homePhone = premMeterChange.getHomePhone();
+    this.workPhone = premMeterChange.getWorkPhone();
+    this.oldMeterNumber = premMeterChange.getOldMeterNumber();
+    this.newMeterNumber = premMeterChange.getNewMeterNumber();
+}
+
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getChangeID(), getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(),

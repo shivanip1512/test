@@ -183,7 +183,6 @@ public final class YukonCRSIntegrator
     		starter = new Thread( runner, "Importer" );
     		starter.start();
     	}
-    
     }
 
     public void runCRSToSAM_PremiseMeterChanger(ArrayList entries)
@@ -193,21 +192,19 @@ public final class YukonCRSIntegrator
     	
         ArrayList failures = new ArrayList();
     	ArrayList successArrayList = new ArrayList();
-    	boolean badEntry = false;
     	int successCounter = 0;
     	Connection conn = null;
         
         for(int j = 0; j < entries.size(); j++)
     	{
-    		badEntry = false;
-            
+            StringBuffer errorMsg = new StringBuffer("");
             currentEntry = (CRSToSAM_PremiseMeterChange)entries.get(j);
             String accountNumber = currentEntry.getPremiseNumber().toString();
             
             if(accountNumber.length() > 0)
             {
                 CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
-//                Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
+                //Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
                 ContactNotification workNotify = null;
                 ContactNotification homeNotify = null;
                 
@@ -225,27 +222,61 @@ public final class YukonCRSIntegrator
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
                 String newMeterNumber = currentEntry.getNewMeterNumber();
                 
-				try {
-                
-					Contact contactDB = new Contact();
-					contactDB.setContactID(customerAccount.getCustomer().getCustomer().getPrimaryContactID());
-					contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
-               
-					YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
-                	YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
+                if(customerAccount != null)
+                {
+                    try
+                    {
+                        Contact contactDB = new Contact();
+                        Customer customerDB = customerAccount.getCustomer().getCustomer();
+                        contactDB.setContactID(customerDB.getPrimaryContactID());
+                        contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
+                    
+                        YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
+                        YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
+                        YukonToCRSFuncs.updateCustomer(customerDB, customerNumber, altTrackingNum);
+                        MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
+                        if( meterHardwareBase == null)
+                            errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
+                        if(oldMeterNumber.compareTo(newMeterNumber) != 0)
+                        {
+                            meterHardwareBase.getMeterHardwareBase().setMeterNumber(newMeterNumber);
+                            //TODO Finish meter update, it should look for new meter number to see if it exists and assign to that account
+                            //TODO DBChangeMsg for meter
+                        }
+                    }
+                    catch (TransactionException e) 
+                    {
+                        e.printStackTrace();
+                        errorMsg.append("One or all database operations failed; ");
+                    }
+                }
+                else
+                {
+                    errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
+                }
 
-				} catch (TransactionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-               
-                /*ONE TRANSACTION FAILURE SHOULD FAIL THE WHOLE THING
-                com.cannontech.database.db.*/
                 
             }
             else
             {
-                badEntry = true;
+                errorMsg.append("Has no premise number specified;");
+            }
+            
+            if( errorMsg.length() > 0)
+            {
+                YukonToCRSFuncs.moveToFailureCRSToSAM_PremMeterChg(currentEntry, errorMsg.toString());
+                continue;
+            }
+            else
+            {
+                try
+                {
+                    Transaction.createTransaction(Transaction.DELETE, currentEntry).execute();
+                }
+                catch (TransactionException e) 
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -396,7 +427,7 @@ public final class YukonCRSIntegrator
 
 	    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
-	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
+	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber, null);
 	    	            //TODO create new appliance if they don't exist?
 	    	            //TODO create new meternumbers if they don't exist?
 	    	            
@@ -504,366 +535,7 @@ public final class YukonCRSIntegrator
 			}
         }
     }
-
-    		/*
-    		//validation
-    		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
-    		badEntry = false;
-    		updateDeviceID = null;
-    		       
-            if(templateName.length() < 1)
-            {
-                CTILogger.info("Import entry with name " + name + " has no specified 410 template.");
-                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified 410 template.", "", "");
-                badEntry = true;
-                errorMsg.append("has no 410 template specified; "); 
-            }
-            else
-            {
-                template410 = DBFuncs.get410FromTemplateName(templateName);
-                if(template410.getDevice().getDeviceID().intValue() == -12)
-                {
-                    CTILogger.info("Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.");
-                    logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.", "", "");
-                    badEntry = true;
-                    errorMsg.append("has an unknown MCT410 template; ");
-                }
-            }
-            
-            if(template410 instanceof MCT410CL)
-            {
-                currentIL = null;
-                currentCL = new MCT410CL();
-            }
-            else
-            {
-                currentCL = null;
-                currentIL = new MCT410IL();
-            }
-    		if(name.length() < 1 || name.length() > 60)
-    		{
-    			CTILogger.info("Import entry with address " + address + " has a name with an improper length.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with address " + address + " has a name with an improper length.", "", "");
-    			badEntry = true;
-    			errorMsg.append("improper name length; ");			
-    		}
-    		else if(name.indexOf('/') != -1 || name.indexOf(',') != -1 || name.indexOf('/') != -1 || name.indexOf('/') != -1)
-    		{
-    			CTILogger.info("Import entry with address " + address + " has a name that uses invalid characters.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with address " + address + " has a name that uses invalid characters.", "", "");
-    			badEntry = true;
-    			errorMsg.append("invalid name chars; ");			
-    		}
-    		else
-    		{
-    			updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
-    			if( updateDeviceID != null)
-    		   	{
-    				CTILogger.info("Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.");
-    			   	logger = ImportFuncs.writeToImportLog(logger, 'F', "Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.", "", "");
-    		   	}
-    			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
-    			if(isDuplicate)
-    			{
-    				CTILogger.info("Name " + name + " is already used by an MCT-410 in the Yukon database.");
-    				logger = ImportFuncs.writeToImportLog(logger, 'F', "Name " + name + " is already used by an MCT-410 in the Yukon database.", "", "");
-    				badEntry = true;
-    				errorMsg.append("is using an existing MCT-410 name; ");
-    			}
-    		}		
-    		if(template410 instanceof MCT410IL && (new Integer(address).intValue() < 1000000 || new Integer(address).intValue() > 2796201))
-    		{
-    			CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
-    			badEntry = true;
-    			errorMsg.append("address out of MCT410IL range; ");	
-    		}
-            else if(template410 instanceof MCT410CL && (new Integer(address).intValue() < 0 || new Integer(address).intValue() > 2796201))
-            {
-                CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
-                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
-                badEntry = true;
-                errorMsg.append("address out of MCT410CL range; "); 
-            }
-    		if(meterNumber.length() < 1)
-    		{
-    			CTILogger.info("Import entry with name " + name + " has no meter number.");
-    			logger = logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no meter number.", "", "");
-    			badEntry = true;
-    			errorMsg.append("has no meter number specified; ");	
-    		}
-    		if(collectionGrp.length() < 1)
-    		{
-    			CTILogger.info("Import entry with name " + name + " has no collection group.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no collection group.", "", "");
-    			badEntry = true;
-    			errorMsg.append("has no collection group specified; ");	
-    		}
-    		if(altGrp.length() < 1)
-    		{
-    			CTILogger.info("Import entry with name " + name + " has no alternate group.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no alternate group.", "", "");
-    			badEntry = true;
-    			errorMsg.append("has no alternate group specified; ");	
-    		}
-    		if(routeName.length() < 1)
-    		{
-    			CTILogger.info("Import entry with name " + name + " has no specified route.");
-    			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified route.", "", "");
-    			badEntry = true;
-    			errorMsg.append("has no route specified; ");	
-    		}
-    		else
-    		{
-    			routeID = DBFuncs.getRouteFromName(routeName);
-    			if(routeID.intValue() == -12)
-    			{
-    				CTILogger.info("Import entry with name " + name + " specifies a route not in the Yukon database.");
-    				logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a route not in the Yukon database.", "", "");
-    				badEntry = true;
-    				errorMsg.append("has an unknown route; ");
-    			}
-    		}
     		
-    		//failure handling
-    		if(badEntry)
-    		{
-    			GregorianCalendar now = new GregorianCalendar();
-    			currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, errorMsg.toString(), now.getTime());
-    			failures.addElement(currentFailure);
-    		}
-    		else if( updateDeviceID != null)
-    		{
-    			YukonPAObject pao = new YukonPAObject();
-    			pao.setPaObjectID(updateDeviceID);
-        
-    			try
-    			{
-    				//update the paobject if the name has changed
-    				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
-    				pao = (YukonPAObject)t.execute();
-    
-    				if( !pao.getPaoName().equals(name))
-    				{
-    					pao.setPaoName(name);
-    					t = Transaction.createTransaction(Transaction.UPDATE, pao);
-    					pao = (YukonPAObject)t.execute();
-    				}
-            
-    				//update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
-    				DeviceMeterGroup dmg = new DeviceMeterGroup();
-    				dmg.setDeviceID(updateDeviceID);
-    				t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
-    				dmg = (DeviceMeterGroup)t.execute();
-            
-    				if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
-    						!dmg.getTestCollectionGroup().equals(altGrp))
-    				{
-    					dmg.setMeterNumber(meterNumber);
-    					dmg.setCollectionGroup(collectionGrp);
-    					dmg.setTestCollectionGroup(altGrp);
-    					t = Transaction.createTransaction( Transaction.UPDATE, dmg);
-    					dmg = (DeviceMeterGroup)t.execute();
-    				}
-            
-    				//update teh deviceRotues table if hte routeID has changed.
-    				DeviceRoutes dr = new DeviceRoutes();
-    				dr.setDeviceID(updateDeviceID);
-    				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
-    				dr = (DeviceRoutes)t.execute();
-    				if( dr.getRouteID().intValue() != routeID.intValue())
-    				{
-    					dr.setRouteID(routeID);
-    					t = Transaction.createTransaction(Transaction.UPDATE, dr);
-    					dr = (DeviceRoutes)t.execute();
-    				}
-            
-    			} catch (TransactionException e)
-    			{
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			}
-    		}
-    		//actual 410 creation
-    		else
-    		{
-    			Integer deviceID = DBFuncs.getNextMCTID();
-    			GregorianCalendar now = new GregorianCalendar();
-    			lastImportTime = now;
-    			Integer templateID = template410.getPAObjectID();
-    			MCT400SeriesBase current410;
-    			if(currentIL != null)
-    			{
-    				currentIL = (MCT410IL)template410;
-    				current410 = currentIL;
-    			}
-    			else if(currentCL != null)
-    			{
-    				currentCL = (MCT410CL)template410;
-    				current410 = currentCL;
-    			}
-    			current410 = template410;
-    			current410.setPAOName(name);
-    			current410.setDeviceID(deviceID);
-    			current410.setAddress(new Integer(address));
-    			current410.getDeviceMeterGroup().setMeterNumber(meterNumber);
-    			current410.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
-    			current410.getDeviceMeterGroup().setTestCollectionGroup(altGrp);
-    			current410.getDeviceRoutes().setRouteID(routeID);
-    			com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
-    			objectsToAdd.getDBPersistentArrayList().add(current410);
-    			
-    			//grab the points we need off the template
-    			ArrayList points = DBFuncs.getPointsForPAO(templateID);
-    			boolean hasPoints = false;
-    			for (int i = 0; i < points.size(); i++)
-    			{
-    				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(new Integer(DBFuncs.getNextPointID() + i));
-    				((com.cannontech.database.data.point.PointBase) points.get(i)).getPoint().setPaoID(deviceID);
-    				objectsToAdd.getDBPersistentArrayList().add(points.get(i));
-    				hasPoints = true;
-    			}
-    			
-    			try
-    			{
-    				/*
-    				 * Do we want to do this every iteration or just use one
-    				 * connection for the whole import run??
-    				 */
-    				/*conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    				
-    				if(hasPoints)
-    				{				
-    					objectsToAdd.setDbConnection(conn);
-    					objectsToAdd.add();
-    					
-    				}
-    				else
-    				{
-    					current410.setDbConnection(conn);
-    					current410.add();
-    				}
-    				
-    				successArrayList.addElement(imps.elementAt(j));
-    				logger = ImportFuncs.writeToImportLog(logger, 'S', "MCT-410 " + name + " with address " + address + ".", "", "");
-    				synchronized(paoIDsForPorter)
-    				{				
-    					paoIDsForPorter.addElement(current410.getPAObjectID());
-    				}
-    				successCounter++;
-    			}
-    			catch( java.sql.SQLException e )
-    			{
-    				e.printStackTrace();
-    				StringBuffer tempErrorMsg = new StringBuffer(e.toString());
-    				currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, tempErrorMsg.toString(), now.getTime());
-    				failures.addElement(currentFailure);
-    				logger = ImportFuncs.writeToImportLog(logger, 'F', "MCT410 with name " + name + "failed on INSERT into database.", e.toString(), e.toString());
-    			}
-    			finally
-    			{
-    				try
-    				{
-    					if( conn != null )
-    					{
-    						conn.commit();
-    						conn.close();
-    					}
-    				}
-    				catch( java.sql.SQLException e )
-    				{
-    					e.printStackTrace();
-    				}
-    			}
-    		}
-    	}
-    	conn = null;	
-    	//remove executed ImportData entries
-    	try
-    	{
-    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    		ImportFuncs.flushImportTable(imps, conn);
-    	}
-    	catch( java.sql.SQLException e )
-    	{
-    		e.printStackTrace();
-    		logger = ImportFuncs.writeToImportLog(logger, 'F', "PREVIOUSLY USED IMPORT ENTRIES NOT REMOVED: THEY WOULD NOT DELETE!!!", e.toString(), e.toString());
-    	}
-    	finally
-    	{
-    		try
-    		{
-    			if( conn != null )
-    			{
-    				conn.commit();
-    				conn.close();
-    			}
-    		}
-    		catch( java.sql.SQLException e )
-    		{
-    			e.printStackTrace();
-    		}
-    	}
-    	
-    	conn = null;
-    	//store failures
-    	try
-    	{
-    		//having trouble with fail adds...want to make sure these work
-    		for(int m = 0; m < failures.size(); m++)
-    		{
-    			((NestedDBPersistent)failures.elementAt(m)).setOpCode(Transaction.INSERT);
-    		}		
-    		
-    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-    		ImportFuncs.storeFailures(successArrayList, failures, conn);
-    	}
-    	catch( java.sql.SQLException e )
-    	{
-    		e.printStackTrace();
-    		logger = ImportFuncs.writeToImportLog(logger, 'F', "FAILURES NOT RECORDED: THEY WOULD NOT INSERT!!!", e.toString(), e.toString());
-    	}
-    	finally
-    	{
-    		try
-    		{
-    			if( conn != null )
-    			{
-    				conn.commit();
-    				conn.close();
-    			}
-    		}
-    		catch( java.sql.SQLException e )
-    		{
-    			e.printStackTrace();
-    		}
-    	}
-    	
-    	//send off a big DBChangeMsg so all Yukon entities know what's goin' on...
-    	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[1], getDispatchConnection());
-        DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410CL[1], getDispatchConnection());
-    	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
-    	
-    	DBFuncs.writeTotalSuccess(successCounter);
-    	DBFuncs.writeTotalAttempted(imps.size());
-    	Date now = new Date();
-    	DBFuncs.writeLastImportTime(now);
-    	
-    	try
-    	{
-    		getDispatchConnection().disconnect();
-    		dispatchConn = null;
-    	}
-    	catch(java.io.IOException ioe)
-    	{
-    		logger = ImportFuncs.writeToImportLog(logger, 'N', "Error disconnecting from dispatch: " + ioe.toString(), "", "");
-    		CTILogger.info("An exception occured disconnecting from dispatch");
-    	}
-    	
-    }
-    
-    public void runCRSToSAM_PTJ(ArrayList entries) { }
-    
     /** 
      * Stop us
      */

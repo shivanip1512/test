@@ -225,7 +225,7 @@ public class YukonToCRSFuncs
                 custAccount.getCustomerAccount().setAccountNotes(stmt.getRow(0)[5].toString());
                 custAccount.setEnergyCompanyID(new Integer(stmt.getRow(0)[6].toString()));
                 
-                //Load the other pieces we care about, todate (no need to load the other vectors, we'll worry about that later.
+                //Load the other pieces we care about, to date (no need to load the other vectors, we'll worry about that later.
                 Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getAccountSite()).execute();
                 Transaction.createTransaction(Transaction.RETRIEVE, custAccount.getCustomer().getCustomer()).execute();
                 return custAccount;
@@ -269,6 +269,7 @@ public class YukonToCRSFuncs
         
         return null;
     }
+    
     public static ServiceCompany retrieveServiceCompany(String code)
     {
         SqlStatement stmt = new SqlStatement("SELECT COMPANYID, COMPANYNAME, ADDRESSID, MAINPHONENUMBER, MAINFAXNUMBER, PRIMARYCONTACTID, HITYPE, ENERGYCOMPANYID " +
@@ -320,14 +321,20 @@ public class YukonToCRSFuncs
     	return null;
     }
 
-    public static Customer updateCustomer(Customer customer, String debtorNumber)
+    public static Customer updateCustomer(Customer customer, String debtorNumber, String transID)
     {
     	//TODO add support for bad entry
         boolean isChanged = false;
 
-        if(debtorNumber.length() > 0 && !debtorNumber.equalsIgnoreCase(customer.getAltTrackingNumber()))
+        if(debtorNumber.length() > 0 && !debtorNumber.equalsIgnoreCase(customer.getCustomerNumber()))
         {
-            customer.setAltTrackingNumber(debtorNumber);
+            customer.setCustomerNumber(debtorNumber);
+            isChanged = true;
+        }
+        
+        if(transID != null && transID.length() > 0 && !transID.equalsIgnoreCase(customer.getAltTrackingNumber()))
+        {
+            customer.setAltTrackingNumber(transID);
             isChanged = true;
         }
 
@@ -446,7 +453,8 @@ public class YukonToCRSFuncs
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205
 		}
-		else{
+		else
+        {
 			boolean isChanged = false;
 			if (meterHardwareBase.getInventoryBase().getAccountID().intValue() != accountID.intValue())
 			{	//AccountID chagned!
@@ -545,7 +553,7 @@ public class YukonToCRSFuncs
     	com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
 		customer.getCustomer().setPrimaryContactID(contactID);
 		customer.getCustomer().setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL));
-		customer.getCustomer().setAltTrackingNumber(debtorNumber);
+		customer.getCustomer().setCustomerNumber(debtorNumber);
 		
 		//Create a new customeraccount
 		customerAccount = new CustomerAccount();
@@ -723,5 +731,21 @@ public class YukonToCRSFuncs
 		}
 		CTILogger.info(errorMessage);
 	}
+    
+    public static void moveToFailureCRSToSAM_PremMeterChg(CRSToSAM_PremiseMeterChange entry, String errorMessage)
+    {
+        FailureCRSToSAM_PremMeterChg failureCrsToSam = new FailureCRSToSAM_PremMeterChg(entry);
+        failureCrsToSam.setErrorMsg(errorMessage);
+        failureCrsToSam.setDatetime(new Date());
+        try {
+            Transaction.createTransaction(Transaction.INSERT, failureCrsToSam).execute();
+            Transaction.createTransaction(Transaction.DELETE, entry).execute();
+        } catch (TransactionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        CTILogger.info(errorMessage);
+    }
+    
 
 }
