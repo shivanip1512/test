@@ -25,6 +25,7 @@ import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.xml.utils.IntVector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DBChangeListener;
@@ -105,6 +106,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			_mspInstance = new Multispeak();
 			_mspInstance.getPilConn().addMessageListener(_mspInstance);
 			DefaultDatabaseCache.getInstance().addDBChangeListener(_mspInstance);
+			CTILogger.info("Porter Connection Valid: " + Multispeak.getInstance().getPilConn().isValid());
 		}
 
 		return _mspInstance;
@@ -178,7 +180,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 	 */
 	private void messageReceived_MeterReadEvent(MeterReadEvent mrEvent, Return returnMsg)
 	{
-		MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
+        MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
 		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
 		String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
 		
@@ -188,15 +190,50 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		meterRead.setObjectID(keyValue);
 		meterRead.setUtility(MultispeakFuncs.AMR_TYPE);
 
-		if( returnMsg.getStatus() != 0)
+	    if( returnMsg.getStatus() != 0)
 		{
-			String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
-			CTILogger.info(result);
-			meterRead.setErrorString(result);
+	    	LiteYukonPAObject lPao = null;
+	    	if( key.equalsIgnoreCase("meternumber"))
+	    		lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(keyValue);
+	    	else
+	    		lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(keyValue);
+	    			
+	        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
+	        CTILogger.info(result);
+	        
+	        LitePoint[] litePoints = PAOFuncs.getLitePointsForPAObject(lPao.getYukonID());
+			for (int i = 0; i < litePoints.length; i ++)
+			{
+				LitePoint lp = litePoints[i];
+				if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kW
+				{
+					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+					if( pointData != null)
+					{
+						meterRead.setKW(new Float(pointData.getValue()));
+						GregorianCalendar cal = new GregorianCalendar();
+						cal.setTime(pointData.getPointDataTimeStamp());
+						meterRead.setKWDateTime(cal);
+					}
+				}
+				else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT && lp.getPointOffset() == 1)	//kWh
+				{
+					PointData pointData = PointChangeCache.getPointChangeCache().getValue(lp.getPointID());
+					if( pointData != null)
+					{
+						meterRead.setPosKWh(new BigInteger(String.valueOf(new Double(pointData.getValue()).intValue())));
+						GregorianCalendar cal = new GregorianCalendar();
+						cal.setTime(pointData.getPointDataTimeStamp());
+						meterRead.setReadingDate(cal);
+					}
+				}
+			}
+
+	        meterRead.setErrorString(result);
 		}
-		else
-		{
-			if(returnMsg.getVector().size() > 0 )
+	    else
+	    {
+	        if(returnMsg.getVector().size() > 0 )
 			{
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
 				{
@@ -214,8 +251,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 					}
 				}
 			}
-		}
-		mrEvent.setMeterRead(meterRead);
+	    }
+	    mrEvent.setMeterRead(meterRead);
 	}
 
 	/** ERRORCODE								Description
