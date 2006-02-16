@@ -55,6 +55,7 @@ public class ServletUtil {
      * if used in session, this attribute should be passed an ArrayList of FilterWrappers
      */
     public static final String FILTER_INVEN_LIST = "InventoryFilters";
+    public static final String FILTER_WORKORDER_LIST = "WorkOrderFilters";
     
 	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
 	public static final String ATT_REPORT_BEAN = "REPORT_BEAN";
