@@ -28,9 +28,14 @@ public class FilterBean
     private List<ServiceCompany> availableServiceCompanies;
     private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
+   
+    private YukonSelectionList availableServiceTypes;
+    private YukonSelectionList availableServiceStatuses;
+    
     boolean hasAssignedFilters = false;
     private ArrayList assignedFilters = new ArrayList();
     private YukonListEntry defaultFilterSelection;
+    private String filterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
     
     /**
      * Need further filters:
@@ -67,7 +72,7 @@ public class FilterBean
     public YukonSelectionList getAvailableFilters()
     {
         if(availableFilters == null)
-            availableFilters = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY, true, true);
+            availableFilters = energyCompany.getYukonSelectionList(filterListName, true, true);
         return availableFilters;
     }
     
@@ -106,6 +111,20 @@ public class FilterBean
         return availableDeviceStates;
     }
     
+    public YukonSelectionList getAvailableServiceTypes()
+    {
+        if(availableServiceTypes == null)
+            availableServiceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        return availableServiceTypes;
+    }
+
+    public YukonSelectionList getAvailableServiceStatuses()
+    {
+        if(availableServiceStatuses == null)
+            availableServiceStatuses = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        return availableServiceStatuses;
+    }
+
     public ArrayList getAssignedFilters()
     {
         return assignedFilters;
@@ -118,9 +137,25 @@ public class FilterBean
     }
 
     public YukonListEntry getDefaultFilterSelection() {
-        defaultFilterSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+    	if( defaultFilterSelection == null)
+    	{
+	    	if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
+	    		defaultFilterSelection = (YukonListEntry)getAvailableServiceStatuses().getYukonListEntries().get(0);
+	    	else if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
+	    		defaultFilterSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    	else
+	    		defaultFilterSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+    	}
         return defaultFilterSelection;
     }
+
+	public String getFilterListName() {
+		return filterListName;
+	}
+
+	public void setFilterListName(String filterListName) {
+		this.filterListName = filterListName;
+	}
     
     
 }
