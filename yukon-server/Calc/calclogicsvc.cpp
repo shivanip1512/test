@@ -881,7 +881,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                             _update = true;
                             _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
                             _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
-    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << CtiTime(_nextCheckTime) << endl;
@@ -898,7 +898,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     else
                     {
                         bool wasCalcPoint = true;
-    
+
                         wasCalcPoint = isANewCalcPointID( ((CtiDBChangeMsg*)message)->getId() );
                         if( wasCalcPoint )
                         {
@@ -906,7 +906,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                             _update = true;
                             _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
                             _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
-    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime()  << " - Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
@@ -914,9 +914,9 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         }
                     }
                 }
-    
+
                 break;
-    
+
             case MSG_COMMAND:
                 // we will handle some messages
                 op = ((CtiCommandMsg*)message)->getOperation();
@@ -928,16 +928,16 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         dout << CtiTime() << " CalcLogic received a shutdown message - Ignoring!!" << endl;
                     }
                     break;
-    
+
                 case (CtiCommandMsg::AreYouThere):
                     {
                         // echo back the same message - we are here
-    
+
                         CtiCommandMsg *pCmd = (CtiCommandMsg*)message;
                         if(pCmd->getUser() != CALCLOGICNAME)
                         {
                             if(_conxion) _conxion->WriteConnQue( pCmd->replicateMessage() );
-    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " CalcLogic has been pinged" << endl;
@@ -962,10 +962,10 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                         dout << CtiTime() << " CalcLogic received a unknown/don't care Command message- " << op << endl;
                     }
                     break;
-    
+
                 }
                 break;
-    
+
             case MSG_POINTDATA:
                 {
                     _lastDispatchMessageTime = CtiTime::now();
@@ -975,24 +975,24 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     _dispatchConnectionBad = false;
                 }
                 break;
-    
+
             case MSG_MULTI:
                 // pull all of the messages out
                 msgMulti = (CtiMultiMsg *)message;
-    
+
                 if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
                 }
-    
+
                 for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
                 {
                     // recursive call to parse this message
                     parseMessage( msgMulti->getData( )[x], calcThread );
                 }
                 break;
-    
+
             case MSG_SIGNAL:
                 // not an error
                 if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
@@ -1001,8 +1001,9 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
                 }
                 break;
-    
+
             default:
+                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
@@ -1129,7 +1130,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
         RWDBTable    componentTable     = db.table("CALCCOMPONENT");
         RWDBSelector componentselector  = db.selector();
-    
+
         componentselector << componentTable["POINTID"]
         << componentTable["COMPONENTTYPE"]
         << componentTable["COMPONENTPOINTID"]
@@ -1138,18 +1139,18 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
         << componentTable["FUNCTIONNAME"];
 
         componentselector.from( componentTable );
-    
+
         // put in order
         componentselector.orderBy(componentselector["COMPONENTORDER"]);
 
         //cout << componentselector.asString() << endl;
-    
+
         RWDBReader  componentRdr = componentselector.reader( conn );
-    
+
         //  iterate through the components
         while( componentRdr() )
         {
-    
+
             //  read 'em in, and append to the class
             componentRdr["POINTID"] >> pointid;
             componentRdr["COMPONENTTYPE"] >> componenttype;
@@ -1157,7 +1158,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             componentRdr["OPERATION"] >> operationtype;
             componentRdr["CONSTANT"] >> constantvalue;
             componentRdr["FUNCTIONNAME"] >> functionname;
-    
+
 
             //    order is defined externally - by the order that they're selected and appended
             calcThread->appendPointComponent( pointid, componenttype, componentpointid,
@@ -1354,7 +1355,7 @@ void CtiCalcLogicService::updateCalcData()
     CtiTime start, stop;
 
     try
-	{
+    {
         start = start.now();
 
         CtiDBChangeMsg *dbChangeMsg;
@@ -1379,7 +1380,7 @@ void CtiCalcLogicService::updateCalcData()
             if( dbChangeMsg->getTypeOfChange() != ChangeTypeAdd )
             {
                 calcThread->removePointStoreObject( pointID );
-            
+
             }
     /*      else
             {
@@ -1408,15 +1409,15 @@ void CtiCalcLogicService::updateCalcData()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to reload calc tables" << endl;
         }
-	}
-	catch(...)
+    }
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-		calcThread->resumeThreads();
-		resumeInputThread();
+        calcThread->resumeThreads();
+        resumeInputThread();
         _restart = true;
     }
 }
