@@ -3,19 +3,17 @@ package com.cannontech.stars.web.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
-import com.cannontech.database.cache.functions.AuthFuncs;
 
 
 public class ManipulationBean 
@@ -29,7 +27,12 @@ public class ManipulationBean
     private List<Warehouse> availableWarehouses;
     private YukonListEntry defaultActionSelection;
     
+    private YukonSelectionList availableServiceTypes;
+    private YukonSelectionList availableServiceStatuses;
+    
+    private String actionFilterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
     private int failures = 0;
+    private ArrayList<LiteWorkOrderBase> failedWorkOrders = null;
     private ArrayList failedSerialNumbers = null;
     private int successes = 0;
     private List<String> actionsApplied = null;
@@ -94,11 +97,41 @@ public class ManipulationBean
         return availableWarehouses;
     }   
     
+    public YukonSelectionList getAvailableServiceTypes()
+    {
+        if(availableServiceTypes == null)
+            availableServiceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        return availableServiceTypes;
+    }
+
+    public YukonSelectionList getAvailableServiceStatuses()
+    {
+        if(availableServiceStatuses == null)
+            availableServiceStatuses = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        return availableServiceStatuses;
+    }
+    
     public YukonListEntry getDefaultActionSelection() {
-        defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+    	if( defaultActionSelection == null)
+    	{
+	    	if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
+	    		defaultActionSelection = (YukonListEntry)getAvailableServiceStatuses().getYukonListEntries().get(0);
+	    	else if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
+	    		defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    	else
+	    		defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+    	}
         return defaultActionSelection;
     }
 
+	public String getActionFilterListName() {
+		return actionFilterListName;
+	}
+
+	public void setActionFilterListName(String actionFilterListName) {
+		this.actionFilterListName = actionFilterListName;
+	}
+	
     public List<String> getActionsApplied() {
         return actionsApplied;
     }
@@ -130,4 +163,12 @@ public class ManipulationBean
     public void setSuccesses(int successes) {
         this.successes = successes;
     }
+
+	public ArrayList<LiteWorkOrderBase> getFailedWorkOrders() {
+		return failedWorkOrders;
+	}
+
+	public void setFailedWorkOrders(ArrayList<LiteWorkOrderBase> failedWorkOrders) {
+		this.failedWorkOrders = failedWorkOrders;
+	}
 }
