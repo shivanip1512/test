@@ -174,7 +174,7 @@ public class InventoryManager extends HttpServlet {
         else if (action.equalsIgnoreCase("ViewInventoryResults"))
             viewInventoryResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateInventoryResults"))
-            redirect = req.getContextPath() + "/operator/Hardware/ChangeSet.jsp";
+            redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
 		resp.sendRedirect( redirect );
 	}
 	
