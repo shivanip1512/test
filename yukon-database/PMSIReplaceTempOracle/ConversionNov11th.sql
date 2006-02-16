@@ -81,7 +81,7 @@ alter table ApplianceChiller
       references YukonListEntry (EntryID);
 
 alter table ApplianceChiller
-   add constraint FK_DUALSTAGE_APPLNCBSE foreign key (ApplianceID)
+   add constraint FK_APPLCHILL_APPLNCBSE foreign key (ApplianceID)
       references ApplianceBase (ApplianceID);
 
 /*
