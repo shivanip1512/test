@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/15 18:42:38 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/16 17:57:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -70,8 +70,8 @@ public:
 
    enum TickleTiming
    {
-       StandardTickleTime =  300,
-       StandardMonitorTime = 380
+       StandardTickleTime =  30,    //Time between responses
+       StandardMonitorTime = 300    //Time until dead
    };
 
    State getState(void);
