@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/5/2006 4:39:28 PM                          */
+/* Created on:     2/16/2006 11:17:24 AM                        */
 /*==============================================================*/
 
 
@@ -204,6 +204,26 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index Contact.Indx_ContLstName
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ContactNotification')
+            and   name  = 'Indx_CntNotif_CntId'
+            and   indid > 0
+            and   indid < 255)
+   drop index ContactNotification.Indx_CntNotif_CntId
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Customer')
+            and   name  = 'Indx_Cstmr_PcId'
+            and   indid > 0
+            and   indid < 255)
+   drop index Customer.Indx_Cstmr_PcId
 go
 
 
@@ -2202,7 +2222,8 @@ go
 create table CALCBASE (
    POINTID              numeric              not null,
    UPDATETYPE           varchar(16)          not null,
-   PERIODICRATE         numeric              not null
+   PERIODICRATE         numeric              not null,
+   QualityFlag          char(1)              not null
 )
 go
 
@@ -2283,7 +2304,11 @@ create table CAPCONTROLSUBSTATIONBUS (
    CurrentVarLoadPointID numeric              not null,
    CurrentWattLoadPointID numeric              not null,
    MapLocationID        varchar(64)          not null,
-   StrategyID           numeric              null
+   StrategyID           numeric              not null,
+   CurrentVoltLoadPointID numeric              not null,
+   AltSubID             numeric              not null,
+   SwitchPointID        numeric              not null,
+   DualBusEnabled       char(1)              not null
 )
 go
 
@@ -2442,7 +2467,8 @@ create table CapControlFeeder (
    CurrentVarLoadPointID numeric              not null,
    CurrentWattLoadPointID numeric              not null,
    MapLocationID        varchar(64)          not null,
-   StrategyID           numeric              null
+   StrategyID           numeric              not null,
+   CurrentVoltLoadPointID numeric              not null
 )
 go
 
@@ -2903,6 +2929,15 @@ go
 
 
 /*==============================================================*/
+/* Index: Indx_CntNotif_CntId                                   */
+/*==============================================================*/
+create   index Indx_CntNotif_CntId on ContactNotification (
+ContactID
+)
+go
+
+
+/*==============================================================*/
 /* Table: Customer                                              */
 /*==============================================================*/
 create table Customer (
@@ -2921,6 +2956,15 @@ go
 INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)', 0, '(none)', 'F');
 alter table Customer
    add constraint PK_CUSTOMER primary key  (CustomerID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_Cstmr_PcId                                       */
+/*==============================================================*/
+create   index Indx_Cstmr_PcId on Customer (
+PrimaryContactID
+)
 go
 
 
@@ -4332,7 +4376,7 @@ create table DynamicCCCapBank (
    PrevVerificationControlStatus numeric              not null,
    VerificationControlIndex numeric              not null,
    AdditionalFlags      varchar(32)          not null,
-   CurrentDailyOperation numeric              not null
+   CurrentDailyOperations numeric              not null
 )
 go
 
@@ -4365,7 +4409,8 @@ create table DynamicCCFeeder (
    EstimatedPFValue     float                not null,
    CurrentVarPointQuality numeric              not null,
    WaiveControlFlag     char(1)              not null,
-   AdditionalFlags      varchar(32)          not null
+   AdditionalFlags      varchar(32)          not null,
+   CurrentVoltPointValue float                not null
 )
 go
 
@@ -4405,7 +4450,10 @@ create table DynamicCCSubstationBus (
    CurrVerifyFeederId   numeric              not null,
    CurrVerifyCBOrigState numeric              not null,
    VerificationStrategy numeric              not null,
-   CbInactivityTime     numeric              not null
+   CbInactivityTime     numeric              not null,
+   CurrentVoltPointValue float                not null,
+   SwitchPointStatus    char(1)              not null,
+   AltSubControlValue   float                not null
 )
 go
 
@@ -5811,7 +5859,7 @@ create table LMProgramDirectGear (
    RampOutPercent       numeric              not null,
    FrontRampOption      varchar(80)          not null,
    FrontRampTime        numeric              not null,
-   BackRampOption       varchar(80)          not null,
+   BackRampOption       image                not null,
    BackRampTime         numeric              not null
 )
 go
@@ -6424,11 +6472,11 @@ go
 
 
 insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
-        select pointid,
-        '',
-        'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
-        'N',
-        1, 0  from point;
+	select pointid,
+	'',
+	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
+	'N',
+	1, 0  from point;
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key  (PointID)
 go
@@ -6702,10 +6750,23 @@ create table SettlementConfig (
    ConfigID             numeric              not null,
    FieldName            varchar(64)          not null,
    FieldValue           varchar(64)          not null,
-   CTISettlement        varchar(32)          not null
+   CTISettlement        varchar(32)          not null,
+   YukonDefID           numeric              not null,
+   Description          varchar(128)         not null,
+   EntryID              numeric              not null,
+   RefEntryID           numeric              not null
 )
 go
 
+
+insert into SettlementConfig values (-1, 'CDI Rate', '0', 'HECO', '3651', 'Controlled Demand Incentive, Dollars per kW.', 0, 0);
+insert into SettlementConfig values (-2, 'ERI Rate', '0', 'HECO', '3651', 'Energy Reduction Incentive, Dollars per kWh.', 0, 0);
+insert into SettlementConfig values (-3, 'UF Delay', '0', 'HECO', '3651', 'Under frequency Delay, in minutes.', 0, 0);
+insert into SettlementConfig values (-4, 'Dispatched Delay', '0', 'HECO', '3651', 'Dispatched Delay, in minutes.', 0, 0);
+insert into SettlementConfig values (-5, 'Emergency Delay', '0', 'HECO', '3651', 'Emergency Delay, in minutes.', 0, 0);
+insert into SettlementConfig values (-6, 'Allowed Violations', '0', 'HECO', '3651', 'Max number of allowed violations, deviations.', 0, 0);
+insert into SettlementConfig values (-7, 'Restore Duration', '0', 'HECO', '3651', 'Duration for event restoration to occur, in minutes.', 0, 0);
+insert into SettlementConfig values (-8, 'Demand Charge', '0', 'HECO', '3651', 'Rate Schedule billing demand charge', 0, 0);
 
 alter table SettlementConfig
    add constraint PK_SETTLEMENTCONFIG primary key  (ConfigID)
@@ -7568,9 +7629,7 @@ insert into YukonGroupRole values (-1276,-2,-900,-90001,'(none)');
 insert into YukonGroupRole values (-1277,-2,-900,-90002,'(none)');
 insert into YukonGroupRole values (-1278,-2,-900,-90003,'(none)');
 insert into YukonGroupRole values (-1279,-2,-900,-90004,'(none)');
-
 insert into YukonGroupRole values (-1280,-2,-204,-20400,'(none)');
-
 insert into YukonGroupRole values (-1281,-2,-900,-90005,'(none)');
 insert into YukonGroupRole values (-1282,-2,-900,-90006,'(none)');
 insert into YukonGroupRole values (-1283,-2,-900,-90007,'(none)');
@@ -7868,6 +7927,9 @@ insert into YukonListEntry values (130, 100, 0, 'Absolute Value', 0);
 insert into YukonListEntry values (131, 100, 0, 'kW from kVA/kVAr', 0);
 insert into YukonListEntry values (132, 100, 0, 'Modulo Divide', 0);
 insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
+insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
+insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
+insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
 insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
@@ -8895,6 +8957,7 @@ insert into YukonSelectionList values (1062,'N','(none)','Irrigation meter volta
 insert into YukonSelectionList values (1063,'N','(none)','Water heater location selection','WHLocation','Y');
 insert into YukonSelectionList values (1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y');
 insert into YukonSelectionList values (1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y');
+insert into YukonSelectionList values (1066,'A','(none)','Energy Company Settlement Types','Settlement','Y');
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key  (ListID)
@@ -9167,7 +9230,6 @@ insert into YukonUserRole values (-776,-1,-900,-90001,'(none)');
 insert into YukonUserRole values (-777,-1,-900,-90002,'(none)');
 insert into YukonUserRole values (-778,-1,-900,-90003,'(none)');
 insert into YukonUserRole values (-779,-1,-900,-90004,'(none)');
-
 insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
 insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
 insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');
@@ -9436,6 +9498,18 @@ go
 
 
 alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
+      references POINT (POINTID)
+go
+
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CAPCONTR_CVOLTPTID foreign key (CurrentVoltLoadPointID)
+      references POINT (POINTID)
+go
+
+
+alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CCSUBB_CCSTR foreign key (StrategyID)
       references CapControlStrategy (StrategyID)
 go
@@ -9516,6 +9590,24 @@ go
 alter table CalcPointBaseline
    add constraint FK_ClcPtBs_ClcBs foreign key (PointID)
       references CALCBASE (POINTID)
+go
+
+
+alter table CapControlFeeder
+   add constraint FK_CAPCONTR_VARPTID foreign key (CurrentVarLoadPointID)
+      references POINT (POINTID)
+go
+
+
+alter table CapControlFeeder
+   add constraint FK_CAPCONTR_VOLTPTID foreign key (CurrentVoltLoadPointID)
+      references POINT (POINTID)
+go
+
+
+alter table CapControlFeeder
+   add constraint FK_CAPCONTR_WATTPTID foreign key (CurrentWattLoadPointID)
+      references POINT (POINTID)
 go
 
 
@@ -9990,12 +10082,6 @@ go
 alter table DynamicPointAlarming
    add constraint FK_DynPtAl_Pt foreign key (PointID)
       references POINT (POINTID)
-go
-
-
-alter table DynamicPointAlarming
-   add constraint FKf_DynPtAl_SysL foreign key (LogID)
-      references SYSTEMLOG (LOGID)
 go
 
 

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/19/2005 3:10:51 PM                        */
+/* Created on:     2/16/2006 11:19:08 AM                        */
 /*==============================================================*/
 
 
@@ -41,6 +41,16 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CustomerAccount.CstAccCstPro_FK
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CustomerAccount')
+            and   name  = 'Indx_CstAcc_CstId'
+            and   indid > 0
+            and   indid < 255)
+   drop index CustomerAccount.Indx_CstAcc_CstId
 go
 
 
@@ -709,6 +719,15 @@ go
 
 
 /*==============================================================*/
+/* Index: Indx_CstAcc_CstId                                     */
+/*==============================================================*/
+create   index Indx_CstAcc_CstId on CustomerAccount (
+CustomerID
+)
+go
+
+
+/*==============================================================*/
 /* Table: CustomerFAQ                                           */
 /*==============================================================*/
 create table CustomerFAQ (
@@ -865,6 +884,7 @@ insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1065, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1066, 'YukonSelectionList');
 
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key  (EnergyCompanyID, ItemID, MappingCategory)

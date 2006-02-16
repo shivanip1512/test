@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/19/2005 3:13:02 PM                        */
+/* Created on:     2/16/2006 11:18:31 AM                        */
 /*==============================================================*/
 
 
@@ -11,6 +11,8 @@ drop index CstAcc_CstLdInfo_FK;
 drop index CstLdTy_CstLdInf_FK;
 
 drop index CstAccCstPro_FK;
+
+drop index Indx_CstAcc_CstId;
 
 drop index CstAccCstHrdB_FK;
 
@@ -327,6 +329,13 @@ create index CstAccCstPro_FK on CustomerAccount (
 );
 
 /*==============================================================*/
+/* Index: Indx_CstAcc_CstId                                     */
+/*==============================================================*/
+create index Indx_CstAcc_CstId on CustomerAccount (
+   CustomerID ASC
+);
+
+/*==============================================================*/
 /* Table: CustomerFAQ                                           */
 /*==============================================================*/
 create table CustomerFAQ  (
@@ -465,6 +474,7 @@ insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1065, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1066, 'YukonSelectionList');
 
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key (EnergyCompanyID, ItemID, MappingCategory);
