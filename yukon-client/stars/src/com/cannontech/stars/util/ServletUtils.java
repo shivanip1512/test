@@ -49,6 +49,8 @@ public class ServletUtils {
     public static final int ACTION_CHANGESTATE = 2;
     public static final int ACTION_TOSERVICECOMPANY = 3;
     public static final int ACTION_TOWAREHOUSE = 4;
+    public static final int ACTION_CHANGE_WO_SERVICE_STATUS = 5;
+    public static final int ACTION_CHANGE_WO_SERVICE_TYPE = 6;
 	/**
 	 * When used in session, the attribute with this name should be passed a CtiNavObject
 	 */
@@ -584,7 +586,7 @@ public class ServletUtils {
 	
 	public static ContactNotification getContactNotification(StarsCustomerContact contact, int notifCatID) {
 		for (int i = 0; i < contact.getContactNotificationCount(); i++) {
-			if (contact.getContactNotification(i).getNotifCatID() == notifCatID)
+			if (contact.getContactNotification(i) != null && contact.getContactNotification(i).getNotifCatID() == notifCatID)
 				return contact.getContactNotification(i);
 		}
 		
