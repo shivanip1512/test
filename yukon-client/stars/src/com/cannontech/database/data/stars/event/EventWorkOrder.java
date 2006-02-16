@@ -1,7 +1,10 @@
 package com.cannontech.database.data.stars.event;
 
+import java.util.ArrayList;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.Transaction;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 
 /**
  * <p>Title: </p>
@@ -67,25 +70,35 @@ public class EventWorkOrder extends EventBase {
 		}
     }*/
     
-	/*public static EventWorkOrder[] getAllEventWorkOrders(int orderID) {
+	public static ArrayList<EventWorkOrder> retrieveEventWorkOrders(int orderID)
+	{
+		ArrayList<EventWorkOrder> eventWorkOrders = new ArrayList<EventWorkOrder>();
+		String sql = "SELECT EB.EVENTID, USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP " +
+					" FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
+					com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO " +
+					" WHERE EB.EVENTID = EWO.EVENTID " +
+					" AND ORDERID = " + orderID;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		
 		try {
-			Integer[] eventIDs = com.cannontech.database.db.stars.event.EventWorkOrder.getEventIDs( orderID );
-			
-			EventWorkOrder[] events = new EventWorkOrder[ eventIDs.length ];
-			for (int i = 0; i < events.length; i++) {
-				events[i] = new EventWorkOrder();
-				events[i].setEventID( eventIDs[i] );
-				events[i] = (EventWorkOrder) Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
-			}
-	        
-			return events;
+			stmt.execute();
+        	for (int i = 0; i < stmt.getRowCount(); i++)
+        	{
+        		EventWorkOrder eventWorkOrder = new EventWorkOrder();
+        		eventWorkOrder.setEventID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() ));
+        		eventWorkOrder.getEventBase().setUserID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[1]).intValue() ));
+        		eventWorkOrder.getEventBase().setSystemCategoryID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[2]).intValue() ));
+        		eventWorkOrder.getEventBase().setActionID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() ));
+        		eventWorkOrder.getEventBase().setEventTimestamp((java.util.Date) stmt.getRow(i)[4] );
+        		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer( orderID));
+        	}
 		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
+		catch( Exception e ) {
+		    CTILogger.error( e.getMessage(), e );
 		}
-    	
-		return null;
-	}*/
+		
+		return eventWorkOrders;
+	}
     
 	/**
 	 * Returns the eventWorkOrder.
