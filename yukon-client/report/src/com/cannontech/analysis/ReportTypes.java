@@ -138,7 +138,7 @@ public class ReportTypes
 		HECO_LMEventSummaryModel.class,
 		HECO_MonthlyBillingSettlementModel.class,
 		HECO_CustomerMonthlyBillingSettlementModel.class,
-		HECO_DSMISModel.class,	
+		HECO_DSMISModel.class	
 	};
 		
 	/** String names for report types */
@@ -228,7 +228,7 @@ public class ReportTypes
 		HECO_LMEVENT_SUMMARY_STRING,
 		HECO_MONTHLY_BILLING_STRING,
 		HECO_CUSTOMER_MONTHLY_BILLING_STRING,
-		HECO_DSMIS_STRING,
+		HECO_DSMIS_STRING
 	};
 
 
