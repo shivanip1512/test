@@ -62,6 +62,8 @@ private:
 
     void _registerForPoints();
 
+    static void sendUserQuit(void *who);
+
     time_t   _nextCheckTime;
 
 };

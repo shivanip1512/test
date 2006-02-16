@@ -46,6 +46,7 @@ private:
 
     void periodicThread( void );
     void onUpdateThread( void );
+    static void sendUserQuit(void *who);
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
