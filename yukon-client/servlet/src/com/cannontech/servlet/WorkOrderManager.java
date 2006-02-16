@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,21 +32,32 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.FilterWrapper;
+import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.task.ManipulateInventoryTask;
+import com.cannontech.stars.util.task.ManipulateWorkOrderTask;
+import com.cannontech.stars.util.task.TimeConsumingTask;
+import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
+import com.cannontech.stars.web.bean.InventoryBean;
+import com.cannontech.stars.web.bean.ManipulationBean;
+import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
@@ -72,6 +84,12 @@ public class WorkOrderManager extends HttpServlet {
 			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
 		}
     	
+		java.util.Enumeration enum1 = req.getParameterNames();
+		  while (enum1.hasMoreElements()) {
+			String ele = enum1.nextElement().toString();
+			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
+		}
+
 		StarsYukonUser user = (StarsYukonUser)
 				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
@@ -110,10 +128,132 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("SendWorkOrder"))
 			sendWorkOrder( user, req, session );
-		
+        else if (action.equalsIgnoreCase("UpdateFilters"))
+            updateFilters( user, req, session );
+        else if (action.equalsIgnoreCase("ManipulateResults"))
+        	manipulateResults( user, req, session );
+        else if (action.equalsIgnoreCase("ApplyActions"))
+        	applyActions( user, req, session );		
+        else if( action.equalsIgnoreCase("ViewAllResults"))
+        	viewAllResults(req, session, true);
+        else if( action.equalsIgnoreCase("HideAllResults"))
+        	viewAllResults(req, session, false);
+
 		resp.sendRedirect( redirect );
 	}
-	
+	private void applyActions(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+
+        
+        String[] selectionIDs = req.getParameterValues("SelectionIDs");
+        String[] actionTexts = req.getParameterValues("ActionTexts");
+        String[] actionTypeIDs = req.getParameterValues("ActionTypeIDs");
+        List<String> appliedActions = new ArrayList();
+        
+        Integer changeServiceCompanyID = null;
+        Integer changeServiceStatusID = null;
+        Integer changeServiceTypeID = null;        
+//        Integer newEnergyCompanyID = null;
+        
+        if(selectionIDs != null && selectionIDs.length > 0 && selectionIDs.length == actionTypeIDs.length)
+        {
+            for(int j = 0; j < selectionIDs.length; j++)
+            {
+                if(new Integer(actionTypeIDs[j]).intValue() == ServletUtils.ACTION_TOSERVICECOMPANY)
+                    changeServiceCompanyID = new Integer(selectionIDs[j]);
+                else if(new Integer(actionTypeIDs[j]).intValue() == ServletUtils.ACTION_CHANGE_WO_SERVICE_STATUS)
+                    changeServiceStatusID = new Integer(selectionIDs[j]);
+                else if(new Integer(actionTypeIDs[j]).intValue() ==  ServletUtils.ACTION_CHANGE_WO_SERVICE_TYPE)
+                    changeServiceTypeID = new Integer(selectionIDs[j]);    
+                
+                appliedActions.add(actionTexts[j]);
+            }
+            
+//            InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+            WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+            ManipulationBean mBean = (ManipulationBean) session.getAttribute("woManipulationBean");
+//            ArrayList theWares = iBean.getInventoryList();
+            if(workOrderBean.getNumberOfRecords() < 1)
+            {
+                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no Work Orders selected to update.");
+                redirect = referer;
+                return;
+            }
+            
+            session.removeAttribute( ServletUtils.ATT_REDIRECT );
+    		LiteYukonUser liteYukonUser = (LiteYukonUser ) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+
+            TimeConsumingTask  task = new ManipulateWorkOrderTask( liteYukonUser, workOrderBean.getWorkOrderList(), changeServiceCompanyID, changeServiceStatusID, changeServiceTypeID, req );
+            long id = ProgressChecker.addTask( task );
+            String redir = req.getContextPath() + "/operator/WorkOrder/WorkOrderResultSet.jsp";
+            
+            //Wait 2 seconds for the task to finish (or error out), if not, then go to the progress page
+            for (int i = 0; i < 2; i++) 
+            {
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {}
+                
+                task = ProgressChecker.getTask(id);
+                
+                if (task.getStatus() == UpdateSNRangeTask.STATUS_FINISHED) {
+                    session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+                    ProgressChecker.removeTask( id );
+                    if (redir != null) redirect = redir;
+                    return;
+                }
+                
+                if (task.getStatus() == UpdateSNRangeTask.STATUS_ERROR) {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+                    ProgressChecker.removeTask( id );
+                    redirect = referer;
+                    return;
+                }
+            }
+            
+            mBean.setActionsApplied(appliedActions);
+//            session.setAttribute("woManipulationBean", mBean);
+            session.setAttribute(ServletUtils.ATT_REDIRECT, redir);
+            session.setAttribute(ServletUtils.ATT_REFERRER, redir);
+            redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+        }
+    }
+	private void manipulateResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		redirect = req.getContextPath() + "/operator/WorkOrder/ChangeWorkOrders.jsp";		
+	}
+
+	private void viewAllResults(HttpServletRequest req, HttpSession session, boolean viewResults) {
+		WorkOrderBean workOrderBean = (WorkOrderBean)session.getAttribute("workOrderBean");
+		workOrderBean.setViewAllResults(viewResults);
+	}
+
+	private void updateFilters(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+    {
+    	String start = req.getParameter("start");
+    	String stop = req.getParameter("stop");
+    	WorkOrderBean woBean = (WorkOrderBean)session.getAttribute("workOrderBean");
+    	woBean.setStart(start);
+    	woBean.setStop(stop);
+
+        String[] selectionIDs = req.getParameterValues("SelectionIDs");
+        String[] filterTexts = req.getParameterValues("FilterTexts");
+        String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
+
+        List<FilterWrapper> filterWrappers = new ArrayList<FilterWrapper>();
+        if( filterTexts != null)
+        {
+	        for(int j = 0; j < filterTexts.length; j++)
+	        {
+	            FilterWrapper wrapper = new FilterWrapper(yukonDefIDs[j], filterTexts[j], selectionIDs[j] );
+	            filterWrappers.add(wrapper);
+	        }
+        }
+        session.setAttribute( ServletUtil.FILTER_WORKORDER_LIST, filterWrappers );
+        redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp";
+    };
+	}
+
 	private void searchWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
