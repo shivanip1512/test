@@ -7,8 +7,9 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Comparator;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -17,9 +18,11 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -81,7 +84,7 @@ public class WorkOrderBean {
 		}
 	};
 	
-	private final Comparator ORDER_DATE_CMPTOR = new Comparator() {
+	/*private final Comparator ORDER_DATE_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
 			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
@@ -90,14 +93,22 @@ public class WorkOrderBean {
 				rslt = so1.getOrderID() - so2.getOrderID();
 			return rslt;
 		}
-	};
+	};*/
 	
+	private String start = null;
+	private String stop = null;
+	private Date startDate = null;
+	private Date stopDate = null;
+	
+	private int numberOfRecords = 0;
+	private boolean viewAllResults = false;
+	private ArrayList<FilterWrapper> filters = null;
 	private int sortBy = CtiUtilities.NONE_ZERO_ID;
 	private int sortOrder = SORT_ORDER_ASCENDING;
 	private int filterBy = CtiUtilities.NONE_ZERO_ID;
-	private int serviceStatus = CtiUtilities.NONE_ZERO_ID;
-	private int serviceType = CtiUtilities.NONE_ZERO_ID;
-	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
+//	private int serviceStatus = CtiUtilities.NONE_ZERO_ID;
+//	private int serviceType = CtiUtilities.NONE_ZERO_ID;
+//	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
@@ -106,12 +117,12 @@ public class WorkOrderBean {
 	private ArrayList searchResults = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList workOrderList = null;
+	private ArrayList<LiteWorkOrderBase> workOrderList = null;
 	
 	public WorkOrderBean() {
 	}
 	
-	private long getRelevantDate(LiteWorkOrderBase liteOrder) {
+/*	private long getRelevantDate(LiteWorkOrderBase liteOrder) {
 		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS) {
 			if (getServiceStatus() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING)
 				return liteOrder.getDateReported();
@@ -124,7 +135,7 @@ public class WorkOrderBean {
 		}
 		
 		return liteOrder.getDateReported();
-	}
+	}*/
 
 	/**
 	 * @return
@@ -138,8 +149,8 @@ public class WorkOrderBean {
 	/**
 	 * @return
 	 */
-	public ArrayList getWorkOrderList() {
-		//if (workOrderList != null) return workOrderList;
+	public ArrayList<LiteWorkOrderBase> getWorkOrderList() {
+		if (workOrderList != null) return workOrderList;
 		
 		ArrayList workOrders = null;
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
@@ -147,50 +158,109 @@ public class WorkOrderBean {
 		else
 			workOrders = getEnergyCompany().loadAllWorkOrders( true );
 		
+		for (int i = 0; i < getFilters().size(); i++)
+		{
+			ArrayList filteredWorkOrders = new ArrayList();
+			FilterWrapper filter = getFilters().get(i);
+			Integer filterTypeID = new Integer(filter.getFilterTypeID());
+            Integer specificFilterID = new Integer(filter.getFilterID());			
+		
+			if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY)
+			{
+				for (int j = 0; j < workOrders.size(); j++)
+				{
+					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+					if (liteOrder.getServiceCompanyID() == specificFilterID)
+						filteredWorkOrders.add( liteOrder );
+				}
+				workOrders = filteredWorkOrders;
+			}
+			else if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE)
+			{
+				for (int j = 0; j < workOrders.size(); j++)
+				{
+					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+					if (liteOrder.getWorkTypeID() == specificFilterID)
+						filteredWorkOrders.add( liteOrder );
+				}
+				workOrders = filteredWorkOrders;
+			}
+			else if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
+			{
+				//Do nothing, skip this filter until all the other filters are done.  See the next iteration below.
+			}
+		}
+		
+		for (int i = 0; i < getFilters().size(); i++)
+		{	//Do just the status filter, since we already handled the other filters.
+
+			ArrayList filteredWorkOrders = new ArrayList();
+			FilterWrapper filter = getFilters().get(i);
+			Integer filterTypeID = new Integer(filter.getFilterTypeID());
+            Integer specificFilterID = new Integer(filter.getFilterID());			
+				
+			if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
+			{
+				if (getStartDate() == null && getStopDate() == null)
+				{
+					for (int j = 0; j < workOrders.size(); j++)
+					{
+						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+						if (liteOrder.getCurrentStateID() == specificFilterID)
+							filteredWorkOrders.add( liteOrder );
+					}
+				}
+				else
+				{
+					for (int j = 0; j < workOrders.size(); j++)
+					{
+						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+						ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(liteOrder.getOrderID());
+						for (int k = 0; k < eventWorkOrders.size(); k++)
+						{
+							if( getStartDate() != null && getStopDate() == null)
+							{
+								if( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
+									filteredWorkOrders.add(liteOrder);
+							}
+							else if (getStopDate() != null && getStartDate() == null)
+							{
+								if( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
+									filteredWorkOrders.add(liteOrder);
+							}
+							else 
+							{
+								if( (eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
+									( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
+									filteredWorkOrders.add(liteOrder);
+							}
+						}
+					}
+				}
+				workOrders = filteredWorkOrders;
+			}
+			else
+			{
+				//Do nothing, we already handled the other filters.  See previous iteration through filters above.
+			}
+		}
+		
 		java.util.TreeSet sortedOrders = null;
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
 			sortedOrders = new java.util.TreeSet( ORDER_NO_CMPTOR );
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
-			sortedOrders = new java.util.TreeSet( ORDER_DATE_CMPTOR );
+//		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
+//			sortedOrders = new java.util.TreeSet( ORDER_DATE_CMPTOR );
 		else
 			sortedOrders = new java.util.TreeSet( ORDER_ID_CMPTOR );
+		sortedOrders.addAll(workOrders);
 		
-		ArrayList workOrders2 = workOrders;
-		if (getServiceStatus() > 0) {
-			workOrders2 = new ArrayList();
-			for (int i = 0; i < workOrders.size(); i++) {
-				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (liteOrder.getCurrentStateID() == getServiceStatus())
-					workOrders2.add( liteOrder );
-			}
-		}
-		
-		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE) {
-			for (int i = 0; i < workOrders2.size(); i++) {
-				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders2.get(i);
-				if (liteOrder.getWorkTypeID() == getServiceType())
-					sortedOrders.add( liteOrder );
-			}
-		}
-		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY) {
-			for (int i = 0; i < workOrders2.size(); i++) {
-				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders2.get(i);
-				if (liteOrder.getServiceCompanyID() == getServiceCompany())
-					sortedOrders.add( liteOrder );
-			}
-		}
-		else {
-			for (int i = 0; i < workOrders2.size(); i++)
-				sortedOrders.add( workOrders2.get(i) );
-		}
-		
-		workOrderList = new ArrayList();
+		workOrderList = new ArrayList<LiteWorkOrderBase>();
 		java.util.Iterator it = sortedOrders.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
-				workOrderList.add( it.next() );
+				workOrderList.add( (LiteWorkOrderBase)it.next() );
 			else
-				workOrderList.add( 0, it.next() );
+				workOrderList.add( 0, (LiteWorkOrderBase)it.next() );
 		}
 		
 		return workOrderList;
@@ -270,14 +340,14 @@ public class WorkOrderBean {
 		for (int i = minOrderNo; i <= maxOrderNo; i++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
-			Date date = StarsUtils.translateDate( getRelevantDate(liteOrder) );
-			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
+//			Date date = StarsUtils.translateDate( getRelevantDate(liteOrder) );
+//			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
 			
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
 					.append("<a href='WorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append("dateStr").append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='8%' >").append(ServletUtils.forceNotEmpty( starsOrder.getOrderedBy() )).append("</td>").append(LINE_SEPARATOR);
@@ -323,13 +393,6 @@ public class WorkOrderBean {
 	/**
 	 * @return
 	 */
-	public int getFilterBy() {
-		return filterBy;
-	}
-
-	/**
-	 * @return
-	 */
 	public int getPage() {
 		return page;
 	}
@@ -339,34 +402,6 @@ public class WorkOrderBean {
 	 */
 	public int getPageSize() {
 		return pageSize;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getServiceCompany() {
-		return serviceCompany;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getServiceStatus() {
-		return serviceStatus;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getServiceType() {
-		return serviceType;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getSortBy() {
-		return sortBy;
 	}
 
 	/**
@@ -386,15 +421,6 @@ public class WorkOrderBean {
 	/**
 	 * @param i
 	 */
-	public void setFilterBy(int i) {
-		filterBy = i;
-		// Search result should be updated
-		workOrderList = null;
-	}
-
-	/**
-	 * @param i
-	 */
 	public void setPage(int i) {
 		page = i;
 	}
@@ -404,34 +430,6 @@ public class WorkOrderBean {
 	 */
 	public void setPageSize(int i) {
 		pageSize = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setServiceCompany(int i) {
-		serviceCompany = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setServiceStatus(int i) {
-		serviceStatus = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setServiceType(int i) {
-		serviceType = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setSortBy(int i) {
-		sortBy = i;
 	}
 
 	/**
@@ -469,4 +467,102 @@ public class WorkOrderBean {
 		searchResults = list;
 	}
 
+	public ArrayList<FilterWrapper> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(ArrayList<FilterWrapper> newFilters) {
+		if( !newFilters.equals(filters))
+		{
+			this.filters = newFilters;
+			workOrderList = null;	//TODO dump the existing list!
+		}
+	}
+
+	public String getFilterHTML(HttpServletRequest req)
+    {
+		//TODO Need to tweak so we don't load all the WorkOrders multiple times. 
+//        setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
+        
+        setFilters((ArrayList<FilterWrapper>) req.getSession().getAttribute(ServletUtil.FILTER_WORKORDER_LIST));
+        String hardwareNum = getHTML(req);
+//        setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
+//        numberOfRecords = hardwareNum;
+        return hardwareNum;
+    }
+
+	public boolean isViewAllResults() {
+		return viewAllResults;
+	}
+
+	public void setViewAllResults(boolean viewAllResults) {
+		this.viewAllResults = viewAllResults;
+	}
+
+	public int getNumberOfRecords() {
+		if( workOrderList != null)
+			return workOrderList.size();
+		return 0;
+	}
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String newStart)
+	{
+		this.start = newStart;
+		if( newStart != null)
+			setStartDate(ServletUtil.parseDateStringLiberally(start));
+		else
+			setStartDate(null);
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getStop() {
+		return stop;
+	}
+
+	public void setStop(String newStop) {
+		this.stop = newStop;
+		if( newStop != null)
+			setStopDate(ServletUtil.parseDateStringLiberally(stop));
+		else
+			setStopDate(null);		
+	}
+
+	public Date getStopDate() {
+		return stopDate;
+	}
+
+	public void setStopDate(Date stopDate) {
+		this.stopDate = stopDate;
+	}
+
+	public void setWorkOrderList(ArrayList<LiteWorkOrderBase> workOrderList) {
+		this.workOrderList = workOrderList;
+	}
+
+	public int getSortBy() {
+		return sortBy;
+	}
+
+	public void setSortBy(int sortBy) {
+		this.sortBy = sortBy;
+	}
+
+	public int getFilterBy() {
+		return filterBy;
+	}
+
+	public void setFilterBy(int filterBy) {
+		this.filterBy = filterBy;
+	}
 }
