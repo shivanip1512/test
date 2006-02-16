@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/05 21:05:36 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/16 14:49:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ protected:
    // additional thread states
    enum
    {
-        INOUTSYNC = CtiThread::LAST,
+        INWAITFOROUT = CtiThread::LAST,
         SOCKCONNECTED,
         SOCKFAILED
    };
