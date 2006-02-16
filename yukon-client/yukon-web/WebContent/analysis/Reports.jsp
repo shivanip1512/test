@@ -207,10 +207,10 @@ function enableDates(value)
 							  	<cti:getProperty propertyid="<%= ReportingRole.STARS_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.STARS_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.SETTLEMENT_REPORTS_GROUP%>">
-							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.SETTLEMENT_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.ADMIN_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
+							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.SETTLEMENT_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.SETTLEMENT_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Settlement Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-							  	<cti:getProperty propertyid="<%= ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.ADMIN_REPORTS_GROUP)%>"/></a>
+							  	<cti:getProperty propertyid="<%= ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.SETTLEMENT_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        
 							</td>
