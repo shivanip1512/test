@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigtest.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/02/17 17:04:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ void main(int argc, char **argv)
             {
                CtiMultiMsg *pChg = (CtiMultiMsg*)c;
 
-               for(int x = 0; x < pChg->getData().entries(); x++)
+               for(int x = 0; x < pChg->getData().size(); x++)
                {
                   ((CtiMessage*)(pChg->getData()[x]))->dump();
                }

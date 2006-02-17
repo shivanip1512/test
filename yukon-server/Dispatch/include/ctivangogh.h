@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/02/15 18:41:54 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/02/17 17:04:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,17 +200,17 @@ public:
 
     CtiMultiMsg* generateMultiMessageForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
 
-    INT   assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, RWOrdered &aOrdered);
+    INT   assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered);
     INT   assembleMultiFromMultiForConnection(const CtiVanGoghConnectionManager &Conn,
                                               CtiMessage                        *pMsg,
-                                              RWOrdered                         &Ord);
+                                              CtiMultiMsg_vec                         &Ord);
     INT   assembleMultiFromPointDataForConnection(const CtiVanGoghConnectionManager &Conn,
                                                   CtiMessage                        *pMsg,
-                                                  RWOrdered                         &Ord);
+                                                  CtiMultiMsg_vec                         &Ord);
     INT   assembleMultiFromSignalForConnection(const CtiVanGoghConnectionManager &Conn,
                                                CtiMessage                        *pMsg,
-                                               RWOrdered                         &Ord);
-    INT assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, RWOrdered &Ord);
+                                               CtiMultiMsg_vec                         &Ord);
+    INT assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &Ord);
 
     BOOL  isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn,
                                          const LONG                          pID);

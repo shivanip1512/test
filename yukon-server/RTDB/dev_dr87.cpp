@@ -1595,7 +1595,7 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
     insertPointIntoReturnMsg (pMsg, pPIL);
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -1720,7 +1720,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     // reset this flag so device makes it on the queue later
     resetScanFlag(ScanRateGeneral);
 
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -1886,7 +1886,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
     }
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -2165,7 +2165,7 @@ BOOL CtiDeviceDR87::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
 
     if (aReturnMsg != NULL)
     {
-        aReturnMsg->PointData().insert(aDataPoint);
+        aReturnMsg->PointData().push_back(aDataPoint);
         aDataPoint = NULL;   // We just put it on the list...
     }
     else

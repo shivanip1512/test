@@ -2567,16 +2567,22 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 /*===========================================================================
     CtiLMMultiMsgExecutor
 ===========================================================================*/
+CtiLMMultiMsgExecutor::CtiLMMultiMsgExecutor(CtiMultiMsg* multiMsg)
+{
+    _multiMsg =  multiMsg; 
+}
+
 /*---------------------------------------------------------------------------
     Execute
 ---------------------------------------------------------------------------*/    
 void CtiLMMultiMsgExecutor::Execute()
 {
     CtiLMExecutorFactory f;
-    RWOrdered& messages = _multiMsg->getData();
-    while(messages.entries( )>0)
+    CtiMultiMsg_vec& messages = _multiMsg->getData();
+    while(messages.size( )>0)
     {
-        CtiMessage* message = (CtiMessage*)(messages.pop());
+        CtiMessage* message = (CtiMessage*)(messages.back());
+        messages.pop_back();
         if( message != NULL )
         {
             CtiLMExecutor* executor = f.createExecutor(message);

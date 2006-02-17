@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2006/01/16 20:06:03 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -593,7 +593,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                                 OutMessage->Request.TrxID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
-                                                RWOrdered( )) );
+                                                CtiMultiMsg_vec( )) );
     }
     else
     {
@@ -1264,7 +1264,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, RWTPtrSlist< CtiM
         }
 
         // send the whole mess to dispatch
-        if( retMsg->PointData().entries() > 0 )
+        if( retMsg->PointData().size() > 0 )
         {
             retList.insert(retMsg);
         }
@@ -1302,7 +1302,7 @@ int CtiDeviceMCT::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int sc
         pMsg->insert( scanType );
         pMsg->insert( InMessage->EventCode );  // The error number from dsm2.h or yukon.h which was reported.
 
-        pPIL->PointData().insert(pMsg);
+        pPIL->PointData().push_back(pMsg);
         pMsg = NULL;
     }
     else
@@ -1489,7 +1489,7 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
@@ -2329,7 +2329,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
 
     if( parse.isKeyValid("install") )
@@ -3284,7 +3284,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType);
                     if(pData != NULL)
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -3629,7 +3629,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
             if(pData != NULL)
             {
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;
             }
         }

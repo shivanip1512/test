@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/01/16 20:45:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.16  2006/02/17 17:04:34  tspar
+* CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+*
 * Revision 1.15  2006/01/16 20:45:40  mfisher
 * Message Flags naming change
 *
@@ -207,7 +210,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         nRet = BADPARAM;
 
         resultString = " Cannot control SA Digital groups except with command \"control shed\"  :" + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -243,7 +246,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             //  Form up the reply here since the ExecuteRequest function will consume the
             //  OutMessage.
             //
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
@@ -266,7 +269,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             nRet = NoRouteGroupDevice;
 
             resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
             retList.insert( pRet );
 
             if(OutMessage)

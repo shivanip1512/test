@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -1643,7 +1643,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         {
             if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
 
-            returnMsg->PointData().insert(pData);
+            returnMsg->PointData().push_back(pData);
             pData = NULL;  // We just put it on the list...
         }
     }
@@ -1662,7 +1662,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
         if(pData != NULL)
         {
             if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
-            returnMsg->PointData().insert(pData);
+            returnMsg->PointData().push_back(pData);
             pData = NULL;  // We just put it on the list...
         }
     }

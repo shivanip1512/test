@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.167 $
-* DATE         :  $Date: 2006/02/06 15:49:41 $
+* REVISION     :  $Revision: 1.168 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1654,7 +1654,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         //send dispatch lp data directly
                         markv->processDispatchReturnMessage( retMsg );
 
-                        if( !retMsg->getData().isEmpty() )
+                        if( !retMsg->getData().empty() )
                         {
                             VanGoghConnection.WriteConnQue( retMsg );
                         }

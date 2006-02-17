@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/02/17 17:04:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -310,7 +310,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                   OutMessage->Request.TrxID,
                                                   OutMessage->Request.UserID,
                                                   OutMessage->Request.SOE,
-                                                  RWOrdered());
+                                                  CtiMultiMsg_vec());
 
             retList.insert( eMsg );
 
@@ -356,7 +356,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                              OutMessage->Request.TrxID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                             CtiMultiMsg_vec()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -399,7 +399,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                    OutMTemp->Request.TrxID,
                                                    OutMTemp->Request.UserID,
                                                    OutMTemp->Request.SOE,
-                                                   RWOrdered()));
+                                                   CtiMultiMsg_vec()));
                }
                else
                {
@@ -430,7 +430,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           OutMessage->Request.TrxID,
                                           OutMessage->Request.UserID,
                                           OutMessage->Request.SOE,
-                                          RWOrdered()));
+                                          CtiMultiMsg_vec()));
 
          break;
       }
@@ -554,7 +554,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
 
             if(pPIL != NULL)
             {
-               pPIL->PointData().insert(pData);
+               pPIL->PointData().push_back(pData);
                pData = NULL;  // We just put it on the list...
             }
             else
@@ -570,7 +570,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
       }
    }
 
-   if(pPIL->PointData().entries() == 0)
+   if(pPIL->PointData().size() == 0)
    {
       pPIL->setResultString("Communication Successful.  TCU has no DB defined points.");
    }

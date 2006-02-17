@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -614,7 +614,7 @@ void CtiPILServer::resultThread()
                                                             InMessage->Return.TrxID,
                                                             InMessage->Return.UserID,
                                                             InMessage->Return.SOE,
-                                                            RWOrdered()));
+                                                            CtiMultiMsg_vec()));
 
                 }
                 else
@@ -1173,9 +1173,10 @@ int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
 
     if(pMulti != NULL)
     {
-        RWOrderedIterator itr( pMulti->getData() );
+        CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
+        //RWOrderedIterator itr( pMulti->getData() );
 
-        for(;NULL != (pMyMsg = (CtiMessage*)itr());)
+        for(;NULL != (pMyMsg = (CtiMessage*)*itr ); itr++)
         {
             switch( pMyMsg->isA() )
             {
@@ -1595,12 +1596,15 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
     }
     else if(MsgPtr->isA() == MSG_MULTI)
     {
-        RWOrderedIterator itr( ((CtiMultiMsg*)MsgPtr)->getData() );
+        CtiMultiMsg_vec::iterator itr = ((CtiMultiMsg*)MsgPtr)->getData().begin();
+        //RWOrderedIterator itr( ((CtiMultiMsg*)MsgPtr)->getData() );
         CtiMessage *pMyMsg;
 
-        while(NULL != (pMyMsg = (CtiMessage*)itr()))
+        while( ((CtiMultiMsg*)MsgPtr)->getData().end() != itr )//TS
         {
-            ReportMessagePriority(pMyMsg, DeviceManager);                  // And recurse.
+            pMyMsg = (CtiMessage*)*itr;
+            ReportMessagePriority(pMyMsg, DeviceManager);// And recurse.
+            itr++;
         }
     }
 

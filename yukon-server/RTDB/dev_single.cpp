@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -755,7 +755,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             {
                 string msg;
-                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -810,7 +810,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
             }
 
-            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)

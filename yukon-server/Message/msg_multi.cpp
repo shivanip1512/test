@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_multi.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dlldefs.h"
 #include "ctibase.h"
 #include "logger.h"
+#include "utility.h"
 
 RWDEFINE_COLLECTABLE( CtiMultiMsg, MSG_MULTI );
 
@@ -52,22 +53,22 @@ void CtiMultiMsg::dump() const
 {
    Inherited::dump();
 
-   for(int i = 0; i < _bag.entries(); i++)
+   for(int i = 0; i < _bag.size(); i++)
    {
       ((CtiMessage*)_bag[i])->dump();
    }
 }
 
-CtiMultiMsg&  CtiMultiMsg::setData(const RWOrdered& Data)
+CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
 {
-   for(int i = 0; i < Data.entries(); i++)
+   for(int i = 0; i < Data.size(); i++)
    {
       RWCollectable *pNew = Data[i]->newSpecies();
 
       if(pNew != NULL)
       {
          *pNew = *(Data[i]);     // Use object's copy constructor!
-         _bag.insert(pNew);
+         _bag.push_back(pNew);
       }
       else
       {
@@ -91,7 +92,7 @@ CtiMessage& CtiMultiMsg::setConnectionHandle(VOID *p)
 {
    ConnectionHandle = p;
 
-   for(int i = 0; i < _bag.entries(); i++)
+   for(int i = 0; i < _bag.size(); i++)
    {
       ((CtiMessage*)_bag[i])->setConnectionHandle(p);
    }
@@ -104,14 +105,19 @@ VOID* CtiMultiMsg::getConnectionHandle()
    return ConnectionHandle;
 }
 
-CtiMultiMsg::CtiMultiMsg(const RWOrdered &pointData, int Pri) :
-   _bag(pointData),
+CtiMultiMsg::CtiMultiMsg(CtiMultiMsg_vec& pointData, int Pri) :
    CtiMessage(Pri)
-{}
+{
+    CtiMultiMsg_vec::iterator itr;
+    itr = pointData.begin();
+    for(;itr != pointData.end(); itr++ )
+        _bag.push_back(*itr);
+}
 
 CtiMultiMsg::~CtiMultiMsg()
 {
-   _bag.clearAndDestroy();    // Clean up any leftovers.
+    delete_vector(_bag);
+   _bag.clear();    // Clean up any leftovers.
 }
 
 CtiMultiMsg::CtiMultiMsg(const CtiMultiMsg &aRef)
@@ -127,21 +133,21 @@ CtiMultiMsg& CtiMultiMsg::operator=(const CtiMultiMsg& aRef)
    if(this != &aRef)
    {
       Inherited::operator=(aRef);
-
-      _bag.clearAndDestroy();     // Make sure it is empty!
+      delete_vector(_bag);
+      _bag.clear();     // Make sure it is empty!
 
       for(int i = 0; i < aRef.getCount(); i++)
       {
          // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
          CtiMessage* newp = aRef[i]->replicateMessage();
-         _bag.insert(newp);
+         _bag.push_back(newp);
       }
    }
 
    return *this;
 }
 
-int CtiMultiMsg::getCount() const       { return _bag.entries(); }
+int CtiMultiMsg::getCount() const       { return _bag.size(); }
 
 CtiPointDataMsg* CtiMultiMsg::operator[](size_t i)
 {
@@ -156,14 +162,15 @@ CtiPointDataMsg* CtiMultiMsg::operator[](size_t i) const
 // Clear out the list.
 void CtiMultiMsg::clear()
 {
-   _bag.clearAndDestroy();
+    delete_vector(_bag);
+   _bag.clear();
 }
 
 void CtiMultiMsg::insert(RWCollectable* a)
 {
-   _bag.insert(a);
+   _bag.push_back(a);
 }
 
-const RWOrdered& CtiMultiMsg::getData() const     { return _bag; }
-RWOrdered& CtiMultiMsg::getData()                 { return _bag; }
+const CtiMultiMsg_vec& CtiMultiMsg::getData() const     { return _bag; }
+CtiMultiMsg_vec& CtiMultiMsg::getData()                 { return _bag; }
 

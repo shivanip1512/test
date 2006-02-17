@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,7 +176,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &Time
 
              if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
              {
-                 ReturnMsg->PointData().insert(pData);
+                 ReturnMsg->PointData().push_back(pData);
                  pData = NULL;  // We just put it on the list...
              }
          }

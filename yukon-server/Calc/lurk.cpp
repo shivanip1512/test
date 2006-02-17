@@ -131,9 +131,9 @@ int inspectMessage( CtiMessage *message )
         
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
-            cout << "MultiMsg - contains " << msgMulti->getData( ).entries( ) << " messages" << endl;
+            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << endl;
             retval = 0;
-            for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+            for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
                 cout << "    multimsg submessage " << (x+1) << endl;
                 cout << "        ";

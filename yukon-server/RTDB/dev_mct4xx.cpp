@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/16 20:41:02 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,7 +165,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                                                                     OutMessage->Request.TrxID,
                                                                     OutMessage->Request.UserID,
                                                                     OutMessage->Request.SOE,
-                                                                    RWOrdered( )) );
+                                                                    CtiMultiMsg_vec( )) );
                         }
                     }
                 }

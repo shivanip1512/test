@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -605,7 +605,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 if((pOM = lcuControl(OutMessage)) == 0)
                 {
                     vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  RWOrdered()) );
+                    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  CtiMultiMsg_vec()) );
                 }
                 else
                 {
@@ -627,7 +627,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 }
 
                 vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -646,7 +646,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " error looping " << getName()<< endl;
                 }
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -667,7 +667,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             break;
         }
     }
@@ -865,7 +865,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
                     {
                         if(pPIL != NULL)
                         {
-                            pPIL->PointData().insert(pData);
+                            pPIL->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                         else
@@ -882,7 +882,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
             }
 
 
-            if(pPIL->PointData().entries() == 0)
+            if(pPIL->PointData().size() == 0)
             {
                 pPIL->setResultString("Communication Successful.  LCU has no DB defined points.");
             }
@@ -938,7 +938,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
                 {
                     if(pPIL != NULL)
                     {
-                        pPIL->PointData().insert(pData);
+                        pPIL->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                     else
@@ -954,7 +954,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
             }
         }
 
-        if(pPIL->PointData().entries() == 0)
+        if(pPIL->PointData().size() == 0)
         {
             pPIL->setResultString("Communication Successful.  LCU has no DB defined points.");
         }
@@ -1021,7 +1021,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
                     {
                         if(pPIL != NULL)
                         {
-                            pPIL->PointData().insert(pData);
+                            pPIL->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                         else
@@ -1045,7 +1045,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
         }
     }
 
-    if(pPIL->PointData().entries() == 0)
+    if(pPIL->PointData().size() == 0)
     {
         pPIL->setResultString("Communication Successful.  LCU has no DB defined points.");
     }
@@ -1143,7 +1143,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
 
                 if(pData != NULL)
                 {
-                    pPIL->PointData().insert(pData);
+                    pPIL->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -1165,7 +1165,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
             pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, string( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
             if(pData != NULL)
             {
-                pPIL->PointData().insert(pData);
+                pPIL->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -1248,7 +1248,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                     {
                         if(pPIL != NULL)
                         {
-                            pPIL->PointData().insert(pData);
+                            pPIL->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                         else
@@ -1266,7 +1266,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                 offset += 2;
             }
 
-            if(pPIL->PointData().entries() == 0)
+            if(pPIL->PointData().size() == 0)
             {
                 pPIL->setResultString("Communication Successful.  LCU has no DB defined points.");
             }
@@ -1302,7 +1302,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                     {
                         if(pPIL != NULL)
                         {
-                            pPIL->PointData().insert(pData);
+                            pPIL->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                         else
@@ -1318,7 +1318,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                 }
             }
 
-            if(pPIL->PointData().entries() == 0)
+            if(pPIL->PointData().size() == 0)
             {
                 pPIL->setResultString("Communication Successful.  LCU has no DB defined points.");
             }

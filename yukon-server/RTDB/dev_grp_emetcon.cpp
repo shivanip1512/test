@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.TrxID,
                                                       OutMessage->Request.UserID,
                                                       OutMessage->Request.SOE,
-                                                      RWOrdered());
+                                                      CtiMultiMsg_vec());
 
                 if( Route->getType() == RouteTypeVersacom )
                 {
@@ -188,7 +188,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.TrxID,
                                                       OutMessage->Request.UserID,
                                                       OutMessage->Request.SOE,
-                                                      RWOrdered());
+                                                      CtiMultiMsg_vec());
 
                 retList.insert( pRet );
 
@@ -221,7 +221,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.TrxID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
-                                              RWOrdered());
+                                              CtiMultiMsg_vec());
 
         retList.insert( pRet );
 

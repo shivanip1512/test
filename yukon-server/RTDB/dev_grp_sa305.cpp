@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/01/16 20:46:04 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.21  2006/02/17 17:04:34  tspar
+* CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+*
 * Revision 1.20  2006/01/16 20:46:04  mfisher
 * Message Flags naming change
 *
@@ -279,7 +282,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
          *  Form up the reply here since the ExecuteRequest function will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
@@ -302,7 +305,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         retList.insert( pRet );
 
         if(OutMessage)

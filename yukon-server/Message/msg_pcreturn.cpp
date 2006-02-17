@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "msg_pcreturn.h"
 #include "logger.h"
 #include "collectable.h"
+#include "utility.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -144,17 +145,17 @@ CtiReturnMsg& CtiReturnMsg::setUserMessageId(long user_message_id)
     return *this;
 }
 
-const RWOrdered& CtiReturnMsg::PointData() const
+const CtiMultiMsg_vec& CtiReturnMsg::PointData() const
 {
     return Inherited::getData();
 }
 
-RWOrdered& CtiReturnMsg::PointData()
+CtiMultiMsg_vec& CtiReturnMsg::PointData()
 {
     return Inherited::getData();
 }
 
-CtiReturnMsg& CtiReturnMsg::setPointData(const RWOrdered& point_data)
+CtiReturnMsg& CtiReturnMsg::setPointData(const CtiMultiMsg_vec& point_data)
 {
     Inherited::setData( point_data );
     return *this;
@@ -199,7 +200,7 @@ void CtiReturnMsg::dump() const
    dout << " Transmission ID               " << _transmission_id << endl;
    dout << " User Message ID               " << _user_message_id << endl;
 
-   for(int x = 0; x < getData().entries(); x++)
+   for(int x = 0; x < getData().size(); x++)
    {
        ((CtiMessage*)(getData()[x]))->dump();
    }
@@ -228,7 +229,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
                  long transmission_id,
                  long user_message_id,
                  int soe,
-                 const RWOrdered &data) :
+                 CtiMultiMsg_vec &data) :
      _expectMore(0),
      _device_id(device_id),
      _command_string(command_string),
@@ -268,13 +269,14 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
        _user_message_id    = aRef.UserMessageId();
        _expectMore         = aRef.ExpectMore();
 
-       PointData().clearAndDestroy();     // Make sure it is empty!
+       delete_vector( PointData() );
+       PointData().clear();     // Make sure it is empty!
 
-       for(int i = 0; i < aRef.PointData().entries(); i++)
+       for(int i = 0; i < aRef.PointData().size(); i++)
        {
           // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
           CtiMessage* newp = ((CtiMessage*)aRef.PointData()[i])->replicateMessage();
-          PointData().insert(newp);
+          PointData().push_back(newp);
        }
     }
 

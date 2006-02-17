@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1943,7 +1943,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     // reset this flag so device makes it on the queue later
     resetScanFlag(ScanRateGeneral);
 
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -2123,7 +2123,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     }
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }

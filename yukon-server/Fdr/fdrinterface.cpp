@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.21 $
- *    DATE         :  $Date: 2006/01/03 20:23:37 $
+ *    REVISION     :  $Revision: 1.22 $
+ *    DATE         :  $Date: 2006/02/17 17:04:31 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.22  2006/02/17 17:04:31  tspar
+ *     CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+ *
  *     Revision 1.21  2006/01/03 20:23:37  tspar
  *     Moved non RW string utilities from rwutil.h to utility.h
  *
@@ -978,7 +981,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 case MSG_MULTI:
                     //  seperate it out into distinct CtiMessages, so the translation
                     //  function can be a simple switch block
-                    for ( x = 0; x < ((CtiMultiMsg *)incomingMsg)->getData( ).entries( ); x++ )
+                    for ( x = 0; x < ((CtiMultiMsg *)incomingMsg)->getData( ).size( ); x++ )
                     {
                         // for now, send on only the pointdata messages
                         if (((CtiMessage *)((CtiMultiMsg *)incomingMsg)->getData()[x])->isA() == MSG_POINTDATA)
@@ -1082,7 +1085,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
                     {
                         cnt++;
                         incomingMsg = iDispatchQueue.getQueue();
-                        pMultiData->getData( ).insert( incomingMsg );
+                        pMultiData->getData( ).push_back( incomingMsg );
 
                         // if divisible by 500, send it and start again
                         if (cnt % 500 == 0)

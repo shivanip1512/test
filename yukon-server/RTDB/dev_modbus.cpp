@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -493,7 +493,7 @@ void Modbus::sendDispatchResults(CtiConnection &vg_connection)
         {
             _string_results.push_back(CTIDBG_new string(pt_msg->getString()));
 
-            vgMsg->PointData().append(pt_msg);
+            vgMsg->PointData().push_back(pt_msg);
         }
     }
 

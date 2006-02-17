@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/16 20:48:48 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,7 +223,7 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
 
     if(status)
     {
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         pRet->setExpectMore( FALSE );
 
         retList.insert( pRet );
@@ -241,7 +241,7 @@ INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, RWTP
 {
     INT status = 0;
 
-    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered()));
+    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec()));
 
 
     return status;

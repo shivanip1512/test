@@ -179,7 +179,7 @@ RWvistream& operator >> ( RWvistream &strm, std::vector<T>* v )
 }
 
 template <class T>
-RWvistream& operator >> ( RWvistream &strm, std::vector<T> v )
+RWvistream& operator >> ( RWvistream &strm, std::vector<T> &v )
 {
     int num_elements;
     T elem;

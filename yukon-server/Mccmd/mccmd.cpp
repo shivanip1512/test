@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/01/03 20:23:38 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,14 +165,18 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     out += "\r\nresult: ";
     out += msg.ResultString();
 
-    RWOrdered rw_set = msg.PointData();
-    RWOrderedIterator iter(rw_set);
+    CtiMultiMsg_vec rw_set = msg.PointData();
+    //RWOrderedIterator iter(rw_set);
+    CtiMultiMsg_vec::iterator iter = rw_set.begin();
     CtiPointDataMsg* p_data;
 
-    while( (p_data = (CtiPointDataMsg*) iter()) != NULL )
+    while( iter != rw_set.end() )
     {
+        p_data = (CtiPointDataMsg*)*iter;
         out += "\r\n  ";
         out += p_data->getString();
+
+        iter++;
     }
 
     WriteOutput((char*) out.c_str());
@@ -1450,7 +1454,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         else
             WriteOutput( (char*) req->CommandString().c_str() );
 
-        multi_req->getData().insert(req);
+        multi_req->getData().push_back(req);
     }
 
     PILConnection->WriteConnQue(multi_req);
@@ -1593,7 +1597,7 @@ void HandleMessage(RWCollectable* msg,
     {
         CtiMultiMsg* multi_msg = (CtiMultiMsg*) msg;
 
-        for( unsigned i = 0; i < multi_msg->getData( ).entries( ); i++ )
+        for( unsigned i = 0; i < multi_msg->getData( ).size( ); i++ )
         {
             HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map);
         }

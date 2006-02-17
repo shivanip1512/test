@@ -198,35 +198,39 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getLastFeederControlledSendRetries() const;
     BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
-    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents);
+    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakDay();
     BOOL isPeakTime(const CtiTime& currentDateTime);
     void clearOutNewPointReceivedFlags();
-    CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
-    void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
-    void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
+
+    CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled();
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
     static DOUBLE calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
-    BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
+
+    BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
     BOOL isBusVerificationAlreadyStarted();
     BOOL isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime);
-    BOOL capBankVerificationDone(RWOrdered& pointChanges, RWOrdered& ccEvents);
+    BOOL capBankVerificationDone(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     BOOL areThereMoreCapBanksToVerify();
     //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
-    CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
+    CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL isVerificationAlreadyControlled();
     CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify();
-    CtiCCSubstationBus& sendNextCapBankVerificationControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages);
+
+    CtiCCSubstationBus& sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+
     CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCSubstationBus& setVerificationDoneFlag(BOOL verificationDoneFlag);
@@ -246,7 +250,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
     LONG getCapBankInactivityTime(void) const;
 
-    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents);
+    BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     
 
 

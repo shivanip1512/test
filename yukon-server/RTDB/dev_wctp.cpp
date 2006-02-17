@@ -197,7 +197,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -1716,7 +1716,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         {
             if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
 
-            returnMsg->PointData().insert(pData);
+            returnMsg->PointData().push_back(pData);
             pData = NULL;  // We just put it on the list...
         }
     }
@@ -1735,7 +1735,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
         if(pData != NULL)
         {
             if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
-            returnMsg->PointData().insert(pData);
+            returnMsg->PointData().push_back(pData);
             pData = NULL;  // We just put it on the list...
         }
     }

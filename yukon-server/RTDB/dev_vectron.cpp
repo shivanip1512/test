@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:20:25 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/17 17:04:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1802,7 +1802,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
     // reset this flag so device makes it on the queue later
     resetScanFlag(ScanRateGeneral);
 
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -1998,7 +1998,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     }
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }

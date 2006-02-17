@@ -1652,7 +1652,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 
 
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     BOOL keepGoing = TRUE;
 
@@ -1860,7 +1860,8 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+
+void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     try
@@ -2240,7 +2241,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
         if( request != NULL )
         {
-            pilMessages.insert(request);
+            pilMessages.push_back(request);
             setLastOperationTime(currentDateTime);
             setLastFeederControlledPAOId(currentFeeder->getPAOId());
             setLastFeederControlledPosition(currentPosition);
@@ -2250,7 +2251,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
-                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
             setRecentlyControlledFlag(TRUE);
         }
@@ -2270,7 +2271,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     CtiCCFeeder* lastFeederControlled = NULL;
@@ -2651,7 +2652,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
 
         if( request != NULL )
         {
-            pilMessages.insert(request);
+            pilMessages.push_back(request);
             setLastOperationTime(currentDateTime);
             setLastFeederControlledPAOId(lastFeederControlled->getPAOId());
             setLastFeederControlledPosition(positionLastFeederControlled);
@@ -2661,7 +2662,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
-                pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
             setRecentlyControlledFlag(TRUE);
         }
@@ -2720,7 +2721,7 @@ BOOL CtiCCSubstationBus::isPeakTime(const CtiTime& currentDateTime)
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents)
+BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
     BOOL returnBoolean = TRUE;
     BOOL found = FALSE;
@@ -2863,7 +2864,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges, RWO
 }
 
 
-BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents)
+BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
     BOOL returnBoolean = FALSE;
     BOOL foundCap = FALSE;
@@ -3053,15 +3054,15 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        if( text.length() > 0 )
                        {//if control failed or questionable, create event to be sent to dispatch
                            long tempLong = currentCapBank->getStatusPointId();
-                           pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                           ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+                           pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+                           ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                        }
-                       pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
-                       ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                       pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                       ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                        currentCapBank->setLastStatusChangeTime(CtiTime());
 
                        setEventSequence(currentFeeder->getEventSequence() + 1);
-                       ccEvents.insert(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                        //setEventSequence(0);
                    }
                    else
@@ -3752,9 +3753,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(LONG 
 }
 
 
-
-
-CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     CtiRequestMsg* request = NULL;
     for (LONG i = 0; i < _ccfeeders.size(); i++)
@@ -3839,7 +3838,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
                     }
                     if( request != NULL )
                     {
-                        pilMessages.insert(request);
+                        pilMessages.push_back(request);
                         setLastOperationTime(currentDateTime);
                         setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         setLastFeederControlledPosition(i);
@@ -3851,7 +3850,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                            pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                         }
 
                         setEventSequence(getEventSequence() + 2);
@@ -3870,7 +3869,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
@@ -3928,7 +3927,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
 
                     if( request != NULL )
                     {
-                        pilMessages.insert(request);
+                        pilMessages.push_back(request);
                         setLastOperationTime(currentDateTime);
                         setLastFeederControlledPAOId(currentFeeder->getPAOId());
                         setLastFeederControlledPosition(i);
@@ -3940,7 +3939,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                            pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                         }
                         setEventSequence(getEventSequence() + 2);
                         //setRecentlyControlledFlag(TRUE);
@@ -4122,7 +4121,7 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
 
     Returns boolean if .
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages)
+BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     BOOL returnBoolean = FALSE;
 
@@ -4517,7 +4516,7 @@ BOOL CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const CtiTime& current
     else
         return FALSE;
 }
-BOOL CtiCCSubstationBus::capBankVerificationDone(RWOrdered& pointChanges, RWOrdered& ccEvents)
+BOOL CtiCCSubstationBus::capBankVerificationDone(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
     BOOL returnBool = FALSE;
 

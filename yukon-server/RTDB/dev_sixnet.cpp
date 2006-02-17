@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1804,12 +1804,12 @@ INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
             pMsg->insert(InMessage->EventCode);
 
 
-            pPIL->PointData().insert(pMsg);
+            pPIL->PointData().push_back(pMsg);
             pMsg = NULL;   // We just put it on the list...
         }
 
         // send the whole mess to dispatch
-        if (pPIL->PointData().entries() > 0)
+        if (pPIL->PointData().size() > 0)
         {
             retList.insert( pPIL );
         }
@@ -1910,7 +1910,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         pData->dump();
 
-                    pPIL->PointData().insert(pData);
+                    pPIL->PointData().push_back(pData);
 
                     pData = 0;
                 }
@@ -1950,7 +1950,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }

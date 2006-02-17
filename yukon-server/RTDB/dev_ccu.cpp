@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/01/16 16:55:12 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -286,7 +286,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                             OutMessage->Request.TrxID,
                                                             OutMessage->Request.UserID,
                                                             OutMessage->Request.SOE,
-                                                            RWOrdered()));
+                                                            CtiMultiMsg_vec()));
                 }
             }
 
@@ -314,7 +314,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
             break;
         }
     }

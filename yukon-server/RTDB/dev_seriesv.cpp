@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,7 @@ INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &par
                                                 OutMessage->Request.TrxID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
-                                                RWOrdered()));
+                                                CtiMultiMsg_vec()));
     }
     else
     {

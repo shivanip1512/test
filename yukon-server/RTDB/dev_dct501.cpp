@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/01/16 20:02:47 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -503,7 +503,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
                 if(pData != NULL)
                 {
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any demand input 1 messages we may have appended - we have a real one
@@ -528,7 +528,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command. (" + string(__FILE__) + ")";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( )) );
+        retList.insert( CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec( )) );
     }
     else
     {
@@ -137,7 +137,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
     CtiTime NowTime;
     CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), string(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered( ));
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), string(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec( ));
 
     if(parse.isKeyValid("rawloc"))
     {

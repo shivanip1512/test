@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/05 18:27:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.15  2006/02/17 17:04:35  tspar
+* CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+*
 * Revision 1.14  2006/01/05 18:27:10  cplender
 * Removed annoying printouts about VRReport
 *
@@ -183,7 +186,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                             OutMessage->Request.TrxID,
                                                             OutMessage->Request.UserID,
                                                             OutMessage->Request.SOE,
-                                                            RWOrdered()));
+                                                            CtiMultiMsg_vec()));
 
                     if(OutMessage)                // And get rid of our memory....
                     {
@@ -293,7 +296,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -320,7 +323,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
     if(retReturn)
     {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/01/16 20:14:33 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -774,7 +774,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
             {
                 pointTime -= pointTime.seconds() % 300;
                 pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -878,7 +878,7 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -958,7 +958,7 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWT
                     {
                         pointTime -= pointTime.seconds() % getDemandInterval();
                         pData->setTime( pointTime );
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -1266,7 +1266,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 
             pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), powerfailStatus, NormalQuality, DemandAccumulatorPointType, resultString);
 
-            ReturnMsg->PointData().insert(pData);
+            ReturnMsg->PointData().push_back(pData);
         }
 
 

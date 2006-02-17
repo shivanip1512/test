@@ -5,8 +5,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
                                              OutMessage->Request.TrxID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                             CtiMultiMsg_vec()));
 
             break;
         }
@@ -293,7 +293,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
             pData = CTIDBG_new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
             if(pData != NULL)
             {
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -421,7 +421,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
             pData = CTIDBG_new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
             if(pData != NULL)
             {
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -429,7 +429,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
             retList.append( ReturnMsg );
         }

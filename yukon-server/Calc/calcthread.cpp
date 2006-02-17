@@ -197,7 +197,7 @@ void CtiCalculateThread::periodicThread( void )
                 CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                 pointData->setTime(calcTime);
 
-                periodicMultiMsg->getData( ).insert( pointData );
+                periodicMultiMsg->getData( ).push_back( pointData );
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
@@ -414,7 +414,7 @@ void CtiCalculateThread::onUpdateThread( void )
                         pointsInMulti = TRUE;
                         sprintf( pointDescription, "calc point %l update", recalcPointID );
                         pData->setString(pointDescription);
-                        pChg->getData( ).insert( pData );
+                        pChg->getData( ).push_back( pData );
                     }
 
                     if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
@@ -927,7 +927,7 @@ void CtiCalculateThread::sendConstants()
 
             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, pointValue, ConstantQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
 
-            pMultiMsg->getData( ).insert( pointData );
+            pMultiMsg->getData( ).push_back( pointData );
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -55,7 +55,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
          {
             if((ConnMgrMsg = CTIDBG_new CtiReturnMsg()) != NULL)
             {
-               ConnMgrMsg->PointData().insert(pData);
+               ConnMgrMsg->PointData().push_back(pData);
 
                (ConnectionManagerCollection[i])->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
                {

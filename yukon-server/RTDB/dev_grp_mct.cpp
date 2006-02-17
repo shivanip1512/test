@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,7 +193,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                          OutMessage->Request.TrxID,
                                          OutMessage->Request.UserID,
                                          OutMessage->Request.SOE,
-                                         RWOrdered( )) );
+                                         CtiMultiMsg_vec( )) );
     }
     else
     {
@@ -257,7 +257,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
@@ -298,7 +298,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                                       pOut->Request.TrxID,
                                                       pOut->Request.UserID,
                                                       pOut->Request.SOE,
-                                                      RWOrdered());
+                                                      CtiMultiMsg_vec());
             }
 
             if(pRet)

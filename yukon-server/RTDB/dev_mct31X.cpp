@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/01/16 20:14:33 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -688,7 +688,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 
                 if(pData != NULL)
                 {
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -1413,7 +1413,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -1471,7 +1471,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -1488,7 +1488,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                         if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                         {
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
@@ -1537,7 +1537,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1563,7 +1563,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1589,7 +1589,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1615,7 +1615,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1648,7 +1648,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1669,7 +1669,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1690,7 +1690,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1833,7 +1833,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -1918,7 +1918,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -2035,7 +2035,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
                         {
                             pData->setTime( timestamp.seconds() );
 
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
@@ -2155,7 +2155,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
                 if(pData != NULL)
                 {
                     pData->setTime(pointTime);
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any KYZ 1 messages we might've appended before this point - we now have a real one
@@ -2268,7 +2268,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
                 {
                     pData->setTime( pointTime );
 
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any demand input 1 messages we may have appended - we have a real one
@@ -2291,7 +2291,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );
@@ -2373,7 +2373,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWT
                     {
                         pointTime -= pointTime.seconds() % getDemandInterval();
                         pData->setTime( pointTime );
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }

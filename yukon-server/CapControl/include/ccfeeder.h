@@ -213,18 +213,19 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
-    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
+    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
-    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
+    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits);
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    BOOL attemptToResendControl(const CtiTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& ccEvents, RWOrdered& pilMessages, LONG maxConfirmTime);
+    BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
     BOOL checkMaxDailyOpCountExceeded();
 
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
@@ -233,8 +234,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
     CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
 
-    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
-    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, RWOrdered& ccEvents, string textInfo);
+    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
+    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
@@ -243,8 +244,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
-
-    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, RWOrdered& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     
     BOOL isDirty() const;
     void dumpDynamicData();

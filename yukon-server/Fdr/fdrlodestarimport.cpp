@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2006/01/03 20:23:37 $
+*    REVISION     :  $Revision: 1.19 $
+*    DATE         :  $Date: 2006/02/17 17:04:31 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.19  2006/02/17 17:04:31  tspar
+      CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+
       Revision 1.18  2006/01/03 20:23:37  tspar
       Moved non RW string utilities from rwutil.h to utility.h
 
@@ -201,9 +204,9 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     bool returnBool = true;
     int msgCnt = 0;
     CtiTime oldTimeStamp = CtiTime(CtiDate(1,1,1990));
-    RWOrdered pointDataList = multiDispatchMsg->getData();
+    CtiMultiMsg_vec pointDataList = multiDispatchMsg->getData();
     CtiMultiMsg* msgPtr;
-    int nbrPoints = pointDataList.entries();
+    int nbrPoints = pointDataList.size();
     
     if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {

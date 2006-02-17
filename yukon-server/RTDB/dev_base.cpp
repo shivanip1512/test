@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/12/20 17:20:20 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                                                              OutMessageTemplate->Request.TrxID,
                                                              OutMessageTemplate->Request.UserID,
                                                              OutMessageTemplate->Request.SOE,
-                                                             RWOrdered());
+                                                             CtiMultiMsg_vec());
 
                 retList.insert( pRet );
             }
@@ -345,7 +345,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                  tempOut->Request.TrxID,
                                                  tempOut->Request.UserID,
                                                  tempOut->Request.SOE,
-                                                 RWOrdered());
+                                                 CtiMultiMsg_vec());
     if( pRet != NULL )
     {
         retList.insert( pRet );
@@ -791,7 +791,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
                                                      OutMessage->Request.TrxID,
                                                      OutMessage->Request.UserID,
                                                      OutMessage->Request.SOE,
-                                                     RWOrdered());
+                                                     CtiMultiMsg_vec());
 
         retList.insert( pRet );
     }

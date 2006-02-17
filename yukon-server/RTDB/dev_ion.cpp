@@ -313,7 +313,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                        OutMessage->Request.TrxID,
                                                        OutMessage->Request.UserID,
                                                        OutMessage->Request.SOE,
-                                                       RWOrdered());
+                                                       CtiMultiMsg_vec());
 
         retmsg->setExpectMore(true);
 
@@ -344,7 +344,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                         OutMessage->Request.TrxID,
                                         OutMessage->Request.UserID,
                                         OutMessage->Request.SOE,
-                                        RWOrdered()));
+                                        CtiMultiMsg_vec()));
 
         delete OutMessage;
         OutMessage = NULL;
@@ -770,10 +770,10 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, RWTP
             if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
             {
                 //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
-                vgMsg->PointData().append(tmpMsg->replicateMessage());
+                vgMsg->PointData().push_back(tmpMsg->replicateMessage());
             }
 
-            retMsg->PointData().append(tmpMsg);
+            retMsg->PointData().push_back(tmpMsg);
         }
         else
         {

@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:20:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.15  2006/02/17 17:04:33  tspar
+      CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+
       Revision 1.14  2005/12/20 17:20:20  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -1889,7 +1892,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
             {
                 if (pPIL != NULL)
                 {
-                    pPIL->PointData().insert(pData);
+                    pPIL->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
                 else
@@ -1921,7 +1924,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
         }
     }
 
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }
@@ -2112,7 +2115,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
 
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }

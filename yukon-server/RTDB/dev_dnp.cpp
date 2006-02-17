@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2006/01/24 19:55:56 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -717,7 +717,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
         {
             _string_results.push_back(CTIDBG_new string(pt_msg->getString()));
 
-            vgMsg->PointData().append(pt_msg);
+            vgMsg->PointData().push_back(pt_msg);
         }
     }
 
@@ -740,7 +740,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
                                                                   StatusPointType,
                                                                   "This point has been controlled");
                 msg->setUser(_porter_info.user.c_str());
-                vgMsg->PointData().append(msg);
+                vgMsg->PointData().push_back(msg);
             }
 
             break;

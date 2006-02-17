@@ -1986,7 +1986,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     //  this is where the messages get sent to Dispatch
     if( pPIL != NULL )
     {
-        if( pPIL->PointData( ).entries( ) > 0 )
+        if( pPIL->PointData( ).size( ) > 0 )
         {
             retList.insert( pPIL );
         }
@@ -2186,7 +2186,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     delete [] pNumericPoint;
 
     //  send the whole mess to dispatch
-    if( pPIL->PointData( ).entries( ) > 0 )
+    if( pPIL->PointData( ).size( ) > 0 )
     {
         retList.insert( pPIL );
     }

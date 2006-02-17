@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -446,7 +446,7 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
 
     if (aReturnMsg != NULL)
     {
-        aReturnMsg->PointData().insert(aDataPoint);
+        aReturnMsg->PointData().push_back(aDataPoint);
         aDataPoint = NULL;  // We just put it on the list...
     }
     else
@@ -567,7 +567,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (INMESS *InMessage,
     insertPointIntoReturnMsg (pMsg, pPIL);
 
     // send the whole mess to dispatch
-    if (pPIL->PointData().entries() > 0)
+    if (pPIL->PointData().size() > 0)
     {
         retList.insert( pPIL );
     }

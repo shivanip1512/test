@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:20:21 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -206,7 +206,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -237,7 +237,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.TrxID,
                                                      OutMessage->Request.UserID,
                                                      OutMessage->Request.SOE,
-                                                     RWOrdered());
+                                                     CtiMultiMsg_vec());
 
         retList.insert( pRet );
 
@@ -326,7 +326,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -358,7 +358,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.TrxID,
                                                      OutMessage->Request.UserID,
                                                      OutMessage->Request.SOE,
-                                                     RWOrdered());
+                                                     CtiMultiMsg_vec());
 
         retList.insert( pRet );
 
@@ -512,7 +512,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -544,7 +544,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.TrxID,
                                                      OutMessage->Request.UserID,
                                                      OutMessage->Request.SOE,
-                                                     RWOrdered());
+                                                     CtiMultiMsg_vec());
 
         retList.insert( pRet );
 

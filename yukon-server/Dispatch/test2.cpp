@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test2.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/17 17:04:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,9 +50,9 @@ int inspectMessage( CtiMessage *message )
 
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
-            cout << "MultiMsg - contains " << msgMulti->getData( ).entries( ) << " messages" << endl;
+            cout << "MultiMsg - contains " << msgMulti->getData( ).size( ) << " messages" << endl;
             retval = 0;
-            for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+            for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
                 cout << "    multimsg submessage " << (x+1) << endl;
                 cout << "        ";
@@ -130,7 +130,7 @@ void main(int argc, char **argv)
             {
                CtiMultiMsg *pChg = (CtiMultiMsg*)c;
 
-               for(int x = 0; x < pChg->getData().entries(); x++)
+               for(int x = 0; x < pChg->getData().size(); x++)
                {
                   ((CtiPointDataMsg*)(pChg->getData()[x]))->dump();
                   cout << endl;

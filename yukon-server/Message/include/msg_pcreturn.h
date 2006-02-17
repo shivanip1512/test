@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcreturn.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ public:
                     long transmission_id = -1L,
                     long user_message_id = -1L,
                     int soe = 0,
-                    const RWOrdered &data = RWOrdered());
+                    CtiMultiMsg_vec &data = CtiMultiMsg_vec());
     CtiReturnMsg(const CtiReturnMsg &aRef);
     virtual ~CtiReturnMsg();
 
@@ -96,9 +96,9 @@ public:
     long UserMessageId() const;
     CtiReturnMsg& setUserMessageId(long user_message_id);
 
-    const RWOrdered& PointData() const;
-    RWOrdered&       PointData();
-    CtiReturnMsg&    setPointData(const RWOrdered& point_data);
+    const CtiMultiMsg_vec& PointData() const;
+    CtiMultiMsg_vec&       PointData();
+    CtiReturnMsg&    setPointData(const CtiMultiMsg_vec& point_data);
 
     virtual void dump() const;
 };

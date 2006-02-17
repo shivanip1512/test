@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/01/16 20:23:34 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1503,7 +1503,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
@@ -1628,7 +1628,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
 /*
     if( parse.isKeyValid("channels") )
@@ -2172,7 +2172,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
                     {
                         pData->setTime(CtiTime::now() - (CtiTime::now().seconds() % 300) );
 
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -2262,7 +2262,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
                 if(pData = makePointDataMsg(pPoint, pi, resultString))
                 {
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -2304,7 +2304,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
                         pData->setTime( pointTime );
                     }
 
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -2408,7 +2408,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime(pointTime);
 
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = 0;  // We just put it on the list...
             }
         }
@@ -2511,7 +2511,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                 point_string = getName() + " / " + kw->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)kw)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(kw, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(kw, pi, point_string));
             }
             else
             {
@@ -2526,7 +2526,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                 point_string = getName() + " / " + km->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)km)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(km, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
             }
             else
             {
@@ -2549,7 +2549,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                 point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)kwh)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(kwh, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
             }
             else
             {
@@ -2564,7 +2564,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                 point_string = getName() + " / " + kmh->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)kmh)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(kmh, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(kmh, pi, point_string));
             }
             else
             {
@@ -2603,7 +2603,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 
                 point_string = getName() + " / " + kwh->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)kwh)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(kwh, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(kwh, pi, point_string));
             }
             else
             {
@@ -2626,7 +2626,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
                 peak_msg = makePointDataMsg(kw, pi, point_string);
                 peak_msg->setTime(peak_time);
 
-                ReturnMsg->PointData().insert(peak_msg);
+                ReturnMsg->PointData().push_back(peak_msg);
             }
             else
             {

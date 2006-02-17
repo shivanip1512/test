@@ -998,8 +998,8 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
     case MSG_MULTI:
     {
         msgMulti = (CtiMultiMsg*)message;
-        RWOrdered& temp = msgMulti->getData();
-        for(i=0;i<temp.entries( );i++)
+        CtiMultiMsg_vec& temp = msgMulti->getData();
+        for(i=0;i<temp.size( );i++)
         {
             parseMessage(temp[i], secondsFrom1901);
         }

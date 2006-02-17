@@ -179,7 +179,7 @@ private:
 class CtiLMMultiMsgExecutor : public CtiLMExecutor
 {
 public:
-    CtiLMMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
+    CtiLMMultiMsgExecutor(CtiMultiMsg* multiMsg);
     virtual ~CtiLMMultiMsgExecutor() { delete _multiMsg;};
 
     virtual void Execute();

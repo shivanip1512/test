@@ -346,7 +346,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
                                                 OutMessage->Request.TrxID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
-                                                RWOrdered( )) );
+                                                CtiMultiMsg_vec( )) );
     }
     else
     {

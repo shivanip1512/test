@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/12/20 17:20:25 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/02/17 17:04:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -673,7 +673,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                 pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
-                                    ReturnMsg->PointData().insert(pData);
+                                    ReturnMsg->PointData().push_back(pData);
                                     pData = NULL;  // We just put it on the list...
                                 }
                             }
@@ -700,7 +700,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 
                             if(pData != NULL)
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -835,7 +835,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                 pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
-                                    ReturnMsg->PointData().insert(pData);
+                                    ReturnMsg->PointData().push_back(pData);
                                     pData = NULL;  // We just put it on the list...
                                 }
 
@@ -875,7 +875,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                             pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
                             if(pData != NULL)
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -946,7 +946,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                         if(pData != NULL)
                         {
                             pData->setTime( pData->getTime() - 1 );
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
 
@@ -961,7 +961,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 
                             if(pData != NULL)
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1020,7 +1020,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                                     tStr);
                         if(pData != NULL)
                         {
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
 
@@ -1036,7 +1036,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                                         tStr);
                             if(pData != NULL)
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -1108,7 +1108,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                                     tStr);
                         if(pData != NULL)
                         {
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
@@ -1200,7 +1200,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
                                                     tStr);
                         if(pData != NULL)
                         {
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
@@ -1257,7 +1257,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 
     if(ReturnMsg != NULL)
     {
-        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
+        if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
             retList.append( ReturnMsg );
         }
@@ -1834,7 +1834,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
                                              OutMessage->Request.TrxID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                             CtiMultiMsg_vec()));
 
             break;
         }

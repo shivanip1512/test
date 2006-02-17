@@ -1016,10 +1016,9 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                 if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
+                    dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).size( ) << " messages -  " << endl;
                 }
-
-                for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+                for( x = 0; x < msgMulti->getData( ).size( ); x++ )
                 {
                     // recursive call to parse this message
                     parseMessage( msgMulti->getData( )[x], calcThread );

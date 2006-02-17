@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,9 @@ using std::string;
 #include "rwutil.h"
 
 class CtiMessage;    // Forward reference...
+
+//typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
+typedef std::vector<RWCollectable*> CtiMultiMsg_vec;
 
 /******************************************************************************
  *  This is a base class which comprises an executable (Dispatch-able) message

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,7 +120,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.TrxID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
-                                              RWOrdered());
+                                              CtiMultiMsg_vec());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
@@ -154,7 +154,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.TrxID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
-                                              RWOrdered());
+                                              CtiMultiMsg_vec());
 
         retList.insert( pRet );
 

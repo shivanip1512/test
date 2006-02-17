@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:24 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,7 +194,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
                                         OutMessage->Request.TrxID,
                                         OutMessage->Request.UserID,
                                         OutMessage->Request.SOE,
-                                        RWOrdered()));
+                                        CtiMultiMsg_vec()));
     }
 
     return nRet;

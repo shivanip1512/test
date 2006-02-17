@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -486,7 +486,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
 
                                 if(pData != NULL)
                                 {
-                                    ReturnMsg->PointData().insert(pData);
+                                    ReturnMsg->PointData().push_back(pData);
                                     pData = NULL;  // We just put it on the list...
                                 }
                             }
@@ -623,7 +623,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
                                     pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                     if(pData != NULL)
                                     {
-                                        ReturnMsg->PointData().insert(pData);
+                                        ReturnMsg->PointData().push_back(pData);
                                         pData = NULL;  // We just put it on the list...
                                     }
                                 }
@@ -674,7 +674,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
 
                                 if(pData != NULL)
                                 {
-                                    ReturnMsg->PointData().insert(pData);
+                                    ReturnMsg->PointData().push_back(pData);
                                     pData = NULL;  // We just put it on the list...
                                 }
                             }
@@ -743,7 +743,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
 
                             if(pData != NULL)
                             {
-                                ReturnMsg->PointData().insert(pData);
+                                ReturnMsg->PointData().push_back(pData);
                                 pData = NULL;  // We just put it on the list...
                             }
                         }
@@ -807,7 +807,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
 
         if(ReturnMsg != NULL)
         {
-            if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
+            if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
             {
                 retList.append( ReturnMsg );
             }
@@ -934,7 +934,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
 
             break;
         }

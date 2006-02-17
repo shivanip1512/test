@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/12/20 17:20:23 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 
             if( pData != NULL )
             {
-               pPIL->PointData().insert( pData );
+               pPIL->PointData().push_back( pData );
                pData = NULL;
             }
          }
@@ -854,7 +854,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                      dout << mTime << " " << pTemp->computeValueForUOM( val ) << endl;
                   }
 
-                  msgMulti->getData().insert( pData );
+                  msgMulti->getData().push_back( pData );
 
                   pTemp = NULL;
                   pData = NULL;

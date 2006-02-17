@@ -132,11 +132,11 @@ int inspectMessage( CtiMessage *message )
         case MSG_MULTI:
             msgMulti = (CtiMultiMsg *)message;
             retval = 0;
-            for( x = 0; x < msgMulti->getData( ).entries( ); x++ )
+            for( x = 0; x < msgMulti->getData( ).size( ); x++ )
             {
 //                cout << x << "th time through the loop" << endl;
                 int minID = 100000, cID, cy;
-                for( int y = 0; y < msgMulti->getData( ).entries( ); y++ )
+                for( int y = 0; y < msgMulti->getData( ).size( ); y++ )
                 {
                     cID = ((CtiPointDataMsg *)(msgMulti->getData( )[y]))->getId( );
 //                    cout << "testing ID " << cID << ", index " << y << " : ";

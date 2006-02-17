@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/12/20 17:17:12 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/02/17 17:04:31 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.10  2006/02/17 17:04:31  tspar
+      CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
+
       Revision 1.9  2005/12/20 17:17:12  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -858,7 +861,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                                 //sendMessageToDispatch(pData);
 
                                 //PUT into Multi Message
-                                pMultiData->getData( ).insert( pData );
+                                pMultiData->getData( ).push_back( pData );
 
                                 ++messCount;
 
@@ -922,7 +925,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
                         // consumes and deletes pData memory
                         //sendMessageToDispatch(pCmdMsg);
 
-                        pMultiData->getData( ).insert( pCmdMsg );
+                        pMultiData->getData( ).push_back( pCmdMsg );
 
                         ++messCount;
 
@@ -1159,7 +1162,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                         //sendMessageToDispatch(pData);
 
                         // PUT into Multi Message
-                        pMultiData->getData( ).insert( pData );
+                        pMultiData->getData( ).push_back( pData );
 
                         ++messCount;
 
@@ -1205,7 +1208,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                     //sendMessageToDispatch(pCmdMsg);
 
                     //- PUT into Multi Message
-                    pMultiData->getData( ).insert( pCmdMsg );
+                    pMultiData->getData( ).push_back( pCmdMsg );
 
                     ++messCount;
 

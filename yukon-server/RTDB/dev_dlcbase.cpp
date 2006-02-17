@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/01/16 20:09:12 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID()
 INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore )
 {
     CtiReturnMsg *tmpVGRetMsg = NULL;
-    RWOrdered subMsgs;
+    CtiMultiMsg_vec subMsgs;
     CtiCommandParser parse(commandStr);
     int retVal;
 
@@ -154,7 +154,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
     if( retMsg != NULL)
     {
-        if(!(retMsg->ResultString().empty()) || retMsg->PointData().entries() > 0)
+        if(!(retMsg->ResultString().empty()) || retMsg->PointData().size() > 0)
         {
             //  if it's an update command
 
@@ -166,7 +166,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
                 subMsgs = tmpVGRetMsg->PointData( );
 
                 //  iterate through the points in the retMsg and set the pointdatas to "MUST ARCHIVE"
-                for( int i = 0; i < subMsgs.entries( ); i++ )
+                for( int i = 0; i < subMsgs.size( ); i++ )
                 {
                     if( (subMsgs[i])->isA( ) == MSG_POINTDATA )
                         ((CtiPointDataMsg *)(subMsgs[i]))->setTags( TAG_POINT_MUST_ARCHIVE );
@@ -182,7 +182,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
                 CtiPointDataMsg *tmpMsg;
 
-                for( int i = 0; i < subMsgs.entries( ); i++ )
+                for( int i = 0; i < subMsgs.size( ); i++ )
                 {
                     if( (subMsgs[i])->isA( ) == MSG_POINTDATA &&
                         (((CtiPointDataMsg *)(subMsgs[i]))->getTags( ) & TAG_POINT_MUST_ARCHIVE) )
@@ -195,7 +195,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
                         tmpMsg = CTIDBG_new CtiPointDataMsg( *((CtiPointDataMsg *)(subMsgs[i])) );
 
-                        tmpVGRetMsg->PointData().append(tmpMsg);
+                        tmpVGRetMsg->PointData().push_back(tmpMsg);
                     }
                 }
 
@@ -529,7 +529,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
              *  Form up the reply here since the ExecuteRequest funciton will consume the
              *  OutMessage.
              */
-            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
@@ -568,7 +568,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                            pOut->Request.TrxID,
                                            pOut->Request.UserID,
                                            pOut->Request.SOE,
-                                           RWOrdered());
+                                           CtiMultiMsg_vec());
         }
 
         if(pRet)

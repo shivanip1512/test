@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_multi.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/02/17 17:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,15 +29,15 @@ class IM_EX_MSG CtiMultiMsg : public CtiMessage
 {
 protected:
 
-   RWOrdered  _bag;
+   CtiMultiMsg_vec  _bag;
 
 public:
    RWDECLARE_COLLECTABLE( CtiMultiMsg );
 
    typedef CtiMessage Inherited;
 
-  CtiMultiMsg(const RWOrdered &pointData = RWOrdered(), int Pri = 7);
-  virtual ~CtiMultiMsg();
+   CtiMultiMsg(CtiMultiMsg_vec &pointData = CtiMultiMsg_vec(), int Pri = 7);
+   virtual ~CtiMultiMsg();
    CtiMultiMsg(const CtiMultiMsg &aRef);
 
    CtiMultiMsg& operator=(const CtiMultiMsg& aRef);
@@ -53,9 +53,9 @@ public:
    // Clear out the list.
    void clear();
    void insert(RWCollectable* a);
-   const RWOrdered& getData() const;
-   RWOrdered& getData();
-   CtiMultiMsg& setData(const RWOrdered& point_data);
+   const CtiMultiMsg_vec& getData() const;
+   CtiMultiMsg_vec& getData();
+   CtiMultiMsg& setData(const CtiMultiMsg_vec& point_data);
 
 
    virtual CtiMessage& setConnectionHandle(VOID *p);

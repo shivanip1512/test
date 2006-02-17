@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/01/31 21:00:11 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/02/17 17:04:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1470,7 +1470,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered());
+                                                   CtiMultiMsg_vec());
 
     //  Load all the other stuff that is needed
     //    we're doing this up here so that the TOU writes can copy a fully-formed outmessage
@@ -1866,7 +1866,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
     //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
@@ -2294,7 +2294,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.TrxID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
-                                                   RWOrdered( ));
+                                                   CtiMultiMsg_vec( ));
 
 
     //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
@@ -2942,7 +2942,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
                         if(pData != NULL)
                         {
                             pData->setTime( pointTime );
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = NULL;  // We just put it on the list...
                         }
                     }
@@ -3037,7 +3037,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
                 {
                     pointTime -= pointTime.seconds() % getDemandInterval();
                     pData->setTime( pointTime );
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -3070,7 +3070,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
                 //  change this to be the voltage averaging rate - this will be in the configs
                 //  pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -3096,7 +3096,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 
             if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
-                ReturnMsg->PointData().insert(pData);
+                ReturnMsg->PointData().push_back(pData);
                 pData = NULL;  // We just put it on the list...
             }
         }
@@ -3348,7 +3348,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                     if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
                     {
                         pData->setTime(kw_time);
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
                     }
                 }
@@ -3371,7 +3371,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 {
                     kwh_time -= kwh_time.seconds() % getDemandInterval();
                     pData->setTime(kwh_time);
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }
@@ -3446,7 +3446,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
             {
                 pdm->setTime(maxTime);
 
-                ReturnMsg->PointData().insert(pdm);
+                ReturnMsg->PointData().push_back(pdm);
                 pdm = 0;
             }
         }
@@ -3474,7 +3474,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
             {
                 pdm->setTime(minTime);
 
-                ReturnMsg->PointData().insert(pdm);
+                ReturnMsg->PointData().push_back(pdm);
                 pdm = 0;
             }
         }
@@ -3652,7 +3652,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                         {
                             pData->setTime( outageTime );
 
-                            ReturnMsg->PointData().insert(pData);
+                            ReturnMsg->PointData().push_back(pData);
                             pData = 0;
                         }
                     }

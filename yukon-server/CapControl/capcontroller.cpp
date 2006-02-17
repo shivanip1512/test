@@ -258,11 +258,11 @@ void CtiCapController::controlLoop()
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
-                RWOrdered& pointChanges = multiDispatchMsg->getData();
-                RWOrdered& pilMessages = multiPilMsg->getData();
-                RWOrdered& ccEvents = multiCCEventMsg->getData();
+                CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+                CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+                CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
-                for(LONG i=0;i<ccSubstationBuses.size();i++)
+                for(LONG i=0; i < ccSubstationBuses.size();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
 
@@ -345,7 +345,7 @@ void CtiCapController::controlLoop()
                                             }
                                             else
                                             {
-                                                if( ccEvents.entries() > 0)
+                                                if( ccEvents.size() > 0)
                                                 {
                                                    /* multiCCEventMsg->resetTime(); 
                                                     getDispatchConnection()->WriteConnQue(multiCCEventMsg);
@@ -410,7 +410,7 @@ void CtiCapController::controlLoop()
                                     }
                                     else
                                     {
-                                        if( ccEvents.entries() > 0)
+                                        if( ccEvents.size() > 0)
                                         {
                                            /* multiCCEventMsg->resetTime(); 
                                             getDispatchConnection()->WriteConnQue(multiCCEventMsg);
@@ -507,7 +507,7 @@ void CtiCapController::controlLoop()
                 try
                 {
                     //send point changes to dispatch
-                    if( pointChanges.entries() > 0 )
+                    if( pointChanges.size() > 0 )
                     {
                         multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         getDispatchConnection()->WriteConnQue(multiDispatchMsg);
@@ -539,7 +539,7 @@ void CtiCapController::controlLoop()
                 try
                 {
                     //send ccEvents to EventLOG!
-                    if( ccEvents.entries() > 0)
+                    if( ccEvents.size() > 0)
                     {
                        /* multiCCEventMsg->resetTime(); 
                         getDispatchConnection()->WriteConnQue(multiCCEventMsg);
@@ -754,8 +754,8 @@ void CtiCapController::processCCEventMsgs()
 
                 if (msg1->isA() == MSG_MULTI)
                 {
-                    RWOrdered& temp = ((CtiMultiMsg*) msg1)->getData();
-                    for(int i=0;i<temp.entries( );i++)
+                    CtiMultiMsg_vec& temp = ((CtiMultiMsg*) msg1)->getData();
+                    for(int i=0;i<temp.size( );i++)
                     {
 
                         msg = (CtiCCEventLogMsg *) temp[i];
@@ -1350,8 +1350,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
             case MSG_MULTI:
                 {
                     msgMulti = (CtiMultiMsg *)message;
-                    RWOrdered& temp = msgMulti->getData( );
-                    for(i=0;i<temp.entries( );i++)
+                    CtiMultiMsg_vec& temp = msgMulti->getData( );
+                    for(i=0;i<temp.size( );i++)
                     {
                         parseMessage(temp[i],secondsFrom1901);
                     }

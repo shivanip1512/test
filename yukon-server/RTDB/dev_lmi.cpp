@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/01/10 22:25:16 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,7 +92,7 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
             //  we might eventually send the pointdata as string results in the INMESS for Commander, but not yet
             //_string_results.push_back(CTIDBG_new string(pt_msg->getString()));
 
-            vgMsg->PointData().append(pt_msg);
+            vgMsg->PointData().push_back(pt_msg);
         }
         else
         {
@@ -198,7 +198,7 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                     OutMessage->Request.TrxID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
-                                                    RWOrdered()));
+                                                    CtiMultiMsg_vec()));
 
             break;
         }
@@ -382,9 +382,9 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, RWTPt
             if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
             {
                 //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
-                vgMsg->PointData().append(tmpMsg->replicateMessage());
+                vgMsg->PointData().push_back(tmpMsg->replicateMessage());
             }
-            retMsg->PointData().append(tmpMsg);
+            retMsg->PointData().push_back(tmpMsg);
         }
         else
         {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/02/15 18:42:12 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/02/17 17:04:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -468,11 +468,11 @@ void DoTheNasty(int argc, char **argv)
 
         CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
         pM->setMessagePriority(15);
-        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), TRUE));
+        pM->getData().push_back(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), TRUE));
 
         CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
 
-        pM->getData().insert(PtRegMsg);
+        pM->getData().push_back(PtRegMsg);
 
         Connect.WriteConnQue( pM );
 
@@ -911,8 +911,8 @@ void defaultExecute(int argc, char **argv)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             pData->dump();
                         }
-                        pChg->getData().insert(pData);
-                        pChg->getData().insert( CTIDBG_new CtiSignalMsg() );
+                        pChg->getData().push_back(pData);
+                        pChg->getData().push_back( CTIDBG_new CtiSignalMsg() );
 
                         // pChg->getData().insert(pEmail->replicateMessage());
 
@@ -1038,10 +1038,12 @@ int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
         CtiMessage *pMyMsg;
         CtiMultiMsg *pMulti = (CtiMultiMsg *)pMsg;
 
-        RWOrderedIterator itr( pMulti->getData() );
+        CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
+        //RWOrderedIterator itr( pMulti->getData() );
 
-        for(;NULL != (pMyMsg = (CtiMessage*)itr());)
+        for( ; pMulti->getData().end() != itr;  itr++ )
         {
+            pMyMsg = (CtiMessage*)*itr;
             instance = tagProcessInbounds(pMyMsg, clientId);
             if(instance == clientId)
             {
@@ -1237,7 +1239,7 @@ void lmExecute(int argc, char **argv)
                     if(pChg != NULL)
                     {
                         // Add a single point change to the message
-                        pChg->getData().insert(pData);
+                        pChg->getData().push_back(pData);
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);

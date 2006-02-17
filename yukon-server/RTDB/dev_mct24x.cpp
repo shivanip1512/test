@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/01/16 20:14:33 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/02/17 17:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -758,7 +758,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPt
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
                     if(pData != NULL)
                     {
-                        ReturnMsg->PointData().insert(pData);
+                        ReturnMsg->PointData().push_back(pData);
                         pData = NULL;  // We just put it on the list...
 
                         //  blank out any complaints that may have been generated
@@ -820,7 +820,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPt
 
                 if(pData != NULL)
                 {
-                    ReturnMsg->PointData().insert(pData);
+                    ReturnMsg->PointData().push_back(pData);
                     pData = NULL;  // We just put it on the list...
                 }
             }

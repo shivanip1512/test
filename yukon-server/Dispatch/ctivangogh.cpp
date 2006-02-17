@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.126 $
-* DATE         :  $Date: 2006/02/16 17:58:29 $
+* REVISION     :  $Revision: 1.127 $
+* DATE         :  $Date: 2006/02/17 17:04:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1088,7 +1088,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 }
                             }
 
-                            if(pMulti->getData().entries())
+                            if(pMulti->getData().size())
                             {
                                 MainQueue_.putQueue(pMulti);
                                 pMulti = 0;
@@ -1703,9 +1703,9 @@ INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
 
     try
     {
-        for(int i = 0; i < pMulti->getData().entries(); i++)
+        for(int i = 0; i < pMulti->getData().size(); i++)
         {
-            CtiMessage *pMsg = (CtiMessage*)pMulti->getData()(i);
+            CtiMessage *pMsg = (CtiMessage*)pMulti->getData()[i];
 
             switch(pMsg->isA())
             {
@@ -1873,7 +1873,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
             {
                 pMulti = generateMultiMessageForConnection(VGCM, pMsg);
 
-                if(pMulti->getData().entries() > 0)
+                if(pMulti->getData().size() > 0)
                 {
                     if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
                     {
@@ -1941,14 +1941,14 @@ CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiVanGoghConne
 
     if(pMulti != NULL)
     {
-        RWOrdered &aOrdered = pMulti->getData();        // This is the big box we put all other messages in for this connection
+        CtiMultiMsg_vec &aOrdered = pMulti->getData();        // This is the big box we put all other messages in for this connection
         status = assembleMultiForConnection(Conn, pMsg, aOrdered);
     }
 
     return pMulti;
 }
 
-INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, RWOrdered &aOrdered)
+INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, CtiMultiMsg_vec &aOrdered)
 {
     INT status   = NORMAL;
 
@@ -2000,7 +2000,7 @@ INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Co
 
 INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionManager &Conn,
                                                     CtiMessage                        *pMsg,
-                                                    RWOrdered                         &Ord)
+                                                    CtiMultiMsg_vec                         &Ord)
 {
     INT            i;
     INT            status   = NORMAL;
@@ -2009,10 +2009,13 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionMa
 
     if(pMulti != NULL)
     {
-        RWOrderedIterator itr( pMulti->getData() );
+        //RWOrderedIterator itr( pMulti->getData() );
 
-        for(;NULL != (pMyMsg = (CtiMessage*)itr());)
+        CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
+
+        for(;pMulti->getData().end() != itr; itr++)
         {
+            pMyMsg = (CtiMessage*)*itr;
             status = assembleMultiForConnection(Conn, pMyMsg, Ord);
             if(status != NORMAL)
             {
@@ -2031,7 +2034,7 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionMa
 
 INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionManager &Conn,
                                                      CtiMessage                        *pMsg,
-                                                     RWOrdered                         &Ord)
+                                                     CtiMultiMsg_vec                         &Ord)
 {
     INT            status   = NORMAL;
     CtiSignalMsg   *pSig    = (CtiSignalMsg*)pMsg;
@@ -2054,7 +2057,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionM
                     pNewSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
                 }
 
-                Ord.insert(pNewSig);
+                Ord.push_back(pNewSig);
             }
         }
     }
@@ -2069,7 +2072,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionM
 
 INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn,
                                                   CtiMessage                        *pMsg,
-                                                  RWOrdered                         &Ord)
+                                                  CtiMultiMsg_vec                         &Ord)
 {
     INT            status   = NORMAL;
     CtiTagMsg      *pTag    = (CtiTagMsg*)pMsg;
@@ -2084,7 +2087,7 @@ INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionMana
                 // This ensures that any processing can occur naturally.???  Beware of removals... Not sure how to handle them?
                 // May have to blitz the const-ness of the processing to account for that??
                 CtiTagMsg *pNewTag = (CtiTagMsg *)pTag->replicateMessage();
-                Ord.insert(pNewTag);
+                Ord.push_back(pNewTag);
             }
         }
     }
@@ -2099,7 +2102,7 @@ INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionMana
 
 INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnectionManager &Conn,
                                                         CtiMessage                        *pMsg,
-                                                        RWOrdered                         &Ord)
+                                                        CtiMultiMsg_vec                         &Ord)
 {
     INT               status   = NORMAL;
     CtiPointDataMsg   *pDat    = (CtiPointDataMsg*)pMsg;
@@ -2130,7 +2133,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                                     pNewData->resetTags();
                                     pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
 
-                                    Ord.insert(pNewData);
+                                    Ord.push_back(pNewData);
                                 }
                             }
                         }
@@ -2555,7 +2558,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
                                 // Make the time match the entered time
                                 pDat->setTime( pDyn->getTimeStamp() );
-                                pMulti->getData().insert(pDat);
+                                pMulti->getData().push_back(pDat);
                             }
                         }
 
@@ -2567,7 +2570,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
 
                             if(pSigMulti)
                             {
-                                pMulti->getData().insert(pSigMulti);
+                                pMulti->getData().push_back(pSigMulti);
                             }
                         }
 
@@ -2576,7 +2579,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                             CtiMultiMsg *pTagMulti = _tagManager.getPointTags(TempPoint->getID());
                             if(pTagMulti)
                             {
-                                pMulti->getData().insert(pTagMulti);
+                                pMulti->getData().push_back(pTagMulti);
                             }
                         }
 
@@ -3187,11 +3190,14 @@ INT CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper
 
     if(pMulti != NULL)
     {
-        RWOrderedIterator itr( pMulti->getData() );
+        CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
+        //RWOrderedIterator itr( pMulti->getData() );
 
-        for(;NULL != (pMyMsg = (CtiMessage*)itr());)
-        {
+        for(; pMulti->getData().end() != itr; )
+        {   
+            pMyMsg = (CtiMessage*)*itr;
             status = checkDataStateQuality( pMyMsg, aWrap );
+            itr++;
         }
     }
 
@@ -5723,7 +5729,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                     }
                 }
 
-                if(pMulti->getData().entries())
+                if(pMulti->getData().size())
                 {
                     MainQueue_.putQueue(pMulti);
                 }
@@ -6477,7 +6483,7 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
                     }
                 }
 
-                if(pMulti->getData().entries())
+                if(pMulti->getData().size())
                 {
                     MainQueue_.putQueue(pMulti);
                     pMulti = 0;
