@@ -35,6 +35,7 @@ public class LiteInventoryBase extends LiteBase {
 	private String notes = null;
 	private int deviceID = CtiUtilities.NONE_ZERO_ID;
 	private String deviceLabel = null;
+    private int currentStateID = CtiUtilities.NONE_ZERO_ID;
 	
 	// Extended fields
 	private ArrayList inventoryHistory = null;		// List of LiteLMHardwareEvent
@@ -293,5 +294,13 @@ public class LiteInventoryBase extends LiteBase {
 	public void setExtended(boolean extended) {
 		this.extended = extended;
 	}
+
+    public int getCurrentStateID() {
+        return currentStateID;
+    }
+
+    public void setCurrentStateID(int currentStateID) {
+        this.currentStateID = currentStateID;
+    }
 
 }

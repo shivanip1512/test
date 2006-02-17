@@ -64,7 +64,7 @@ public class LoadInventoryTask extends TimeConsumingTask {
 		
 		String sql2 = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID," +
 			" ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID," +
-			" Notes, DeviceID, DeviceLabel, ManufacturerSerialNumber, LMHardwareTypeID," +
+			" Notes, DeviceID, DeviceLabel, CurrentStateID, ManufacturerSerialNumber, LMHardwareTypeID," +
 			" RouteID, ConfigurationID" +
 			" FROM InventoryBase inv LEFT OUTER JOIN LMHardwareBase hw ON inv.InventoryID = hw.InventoryID," +
 			" ECToInventoryMapping map" +
@@ -181,6 +181,7 @@ public class LoadInventoryTask extends TimeConsumingTask {
 		liteInv.setNotes( rset.getString("Notes") );
 		liteInv.setDeviceID( rset.getInt("DeviceID") );
 		liteInv.setDeviceLabel( rset.getString("DeviceLabel") );
+        liteInv.setCurrentStateID( rset.getInt("CurrentStateID") );
 		
 		ArrayList events = (ArrayList) invEventMap.get( new Integer(invID) );
 		if (events != null) liteInv.setInventoryHistory( events );

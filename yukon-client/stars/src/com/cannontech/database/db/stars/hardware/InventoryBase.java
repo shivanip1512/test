@@ -32,10 +32,12 @@ public class InventoryBase extends DBPersistent {
 	private String notes = "";
 	private Integer deviceID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private String deviceLabel = "";
+    private Integer currentStateID = new Integer( CtiUtilities.NONE_ZERO_ID );
 
 	public static final String[] SETTER_COLUMNS = {
 		"AccountID", "InstallationCompanyID", "CategoryID", "ReceiveDate", "InstallDate",
-		"RemoveDate", "AlternateTrackingNumber", "VoltageID", "Notes", "DeviceID", "DeviceLabel"
+		"RemoveDate", "AlternateTrackingNumber", "VoltageID", "Notes", "DeviceID", "DeviceLabel",
+        "CurrentStateID"
 	};
 
 	public static final String[] CONSTRAINT_COLUMNS = { "InventoryID" };
@@ -84,7 +86,7 @@ public class InventoryBase extends DBPersistent {
 		Object[] addValues = {
 			getInventoryID(), getAccountID(), getInstallationCompanyID(), getCategoryID(),
 			getReceiveDate(), getInstallDate(), getRemoveDate(), getAlternateTrackingNumber(),
-			getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel()
+			getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel(), getCurrentStateID()
 		};
 
 		add( TABLE_NAME, addValues );
@@ -94,7 +96,7 @@ public class InventoryBase extends DBPersistent {
 		Object[] setValues = {
 			getAccountID(), getInstallationCompanyID(), getCategoryID(),
 			getReceiveDate(), getInstallDate(), getRemoveDate(), getAlternateTrackingNumber(),
-			getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel()
+			getVoltageID(), getNotes(), getDeviceID(), getDeviceLabel(), getCurrentStateID()
 		};
 
 		Object[] constraintValues = { getInventoryID() };
@@ -119,6 +121,7 @@ public class InventoryBase extends DBPersistent {
 			setNotes( (String) results[8] );
 			setDeviceID( (Integer) results[9] );
 			setDeviceLabel( (String) results[10] );
+            setCurrentStateID( (Integer) results[11]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -176,7 +179,7 @@ public class InventoryBase extends DBPersistent {
 	 */
 	public static InventoryBase[] searchForDevice(String deviceName, int energyCompanyID) {
 		String sql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, ReceiveDate, " +
-			"InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID, Notes, DeviceID, DeviceLabel " +
+			"InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID, Notes, DeviceID, DeviceLabel, CurrentStateID " +
 			"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
 			"WHERE inv.DeviceID > 0 AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
 			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
@@ -208,6 +211,7 @@ public class InventoryBase extends DBPersistent {
 				inv.setNotes( rset.getString(10) );
 				inv.setDeviceID( new Integer(rset.getInt(11)) );
 				inv.setDeviceLabel( rset.getString(12) );
+                inv.setCurrentStateID( new Integer(rset.getInt(13)) );
 				resList.add( inv );
 			}
 			
@@ -438,5 +442,13 @@ public class InventoryBase extends DBPersistent {
 	public void setDeviceLabel(String deviceLabel) {
 		this.deviceLabel = deviceLabel;
 	}
+
+    public Integer getCurrentStateID() {
+        return currentStateID;
+    }
+
+    public void setCurrentStateID(Integer currentStateID) {
+        this.currentStateID = currentStateID;
+    }
 
 }
