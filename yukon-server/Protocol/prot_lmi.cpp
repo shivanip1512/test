@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/01/31 02:01:39 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/02/17 20:55:51 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -537,8 +537,8 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
     else
     {
         _outbound.preamble = 0x01;
-        _outbound.dest_sat_id  = _address;
-        _outbound.dest_node    = 0x08;
+        _outbound.dest_sat_id  = 0x08;
+        _outbound.dest_node    = _address;
         _outbound.src_sat_id   = 0x01;
         _outbound.src_sat_node = 0x01;
         _outbound.body_header.flush_codes  = 0;
