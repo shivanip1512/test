@@ -202,7 +202,7 @@ go
 alter table dynamiccccapbank add verificationcontrolindex numeric;
 update dynamiccccapbank set verificationcontrolindex = 0;
 alter table dynamiccccapbank alter column verificationcontrolindex numeric not null;
-gp
+go
 
 alter table dynamiccccapbank add AdditionalFlags varchar(32);
 update dynamiccccapbank set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
