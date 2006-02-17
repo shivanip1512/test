@@ -69,8 +69,8 @@
 	                    </div>
 	                   	<div id="4" style="display:none" > 
 	                    	<select id="41" name="41" size="1" style="width: 200px" onChange="selectAction(this.value)">
-	                            <c:forEach var="serviceCompany" items="${manipBean.availableServiceCompanies}">
-									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
+	                            <c:forEach var="warehouse" items="${manipBean.availableWarehouses}">
+									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.warehouseName}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
