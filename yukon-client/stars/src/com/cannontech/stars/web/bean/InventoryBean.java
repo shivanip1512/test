@@ -418,7 +418,13 @@ public class InventoryBean {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
-        				if (liteInv.getDeviceStatus() == specificFilterID.intValue())
+                        /**
+                         * TODO CurrentState in the Xcel world will need to be more elegantly
+                         * combined with the old DeviceStatus.  They are currently separate so as
+                         * to not break STARS too much for existing customers.
+                         */
+        				if (liteInv.getCurrentStateID() == specificFilterID.intValue() ||
+                                liteInv.getDeviceStatus() == specificFilterID.intValue())
         					filteredHardwares.add( hardwares.get(i) );
         			}
         		}
@@ -594,7 +600,7 @@ public class InventoryBean {
 		}
 		htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / Device Name</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td class='HeaderCell' width='15%'>Install Date</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td class='HeaderCell' width='15%'>Device Status</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td class='HeaderCell'>Location</td>").append(LINE_SEPARATOR);
 		if (showEnergyCompany)
 			htmlBuf.append("          <td class='HeaderCell' width='17%'>Member</td>").append(LINE_SEPARATOR);
@@ -634,10 +640,12 @@ public class InventoryBean {
 					deviceName = liteInv.getDeviceLabel();
 			}
         	
-			Date installDate = StarsUtils.translateDate( liteInv.getInstallDate() );
+			String currentDeviceState = YukonListFuncs.getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
+            
+            /*Date installDate = StarsUtils.translateDate( liteInv.getInstallDate() );
 			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
 			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
-			
+			*/
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
 			if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
@@ -664,11 +672,16 @@ public class InventoryBean {
 			htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
 			htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='15%'>").append(instDate).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='15%'>").append(currentDeviceState).append("</td>").append(LINE_SEPARATOR);
             
 			htmlBuf.append("          <td class='TableCell'>");
-			if (liteInv.getAccountID() == 0) {
-				htmlBuf.append("Warehouse");
+			if (liteInv.getAccountID() == 0) 
+            {
+				String warehouseName = Warehouse.getWarehouseNameFromInventoryID(liteInv.getInventoryID());
+                if(warehouseName.length() > 0)
+                    htmlBuf.append(warehouseName);
+                else
+                    htmlBuf.append("General Inventory");
 			}
 			else {
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
@@ -744,6 +757,9 @@ public class InventoryBean {
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
             htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All On Page' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             /*htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
             htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeSelected()>").append(LINE_SEPARATOR);
@@ -839,6 +855,13 @@ public class InventoryBean {
             htmlBuf.append("}").append(LINE_SEPARATOR);
             
             htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
+            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
+            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+            
+            htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
             htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
