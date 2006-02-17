@@ -100,7 +100,7 @@
 	                   	<div id='<c:out value="${filterDeviceWarehouse}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceWarehouse}"/>1' name='<c:out value="${filterDeviceWarehouse}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="warehouse" items="${filterBean.availableWarehouses}">
-									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.WarehouseName}"/> </option>
+									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.warehouseName}"/> </option>
 								</c:forEach>
 							</select>
 	                    </div>
