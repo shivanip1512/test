@@ -321,7 +321,7 @@ public class YukonToCRSFuncs
     	return null;
     }
 
-    public static Customer updateCustomer(Customer customer, String debtorNumber, String transID)
+    public static Customer updateCustomer(Customer customer, String debtorNumber)
     {
     	//TODO add support for bad entry
         boolean isChanged = false;
@@ -332,12 +332,6 @@ public class YukonToCRSFuncs
             isChanged = true;
         }
         
-        if(transID != null && transID.length() > 0 && !transID.equalsIgnoreCase(customer.getAltTrackingNumber()))
-        {
-            customer.setAltTrackingNumber(transID);
-            isChanged = true;
-        }
-
         if( isChanged)
     	{
 	    	try {

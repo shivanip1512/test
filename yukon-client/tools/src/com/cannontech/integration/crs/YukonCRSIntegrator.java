@@ -218,7 +218,7 @@ public final class YukonCRSIntegrator
                 String state = currentEntry.getStateCode();
                 String zipCode = currentEntry.getZipCode();
                 String customerNumber = currentEntry.getNewDebtorNumber();
-                String altTrackingNum = currentEntry.getTransID();
+                String alternateTrackingNumber = currentEntry.getTransID();
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
                 String newMeterNumber = currentEntry.getNewMeterNumber();
                 
@@ -233,20 +233,20 @@ public final class YukonCRSIntegrator
                     
                         YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
                         YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
-                        YukonToCRSFuncs.updateCustomer(customerDB, customerNumber, altTrackingNum);
+                        YukonToCRSFuncs.updateCustomer(customerDB, customerNumber);
                         
                         if(oldMeterNumber.compareTo(newMeterNumber) != 0)
                         {
-                            MeterHardwareBase oldMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
-                            if( oldMeterHardwareBase == null)
+                            MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
+                            if( meterHardwareBase == null)
                                 errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
-                            MeterHardwareBase newMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(newMeterNumber, customerAccount.getEnergyCompanyID().intValue());
-                            if( newMeterHardwareBase == null)
+                            else
                             {
-                                //Must be a new meter not in the system
-                                
+                                meterHardwareBase.getMeterHardwareBase().setMeterNumber(newMeterNumber);
+                                meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(alternateTrackingNumber);
+                                Transaction.createTransaction(Transaction.RETRIEVE, meterHardwareBase).execute();
                             }
-                            //TODO Finish meter update, it should look for new meter number to see if it exists and assign to that account
+
                             //TODO DBChangeMsg for meter
                         }
                     }
@@ -433,7 +433,7 @@ public final class YukonCRSIntegrator
 
 	    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
-	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber, null);
+	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
 	    	            //TODO create new appliance if they don't exist?
 	    	            //TODO create new meternumbers if they don't exist?
 	    	            
