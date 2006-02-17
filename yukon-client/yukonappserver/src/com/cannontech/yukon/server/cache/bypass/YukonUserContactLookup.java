@@ -95,12 +95,12 @@ public class YukonUserContactLookup
         if(partialMatch)
         {        
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE CONTLASTNAME LIKE '" + lName + "%'", "yukon");
+                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTLASTNAME) LIKE '" + lName.toUpperCase() + "%'", "yukon");
         }
         else
         {
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE CONTLASTNAME = '" + lName + "'", "yukon");
+                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTLASTNAME) = '" + lName.toUpperCase() + "'", "yukon");
         }
         
         LiteContact[] foundContacts;
@@ -141,12 +141,12 @@ public class YukonUserContactLookup
         if(partialMatch)
         {        
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE CONTFIRSTNAME LIKE '" + fName + "%'", "yukon");
+                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTFIRSTNAME) LIKE '" + fName.toUpperCase() + "%'", "yukon");
         }
         else
         {
             stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE CONTFIRSTNAME = '" + fName + "'", "yukon");
+                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTFIRSTNAME) = '" + fName.toUpperCase() + "'", "yukon");
         }
         
         LiteContact[] foundContacts;
@@ -220,7 +220,7 @@ public class YukonUserContactLookup
     public static LiteContact loadContactsByEmail(String email)
     {
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION = '" + email + "'", "yukon");
+                                                           ContactNotification.TABLE_NAME + " WHERE UPPER(NOTIFICATION) = '" + email.toUpperCase() + "'", "yukon");
         try
         {
             stmt.execute();
