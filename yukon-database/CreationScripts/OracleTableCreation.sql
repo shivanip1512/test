@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/16/2006 11:15:42 AM                        */
+/* Created on:     2/17/2006 2:53:14 PM                         */
 /*==============================================================*/
 
 
@@ -635,7 +635,7 @@ create table CALCBASE  (
    POINTID              NUMBER                          not null,
    UPDATETYPE           VARCHAR2(16)                    not null,
    PERIODICRATE         NUMBER                          not null,
-   QualityFlag          char(1)                         not null
+   QualityFlag          CHAR(1)                         not null
 );
 
 alter table CALCBASE
@@ -2718,7 +2718,7 @@ create table DynamicLMProgramDirect  (
    TimeStamp            DATE                            not null,
    NotifyActiveTime     DATE                            not null,
    StartedRampingOut    DATE                            not null,
-   NotifyInactiveTime   NUMBER                          not null,
+   NotifyInactiveTime   DATE                            not null,
    ConstraintOverride   CHAR(1)                         not null
 );
 

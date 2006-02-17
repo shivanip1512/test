@@ -2,6 +2,11 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+/* @error ignore */
+delete from DynamicLMProgramDirect;
+
+/* @error ignore */
+alter table dynamiclmprogramdirect modify notifyinactivetime DATE;
 
 /* @error ignore */
 create table CommandGroup  (
@@ -1411,7 +1416,7 @@ create table DynamicLMProgramDirect  (
    TimeStamp            DATE                            not null,
    NotifyActiveTime     DATE                            not null,
    StartedRampingOut    DATE                            not null,
-   NotifyInactiveTime   NUMBER                          not null,
+   NotifyInactiveTime   DATE                            not null,
    ConstraintOverride   CHAR(1)                         not null
 );
 

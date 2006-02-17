@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/16/2006 11:17:24 AM                        */
+/* Created on:     2/17/2006 2:52:23 PM                         */
 /*==============================================================*/
 
 
@@ -4624,7 +4624,7 @@ create table DynamicLMProgramDirect (
    TimeStamp            datetime             not null,
    NotifyActiveTime     datetime             not null,
    StartedRampingOut    datetime             not null,
-   NotifyInactiveTime   numeric              not null,
+   NotifyInactiveTime   datetime             not null,
    ConstraintOverride   char(1)              not null
 )
 go

@@ -2,6 +2,15 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+
+/* @error ignore */
+delete from DynamicLMProgramDirect;
+go
+
+/* @error ignore */
+alter table DynamicLMProgramDirect alter column NotifyInactiveTime datetime not null;
+go
+
 /* @error ignore */
 create table CommandGroup (
    CommandGroupID       numeric              not null,
@@ -1782,7 +1791,7 @@ create table DynamicLMProgramDirect (
    TimeStamp            datetime             not null,
    NotifyActiveTime     datetime             not null,
    StartedRampingOut    datetime             not null,
-   NotifyInactiveTime   numeric              not null,
+   NotifyInactiveTime   datetime              not null,
    ConstraintOverride   char(1)              not null
 )
 go
