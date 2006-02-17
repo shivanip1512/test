@@ -101,7 +101,7 @@ update CapControlSubstationBus set SwitchPointID = 0;
 alter table CapControlSubstationBus modify SwitchPointID not null;
 
 alter table CapControlSubstationBus 
-   add constraint FK_CAPCONTR_SWPTID foreign key SwitchPointID)
+   add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references Point (PointID);
 
 alter table CapControlSubstationBus add DualBusEnabled char(1);

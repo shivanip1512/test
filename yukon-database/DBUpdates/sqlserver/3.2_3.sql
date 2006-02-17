@@ -125,7 +125,7 @@ go
 alter table CapControlSubstationBus alter column SwitchPointID numeric not null;
 go
 alter table CapControlSubstationBus 
-   add constraint FK_CAPCONTR_SWPTID foreign key SwitchPointID)
+   add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references Point (PointID);
 go
  
