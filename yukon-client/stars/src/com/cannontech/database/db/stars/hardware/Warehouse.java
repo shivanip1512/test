@@ -229,4 +229,49 @@ public static Integer getWarehouseFromInventoryID(int invenID)
     return warehouseID;
 }
 
+public static String getWarehouseNameFromInventoryID(int invenID)
+{
+    String name = "";
+    
+    SqlStatement stmt = new SqlStatement("SELECT W.WAREHOUSENAME FROM WAREHOUSE W, INVENTORYTOWAREHOUSEMAPPING IWP WHERE IWP.WAREHOUSEID = W.WAREHOUSEID AND IWP.INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                name = stmt.getRow(i)[0].toString();
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return name;
+}
+
+public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID)
+{
+    boolean success = false;
+    
+    SqlStatement stmt = new SqlStatement("UPDATE WAREHOUSE SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        success = true;
+        
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return success;
+}
 }
