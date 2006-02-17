@@ -234,12 +234,18 @@ public final class YukonCRSIntegrator
                         YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
                         YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
                         YukonToCRSFuncs.updateCustomer(customerDB, customerNumber, altTrackingNum);
-                        MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
-                        if( meterHardwareBase == null)
-                            errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
+                        
                         if(oldMeterNumber.compareTo(newMeterNumber) != 0)
                         {
-                            meterHardwareBase.getMeterHardwareBase().setMeterNumber(newMeterNumber);
+                            MeterHardwareBase oldMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
+                            if( oldMeterHardwareBase == null)
+                                errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
+                            MeterHardwareBase newMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(newMeterNumber, customerAccount.getEnergyCompanyID().intValue());
+                            if( newMeterHardwareBase == null)
+                            {
+                                //Must be a new meter not in the system
+                                
+                            }
                             //TODO Finish meter update, it should look for new meter number to see if it exists and assign to that account
                             //TODO DBChangeMsg for meter
                         }
