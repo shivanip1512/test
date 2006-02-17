@@ -109,7 +109,15 @@
         </form>
 	</div>
 
+	<script language="JavaScript">
 
+		function init()
+		{
+
+		}
+		
+		
+	</script>
 
 </cti:standardPage>
 
