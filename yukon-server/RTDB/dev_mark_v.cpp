@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/02/17 22:45:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -981,6 +981,14 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
 
       switch( quality )
       {
+      case 0xe000:
+            {
+                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << getName() << " quality is " << string(CtiNumStr(quality).xhex().zpad(2)) << endl;
+                }
+            } // FALL THROUGH
       case 0x0000:
          quality = NormalQuality;
          break;
@@ -1001,12 +1009,13 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
          quality = PartialIntervalQuality;
          break;
 
+#if 0       // 20060216 CGP.
       case 0xe000:
+#endif
       case 0xc000:
       case 0x4000:
          quality = QuestionableQuality;
          break;
-
       default:
          quality = NormalQuality; // 20051014 CGP. // AbnormalQuality;
          break;
