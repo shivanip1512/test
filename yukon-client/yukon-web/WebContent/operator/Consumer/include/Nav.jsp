@@ -494,7 +494,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
 	%>
 		pageLinks[<%= num %>] = new Array(1);
-		pageLinks[<%= num %>][0] = "MeterProfile?InvNo=<%= num %>";
+		pageLinks[<%= num %>][0] = "MeterProfile.jsp?InvNo=<%= num %>";
 	<%
 		}
 	}
