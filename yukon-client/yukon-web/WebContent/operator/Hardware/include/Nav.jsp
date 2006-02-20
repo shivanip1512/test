@@ -2,6 +2,7 @@
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"CreateHardware.jsp?Init", "Create Hardware", "CreateHardware.jsp"},
 						  {"CreateMCT.jsp?Init", "Create MCT", "CreateMCT.jsp"},
+						  {"MeterProfile.jsp", "Create Meter", "MeterProfile.jsp"},
 						  {"Filter.jsp", "Edit Filters"},
 						  {"Inventory.jsp", "View Inventory"},
 						  {"AddSN.jsp", "Add Range"},
@@ -40,13 +41,23 @@
             <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
           </tr>
-          <% if (liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null) { %>
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("CreateMCT.jsp"))[1] %></td>
-          </tr>
-          <% } %>
-		  </cti:checkProperty>
+          <% if((AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) 
+          	{%>
+          	  <tr> 
+	            <td width="10"><%= ((String[]) links.get("MeterProfile.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("MeterProfile.jsp"))[1] %></td>
+	          </tr>
+          	<%}
+          	else
+            { 
+	          if (liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null) { %>
+	          <tr> 
+	            <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("CreateMCT.jsp"))[1] %></td>
+	          </tr>
+	          <% } 
+	        }%>
+          </cti:checkProperty>
 		  <tr> 
             <td width="10"><%= ((String[]) links.get("Filter.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("Filter.jsp"))[1] %></td>

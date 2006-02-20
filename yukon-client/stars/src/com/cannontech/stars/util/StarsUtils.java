@@ -50,6 +50,9 @@ public class StarsUtils {
 	// If date in database is earlier than this, than the date is actually empty
 	public static long VERY_EARLY_TIME = 1000 * 3600 * 24;
     
+    public static final String MCT_BASE_DESIGNATION = "yukon";
+    public static final String METER_BASE_DESIGNATION = "stars";
+    
 	public static final java.text.SimpleDateFormat starsDateFormat =
 			new java.text.SimpleDateFormat( "yyyyMMdd" );
 	public static final java.text.SimpleDateFormat starsTimeFormat =
