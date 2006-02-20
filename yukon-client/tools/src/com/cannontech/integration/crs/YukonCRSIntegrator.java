@@ -24,8 +24,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.data.stars.report.ServiceCompany;
+import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -35,7 +37,7 @@ import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
-import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
@@ -183,6 +185,7 @@ public final class YukonCRSIntegrator
     		starter = new Thread( runner, "Importer" );
     		starter.start();
     	}
+    
     }
 
     public void runCRSToSAM_PremiseMeterChanger(ArrayList entries)
@@ -491,25 +494,43 @@ public final class YukonCRSIntegrator
         		servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED;
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, servStat);
 
-            WorkOrderBase workOrderDB = new WorkOrderBase();
-            workOrderDB.setOrderID(workOrderDB.getNextOrderID());
-            workOrderDB.setOrderNumber(String.valueOf(workOrderDB.getOrderID()));	//orderNumber is the same as orderID, I guess...
-            workOrderDB.setWorkTypeID(new Integer(workTypeEntry.getEntryID()));
-            workOrderDB.setCurrentStateID(new Integer(workStatusEntry.getEntryID()));
-            workOrderDB.setServiceCompanyID(serviceCompany.getServiceCompany().getCompanyID());
-            workOrderDB.setOrderedBy(liteYukonUser.getUsername());
-            workOrderDB.setDescription(notes);
-            workOrderDB.setAccountID(customerAccount.getCustomerAccount().getAccountID());
-            workOrderDB.setAdditionalOrderNumber(String.valueOf(ptjID));
+        	WorkOrderBase workOrder = new WorkOrderBase();
+            workOrder.getWorkOrderBase().setOrderID(com.cannontech.database.db.stars.report.WorkOrderBase.getNextOrderID());
+            workOrder.getWorkOrderBase().setOrderNumber(String.valueOf(workOrder.getWorkOrderBase().getOrderID()));	//orderNumber is the same as orderID, I guess...
+            workOrder.getWorkOrderBase().setWorkTypeID(new Integer(workTypeEntry.getEntryID()));
+            workOrder.getWorkOrderBase().setCurrentStateID(new Integer(workStatusEntry.getEntryID()));
+            workOrder.getWorkOrderBase().setServiceCompanyID(serviceCompany.getServiceCompany().getCompanyID());
+            workOrder.getWorkOrderBase().setOrderedBy(liteYukonUser.getUsername());
+            workOrder.getWorkOrderBase().setDescription(notes);
+            workOrder.getWorkOrderBase().setAccountID(customerAccount.getCustomerAccount().getAccountID());
+            workOrder.getWorkOrderBase().setAdditionalOrderNumber(String.valueOf(ptjID));
+        	workOrder.setEnergyCompanyID(new Integer(ecID_workOrder));
+        	
+        	//Every New Work Order has a Pending event!
+            workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
+            EventWorkOrder eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
+           	workOrder.getEventWorkOrders().add(eventWorkOrder);
 
-            try {
-            	com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
-            	workOrder.setWorkOrderBase(workOrderDB);
-            	workOrder.setEnergyCompanyID(new Integer(ecID_workOrder));
-				workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+           	//Then, every Work Order has an Assigned event, too!
+            workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
+            eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
+           	workOrder.getEventWorkOrders().add(eventWorkOrder);
+
+           	//And...every new ACT/DEACT Work Order has a Processed Event
+        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
+            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
+        	{
+                workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED);
+                eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
+               	workOrder.getEventWorkOrders().add(eventWorkOrder);
+        	}
+
+        	try
+        	{
+            	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
-    				workOrderDB.getOrderID(),
+    				workOrder.getWorkOrderBase().getOrderID(),
     				DBChangeMsg.CHANGE_WORK_ORDER_DB,
     				DBChangeMsg.CAT_WORK_ORDER,
     				DBChangeMsg.CAT_WORK_ORDER,
@@ -517,21 +538,13 @@ public final class YukonCRSIntegrator
     			);
                 ServerUtils.handleDBChangeMsg(dbChangeMessage);
                 
-				//Need to have a multiple event entries, but no need to insert and then update the work order, just create the extra events!
-                //All entries have a pending state.
-            	workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
-                EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
-                
-                //Act and Deact have pending (all default above), assigned, and processed(default end state, below).
-                if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
-                		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
-                {
-                	workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
-                	EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
+                if( servStat == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+                {	//All Processed status must have an entry in SAMToCRS_PTJ             	
+                	SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ(ptjID, Integer.valueOf(accountNumber), debtorNumber, 
+                												workOrder.getWorkOrderBase().getOrderNumber(), "??", new Date(), liteYukonUser.getUsername());
+                	samToCrs_ptj = (SAMToCRS_PTJ)Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
                 }
-                //Everything else needs entry for final state.
-                EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue());
-
+                
     			//We made it...remove currentEntry from CRSToSAM_PTJ table
     			Transaction.createTransaction(Transaction.DELETE, currentEntry).execute();
 
