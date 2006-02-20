@@ -397,7 +397,7 @@ public class WorkOrderBean {
                 htmlBuf.append("</td>").append(LINE_SEPARATOR);
             }        
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
-					.append("<a href='WorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
+					.append("<a href='ModifyWorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
