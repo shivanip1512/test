@@ -345,7 +345,7 @@ public class WorkOrderManager extends HttpServlet {
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
 		}
 		else if (orderIDs.length == 1) {
-			redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp?OrderId=" + orderIDs[0];
+			redirect = req.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp?OrderId=" + orderIDs[0];
 		}
 		else {
 			ArrayList soList = new ArrayList();
