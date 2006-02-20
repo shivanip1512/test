@@ -107,7 +107,7 @@ public class WorkOrderBase extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextOrderID() {
+    public static final Integer getNextOrderID() {
     	
         int nextID = 1;
         SqlStatement stmt = new SqlStatement(GET_NEXT_ORDER_ID_SQL, CtiUtilities.getDatabaseAlias());
