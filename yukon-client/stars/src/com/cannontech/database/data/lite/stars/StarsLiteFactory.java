@@ -199,6 +199,7 @@ public class StarsLiteFactory {
 		liteInv.setNotes( invDB.getNotes() );
 		liteInv.setDeviceID( invDB.getDeviceID().intValue() );
 		liteInv.setDeviceLabel( invDB.getDeviceLabel() );
+		liteInv.setCurrentStateID(invDB.getCurrentStateID().intValue());
 		
 		ArrayList invHist = liteInv.getInventoryHistory();
 		invHist.clear();
@@ -317,6 +318,8 @@ public class StarsLiteFactory {
 		liteOrder.setOrderedBy( order.getWorkOrderBase().getOrderedBy() );
 		liteOrder.setAccountID( order.getWorkOrderBase().getAccountID().intValue() );
 		liteOrder.setEnergyCompanyID( order.getEnergyCompanyID().intValue());
+		if( order.getEventWorkOrders() != null && order.getEventWorkOrders().size() > 0)
+			liteOrder.setLastEventTimestamp(order.getEventWorkOrders().get(0).getEventBase().getEventTimestamp());
 	}
 	
 	public static void setLiteSiteInformation(LiteSiteInformation liteSiteInfo, com.cannontech.database.db.stars.customer.SiteInformation siteInfo) {
@@ -884,6 +887,7 @@ public class StarsLiteFactory {
 		invDB.setNotes( liteInv.getNotes() );
 		invDB.setDeviceID( new Integer(liteInv.getDeviceID()) );
 		invDB.setDeviceLabel( liteInv.getDeviceLabel() );
+		invDB.setCurrentStateID( new Integer (liteInv.getCurrentStateID()));
 	}
 	
 	public static void setLMHardwareBase(com.cannontech.database.data.stars.hardware.LMHardwareBase hw, LiteStarsLMHardware liteHw) {
