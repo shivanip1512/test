@@ -5,6 +5,8 @@ import com.cannontech.database.db.DBPersistent;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.ArrayList;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 public class EventWorkOrder extends DBPersistent {
@@ -55,5 +57,25 @@ public void setWorkOrderID(Integer newWorkOrderID)
 }
 
 public void update() throws java.sql.SQLException {}
+
+public static Integer[] getAllEventWorkOrderIDs(Integer orderID) {
+    String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE OrderID =" + orderID + " ORDER BY EventID";
+    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    
+    try {
+    	stmt.execute();
+    	
+    	Integer[] eventIDs = new Integer[ stmt.getRowCount() ];
+    	for (int i = 0; i < stmt.getRowCount(); i++)
+    		eventIDs[i] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
+    	
+		return eventIDs;
+    }
+    catch( Exception e ) {
+        CTILogger.error( e.getMessage(), e );
+    }
+    
+    return null;
+}
 
 }
