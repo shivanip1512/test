@@ -321,7 +321,7 @@ function confirmDelete() {
         </tr>
         <tr> 
           <td width="25%" class = "MainText"> <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_SHOW_ALL %>"> 
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/SOList.jsp" class = "Link1" style = "text-decoration:none;">Service Order List</a></div>
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/WOFilter.jsp" class = "Link1" style = "text-decoration:none;">Service Order List</a></div>
 </cti:checkProperty>
           </td>
           <td width="25%" class = "MainText">&nbsp;</td>
