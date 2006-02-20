@@ -233,3 +233,64 @@ insert into YukonListEntry values (1079,1006,0,'Removed',1709);
 /* Substates such as Activated, Deactivated, Scrapped, etc. can be done through customizing the list*/
 /* IMPORTANT: The above added list entries are not automatically added to the database for any list other than the default list.
               Therefore, one must manually Config Energy Company to add the rest of the list entries */
+              
+              
+/*Hopefully we get all updated because Hopefully they didn't change the word Service (Call)...hopefully.*/
+update yukonlistentry set yukondefinitionid = 1550 where entryid in 
+	(select distinct entryid From yukonlistentry yle, yukonselectionlist ysl
+	where listname = 'ServiceType'
+	and yle.listid = ysl.listid
+	and entrytext like 'Service%');
+
+/*Hopefully we get all updated because Hopefully they didn't change the word install...hopefully.*/
+update yukonlistentry set yukondefinitionid = 1551 where entryid in 
+	(select distinct entryid From yukonlistentry yle, yukonselectionlist ysl
+	where listname = 'ServiceType'
+	and yle.listid = ysl.listid
+	and entrytext like 'Install%');
+
+insert into YukonListEntry values (1113,1009,0,'Activation',1552);
+insert into YukonListEntry values (1114,1009,0,'Deactivation',1553);
+insert into YukonListEntry values (1115,1009,0,'Removal',1554);
+insert into YukonListEntry values (1116,1009,0,'Repair',1555);
+insert into YukonListEntry values (1117,1009,0,'Other',1556);
+
+insert into YukonListEntry values (1125,1010,0,'Assigned',1505);
+insert into YukonListEntry values (1126,1010,0,'Released',1506);
+insert into YukonListEntry values (1127,1010,0,'Processed',1507);
+insert into YukonListEntry values (1128,1010,0,'Hold',1508);
+
+/* IMPORTANT: The above added list entries are not automatically added to the database for any list other than the default list.
+              Therefore, one must manually Config Energy Company to add the rest of the list entries */
+
+insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
+
+insert into yukonselectionlist values(1067, 'A', '(none)', 'System category types for Event Logging in STARS', 'EventSystemCategory', 'N');
+insert into yukonselectionlist values(1068, 'A', '(none)', 'Action types for Customer Account events in STARS', 'EventAccountActions', 'N');
+/*We think these won't be necessary...we can use the service status and device status lists
+insert into yukonselectionlist values(1069, 'A', '(none)', 'Action types for Inventory events in STARS', 'EventInventoryActions', 'N');
+insert into yukonselectionlist values(1070, 'A', '(none)', 'Action types for Work Order events in STARS', 'EventWorkOrderActions', 'N');
+*/
+
+insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
+insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
+insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
+insert into yukonlistentry values (10201, 1068, 0, 'Created', 0);
+insert into yukonlistentry values (10202, 1068, 0, 'Updated', 0);
+
+/*
+insert into yukonlistentry values (10301, 1069, 0, 'Ordered', 0);
+insert into yukonlistentry values (10302, 1069, 0, 'Shipped', 0);
+insert into yukonlistentry values (10303, 1069, 0, 'Received', 0);
+insert into yukonlistentry values (10304, 1069, 0, 'Issued', 0);
+insert into yukonlistentry values (10305, 1069, 0, 'Installed', 0);
+insert into yukonlistentry values (10306, 1069, 0, 'Installed Activated', 0);
+insert into yukonlistentry values (10307, 1069, 0, 'Installed Deactivated', 0);
+insert into yukonlistentry values (10308, 1069, 0, 'Removed', 0);
+insert into yukonlistentry values (10309, 1069, 0, 'Retired', 0);
+insert into yukonlistentry values (10310, 1069, 0, 'Scrapped', 0);
+insert into yukonlistentry values (10311, 1069, 0, 'Returned', 0);
+insert into yukonlistentry values (10312, 1069, 0, 'Lost', 0);
+*/
+
+insert into yukonlistentry values(1351, 1056, 0, 'Service Status', 3501);
