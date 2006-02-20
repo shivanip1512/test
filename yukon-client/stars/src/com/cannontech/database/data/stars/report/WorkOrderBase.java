@@ -1,9 +1,11 @@
 package com.cannontech.database.data.stars.report;
 
+import java.util.ArrayList;
+
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.stars.ECToGenericMapping;
 
 
 /**
@@ -19,6 +21,7 @@ public class WorkOrderBase extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.WorkOrderBase workOrderBase = null;
     private Integer energyCompanyID = null;
+    private ArrayList<EventWorkOrder> eventWorkOrders = null;
 
     public WorkOrderBase() {
         super();
@@ -30,6 +33,8 @@ public class WorkOrderBase extends DBPersistent {
 
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
+        for (int i = 0; i < getEventWorkOrders().size(); i++)
+        	getEventWorkOrders().get(i).setDbConnection(conn);
         getWorkOrderBase().setDbConnection(conn);
     }
 
@@ -37,6 +42,8 @@ public class WorkOrderBase extends DBPersistent {
         // delete from mapping table
         delete( "ECToWorkOrderMapping", "WorkOrderID", getWorkOrderBase().getOrderID() );
 
+        EventWorkOrder.deleteEventWorkOrders(getWorkOrderBase().getOrderID().intValue());
+        
         getWorkOrderBase().delete();
     }
 
@@ -45,6 +52,9 @@ public class WorkOrderBase extends DBPersistent {
     		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
         getWorkOrderBase().add();
+        
+        for( int i = 0; i < getEventWorkOrders().size(); i++)
+        	getEventWorkOrders().get(i).add();
         
         // add to mapping table
         Object[] addValues = {
@@ -55,11 +65,15 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void update() throws java.sql.SQLException {
-        getWorkOrderBase().update();
+    	getWorkOrderBase().update();
     }
 
     public void retrieve() throws java.sql.SQLException {
-    	
+
+        getWorkOrderBase().retrieve();
+        
+        setEventWorkOrders(EventWorkOrder.retrieveEventWorkOrders(getWorkOrderBase().getOrderID().intValue()));
+        
     	String[] SETTER_COLUMNS = {"EnergyCompanyID"};
     	String[] CONSTRAINT_COLUMNS = { "WorkOrderID" };
     	Object[] constraintValues = { getWorkOrderBase().getOrderID() };
@@ -68,8 +82,6 @@ public class WorkOrderBase extends DBPersistent {
         if (results.length == SETTER_COLUMNS.length) {
             setEnergyCompanyID( (Integer) results[0] );
         }
-
-        getWorkOrderBase().retrieve();
     }
     
     public static void deleteAllWorkOrders(int accountID) {
@@ -106,6 +118,16 @@ public class WorkOrderBase extends DBPersistent {
 
 	public Integer getEnergyCompanyID() {
 		return energyCompanyID;
+	}
+
+	public ArrayList<EventWorkOrder> getEventWorkOrders() {
+		if( getEventWorkOrders() == null)
+			eventWorkOrders = new ArrayList<EventWorkOrder>();
+		return eventWorkOrders;
+	}
+
+	public void setEventWorkOrders(ArrayList<EventWorkOrder> eventWorkOrders) {
+		this.eventWorkOrders = eventWorkOrders;
 	}
 
 }
