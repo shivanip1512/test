@@ -110,8 +110,7 @@ function manipulateAll(form)
 				  			<table width="80%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
 							  	<tr>
 									<td width="100%" class="headeremphasis"> WORK ORDER RESULTS: 
-				              			<%= workOrderBean.getFilterHTML(request) %> 
-<%--										<c:out value="${workOrderBean.filterHTML}"/>--%>
+										<c:out value="${workOrderBean.numberOfRecords}"/>
  entries returned.
 									</td>
 								</tr>
@@ -131,6 +130,7 @@ function manipulateAll(form)
 					               	</td>
 				                </tr>
 							</table>
+							<BR>
 				      		<c:if test="${workOrderBean.viewAllResults}">
 					      		<table width="80%" border="0" cellspacing="0" cellpadding="0">
 						      		<tr>
@@ -141,7 +141,7 @@ function manipulateAll(form)
 					                            		<div align="right">Order by:</div>
 					                          		</td>
 					                          		<td width="35%"> 
-<%--					                            		<select name="SortBy">
+					                            		<select name="SortBy">
 														                              <%
 															StarsCustSelectionList sortByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY );
 															for (int i = 0; i < sortByList.getStarsSelectionListEntryCount(); i++) {
@@ -152,7 +152,7 @@ function manipulateAll(form)
 														                              <%
 															}
 														%>
-					                          			</select>--%>
+					                          			</select>
 					                          		</td>
 					                          		<td width="50%"> 
 					                            		<select name="SortOrder">
@@ -169,7 +169,6 @@ function manipulateAll(form)
 			                  		</tr>
 		                		</table>
 					 		</c:if>
-	              		</form>
 				  		<c:if test="${workOrderBean.viewAllResults}">
 					  		<table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
 		                		<tr>
@@ -182,6 +181,7 @@ function manipulateAll(form)
 	              			<%= workOrderBean.getHTML(request) %> 
 	              			<p>&nbsp; </p>
 	              		</c:if>
+	              		</form>
 	            	</div>
 	        		<td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 	    		</tr>

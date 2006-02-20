@@ -24,7 +24,7 @@
 	<c:set target="${woManipulationBean}" property="actionFilterListName" value="${actionFilterListName}" />
  	
 	<div class="standardpurplesidebox"> 
-		<% String pageName = "ChangeInventory.jsp"; %>
+		<% String pageName = "ChangeWorkOrders.jsp"; %>
 		<%@ include file="include/Nav.jsp" %>
 	</div>
 
