@@ -29,6 +29,17 @@ public SAMToCRS_PTJ() {
     super();
 }
 
+public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, String workOrderNumber, String statusCode, Date timestamp, String starsUserName) {
+	super();
+	this.ptjID = ptjID;
+	this.premiseNumber = premiseNumber;
+	this.debtorNumber = debtorNumber;
+	this.workOrderNumber = workOrderNumber;
+	this.statusCode = statusCode;
+	this.timestamp = timestamp;
+	this.starsUserName = starsUserName;
+}
+
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getWorkOrderNumber(),
