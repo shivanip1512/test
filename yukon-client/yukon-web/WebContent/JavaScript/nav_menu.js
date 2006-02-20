@@ -18,15 +18,9 @@ function initHardwareMenu(menu, num) {
 	invNo = num;
 	var menuItems, menuItemsSelected;
 	
-	if (browser.isMicrosoft) {
-		menuItems = menu.all(menu.id + "Item");
-		menuItemsSelected = menu.all(menu.id + "ItemSelected");
-	}
-	else {
-		menuItems = document.getElementsByName(menu.id + "Item");
-		menuItemsSelected = document.getElementsByName(menu.id + "ItemSelected");
-	}
-	
+	menuItems = document.getElementsByName(menu.id + "Item");
+	menuItemsSelected = document.getElementsByName(menu.id + "ItemSelected");
+		
 	for (i = 0; i < pageLinks[invNo].length; i++) {
 		menuItems[i].className = "navmenu1";
 		menuItemsSelected[i].className = "navmenu2";
