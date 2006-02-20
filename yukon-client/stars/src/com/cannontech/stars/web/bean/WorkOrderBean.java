@@ -12,15 +12,21 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import allaire.taglib.TransactionBeginException;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -37,6 +43,7 @@ public class WorkOrderBean {
 	
 	public static final int HTML_STYLE_WORK_ORDERS = 0;
 	public static final int HTML_STYLE_SEARCH_RESULTS = 1;
+	public static final int HTML_STYLE_LIST_ALL = 2;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
@@ -106,9 +113,9 @@ public class WorkOrderBean {
 	private int sortBy = CtiUtilities.NONE_ZERO_ID;
 	private int sortOrder = SORT_ORDER_ASCENDING;
 	private int filterBy = CtiUtilities.NONE_ZERO_ID;
-//	private int serviceStatus = CtiUtilities.NONE_ZERO_ID;
-//	private int serviceType = CtiUtilities.NONE_ZERO_ID;
-//	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
+	private int serviceStatus = CtiUtilities.NONE_ZERO_ID;
+	private int serviceType = CtiUtilities.NONE_ZERO_ID;
+	private int serviceCompany = CtiUtilities.NONE_ZERO_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
@@ -158,6 +165,7 @@ public class WorkOrderBean {
 		else
 			workOrders = getEnergyCompany().loadAllWorkOrders( true );
 		
+		if( getFilters() != null){
 		for (int i = 0; i < getFilters().size(); i++)
 		{
 			ArrayList filteredWorkOrders = new ArrayList();
@@ -212,29 +220,36 @@ public class WorkOrderBean {
 				}
 				else
 				{
-					for (int j = 0; j < workOrders.size(); j++)
-					{
-						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-						ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(liteOrder.getOrderID());
-						for (int k = 0; k < eventWorkOrders.size(); k++)
+					try{
+						for (int j = 0; j < workOrders.size(); j++)
 						{
-							if( getStartDate() != null && getStopDate() == null)
+							LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+							WorkOrderBase workOrderBase = (WorkOrderBase)StarsLiteFactory.createDBPersistent(liteOrder);
+							workOrderBase = (WorkOrderBase)Transaction.createTransaction(Transaction.RETRIEVE, workOrderBase).execute();
+							
+							for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++)
 							{
-								if( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
-									filteredWorkOrders.add(liteOrder);
-							}
-							else if (getStopDate() != null && getStartDate() == null)
-							{
-								if( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
-									filteredWorkOrders.add(liteOrder);
-							}
-							else 
-							{
-								if( (eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
-									( eventWorkOrders.get(k).getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
-									filteredWorkOrders.add(liteOrder);
+								EventWorkOrder eventWorkOrder = workOrderBase.getEventWorkOrders().get(k);
+								if( getStartDate() != null && getStopDate() == null)
+								{
+									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
+										filteredWorkOrders.add(liteOrder);
+								}
+								else if (getStopDate() != null && getStartDate() == null)
+								{
+									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
+										filteredWorkOrders.add(liteOrder);
+								}
+								else 
+								{
+									if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
+										( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
+										filteredWorkOrders.add(liteOrder);
+								}
 							}
 						}
+					} catch (TransactionException te){
+						te.printStackTrace();
 					}
 				}
 				workOrders = filteredWorkOrders;
@@ -243,6 +258,7 @@ public class WorkOrderBean {
 			{
 				//Do nothing, we already handled the other filters.  See previous iteration through filters above.
 			}
+		}
 		}
 		
 		java.util.TreeSet sortedOrders = null;
@@ -310,6 +326,31 @@ public class WorkOrderBean {
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
+		
+        if((getHtmlStyle() & HTML_STYLE_LIST_ALL) != 0)
+        {
+    		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
+            htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
+            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.iterateForm.checkWorkOrder;").append(LINE_SEPARATOR);
+            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+            
+            htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
+            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.iterateForm.checkWorkOrder;").append(LINE_SEPARATOR);
+            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+            
+            htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
+            htmlBuf.append("	this.MForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
+            htmlBuf.append(" 	this.MForm.submit();").append(LINE_SEPARATOR);
+            htmlBuf.append("}").append(LINE_SEPARATOR);
+    		htmlBuf.append("</script>").append(LINE_SEPARATOR);
+        }
+
 		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -328,6 +369,7 @@ public class WorkOrderBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='1%' >&nbsp;</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Date/Time</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Type</td>").append(LINE_SEPARATOR);
@@ -340,14 +382,24 @@ public class WorkOrderBean {
 		for (int i = minOrderNo; i <= maxOrderNo; i++) {
 			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
-//			Date date = StarsUtils.translateDate( getRelevantDate(liteOrder) );
-//			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
-			
+			Date date = null;
+			if( liteOrder.getLastEventTimestamp() != null)
+				date = StarsUtils.translateDate( liteOrder.getLastEventTimestamp().getTime() );
+
+			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
+
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
+			
+			if ((getHtmlStyle() & HTML_STYLE_LIST_ALL) != 0)
+            {
+                htmlBuf.append("          <td class='TableCell' width='1%'>");
+                htmlBuf.append("<input type='checkbox' name='checkWorkOrder' value='").append(liteOrder.getOrderID()).append("'>");
+                htmlBuf.append("</td>").append(LINE_SEPARATOR);
+            }        
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
 					.append("<a href='WorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='13%' >").append("dateStr").append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='8%' >").append(ServletUtils.forceNotEmpty( starsOrder.getOrderedBy() )).append("</td>").append(LINE_SEPARATOR);
@@ -386,6 +438,32 @@ public class WorkOrderBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
+		else if((getHtmlStyle() & HTML_STYLE_LIST_ALL) != 0)
+        {
+            htmlBuf.append("<br>").append(LINE_SEPARATOR);
+            htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
+            htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='CheckAll' value='Check All On Page' onclick='checkAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All On Page' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            /*htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeSelected()>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);*/
+            htmlBuf.append("    <td>").append(LINE_SEPARATOR);
+            if (referer != null)
+                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
+            else
+                htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append(LINE_SEPARATOR);
+            htmlBuf.append("    </td>").append(LINE_SEPARATOR);
+            htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+            htmlBuf.append("</table>").append(LINE_SEPARATOR);
+        }
 		
 		return htmlBuf.toString();
 	}
@@ -472,7 +550,9 @@ public class WorkOrderBean {
 	}
 
 	public void setFilters(ArrayList<FilterWrapper> newFilters) {
-		if( !newFilters.equals(filters))
+		if (newFilters == null && filters == null)
+			return;
+		if( !(newFilters.equals(filters)) )
 		{
 			this.filters = newFilters;
 			workOrderList = null;	//TODO dump the existing list!
@@ -497,11 +577,15 @@ public class WorkOrderBean {
 
 	public void setViewAllResults(boolean viewAllResults) {
 		this.viewAllResults = viewAllResults;
+		if( viewAllResults)
+			setHtmlStyle(HTML_STYLE_LIST_ALL);
+		else
+			setHtmlStyle(HTML_STYLE_WORK_ORDERS);
 	}
 
 	public int getNumberOfRecords() {
-		if( workOrderList != null)
-			return workOrderList.size();
+		if( getWorkOrderList() != null)
+			return getWorkOrderList().size();
 		return 0;
 	}
 
@@ -564,5 +648,29 @@ public class WorkOrderBean {
 
 	public void setFilterBy(int filterBy) {
 		this.filterBy = filterBy;
+	}
+
+	public int getServiceCompany() {
+		return serviceCompany;
+	}
+
+	public void setServiceCompany(int serviceCompany) {
+		this.serviceCompany = serviceCompany;
+	}
+
+	public int getServiceStatus() {
+		return serviceStatus;
+	}
+
+	public void setServiceStatus(int serviceStatus) {
+		this.serviceStatus = serviceStatus;
+	}
+
+	public int getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(int serviceType) {
+		this.serviceType = serviceType;
 	}
 }
