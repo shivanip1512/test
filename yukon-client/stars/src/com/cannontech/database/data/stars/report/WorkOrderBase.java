@@ -121,7 +121,7 @@ public class WorkOrderBase extends DBPersistent {
 	}
 
 	public ArrayList<EventWorkOrder> getEventWorkOrders() {
-		if( getEventWorkOrders() == null)
+		if( eventWorkOrders == null)
 			eventWorkOrders = new ArrayList<EventWorkOrder>();
 		return eventWorkOrders;
 	}
