@@ -78,7 +78,8 @@ public class EventWorkOrder extends EventBase {
 					" FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
 					com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO " +
 					" WHERE EB.EVENTID = EWO.EVENTID " +
-					" AND ORDERID = " + orderID;
+					" AND ORDERID = " + orderID +
+					" ORDER BY EVENTTIMESTAMP DESC ";
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
