@@ -19,6 +19,7 @@
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
+						  {"MeterSwitchMapping.jsp", "Meter/Switch Assignment"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
@@ -354,12 +355,18 @@
 			for (int i = 0; i < meterLabels.size(); i++) {
 				String[] linkFields = (String[]) meterLabels.get(i);
 				String connImg = (i == meterLabels.size() - 1)? connImgBtm : connImgMid;
+				if((AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) 
+				{
 %>
-                <tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
-                  <td width="12"><%= connImg %></td>
-                  <td><%= linkFields[1] %></td>
-                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
-                </tr>
+                	<tr onmouseover="hardwareMenuAppear(event, this, 'nonYukonMeterMenu', <%= linkFields[0] %>)">
+<% 				} else { %>
+					<tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)">
+						
+<% 				} %> 
+                  		<td width="12"><%= connImg %></td>
+                  		<td><%= linkFields[1] %></td>
+                  		<td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[2] %></td>
+                	</tr>
 <%
 			}
 %>
@@ -384,6 +391,22 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
+<% if((AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) {%>
+  <tr> 
+    <td> 
+      <div align="left">
+	    <span class="NavHeader">Mapping</span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="10"><%= ((String[]) links.get("MeterSwitchMapping.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("MeterSwitchMapping.jsp"))[1] %></td>
+          </tr>
+        </table>
+	  </div>
+    </td>
+  </tr>
+<% } %>
+</cti:checkProperty>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
   <tr> 
     <td> 
@@ -465,15 +488,29 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 </cti:checkProperty>
 <%
 	}
-	for (int i = 0; i < meterLabels.size(); i++) {
-		int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
-%>
-	pageLinks[<%= num %>] = new Array(3);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][2] = "CommandInv.jsp?InvNo=<%= num %>";
-<%
+	if((AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) 
+	{
+		for (int i = 0; i < meterLabels.size(); i++) {
+			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
+	%>
+		pageLinks[<%= num %>] = new Array(1);
+		pageLinks[<%= num %>][0] = "MeterProfile?InvNo=<%= num %>";
+	<%
+		}
 	}
+	else
+	{
+		for (int i = 0; i < meterLabels.size(); i++) {
+			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
+	%>
+		pageLinks[<%= num %>] = new Array(3);
+		pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
+		pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
+		pageLinks[<%= num %>][2] = "CommandInv.jsp?InvNo=<%= num %>";
+	<%
+		}
+	}
+	
 	int invCnt = inventories.getStarsInventoryCount();
 %>
 	// Defines links for the thermostat "All" menu
@@ -552,6 +589,15 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   </div>
   <div id="meterMenuItemSelected" name="meterMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(2)">
   &nbsp;&#149;&nbsp;Command
+  </div>
+</div>
+
+<div id="nonYukonMeterMenu" class="bgMenu" style="width:100px" align="left">
+  <div id="nonYukonMeterMenuItem" name="nonYukonMeterMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(0)">
+  &nbsp;&nbsp;&nbsp;Meter Profile
+  </div>
+  <div id="nonYukonMeterMenuItemSelected" name="nonYukonMeterMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(0)">
+  &nbsp;&#149;&nbsp;Meter Profile
   </div>
 </div>
 
