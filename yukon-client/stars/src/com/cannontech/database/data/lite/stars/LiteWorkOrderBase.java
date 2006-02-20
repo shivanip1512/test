@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -8,6 +11,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -37,6 +41,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	
+	private Date lastEventTimestamp = null;
 	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
@@ -271,6 +276,11 @@ public class LiteWorkOrderBase extends LiteBase {
             setAccountID(( (java.math.BigDecimal) results[10] ).intValue());
             setAdditionalOrderNumber( (String) results[11]);
             setEnergyCompanyID(( (java.math.BigDecimal) results[12]).intValue());
+            
+    		ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(getOrderID());
+    		if( eventWorkOrders.size() > 0 )
+    			setLastEventTimestamp(new Date(eventWorkOrders.get(0).getEventBase().getEventTimestamp().getTime()));
+
 		}
 		catch (Exception e)
 		{
@@ -284,5 +294,13 @@ public class LiteWorkOrderBase extends LiteBase {
 
 	public void setAdditionalOrderNumber(String additionalOrderNumber) {
 		this.additionalOrderNumber = additionalOrderNumber;
+	}
+
+	public Date getLastEventTimestamp() {
+		return lastEventTimestamp;
+	}
+
+	public void setLastEventTimestamp(Date lastEventTimestamp) {
+		this.lastEventTimestamp = lastEventTimestamp;
 	}
 }
