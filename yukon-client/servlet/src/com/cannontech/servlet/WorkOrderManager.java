@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.xml.utils.IntVector;
 import org.jfree.report.JFreeReport;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -130,6 +131,8 @@ public class WorkOrderManager extends HttpServlet {
 			sendWorkOrder( user, req, session );
         else if (action.equalsIgnoreCase("UpdateFilters"))
             updateFilters( user, req, session );
+        else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
+        	manipulateSelectedResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateResults"))
         	manipulateResults( user, req, session );
         else if (action.equalsIgnoreCase("ApplyActions"))
@@ -140,6 +143,39 @@ public class WorkOrderManager extends HttpServlet {
         	viewAllResults(req, session, false);
 
 		resp.sendRedirect( redirect );
+	}
+	private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		
+				java.util.Enumeration enum1 = req.getParameterNames();
+		  while (enum1.hasMoreElements()) {
+			String ele = enum1.nextElement().toString();
+			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
+		}
+
+
+		String[] selections = req.getParameterValues("checkWorkOrder");
+		int [] selectionIDs = new int[selections.length];
+		for ( int i = 0; i < selections.length; i++)
+			selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
+		
+		WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+		ArrayList<LiteWorkOrderBase> liteWorkOrderList = new ArrayList<LiteWorkOrderBase>(); 
+		for ( int i = 0; i < workOrderBean.getWorkOrderList().size(); i ++)
+		{
+			LiteWorkOrderBase liteWorkOrderBase = workOrderBean.getWorkOrderList().get(i);
+			for (int j = 0; j < selectionIDs.length; j++)
+			{
+				if( liteWorkOrderBase.getOrderID() == selectionIDs[j])
+				{
+					liteWorkOrderList.add(liteWorkOrderBase);
+					break;
+				}
+			}
+		}
+		workOrderBean.setWorkOrderList(liteWorkOrderList);
+		
+		manipulateResults(user, req, session);
+		
 	}
 	private void applyActions(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {
