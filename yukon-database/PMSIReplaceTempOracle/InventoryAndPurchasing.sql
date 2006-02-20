@@ -192,10 +192,44 @@ insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','
 
 /*This is for toggling on and off switch to meter assignment*/
 insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
+/*This allows whether a user can create a dumb meter vs. a Yukon MCT*/
+insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used as general switch holders versus Yukon MCTs');
+
+create table LMHardwareToMeterMapping
+ (
+   LMHardwareInventoryID	number		not null,
+   MeterInventoryID		number		not null
+);
+
+alter table LMHardwareToMeterMapping
+   add constraint FK_LMMETMAP_LMHARDBASE foreign key (LMHardwareInventoryID)
+      references LMHardwareBase (InventoryID);  
+go
+
+alter table LMHardwareToMeterMapping
+   add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
+      references MeterHardwareBase (InventoryID);  
+go
 
 /*New filter types*/
 insert into YukonListEntry values (1326,1053,0,'Member',2906);
 insert into YukonListEntry values (1327,1053,0,'Warehouse',2907);
-insert into YukonListEntry values (1328,1053,0,'Postal Code',2908);
-/*insert into YukonListEntry values (1329,1053,0,'Serial Range',2909);*/
+insert into YukonListEntry values (1328,1053,0,'Min Serial Number',2908);
+insert into YukonListEntry values (1329,1053,0,'Max Serial Number',2909);
+/*insert into YukonListEntry values (1330,1053,0,'Postal Code',2910);*/
+
 /*New Device States*/
+alter table InventoryBase add CurrentStateID number;
+update InventoryBase set CurrentStateID = 0;
+alter table InventoryBase modify CurrentStateID number not null;
+
+update YukonSelectionList set UserUpdateAvailable = 'Y' where ListID = 1006
+insert into YukonListEntry values (1074,1006,0,'Ordered',1704);
+insert into YukonListEntry values (1075,1006,0,'Shipped',1705);
+insert into YukonListEntry values (1076,1006,0,'Received',1706);
+insert into YukonListEntry values (1077,1006,0,'Issued',1707);
+insert into YukonListEntry values (1078,1006,0,'Installed',1708);
+insert into YukonListEntry values (1079,1006,0,'Removed',1709);
+/* Substates such as Activated, Deactivated, Scrapped, etc. can be done through customizing the list*/
+/* IMPORTANT: The above added list entries are not automatically added to the database for any list other than the default list.
+              Therefore, one must manually Config Energy Company to add the rest of the list entries */
