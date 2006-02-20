@@ -17,6 +17,7 @@
 #include <rw/toolpro/sockaddr.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/thr/thread.h>
+#include <vector>
 
 #include "ccclientconn.h"
 #include "ccstate.h"
@@ -36,8 +37,8 @@ public:
 
     RWRecursiveLock<RWMutexLock> & getMux() { return _connmutex; };
 
-    RWTPtrSlist<CtiCCClientConnection>& getClientConnectionList();
-
+    //RWTPtrSlist<CtiCCClientConnection>& getClientConnectionList();
+    std::vector<CtiCCClientConnection*>& getClientConnectionList();
 
 protected:
 
@@ -48,7 +49,8 @@ private:
     RWThread _listenerthr;
     RWThread _checkthr;
 
-    RWTPtrSlist<CtiCCClientConnection> _connections;
+    //RWTPtrSlist<CtiCCClientConnection> _connections;
+    std::vector<CtiCCClientConnection*> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
 
     static CtiCCClientListener* _instance;

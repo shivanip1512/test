@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2006/02/17 17:04:30 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2006/02/20 22:26:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2009,7 +2009,6 @@ INT CtiVanGogh::assembleMultiFromMultiForConnection(const CtiVanGoghConnectionMa
 
     if(pMulti != NULL)
     {
-        //RWOrderedIterator itr( pMulti->getData() );
 
         CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
 
@@ -3191,7 +3190,6 @@ INT CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper
     if(pMulti != NULL)
     {
         CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
-        //RWOrderedIterator itr( pMulti->getData() );
 
         for(; pMulti->getData().end() != itr; )
         {   

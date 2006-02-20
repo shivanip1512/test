@@ -106,7 +106,7 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 /*---------------------------------------------------------------------------
     getSubstationBuses
 
-    Returns a RWOrdered of CtiCCSubstationBuses
+    Returns a CtiCCSubstationBus_vec of CtiCCSubstationBuses
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
 {
@@ -133,7 +133,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
 /*---------------------------------------------------------------------------
     getCCGeoAreas
 
-    Returns a RWOrdered of CtiCCGeoAreas
+    Returns a CtiCCGeoArea_vec of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
 CtiCCGeoArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 {
@@ -150,7 +150,7 @@ CtiCCGeoArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 /*---------------------------------------------------------------------------
     getCCCapBankStates
 
-    Returns a RWOrdered of CtiCCStates
+    Returns a CtiCCState_vec* of CtiCCStates
 ---------------------------------------------------------------------------*/
 CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom1901)
 {

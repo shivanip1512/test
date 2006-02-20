@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/02/17 17:04:30 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/02/20 22:26:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1039,7 +1039,6 @@ int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
         CtiMultiMsg *pMulti = (CtiMultiMsg *)pMsg;
 
         CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
-        //RWOrderedIterator itr( pMulti->getData() );
 
         for( ; pMulti->getData().end() != itr;  itr++ )
         {

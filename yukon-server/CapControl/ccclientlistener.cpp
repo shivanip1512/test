@@ -18,6 +18,8 @@
 #include "ctibase.h"
 #include "ccexecutor.h"
 #include "logger.h"
+#include "utility.h"
+
 
 #include <rw/toolpro/inetaddr.h>
 
@@ -60,7 +62,8 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
     return _instance;
 }
 
-RWTPtrSlist<CtiCCClientConnection>& CtiCCClientListener::getClientConnectionList()
+//RWTPtrSlist<CtiCCClientConnection>& CtiCCClientListener::getClientConnectionList()
+std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionList()
 {
 
   return _connections;
@@ -140,7 +143,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        for( int i = 0; i < _connections.entries(); i++ )
+        for( int i = 0; i < _connections.size(); i++ )
         {
             try
             {
@@ -234,7 +237,7 @@ void CtiCCClientListener::_listen()
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-                    _connections.insert(conn);
+                    _connections.push_back(conn);
                 }
             }
         }
@@ -278,22 +281,28 @@ void CtiCCClientListener::_check()
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-                for ( int i = 0; i < _connections.entries(); i++ )
+                
+                std::vector<CtiCCClientConnection*>::iterator itr = _connections.begin();
+                while( itr != _connections.end() )
                 {
-                    if ( !_connections[i]->isValid() )
+                    CtiCCClientConnection* toDelete = *itr;
+                    if ( !toDelete->isValid() )
                     {
                         {
-                            CtiCCClientConnection* toDelete = _connections.removeAt(i);
+                            //CtiCCClientConnection* toDelete = _connections.at(i);
+                     
 							if( _CC_DEBUG & CC_DEBUG_CLIENT )
 							{    
 								CtiLockGuard<CtiLogger> logger_guard(dout);
 								dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
 							}
+                            itr = _connections.erase(itr);
                             delete toDelete;
                         }
                         break;
                     }
+                    else
+                        ++itr;
                 }
             }   //Release mutex
         }
@@ -308,7 +317,8 @@ void CtiCCClientListener::_check()
     {   
  
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        _connections.clearAndDestroy();
+        delete_vector(_connections);
+        _connections.clear();
     }
 }
 
