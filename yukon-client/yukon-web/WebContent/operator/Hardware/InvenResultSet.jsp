@@ -12,7 +12,7 @@
  	<br clear="all"> 
  	
 	<div class="standardpurplesidebox"> 
-		<% String pageName = "ChangeInventory.jsp"; %>
+		<% String pageName = "InvenResultSet.jsp"; %>
 		<%@ include file="include/Nav.jsp" %>
 	</div>
 
