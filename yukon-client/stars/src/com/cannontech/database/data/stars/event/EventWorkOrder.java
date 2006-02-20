@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
 
 /**
  * <p>Title: </p>
@@ -55,9 +56,9 @@ public class EventWorkOrder extends EventBase {
         getEventWorkOrder().retrieve();
     }
     
-    /*public static void deleteEventWorkOrder(int orderID) {
+    public static void deleteEventWorkOrders(int orderID) {
 		try {
-	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.EventWorkOrder.getEventIDs( orderID );
+	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.EventWorkOrder.getAllEventWorkOrderIDs( orderID );
 	    	
 	    	EventWorkOrder event = new EventWorkOrder();
 	    	for (int i = 0; i < eventIDs.length; i++) {
@@ -68,7 +69,7 @@ public class EventWorkOrder extends EventBase {
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 		}
-    }*/
+    }
     
 	public static ArrayList<EventWorkOrder> retrieveEventWorkOrders(int orderID)
 	{
@@ -91,6 +92,7 @@ public class EventWorkOrder extends EventBase {
         		eventWorkOrder.getEventBase().setActionID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() ));
         		eventWorkOrder.getEventBase().setEventTimestamp((java.util.Date) stmt.getRow(i)[4] );
         		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer( orderID));
+        		eventWorkOrders.add(eventWorkOrder);
         	}
 		}
 		catch( Exception e ) {
