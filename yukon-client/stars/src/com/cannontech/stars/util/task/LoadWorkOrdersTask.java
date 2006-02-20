@@ -6,10 +6,14 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 
 /**
  * @author yao
@@ -110,7 +114,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		
 		if (energyCompany.getWorkOrderBase( orderID, false ) != null)
 			return;	// work order already loaded
-		
 		LiteWorkOrderBase liteOrder = new LiteWorkOrderBase();
 		liteOrder.setOrderID( orderID );
 		liteOrder.setOrderNumber( rset.getString("OrderNumber") );
@@ -125,6 +128,10 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		liteOrder.setActionTaken( rset.getString("ActionTaken") );
 		liteOrder.setAccountID( rset.getInt("AccountID") );
 		
+		ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(liteOrder.getOrderID());
+		if( eventWorkOrders.size() > 0 )
+			liteOrder.setLastEventTimestamp(new Date(eventWorkOrders.get(0).getEventBase().getEventTimestamp().getTime()));
+
 		energyCompany.addWorkOrderBase( liteOrder );
 	}
 
