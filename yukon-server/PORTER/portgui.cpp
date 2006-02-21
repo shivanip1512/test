@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/02/21 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,8 @@ VOID PorterGUIConnectionThread (VOID *Arg)
    CTINEXUS  ListenNexus;
    CTINEXUS  *NewNexus;
 
+   CtiTime lastTickleTime, lastReportTime;
+
    return;                 // CGP 012400 For now...
 
 
@@ -98,19 +100,20 @@ VOID PorterGUIConnectionThread (VOID *Arg)
    {
       for(;;)
       {
-
-         //Thread Monitor Begins here**************************************************
-         if(!(++sanity % SANITY_RATE))
+         if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
          {
+             if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
              {
+                 lastReportTime = lastReportTime.now();
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                  dout << CtiTime() << " Porter GUI Connection Thread. TID:  " << rwThreadId() << endl;
              }
-   
-             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GUI Connection Thread", CtiThreadRegData::None, 400 );
+         
+             CtiThreadRegData *data;
+             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GUI Connection Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
              ThreadMonitor.tickle( data );
+             lastTickleTime = lastTickleTime.now();
          }
-         //End Thread Monitor Section
         
          NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
 

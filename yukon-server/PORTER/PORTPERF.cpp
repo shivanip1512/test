@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/02/02 16:17:00 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/02/21 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,7 +119,7 @@ VOID PerfUpdateThread (PVOID Arg)
     HEV PerfUpdateSem;
     PSZ Environment;
     ULONG Rate;
-    CtiTime now;
+    CtiTime now, lastTickleTime, lastReportTime;
     LONG delay;
 
     /* set the priority of this guy high */
@@ -139,19 +139,6 @@ VOID PerfUpdateThread (PVOID Arg)
                 }
             }
 
-            //Thread Monitor Begins here**************************************************
-            if(!(++sanity % SANITY_RATE))
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
-                }
-
-                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, 400 );
-                ThreadMonitor.tickle( data );
-            }
-            //End Thread Monitor Section
-
             now = now.now();
 
             CtiTime nextTime = nextScheduledTimeAlignedOnRate(now, PerfUpdateRate);
@@ -159,6 +146,21 @@ VOID PerfUpdateThread (PVOID Arg)
             do
             {
                 now = now.now();
+                if(lastTickleTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardTickleTime))
+                {
+                    if(lastReportTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardMonitorTime))
+                    {
+                        lastReportTime = lastReportTime.now();
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
+                    }
+    
+                    CtiThreadRegData *data;
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    ThreadMonitor.tickle( data );
+                    lastTickleTime = lastTickleTime.now();
+                }
+
                 if(statCol.empty())
                 {
                     Sleep(2500);

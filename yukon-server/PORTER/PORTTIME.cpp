@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/01/19 20:40:32 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/02/21 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -656,7 +656,7 @@ VOID TimeSyncThread (PVOID Arg)
     struct timeb TimeB;
     ULONG EventWait;
     DWORD dwWait = 0;
-    CtiTime nowTime;
+    CtiTime nowTime, lastTickleTime, lastReportTime;
     CtiTime nextTime;
     UINT sanity = 0;
 
@@ -706,18 +706,21 @@ VOID TimeSyncThread (PVOID Arg)
     /* loop doing time sync at 150 seconds after the hour */
     for(; PorterQuit != TRUE ;)
     {
-        //Thread Monitor Begins here**************************************************
-        if(!(++sanity % SANITY_RATE))
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
             {
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
-
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, 400 );
+        
+            CtiThreadRegData *data;
+            //This is an odd duck, it can sleep for 1 hour at a time (currently set time), we will wait for 1 hour + 5 minutes
+            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, TimeSyncRate + CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
-        //End Thread Monitor Section
 
         /* Figure out how long to wait */
         nowTime = nowTime.now();

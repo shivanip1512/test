@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/21 15:27:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ static void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperatio
 
 void GWTimeSyncThread (void *Dummy)
 {
-    CtiTime now;
+    CtiTime now, lastTickleTime, lastReportTime;
     CtiTime midnightnext = now + 60;
     CtiTime querynext = now + 60;
     UINT sanity = 0;
@@ -82,19 +82,20 @@ void GWTimeSyncThread (void *Dummy)
     {
         now = now.now();
 
-        //Thread Monitor Begins here**************************************************
-        //This thing can sleep for quite a while (15-30s), so we probably dont want to wait this long!!
-        if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
-            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
-      
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, 300 );
+        
+            CtiThreadRegData *data;
+            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
-        //End Thread Monitor Section
         
         if(now > querynext && gwMap.size() > 0)
         {
@@ -168,23 +169,25 @@ void GWTimeSyncThread (void *Dummy)
 
 void KeepAliveThread (void *Dummy)
 {
-    CtiTime now;
+    CtiTime now, lastTickleTime, lastReportTime;
     UINT sanity = 0;
 
     while(!PorterQuit)
     {
-        //Thread Monitor Begins here**************************************************
-        if(!(++sanity % SANITY_RATE))
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
-            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
             }
-      
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, 300 );
+        
+            CtiThreadRegData *data;
+            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
-        //End Thread Monitor Section
         
         now = now.now();
 
@@ -402,7 +405,7 @@ VOID PorterGWThread(void *pid)
     BYTE           ReadPriority;
     ULONG          ReadLength;
     ULONG          QueEntries;
-    CtiTime         lastQueueReportTime;
+    CtiTime         lastQueueReportTime, lastTickleTime, lastReportTime;
 
     LONG portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiDeviceSPtr Device;
@@ -447,18 +450,20 @@ VOID PorterGWThread(void *pid)
     {
         try
         {
-            //Thread Monitor Begins here**************************************************
-            if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
             {
-                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+                {
+                    lastReportTime = lastReportTime.now();
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
                 }
-          
-                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, 300 );
+            
+                CtiThreadRegData *data;
+                data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
                 ThreadMonitor.tickle( data );
+                lastTickleTime = lastTickleTime.now();
             }
-            //End Thread Monitor Section
              
             OutMessage = GatewayOutMessageQueue.getQueue( 2500 );
 
@@ -599,6 +604,7 @@ int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage )
 void GWResultThread (void *Dummy)
 {
     UINT sanity = 0;
+    CtiTime lastTickleTime, lastReportTime;
 
     HANDLE  hArray[] = {
         hPorterEvents[P_QUIT_EVENT],
@@ -611,19 +617,20 @@ void GWResultThread (void *Dummy)
 
     while(!PorterQuit)
     {
-        //Thread Monitor Begins here**************************************************
-        //This thing can sleep for quite a while (30s), so we probably dont want to wait this long!!
-        if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
-            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+            {
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
             }
-      
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, 400 );
+        
+            CtiThreadRegData *data;
+            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
-        //End Thread Monitor Section
             
         DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, dwSleepTime);
 

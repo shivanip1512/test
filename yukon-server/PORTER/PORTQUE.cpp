@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2006/02/21 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1161,6 +1161,7 @@ VOID KickerThread (VOID *Arg)
     USHORT Port, Remote;
     ULONG i;
     UINT sanity = 0;
+    CtiTime lastTickleTime, lastReportTime;
 
     /* make it clear who isn't the boss */
     CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -15, 0);
@@ -1192,18 +1193,20 @@ VOID KickerThread (VOID *Arg)
             DeviceManager.apply( applyKick, NULL );
         }
 
-        //Thread Monitor Begins here**************************************************
-        if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
         {
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
             {
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " CCU Kicker thread active. TID:  " << rwThreadId() << endl;
             }
-
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "CCU Kicker Thread", CtiThreadRegData::None, 300 );
+        
+            CtiThreadRegData *data;
+            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "CCU Kicker Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
-
     }
 }
 
