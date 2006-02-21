@@ -696,6 +696,19 @@ BOOL CtiCCSubstationBus::getOverlappingVerificationFlag() const
     return _overlappingSchedulesVerificationFlag;
 }
 
+BOOL CtiCCSubstationBus::getPreOperationMonitorPointScanFlag() const
+{
+    return _preOperationMonitorPointScanFlag;
+}
+BOOL CtiCCSubstationBus::getOperationSentWaitFlag() const
+{
+    return _postOperationMonitorPointScanFlag;
+}
+BOOL CtiCCSubstationBus::getPostOperationMonitorPointScanFlag() const
+{
+    return _postOperationMonitorPointScanFlag;
+}
+
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
 {
     return _currentVerificationFeederId;
@@ -732,6 +745,10 @@ BOOL CtiCCSubstationBus::getDualBusEnable() const
 LONG CtiCCSubstationBus::getEventSequence() const
 {
     return _eventSeq;
+}
+BOOL CtiCCSubstationBus::getMultiMonitorFlag() const
+{
+    return _multiMonitorFlag;
 }
 
 
@@ -1598,7 +1615,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEventSequence(LONG eventSeq)
     _eventSeq = eventSeq;
     return *this;
 }
-
+CtiCCSubstationBus& CtiCCSubstationBus::setMultiMonitorFlag(BOOL flag)
+{
+    if (_multiMonitorFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _multiMonitorFlag = flag;
+    return *this;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -2775,8 +2800,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
         if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
         {
-            currentFeeder->setEventSequence(getEventSequence() + 1);
-            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
+            currentFeeder->setEventSequence(getEventSequence());
+            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
             setRecentlyControlledFlag(FALSE);
             figureEstimatedVarLoadPointValue();
             found = TRUE;
@@ -2789,8 +2814,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
                 if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                 {
-                    currentFeeder->setEventSequence(getEventSequence() + 1);
-                    currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
+                    currentFeeder->setEventSequence(getEventSequence());
+                    currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
                     setRecentlyControlledFlag(FALSE);
                     figureEstimatedVarLoadPointValue();
                     found = TRUE;
@@ -2815,7 +2840,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             if( currentFeeder->getRecentlyControlledFlag() )
             {
 
-                currentFeeder->setEventSequence(getEventSequence() + 1);
+                currentFeeder->setEventSequence(getEventSequence());
                 if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                 {
                     if( currentFeeder->isAlreadyControlled(getMinConfirmPercent()) ||
@@ -3061,7 +3086,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                        currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                       setEventSequence(currentFeeder->getEventSequence() + 1);
+                       //setEventSequence(currentFeeder->getEventSequence() + 1);
                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                        //setEventSequence(0);
                    }
@@ -3702,6 +3727,56 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOverlappingVerificationFlag(BOOL over
 
     return *this;
 }
+
+
+CtiCCSubstationBus& CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( BOOL flag)
+{
+    if( _preOperationMonitorPointScanFlag != flag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _preOperationMonitorPointScanFlag = flag;
+
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setOperationSentWaitFlag( BOOL flag)
+{
+    if( _operationSentWaitFlag != flag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _operationSentWaitFlag = flag;
+
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( BOOL flag)
+{
+    if( _postOperationMonitorPointScanFlag != flag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _postOperationMonitorPointScanFlag = flag;
+
+    return *this;
+}
+
  
 
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feederId)
@@ -3853,7 +3928,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
                             pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                         }
 
-                        setEventSequence(getEventSequence() + 2);
+                        //setEventSequence(getEventSequence() + 2);
 
                         //setRecentlyControlledFlag(TRUE);
                         setBusUpdatedFlag(TRUE);
@@ -3941,7 +4016,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         {
                             pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                         }
-                        setEventSequence(getEventSequence() + 2);
+                        //setEventSequence(getEventSequence() + 2);
                         //setRecentlyControlledFlag(TRUE);
                     }
                     //setNewPointDataReceivedFlag(FALSE);
@@ -4177,10 +4252,10 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
 
         }
     }
-    if (returnBoolean == TRUE)
+    /*if (returnBoolean == TRUE)
     {
         setEventSequence(getEventSequence() + 1);
-    }
+    }*/
 
     return returnBoolean;
 }
@@ -4326,7 +4401,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
             addFlags[3] = (_overlappingSchedulesVerificationFlag?'Y':'N');
-			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ char2string(*(addFlags+3)) + string(17, *(addFlags + 4)));
+            addFlags[4] = (_preOperationMonitorPointScanFlag?'Y':'N');
+            addFlags[5] = (_operationSentWaitFlag?'Y':'N');
+            addFlags[6] = (_postOperationMonitorPointScanFlag?'Y':'N');
+			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
+                                         char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
+                                         char2string(*(addFlags+6))) + string(*(addFlags + 7), 13);
+
             updater.clear();
 
             updater.where(dynamicCCSubstationBusTable["substationbusid"]==_paoid);
@@ -4929,6 +5010,242 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
     return *this;
 }
 
+
+BOOL CtiCCSubstationBus::analyzeMultiPointBus(const CtiTime& currentDateTime)
+{
+    BOOL retVal = FALSE;
+    /*switch (_currentMultiBusState)
+    {
+        case NEW_MULTI_POINT_DATA_RECEIVED:
+        {
+            if (currentDateTime <= getLastMonitorPointUpdateTime() + _STALE_MONITOR_POINT_TIME)
+            {
+                _currentMultiBusState = EVALUATE_SUB;
+                retVal = TRUE;
+            }
+            else
+            {
+                //SCAN Points.
+                
+                retVal = TRUE;
+                _currentMultiBusState = PRE_OP_SCAN_PENDING;
+            }
+            break;
+        }
+        case PRE_OP_SCAN_PENDING:
+        {
+            if (currentDateTime <= getLastOperationTime() + _MAX_SCAN_RESPONSE_WAIT)
+            {
+                //wait
+                retVal = FALSE;
+            }
+            else
+            {
+                _currentMultiBusState = EVALUATE_SUB;
+                retVal = TRUE;
+            }
+            break;
+        }
+        case EVALUATE_SUB:
+        {
+            retVal = TRUE;
+            break;
+        }
+        case SELECT_BANK:
+        {
+            _currentMultiBusState = POST_OP_SCAN_PENDING;
+            retVal = TRUE;
+            break;
+        }
+        case POST_OP_SCAN_PENDING:
+        {
+            if (currentDateTime <= getLastOperationTime() + _MAX_SCAN_RESPONSE_WAIT)
+            {
+                retVal = FALSE
+                //wait
+            }
+            else
+            {
+                retVal = TRUE;
+                _currentMultiBusState = RECORD_ADAPTIVE_VOLTAGE;
+            }
+
+
+            break;
+        }
+        case RECORD_ADAPTIVE_VOLTAGE:
+        {
+            retVal = TRUE;
+            break;
+        }
+        case IDLE:
+        {
+            //can we improve pf with vars???
+            // VAR CONTROL?????
+            break;
+        }
+        default:
+            break;
+
+    }*/
+
+    return retVal;
+}
+
+BOOL CtiCCSubstationBus::performActionMultiPointBus(const CtiTime& currentDateTime)
+{
+    BOOL retVal = FALSE;
+   /* switch (_currentMultiBusState)
+    {
+        case NEW_MULTI_POINT_DATA_RECEIVED:
+        {
+            break;
+        }
+        case PRE_OP_SCAN_PENDING:
+        {
+            for (int i = 0; i <)
+            {
+            }
+            
+            break;
+        }
+        case EVALUATE_SUB:
+        {
+            // check monitor points against bw.
+
+            if ()
+            {   
+                _currentMultiBusState = SELECT_BANK;
+            }
+            else
+                _currentMultiBusState = IDLE;
+            retVal = TRUE;
+            break;
+        }
+        case SELECT_BANK:
+        {
+
+
+            
+            retVal = TRUE;
+            break;
+        }
+        case POST_OP_SCAN_PENDING:
+        {
+
+            for (int i = 0; i <)
+            {
+            }
+            break;
+        }
+        case RECORD_ADAPTIVE_VOLTAGE:
+        {
+
+
+
+            retVal = TRUE;
+            break;
+        }
+        case IDLE:
+        {
+            //can we improve pf with vars???
+            // VAR CONTROL?????
+            break;
+        }
+        default:
+            break;
+
+    } */
+
+    return retVal;
+}
+
+BOOL CtiCCSubstationBus::analyzeBus(const CtiTime& currentDateTime)
+{
+    BOOL retVal = FALSE;
+    if (getMultiMonitorFlag() && getNewPointDataReceivedFlag())
+    {
+        retVal = TRUE;
+        /*if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod)  )
+        {
+            for(LONG i=0;i<_ccfeeders.entries();i++)
+            {
+                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+                if (currentFeeder->getMultiMonitorFlag())
+                {
+
+                }
+            }
+        }
+        else
+        {   
+            for(LONG i=0;i<_ccfeeders.entries();i++)
+            {
+                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                for (LONG j = 0; j < ccCapBanks.entries(); j++)
+                {
+                    CtiCCCapBankPtr currentCapBank = ccCapBanks[j];
+                    vector <CtiCCMonitorPointPtr> &monPoints = currentCapBank->getMonitorPoint();
+                    for (LONG k = 0; j < monPoints.size(); k++)
+                    {
+                        CtiCCMonitorPointPtr currentMon = (CtiCCMonitorPointPtr)monPoints[k]
+                        if (currentMon->getValue() < currentMon->getLowerBandwidth() ||
+                            currentMon->getValue() > currentMon->getUpperBandwidth())
+                        {
+
+                        }
+                    }
+                }
+            }
+        }*/
+    }
+    else if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod)  )
+    {
+        for(LONG i=0;i<_ccfeeders.size();i++)
+        {
+            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
+            if (currentFeeder->getMultiMonitorFlag() && currentFeeder->getNewPointDataReceivedFlag())
+            {
+                retVal = TRUE;
+                /*
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                for (LONG j = 0; j < ccCapBanks.size(); j++)
+                {
+                    CtiCCCapBankPtr currentCapBank = ccCapBanks[j];
+                    vector <CtiCCMonitorPointPtr> &monPoints = currentCapBank->getMonitorPoint();
+                    for (LONG k = 0; j < monPoints.size(); k++)
+                    {
+                        CtiCCMonitorPointPtr currentMon = (CtiCCMonitorPointPtr)monPoints[k]
+                        if (currentMon->getValue() < currentMon->getLowerBandwidth() ||
+                            currentMon->getValue() > currentMon->getUpperBandwidth())
+                        {
+
+                        }
+                    }
+
+                } */
+
+
+
+            }
+        }
+    }
+    else if (isVarCheckNeeded(currentDateTime) || isConfirmCheckNeeded() || getVerificationFlag() )
+    {                          
+        retVal = TRUE;
+    }
+
+
+    return retVal;
+}
+void CtiCCSubstationBus::analyzeVoltDataAndRefreshIfNeeded()
+{
+    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+    {
+    }
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -5132,6 +5449,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _altSubControlValue = right._altSubControlValue;
         _eventSeq = right._eventSeq;
         
+        _multiMonitorFlag = right._multiMonitorFlag;
+        
         _ccfeeders.clear();
         for(LONG i=0;i<right._ccfeeders.size();i++)
         {
@@ -5195,6 +5514,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["DualBusEnabled"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _dualBusEnable = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["multiMonitorControl"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _multiMonitorFlag = (tempBoolString=="y"?TRUE:FALSE);
+
 
 
     _parentId =  0;
@@ -5249,6 +5572,9 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setPerformingVerificationFlag(FALSE);
     setVerificationDoneFlag(FALSE);
     setOverlappingVerificationFlag(FALSE);
+    setPreOperationMonitorPointScanFlag(FALSE);
+    setOperationSentWaitFlag(FALSE);
+    setPostOperationMonitorPointScanFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -5351,7 +5677,10 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
         _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
         _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
-        _overlappingSchedulesVerificationFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+        _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+        _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+        _operationSentWaitFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
+        _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;

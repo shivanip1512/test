@@ -2504,7 +2504,8 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     {
         INT logId = CCEventLogIdGen();
-        {
+        INT seqId;
+        
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
@@ -2536,7 +2537,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
             }
 
             return inserter.status().isValid();
-        }
+        
     }
 }
 
@@ -2659,6 +2660,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                         if (currentCCSubstationBus != NULL)
                         {
                             currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                            currentCCSubstationBus->figureNextCheckTime();
                         }
                     }
 
@@ -2751,8 +2753,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["currentvoltloadpointid"]
                         << capControlSubstationBusTable["AltSubID"] 
                         << capControlSubstationBusTable["SwitchPointID"] 
-                        << capControlSubstationBusTable["DualBusEnabled"];
-
+                        << capControlSubstationBusTable["DualBusEnabled"]
+                        << capControlSubstationBusTable["multiMonitorControl"];
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
                         if (subBusId > 0)
@@ -3190,7 +3192,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         << capControlFeederTable["currentwattloadpointid"]
                         << capControlFeederTable["maplocationid"]
                         << capControlFeederTable["strategyid"]
-                        << capControlFeederTable["currentvoltloadpointid"];
+                        << capControlFeederTable["currentvoltloadpointid"]
+                        << capControlFeederTable["multiMonitorControl"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlFeederTable);
@@ -3434,7 +3437,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["waivecontrolflag"]
                     << dynamicCCFeederTable["additionalflags"] 
                     << dynamicCCFeederTable["currentvoltpointvalue"]
-                    << dynamicCCFeederTable["eventSeq"];
+                    << dynamicCCFeederTable["eventSeq"]
+                    << dynamicCCFeederTable["currverifycbid"]
+                    << dynamicCCFeederTable["currverifycborigstate"];
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);
@@ -3602,6 +3607,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     RWDBTable capBankTable = db.table("capbank");
                     RWDBTable dynamicCCCapBankTable = db.table("dynamiccccapbank");
                     RWDBTable ccFeederBankListTable = db.table("ccfeederbanklist");
+                    RWDBTable ccMonitorBankListTable = db.table("ccmonitorbanklist");
+                    RWDBTable dynamicCCMonitorBankHistoryTable = db.table("dynamicccmonitorbankhistory");
+                    RWDBTable dynamicCCMonitorPointResponseTable = db.table("dynamicccmonitorpointresponse");
+
+
 
                     {
                         RWDBSelector selector = db.selector();
@@ -3922,6 +3932,113 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                 }
                             }
                         }
+                    }
+                }
+                {
+                    //LOADING OF MONITOR POINTS.
+                    RWDBSelector selector = db.selector();
+                    selector << ccMonitorBankListTable["bankid"]
+                    << ccMonitorBankListTable["pointid"]
+                    << ccMonitorBankListTable["displayorder"]
+                    << ccMonitorBankListTable["scannable"]
+                    << ccMonitorBankListTable["ninavg"]
+                    << ccMonitorBankListTable["upperbandwidth"]
+                    << ccMonitorBankListTable["lowerbandwidth"];     
+                    selector.from(ccMonitorBankListTable);
+                    selector.from(capBankTable);
+
+                    if (capBankId > 0)
+                        selector.where(ccMonitorBankListTable["bankid"] == capBankId);
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    CtiCCMonitorPointPtr currentMonPoint = NULL;
+                    while ( rdr() )
+                    {
+                        currentMonPoint = new CtiCCMonitorPoint(rdr);
+                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
+
+                        currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
+                        pointid_capbank_map->insert(make_pair(currentMonPoint->getBankId(),currentCCCapBank));
+
+
+                    }
+                }
+                {
+                    //LOADING OF MONITOR POINTS.
+                    RWDBSelector selector = db.selector();
+                    selector << dynamicCCMonitorBankHistoryTable["bankid"]
+                    << dynamicCCMonitorBankHistoryTable["pointid"]
+                    << dynamicCCMonitorBankHistoryTable["value"];
+                    
+                    selector.from(dynamicCCMonitorBankHistoryTable);
+                    selector.from(capBankTable);
+
+                    if (capBankId > 0)
+                        selector.where(dynamicCCMonitorBankHistoryTable["bankid"] == capBankId);
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    CtiCCMonitorPoint* currentMonPoint = NULL;
+
+                    while ( rdr() )
+                    {
+                        long currentCapBankId, currentPointId;
+                        float value;
+                        rdr["bankid"] >> currentCapBankId;
+                        rdr["pointid"] >> currentPointId;
+
+                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
+                        vector <CtiCCMonitorPoint*>& monPoints = currentCCCapBank->getMonitorPoint();
+                        for (int i = 0; i < monPoints.size(); i++)
+                        {
+                            currentMonPoint = (CtiCCMonitorPoint*)monPoints[i];
+                            if (currentMonPoint->getPointId() == currentPointId)
+                            {
+                                rdr["value"] >> value;
+                                currentMonPoint->setValue(value);
+                                break;
+                            }
+                        }
+                        
+                    }
+                }
+                {
+                    //LOADING OF MONITOR POINTS.
+                    RWDBSelector selector = db.selector();
+                    selector << dynamicCCMonitorPointResponseTable["bankid"]
+                    << dynamicCCMonitorPointResponseTable["pointid"]
+                    << dynamicCCMonitorPointResponseTable["delta"];
+                    
+                    selector.from(dynamicCCMonitorPointResponseTable);
+                    selector.from(capBankTable);
+
+                    if (capBankId > 0)
+                        selector.where(dynamicCCMonitorPointResponseTable["bankid"] == capBankId);
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    CtiCCPointResponsePtr currentPointResponse = NULL;
+                    while ( rdr() )
+                    {
+                        long capBankId;
+                        rdr["bankid"] >> capBankId;
+                        currentPointResponse = new CtiCCPointResponse(rdr);
+
+                        CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(capBankId)->second;
+                        currentCCCapBank->getPointResponse().push_back(currentPointResponse);
                     }
                 }
             }
@@ -4362,6 +4479,12 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                 _pointid_capbank_map.erase(pointid);
             }
             capBankToDelete->getPointIds()->clear();
+            for (int i = 0; i < capBankToDelete->getMonitorPoint().size(); i++)
+            {
+                LONG pointid =  ((CtiCCMonitorPointPtr)capBankToDelete->getMonitorPoint()[i])->getPointId();
+                _pointid_capbank_map.erase(pointid);
+            }
+            
             try
             {   
                 CtiCCFeederPtr feeder = NULL;

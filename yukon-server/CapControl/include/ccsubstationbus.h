@@ -34,13 +34,7 @@ using std::list;
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 #include "ccstrategy.h"
-
-#define ALLBANKS 0
-#define FAILEDBANKS 1
-#define QUESTIONABLEBANKS 2
-#define FAILEDANDQUESTIONABLEBANKS 3
-#define SELECTEDFORVERIFICATIONBANKS 4
-#define BANKSINACTIVEFORXTIME 5
+#include "ccmonitorpoint.h"
 
 typedef std::vector<CtiCCFeeder*> CtiFeeder_vec;
 
@@ -120,12 +114,16 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     BOOL getOverlappingVerificationFlag() const;
+    BOOL getPreOperationMonitorPointScanFlag() const;
+    BOOL getOperationSentWaitFlag() const;
+    BOOL getPostOperationMonitorPointScanFlag() const;
     LONG getAltDualSubId() const;
     DOUBLE getAltSubControlValue() const;
     LONG getSwitchOverPointId() const;        
     BOOL getSwitchOverStatus() const;          
     BOOL getDualBusEnable() const;
     LONG getEventSequence() const;
+    BOOL getMultiMonitorFlag() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -187,15 +185,22 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVarPointQuality(LONG cvpq);
     CtiCCSubstationBus& setWaiveControlFlag(BOOL waive);
     CtiCCSubstationBus& setOverlappingVerificationFlag( BOOL overlapFlag);
+    CtiCCSubstationBus& setPreOperationMonitorPointScanFlag( BOOL flag);
+    CtiCCSubstationBus& setOperationSentWaitFlag( BOOL flag);
+    CtiCCSubstationBus& setPostOperationMonitorPointScanFlag( BOOL flag);
     CtiCCSubstationBus& setAltDualSubId(LONG altDualSubId);
     CtiCCSubstationBus& setAltSubControlValue(DOUBLE controlValue);
     CtiCCSubstationBus& setSwitchOverPointId(LONG pointId);
     CtiCCSubstationBus& setSwitchOverStatus(BOOL status);
     CtiCCSubstationBus& setDualBusEnable(BOOL flag);
     CtiCCSubstationBus& setEventSequence(LONG eventSeq);
+    CtiCCSubstationBus& setMultiMonitorFlag(BOOL flag);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
+    BOOL analyzeBus(const CtiTime& currentDateTime);
+    BOOL analyzeMultiPointBus(const CtiTime& currentDateTime);
+    BOOL performActionMultiPointBus(const CtiTime& currentDateTime);
     BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
@@ -215,6 +220,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static DOUBLE calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
 
     BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeVoltDataAndRefreshIfNeeded();
 
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
@@ -314,7 +320,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL   _switchOverStatus;
     BOOL   _dualBusEnable;
     LONG   _eventSeq;
-    
+    BOOL   _multiMonitorFlag;
     
       LONG _controlinterval;
       LONG _maxconfirmtime;
@@ -362,6 +368,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
     BOOL _overlappingSchedulesVerificationFlag;
+    BOOL _preOperationMonitorPointScanFlag;
+    BOOL _operationSentWaitFlag;
+    BOOL _postOperationMonitorPointScanFlag;
 
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
@@ -374,7 +383,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void restore(RWDBReader& rdr);
 
     string doubleToString(DOUBLE doubleVal);
-    list <long> _pointIds;
+    std::list <long> _pointIds;
+    //vector <long> _multipleMonitorPoints;
+    std::vector <CtiCCMonitorPoint> _multipleMonitorPoints;
+
 };
 
 

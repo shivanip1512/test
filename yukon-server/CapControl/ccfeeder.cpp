@@ -651,6 +651,12 @@ LONG CtiCCFeeder::getEventSequence() const
 {
     return _eventSeq;
 }
+
+
+BOOL CtiCCFeeder::getMultiMonitorFlag() const
+{
+    return _multiMonitorFlag;
+}
     
 /*---------------------------------------------------------------------------
     getCCCapBanks
@@ -1429,6 +1435,16 @@ CtiCCFeeder& CtiCCFeeder::setEventSequence(LONG eventSeq)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(BOOL flag)
+{
+    if (_multiMonitorFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _multiMonitorFlag = flag;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     findCapBankToDecreaseVars
@@ -1562,7 +1578,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
             capBank->setLastStatusChangeTime(CtiTime());
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
         }
         else
@@ -1577,7 +1593,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
         }
 
@@ -1621,8 +1637,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
             capBank->setLastStatusChangeTime(CtiTime());
 
-            setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
+            //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationOpenSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
         }
         else
         {
@@ -1636,7 +1652,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
             pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
         }  
 
@@ -1685,8 +1701,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
             capBank->setLastStatusChangeTime(CtiTime());
 
-            setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
+            //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCloseSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
         }
         else
         {
@@ -1700,7 +1716,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
         }  
 
@@ -1748,7 +1764,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
             capBank->setLastStatusChangeTime(CtiTime());
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control"));
         }
         else
@@ -1763,7 +1779,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
             pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
 
-            setEventSequence(getEventSequence() + 1);
+            //setEventSequence(getEventSequence() + 1);
             ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
         }
 
@@ -2274,7 +2290,6 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                setEventSequence(getEventSequence() + 1);
                 ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                 setEventSequence(0);
             }
@@ -2488,7 +2503,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
 
-                        setEventSequence(getEventSequence() + 1);     //if in verification mode, should be sub's sequence!
+                        //setEventSequence(getEventSequence() + 1);     //if in verification mode, should be sub's sequence!
                         ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                     }
                     else
@@ -2518,7 +2533,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
 
-                        setEventSequence(getEventSequence() + 1);
+                        //setEventSequence(getEventSequence() + 1);
                         ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
 
                     }
@@ -2577,7 +2592,64 @@ CtiCCFeeder& CtiCCFeeder::setVerificationDoneFlag(BOOL verificationDoneFlag)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setPreOperationMonitorPointScanFlag( BOOL flag)
+{
+    if (_preOperationMonitorPointScanFlag != flag)
+        _dirty = TRUE;
+    _preOperationMonitorPointScanFlag = flag;
 
+    return *this;
+}
+
+CtiCCFeeder& CtiCCFeeder::setOperationSentWaitFlag( BOOL flag)
+{
+    if (_operationSentWaitFlag != flag)
+        _dirty = TRUE;
+    _operationSentWaitFlag = flag;
+
+    return *this;
+}
+
+CtiCCFeeder& CtiCCFeeder::setPostOperationMonitorPointScanFlag( BOOL flag)
+{
+    if (_postOperationMonitorPointScanFlag != flag)
+        _dirty = TRUE;
+    _postOperationMonitorPointScanFlag = flag;
+
+    return *this;
+}
+
+
+CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(LONG capBankId)
+{
+    if( _currentVerificationCapBankId != capBankId )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _currentVerificationCapBankId = capBankId;
+
+    return *this;
+}
+CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankState(LONG status)
+{
+    if( _currentCapBankToVerifyAssumedOrigState != status )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _currentCapBankToVerifyAssumedOrigState = status;
+
+    return *this;
+}
 
 
 BOOL CtiCCFeeder::getVerificationFlag() const
@@ -2595,10 +2667,32 @@ BOOL CtiCCFeeder::getVerificationDoneFlag() const
     return _verificationDoneFlag;
 }
 
+BOOL CtiCCFeeder::getPreOperationMonitorPointScanFlag() const
+{
+    return _preOperationMonitorPointScanFlag;
+}
+BOOL CtiCCFeeder::getOperationSentWaitFlag() const
+{
+    return _operationSentWaitFlag;
+}
+BOOL CtiCCFeeder::getPostOperationMonitorPointScanFlag() const
+{
+    return _postOperationMonitorPointScanFlag;
+}                                             
 
 BOOL CtiCCFeeder::isFeederPerformingVerification()
 {
     return TRUE;
+}
+
+LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
+{
+    return _currentVerificationCapBankId;
+}
+LONG CtiCCFeeder::getCurrentVerificationCapBankOrigState() const
+{
+    return _currentCapBankToVerifyAssumedOrigState;
+
 }
 BOOL CtiCCFeeder::isVerificationAlreadyControlled(LONG minConfirmPercent)
 {
@@ -2753,7 +2847,12 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[0] = (_verificationFlag?'Y':'N');
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
             addFlags[2] = (_verificationDoneFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + string(17, *(addFlags + 3)));
+            addFlags[3] = (_preOperationMonitorPointScanFlag?'Y':'N');
+            addFlags[4] = (_operationSentWaitFlag?'Y':'N');
+            addFlags[5] = (_postOperationMonitorPointScanFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + 
+                                         char2string(*(addFlags+3)) + char2string(*(addFlags+4)) + char2string(*(addFlags+5))) +
+                                         string(*(addFlags + 6), 14);
 
             updater.clear();
 
@@ -2767,8 +2866,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N")) 
             << dynamicCCFeederTable["additionalflags"].assign( _additionalFlags[0] )
             << dynamicCCFeederTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
-            << dynamicCCFeederTable["eventseq"].assign( _eventSeq );
-
+            << dynamicCCFeederTable["eventseq"].assign( _eventSeq )
+            << dynamicCCFeederTable["currverifycbid"].assign(_currentVerificationCapBankId)
+            << dynamicCCFeederTable["currverifycborigstate"].assign(_currentCapBankToVerifyAssumedOrigState);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2827,7 +2927,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << (_waivecontrolflag?"Y":"N")
             << string(*addFlags, 20)
             << _currentvoltloadpointvalue
-            << _eventSeq;
+            << _eventSeq
+            << _currentVerificationCapBankId
+            << _currentCapBankToVerifyAssumedOrigState;
+
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -3060,6 +3163,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _decimalPlaces = right._decimalPlaces;
         _peakTimeFlag = right._peakTimeFlag;
         _eventSeq = right._eventSeq;
+        _multiMonitorFlag = right._multiMonitorFlag;
 
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
@@ -3130,6 +3234,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
    
    
     rdr["currentvoltloadpointid"] >> _currentvoltloadpointid;
+    rdr["multiMonitorControl"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _multiMonitorFlag = (tempBoolString=="y"?TRUE:FALSE);
 
 
     //initialize strategy members
@@ -3179,8 +3286,13 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setPerformingVerificationFlag(FALSE);
     setVerificationDoneFlag(FALSE);
+    setPreOperationMonitorPointScanFlag(FALSE);
+    setOperationSentWaitFlag(FALSE);
+    setPostOperationMonitorPointScanFlag(FALSE);
     setEventSequence(0);
-
+    setCurrentVerificationCapBankId(-1);
+    setCurrentVerificationCapBankState(0);
+    
     _insertDynamicDataFlag = TRUE;
 
 
@@ -3257,7 +3369,13 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    _preOperationMonitorPointScanFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+    _operationSentWaitFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+    _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
+    rdr["currverifycbid"] >> _currentVerificationCapBankId;
+    rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
+
 
 
     _insertDynamicDataFlag = FALSE;

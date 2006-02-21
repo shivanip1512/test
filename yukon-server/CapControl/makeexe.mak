@@ -57,7 +57,9 @@ ccsubstationbusstore.obj \
 pao_schedule.obj \
 pao_event.obj \
 mgr_paosched.obj \
-ccstrategy.obj
+ccstrategy.obj \
+ccmonitorpoint.obj \
+ccpointresponse.obj
 
 TARGS = capcontrol.exe
 

@@ -52,6 +52,27 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 CtiCCCapBank::~CtiCCCapBank()
 {
     _pointIds.clear();
+    if (!_monitorPoint.empty()) 
+    {
+        for (int i = 0; i < _monitorPoint.size(); i++)
+        {
+            CtiCCMonitorPointPtr monPoint = (CtiCCMonitorPointPtr)_monitorPoint[i];
+            delete monPoint;
+        }
+        _monitorPoint.clear();
+    }
+
+    if (!_pointResponses.empty()) 
+    {
+        for (int i = 0; i < _pointResponses.size(); i++)
+        {
+            CtiCCPointResponsePtr point = (CtiCCPointResponsePtr)_pointResponses[i];
+            delete point;
+        }
+        _pointResponses.clear();
+    }
+    
+
 }
 
 /*---------------------------------------------------------------------------
@@ -1398,6 +1419,21 @@ void CtiCCCapBank::dumpDynamicData()
 void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
+        for (int i = 0; i < _monitorPoint.size(); i++)
+        {
+            if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
+            {   
+                ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData();
+            }
+        }
+        for (i = 0; i < _pointResponses.size(); i++)
+        {
+            if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
+            {   
+                ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData();
+            }
+        }
+
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {

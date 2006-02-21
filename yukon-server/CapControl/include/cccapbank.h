@@ -22,30 +22,15 @@
 #include <rw/thr/recursiv.h> 
 #include <list>
 
+#include "ccpointresponse.h"
+#include "ccmonitorpoint.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "ctitime.h"
 #include "ctidate.h"
 
 
-typedef enum
-{
-    uninit = 0,
-    pending1stCmd, 
-    pending2ndCmd,
-    pending2ndCmdRetry,
-    pending3rdCmd,
-    pending3rdCmdRetry,
-    success,
-    fail
-} CCBANKVSTATE;  
 
-typedef enum
-{
-    verificationFail = 0,
-    verificationSuccess,
-    verificationRetry
-} CCBANKVRESULT;
                 
 class CtiCCCapBank : public RWCollectable
 {
@@ -96,12 +81,11 @@ public:
     BOOL getVerificationDoneFlag() const;
 
     int  getVCtrlIndex() const;
-    CCBANKVRESULT getCurrVCmdResult() const;
-    CCBANKVRESULT getPrevVCmdResult() const;
-    CCBANKVSTATE getVerificationState() const;
     int getAssumedOrigVerificationState() const;
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
+    std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
+    std::vector <CtiCCPointResponsePtr>& getPointResponse() {return _pointResponses;};
 
     CtiCCCapBank& setPAOId(LONG id);
     CtiCCCapBank& setPAOCategory(const string& category);
@@ -246,6 +230,10 @@ private:
     CtiCCCapBank();
 
     std::list <LONG> _pointIds;
+
+    std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
+                                                // than one monitor point attached to a capbank!!!
+    std::vector <CtiCCPointResponse*> _pointResponses;
 };
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;

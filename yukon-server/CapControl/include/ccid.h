@@ -33,6 +33,8 @@ class CtiTime;
 #define CTIPAOSCHEDULEMSG_ID        515
 #define CTICCSTRATEGY_ID            516
 #define CTICCEVENTLOG_ID            517
+#define CTICCMONITORPOINT_ID        518
+#define CTICCPOINTRESPONSE_ID       519
 
 
 /*#define CTICCSTRATEGYLIST_ID     501

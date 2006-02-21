@@ -347,14 +347,7 @@ void CtiCapController::controlLoop()
                                             {
                                                 if( ccEvents.size() > 0)
                                                 {
-                                                   /* multiCCEventMsg->resetTime(); 
-                                                    getDispatchConnection()->WriteConnQue(multiCCEventMsg);
-                                                    multiCCEventMsg = new CtiMultiMsg();
-                                                    */
-                                                    //multiCCEventMsg->resetTime();
-
                                                     _ccEventMsgQueue.write(multiCCEventMsg);
-                                                    //processCCEventMsgs(multiCCEventMsg);
                                                     processCCEventMsgs();
                                                     multiCCEventMsg = new CtiMultiMsg();
                                                 }
@@ -412,14 +405,7 @@ void CtiCapController::controlLoop()
                                     {
                                         if( ccEvents.size() > 0)
                                         {
-                                           /* multiCCEventMsg->resetTime(); 
-                                            getDispatchConnection()->WriteConnQue(multiCCEventMsg);
-                                            multiCCEventMsg = new CtiMultiMsg();
-                                            */
-                                            //multiCCEventMsg->resetTime();
-
                                             _ccEventMsgQueue.write(multiCCEventMsg);
-                                            //processCCEventMsgs(multiCCEventMsg);
                                             processCCEventMsgs();
                                             multiCCEventMsg = new CtiMultiMsg();
                                         }
@@ -541,14 +527,7 @@ void CtiCapController::controlLoop()
                     //send ccEvents to EventLOG!
                     if( ccEvents.size() > 0)
                     {
-                       /* multiCCEventMsg->resetTime(); 
-                        getDispatchConnection()->WriteConnQue(multiCCEventMsg);
-                        multiCCEventMsg = new CtiMultiMsg();
-                        */
-                        //multiCCEventMsg->resetTime();
-
                         _ccEventMsgQueue.write(multiCCEventMsg);
-                        //processCCEventMsgs(multiCCEventMsg);
                         processCCEventMsgs();
                         multiCCEventMsg = new CtiMultiMsg();
                     }
@@ -1735,6 +1714,25 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentCapBank->setTotalOperations((LONG)value);
                             found = TRUE;
                             //break;
+                        }
+                        else 
+                        {   
+                            for (int i = 0; i < currentCapBank->getMonitorPoint().size(); i++)
+                            {
+                                CtiCCMonitorPointPtr currentMonPoint = (CtiCCMonitorPointPtr)currentCapBank->getMonitorPoint()[i];
+                                if( currentMonPoint->getPointId() == pointID )
+                                {
+                                    if (currentMonPoint->getValue() != value)
+                                    {
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+                                        currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                                    }
+                                    currentMonPoint->setValue(value);
+                                    currentMonPoint->setTimeStamp(timestamp);
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

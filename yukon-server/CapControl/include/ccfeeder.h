@@ -145,6 +145,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPorterRetFailFlag() const;
     LONG getEventSequence() const;
     
+    BOOL getMultiMonitorFlag() const;
+    BOOL getVerificationFlag() const;
+    BOOL getPerformingVerificationFlag() const;
+    BOOL getVerificationDoneFlag() const;
+    BOOL getPreOperationMonitorPointScanFlag() const;
+    BOOL getOperationSentWaitFlag() const;
+    BOOL getPostOperationMonitorPointScanFlag() const;
+    LONG getCurrentVerificationCapBankId() const;
+    LONG getCurrentVerificationCapBankOrigState() const;
+    
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
@@ -211,6 +221,15 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPorterRetFailFlag(BOOL flag);
     CtiCCFeeder& setEventSequence(LONG eventSeq);
 
+    CtiCCFeeder& setMultiMonitorFlag(BOOL flag);
+    CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
+    CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
+    CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
+    CtiCCFeeder& setPreOperationMonitorPointScanFlag( BOOL flag);
+    CtiCCFeeder& setOperationSentWaitFlag( BOOL flag);
+    CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
+    CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
+    CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
 
@@ -230,17 +249,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
 
-    CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
-    CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
-    CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
-
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo);
-    BOOL getVerificationFlag() const;
-    BOOL getPerformingVerificationFlag() const;
-    BOOL getVerificationDoneFlag() const;
 
-    list <LONG>* getPointIds() {return &_pointIds;};
+    std::list <LONG>* getPointIds() {return &_pointIds;};
 
     BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
@@ -283,6 +295,8 @@ private:
     BOOL _disableflag;
     LONG _parentId; //subBusId
     LONG _strategyId;
+    BOOL _multiMonitorFlag;
+
     string _strategyName;
     string _controlmethod;
     LONG _maxdailyoperation;
@@ -344,9 +358,15 @@ private:
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
+    BOOL _preOperationMonitorPointScanFlag;
+    BOOL _operationSentWaitFlag;
+    BOOL _postOperationMonitorPointScanFlag;
     BOOL _porterRetFailFlag;
     LONG   _eventSeq;
 
+    LONG _currentVerificationCapBankId;
+    LONG _currentCapBankToVerifyAssumedOrigState;
+    
 
     //don't stream
     BOOL _insertDynamicDataFlag;
@@ -355,7 +375,7 @@ private:
     void restore(RWDBReader& rdr);
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
-    list <long> _pointIds;
+    std::list <long> _pointIds;
 };
 
 
