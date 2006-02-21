@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/02/16 22:16:11 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/02/21 15:27:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -28,24 +28,35 @@ using std::map;
         To find current implementations search for ThreadMonitor.getState() and ThreadMonitor.tickle( data );
         
         //Thread Monitor (code for thread) Any thread that is to be monitored needs code similar to this.
-        if(!(++sanity % SANITY_RATE))//SANITY_RATE is used to slow reporting, but must be low enough to allow for the 300 seconds defined below
-        {                            //SANITY_RATE currently defined as 300 in most applications
-        
+        CtiTime lastTickleTime, lastReportTime;     //defined above, not right before as you see here
+        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
+        {
+            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
             {
-                //This is not necessary and can be annoying, but if you want it (which you might) here it is.
-                //It should be included or excluded based on thread. Every thread can be implemented differently
-                
+                lastReportTime = lastReportTime.now();
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
+                dout << CtiTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
             }
 
-            //Replace DNP Inbound Thread with whatever thread you want to use
-            
-            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DNP Inbound Thread", CtiThreadRegData::None, 300 );
-            ThreadMonitor.tickle( data ); 
+            CtiThreadRegData *data;
+            if( ShutdownOnThreadTimeout )
+            {
+                data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::Action,
+                                                                      CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("RTDB Archiver Thread") );
+            }
+            else
+            {
+                data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+            }
+            ThreadMonitor.tickle( data );
+            lastTickleTime = lastTickleTime.now();
         }
         //End Thread Monitor Section (thread specific)
 
+        Note that any thread who goes away besides on a shutdown should also include a logout command
+        
+        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
+        
         Now each application needs a polling and reporting section. 
         This example was in the DispatchMsgHandlerThread thread. This is a good choice for several reasons, but
         one good reason is that if the communication to dispatch is down, reporting cannot happen anyway, so this thread really
@@ -68,6 +79,9 @@ using std::map;
                 VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
             }
         }
+
+        ***** When a thread goes unreported, it is not removed from the list, threads are only removed upon logout. Also, their
+        unreported status, or the action that is set should be reported every 10 minutes after this until they report.
 
 ************************************************************************************************/
 
@@ -192,7 +206,7 @@ void CtiThreadMonitor::processQueue( void )
             }
             _threadData.remove(tempId);//smart pointer will delete reg data item!
         }
-            
+
         ThreadData::insert_pair insertpair;
 
         //we try to put the element from the queue into the map
