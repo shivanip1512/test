@@ -1391,12 +1391,13 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
             LONG feedMapId;
             if( (feedMapId = atol( currentFeeder->getMapLocationId().c_str() ) ) == feederid )
             {
-                for( CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin(); 
-                     itr != oldFeederCapBanks.end(); 
-                     itr++)
+                CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
+                while(  itr != oldFeederCapBanks.end() )
                 {
                     if( *itr == movedCapBank)//if address itr is pointing to matches the address passed in.
-                        oldFeederCapBanks.erase(movedCapBank);
+                        itr = oldFeederCapBanks.erase(itr);
+                    else
+                        ++itr;
                 }
                 CtiCCCapBank_SVector& newFeederCapBanks = currentFeeder->getCCCapBanks();
 
@@ -4225,15 +4226,16 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
             {
                 string subBusName = subToDelete->getPAOName();
                 _paobject_subbus_map.erase(subToDelete->getPAOId());
-                //_ccSubstationBuses->removeAndDestroy(subToDelete);
-                for (LONG j = 0; j < _ccSubstationBuses->size(); j++)
+                CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
+                while ( itr != _ccSubstationBuses->end() )
                 {
-                    CtiCCSubstationBus *subBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(j);
+                    CtiCCSubstationBus *subBus = *itr;
                     if (subBus->getPAOId() == subBusId)
                     {
-                        _ccSubstationBuses->erase(_ccSubstationBuses->begin()+j,_ccSubstationBuses->begin()+j+1);
+                        itr = _ccSubstationBuses->erase(itr);
                         break;
-                    }
+                    }else
+                        ++itr;
 
                 }
 

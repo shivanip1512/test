@@ -3283,16 +3283,17 @@ string CtiCCFeeder::doubleToString(DOUBLE doubleVal, LONG decimalPlaces)
 void CtiCCFeeder::deleteCCCapBank(long capBankId)
 {
     CtiCCCapBank_SVector& ccCapBanks = getCCCapBanks();
-    
-    for (CtiCCCapBank_SVector::iterator itr = ccCapBanks.begin(); itr != ccCapBanks.end(); itr++)
+    CtiCCCapBank_SVector::iterator itr = ccCapBanks.begin();
+    while(itr != ccCapBanks.end())
     {
         CtiCCCapBank *capBank = *itr;
         if (capBank->getPAOId() == capBankId)
         {
-            delete *itr;
-            getCCCapBanks().erase(itr);
+            delete capBank;
+            itr = getCCCapBanks().erase(itr);
             break;
-        }
+        }else
+            ++itr;
 
     }
     return;

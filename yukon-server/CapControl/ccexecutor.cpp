@@ -2293,14 +2293,15 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         {
             CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
 
-            for( CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
-                 itr != oldFeederCapBanks.end();
-                 itr++)
+            CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
+            while( itr != oldFeederCapBanks.end() )
             {
                 if (*itr == movedCapBankPtr) {
-                    oldFeederCapBanks.erase(movedCapBankPtr);
-                }
+                    itr = oldFeederCapBanks.erase( itr );
+                }else
+                    ++itr;
             }
+
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
             store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
 
