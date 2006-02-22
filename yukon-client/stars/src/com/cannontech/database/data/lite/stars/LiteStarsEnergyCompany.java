@@ -918,7 +918,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public List<ServiceCompany> getAllServiceCompaniesDownward() 
     {
-        List<ServiceCompany> companies = new ArrayList( getAllServiceCompanies() );
+        List<ServiceCompany> companies = new ArrayList<ServiceCompany>( getAllServiceCompanies() );
         
         if(getChildren() != null)
         {
