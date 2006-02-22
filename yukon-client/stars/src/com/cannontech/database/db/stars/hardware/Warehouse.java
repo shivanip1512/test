@@ -144,9 +144,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllWarehousesForEnergyCompany(int ecID)
+public static List<Warehouse> getAllWarehousesForEnergyCompany(int ecID)
 {
-    ArrayList warehouses = new ArrayList();
+    List<Warehouse> warehouses = new ArrayList<Warehouse>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE ENERGYCOMPANYID = " + ecID, CtiUtilities.getDatabaseAlias());
     
@@ -179,7 +179,7 @@ public static ArrayList getAllWarehousesForEnergyCompany(int ecID)
 
 public static List<Integer> getAllInventoryInAWarehouse(int warehouseID)
 {
-    List<Integer> inventory = new ArrayList();
+    List<Integer> inventory = new ArrayList<Integer>();
     
     SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM INVENTORYTOWAREHOUSEMAPPING WHERE WAREHOUSEID = " + warehouseID, CtiUtilities.getDatabaseAlias());
     
