@@ -45,7 +45,7 @@ public CalcBase(Integer pointID, String updateType, Integer periodicRate, char c
  * add method comment.
  */
 public void add() throws java.sql.SQLException {
-	Object addValues[]= { getPointID(), getUpdateType(), getPeriodicRate() };
+	Object addValues[]= { getPointID(), getUpdateType(), getPeriodicRate(), 'N' };
 
 	add( this.tableName, addValues );
 }
