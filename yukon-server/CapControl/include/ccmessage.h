@@ -38,8 +38,7 @@ enum CtiCCEventType_t
     capControlDisable,
     capControlEnableVerification,
     capControlDisableVerification,
-    capControlVerificationOpenSent,
-    capControlVerificationCloseSent
+    capControlVerificationCommandSent
 };
 
 
