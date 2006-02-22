@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/01/05 21:05:14 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/22 18:05:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -439,9 +439,6 @@ void CtiPointClientManager::storeDirtyRecords()
 
     return;
 }
-
-//typedef CtiPointManager Inherited;
-//typedef RWTPtrSlist<CtiConnectionManager> ConnectionList;
 
 CtiPointClientManager::CtiPointClientManager() {}
 

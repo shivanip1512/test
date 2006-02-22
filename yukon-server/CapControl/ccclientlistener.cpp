@@ -62,7 +62,6 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
     return _instance;
 }
 
-//RWTPtrSlist<CtiCCClientConnection>& CtiCCClientListener::getClientConnectionList()
 std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionList()
 {
 

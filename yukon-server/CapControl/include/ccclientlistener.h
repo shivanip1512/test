@@ -37,7 +37,6 @@ public:
 
     RWRecursiveLock<RWMutexLock> & getMux() { return _connmutex; };
 
-    //RWTPtrSlist<CtiCCClientConnection>& getClientConnectionList();
     std::vector<CtiCCClientConnection*>& getClientConnectionList();
 
 protected:
@@ -49,7 +48,6 @@ private:
     RWThread _listenerthr;
     RWThread _checkthr;
 
-    //RWTPtrSlist<CtiCCClientConnection> _connections;
     std::vector<CtiCCClientConnection*> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
 

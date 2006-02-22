@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/02/22 18:05:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 
 #include "clistener.h"
 #include "dllbase.h"
+#include "utility.h"
 
 using std::vector;
 
@@ -100,7 +101,7 @@ void CtiMCClientListener::BroadcastMessage(CtiMessage* msg)
 
     try
     {
-        for( int i = 0; i < _connections.entries(); i++ )
+        for( int i = 0; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
             if( _connections[i]->isValid() )
@@ -132,7 +133,7 @@ void CtiMCClientListener::checkConnections()
     CtiMCConnection* conn;
     vector< CtiMCConnection* > to_remove;
 
-    for( int i = 0; i < _connections.entries(); i++ )
+    for( int i = 0; i < _connections.size(); i++ )
     {
         conn = _connections[i];
         if( !conn->isValid() )
@@ -141,12 +142,13 @@ void CtiMCClientListener::checkConnections()
         }
     }
 
-    for( int j = 0; j < to_remove.size(); j++ )
+    std::vector< CtiMCConnection* >::iterator itr = to_remove.begin();
+    while ( itr != to_remove.end() )
     {
-        conn = to_remove[j];
+        conn = *itr;
         conn->deleteObserver( (CtiObserver&) *this);
         conn->close();
-        _connections.remove(conn);
+        itr = _connections.erase(itr);
 
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
@@ -166,19 +168,26 @@ void CtiMCClientListener::update(CtiObservable& observable)
     {
         RWMutexLock::LockGuard conn_guard( _connmutex );
 
-        CtiMCConnection* to_remove = _connections.remove((CtiMCConnection*) &observable);
-
-        if( to_remove != NULL )
-        {
-            to_remove->deleteObserver((CtiObserver&) *this);
-            delete to_remove;
-        }
-        else
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > dout_guard(dout);
-            dout << CtiTime() << " CtiMCClientListener attempted to remove an unknown connection" << endl;
-        }
+        std::vector<CtiMCConnection*>::iterator itr = _connections.begin();
+        while( itr != _connections.end() ){
+            CtiMCConnection* to_remove = *itr;
+            if ( ((CtiMCConnection*) &observable) == *itr ) {
+                _connections.erase(itr);
+                if( to_remove != NULL )
+                {
+                    to_remove->deleteObserver((CtiObserver&) *this);
+                    delete to_remove;
+                }
+                else
+                if( gMacsDebugLevel & MC_DEBUG_CONN )
+                {
+                    CtiLockGuard< CtiLogger > dout_guard(dout);
+                    dout << CtiTime() << " CtiMCClientListener attempted to remove an unknown connection" << endl;
+                }
+                break;
+            }else
+                ++itr;
+        }//end while
     }
     else
     {
@@ -227,7 +236,7 @@ void CtiMCClientListener::run()
 
             {
                 RWMutexLock::LockGuard guard( _connmutex );
-                _connections.insert(conn);
+                _connections.push_back(conn);
             }
 
 	    conn->initialize(portal);
@@ -250,14 +259,15 @@ void CtiMCClientListener::run()
             dout << CtiTime()  << " Closing all client connections."  << endl;
         }
 
-        for ( int i = 0; i < _connections.entries(); i++ )
+        for ( int i = 0; i < _connections.size(); i++ )
         {
             CtiMCConnection* conn = _connections[i];
             conn->deleteObserver((CtiObserver&) *this);
             conn->close();
         }
 
-        _connections.clearAndDestroy();
+        delete_vector(_connections);
+        _connections.clear();
     }
 
     if( gMacsDebugLevel & MC_DEBUG_CONN )
@@ -285,20 +295,22 @@ void CtiMCClientListener::_check()
         {
             {
                 RWMutexLock::LockGuard conn_guard( _connmutex );
-
-                for ( int i = 0; i < _connections.entries(); i++ )
+                vector<CtiMCConnection*>::iterator itr = _connections.begin();
+                while( itr != _connections.end() ){               
                 {
-                    if ( !_connections[i]->isValid() )
+                    CtiMCConnection* temp = *itr;
+                    if ( !temp->isValid() )
                     {
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << CtiTime()  << " Connection closed, removing it." << _connections[i] << endl;
+                            dout << CtiTime()  << " Connection closed, removing it." << temp << endl;
                         }
 
-                        delete _connections[i];
-                        _connections.removeAt(i);
+                        delete temp;
+                        itr = _connections.erase(itr);
                         continue;
-                    }
+                    }else
+                        ++itr;
                 }
             }   //Release mutex
 
@@ -314,7 +326,7 @@ void CtiMCClientListener::_check()
             {
                 RWMutexLock::LockGuard conn_guard( _connmutex );
 
-                for( int i = 0; i < _connections.entries(); i++ )
+                for( int i = 0; i < _connections.size(); i++ )
                 {
                     // replicateMessage does a deep copy
                     CtiMultiMsg* replicated_multi = (CtiMultiMsg*) multi->replicateMessage();
@@ -333,15 +345,16 @@ void CtiMCClientListener::_check()
 
             {
                 CtiLockGuard< CtiLogger > g(dout);
-                dout << CtiTime()  << " Client listener shutting down all connections." << _connections.entries() << " connections..." << endl;
+                dout << CtiTime()  << " Client listener shutting down all connections." << _connections.size() << " connections..." << endl;
             }
 
             //Before we exit try to close all the connections
-            for ( int j = 0; j < _connections.entries(); j++ )
+            for ( int j = 0; j < _connections.size(); j++ )
             {
                 _connections[j]->close();
                 delete _connections[j];
             }
+            _connections.clear();//TS added this
         }
 
     } catch ( RWxmsg& msg )
