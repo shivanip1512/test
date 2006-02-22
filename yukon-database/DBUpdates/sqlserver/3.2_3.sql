@@ -2,7 +2,6 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-
 /* @error ignore */
 delete from DynamicLMProgramDirect;
 go
@@ -11,6 +10,7 @@ go
 alter table DynamicLMProgramDirect alter column NotifyInactiveTime datetime not null;
 go
 
+alter table DynamicLMProgramDirect 
 /* @error ignore */
 create table CommandGroup (
    CommandGroupID       numeric              not null,
@@ -164,6 +164,115 @@ go
 
 /* @error ignore */
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
+go
+
+alter table dynamicccfeeder add currVerifyCBId numeric;
+go
+update dynamicccfeeder  set currVerifyCBId = -1;
+go 
+alter table dynamicccfeeder alter column currVerifyCBId numeric not null;
+go
+
+alter table dynamicccfeeder add currVerifyCBOrigState numeric;
+go
+update dynamicccfeeder  set currVerifyCBOrigState = 0;
+go 
+alter table dynamicccfeeder alter column currVerifyCBOrigState numeric not null;
+go
+
+/*==============================================================*/
+/* Table: CCMONITORBANKLIST                                     */
+/*==============================================================*/
+create table CCMONITORBANKLIST (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   DisplayOrder         numeric              not null,
+   Scannable            char(1)              not null,
+   NLNAvg               numeric              not null,
+   UpperBandwith        float                not null,
+   LowerBandwith        float                not null
+)
+go
+
+
+alter table CCMONITORBANKLIST
+   add constraint PK_CCMONITORBANKLIST primary key  (BankID, PointID)
+go
+
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID)
+go
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorBankHistory                           */
+/*==============================================================*/
+create table DynamicCCMonitorBankHistory (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   Value                float                not null,
+   DateTime             datetime             not null,
+   ScanInProgress       char(1)              not null
+)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint PK_DYNAMICCCMONITORBANKHISTORY primary key  (BankID, PointID)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_PTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID)
+go
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorPointResponse                         */
+/*==============================================================*/
+create table DynamicCCMonitorPointResponse (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   PreOpValue           float                not null,
+   Delta                numeric              not null
+)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint PK_DYNAMICCCMONITORPOINTRESPON primary key  (BankID, PointID)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_BNKID foreign key (BankID)
+      references DynamicCCCapBank (CapBankID)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+alter table Capcontrolsubstationbus add multiMonitorControl char(1);
+go
+update  Capcontrolsubstationbus set  multiMonitorControl = 'N';
+go
+alter table   Capcontrolsubstationbus alter column  multiMonitorControl char(1) not null;
 go
 
 /* @error ignore-begin */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/17/2006 2:52:23 PM                         */
+/* Created on:     2/22/2006 4:58:26 PM                         */
 /*==============================================================*/
 
 
@@ -607,6 +607,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CCMONITORBANKLIST')
+            and   type = 'U')
+   drop table CCMONITORBANKLIST
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CICUSTOMERPOINTDATA')
             and   type = 'U')
    drop table CICUSTOMERPOINTDATA
@@ -1074,6 +1082,22 @@ if exists (select 1
            where  id = object_id('DynamicCCFeeder')
             and   type = 'U')
    drop table DynamicCCFeeder
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCMonitorBankHistory')
+            and   type = 'U')
+   drop table DynamicCCMonitorBankHistory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCMonitorPointResponse')
+            and   type = 'U')
+   drop table DynamicCCMonitorPointResponse
 go
 
 
@@ -2308,7 +2332,8 @@ create table CAPCONTROLSUBSTATIONBUS (
    CurrentVoltLoadPointID numeric              not null,
    AltSubID             numeric              not null,
    SwitchPointID        numeric              not null,
-   DualBusEnabled       char(1)              not null
+   DualBusEnabled       char(1)              not null,
+   MultiMonitorControl  char(1)              not null
 )
 go
 
@@ -2356,6 +2381,26 @@ go
 
 alter table CCFeederSubAssignment
    add constraint PK_CCFEEDERSUBASSIGNMENT primary key  (SubStationBusID, FeederID)
+go
+
+
+/*==============================================================*/
+/* Table: CCMONITORBANKLIST                                     */
+/*==============================================================*/
+create table CCMONITORBANKLIST (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   DisplayOrder         numeric              not null,
+   Scannable            char(1)              not null,
+   NLNAvg               numeric              not null,
+   UpperBandwith        float                not null,
+   LowerBandwith        float                not null
+)
+go
+
+
+alter table CCMONITORBANKLIST
+   add constraint PK_CCMONITORBANKLIST primary key  (BankID, PointID)
 go
 
 
@@ -4410,13 +4455,50 @@ create table DynamicCCFeeder (
    CurrentVarPointQuality numeric              not null,
    WaiveControlFlag     char(1)              not null,
    AdditionalFlags      varchar(32)          not null,
-   CurrentVoltPointValue float                not null
+   CurrentVoltPointValue float                not null,
+   CurrVerifyCBId       numeric              not null,
+   CurrVerifyCBOrigState numeric              not null
 )
 go
 
 
 alter table DynamicCCFeeder
    add constraint PK_DYNAMICCCFEEDER primary key  (FeederID)
+go
+
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorBankHistory                           */
+/*==============================================================*/
+create table DynamicCCMonitorBankHistory (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   Value                float                not null,
+   DateTime             datetime             not null,
+   ScanInProgress       char(1)              not null
+)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint PK_DYNAMICCCMONITORBANKHISTORY primary key  (BankID, PointID)
+go
+
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorPointResponse                         */
+/*==============================================================*/
+create table DynamicCCMonitorPointResponse (
+   BankID               numeric              not null,
+   PointID              numeric              not null,
+   PreOpValue           float                not null,
+   Delta                numeric              not null
+)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint PK_DYNAMICCCMONITORPOINTRESPON primary key  (BankID, PointID)
 go
 
 
@@ -9557,6 +9639,18 @@ alter table CCFeederSubAssignment
 go
 
 
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID)
+go
+
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
 alter table CICUSTOMERPOINTDATA
    add constraint FK_CICstPtD_CICst foreign key (CustomerID)
       references CICustomerBase (CustomerID)
@@ -10016,6 +10110,30 @@ go
 alter table DynamicCCFeeder
    add constraint FK_CCFeed_DyFeed foreign key (FeederID)
       references CapControlFeeder (FeederID)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID)
+go
+
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_PTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_BNKID foreign key (BankID)
+      references DynamicCCCapBank (CapBankID)
+go
+
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
+      references POINT (POINTID)
 go
 
 

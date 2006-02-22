@@ -127,6 +127,85 @@ alter table CALCBASE modify QualityFlag not null;
 /* @error ignore */
 alter table DynamicPointAlarming drop constraint FKf_DynPtAl_SysL;
 
+alter table dynamicccfeeder add currVerifyCBId NUMBER;
+update dynamicccfeeder  set currVerifyCBId = -1;
+alter table dynamicccfeeder modify currVerifyCBId not null;
+
+alter table dynamicccfeeder add currVerifyCBOrigState NUMBER;
+update dynamicccfeeder  set currVerifyCBOrigState = 0;
+alter table dynamicccfeeder modify currVerifyCBOrigState not null;
+
+/*==============================================================*/
+/* Table: CCMONITORBANKLIST                                     */
+/*==============================================================*/
+create table CCMONITORBANKLIST  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null,
+   Scannable            CHAR(1)                         not null,
+   NLNAvg               NUMBER                          not null,
+   UpperBandwith        FLOAT                           not null,
+   LowerBandwith        FLOAT                           not null
+);
+
+alter table CCMONITORBANKLIST
+   add constraint PK_CCMONITORBANKLIST primary key (BankID, PointID);
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID);
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorBankHistory                           */
+/*==============================================================*/
+create table DynamicCCMonitorBankHistory  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   Value                FLOAT                           not null,
+   DateTime             DATE                            not null,
+   ScanInProgress       CHAR(1)                         not null
+);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID);
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorPointResponse                         */
+/*==============================================================*/
+create table DynamicCCMonitorPointResponse  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   PreOpValue           FLOAT                           not null,
+   Delta                NUMBER                          not null
+);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_BNKID foreign key (BankID)
+      references DynamicCCCapBank (CapBankID);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+alter table Capcontrolsubstationbus add multiMonitorControl CHAR(1);
+update  Capcontrolsubstationbus set  multiMonitorControl = 'N';
+alter table   Capcontrolsubstationbus modify multiMonitorControl not null;
+
 
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint
