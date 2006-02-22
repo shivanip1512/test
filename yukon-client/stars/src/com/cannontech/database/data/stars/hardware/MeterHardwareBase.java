@@ -1,10 +1,13 @@
 package com.cannontech.database.data.stars.hardware;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -247,4 +250,29 @@ public class MeterHardwareBase extends InventoryBase {
         
         return meterHardwareBase;
     }
+    
+    public static boolean hasSwitchAssigned(int meterInvenID)
+    {
+        boolean truth = false;
+        
+        SqlStatement stmt = new SqlStatement("SELECT * FROM LMHardwareToMeterMapping WHERE METERINVENTORYID = " + meterInvenID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                truth = true;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return truth;
+    }
+
+    
 }
