@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.customer.Address;
@@ -10,13 +11,13 @@ import com.cannontech.database.TransactionException;
 
 public class WarehouseAdminBean 
 {
-    private ArrayList warehouses;    
+    private List<Warehouse> warehouses;    
     private Integer energyCompanyID;
     private Warehouse currentWarehouse;
     private Integer currentWarehouseID;
     private Address currentAddress;
     
-    public ArrayList getWarehouses()
+    public List<Warehouse> getWarehouses()
     {
         if(energyCompanyID != null)
         {
@@ -27,7 +28,7 @@ public class WarehouseAdminBean
         return new ArrayList(0);
     }
     
-    public void setWarehouses(ArrayList newHouses)
+    public void setWarehouses(List<Warehouse> newHouses)
     {
         warehouses = newHouses;
     }
