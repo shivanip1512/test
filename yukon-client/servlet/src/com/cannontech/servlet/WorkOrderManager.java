@@ -141,18 +141,26 @@ public class WorkOrderManager extends HttpServlet {
         	viewAllResults(req, session, true);
         else if( action.equalsIgnoreCase("HideAllResults"))
         	viewAllResults(req, session, false);
+        else if( action.equalsIgnoreCase("SortWorkOrders"))
+        	sortWorkOrders(req, session);
 
 		resp.sendRedirect( redirect );
 	}
+	
+	private void sortWorkOrders(HttpServletRequest req, HttpSession session) {
+		
+		WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+		String param = req.getParameter("SortBy");
+		if( param != null)
+			workOrderBean.setSortBy(Integer.valueOf(param) );
+		
+		param = req.getParameter("SortOrder");
+		if( param != null)
+			workOrderBean.setSortOrder(Integer.valueOf(param) );
+
+	}
 	private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		
-				java.util.Enumeration enum1 = req.getParameterNames();
-		  while (enum1.hasMoreElements()) {
-			String ele = enum1.nextElement().toString();
-			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
-		}
-
-
 		String[] selections = req.getParameterValues("checkWorkOrder");
 		int [] selectionIDs = new int[selections.length];
 		for ( int i = 0; i < selections.length; i++)
