@@ -38,6 +38,8 @@ public class WorkOrderManagerUtil {
 			starsOrder.setAccountID( Integer.parseInt(req.getParameter("AccountID")) );
 		if (req.getParameter("OrderNo") != null)
 			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
+		if (req.getParameter("AddtlOrderNo") != null)
+			starsOrder.setAddtlOrderNumber( req.getParameter("AddtlOrderNo") );		
 		if (req.getParameter("ActionTaken") != null)
 			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll(System.getProperty("line.separator"), "<br>") );
 		starsOrder.setOrderedBy( req.getParameter("OrderedBy") );
@@ -57,7 +59,16 @@ public class WorkOrderManagerUtil {
 			starsOrder.setCurrentState( status );
 		}
 		
-		if (req.getParameter("DateReported").length() > 0) {
+		//TODO Currently using the DateReported field to hold the current state's date.  This should be changed since this field is deprecated. 
+		if (req.getParameter("DateEventTimestamp").length() > 0) {
+			Date dateReported = ServletUtils.parseDateTime(
+					req.getParameter("DateEventTimestamp"), req.getParameter("TimeEventTimestamp"), tz );
+			if (dateReported == null)
+				throw new WebClientException("Invalid report date format '" + req.getParameter("DateEventTimestamp") + " " + req.getParameter("TimeEventTimestamp") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
+			starsOrder.setDateReported( dateReported );
+		}
+		
+		/*if (req.getParameter("DateReported").length() > 0) {
 			Date dateReported = ServletUtils.parseDateTime(
 					req.getParameter("DateReported"), req.getParameter("TimeReported"), tz );
 			if (dateReported == null)
@@ -79,6 +90,6 @@ public class WorkOrderManagerUtil {
 			if (dateCompleted == null)
 				throw new WebClientException("Invalid close date format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
 			starsOrder.setDateCompleted( dateCompleted );
-		}
+		}*/
 	}
 }
