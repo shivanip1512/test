@@ -496,7 +496,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					}
 					
 					ImportProblem problem = new ImportProblem();
-					ImportManagerUtil.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
+					ImportManagerUtil.newServiceRequest(fields, liteAcctInfo, energyCompany, energyCompany.getUserID(), first, problem);
 					if (problem.getProblem() != null) {
 						importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
 						if (++numWarnings > WARNING_NUM_LIMIT)
