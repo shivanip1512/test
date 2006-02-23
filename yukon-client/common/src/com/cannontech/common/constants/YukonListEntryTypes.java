@@ -191,6 +191,10 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SO_SEARCH_BY_ADDRESS			= 3306;
 	public static final int YUK_DEF_ID_SO_SORT_BY_ORDER_NO			= 3401;
 	public static final int YUK_DEF_ID_SO_SORT_BY_DATE_TIME			= 3402;
+	public static final int YUK_DEF_ID_SO_SORT_BY_SERV_COMP			= 3403;
+	public static final int YUK_DEF_ID_SO_SORT_BY_SERV_TYPE			= 3404;
+	public static final int YUK_DEF_ID_SO_SORT_BY_SERV_STAT			= 3405;
+	public static final int YUK_DEF_ID_SO_SORT_BY_CUST_TYPE			= 3406;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_STATUS			= 3501;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE		= 3502;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY		= 3503;
