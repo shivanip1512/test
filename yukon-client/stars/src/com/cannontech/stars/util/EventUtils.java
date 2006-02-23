@@ -18,7 +18,12 @@ public class EventUtils
     public static final String EVENT_CATEGORY_INVENTORY = "Inventory";
     public static final String EVENT_CATEGORY_WORKORDER = "WorkOrder";
         
-    public static void logSTARSEvent(int userID, String sysCategory, int actionID, int objectID)
+    public static EventBase logSTARSEvent(int userID, String sysCategory, int actionID, int objectID)
+    {
+    	return logSTARSEvent(userID, sysCategory, actionID, objectID, new Date());
+    }
+
+    public static EventBase logSTARSEvent(int userID, String sysCategory, int actionID, int objectID, Date eventDate)
     {
         EventBase eventBase;
         if(sysCategory.compareTo(EVENT_CATEGORY_ACCOUNT) == 0)
@@ -42,7 +47,7 @@ public class EventUtils
         
         eventBase.getEventBase().setUserID(new Integer(userID));
         eventBase.getEventBase().setActionID(new Integer(actionID));
-        eventBase.getEventBase().setEventTimestamp(new Date());
+        eventBase.getEventBase().setEventTimestamp(eventDate);
         
         try
         {
@@ -52,8 +57,9 @@ public class EventUtils
         {
             CTILogger.error( e.getMessage(), e );
         }
+        return eventBase;
     }
-
+    
     public static EventWorkOrder buildEventWorkOrder(int userID, int actionID, int objectID)
     {
         EventWorkOrder  eventWorkOrder = new EventWorkOrder();
