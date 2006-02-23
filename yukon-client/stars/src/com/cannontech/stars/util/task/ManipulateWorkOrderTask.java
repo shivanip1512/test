@@ -105,7 +105,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		for (int i = 0; i < workOrderList.size(); i++) 
         {
 			boolean isChanged = false;			//flag if workOrder changed at all
-			boolean isSAMToCRSChange = false;	//flag if need to write change to SAMToCRS_PTJ table
+			String samToCrsStatus = null;		//status code for outbound table, also flags if need to write change to SAMToCRS_PTJ table
 			boolean isStatusChanged = false;	//flag if status change, need to write to EventWorkOrderBase
 			
 			LiteWorkOrderBase liteWorkOrder = workOrderList.get(i);
@@ -120,9 +120,10 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			if( changeServiceStatusID != null && workOrderBase.getWorkOrderBase().getCurrentStateID().intValue() != changeServiceStatusID.intValue())
 			{
 				workOrderBase.getWorkOrderBase().setCurrentStateID(changeServiceStatusID);
-				if( changeServiceStatusID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED ||
-					changeServiceStatusID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
-					isSAMToCRSChange = true;
+				if( changeServiceStatusID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+					samToCrsStatus = "P";
+				else if ( changeServiceStatusID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+					samToCrsStatus = "X";
 				isChanged = true;
 				isStatusChanged = true;
 			}
@@ -139,22 +140,20 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
 						EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue());
-					if (isSAMToCRSChange)
+					if (samToCrsStatus != null)
 					{
 						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
 						LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEC.getCustAccountInformation(workOrderBase.getWorkOrderBase().getAccountID().intValue(), true);
 						
-//	                	SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ(ptjID, Integer.valueOf(accountNumber), debtorNumber, 
-//								workOrder.getWorkOrderBase().getOrderNumber(), "??", new Date(), liteYukonUser.getUsername());
-
 						SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
 	                	samToCrs_ptj.setDebtorNumber(liteStarsCustAcctInfo.getCustomer().getAltTrackingNumber());
 	                	samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteStarsCustAcctInfo.getCustomerAccount().getAccountNumber()));
 	                	samToCrs_ptj.setPTJID(Integer.valueOf(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber()));
 	                	samToCrs_ptj.setStarsUserName(liteYukonUser.getUsername());
-	                	samToCrs_ptj.setStatusCode("??");
-	                	samToCrs_ptj.setTimestamp(new Date());
+	                	samToCrs_ptj.setStatusCode(samToCrsStatus);
+	                	samToCrs_ptj.setDateTime_Completed(new Date());
 	                	samToCrs_ptj.setWorkOrderNumber(workOrderBase.getWorkOrderBase().getOrderNumber());
+
 	                	Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
 					}
 
@@ -165,6 +164,8 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			    				DBChangeMsg.CAT_WORK_ORDER,
 			    				DBChangeMsg.CHANGE_TYPE_ADD
 			    			);
+			    		//Change the dbChangeMessage source so the stars message handler will handle it instead of ignore it.
+						dbChangeMessage.setSource("ManipulateWorkOrder:ForceHandleDBChange");
 		                ServerUtils.handleDBChangeMsg(dbChangeMessage);
 		                StarsLiteFactory.setLiteWorkOrderBase(liteWorkOrder, workOrderBase);
 				}
