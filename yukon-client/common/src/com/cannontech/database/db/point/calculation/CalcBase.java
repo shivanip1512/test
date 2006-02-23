@@ -16,21 +16,21 @@ public class CalcBase extends com.cannontech.database.db.DBPersistent {
  */
 public CalcBase() {
 	super();
-	initialize( null, null, null, 'N' );
+	initialize( null, null, null, calculateQuality );
 }
 /**
  * Point constructor comment.
  */
 public CalcBase(Integer pointID) {
 	super();
-	initialize(pointID, null, null, 'N' );
+	initialize(pointID, null, null, calculateQuality );
 }
 /**
  * Point constructor comment.
  */
-public CalcBase(Integer pointID, String updateType, Integer periodicRate ) {
+public CalcBase(Integer pointID, String updateType, Integer periodicRate) {
 	super();
-	initialize(pointID, updateType, periodicRate, 'N');
+	initialize(pointID, updateType, periodicRate, calculateQuality);
 }
 
 /**
@@ -45,7 +45,7 @@ public CalcBase(Integer pointID, String updateType, Integer periodicRate, char c
  * add method comment.
  */
 public void add() throws java.sql.SQLException {
-	Object addValues[]= { getPointID(), getUpdateType(), getPeriodicRate(), 'N' };
+	Object addValues[]= { getPointID(), getUpdateType(), getPeriodicRate(), getCalculateQuality() };
 
 	add( this.tableName, addValues );
 }
@@ -93,12 +93,12 @@ public char getCalculateQuality() {
  * @param alarmClass java.lang.Integer
  * @param pseudoFlag java.lang.Character
  */
-public void initialize(Integer pointID, String updateType, Integer periodicRate, char calcQaul ) {
+public void initialize(Integer pointID, String updateType, Integer periodicRate, char calcQual ) {
 
 	setPointID( pointID ) ;
 	setUpdateType( updateType );
 	setPeriodicRate( periodicRate );
-    setCalculateQuality( calcQaul );
+    setCalculateQuality(calcQual);
 }
 /**
  * retrieve method comment.
@@ -114,7 +114,8 @@ public void retrieve() throws java.sql.SQLException {
 	if( results.length == selectColumns.length )
 	{
 		setUpdateType( (String) results[0] );
-		setPeriodicRate( (Integer) results[1]);
+		setPeriodicRate( (Integer) results[1] );
+        setCalculateQuality( (String)results[2] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -144,6 +145,10 @@ public void setUpdateType(String newValue) {
 
 public void setCalculateQuality(char newValue){
     this.calculateQuality = newValue;
+}
+
+public void setCalculateQuality(String newValue){
+    this.calculateQuality = newValue.charAt(0);
 }
 
 /**

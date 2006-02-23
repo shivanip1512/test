@@ -48,6 +48,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC1(e);
 	if (e.getSource() == getUnitOfMeasureComboBox()) 
 		connEtoC4(e);
+    if (e.getSource() == getJCheckboxCalcQual())
+        connEtoC6(e);
 	// user code begin {2}
 	// user code end
 }
@@ -148,6 +150,26 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+/**
+ * connEtoC4:  (UnitOfMeasureComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> CalcBasePanel.fireInputUpdate()V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC6(java.awt.event.ActionEvent arg1) {
+    try {
+        // user code begin {1}
+        // user code end
+        this.fireInputUpdate();
+        // user code begin {2}
+        // user code end
+    } catch (java.lang.Throwable ivjExc) {
+        // user code begin {3}
+        // user code end
+        handleException(ivjExc);
+    }
+}
+
 /**
  * connEtoC5:  (ArchiveIntervalComboBox.action.actionPerformed(java.awt.event.ActionEvent) --> CalcBasePanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
@@ -628,6 +650,7 @@ private void initConnections() throws java.lang.Exception {
 	getArchiveIntervalComboBox().addActionListener(this);
 	getUpdateTypeComboBox().addActionListener(this);
 	getUnitOfMeasureComboBox().addActionListener(this);
+    getJCheckboxCalcQual().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -876,6 +899,7 @@ public void setValue(Object val) {
 	}
 
 	getDecimalPlacesSpinner().setValue( calcPoint.getPointUnit().getDecimalPlaces() );
+    
     if( calcPoint.getCalcBase().getCalculateQuality() == 'Y' || 
             calcPoint.getCalcBase().getCalculateQuality() == 'y')
     {
