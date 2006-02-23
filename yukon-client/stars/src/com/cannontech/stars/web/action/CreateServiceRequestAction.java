@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Date;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,11 +12,16 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -100,7 +106,7 @@ public class CreateServiceRequestAction implements ActionBase {
             
             LiteWorkOrderBase liteOrder = null;
             try {
-            	liteOrder = createServiceRequest( createOrder, liteAcctInfo, energyCompany );
+            	liteOrder = createServiceRequest( createOrder, liteAcctInfo, energyCompany, user.getUserID());
             }
             catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -192,7 +198,7 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 	
 	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws WebClientException, CommandExecutionException
+		LiteStarsEnergyCompany energyCompany, int userID, boolean checkConstraint) throws WebClientException, CommandExecutionException
 	{
 		String orderNo = createOrder.getOrderNumber();
 		
@@ -227,6 +233,33 @@ public class CreateServiceRequestAction implements ActionBase {
 		workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
 				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
+		//New event!
+		Date eventTimestamp = createOrder.getDateReported();
+        EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue(), eventTimestamp);
+       	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
+
+       	String samToCrsStatus = null;
+       	if( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+			samToCrsStatus = "P";
+		else if ( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+			samToCrsStatus = "X";
+		else if ( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
+			samToCrsStatus = "C";
+       	
+       	if (samToCrsStatus != null)
+       	{
+       		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
+        	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
+        	samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteAcctInfo.getCustomerAccount().getAccountNumber()));
+        	samToCrs_ptj.setPTJID(Integer.valueOf(workOrder.getWorkOrderBase().getAdditionalOrderNumber()));
+        	samToCrs_ptj.setStarsUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
+        	samToCrs_ptj.setStatusCode(samToCrsStatus);
+        	samToCrs_ptj.setDateTime_Completed(new Date());
+        	samToCrs_ptj.setWorkOrderNumber(workOrder.getWorkOrderBase().getOrderNumber());
+        	Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
+       	}
+       	
+		
 		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrder );
 		energyCompany.addWorkOrderBase( liteOrder );
 		if (liteAcctInfo != null)
@@ -236,9 +269,9 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 	
 	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws WebClientException, CommandExecutionException
+		LiteStarsEnergyCompany energyCompany, int userID) throws WebClientException, CommandExecutionException
 	{
-		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, true);
+		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, true);
 	}
 
 }
