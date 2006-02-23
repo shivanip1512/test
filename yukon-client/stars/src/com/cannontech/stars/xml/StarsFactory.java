@@ -551,6 +551,8 @@ public class StarsFactory {
 			workOrderBase.getWorkOrderBase().setAccountID( new Integer(order.getAccountID()) );
 		if (order.getOrderNumber() != null)
 			workOrderBase.getWorkOrderBase().setOrderNumber( order.getOrderNumber() );
+		if (order.getAddtlOrderNumber() != null)
+			workOrderBase.getWorkOrderBase().setAdditionalOrderNumber( order.getAddtlOrderNumber() );
 		workOrderBase.getWorkOrderBase().setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
 		if (order.getCurrentState() != null)
 			workOrderBase.getWorkOrderBase().setCurrentStateID( new Integer(order.getCurrentState().getEntryID()) );
