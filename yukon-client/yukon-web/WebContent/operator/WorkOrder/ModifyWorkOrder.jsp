@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%
 	int orderID = Integer.parseInt(request.getParameter("OrderId"));
 	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(orderID, true);
@@ -78,78 +79,44 @@ function getCurrentTime() {
 var currentDivName = null;
 
 function showDateDiv(form, divName) {
-	currentDivName = divName;
 	form.elements["Date" + divName].disabled = false;
 	form.elements["Time" + divName].disabled = false;
 	form.elements["Date" + divName].value = getCurrentDate();
 	form.elements["Time" + divName].value = getCurrentTime();
-	if (document.getElementById("Div" + divName) != null)
-		document.getElementById("Div" + divName).style.display = "";
 	form.elements["Date" + divName].focus();
 }
 
 function resetOrder(form) {
-	if (currentDivName != null) {
-		if (document.getElementById("Div" + currentDivName) != null)
-			document.getElementById("Div" + currentDivName).style.display = "none";
-		form.elements["Date" + currentDivName].value = "";
-		form.elements["Time" + currentDivName].value = "";
-		form.elements["Date" + currentDivName].disabled = true;
-		form.elements["Time" + currentDivName].disabled = true;
-		currentDivName = null;
-	}
+	form.elements["DateEventTimestamp"].value = "";
+	form.elements["TimeEventTimestamp"].value = "";
 }
 
 function scheduleOrder(form) {
 	form.CurrentState.value = "<%= statusScheduled %>";
 	resetOrder(form);
-	showDateDiv(form, "Scheduled");
+	showDateDiv(form, "EventTimestamp");
 }
 
 function closeOrder(form) {
 	resetOrder(form);
-	showDateDiv(form, "Completed");
+	showDateDiv(form, "EventTimstamp");
 }
 
 function changeStatus(form) {
-<%
-	if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {
-%>
-	if (form.CurrentState.value == "<%= statusCompleted %>" || form.CurrentState.value == "<%= statusCancelled %>")
-		closeOrder(form);
-	else if (form.CurrentState.value == "<%= statusScheduled %>")
-<%
-		if (liteOrder.getCurrentStateID() != statusScheduled) {
-%>
-		scheduleOrder(form);
-<%
-		}
-		else {
-%>
-		resetOrder(form);
-<%
-		}
-%>
-	else if (form.CurrentState.value == "<%= statusPending %>")
-		resetOrder(form);
-<%
+	if( form.CurrentState.value == "<%= liteOrder.getCurrentStateID()%>" )
+	{
+		form.elements["DateEventTimestamp"].value = "<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart) %>";
+		form.elements["TimeEventTimestamp"].value = "<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat) %>";
+		document.getElementById("DivEventTimestamp").disabled = true;
 	}
-%>
+	else {
+		document.getElementById("DivEventTimestamp").disabled = false;
+		resetOrder(form);
+		showDateDiv(form, "EventTimestamp");
+	}
 }
 
 function init() {
-<% if (liteOrder.getCurrentStateID() == statusPending) { %>
-	document.soForm.Schedule.disabled = false;
-<% } %>
-<% if (liteOrder.getCurrentStateID() == statusScheduled || order.getDateScheduled() != null) { %>
-	document.soForm.DateScheduled.disabled = false;
-	document.soForm.TimeScheduled.disabled = false;
-	document.getElementById("DivScheduled").style.display = "";
-<% } %>
-<% if (liteOrder.getCurrentStateID() == statusCompleted || liteOrder.getCurrentStateID() == statusCancelled) { %>
-	document.soForm.DateCompleted.disabled = false;
-	document.soForm.TimeCompleted.disabled = false;
-<% } %>
 }
 
 function getPrintableVersion() {
@@ -242,16 +209,6 @@ function sendWorkOrder() {
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right">Date Reported:</div>
-                                </td>
-                                <td width="70%"> 
-                                  <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(order.getDateReported(), datePart) %>" onchange="setContentChanged(true)">
-                                  -
-                                  <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(order.getDateReported(), timeFormat) %>" onchange="setContentChanged(true)">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="30%" class="TableCell"> 
                                   <div align="right">Service Type:</div>
                                 </td>
                                 <td width="70%"> 
@@ -275,6 +232,15 @@ function sendWorkOrder() {
                                   <input type="text" name="OrderedBy" size="14" value="<%= order.getOrderedBy() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
+                              <tr> 
+                                <td width="30%" class="TableCell"> 
+                                  <div align="right">Addtl Order #:</div>
+                                </td>
+                                <td width="70%"> 
+                                  <input type="text" name="AddtlOrderNo" size="14" value="<%= order.getAddtlOrderNumber() %>" onchange="setContentChanged(true)">
+                                </td>
+                              </tr>
+                              
                               <tr> 
                                 <td width="30%" class="TableCell"> 
                                   <div align="right">Assigned to:</div>
@@ -311,7 +277,7 @@ function sendWorkOrder() {
                             <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right">Status:</div>
+                                  <div align="right">Current State:</div>
                                 </td>
                                 <td width="70%"> 
                                   <select name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
@@ -324,42 +290,43 @@ function sendWorkOrder() {
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%	} %>
                                   </select>
-                                  <input type="button" name="Schedule" value="Schedule" onclick="scheduleOrder(this.form);setContentChanged(true);" disabled>
                                 </td>
                               </tr>
                             </table>
                           </td>
                         </tr>
                       </table>
-                      <div id="DivScheduled" style="display:none"> 
+                      <div id="DivEventTimestamp" style="disabled:true"> 
                         <table width="100%" border="0" cellspacing="0" cellpadding="1">
                           <tr> 
-                            <td width="30%" align="right" class="TableCell">Date 
-                              Scheduled:</td>
+                            <td width="30%" align="right" class="TableCell">Event Date:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateScheduled" size="14" value="<%= ServletUtils.formatDate(order.getDateScheduled(), datePart) %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart) %>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeScheduled" size="8" value="<%= ServletUtils.formatDate(order.getDateScheduled(), timeFormat) %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat) %>" disabled onchange="setContentChanged(true)">
                             </td>
                           </tr>
                         </table>
                       </div>
-                      <table width="100%" border="0" cellspacing="0" cellpadding="1">
-                        <tr> 
-                          <td width="30%" align="right" class="TableCell">Date 
-                            Closed:</td>
-                          <td width="70%"> 
-                            <input type="text" name="DateCompleted" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled onchange="setContentChanged(true)">
-                            - 
-                            <input type="text" name="TimeCompleted" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>" disabled onchange="setContentChanged(true)">
-                          </td>
-                        </tr>
-                      </table>
+                        <br>
+						<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+	                      <tr> 
+	                        <td width="30%" align="right" valign="top" class="TableCell">Event History:
+	                        <td width="70%">
+						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
+	                            <% for (int i = 0; i < liteOrder.getEventWorkOrders().size(); i++) { %>
+	                            <tr> 
+	                              <td width="40%" class="TableCell">&nbsp;<%=YukonListFuncs.getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
+	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), datePart) %>&nbsp;-&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), timeFormat) %></td>
+	                            </tr>
+	                            <%}%>
+	                          </table>                                
+	                        </td>
+	                      </tr>
+	                    </table>
                       <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr>
-                          <td width="30%" class="TableCell"> 
-                            <div align="right">Action Taken:</div>
-                          </td>
+                          <td width="30%" align="right" class="TableCell">Action Taken:</td>
                           <td width="70%"> 
                             <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
