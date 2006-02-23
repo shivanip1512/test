@@ -317,9 +317,9 @@ public class StarsLiteFactory {
 		liteOrder.setActionTaken( order.getWorkOrderBase().getActionTaken() );
 		liteOrder.setOrderedBy( order.getWorkOrderBase().getOrderedBy() );
 		liteOrder.setAccountID( order.getWorkOrderBase().getAccountID().intValue() );
+		liteOrder.setAdditionalOrderNumber(order.getWorkOrderBase().getAdditionalOrderNumber());
 		liteOrder.setEnergyCompanyID( order.getEnergyCompanyID().intValue());
-		if( order.getEventWorkOrders() != null && order.getEventWorkOrders().size() > 0)
-			liteOrder.setLastEventTimestamp(order.getEventWorkOrders().get(0).getEventBase().getEventTimestamp());
+		liteOrder.setEventWorkOrders(order.getEventWorkOrders());
 	}
 	
 	public static void setLiteSiteInformation(LiteSiteInformation liteSiteInfo, com.cannontech.database.db.stars.customer.SiteInformation siteInfo) {
@@ -1068,7 +1068,9 @@ public class StarsLiteFactory {
 		order.getWorkOrderBase().setDateCompleted( new Date(liteOrder.getDateCompleted()) );
 		order.getWorkOrderBase().setActionTaken( liteOrder.getActionTaken() );
 		order.getWorkOrderBase().setAccountID( new Integer(liteOrder.getAccountID()) );
+		order.getWorkOrderBase().setAdditionalOrderNumber( liteOrder.getAdditionalOrderNumber());
 		order.setEnergyCompanyID( new Integer(liteOrder.getEnergyCompanyID()) );
+		order.setEventWorkOrders(liteOrder.getEventWorkOrders());
 	}
 	
 	public static void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany company, LiteStarsEnergyCompany liteCompany) {
