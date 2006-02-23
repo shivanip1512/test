@@ -13,14 +13,15 @@ public class SAMToCRS_PTJ extends DBPersistent {
     private Integer premiseNumber;
     private String debtorNumber;
     private String workOrderNumber;
-    private String statusCode;
-    private Date timestamp;
+    private String statusCode;		//P-Processed, X-Cancelled, C-Completed
+    private Date dateTime_Completed;
     private String starsUserName;
+    private Character extract;
 
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
     public static final String SETTER_COLUMNS[] = { "PTJID", "PremiseNumber", "DebtorNumber", "WorkOrderNumber", "StatusCode", 
-    												"Timestamp", "StarsUserName"};
+    												"DateTime_Completed", "StarsUserName", "Extract"};
 
     public static final String TABLE_NAME = "SAMToCRS_PTJ";
 
@@ -29,21 +30,21 @@ public SAMToCRS_PTJ() {
     super();
 }
 
-public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, String workOrderNumber, String statusCode, Date timestamp, String starsUserName) {
+public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, String workOrderNumber, String statusCode, Date dateTime_Completed, String starsUserName) {
 	super();
 	this.ptjID = ptjID;
 	this.premiseNumber = premiseNumber;
 	this.debtorNumber = debtorNumber;
 	this.workOrderNumber = workOrderNumber;
 	this.statusCode = statusCode;
-	this.timestamp = timestamp;
+	this.dateTime_Completed = dateTime_Completed;
 	this.starsUserName = starsUserName;
 }
 
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getWorkOrderNumber(),
-    		getStatusCode(), getTimestamp(), getStarsUserName()};
+    		getStatusCode(), getDateTime_Completed(), getStarsUserName(), getExtract()};
 
     add( TABLE_NAME, setValues );
 }
@@ -68,8 +69,9 @@ public void retrieve() throws java.sql.SQLException
         setDebtorNumber( (String) results[1] );
         setWorkOrderNumber( (String) results[2] );
         setStatusCode( (String) results[3] );
-        setTimestamp( (Date) results[4]);
+        setDateTime_Completed( (Date) results[4]);
         setStarsUserName( (String) results[5] );
+        setExtract((Character)results[6]);
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -79,7 +81,7 @@ public void retrieve() throws java.sql.SQLException
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), 
-    		getStatusCode(), getTimestamp(), getStarsUserName()}; 
+    		getStatusCode(), getDateTime_Completed(), getStarsUserName(), getExtract()}; 
     		
     		Object constraintValues[] = { getPTJID() };
 
@@ -107,8 +109,9 @@ public static ArrayList getAllCurrentPTJEntries()
                 currentEntry.setDebtorNumber( stmt.getRow(i)[2].toString());
                 currentEntry.setWorkOrderNumber( stmt.getRow(i)[3].toString());
                 currentEntry.setStatusCode( stmt.getRow(i)[4].toString());
-                currentEntry.setTimestamp(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
+                currentEntry.setDateTime_Completed(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
                 currentEntry.setStarsUserName( stmt.getRow(i)[6].toString());
+                currentEntry.setExtract(new Character(stmt.getRow(i)[7].toString().charAt(0)));
                 
                 changes.add(currentEntry);
             }
@@ -171,11 +174,19 @@ public void setWorkOrderNumber(String workOrderNumber) {
 	this.workOrderNumber = workOrderNumber;
 }
 
-public Date getTimestamp() {
-	return timestamp;
+public Date getDateTime_Completed() {
+	return dateTime_Completed;
 }
 
-public void setTimestamp(Date timestamp) {
-	this.timestamp = timestamp;
+public void setDateTime_Completed(Date timestamp) {
+	this.dateTime_Completed = timestamp;
+}
+
+public Character getExtract() {
+	return extract;
+}
+
+public void setExtract(Character extract) {
+	this.extract = extract;
 }
 }
