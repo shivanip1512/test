@@ -66,6 +66,8 @@ public abstract class StarsSrvReq implements java.io.Serializable {
     private java.util.Date _dateCompleted;
 
     private java.lang.String _actionTaken;
+    
+    private java.lang.String _addtlOrderNumber;
 
 
       //----------------/
@@ -184,6 +186,16 @@ public abstract class StarsSrvReq implements java.io.Serializable {
     {
         return this._orderNumber;
     } //-- java.lang.String getOrderNumber() 
+
+    /**
+     * Returns the value of field 'addtlOrderNumber'.
+     * 
+     * @return the value of field 'addtlOrderNumber'.
+    **/
+    public java.lang.String getAddtlOrderNumber()
+    {
+        return this._addtlOrderNumber;
+    } //-- java.lang.String getAddtlOrderNumber() 
 
     /**
      * Returns the value of field 'orderedBy'.
@@ -350,6 +362,16 @@ public abstract class StarsSrvReq implements java.io.Serializable {
         this._orderNumber = orderNumber;
     } //-- void setOrderNumber(java.lang.String) 
 
+    /**
+     * Sets the value of field 'addtlOrderNumber'.
+     * 
+     * @param orderNumber the value of field 'addtlOrderNumber'.
+    **/
+    public void setAddtlOrderNumber(java.lang.String addtlOrderNumber)
+    {
+        this._addtlOrderNumber = addtlOrderNumber;
+    } //-- void setAddtlOrderNumber(java.lang.String)
+    
     /**
      * Sets the value of field 'orderedBy'.
      * 
