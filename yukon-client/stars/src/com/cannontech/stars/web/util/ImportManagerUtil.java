@@ -1143,7 +1143,7 @@ public class ImportManagerUtil {
 	}
 	
 	public static void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
+		LiteStarsEnergyCompany energyCompany, int userID, boolean checkConstraint, ImportProblem problem) throws Exception
 	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		createOrder.setOrderNumber( fields[IDX_ORDER_NO] );
@@ -1215,7 +1215,7 @@ public class ImportManagerUtil {
 		company.setEntryID( Integer.parseInt(fields[IDX_ORDER_CONTRACTOR]) );
 		createOrder.setServiceCompany( company );
 	    
-		CreateServiceRequestAction.createServiceRequest(createOrder, liteAcctInfo, energyCompany, checkConstraint);
+		CreateServiceRequestAction.createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, checkConstraint);
 	}
 	
 	public static void newResidenceInfo(String[] fields, LiteStarsCustAccountInformation liteAcctInfo)
