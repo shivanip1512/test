@@ -4,6 +4,7 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 import java.lang.Integer;
 import java.lang.String;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.ArrayList;
 import com.cannontech.common.util.CtiUtilities;
@@ -41,9 +42,9 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException {}
 
 
-public static Integer getNextEventID() 
+public Integer getNextEventID() throws SQLException 
 {
-    SqlStatement stmt = new SqlStatement("SELECT MAX(EVENTID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("SELECT MAX(EVENTID) + 1 FROM " + TABLE_NAME, getDbConnection());
     
     try
     {
