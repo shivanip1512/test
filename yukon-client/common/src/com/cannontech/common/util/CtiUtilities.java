@@ -982,7 +982,7 @@ public static final String[] getTimeZones()
 	
 	for (int i = 0; i < availableIDs.length; i++) {
 		String zone = availableIDs[i];
-		if (zone.matches("^US.*")) {
+		if (zone.matches("^US.*") && !zone.matches("^US.Pacific-New")) {
 			retVals.add( zone );
 		}
 	}
