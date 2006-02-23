@@ -509,12 +509,12 @@ public final class YukonCRSIntegrator
         	//Every New Work Order has a Pending event!
             workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
             EventWorkOrder eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
-           	workOrder.getEventWorkOrders().add(eventWorkOrder);
+           	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
 
            	//Then, every Work Order has an Assigned event, too!
             workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED);
             eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
-           	workOrder.getEventWorkOrders().add(eventWorkOrder);
+           	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
 
            	//And...every new ACT/DEACT Work Order has a Processed Event
         	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
@@ -522,7 +522,7 @@ public final class YukonCRSIntegrator
         	{
                 workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED);
                 eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
-               	workOrder.getEventWorkOrders().add(eventWorkOrder);
+               	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
         	}
 
         	try
@@ -541,7 +541,7 @@ public final class YukonCRSIntegrator
                 if( servStat == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
                 {	//All Processed status must have an entry in SAMToCRS_PTJ             	
                 	SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ(ptjID, Integer.valueOf(accountNumber), debtorNumber, 
-                												workOrder.getWorkOrderBase().getOrderNumber(), "??", new Date(), liteYukonUser.getUsername());
+                												workOrder.getWorkOrderBase().getOrderNumber(), "P", new Date(), liteYukonUser.getUsername());
                 	samToCrs_ptj = (SAMToCRS_PTJ)Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
                 }
                 
