@@ -43,8 +43,8 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
 		}	
 			
-		resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
+//		resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+//		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 		resp.setContentType("text/x-comma-separated-values");
 	
@@ -100,7 +100,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		String fileName = "billing";		
 		fileName += fileNameFormat.format(localBean.getEndDate());
 		fileName += ".txt";
-		resp.addHeader("Content-Disposition", "filename=" + fileName);
+		resp.addHeader("Content-Disposition", "attachment;filename=" + fileName);
 		
 		if( req.getParameter("generate") != null)
 		{		    
