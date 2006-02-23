@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Date;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -121,6 +125,34 @@ public class UpdateServiceRequestAction implements ActionBase {
 			StarsFactory.setWorkOrderBase( order, updateOrder );
         	
         	order = (com.cannontech.database.data.stars.report.WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
+        	//compare with old liteOrder before updating it.
+			if( liteOrder.getCurrentStateID() != updateOrder.getCurrentState().getEntryID())
+			{	//New event!
+				Date eventTimestamp = updateOrder.getDateReported();
+	            EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, updateOrder.getCurrentState().getEntryID(), updateOrder.getOrderID(), eventTimestamp);
+	           	order.getEventWorkOrders().add(0, eventWorkOrder);
+
+	           	String samToCrsStatus = null;
+	           	if( updateOrder.getCurrentState().getEntryID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+					samToCrsStatus = "P";
+				else if ( updateOrder.getCurrentState().getEntryID()== YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+					samToCrsStatus = "X";
+				else if ( updateOrder.getCurrentState().getEntryID()== YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
+					samToCrsStatus = "C";
+	           	
+	           	if (samToCrsStatus != null)
+	           	{
+	           		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
+                	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
+                	samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteAcctInfo.getCustomerAccount().getAccountNumber()));
+                	samToCrs_ptj.setPTJID(Integer.valueOf(updateOrder.getAddtlOrderNumber()));
+                	samToCrs_ptj.setStarsUserName(user.getYukonUser().getUsername());
+                	samToCrs_ptj.setStatusCode(samToCrsStatus);
+                	samToCrs_ptj.setDateTime_Completed(new Date());
+                	samToCrs_ptj.setWorkOrderNumber(updateOrder.getOrderNumber());
+                	Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
+	           	}
+			}
         	StarsLiteFactory.setLiteWorkOrderBase( liteOrder, order );
         	
         	if (updateOrder.hasAccountID()) {
