@@ -41,7 +41,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	
-	private Date lastEventTimestamp = null;
+	private ArrayList<EventWorkOrder> eventWorkOrders = null;
 	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
@@ -277,10 +277,7 @@ public class LiteWorkOrderBase extends LiteBase {
             setAdditionalOrderNumber( (String) results[11]);
             setEnergyCompanyID(( (java.math.BigDecimal) results[12]).intValue());
             
-    		ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(getOrderID());
-    		if( eventWorkOrders.size() > 0 )
-    			setLastEventTimestamp(new Date(eventWorkOrders.get(0).getEventBase().getEventTimestamp().getTime()));
-
+    		setEventWorkOrders(EventWorkOrder.retrieveEventWorkOrders(getOrderID()));
 		}
 		catch (Exception e)
 		{
@@ -296,11 +293,13 @@ public class LiteWorkOrderBase extends LiteBase {
 		this.additionalOrderNumber = additionalOrderNumber;
 	}
 
-	public Date getLastEventTimestamp() {
-		return lastEventTimestamp;
+	public ArrayList<EventWorkOrder> getEventWorkOrders() {
+		if( eventWorkOrders == null)
+			eventWorkOrders = new ArrayList<EventWorkOrder>();
+		return eventWorkOrders;
 	}
 
-	public void setLastEventTimestamp(Date lastEventTimestamp) {
-		this.lastEventTimestamp = lastEventTimestamp;
+	public void setEventWorkOrders(ArrayList<EventWorkOrder> eventWorkOrders) {
+		this.eventWorkOrders = eventWorkOrders;
 	}
 }
