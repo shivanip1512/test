@@ -30,11 +30,7 @@ public class BillingBean implements java.util.Observer
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
-	private Date endDate  = ServletUtil.getToday();
 	private String endDateStr = null;
-
-	private Date demandStartDate = null;
-	
 	private int timer = 0;
 	private String timerString = "";
 
@@ -144,16 +140,15 @@ public void setFileFormat(int newFileFormat)
 
 public Date getEndDate()
 {
-	CTILogger.info(" Getting End Date! " + endDate);	
-	return endDate;
+	CTILogger.info(" Getting End Date! " + getBillingDefaults().getEndDate());
+	return getBillingDefaults().getEndDate();
 }
 public void setEndDate(Date newEndDate)
 {
-	if( endDate == null || endDate.compareTo(newEndDate) != 0)
+	if( getBillingDefaults().getEndDate().compareTo(newEndDate) != 0)
 	{
-		CTILogger.info("Changing End Date! " + endDate);
-		endDate = newEndDate;
-		getBillingDefaults().setEndDate(endDate);
+		CTILogger.info("Changing End Date from: " + getBillingDefaults().getEndDate() +" to: " + newEndDate);
+		getBillingDefaults().setEndDate(newEndDate);
 	}
 }
 public void setEndDateStr(String newEndDateStr)

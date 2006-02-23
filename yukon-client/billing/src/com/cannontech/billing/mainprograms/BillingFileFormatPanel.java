@@ -64,7 +64,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		java.util.GregorianCalendar  tempCal = new java.util.GregorianCalendar();
 		tempCal.setTime(getDateComboBox().getSelectedDate());
-		tempCal.add(java.util.Calendar.DATE,1);
+//		tempCal.add(java.util.Calendar.DATE,1);
 //		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
 		java.util.Date newEndDate = tempCal.getTime();
 		getBillingDefaults().setEndDate(newEndDate);

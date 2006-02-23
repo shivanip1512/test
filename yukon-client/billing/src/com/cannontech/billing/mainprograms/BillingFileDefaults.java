@@ -1,6 +1,9 @@
 package com.cannontech.billing.mainprograms;
 
-import com.cannontech.database.db.device.DeviceMeterGroup;;
+import java.util.Calendar;
+
+import com.cannontech.database.db.device.DeviceMeterGroup;import com.cannontech.util.ServletUtil;
+;
 
 /**
  * Insert the type's description here.
@@ -228,21 +231,7 @@ public class BillingFileDefaults
 	{
 		if( endDate == null)
 		{
-			endDate = new java.util.Date();
-			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-		
-			// add a whole day to now so we can increment the Date field
-			long time = endDate.getTime() + 86400000;
-			endDate.setTime(time);
-		
-			cal.setTime(endDate);
-				
-			cal.set(java.util.Calendar.HOUR_OF_DAY,0);
-			cal.set(java.util.Calendar.MINUTE,0);
-			cal.set(java.util.Calendar.SECOND,0);
-			cal.set(java.util.Calendar.MILLISECOND,0);
-		
-			endDate = cal.getTime();
+			endDate = ServletUtil.getTomorrow();
 		}
 		return endDate;
 	}
@@ -396,18 +385,19 @@ public class BillingFileDefaults
 	{
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		// add a whole day to now so we can increment the Date field
-		long day = 86400000;
-		long time = endDate.getTime() + day;
+//		long day = 86400000;
+//		long time = endDate.getTime() + day;
 	
-		this.endDate = new java.util.Date(time);
+//		this.endDate = new java.util.Date();
 		cal.setTime(endDate);
-	
+		cal.add(java.util.Calendar.DATE,1);
 		cal.set(java.util.Calendar.HOUR_OF_DAY,0);
 		cal.set(java.util.Calendar.MINUTE,0);
 		cal.set(java.util.Calendar.SECOND,0);
 		cal.set(java.util.Calendar.MILLISECOND,0);
 	
 		this.endDate = cal.getTime();
+		endDate = cal.getTime();
 		getDemandStartDate();
 		getEnergyStartDate();
 	}
