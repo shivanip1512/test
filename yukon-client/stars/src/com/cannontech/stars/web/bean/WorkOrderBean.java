@@ -7,26 +7,37 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import allaire.taglib.TransactionBeginException;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.database.model.ModelFactory;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -91,6 +102,64 @@ public class WorkOrderBean {
 		}
 	};
 	
+	private static final Comparator SERVICE_COMPANY_CMPTOR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+
+			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
+			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
+			if( so1 == null || so2 == null)
+				System.out.println("HERE");
+			int servCo1 = so1.getServiceCompanyID();
+		    int servCo2 = so2.getServiceCompanyID();
+		    
+		    LiteServiceCompany lsc1 = StarsDatabaseCache.getInstance().getEnergyCompany(so1.getEnergyCompanyID()).getServiceCompany(servCo1);
+		    LiteServiceCompany lsc2 = StarsDatabaseCache.getInstance().getEnergyCompany(so2.getEnergyCompanyID()).getServiceCompany(servCo2);
+
+		    String thisVal = (lsc1 == null ? CtiUtilities.STRING_NONE : lsc1.getCompanyName());
+		    String anotherVal = (lsc2 == null ? CtiUtilities.STRING_NONE : lsc2.getCompanyName());
+
+			return (thisVal.compareToIgnoreCase(anotherVal));
+		}
+	};	
+	
+	private static final Comparator SERVICE_STATUS_CMPTOR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+
+			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
+			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
+			if( so1 == null || so2 == null)
+				System.out.println("HERE");			
+			int servStat1 = so1.getCurrentStateID();
+		    int servStat2 = so2.getCurrentStateID();
+		    YukonListEntry yle1 = YukonListFuncs.getYukonListEntry(servStat1);
+		    YukonListEntry yle2 = YukonListFuncs.getYukonListEntry(servStat2);
+		    
+		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
+		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
+
+			return (thisVal.compareToIgnoreCase(anotherVal));
+		}
+	};	
+	
+	private static final Comparator SERVICE_TYPE_CMPTOR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+
+			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
+			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
+			if( so1 == null || so2 == null)
+				System.out.println("HERE");
+			int servType1 = so1.getWorkTypeID();
+		    int servType2 = so2.getWorkTypeID();
+		    YukonListEntry yle1 = YukonListFuncs.getYukonListEntry(servType1);
+		    YukonListEntry yle2 = YukonListFuncs.getYukonListEntry(servType2);
+		    
+		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
+		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
+
+			return (thisVal.compareToIgnoreCase(anotherVal));
+		}
+	};
+	
 	/*private final Comparator ORDER_DATE_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
@@ -122,6 +191,9 @@ public class WorkOrderBean {
 	private int htmlStyle = HTML_STYLE_WORK_ORDERS;
 	private String referer = null;
 	private ArrayList searchResults = null;
+	
+	private boolean sortByChanged = false;
+	private boolean sortOrderChanged = false;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList<LiteWorkOrderBase> workOrderList = null;
@@ -157,9 +229,16 @@ public class WorkOrderBean {
 	 * @return
 	 */
 	public ArrayList<LiteWorkOrderBase> getWorkOrderList() {
-		if (workOrderList != null) return workOrderList;
+		if (workOrderList != null)
+		{	//Update the order without reloading all of the workOrder objects.
+			if( sortByChanged || sortOrderChanged )
+				workOrderList = sortList(workOrderList);
+
+			sortByChanged = sortOrderChanged = false;
+			return workOrderList;
+		}
 		
-		ArrayList workOrders = null;
+		ArrayList<LiteWorkOrderBase> workOrders = null;
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
 			workOrders = searchResults;
 		else
@@ -202,7 +281,7 @@ public class WorkOrderBean {
 		for (int i = 0; i < getFilters().size(); i++)
 		{	//Do just the status filter, since we already handled the other filters.
 
-			ArrayList filteredWorkOrders = new ArrayList();
+			ArrayList<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
 			FilterWrapper filter = getFilters().get(i);
 			Integer filterTypeID = new Integer(filter.getFilterTypeID());
             Integer specificFilterID = new Integer(filter.getFilterID());			
@@ -220,36 +299,31 @@ public class WorkOrderBean {
 				}
 				else
 				{
-					try{
-						for (int j = 0; j < workOrders.size(); j++)
+					for (int j = 0; j < workOrders.size(); j++)
+					{
+						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+						WorkOrderBase workOrderBase = (WorkOrderBase)StarsLiteFactory.createDBPersistent(liteOrder);
+						
+						for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++)
 						{
-							LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
-							WorkOrderBase workOrderBase = (WorkOrderBase)StarsLiteFactory.createDBPersistent(liteOrder);
-							workOrderBase = (WorkOrderBase)Transaction.createTransaction(Transaction.RETRIEVE, workOrderBase).execute();
-							
-							for (int k = 0; k < workOrderBase.getEventWorkOrders().size(); k++)
+							EventWorkOrder eventWorkOrder = workOrderBase.getEventWorkOrders().get(k);
+							if( getStartDate() != null && getStopDate() == null)
 							{
-								EventWorkOrder eventWorkOrder = workOrderBase.getEventWorkOrders().get(k);
-								if( getStartDate() != null && getStopDate() == null)
-								{
-									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
-										filteredWorkOrders.add(liteOrder);
-								}
-								else if (getStopDate() != null && getStartDate() == null)
-								{
-									if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
-										filteredWorkOrders.add(liteOrder);
-								}
-								else 
-								{
-									if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
-										( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
-										filteredWorkOrders.add(liteOrder);
-								}
+								if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0 )
+									filteredWorkOrders.add(liteOrder);
+							}
+							else if (getStopDate() != null && getStartDate() == null)
+							{
+								if( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 )
+									filteredWorkOrders.add(liteOrder);
+							}
+							else 
+							{
+								if( (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
+									( eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0 ) )
+									filteredWorkOrders.add(liteOrder);
 							}
 						}
-					} catch (TransactionException te){
-						te.printStackTrace();
 					}
 				}
 				workOrders = filteredWorkOrders;
@@ -261,23 +335,30 @@ public class WorkOrderBean {
 		}
 		}
 		
-		java.util.TreeSet sortedOrders = null;
+		workOrderList = sortList(workOrders);
+		return workOrderList;
+	}
+
+	private ArrayList<LiteWorkOrderBase> sortList(ArrayList<LiteWorkOrderBase> workOrders)
+	{
+		workOrderList = workOrders;
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
-			sortedOrders = new java.util.TreeSet( ORDER_NO_CMPTOR );
+			Collections.sort(workOrderList, ORDER_NO_CMPTOR );
+		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_COMP)
+			Collections.sort(workOrderList, SERVICE_COMPANY_CMPTOR );
+		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_STAT)
+			Collections.sort(workOrderList, SERVICE_STATUS_CMPTOR );
+		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_TYPE)
+			Collections.sort(workOrderList, SERVICE_TYPE_CMPTOR );
+//		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_CUST_TYPE)
+//			sortedOrders = new java.util.TreeSet( TODO);
 //		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
 //			sortedOrders = new java.util.TreeSet( ORDER_DATE_CMPTOR );
 		else
-			sortedOrders = new java.util.TreeSet( ORDER_ID_CMPTOR );
-		sortedOrders.addAll(workOrders);
-		
-		workOrderList = new ArrayList<LiteWorkOrderBase>();
-		java.util.Iterator it = sortedOrders.iterator();
-		while (it.hasNext()) {
-			if (getSortOrder() == SORT_ORDER_ASCENDING)
-				workOrderList.add( (LiteWorkOrderBase)it.next() );
-			else
-				workOrderList.add( 0, (LiteWorkOrderBase)it.next() );
-		}
+			Collections.sort(workOrderList, ORDER_NO_CMPTOR );		
+	
+		if (getSortOrder() == SORT_ORDER_DESCENDING)
+			Collections.reverse(workOrderList);
 		
 		return workOrderList;
 	}
@@ -352,7 +433,7 @@ public class WorkOrderBean {
         }
 
 		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
-		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
+		/*htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
@@ -365,6 +446,7 @@ public class WorkOrderBean {
 		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
+*/		
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
@@ -372,19 +454,20 @@ public class WorkOrderBean {
 		htmlBuf.append("          <td  class='HeaderCell' width='1%' >&nbsp;</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order #</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Date/Time</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Type</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='10%' >Status</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='8%' >By Who</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='12%' >Assigned</td>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Order Type</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Current State</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Ordered By</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("          <td  class='HeaderCell' width='20%' >Assigned</td>").append(LINE_SEPARATOR);
+//		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
-		for (int i = minOrderNo; i <= maxOrderNo; i++) {
-			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
+//		for (int i = minOrderNo; i <= maxOrderNo; i++) {
+		for (int i = 0; i < soList.size(); i++) {
+			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i);
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
 			Date date = null;
-			if( liteOrder.getLastEventTimestamp() != null)
-				date = StarsUtils.translateDate( liteOrder.getLastEventTimestamp().getTime() );
+			if( liteOrder.getEventWorkOrders().size() > 0)
+				date = StarsUtils.translateDate( liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp().getTime());
 
 			String dateStr = (date != null)? StarsUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
 
@@ -400,14 +483,14 @@ public class WorkOrderBean {
 					.append("<a href='ModifyWorkOrder.jsp?OrderId=").append(liteOrder.getOrderID()).append("' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='10%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='10%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='8%' >").append(ServletUtils.forceNotEmpty( starsOrder.getOrderedBy() )).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='12%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceCompany().getContent() )).append("</td>").append(LINE_SEPARATOR);
-			htmlBuf.append("          <td class='TableCell' width='34%'>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getOrderedBy() )).append("</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='TableCell' width='20%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceCompany().getContent() )).append("</td>").append(LINE_SEPARATOR);
+/*			htmlBuf.append("          <td class='TableCell' width='34%'>").append(LINE_SEPARATOR);
 			htmlBuf.append("            <textarea name='textarea' rows='2' wrap='soft' cols='35' class='TableCell' readonly>")
 					.append(starsOrder.getDescription().replaceAll("<br>", LINE_SEPARATOR)).append("</textarea>").append(LINE_SEPARATOR);
-			htmlBuf.append("          </td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          </td>").append(LINE_SEPARATOR);*/
 			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
 		
@@ -418,7 +501,7 @@ public class WorkOrderBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+//		htmlBuf.append("          <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("      </table>").append(LINE_SEPARATOR);
 		htmlBuf.append("    </td>").append(LINE_SEPARATOR);
@@ -514,7 +597,11 @@ public class WorkOrderBean {
 	 * @param i
 	 */
 	public void setSortOrder(int i) {
-		sortOrder = i;
+		if( sortOrder != i)
+		{
+			sortOrder = i;
+			sortOrderChanged = true;
+		}
 	}
 
 	/**
@@ -639,7 +726,11 @@ public class WorkOrderBean {
 	}
 
 	public void setSortBy(int sortBy) {
-		this.sortBy = sortBy;
+		if( this.sortBy != sortBy)
+		{
+			this.sortBy = sortBy;
+			sortByChanged = true;
+		}
 	}
 
 	public int getFilterBy() {
