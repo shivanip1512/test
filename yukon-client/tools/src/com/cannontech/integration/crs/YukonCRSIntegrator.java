@@ -247,7 +247,7 @@ public final class YukonCRSIntegrator
                             {
                                 meterHardwareBase.getMeterHardwareBase().setMeterNumber(newMeterNumber);
                                 meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(alternateTrackingNumber);
-                                Transaction.createTransaction(Transaction.RETRIEVE, meterHardwareBase).execute();
+                                Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
                             }
 
                             //TODO DBChangeMsg for meter
