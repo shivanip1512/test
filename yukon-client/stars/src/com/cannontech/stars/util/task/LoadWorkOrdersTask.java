@@ -58,7 +58,7 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		String sql = "SELECT OrderID, OrderNumber, WorkTypeID, CurrentStateID, ServiceCompanyID," +
-			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AccountID" +
+			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AccountID, EnergyCompanyID" +
 			" FROM WorkOrderBase wo, ECToWorkOrderMapping map" +
 			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
 			" AND map.WorkOrderID = wo.OrderID";
@@ -86,7 +86,35 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 					return;
 				}
 			}
+			if( stmt != null)
+				stmt.close();
 			
+			sql = "SELECT EB.EVENTID, USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP, ORDERID " +
+			" FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
+			com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO " +
+			" WHERE EB.EVENTID = EWO.EVENTID " +
+			" ORDER BY EB.EVENTID, EVENTTIMESTAMP";
+			
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery( sql );
+			while (rset.next()) {
+
+				int orderID = rset.getInt(6);
+				LiteWorkOrderBase liteWorkOrderBase = energyCompany.getWorkOrderBase(orderID, false);
+        		EventWorkOrder eventWorkOrder = new EventWorkOrder();
+        		eventWorkOrder.setEventID(new Integer(rset.getInt(1)));
+        		eventWorkOrder.getEventBase().setUserID(new Integer(rset.getInt(2)));
+        		eventWorkOrder.getEventBase().setSystemCategoryID(new Integer(rset.getInt(3)));
+        		eventWorkOrder.getEventBase().setActionID(new Integer(rset.getInt(4)));
+        		eventWorkOrder.getEventBase().setEventTimestamp( new Date(rset.getTimestamp(5).getTime() ));        		
+        		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer(new Integer( orderID)));
+				liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
+
+				if (isCanceled) {
+					status = STATUS_CANCELED;
+					return;
+				}
+			}
 			energyCompany.setWorkOrdersLoaded( true );
 			status = STATUS_FINISHED;
             rset.close();
@@ -127,11 +155,8 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		liteOrder.setDateCompleted( rset.getTimestamp("DateCompleted").getTime() );
 		liteOrder.setActionTaken( rset.getString("ActionTaken") );
 		liteOrder.setAccountID( rset.getInt("AccountID") );
+		liteOrder.setEnergyCompanyID( rset.getInt("EnergyCompanyID") );
 		
-		ArrayList<EventWorkOrder> eventWorkOrders = EventWorkOrder.retrieveEventWorkOrders(liteOrder.getOrderID());
-		if( eventWorkOrders.size() > 0 )
-			liteOrder.setLastEventTimestamp(new Date(eventWorkOrders.get(0).getEventBase().getEventTimestamp().getTime()));
-
 		energyCompany.addWorkOrderBase( liteOrder );
 	}
 
