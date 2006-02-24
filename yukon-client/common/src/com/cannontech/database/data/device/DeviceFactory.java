@@ -1,8 +1,7 @@
 package com.cannontech.database.data.device;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.database.data.capcontrol.CapBankController701x;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.MacroGroup;
@@ -272,11 +271,22 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_CBC_EXPRESSCOM[0] );
 			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
 			break;
-		case PAOGroups.CBC_7010:
-			returnDevice = new com.cannontech.database.data.capcontrol.CapBankController7010();
-			returnDevice.setDeviceType( PAOGroups.STRING_CBC_7010[0] );
-			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
-			break;
+        case PAOGroups.CBC_7010:
+            returnDevice = new CapBankController701x();
+            returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[0] );
+            returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+            break;    
+        case PAOGroups.CBC_7011:
+            returnDevice = new CapBankController701x();
+            returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[1] );
+            returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+            break;
+        case PAOGroups.CBC_7012:
+            returnDevice = new CapBankController701x();
+            returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[2] );
+            returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+            break;
+            
 		case PAOGroups.CBC_FP_2800:
 			returnDevice = new com.cannontech.database.data.capcontrol.CapBankController_FP_2800();
 			returnDevice.setDeviceType( PAOGroups.STRING_CBC_FP_2800[0] );
@@ -287,14 +297,33 @@ public final static DeviceBase createDevice(int deviceType) {
          returnDevice.setDeviceType( PAOGroups.STRING_DNP_CBC_6510[0] );
          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
          break;
-		case PAOGroups.CBC_7020:
-			returnDevice = new com.cannontech.database.data.capcontrol.CapBankController7020();
-			returnDevice.setDeviceType( PAOGroups.STRING_CBC_7020[0] );
-			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
-			break;
-
-		//The new MCT broadcast group (lead meter broadcast)
-		case PAOGroups.MCTBROADCAST:
+      case PAOGroups.CBC_7020:
+          returnDevice = new CapBankController702x();
+          returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[0] );
+          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+          break;      
+         
+      case PAOGroups.CBC_7022:
+          returnDevice = new CapBankController702x();
+          returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[1] );
+          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+          break;      
+         
+      case PAOGroups.CBC_7023:
+          returnDevice = new CapBankController702x();
+          returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[2] );
+          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+          break;      
+          
+      case PAOGroups.CBC_7024:
+          returnDevice = new CapBankController702x();
+          returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[3] );
+          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+          break;      
+         
+          
+          //The new MCT broadcast group (lead meter broadcast)
+      case PAOGroups.MCTBROADCAST:
 			returnDevice = new MCT_Broadcast();
 			returnDevice.setDeviceType( PAOGroups.STRING_MCT_BROADCAST[0] );
 			break;

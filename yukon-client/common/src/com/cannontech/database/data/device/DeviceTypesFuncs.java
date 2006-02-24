@@ -155,7 +155,12 @@ public final static boolean isCapBankController( int deviceType )
              || deviceType == DNP_CBC_6510
              || deviceType == CBC_EXPRESSCOM
              || deviceType == CBC_7010
-             || deviceType == CBC_7020 );
+             || deviceType == CBC_7011
+             || deviceType == CBC_7012
+             || deviceType == CBC_7020 
+             || deviceType == CBC_7022
+             || deviceType == CBC_7023
+             || deviceType == CBC_7024);
 }
 /**
  * This method was created in VisualAge.
@@ -175,7 +180,10 @@ public final static boolean cbcHasPort( int cbcType ) {
 
 	return
 		cbcType == DNP_CBC_6510
-		|| cbcType == CBC_7020;
+		|| cbcType == CBC_7020
+        || cbcType == CBC_7022
+        || cbcType == CBC_7023
+        || cbcType == CBC_7024;
 }
 
 

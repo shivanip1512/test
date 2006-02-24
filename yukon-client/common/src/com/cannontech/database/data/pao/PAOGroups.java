@@ -285,12 +285,26 @@ public final static int getDeviceType(String typeString)
 	   return SENTINEL;
 	else if (isStringDevice(compareString, STRING_ALPHA_A3))
 	   return ALPHA_A3;
-	else if (isStringDevice(compareString, STRING_CBC_7010))
+	else if (isStringDevice(compareString, STRING_CBC_7010[0]))
 		return CBC_7010;
-	else if (isStringDevice(compareString, STRING_CBC_7020))
+    else if (isStringDevice(compareString, STRING_CBC_7010[1]))
+        return CBC_7011;
+    else if (isStringDevice(compareString, STRING_CBC_7010[2]))
+        return CBC_7012;
+    else if (isStringDevice(compareString, STRING_CBC_7020[0]))
 		return CBC_7020;
+    else if (isStringDevice(compareString, STRING_CBC_7020[1]))
+        return CBC_7022;
+    else if (isStringDevice(compareString, STRING_CBC_7020[2]))
+        return CBC_7023;
+    else if (isStringDevice(compareString, STRING_CBC_7020[3]))
+        return CBC_7024;
    	else
 	  return INVALID;
+}
+private static boolean isStringDevice(String compareString, String string) {
+   
+    return compareString.equalsIgnoreCase(string);
 }
 /**
  * This method was created in VisualAge.
@@ -534,8 +548,19 @@ public final static String getPAOTypeString(int type)
 			return STRING_CBC_EXPRESSCOM[0];
 		case CBC_7010:
 			return STRING_CBC_7010[0];
-		case CBC_7020:
+        case CBC_7011:
+            return STRING_CBC_7010[1];
+        case CBC_7012:
+            return STRING_CBC_7010[2];
+        case CBC_7020:
 			return STRING_CBC_7020[0];
+        case CBC_7022:
+            return STRING_CBC_7020[1];
+        case CBC_7023:
+            return STRING_CBC_7020[2];
+        case CBC_7024:
+            return STRING_CBC_7020[3];
+            
  	  	default:
 		  	return STRING_INVALID;
 	}

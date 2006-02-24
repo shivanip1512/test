@@ -103,13 +103,25 @@ public interface DeviceTypes extends TypeBase
 	public final static int CBC_7010				= DEVICE_OFFSET + 82;
 	public final static int CBC_7020				= DEVICE_OFFSET + 83;
 	
-	public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
+	
+    
+    public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
 	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
     public final static int MCT430A                  = DEVICE_OFFSET + 86;
     public final static int MCT430S                  = DEVICE_OFFSET + 87;
 	
-	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 87;
+	
+    public final static int CBC_7022                = DEVICE_OFFSET + 88;
+    public final static int CBC_7023                = DEVICE_OFFSET + 89;
+    public final static int CBC_7024                = DEVICE_OFFSET + 90;
+    
+    public final static int CBC_7011                = DEVICE_OFFSET + 91;
+    public final static int CBC_7012                = DEVICE_OFFSET + 92;
+    
+    
+    
+    //***IMPORTANT ** If you add a deviceType, please update the total device type count!
+	public final static int DEVICE_TYPES_COUNT = 92;
 	
 
 	//all the possible text representation of each device type.
@@ -200,6 +212,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_RTM = {"RTM"};
 	public static final String[] STRING_SENTINEL = {"SENTINEL"};
 	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
-	public static final String[] STRING_CBC_7010 = {"CBC 7010"};
-	public static final String[] STRING_CBC_7020 = {"CBC 7020"};	
+	public static final String[] STRING_CBC_7010 = {"CBC 7010", "CBC 7011", "CBC 7012"};
+	public static final String[] STRING_CBC_7020 = {"CBC 7020", "CBC 7022", "CBC 7023", "CBC 7024"};
+    
 }
