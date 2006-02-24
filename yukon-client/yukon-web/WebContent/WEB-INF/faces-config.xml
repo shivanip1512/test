@@ -89,6 +89,13 @@
 			<to-view-id>/editor/paoSchedListBase.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>pointEditor</from-outcome>
+            <to-view-id>/editor/pointBase.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
 
 
 </faces-config>
