@@ -68,8 +68,8 @@ for (var i=0; i < button_ids.length; i++)
                 </f:facet>
 
 
-                <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" >
-                    <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
+                <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" selectedIndex="#{capControlForm.selectedPanelIndex}">
+                    <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}" >
                         <jsp:include page="/WEB-INF/pages/cbc/cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 
