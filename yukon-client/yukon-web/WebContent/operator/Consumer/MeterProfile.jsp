@@ -38,7 +38,7 @@
             	<tr> 
                 	<td width="300" valign="top" bgcolor="#FFFFFF"> 
                     	<table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                        	<tr> 
+                        	<tr>    
                           		<td>
 	                          		<span class="SubtitleHeader">METER</span> 
 	                            	<hr>
