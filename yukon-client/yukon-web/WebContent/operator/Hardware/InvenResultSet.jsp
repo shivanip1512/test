@@ -13,7 +13,9 @@
  	
 	<div class="standardpurplesidebox"> 
 		<% String pageName = "InvenResultSet.jsp"; %>
-		<%@ include file="include/Nav.jsp" %>
+		<div align="right">
+			<%@ include file="include/Nav.jsp" %>
+		</div>
 	</div>
 
 	<div class="standardcentralwhitebody">
