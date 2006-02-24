@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.database.data.stars.hardware.MeterHardwareBase" %>
 <%
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"Update.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_GENERAL)},
@@ -19,7 +20,6 @@
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
-						  {"MeterSwitchMapping.jsp", "Meter/Switch Assignment"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
@@ -49,6 +49,8 @@
 	ArrayList thermostatLabels = new ArrayList();
 	ArrayList meterLabels = new ArrayList();
 	StarsInventories thermostats = new StarsInventories();
+	ArrayList validSwitches = new ArrayList();
+	
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -274,12 +276,32 @@
 				thermostats.addStarsInventory( inv );
 			}
 			else
+			{
+				//I'm cheating here...a lot.
+				validSwitches.add( inv );
 				switchLabels.add( linkFields );
+			}
 		}
 		else
+		{
+			if(MeterHardwareBase.hasSwitchAssigned(inv.getInventoryID()))
+			{
+				if (i == selectedInvNo) 
+				{
+					linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "*" + "</span>";
+				}
+				else 
+				{
+					linkHtml = "<span class='NavTextNoLink' style='cursor:default'>" + linkLabel + "*" + "</span>";
+				}
+				
+				linkFields[1] = linkHtml;
+			}
+				
 			meterLabels.add( linkFields );
+		}
 	}
-	
+
 	if (inventories.getStarsInventoryCount() > 0) {
 %>
           <tr>
@@ -391,22 +413,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<% if((AuthFuncs.getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0) {%>
-  <tr> 
-    <td> 
-      <div align="left">
-	    <span class="NavHeader">Mapping</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr>
-            <td width="10"><%= ((String[]) links.get("MeterSwitchMapping.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("MeterSwitchMapping.jsp"))[1] %></td>
-          </tr>
-        </table>
-	  </div>
-    </td>
-  </tr>
-<% } %>
-</cti:checkProperty>
+
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
   <tr> 
     <td> 
@@ -494,7 +501,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
 	%>
 		pageLinks[<%= num %>] = new Array(1);
-		pageLinks[<%= num %>][0] = "MeterProfile.jsp?InvNo=<%= num %>";
+		pageLinks[<%= num %>][0] = "MeterProfile.jsp?MetRef=<%= inventories.getStarsInventory(num).getInventoryID() %>";
 	<%
 		}
 	}

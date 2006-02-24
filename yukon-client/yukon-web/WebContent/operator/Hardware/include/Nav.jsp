@@ -2,7 +2,7 @@
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"CreateHardware.jsp?Init", "Create Hardware", "CreateHardware.jsp"},
 						  {"CreateMCT.jsp?Init", "Create MCT", "CreateMCT.jsp"},
-						  {"MeterProfile.jsp", "Create Meter", "MeterProfile.jsp"},
+						  {"MeterProfile.jsp?MetRef=-1", "Create Meter", "MeterProfile.jsp"},
 						  {"Filter.jsp", "Edit Filters"},
 						  {"Inventory.jsp", "View Inventory"},
 						  {"AddSN.jsp", "Add Range"},
@@ -65,8 +65,7 @@
 		  <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
           <tr> 
             <% if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { %>
-	            <td width="10"><%= ((String[]) links.get("Filter.jsp"))[0] %></td>
-	            <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
+
             <% } else {%>
             	<td width="10"><%= ((String[]) links.get("Inventory.jsp"))[0] %></td>
 	            <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
