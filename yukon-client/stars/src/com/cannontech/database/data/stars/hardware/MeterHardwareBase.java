@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 /**
  * <p>Title: </p>
@@ -255,7 +257,34 @@ public class MeterHardwareBase extends InventoryBase {
     {
         boolean truth = false;
         
-        SqlStatement stmt = new SqlStatement("SELECT * FROM LMHardwareToMeterMapping WHERE METERINVENTORYID = " + meterInvenID, CtiUtilities.getDatabaseAlias());
+        SqlStatement stmt = new SqlStatement("SELECT LMHARDWAREINVENTORYID FROM LMHARDWARETOMETERMAPPING WHERE METERINVENTORYID = " + meterInvenID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                truth = true;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return truth;
+    }
+    
+    /**
+     * this method assumes that this switch's inventoryID is valid for the correct customer account already 
+     */
+    public static boolean switchIsNotAvailable(int switchInventoryID)
+    {
+        boolean truth = false;
+        
+        SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM LMHARDWAREBASE WHERE INVENTORYID " +
+                "NOT IN (SELECT LMHARDWAREINVENTORYID FROM LMHARDWARETOMETERMAPPING WHERE LMHARDWAREINVENTORYID = " + switchInventoryID + ")", CtiUtilities.getDatabaseAlias());
         
         try
         {
@@ -274,5 +303,69 @@ public class MeterHardwareBase extends InventoryBase {
         return truth;
     }
 
+    public static List<Pair> getAssignedSwitchesForDisplay(int meterInvenID)
+    {
+        List<Pair> switchPair = new ArrayList<Pair>();
+        
+        SqlStatement stmt = new SqlStatement("SELECT INVENTORYID, MANUFACTURERSERIALNUMBER FROM LMHARDWAREBASE WHERE INVENTORYID IN " +
+                "(SELECT LMHARDWAREINVENTORYID FROM LMHARDWARETOMETERMAPPING WHERE METERINVENTORYID = " + meterInvenID + ")", CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                for( int i = 0; i < stmt.getRowCount(); i++ )
+                {
+                    Pair switchInfo = new Pair(new Integer(stmt.getRow(i)[0].toString()), stmt.getRow(i)[1].toString());
+                    switchPair.add(switchInfo);
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return switchPair;
+    }
     
+    public static boolean deleteAssignedSwitches(int meterID)
+    {
+        boolean truth = false;
+        
+        SqlStatement stmt = new SqlStatement("DELETE FROM LMHARDWARETOMETERMAPPING WHERE METERINVENTORYID = " + meterID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            truth = true;
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return truth;
+    }
+    
+    public static boolean updateAssignedSwitch(int switchID, int meterID)
+    {
+        boolean truth = false;
+        
+        SqlStatement stmt = new SqlStatement("INSERT INTO LMHARDWARETOMETERMAPPING VALUES(" + switchID + ", " + meterID + ")", CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            truth = true;
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return truth;
+    }
 }
