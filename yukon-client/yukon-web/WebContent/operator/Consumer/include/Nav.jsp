@@ -7,7 +7,7 @@
 						  {"Calls.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CALL_TRACKING)},
 						  {"CreateCalls.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CREATE_CALL)},
 						  {"Metering.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_INTERVAL_DATA)},
-						  {"CreateTrend.jsp", "New"},
+					 	  {"CreateTrend.jsp", "New"},
 						  {"Usage.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY)},
 						  {"Programs.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT)},
@@ -43,7 +43,7 @@
 		}
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
-	
+	  
 	// List of String[] (inventory no., link html, expand bullet image)
 	ArrayList switchLabels = new ArrayList();
 	ArrayList thermostatLabels = new ArrayList();
