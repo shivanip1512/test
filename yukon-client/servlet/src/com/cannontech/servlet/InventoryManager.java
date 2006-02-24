@@ -14,6 +14,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.*;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.*;
+import com.cannontech.database.DatabaseTypes;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -24,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -55,8 +59,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.stars.web.action.MultiAction;
-import com.cannontech.stars.web.bean.InventoryBean;
-import com.cannontech.stars.web.bean.ManipulationBean;
+import com.cannontech.stars.web.bean.*;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.util.ServletUtil;
 
@@ -165,6 +168,8 @@ public class InventoryManager extends HttpServlet {
 			selectLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("SelectDevice"))
 			selectDevice( user, req, session );
+        else if (action.equalsIgnoreCase("MeterProfileSave"))
+            saveMeterProfile( user, req, session );
         else if (action.equalsIgnoreCase("FiltersUpdated"))
             updateFilters( user, req, session, false );
         else if (action.equalsIgnoreCase("FiltersUpdatedForSelection"))
@@ -1369,7 +1374,7 @@ public class InventoryManager extends HttpServlet {
         String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
         ArrayList filters = new ArrayList();
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-       
+        
         if(filterTexts == null)
         {
             iBean.setFilterByList(filters);
@@ -1481,5 +1486,73 @@ public class InventoryManager extends HttpServlet {
         session.setAttribute("inventoryBean", iBean);
         
         redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
+    }
+    
+    private void saveMeterProfile(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        NonYukonMeterBean mBean = (NonYukonMeterBean) session.getAttribute("meterBean");
+        MeterHardwareBase currentMeter = mBean.getCurrentMeter();
+        
+        currentMeter.getMeterHardwareBase().setMeterNumber(req.getParameter("MeterNumber"));
+        currentMeter.getMeterHardwareBase().setMeterTypeID(new Integer(req.getParameter("MeterType")));
+        currentMeter.getInventoryBase().setAlternateTrackingNumber(req.getParameter("AltTrackNo"));
+        currentMeter.getInventoryBase().setDeviceLabel(req.getParameter("DeviceLabel"));
+        currentMeter.getInventoryBase().setVoltageID(new Integer(req.getParameter("Voltage")));
+        currentMeter.getInventoryBase().setNotes(req.getParameter("Notes"));
+        
+        try
+        {
+            //new meter
+            if(mBean.getCurrentMeterID() == -1)
+            {
+                currentMeter.setInventoryID(null);
+                currentMeter.setEnergyCompanyID(mBean.getEnergyCompany().getEnergyCompanyID());
+                Transaction.createTransaction(Transaction.INSERT, currentMeter).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New meter added to inventory.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentMeter).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Meter successfully updated in the database.");
+            }
+            
+            /**
+             * Switch mapping to non-Yukon dumb meters
+             */
+            String[] assignedSwitchIDs = req.getParameterValues("SwitchIDs");
+            
+            if(assignedSwitchIDs != null && assignedSwitchIDs.length > 0)
+            {
+                boolean deleteSuccess = MeterHardwareBase.deleteAssignedSwitches(currentMeter.getInventoryBase().getInventoryID());
+                
+                if(deleteSuccess)
+                {
+                    for(int j = 0; j < assignedSwitchIDs.length; j++)
+                    {
+                        boolean updateSuccess = MeterHardwareBase.updateAssignedSwitch(Integer.parseInt(assignedSwitchIDs[j]), currentMeter.getInventoryBase().getInventoryID().intValue());
+                        
+                        //something wrong
+                        if(!updateSuccess)
+                        {
+                            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Switch assignment to this meter failed.");
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Could not delete previous switch assignment to this meter.  Assignment not updated.");
+                }
+            }
+            
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Meter information could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
     }
 }
