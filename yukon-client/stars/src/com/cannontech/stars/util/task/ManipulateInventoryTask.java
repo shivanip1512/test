@@ -50,6 +50,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     boolean hasChanged = false;
     boolean devTypeChanged = false;
     boolean stateChanged = false;
+    boolean warehouseFailed = false;
 	
 	ArrayList hardwareSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
@@ -186,11 +187,11 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
                 if (newWarehouseID != null && Warehouse.getWarehouseFromInventoryID(invDB.getInventoryID()) != newDevStateID)
                 {
-                    Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID().intValue(), newWarehouseID.intValue());
-                    hasChanged = true;
+                    warehouseFailed = Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID().intValue(), newWarehouseID.intValue());
+                    hasChanged = !warehouseFailed;
                 }
 
-                if( hasChanged)
+                if( hasChanged )
                 {
                     hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
                     Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();

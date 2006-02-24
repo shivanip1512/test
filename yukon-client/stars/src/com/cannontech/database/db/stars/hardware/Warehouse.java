@@ -256,10 +256,23 @@ public static String getWarehouseNameFromInventoryID(int invenID)
     return name;
 }
 
-public static void moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID) throws Exception
+public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID)
 {
+    boolean success = false;
+    
     SqlStatement stmt = new SqlStatement("UPDATE WAREHOUSE SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
-    stmt.execute();
+    
+    try
+    {
+        stmt.execute();
+        success = true;
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+        success = false;
+    }
+    
+    return success;
 }
-
 }
