@@ -2,8 +2,12 @@ package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
  * This type was created in VisualAge.
@@ -366,6 +370,62 @@ public static synchronized PointBase createBankStatusPt( Integer capBankID )
 	((StatusPoint) newPoint).setPointStatus( new PointStatus(pointID) );
 
 	return newPoint;
+}
+
+public static PointBase createCalcStatusPoint (Integer paoId, String name){
+    
+    PointBase newPoint =
+        PointFactory.createPoint(PointTypes.STATUS_POINT);
+
+    newPoint = PointFactory.createNewPoint(     
+                                        newPoint.getPoint().getPointID(),
+                                        PointTypes.CALCULATED_STATUS_POINT,
+                                        name,
+                                        paoId,
+                                        TypeBase.POINT_OFFSET );
+    
+    
+    newPoint.getPoint().setStateGroupID( StateGroupUtils.STATEGROUP_CALCULATED );
+    
+    //defaults pointStatus
+    ((CalcStatusPoint) newPoint).setPointStatus( new PointStatus(newPoint.getPoint().getPointID()) );
+    
+    return newPoint;
+    
+}
+
+public static PointBase createCalculatedPoint(Integer paoId, String name){
+    PointBase point = createPoint(PointTypes.CALCULATED_POINT);
+    
+    point = PointFactory.createNewPoint(    
+                                        point.getPoint().getPointID(),
+                                        PointTypes.CALCULATED_POINT,
+                                        name,
+                                        paoId,
+                                        TypeBase.POINT_OFFSET
+                                         );
+    
+    point.getPoint().setStateGroupID(StateGroupUtils.STATEGROUP_CALCULATED);
+    PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
+                                      new Integer (PointUnits.UOMID_UNDEF),
+                                      new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),
+                                      new Double(0.0),
+                                      new Double(0.0));
+    
+    ((ScalarPoint)point).setPointUnit(punit);
+                                                                           
+    
+    //Calculated Point consists of CalcBase and CalcPointBaseline
+    CalcBase calcBase = new CalcBase();
+    calcBase.setPointID(point.getPoint().getPointID());
+    calcBase.setUpdateType(PointTypes.UPDATE_FIRST_CHANGE);
+    calcBase.setPeriodicRate(new Integer (1));
+    
+    ((CalculatedPoint)point).setCalcBase(calcBase);    
+    ((CalculatedPoint) point).setBaselineAssigned(false);
+    
+    
+    return point;
 }
 
 }
