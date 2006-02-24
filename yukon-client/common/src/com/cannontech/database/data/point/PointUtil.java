@@ -4,21 +4,36 @@
  */
 package com.cannontech.database.data.point;
 
+import java.util.ArrayList;
+import java.util.Map;
+
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
-import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCT410CL;
-import com.cannontech.database.data.device.MCT470;
+import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.device.MCT430A;
 import com.cannontech.database.data.device.MCT430S;
-import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCT470;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.TypeBase;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+//import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao To change the template for this generated type comment go to
@@ -305,4 +320,91 @@ public class PointUtil {
         return null;
     }
 
+    
+    public static PointBase createPoint(int type, String name, Integer paoId) throws TransactionException {
+       MultiDBPersistent dbPersistentVector = new MultiDBPersistent(); 
+       PointBase point = new PointBase();
+       switch (type){
+       case PointTypes.ANALOG_POINT:
+           point = (AnalogPoint) PointFactory.createPoint(PointTypes.ANALOG_POINT);
+           point = (AnalogPoint) PointFactory.createAnalogPoint(name,
+                                                                      paoId,
+                                                                      point.getPoint()
+                                                                                 .getPointID(),
+                                                                      TypeBase.POINT_OFFSET,
+                                                                      PointUnits.UOMID_VOLTS,
+                                                                      1.0);
+           dbPersistentVector.getDBPersistentVector().add(point);
+           break;
+       case PointTypes.STATUS_POINT:
+           point = (StatusPoint)PointFactory.createBankStatusPt(paoId);
+           point.getPoint().setPointName(name);
+           dbPersistentVector.getDBPersistentVector().add(point);
+           break;
+           
+       case PointTypes.DEMAND_ACCUMULATOR_POINT:
+           point = (AccumulatorPoint)PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
+           point = (AccumulatorPoint)PointFactory.createDmdAccumPoint(name, 
+                                                    paoId, 
+                                                                      point.getPoint().getPointID(),
+                                                                      TypeBase.POINT_OFFSET, 
+                                                                      PointUnits.UOMID_UNDEF, 
+                                                                      0.1);
+
+           
+           
+           
+           dbPersistentVector.getDBPersistentVector().add(point);
+           break;
+           
+       case PointTypes.CALCULATED_POINT:
+           point = PointFactory.createCalculatedPoint(paoId, name);
+           dbPersistentVector.getDBPersistentVector().add(point);
+           break;
+           
+       case PointTypes.CALCULATED_STATUS_POINT:
+           point = (StatusPoint)PointFactory.createCalcStatusPoint(paoId, name);
+           dbPersistentVector.getDBPersistentVector().add(point); 
+           break;
+           
+        default: 
+            throw new Error("PointUtil::createPoint - Unrecognized point type");
+       }
+       
+       
+       PointUtil.insertIntoDB(dbPersistentVector);
+       
+       return point;
+    }
+
+    public static void insertIntoDB(DBPersistent pointVector) throws TransactionException {
+        if (pointVector != null) {
+            try {
+                pointVector = (DBPersistent) Transaction.createTransaction(Transaction.INSERT,
+                                                                           pointVector)
+                                                        .execute();
+            
+                DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
+                                                             .createDBChangeMessages((CTIDbChange) pointVector,
+                                                                                     DBChangeMsg.CHANGE_TYPE_ADD);
+                //make sure we update the cache
+                for (int i = 0; i < dbChange.length; i++)
+                    DefaultDatabaseCache.getInstance().handleDBChangeMessage( dbChange[i] );
+                
+            } catch (TransactionException e) {
+                
+                throw e;
+            }
+        }
+        else
+        {
+            throw new  TransactionException ("Trying to INSERT empty - insertIntoDB - PointUtil");
+        
+        }
+    }
+
+    
+        
+        
 }
+
