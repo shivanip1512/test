@@ -1,6 +1,7 @@
 package com.cannontech.database.db.stars.hardware;
 
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
 import java.lang.Integer;
 import java.lang.String;
@@ -255,23 +256,10 @@ public static String getWarehouseNameFromInventoryID(int invenID)
     return name;
 }
 
-public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID)
+public static void moveInventoryToAnotherWarehouse(int invenID, int newWarehouseID) throws Exception
 {
-    boolean success = false;
-    
     SqlStatement stmt = new SqlStatement("UPDATE WAREHOUSE SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
-    
-    try
-    {
-        stmt.execute();
-        success = true;
-        
-    }
-    catch( Exception e )
-    {
-        e.printStackTrace();
-    }
-    
-    return success;
+    stmt.execute();
 }
+
 }
