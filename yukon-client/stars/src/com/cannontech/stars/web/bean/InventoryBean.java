@@ -56,7 +56,7 @@ public class InventoryBean {
 	public static final int HTML_STYLE_INVENTORY_SET = 8;
     public static final int HTML_STYLE_FILTERED_INVENTORY_SUMMARY = 9;
 	
-	private static final int DEFAULT_PAGE_SIZE = 1000;
+	private static final int DEFAULT_PAGE_SIZE = 250;
 	
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -606,8 +606,9 @@ public class InventoryBean {
 			htmlBuf.append("          <td class='HeaderCell' width='17%'>Member</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
-        htmlBuf.append("<form name='iterateForm' method='post' action=''>").append(LINE_SEPARATOR);
-		for (int i = minInvNo; i <= maxInvNo; i++) {
+        htmlBuf.append("<form name='chooseForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
+		htmlBuf.append("<input type='hidden' name='action' value='ManipulateInventoryResults'>").append(LINE_SEPARATOR);
+        for (int i = minInvNo; i <= maxInvNo; i++) {
 			LiteInventoryBase liteInv = null;
 			LiteStarsEnergyCompany member = null;
 			boolean isManagable = false;
@@ -658,7 +659,7 @@ public class InventoryBean {
             else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
             {
                 htmlBuf.append("          <td class='TableCell' width='1%'>");
-                htmlBuf.append("<input type='checkbox' name='checkMultiInven' value='").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append(")'>");
+                htmlBuf.append("<input type='checkbox' name='checkMultiInven' value='").append(liteInv.getInventoryID()).append("'>");
                 htmlBuf.append("</td>").append(LINE_SEPARATOR);
             }
 	        
@@ -849,24 +850,23 @@ public class InventoryBean {
         {
             htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.chooseForm.checkMultiInven;").append(LINE_SEPARATOR);
             htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
             htmlBuf.append("}").append(LINE_SEPARATOR);
             
             htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.chooseForm.checkMultiInven;").append(LINE_SEPARATOR);
             htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
             htmlBuf.append("}").append(LINE_SEPARATOR);
             
             htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
-            htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.iterateForm.checkMultiInven;").append(LINE_SEPARATOR);
-            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("    document.chooseForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
+            htmlBuf.append("    document.chooseForm.submit();").append(LINE_SEPARATOR);
             htmlBuf.append("}").append(LINE_SEPARATOR);
+     
         }
         
 		if (showEnergyCompany) {
@@ -1127,5 +1127,13 @@ public class InventoryBean {
     public void setViewResults(boolean truth)
     {
         viewResults = truth;
+    }
+
+    public void setNumberOfRecords(String numberOfRecords) {
+        this.numberOfRecords = numberOfRecords;
+    }
+
+    public void setInventoryList(ArrayList inventoryList) {
+        this.inventoryList = inventoryList;
     }
 }

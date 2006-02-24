@@ -22,6 +22,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -179,7 +180,9 @@ public class InventoryManager extends HttpServlet {
         else if (action.equalsIgnoreCase("ViewInventoryResults"))
             viewInventoryResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateInventoryResults"))
-            redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
+            manipulateResults( user, req, session );
+        else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
+            manipulateSelectedResults( user, req, session );
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1554,5 +1557,39 @@ public class InventoryManager extends HttpServlet {
         }
         
         redirect = req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
+    }
+    
+    private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        String[] selections = req.getParameterValues("checkMultiInven");
+        int [] selectionIDs = new int[selections.length];
+        for ( int i = 0; i < selections.length; i++)
+            selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
+        
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        ArrayList<Pair> inventoryPairList = new ArrayList<Pair>(); 
+        for ( int i = 0; i < iBean.getInventoryList().size(); i ++)
+        {
+            Pair inventoryPair = (Pair)iBean.getInventoryList().get(i);
+            for (int j = 0; j < selectionIDs.length; j++)
+            {
+                if( ((LiteInventoryBase)inventoryPair.getFirst()).getInventoryID() == selectionIDs[j])
+                {
+                    inventoryPairList.add(inventoryPair);
+                    break;
+                }
+            }
+        }
+        
+        iBean.setInventoryList(inventoryPairList);
+        iBean.setNumberOfRecords(String.valueOf((iBean.getInventoryList().size())));
+        //session.setAttribute("inventoryBean", iBean);
+        
+        manipulateResults(user, req, session);
+    }
+    
+    private void manipulateResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
     }
 }
