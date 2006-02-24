@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -363,7 +363,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -443,7 +443,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
-                    outList.insert(tmpOutMess);
+                    outList.push_back(tmpOutMess);
                     _lastLPRequest[i] = Now;
                 }
                 else
@@ -521,7 +521,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
 
 
-INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -622,7 +622,7 @@ INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, bool expectMore)
+INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, bool expectMore)
 {
     INT status = NORMAL;
     ULONG i;
@@ -701,7 +701,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 }
 
 
-INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -980,7 +980,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1251,7 +1251,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -2093,7 +2093,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid;
@@ -2181,7 +2181,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -2310,7 +2310,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL;
     double    Value;
@@ -2397,7 +2397,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 

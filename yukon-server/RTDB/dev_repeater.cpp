@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,10 +123,10 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          OUTMESS                        *&OutMessage,
                                          RWTPtrSlist< CtiMessage >      &vgList,
                                          RWTPtrSlist< CtiMessage >      &retList,
-                                         RWTPtrSlist< OUTMESS >         &outList)
+                                         list< OUTMESS* >         &outList)
 {
     int nRet = NoError;
-    RWTPtrSlist< OUTMESS > tmpOutList;
+    list< OUTMESS* > tmpOutList;
 
     switch( parse.getCommand() )
     {
@@ -196,7 +196,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
     {
         if(OutMessage != NULL)
         {
-            tmpOutList.append( OutMessage );
+            tmpOutList.push_back( OutMessage );
             OutMessage = NULL;
         }
 
@@ -207,7 +207,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -237,7 +237,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
             OutMessage->Request.RouteID = getRouteID();
             strncpy(OutMessage->Request.CommandStr, "loop", COMMAND_STR_SIZE);
 
-            outList.insert(OutMessage);
+            outList.push_back(OutMessage);
             OutMessage = NULL;
         }
         else
@@ -259,7 +259,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
                                           OUTMESS                        *&OutMessage,
                                           RWTPtrSlist< CtiMessage >      &vgList,
                                           RWTPtrSlist< CtiMessage >      &retList,
-                                          RWTPtrSlist< OUTMESS >         &outList)
+                                          list< OUTMESS* >         &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -298,7 +298,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
                                            OUTMESS                        *&OutMessage,
                                            RWTPtrSlist< CtiMessage >      &vgList,
                                            RWTPtrSlist< CtiMessage >      &retList,
-                                           RWTPtrSlist< OUTMESS >         &outList)
+                                           list< OUTMESS* >         &outList)
 {
     bool found = false;
     INT   nRet = NoError;
@@ -361,7 +361,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
                                            OUTMESS                        *&OutMessage,
                                            RWTPtrSlist< CtiMessage >      &vgList,
                                            RWTPtrSlist< CtiMessage >      &retList,
-                                           RWTPtrSlist< OUTMESS >         &outList)
+                                           list< OUTMESS* >         &outList)
 {
     int   i;
     bool  found = false;
@@ -506,7 +506,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            // Tell the porter side to complete the assembly of the message.
            strncpy(pOutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-           outList.insert( pOutMessage );
+           outList.push_back( pOutMessage );
        }
 
        delete OutMessage;
@@ -542,7 +542,7 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
                                           OUTMESS                        *&OutMessage,
                                           RWTPtrSlist< CtiMessage >      &vgList,
                                           RWTPtrSlist< CtiMessage >      &retList,
-                                          RWTPtrSlist< OUTMESS >         &outList)
+                                          list< OUTMESS* >         &outList)
 {
    bool found = false;
    INT   nRet = NoError;
@@ -581,7 +581,7 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -628,7 +628,7 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -665,7 +665,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RW
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -712,7 +712,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -768,7 +768,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 

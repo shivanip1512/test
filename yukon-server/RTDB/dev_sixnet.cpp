@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1657,7 +1657,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
     return;
 }
 
-INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -1702,7 +1702,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             OutMessage->Sequence  = 0;
             OutMessage->Retry     = 3;
 
-            outList.insert(OutMessage);
+            outList.push_back(OutMessage);
             OutMessage = NULL;
         }
         else
@@ -1714,7 +1714,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1772,7 +1772,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSl
     return status;
 }
 
-INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1838,7 +1838,7 @@ void CtiDeviceSixnet::DecodeDatabaseReader(RWDBReader &rdr)
 
 
 
-INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -1965,7 +1965,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
 
 
-INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     resetScanFlag(ScanForced);
     resetScanFlag(ScanRateGeneral);

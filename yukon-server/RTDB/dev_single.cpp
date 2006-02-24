@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
     }
 }
 
-INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -269,7 +269,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
 }
 
 
-INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -396,7 +396,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 }
 
 
-INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -515,7 +515,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
      *  Calculate the next time we see this guy...
      *  But only if we are about to do something now (as indicated by OutMessages in the list!).
      */
-    if(!isScanFlagSet(ScanForced) && outList.entries() > 0)
+    if(!isScanFlagSet(ScanForced) && outList.size() > 0)
     {
         adjustNextScanTime(ScanRateGeneral);
     }
@@ -535,7 +535,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 }
 
 
-INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT      nRet = 0;
     CtiTime   Now;
@@ -715,7 +715,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                                    CtiTime &TimeNow,
                                    RWTPtrSlist< CtiMessage >   &vgList,
                                    RWTPtrSlist< CtiMessage > &retList,
-                                   RWTPtrSlist< OUTMESS > &outList)
+                                   list< OUTMESS* > &outList)
 {
     INT   nRet = InMessage->EventCode & 0x3fff;
     INT   DoAccums;
@@ -765,7 +765,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 retList.insert( Ret );
             }
 
-            size_t cnt = outList.entries();
+            size_t cnt = outList.size();
 
             if( 0 != (status = ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
             {
@@ -776,7 +776,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 }
             }
 
-            if(cnt == outList.entries())
+            if(cnt == outList.size())
             {
                 bLastFail = true;
             }

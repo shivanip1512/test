@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,19 +197,19 @@ public:
                             OUTMESS *&OutMessage,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS > &outList,
+                            list< OUTMESS* > &outList,
                             INT ScanPriority);
 
     virtual INT ResultDecode(INMESS *InMessage,
                              CtiTime &TimeNow,
                              RWTPtrSlist< CtiMessage >   &vgList,
                              RWTPtrSlist< CtiMessage > &retList,
-                             RWTPtrSlist< OUTMESS > &outList);
+                             list< OUTMESS* > &outList);
     virtual INT ErrorDecode(INMESS*,
                             CtiTime&,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist<OUTMESS> &outList);
+                            list< OUTMESS* > &outList);
 
     // interrogation routines
     virtual INT decodeResponseHandshake   (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
@@ -233,13 +233,13 @@ public:
                                     CtiTime                    &TimeNow,
                                     RWTPtrSlist< CtiMessage > &vgList,
                                     RWTPtrSlist< CtiMessage > &retList,
-                                    RWTPtrSlist< OUTMESS >    &outList);
+                                    list< OUTMESS* >    &outList);
 
     virtual INT decodeResultLoadProfile (INMESS                    *InMessage,
                                          CtiTime                    &TimeNow,
                                          RWTPtrSlist< CtiMessage > &vgList,
                                          RWTPtrSlist< CtiMessage > &retList,
-                                         RWTPtrSlist< OUTMESS >    &outList);
+                                         list< OUTMESS* >    &outList);
     virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointID,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,

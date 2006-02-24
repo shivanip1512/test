@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
                                   OUTMESS *&OutMessage,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
-                                  RWTPtrSlist< OUTMESS > &outList,
+                                  list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1844,7 +1844,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList)
+                                        list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR     temp[100], buffer[60];
@@ -1965,7 +1965,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
-                                               RWTPtrSlist< OUTMESS > &outList)
+                                               list< OUTMESS* > &outList)
 {
 
     DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;

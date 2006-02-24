@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/01/19 20:46:21 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,10 +92,10 @@ protected:
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                   *&OutMessage,
-                           RWTPtrSlist< OUTMESS >     &tmpOutList,
+                           list< OUTMESS* >     &tmpOutList,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
-                           RWTPtrSlist< OUTMESS >     &outList,
+                           list< OUTMESS* >     &outList,
                            bool                        wait );
 
 public:
@@ -128,7 +128,7 @@ public:
     virtual LONG getRouteID() const;
 
     INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore = false );
-    INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;

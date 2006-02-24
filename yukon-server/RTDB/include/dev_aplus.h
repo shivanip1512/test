@@ -385,7 +385,7 @@ public:
                             OUTMESS *&OutMessage,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS > &outList,
+                            list< OUTMESS* > &outList,
                             INT ScanPriority = MAXPRIORITY - 4);
 
     virtual INT reformatDataBuffer (BYTE *aInMessBuffer, ULONG &aBytesReceived);
@@ -402,12 +402,12 @@ public:
                                            CtiTime &TimeNow,
                                            RWTPtrSlist< CtiMessage >   &vgList,
                                            RWTPtrSlist< CtiMessage > &retList,
-                                           RWTPtrSlist< OUTMESS > &outList);
+                                           list< OUTMESS* > &outList);
     virtual INT decodeResultScan (INMESS *InMessage,
                                     CtiTime &TimeNow,
                                     RWTPtrSlist< CtiMessage >   &vgList,
                                     RWTPtrSlist< CtiMessage > &retList,
-                                    RWTPtrSlist< OUTMESS > &outList);
+                                    list< OUTMESS* > &outList);
 
 
 

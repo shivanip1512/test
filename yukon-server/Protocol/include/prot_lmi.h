@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/01/24 19:57:28 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,8 +240,8 @@ public:
     LMICommand getCommand() const;
 
     //  client-side (Scanner, PIL) functions
-    int sendCommRequest(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList);
-    int recvCommResult (INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList);
+    int sendCommRequest(OUTMESS *&OutMessage, list< OUTMESS* > &outList);
+    int recvCommResult (INMESS   *InMessage,  list< OUTMESS* > &outList);
 
     bool hasInboundData();
     void getInboundData(RWTPtrSlist< CtiPointDataMsg > &pointList, string &info);

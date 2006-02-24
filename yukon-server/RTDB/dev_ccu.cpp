@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 }
 
 
-INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -151,20 +151,20 @@ INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     if( OutMessage != NULL )
     {
         CCULoop(OutMessage);
-        outList.insert( OutMessage );
+        outList.push_back( OutMessage );
         OutMessage = NULL;
     }
 
     return status;
 }
 
-INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,  INT ScanPriority)
+INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
@@ -238,7 +238,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  OUTMESS                        *&OutMessage,
                                  RWTPtrSlist< CtiMessage >      &vgList,
                                  RWTPtrSlist< CtiMessage >      &retList,
-                                 RWTPtrSlist< OUTMESS >         &outList)
+                                 list< OUTMESS* >         &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -253,7 +253,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
         case LoopbackRequest:
         {
             CCULoop(OutMessage);
-            outList.insert( OutMessage );
+            outList.push_back( OutMessage );
             OutMessage = NULL;
             break;
         }
@@ -270,7 +270,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                     {
                         // Get a reset done maybe?
                         CCU711Reset(OutMTemp);
-                        outList.insert( OutMTemp );
+                        outList.push_back( OutMTemp );
                     }
                 }
                 else

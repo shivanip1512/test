@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,10 @@ using boost::shared_ptr;
 #include "tbl_rtcomm.h"
 #include "msg_signal.h"
 #include "yukon.h"
+#include <list>
+
+using std::list;
+
 
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
@@ -101,7 +105,7 @@ public:
         _tblComm.DecodeDatabaseReader(rdr);
     }
 
-    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
     {
         return NoExecuteRequestMethod;
     }

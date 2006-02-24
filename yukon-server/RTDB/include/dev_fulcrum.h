@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_fulcrum.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,7 @@ public:
                            OUTMESS *&OutMessage,
                            RWTPtrSlist< CtiMessage > &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist< OUTMESS > &outList,
+                           list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
@@ -264,13 +264,13 @@ public:
                           CtiTime &TimeNow,
                           RWTPtrSlist< CtiMessage >   &vgList,
                           RWTPtrSlist< CtiMessage > &retList,
-                          RWTPtrSlist< OUTMESS > &outList);
+                          list< OUTMESS* > &outList);
 
    virtual INT decodeResultLoadProfile ( INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
-                                 RWTPtrSlist< OUTMESS > &outList);
+                                 list< OUTMESS* > &outList);
 
    BOOL getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, CtiTime &peak,  FulcrumScanData_t *aScanData);
    INT ResultDisplay (INMESS *InMessage);

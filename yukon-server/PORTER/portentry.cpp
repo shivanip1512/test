@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/02/02 16:17:00 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,7 +119,7 @@ INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype);
 INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage );
 INT QueueBookkeeping(OUTMESS *&SendOutMessage);
 INT ExecuteGoodRemote(OUTMESS *&OutMessage);
-INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutTemplate);
+INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutTemplate);
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
 VOID ConnectionThread (VOID *Arg);
@@ -224,7 +224,7 @@ VOID ConnectionThread (VOID *Arg)
     OUTMESS        *OutMessage = NULL;
 
     ULONG                   BytesRead;
-    RWTPtrSlist< OUTMESS >  outList;
+    list< OUTMESS* >  outList;
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
@@ -249,12 +249,12 @@ VOID ConnectionThread (VOID *Arg)
         OutMessage = NULL;
         BytesRead = 0;
 
-        if( outList.entries() )
+        if( outList.size() )
         {
             /*
              *  A previous message has caused a list of OUTMESS objects to require sequential processing!
              */
-            OutMessage = outList.get();
+            OutMessage = outList.front();outList.pop_front();
             OutMessage->Request.BuildIt = FALSE;         // Make this FALSE, so the OutMessage passes into the PorterEntryPoint function.
 
             if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
@@ -270,7 +270,7 @@ VOID ConnectionThread (VOID *Arg)
                 }
             }
 
-            if(outList.entries() > 2)
+            if(outList.size() > 2)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1518,7 +1518,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
     return status;
 }
 
-INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessage)
+INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 {
     extern CtiConnection VanGoghConnection;
 
@@ -1570,9 +1570,9 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
                     dout << NowTime << "   Command: " << pReq->CommandString() << endl;
                     dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
 
-                    if(outList.entries() > 0)
+                    if(outList.size() > 0)
                     {
-                        dout << NowTime << "   Sending " << outList.entries() << " requests through porter on error condition" << endl;
+                        dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
                     }
                 }
 

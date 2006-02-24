@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/02/17 17:04:36 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
                               OUTMESS *&OutMessage,
                               RWTPtrSlist< CtiMessage > &vgList,
                               RWTPtrSlist< CtiMessage > &retList,
-                              RWTPtrSlist< OUTMESS > &outList,
+                              list< OUTMESS* > &outList,
                               INT ScanPriority)
 {
    INT status = NORMAL;
@@ -96,7 +96,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
       status = TCUScanAll(OutMessage);
 
       // Put the single built up OUTMESS into the Slist
-      outList.insert(OutMessage);
+      outList.push_back(OutMessage);
       OutMessage = NULL;
    }
    else
@@ -112,7 +112,7 @@ INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
                                 OUTMESS *&OutMessage,
                                 RWTPtrSlist< CtiMessage > &vgList,
                                 RWTPtrSlist< CtiMessage > &retList,
-                                RWTPtrSlist< OUTMESS > &outList,
+                                list< OUTMESS* > &outList,
                                 INT ScanPriority)
 {
    return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
@@ -123,7 +123,7 @@ INT CtiDeviceTCU::ResultDecode(INMESS *InMessage,
                                CtiTime &TimeNow,
                                RWTPtrSlist< CtiMessage > &vgList,
                                RWTPtrSlist< CtiMessage > &retList,
-                               RWTPtrSlist< OUTMESS > &outList)
+                               list< OUTMESS* > &outList)
 {
 #if 0
    {
@@ -272,7 +272,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  OUTMESS                        *&OutMessage,
                                  RWTPtrSlist< CtiMessage >      &vgList,
                                  RWTPtrSlist< CtiMessage >      &retList,
-                                 RWTPtrSlist< OUTMESS >         &outList)
+                                 list< OUTMESS* >         &outList)
 {
    INT nRet = NORMAL;
    /*
@@ -322,7 +322,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          }
          else
          {
-            outList.insert( OutMessage );
+            outList.push_back( OutMessage );
             OutMessage = NULL;
          }
 
@@ -366,7 +366,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          }
          else
          {
-            outList.insert( OutMessage );
+            outList.push_back( OutMessage );
             OutMessage = NULL;
          }
 
@@ -403,7 +403,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                }
                else
                {
-                  outList.insert( OutMTemp );
+                  outList.push_back( OutMTemp );
                }
             }
          }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -44,14 +44,14 @@ public:
                            OUTMESS                    *&OutMessage,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
-                           RWTPtrSlist< OUTMESS >     &outList,
+                           list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
                     RWTPtrSlist< CtiMessage > &vgList,
                     RWTPtrSlist< CtiMessage > &retList,
-                    RWTPtrSlist< OUTMESS > &outList,
+                    list< OUTMESS* > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
 
@@ -59,20 +59,20 @@ public:
                             CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS >    &outList);
+                            list< OUTMESS* >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
                            CtiTime                     &TimeNow,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
-                           RWTPtrSlist< OUTMESS >     &outList);
+                           list< OUTMESS* >     &outList);
 
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
                        RWTPtrSlist< CtiMessage >  &vgList,
                        RWTPtrSlist< CtiMessage >  &retList,
-                       RWTPtrSlist< OUTMESS >     &outList );
+                       list< OUTMESS* >     &outList );
 
    CtiProtocolANSI & getSentinelProtocol( void );
    void processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg >  &retList, UINT archiveFlag );

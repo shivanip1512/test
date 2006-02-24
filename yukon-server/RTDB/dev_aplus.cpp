@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.15  2006/02/24 00:19:10  tspar
+      First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+
       Revision 1.14  2006/02/17 17:04:33  tspar
       CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 
@@ -183,7 +186,7 @@ INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg *pReq,
                                      OUTMESS *&OutMessage,
                                      RWTPtrSlist< CtiMessage > &vgList,
                                      RWTPtrSlist< CtiMessage > &retList,
-                                     RWTPtrSlist< OUTMESS > &outList,
+                                     list< OUTMESS* > &outList,
                                      INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1787,7 +1790,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
                                              CtiTime &TimeNow,
                                              RWTPtrSlist< CtiMessage >   &vgList,
                                              RWTPtrSlist< CtiMessage > &retList,
-                                             RWTPtrSlist< OUTMESS > &outList)
+                                             list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR     temp[100], buffer[100];
@@ -1962,7 +1965,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                                   CtiTime &TimeNow,
                                                   RWTPtrSlist< CtiMessage >   &vgList,
                                                   RWTPtrSlist< CtiMessage > &retList,
-                                                  RWTPtrSlist< OUTMESS > &outList)
+                                                  list< OUTMESS* > &outList)
 {
 
     DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;

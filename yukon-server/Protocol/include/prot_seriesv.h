@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -259,8 +259,8 @@ public:
     void setAnalogOutPoints ( int min, int max );
 
     //  client-side (Scanner, PIL) functions
-    int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
 
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );

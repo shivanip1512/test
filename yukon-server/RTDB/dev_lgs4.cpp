@@ -1295,7 +1295,7 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
                                       OUTMESS *&OutMessage,
                                       RWTPtrSlist< CtiMessage > &vgList,
                                       RWTPtrSlist< CtiMessage > &retList,
-                                      RWTPtrSlist< OUTMESS > &outList,
+                                      list< OUTMESS* > &outList,
                                       INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1367,7 +1367,7 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
         OutMessage->Sequence  = 0;
         OutMessage->Retry     = 3;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -1824,7 +1824,7 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList)
+                                        list< OUTMESS* > &outList)
 {
 
     /****************************
@@ -1893,7 +1893,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
                                        CtiTime &TimeNow,
                                        RWTPtrSlist< CtiMessage >   &vgList,
                                        RWTPtrSlist< CtiMessage > &retList,
-                                       RWTPtrSlist< OUTMESS > &outList)
+                                       list< OUTMESS* > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1944,7 +1944,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
                                             CtiTime &TimeNow,
                                             RWTPtrSlist< CtiMessage >   &vgList,
                                             RWTPtrSlist< CtiMessage > &retList,
-                                            RWTPtrSlist< OUTMESS > &outList)
+                                            list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
     CHAR           temp[100], buffer[60];
@@ -2062,7 +2062,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                    CtiTime &TimeNow,
                                                    RWTPtrSlist< CtiMessage >   &vgList,
                                                    RWTPtrSlist< CtiMessage > &retList,
-                                                   RWTPtrSlist< OUTMESS > &outList)
+                                                   list< OUTMESS* > &outList)
 {
     DIALUPREQUEST     *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
     DIALUPREPLY       *dupRep = &InMessage->Buffer.DUPSt.DUPRep;

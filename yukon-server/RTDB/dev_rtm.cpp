@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.16  2006/02/24 00:19:12  tspar
+* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+*
 * Revision 1.15  2006/02/17 17:04:35  tspar
 * CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 *
@@ -87,7 +90,7 @@ CtiDeviceRTM::~CtiDeviceRTM()
 }
 
 
-INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -112,7 +115,7 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     string      resultString;
@@ -150,7 +153,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                         OutMessage->Port = getPortID();
                         OutMessage->EventCode = RESULT | ENCODED;
 
-                        outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+                        outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
                         resultString = " Command successfully sent on route " + getName() + "\n";
 
@@ -268,7 +271,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 OutMessage->Buffer.SASt = prot.getSAData();
                 OutMessage->OutLength = prot.getSABufferLen();
 
-                outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+                outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
                 prot.copyMessage(byteString);
                 resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
@@ -339,7 +342,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -389,7 +392,7 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 }
 
 
-INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL;
 

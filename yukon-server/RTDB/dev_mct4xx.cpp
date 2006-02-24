@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                                    OUTMESS                        *&OutMessage,
                                    RWTPtrSlist< CtiMessage >      &vgList,
                                    RWTPtrSlist< CtiMessage >      &retList,
-                                   RWTPtrSlist< OUTMESS >         &outList)
+                                   list< OUTMESS* >         &outList)
 {
     bool  found = false;
     INT   nRet = NoError, sRet;
@@ -185,7 +185,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
             nRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
         }
         recordMultiMessageRead(outList);
-        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.entries());
+        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
         if(OutMessage!=NULL)
         {
@@ -207,7 +207,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
                                    OUTMESS                        *&OutMessage,
                                    RWTPtrSlist< CtiMessage >      &vgList,
                                    RWTPtrSlist< CtiMessage >      &retList,
-                                   RWTPtrSlist< OUTMESS >         &outList)
+                                   list< OUTMESS* >         &outList)
 {
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
@@ -285,7 +285,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
 }
 
 
-INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;
@@ -350,7 +350,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtr
 
 using namespace Cti;
 using namespace Config;
-int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -394,11 +394,11 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
                     OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
                     OutMessage->Buffer.BSt.Message[3] = (underVThreshold);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -412,7 +412,7 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     if(OutMessage)
     {
@@ -422,27 +422,27 @@ int CtiDeviceMCT4xx::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -494,11 +494,11 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
                     OutMessage->Buffer.BSt.Message[4] = (collection);
                     OutMessage->Buffer.BSt.Message[5] = spid;
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -512,7 +512,7 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -563,11 +563,11 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
                     OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
 
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
 
                     nRet = NORMAL;
@@ -583,17 +583,17 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -647,11 +647,11 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.Message[9] = (holiday3>>16);
                     OutMessage->Buffer.BSt.Message[10] = (holiday3>>8);
                     OutMessage->Buffer.BSt.Message[11] = (holiday3);
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -665,13 +665,13 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParse
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigUsage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigUsage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 
 
-int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -724,14 +724,14 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
                     OutMessage->Buffer.BSt.Message[3] = (channel3);
                     OutMessage->Buffer.BSt.Message[4] = (channel4);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     getOperation(Emetcon::GetConfig_LongloadProfile, function, length, io);
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }

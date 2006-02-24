@@ -113,7 +113,7 @@ public:
                               OUTMESS                        *&OutMessage,
                               RWTPtrSlist< CtiMessage >      &vgList,
                               RWTPtrSlist< CtiMessage >      &retList,
-                              RWTPtrSlist< OUTMESS >         &outList);
+                              list< OUTMESS* >         &outList);
 
    string getDescription(const CtiCommandParser & parse) const;
 

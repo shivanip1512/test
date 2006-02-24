@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 
 #include <utility>
-
+#include <list>
 
 #include <rw/tpslist.h>
 
@@ -33,7 +33,7 @@
 #define PRIORITY_STATUS          9
 #define PRIORITY_STATUS_FORCED   13
 
-
+using std::list;
 namespace Cti       {
 namespace Protocol  {
 
@@ -50,7 +50,7 @@ protected:
     INT  _last;
     BOOL _double;                    // Double the sent messages (protocol operation, sends twice)
 
-    RWTPtrSlist< OUTMESS >  _out;
+    list< OUTMESS* >  _out;
 
 public:
 
@@ -60,7 +60,7 @@ public:
 
     Emetcon& operator=(const Emetcon& aRef);
 
-    INT entries() const;
+    INT size() const;
 
     INT advanceAndPrime(const OUTMESS &OutTemp);
     INT primeOut(const OUTMESS &OutTemplate);
@@ -88,8 +88,8 @@ public:
 
     static INT determineDWordCount(INT Length);
 
-    OUTMESS  getOutMessage(INT pos) const;
-    OUTMESS& getOutMessage(INT pos);
+    OUTMESS*  getOutMessage(INT pos) const;
+    OUTMESS*& getOutMessage(INT pos);
     OUTMESS* popOutMessage();
 
     INT buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);

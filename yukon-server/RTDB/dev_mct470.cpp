@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -788,7 +788,7 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
 }
 
 
-void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     bool valid = true;
 
@@ -877,7 +877,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
 
     if( OutMessage )
     {
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
 }
@@ -1008,7 +1008,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
 }
 
 
-void CtiDeviceMCT470::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceMCT470::sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
@@ -1025,7 +1025,7 @@ void CtiDeviceMCT470::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
     OutMessage->Request.BuildIt = TRUE;
     strncpy(OutMessage->Request.CommandStr, "putconfig emetcon intervals", COMMAND_STR_SIZE );
 
-    outList.insert(OutMessage);
+    outList.push_back(OutMessage);
     OutMessage = NULL;
 }
 
@@ -1097,7 +1097,7 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 }
 
 
-INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -1233,7 +1233,7 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
-                    outList.insert(tmpOutMess);
+                    outList.push_back(tmpOutMess);
                 }
             }
         }
@@ -1298,7 +1298,7 @@ bool CtiDeviceMCT470::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     int ioType, location;
@@ -1486,7 +1486,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
                                       OUTMESS                   *&OutMessage,
                                       RWTPtrSlist< CtiMessage >  &vgList,
                                       RWTPtrSlist< CtiMessage >  &retList,
-                                      RWTPtrSlist< OUTMESS >     &outList )
+                                      list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -1611,7 +1611,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
                                        OUTMESS                   *&OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
                                        RWTPtrSlist< CtiMessage >  &retList,
-                                       RWTPtrSlist< OUTMESS >     &outList )
+                                       list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -1679,7 +1679,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
 
 using namespace Cti;
 using namespace Config;
-int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -1736,13 +1736,13 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
                     OutMessage->Buffer.BSt.Message[12] =(kRatio2);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_LoadProfileChannel12Pos;
                     OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_LoadProfileChannel12Len;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -1790,13 +1790,13 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
                     OutMessage->Buffer.BSt.Message[11] =(kRatio2>>8);
                     OutMessage->Buffer.BSt.Message[12] =(kRatio2);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_LoadProfileChannel34Pos;
                     OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_LoadProfileChannel34Len;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -1810,7 +1810,7 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
     return NORMAL;
 }
 
-int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -1847,13 +1847,13 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
                     OutMessage->Buffer.BSt.Message[1] = relayATimer;
                     OutMessage->Buffer.BSt.Message[2] = relayBTimer;
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_Memory_RelayATimerPos;
                     OutMessage->Buffer.BSt.Length     = MCT470_Memory_RelayATimerLen + MCT470_Memory_RelayBTimerLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -1867,7 +1867,7 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
     return NORMAL;
 }
 
-int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -1908,13 +1908,13 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
                     OutMessage->Buffer.BSt.Message[2] = (loadProfile2);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_Memory_IntervalsPos;
                     OutMessage->Buffer.BSt.Length     = MCT470_Memory_IntervalsLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
 
                 }
@@ -1930,7 +1930,7 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
 }
 
 
-int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -1972,13 +1972,13 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
                     OutMessage->Buffer.BSt.Message[2] = meterNumber;
                     OutMessage->Buffer.BSt.Message[3] = tableType;
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_FuncRead_PrecannedTablePos;
                     OutMessage->Buffer.BSt.Length     = MCT470_FuncRead_PrecannedTableLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -1992,13 +1992,13 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
     return NORMAL;
 }
 
-int CtiDeviceMCT470::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     //This can be removed as soon as the 470 does not inherit from the 410
     return NoMethod;
 }
 
-int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -2048,17 +2048,17 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.Message[1] = (event1mask);
                     OutMessage->Buffer.BSt.Message[2] = (event2mask);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
                     OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_Memory_EventFlagsMaskPos;
                     OutMessage->Buffer.BSt.Length     = MCT470_Memory_EventFlagsMaskLen;
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2086,11 +2086,11 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                     OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2105,7 +2105,7 @@ int CtiDeviceMCT470::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
 }
 
 
-INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -2206,7 +2206,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int          status = NORMAL, i;
     point_info_t pi;
@@ -2327,7 +2327,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 }
 
 
-INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int          status = NORMAL, base_offset, point_offset;
     point_info_t pi, pi_time;
@@ -2457,7 +2457,7 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int             status = NORMAL,
                     frozen = 0,
@@ -2645,7 +2645,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int             status = NORMAL,
                     frozen = 0,
@@ -2736,7 +2736,7 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -2829,7 +2829,7 @@ INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -2940,7 +2940,7 @@ INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -2996,7 +2996,7 @@ INT CtiDeviceMCT470::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL, lp_channel;
 
@@ -3066,7 +3066,7 @@ INT CtiDeviceMCT470::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
 }
 
 
-INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3117,7 +3117,7 @@ INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3204,7 +3204,7 @@ INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &Tim
 }
 
 
-INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/17 17:04:36 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                      OUTMESS                        *&OutMessage,
                                      RWTPtrSlist< CtiMessage >      &vgList,
                                      RWTPtrSlist< CtiMessage >      &retList,
-                                     RWTPtrSlist< OUTMESS >         &outList)
+                                     list< OUTMESS* >         &outList)
 {
 #define ABUFSIZE 40
 
@@ -265,7 +265,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                                               OUTMESS                        *OutMessage,
                                               RWTPtrSlist< CtiMessage >      &vgList,
                                               RWTPtrSlist< CtiMessage >      &retList,
-                                              RWTPtrSlist< OUTMESS >         &outList)
+                                              list< OUTMESS* >         &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -327,7 +327,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
                 {
                     /* Copy message into buffer */
                     ::memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
-                    outList.insert( NewOutMessage );
+                    outList.push_back( NewOutMessage );
                 }
             }
             else

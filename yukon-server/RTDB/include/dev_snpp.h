@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ public:
                           OUTMESS                        *&OutMessage,
                           RWTPtrSlist< CtiMessage >      &vgList,
                           RWTPtrSlist< CtiMessage >      &retList,
-                          RWTPtrSlist< OUTMESS >         &outList);
+                          list< OUTMESS* >         &outList);
 
    bool isTransactionComplete();
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:19:55 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "porter.h"
 #include "prot_emetcon.h"
 #include "logger.h"
+#include "utility.h"
 
 
 namespace Cti      {
@@ -44,20 +45,22 @@ Emetcon::Emetcon(const Emetcon& aRef)  :
     _last(0),
     _double(FALSE)
 {
-    _out.clearAndDestroy();
+    delete_list(_out);
+    _out.clear();
     *this = aRef;
 }
 
 
 Emetcon::~Emetcon()
 {
-    _out.clearAndDestroy();
+    delete_list(_out);
+    _out.clear();
 }
 
 
-INT Emetcon::entries() const
+INT Emetcon::size() const
 {
-    return _out.entries();
+    return _out.size();
 }
 
 
@@ -65,16 +68,17 @@ Emetcon& Emetcon::operator=(const Emetcon& aRef)
 {
     if(this != &aRef)
     {
-        _out.clearAndDestroy();
-
-        for( int i = 0; i < aRef.entries(); i++ )
+        delete_list(_out);
+        _out.clear();
+        
+        for( int i = 0; i < aRef.size(); i++ )
         {
             _ied = getIED();
-
-            OUTMESS *Out = CTIDBG_new OUTMESS(aRef.getOutMessage(i));
+            
+            OUTMESS *Out = CTIDBG_new OUTMESS( aRef.getOutMessage(i) );
             if(Out != NULL)
             {
-                _out.insert( Out );
+                _out.push_back( Out );
             }
         }
 
@@ -106,8 +110,8 @@ INT Emetcon::primeOut(const OUTMESS &OutTemplate)
 
    if(Out != NULL)
    {
-      _out.insert( Out );
-      _last = _out.entries() - 1;
+      _out.push_back( Out );
+      _last = _out.size() - 1;
    }
    else
    {
@@ -170,7 +174,7 @@ INT Emetcon::assembleCommand(CtiCommandParser  &parse, OUTMESS &aOutTemplate)
 
    if(status == NORMAL)
    {
-      _out[_last]->EventCode |= BWORD;          // Make sure we know the basics
+      _out.back()->EventCode |= BWORD;          // Make sure we know the basics
 
       status = buildMessages(parse, aOutTemplate);
    }
@@ -182,7 +186,7 @@ INT Emetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate
 {
    INT status = NORMAL;
 
-   OUTMESS *curOutMessage= _out[_last];                 // Grab a pointer to the current OUTMESS
+   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
 
    if(curOutMessage->EventCode & AWORD)
    {
@@ -205,7 +209,7 @@ INT Emetcon::buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTem
 {
    INT status = NORMAL;
 
-   OUTMESS *curOutMessage= _out[_last];                 // Grab a pointer to the current OUTMESS
+   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
 
    // Use the template's ASt since Buffer.OutMessage & Buffer.ASt are members of a union.
    APreamble(curOutMessage->Buffer.OutMessage + PREIDLEN, aOutTemplate.Buffer.ASt);
@@ -227,7 +231,7 @@ INT Emetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTem
 
    INT wordCount = 0;
 
-   OUTMESS *curOutMessage= _out[_last];                 // Grab a pointer to the current OUTMESS
+   OUTMESS *curOutMessage= _out.back();                 // Grab a pointer to the current OUTMESS
 
    if( aOutTemplate.Buffer.BSt.IO & Emetcon::IO_Read )
    {
@@ -310,19 +314,25 @@ INT Emetcon::determineDWordCount(INT Length)
    return cnt;
 }
 
-OUTMESS Emetcon::getOutMessage(INT pos) const
+OUTMESS* Emetcon::getOutMessage(INT pos) const
 {
-   return *_out[pos];
+    std::list< OUTMESS* >::const_iterator itr = _out.begin();
+    for( int i = 0; i<pos;i++)
+        ++itr;
+    return *itr;
 }
-OUTMESS& Emetcon::getOutMessage(INT pos)
+OUTMESS*& Emetcon::getOutMessage(INT pos)
 {
-   return *_out[pos];
+    std::list< OUTMESS* >::iterator itr = _out.begin();
+    for( int i = 0; i<pos;i++)
+        ++itr;
+    return *itr;
 }
 
 OUTMESS* Emetcon::popOutMessage()
 {
-   OUTMESS *ptr = _out.removeFirst();
-   _last = _out.entries() - 1;
+   OUTMESS *ptr = _out.front(); _out.pop_front();
+   _last = _out.size() - 1;
 
    return ptr;
 }

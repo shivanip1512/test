@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.19  2006/02/24 00:19:11  tspar
+* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+*
 * Revision 1.18  2006/02/17 17:04:34  tspar
 * CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 *
@@ -197,7 +200,7 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(RWDBReader &rdr)
 //===================================================================================================================
 //===================================================================================================================
 
-INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;

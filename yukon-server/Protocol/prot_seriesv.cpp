@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,7 +129,7 @@ void CtiProtocolSeriesV::setAnalogOutPoints( int min, int max )
 }
 
 
-int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
@@ -146,7 +146,7 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTM
 
         OutMessage->EventCode = RESULT;
 
-        outList.append(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -158,7 +158,7 @@ int CtiProtocolSeriesV::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTM
 }
 
 
-int CtiProtocolSeriesV::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolSeriesV::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
 {
     seriesv_inmess_struct &response = *((seriesv_inmess_struct *)InMessage->Buffer.InMessage);
     seriesv_pointdata *pd = (seriesv_pointdata *)(InMessage->Buffer.InMessage + sizeof(seriesv_inmess_struct));

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,19 +147,19 @@ private:
                            OUTMESS *&OutMessage,
                            RWTPtrSlist< CtiMessage > &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist< OUTMESS > &outList,
+                           list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS *InMessage,
                             CtiTime &TimeNow,
                             RWTPtrSlist< CtiMessage >   &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS > &outList);
+                            list< OUTMESS* > &outList);
 
    virtual INT ErrorDecode(INMESS*,
                            CtiTime&,
                            RWTPtrSlist< CtiMessage >   &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist<OUTMESS> &outList);
+                           list< OUTMESS* > &outList);
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,

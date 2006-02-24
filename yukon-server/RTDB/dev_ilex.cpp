@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ INT CtiDeviceILEX::header(PBYTE  Header,          /* Pointer to message */
     return(NORMAL);
 }
 
-INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -105,14 +105,14 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         setScanFlag(ScanFreezePending);                     // This is an outbound freeze request.  We need a response to knowthey are frozen.
         setScanFlag(ScanRateIntegrity);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
 
     return status;
 }
 
-INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -133,20 +133,20 @@ INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrS
         OutMessage->Sequence              = 0;
         OutMessage->Retry                 = 2;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
 
     return status;
 }
 
-INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     return IntegrityScan(pReq,parse,OutMessage,vgList,retList,outList,ScanPriority);
     // return exceptionScan(OutMessage,ScanPriority,outList);
 }
 
-INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -170,7 +170,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         OutMessage->Sequence              = 0;
         OutMessage->Retry                 = 2;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
 
@@ -178,7 +178,7 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT             status = NORMAL;
     CtiPoint        *PointRecord;
@@ -828,7 +828,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
     return status;
 }
 
-INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NoError;
 
@@ -879,7 +879,7 @@ INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
     return status;
 }
 
-INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NoError;
 
@@ -944,7 +944,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return status;
 }
 
-INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1027,7 +1027,7 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         /* set the point number */
                         MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN] = ctloffset - 1;
 
-                        outList.insert( MyOutMessage );
+                        outList.push_back( MyOutMessage );
                         MyOutMessage = 0;
 
 
@@ -1047,7 +1047,7 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         OutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN] = ctloffset - 1;
 
                         /* Sent the message on to the remote */
-                        outList.insert( OutMessage );
+                        outList.push_back( OutMessage );
                         OutMessage = 0;
 
                         CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, CtiTime(), -1, 100 );

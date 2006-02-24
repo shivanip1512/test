@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/02/17 17:04:36 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                                 OUTMESS                     *&OutMessage,
                                 RWTPtrSlist< CtiMessage >   &vgList,
                                 RWTPtrSlist< CtiMessage >   &retList,
-                                RWTPtrSlist< OUTMESS >      &outList)
+                                list< OUTMESS* >      &outList)
 {
     INT      status = NORMAL;
     ULONG    BytesWritten;
@@ -193,7 +193,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                                          OUTMESS                     *&OutMessage,
                                          RWTPtrSlist< CtiMessage >   &vgList,
                                          RWTPtrSlist< CtiMessage >   &retList,
-                                         RWTPtrSlist< OUTMESS >      &outList)
+                                         list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -267,7 +267,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     byteString += "\n";
 
                     /* Now add it to the collection of outbound messages */
-                    outList.insert( NewOutMessage );
+                    outList.push_back( NewOutMessage );
 
                     break;
                 }
@@ -300,7 +300,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                         ::memcpy (NewOutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, VSt.Message, Length);
 
                         /* Now add it to the collection of outbound messages */
-                        outList.insert( NewOutMessage );
+                        outList.push_back( NewOutMessage );
                     }
                     break;
                 }
@@ -361,7 +361,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
                                        OUTMESS                     *&OutMessage,
                                        RWTPtrSlist< CtiMessage >   &vgList,
                                        RWTPtrSlist< CtiMessage >   &retList,
-                                       RWTPtrSlist< OUTMESS >      &outList)
+                                       list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -421,7 +421,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 
     if(OutMessage)
     {
-        outList.insert( OutMessage );         // Insert a copy someone else can clean up.
+        outList.push_back( OutMessage );         // Insert a copy someone else can clean up.
         OutMessage = NULL;
     }
 
@@ -434,7 +434,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                                              OUTMESS                     *&OutMessage,
                                              RWTPtrSlist< CtiMessage >   &vgList,
                                              RWTPtrSlist< CtiMessage >   &retList,
-                                             RWTPtrSlist< OUTMESS >      &outList)
+                                             list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -516,7 +516,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                     }
 
                     /* Now add it to the collection of outbound messages */
-                    outList.insert( NewOutMessage );
+                    outList.push_back( NewOutMessage );
 
                     break;
                 }
@@ -564,7 +564,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -654,7 +654,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
 
                 /* Now add it to the collection of outbound messages */
-                outList.insert( OutMessage );
+                outList.push_back( OutMessage );
                 OutMessage = 0; // It has been used, don't let it be deleted!
 
 
@@ -707,7 +707,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                                       OUTMESS *&OutMessage,
                                       RWTPtrSlist< CtiMessage >   &vgList,
                                       RWTPtrSlist< CtiMessage >   &retList,
-                                      RWTPtrSlist< OUTMESS >      &outList)
+                                      list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -762,7 +762,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     byteString += prot305.getBitString() + "\n";
 
                     /* Now add it to the collection of outbound messages */
-                    outList.insert( NewOutMessage );
+                    outList.push_back( NewOutMessage );
                     NewOutMessage = 0;
 
                     break;
@@ -785,7 +785,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     }
                     byteString += "\n" + prot305.getBitString() + "\n";
 
-                    outList.insert( NewOutMessage );
+                    outList.push_back( NewOutMessage );
                     NewOutMessage = 0;
 
                     resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
@@ -854,7 +854,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                                          OUTMESS *&OutMessage,
                                          RWTPtrSlist< CtiMessage >   &vgList,
                                          RWTPtrSlist< CtiMessage >   &retList,
-                                         RWTPtrSlist< OUTMESS >      &outList)
+                                         list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -887,7 +887,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                 CtiOutMessage *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );
                 strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr().c_str() ,COMMAND_STR_SIZE);
 
-                outList.insert( NewOutMessage );
+                outList.push_back( NewOutMessage );
 
                 prot.copyMessage(byteString);
                 resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
@@ -950,7 +950,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                                          OUTMESS *&OutMessage,
                                          RWTPtrSlist< CtiMessage >   &vgList,
                                          RWTPtrSlist< CtiMessage >   &retList,
-                                         RWTPtrSlist< OUTMESS >      &outList)
+                                         list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -974,7 +974,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                 OutMessage->Buffer.SASt._codeSimple[z] = tempString[z];
             }
 
-            outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+            outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
             resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
             break;
@@ -985,7 +985,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             OutMessage->Buffer.SASt._groupType = GOLAY;
             strncpy(OutMessage->Buffer.SASt._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
             OutMessage->Sequence = CtiProtocolLMI::Sequence_Code;  //  these are the only commands that can be queued to an LMI
-            outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+            outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
             resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
 
@@ -1005,7 +1005,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                 OutMessage->Buffer.SASt = prot.getSAData();
                 OutMessage->OutLength = prot.getSABufferLen();
 
-                outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+                outList.push_back( CTIDBG_new OUTMESS( *OutMessage ) );
 
                 prot.copyMessage(byteString);
                 resultString = " Command successfully sent on route " + getName() + "\n" + byteString;

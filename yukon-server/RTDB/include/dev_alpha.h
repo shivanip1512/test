@@ -224,19 +224,19 @@ public:
                             OUTMESS                   *&OutMessage,
                             RWTPtrSlist< CtiMessage >  &vgList,
                             RWTPtrSlist< CtiMessage >  &retList,
-                            RWTPtrSlist< OUTMESS >     &outList,
+                            list< OUTMESS* >     &outList,
                             INT                         ScanPriority=MAXPRIORITY-4);
 
     virtual INT ResultDecode(INMESS                    *InMessage,
                              CtiTime                    &TimeNow,
                              RWTPtrSlist< CtiMessage > &vgList,
                              RWTPtrSlist< CtiMessage > &retList,
-                             RWTPtrSlist< OUTMESS >    &outList);
+                             list< OUTMESS* >    &outList);
     virtual INT ErrorDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS >    &outList);
+                            list< OUTMESS* >    &outList);
 
     // all defined in dev_alpha.cpp
     virtual INT generateCommand          (CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList);

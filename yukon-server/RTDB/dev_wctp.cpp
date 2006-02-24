@@ -156,7 +156,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           OUTMESS                        *&OutMessage,
                                           RWTPtrSlist< CtiMessage >      &vgList,
                                           RWTPtrSlist< CtiMessage >      &retList,
-                                          RWTPtrSlist< OUTMESS >         &outList)
+                                          list< OUTMESS* >         &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -926,7 +926,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                     if(in[0] != 0)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         for(int b = 0; in[b] != 0 && b <= xfer.getInCountActual(); b++)
                         {
                             if( isprint(in[b]) ) dout << in[b];

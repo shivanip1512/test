@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ public:
                               OUTMESS                   *&OutMessage,
                               RWTPtrSlist< CtiMessage >  &vgList,
                               RWTPtrSlist< CtiMessage >  &retList,
-                              RWTPtrSlist< OUTMESS >     &outList);
+                              list< OUTMESS* >     &outList);
 
    /*
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
@@ -83,12 +83,12 @@ public:
                                    CtiTime                    &TimeNow,
                                    RWTPtrSlist< CtiMessage > &vgList,
                                    RWTPtrSlist< CtiMessage > &retList,
-                                   RWTPtrSlist< OUTMESS >    &outList )         { return NoResultDecodeMethod; };
+                                   list< OUTMESS* >    &outList )         { return NoResultDecodeMethod; };
    virtual INT   decodeResultLoadProfile( INMESS                    *InMessage,
                                           CtiTime                    &TimeNow,
                                           RWTPtrSlist< CtiMessage > &vgList,
                                           RWTPtrSlist< CtiMessage > &retList,
-                                          RWTPtrSlist< OUTMESS >    &outList )  { return NoResultDecodeMethod; };
+                                          list< OUTMESS* >    &outList )  { return NoResultDecodeMethod; };
 
    virtual BOOL verifyAndAddPointToReturnMsg( LONG   aPointId,
                                               DOUBLE aValue,

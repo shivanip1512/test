@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/01/12 22:21:20 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/24 00:19:09 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -299,7 +299,7 @@ bool getOutMessages( unsigned wait )
             CtiRequestMsg msg(dr->device->getID(), "ping");
             CtiCommandParser parse(msg.CommandString());
             RWTPtrSlist<CtiMessage> vg_list, ret_list;
-            RWTPtrSlist<OUTMESS> om_list;
+            list<OUTMESS*> om_list;
 
             dr->device->ExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
 
@@ -314,9 +314,10 @@ bool getOutMessages( unsigned wait )
                 ret_list.clearAndDestroy();
             }
 
-            while( !om_list.isEmpty() )
+            while( !om_list.empty() )
             {
-                local_queue.push(om_list.get());
+                local_queue.push(om_list.front());
+                om_list.pop_front();
 
                 //  we just generated an entry - don't wait around for Porter to send us anything
                 wait = 25;

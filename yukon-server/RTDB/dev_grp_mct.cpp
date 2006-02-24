@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,7 +142,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
 }
 
 
-INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT        nRet  = NoError;
     CtiRouteSPtr Route;
@@ -199,16 +199,16 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         if(OutMessage != NULL)
         {
-            outList.append( OutMessage );
+            outList.push_back( OutMessage );
             OutMessage = NULL;
         }
         /*
          ***************************** PASS OFF TO ROUTE BEYOND THIS POINT ****************************************
          */
 
-        for(int i = outList.entries() ; i > 0; i-- )
+        for(int i = outList.size() ; i > 0; i-- )
         {
-            OUTMESS *pOut = outList.get();
+            OUTMESS *pOut = outList.front(); outList.pop_front();
 
             if( pReq->RouteId() )
             {
@@ -279,7 +279,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 pOut->Request.BuildIt = TRUE;
                 ::strncpy(pOut->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-                outList.insert( pOut );       // May porter have mercy.
+                outList.push_back( pOut );       // May porter have mercy.
                 pOut = 0;
             }
             else
@@ -318,7 +318,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
 }
 
 
-INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     bool found = false;
     INT   nRet = NoError;
@@ -420,7 +420,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
         OutMessage->Request.RouteID = getRouteID();
         ::strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-        outList.append( OutMessage );
+        outList.push_back( OutMessage );
         OutMessage = NULL;
     }
 

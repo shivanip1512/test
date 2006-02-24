@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/24 00:19:13 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.13  2006/02/24 00:19:13  tspar
+      First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+
       Revision 1.12  2005/12/20 17:20:29  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -72,7 +75,7 @@ public:
                     OUTMESS *&OutMessage, 
                     RWTPtrSlist< CtiMessage > &vgList,
                     RWTPtrSlist< CtiMessage > &retList, 
-                    RWTPtrSlist< OUTMESS > &outList, 
+                    list< OUTMESS* > &outList, 
                     INT ScanPriority = MAXPRIORITY-4);
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
@@ -80,26 +83,26 @@ public:
                            OUTMESS                    *&OutMessage,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
-                           RWTPtrSlist< OUTMESS >     &outList,
+                           list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
                             RWTPtrSlist< CtiMessage > &vgList,
                             RWTPtrSlist< CtiMessage > &retList,
-                            RWTPtrSlist< OUTMESS >    &outList);
+                            list< OUTMESS* >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
                            CtiTime                     &TimeNow,
                            RWTPtrSlist< CtiMessage >  &vgList,
                            RWTPtrSlist< CtiMessage >  &retList,
-                           RWTPtrSlist< OUTMESS >     &outList);
+                           list< OUTMESS* >     &outList);
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,
                        RWTPtrSlist< CtiMessage >  &vgList,
                        RWTPtrSlist< CtiMessage >  &retList,
-                       RWTPtrSlist< OUTMESS >     &outList );
+                       list< OUTMESS* >     &outList );
 
 
    CtiProtocolANSI & getKV2Protocol( void );

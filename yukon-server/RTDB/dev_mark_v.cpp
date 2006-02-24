@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/02/17 22:45:31 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
                                      OUTMESS                   *&OutMessage,
                                      RWTPtrSlist< CtiMessage > &vgList,
                                      RWTPtrSlist< CtiMessage > &retList,
-                                     RWTPtrSlist< OUTMESS >    &outList,
+                                     list< OUTMESS* >    &outList,
                                      INT                       ScanPriority )
 {
    CtiProtocolTransdata::mkv   *ptr = NULL;
@@ -105,7 +105,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       ptr->command = _transdataProtocol.getCommand();
       ptr->getLP = _transdataProtocol.getAction();
 
-      outList.insert( OutMessage );
+      outList.push_back( OutMessage );
       OutMessage = NULL;                //we used it, don't delete it
 
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
@@ -132,7 +132,7 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
                                  OUTMESS                    *&OutMessage,
                                  RWTPtrSlist< CtiMessage >  &vgList,
                                  RWTPtrSlist< CtiMessage >  &retList,
-                                 RWTPtrSlist< OUTMESS >     &outList,
+                                 list< OUTMESS* >     &outList,
                                  INT                        ScanPriority)
 {
    INT status = NORMAL;
@@ -153,7 +153,7 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
                                      OUTMESS                    *&OutMessage,
                                      RWTPtrSlist< CtiMessage >  &vgList,
                                      RWTPtrSlist< CtiMessage >  &retList,
-                                     RWTPtrSlist< OUTMESS >     &outList,
+                                     list< OUTMESS* >     &outList,
                                      INT                        ScanPriority)
 {
    INT status = NORMAL;
@@ -173,7 +173,7 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   CtiTime                    &TimeNow,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
-                                  RWTPtrSlist< OUTMESS >    &outList)
+                                  list< OUTMESS* >    &outList)
 {
    vector<CtiTransdataData *> transVector;
    INT                        retCode = NOTNORMAL;
@@ -225,7 +225,7 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
                                  CtiTime                     &TimeNow,
                                  RWTPtrSlist< CtiMessage >  &vgList,
                                  RWTPtrSlist< CtiMessage >  &retList,
-                                 RWTPtrSlist< OUTMESS >     &outList)
+                                 list< OUTMESS* >     &outList)
 {
    INT retCode = NORMAL;
 

@@ -1344,7 +1344,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
                                OUTMESS *&OutMessage,
                                RWTPtrSlist< CtiMessage > &vgList,
                                RWTPtrSlist< CtiMessage > &retList,
-                               RWTPtrSlist< OUTMESS > &outList,
+                               list< OUTMESS* > &outList,
                                INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1402,7 +1402,7 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
         OutMessage->Sequence  = 0;
         OutMessage->Retry     = 3;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -1495,7 +1495,7 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
-                                 RWTPtrSlist< OUTMESS > &outList)
+                                 list< OUTMESS* > &outList)
 {
 
     /****************************
@@ -1563,7 +1563,7 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
                                 CtiTime &TimeNow,
                                 RWTPtrSlist< CtiMessage >   &vgList,
                                 RWTPtrSlist< CtiMessage > &retList,
-                                RWTPtrSlist< OUTMESS > &outList)
+                                list< OUTMESS* > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1613,7 +1613,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                                      CtiTime &TimeNow,
                                      RWTPtrSlist< CtiMessage >   &vgList,
                                      RWTPtrSlist< CtiMessage > &retList,
-                                     RWTPtrSlist< OUTMESS > &outList)
+                                     list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
@@ -1740,7 +1740,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                                             CtiTime &TimeNow,
                                             RWTPtrSlist< CtiMessage >   &vgList,
                                             RWTPtrSlist< CtiMessage > &retList,
-                                            RWTPtrSlist< OUTMESS > &outList)
+                                            list< OUTMESS* > &outList)
 {
     int retCode = NORMAL;
     DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;

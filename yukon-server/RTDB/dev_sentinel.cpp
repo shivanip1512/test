@@ -46,7 +46,7 @@ CtiDeviceSentinel::~CtiDeviceSentinel()
 //=========================================================================================================================================
 
 INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
+                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -93,7 +93,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
           retMsg = 0;
 
       }
-      outList.insert( OutMessage );
+      outList.push_back( OutMessage );
 
 
       OutMessage = 0;
@@ -106,7 +106,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
 }
 
 INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
+                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -186,7 +186,7 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
 
 
-    outList.insert( OutMessage );
+    outList.push_back( OutMessage );
     OutMessage = 0;
    }
    else
@@ -196,7 +196,7 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "outList.entries() = " <<outList.entries()<< endl;
+        dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
    }
    return NoError;
 }
@@ -208,10 +208,10 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
                                   OUTMESS                   *&OutMessage,
                                   RWTPtrSlist< CtiMessage >  &vgList,
                                   RWTPtrSlist< CtiMessage >  &retList,
-                                  RWTPtrSlist< OUTMESS >     &outList )
+                                  list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
-    RWTPtrSlist< OUTMESS > tmpOutList;
+    list< OUTMESS* > tmpOutList;
 
     //_parseFlags = parse.getFlags();
 
@@ -310,7 +310,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
     {
         /*if(OutMessage != NULL)
         {
-            tmpOutList.append( OutMessage );
+            tmpoutList.push_back( OutMessage );
             OutMessage = NULL;
         } */
 
@@ -325,7 +325,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 
 INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
-                                RWTPtrSlist< OUTMESS >    &outList)
+                                list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
     string inMsgResultString = "";
@@ -512,7 +512,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 
 INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
-                               RWTPtrSlist< OUTMESS > &outList)
+                               list< OUTMESS* > &outList)
 {
 
    return( 1 ); //just a val

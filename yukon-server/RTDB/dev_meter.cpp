@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -152,7 +152,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
                                    OUTMESS                   *&OutMessage,
                                    RWTPtrSlist< CtiMessage >  &vgList,
                                    RWTPtrSlist< CtiMessage >  &retList,
-                                   RWTPtrSlist< OUTMESS >     &outList)
+                                   list< OUTMESS* >     &outList)
 {
     INT   nRet = NoError;
     string resultString;

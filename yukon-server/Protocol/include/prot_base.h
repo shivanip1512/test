@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/01/24 19:59:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,8 @@
 
 #include <vector>
 #include <string>
+#include <list>
+using std::list;
 using std::string;
 using std::vector;
 
@@ -56,8 +58,8 @@ public:
     Interface &operator=(const Interface &aRef);
 
     //  client-side (Scanner, PIL) functions
-    virtual int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    virtual int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
+    virtual int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    virtual int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
 
     virtual void getInboundPoints ( pointlist_t  &point_list );
     virtual void getInboundStrings( stringlist_t &string_list );

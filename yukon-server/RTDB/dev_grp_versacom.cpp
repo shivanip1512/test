@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            OUTMESS                        *&OutMessage,
                                            RWTPtrSlist< CtiMessage >      &vgList,
                                            RWTPtrSlist< CtiMessage >      &retList,
-                                           RWTPtrSlist< OUTMESS >         &outList)
+                                           list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
     string resultString;

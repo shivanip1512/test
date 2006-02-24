@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -329,7 +329,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
                                        OUTMESS *&OutMessage,
                                        RWTPtrSlist< CtiMessage > &vgList,
                                        RWTPtrSlist< CtiMessage > &retList,
-                                       RWTPtrSlist< OUTMESS > &outList,
+                                       list< OUTMESS* > &outList,
                                        INT ScanPriority)
 {
     INT status = NORMAL;
@@ -375,7 +375,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
         OutMessage->Sequence  = 0;
         OutMessage->Retry     = 3;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -466,7 +466,7 @@ INT CtiDeviceSchlumberger::ResultDecode(INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList)
+                                        list< OUTMESS* > &outList)
 {
     /****************************
     *
@@ -534,7 +534,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList)
+                                        list< OUTMESS* > &outList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/21 23:33:04 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/02/24 00:19:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,8 @@
 
 
 #include <string>
+#include <list>
+using std::list;
 using std::string;
 
 #include "ctitime.h"
@@ -250,5 +252,20 @@ inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> *V )
         delete *itr;
    }
 }
+template < class T >
+inline void delete_list( std::list<T> V )
+{
 
+   for (std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+        delete *itr;
+   }
+}
+template < class T >
+inline void delete_list( std::list<T> *V )
+{
+
+   for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
+        delete *itr;
+   }
+}
 #endif // #ifndef __UTILITY_H__

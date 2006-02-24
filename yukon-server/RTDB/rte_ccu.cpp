@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/02/17 17:04:36 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                 OUTMESS                        *&OutMessage,
                                 RWTPtrSlist< CtiMessage >      &vgList,
                                 RWTPtrSlist< CtiMessage >      &retList,
-                                RWTPtrSlist< OUTMESS >         &outList)
+                                list< OUTMESS* >         &outList)
 {
     INT      status = NORMAL;
     CHAR     temp[80];
@@ -97,7 +97,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                                          OUTMESS                        *OutMessage,
                                          RWTPtrSlist< CtiMessage >      &vgList,
                                          RWTPtrSlist< CtiMessage >      &retList,
-                                         RWTPtrSlist< OUTMESS >         &outList)
+                                         list< OUTMESS* >         &outList)
 {
     INT            i, j;
     INT            status = NORMAL;
@@ -263,7 +263,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                     }
             }
 
-            outList.insert(NewOutMessage);
+            outList.push_back(NewOutMessage);
         }
     }
 
@@ -299,7 +299,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                                     OUTMESS                        *OutMessage,
                                     RWTPtrSlist< CtiMessage >      &vgList,
                                     RWTPtrSlist< CtiMessage >      &retList,
-                                    RWTPtrSlist< OUTMESS >         &outList)
+                                    list< OUTMESS* >         &outList)
 {
     INT            i, j;
     INT            status = NORMAL;
@@ -344,9 +344,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     }
 
 
-    if( prot.entries() > 0 )
+    if( prot.size() > 0 )
     {
-        resultString = CtiNumStr(prot.entries()) + " Emetcon DLC commands sent on route " + getName();
+        resultString = CtiNumStr(prot.size()) + " Emetcon DLC commands sent on route " + getName();
     }
     else
     {
@@ -354,7 +354,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         resultString = "Emetcon DLC commands failed with error " + CtiNumStr(status) + string(" on route ") + getName();
     }
 
-    while( prot.entries() > 0 )
+    while( prot.size() > 0 )
     {
         OUTMESS *NewOutMessage = prot.popOutMessage();
 
@@ -414,7 +414,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                     }
             }
 
-            outList.insert(NewOutMessage);
+            outList.push_back(NewOutMessage);
         }
     }
 
@@ -440,7 +440,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                                          OUTMESS                        *OutMessage,
                                          RWTPtrSlist< CtiMessage >      &vgList,
                                          RWTPtrSlist< CtiMessage >      &retList,
-                                         RWTPtrSlist< OUTMESS >         &outList)
+                                         list< OUTMESS* >         &outList)
 {
     INT            i, j;
     INT            status = NORMAL;
@@ -607,7 +607,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                         break;
                     }
             }
-            outList.insert(CTIDBG_new OUTMESS(*NewOutMessage));
+            outList.push_back(CTIDBG_new OUTMESS(*NewOutMessage));
         }
         else if(xcom.entries()>1 && maxsize<=MAX_EXPRESSCOM_IN_EMETCON_LENGTH)//we can divide this up and still send every message!
         {
@@ -726,7 +726,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                             break;
                         }
                 }
-                outList.insert(CTIDBG_new OUTMESS(*NewOutMessage));
+                outList.push_back(CTIDBG_new OUTMESS(*NewOutMessage));
             }
         }
         else

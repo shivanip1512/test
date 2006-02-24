@@ -236,7 +236,7 @@ public:
                              OUTMESS *&OutMessage,
                              RWTPtrSlist< CtiMessage > &vgList,
                              RWTPtrSlist< CtiMessage > &retList,
-                             RWTPtrSlist< OUTMESS > &outList,
+                             list< OUTMESS* > &outList,
                              INT ScanPriority = MAXPRIORITY - 4 );
 
    // interrogation routines
@@ -261,13 +261,13 @@ public:
                                  CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage > &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
-                                 RWTPtrSlist< OUTMESS >    &outList );
+                                 list< OUTMESS* >    &outList );
 
    virtual INT decodeResultLoadProfile( INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage > &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS >    &outList );
+                                        list< OUTMESS* >    &outList );
 
    BOOL getMeterDataFromScanStruct( int aOffset, DOUBLE &aValue, CtiTime &peak, QuantumScanData_t *aScanData );
 };

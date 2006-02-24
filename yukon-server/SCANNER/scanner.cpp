@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/01/19 16:39:32 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ VOID    NexusThread(VOID *Arg);
 INT     RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
-INT     MakePorterRequests(RWTPtrSlist< OUTMESS > &outList);
+INT     MakePorterRequests(list< OUTMESS* > &outList);
 
 CtiDeviceManager      ScannerDeviceManager(Application_Scanner);
 
@@ -193,7 +193,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 {
     INT   nRet = 0;
     CtiTime TimeNow;
-    RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
+    list< OUTMESS* > &outList =  *((list< OUTMESS* > *)d);
 
     if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
     {
@@ -272,7 +272,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
 {
     INT nRet;
     CtiTime TimeNow;
-    RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
+    list< OUTMESS* > &outList =  *((list< OUTMESS* > *)d);
 
     if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
     {
@@ -360,7 +360,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     /* Define for the porter interface */
     IM_EX_CTIBASE extern USHORT   PrintLogEvent;
-    RWTPtrSlist< OUTMESS >         outList;         // Nice little collection of OUTMESS's
+    list< OUTMESS* >         outList;         // Nice little collection of OUTMESS's
 
 
     int Op, k;
@@ -657,7 +657,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             continue;      // get us out of here!
         }
 
-        if(outList.entries() > 0)
+        if(outList.size() > 0)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -744,7 +744,7 @@ VOID ResultThread (VOID *Arg)
 
     HANDLE      evShutdown;
 
-    RWTPtrSlist< OUTMESS > outList;
+    list< OUTMESS* > outList;
     RWTPtrSlist< CtiMessage > retList;
     RWTPtrSlist< CtiMessage > vgList;
 
@@ -867,7 +867,7 @@ VOID ResultThread (VOID *Arg)
                     DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                     // Send any CTIDBG_new porter requests to porter
-                    if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.entries() > 0)
+                    if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.size() > 0)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1573,7 +1573,7 @@ void DatabaseHandlerThread(VOID *Arg)
     ScannerDeviceManager.writeDynamicPaoInfo();
 }
 
-INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
+INT MakePorterRequests(list< OUTMESS* > &outList)
 {
     INT   i, j = 0;
     INT   status = NORMAL;
@@ -1589,16 +1589,16 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         status = PIPEWASBROKEN;
     }
 
-    for( i = outList.entries() ; status == NORMAL && i > 0; i-- )
+    for( i = outList.size() ; status == NORMAL && i > 0; i-- )
     {
-        OutMessage = outList.get();
+        OutMessage = outList.front(); outList.pop_front();
 
         if(OutMessage->ExpirationTime == 0)
         {
             // Scanner is about to make some big decisions...
 
             LONG exptime = gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 3600);
-            OutMessage->ExpirationTime = RWTime().seconds() + exptime;
+            OutMessage->ExpirationTime = CtiTime().seconds() + exptime;
         }
 
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
@@ -1678,7 +1678,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         delete OutMessage;
     }
 
-    if(outList.entries()) outList.clearAndDestroy();
+    if(outList.size()) outList.clear();
 
     return status;
 }

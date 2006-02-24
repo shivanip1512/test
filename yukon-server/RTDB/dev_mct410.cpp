@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -860,7 +860,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 }
 
 
-void CtiDeviceMCT410::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceMCT410::sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
@@ -876,12 +876,12 @@ void CtiDeviceMCT410::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
     OutMessage->Request.BuildIt = TRUE;
     strncpy(OutMessage->Request.CommandStr, "putconfig emetcon intervals", COMMAND_STR_SIZE );
 
-    outList.insert(OutMessage);
+    outList.push_back(OutMessage);
     OutMessage = NULL;
 }
 
 
-INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -962,7 +962,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
-                    outList.insert(tmpOutMess);
+                    outList.push_back(tmpOutMess);
                 }
                 else
                 {
@@ -1035,7 +1035,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1453,7 +1453,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                                        OUTMESS                   *&OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
                                        RWTPtrSlist< CtiMessage >  &retList,
-                                       RWTPtrSlist< OUTMESS >     &outList )
+                                       list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -1811,8 +1811,8 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
                 TOU_OutMessage2->Buffer.BSt.Message[14] = default_rate;
 
-                outList.append(TOU_OutMessage2);
-                outList.append(TOU_OutMessage1);
+                outList.push_back(TOU_OutMessage2);
+                outList.push_back(TOU_OutMessage1);
 
                 TOU_OutMessage1 = 0;
                 TOU_OutMessage2 = 0;
@@ -1849,7 +1849,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                       OUTMESS                   *&OutMessage,
                                       RWTPtrSlist< CtiMessage >  &vgList,
                                       RWTPtrSlist< CtiMessage >  &retList,
-                                      RWTPtrSlist< OUTMESS >     &outList )
+                                      list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -2055,7 +2055,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
                             interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
 
-                            outList.append(interest_om);
+                            outList.push_back(interest_om);
                             interest_om = 0;
                         }
                         else
@@ -2164,7 +2164,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                                 interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
 
-                                outList.append(interest_om);
+                                outList.push_back(interest_om);
                                 interest_om = 0;
                             }
                             else
@@ -2214,7 +2214,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 sspec_om->MessageFlags |= MessageFlag_ExpectMore;
 
-                outList.append(sspec_om);
+                outList.push_back(sspec_om);
                 sspec_om = 0;
             }
         }
@@ -2277,7 +2277,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
                                        OUTMESS                   *&OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
                                        RWTPtrSlist< CtiMessage >  &retList,
-                                       RWTPtrSlist< OUTMESS >     &outList )
+                                       list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -2389,7 +2389,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
-int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -2431,13 +2431,13 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
                     OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
                     OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
 
                 }
@@ -2452,7 +2452,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     return nRet;
 }
 
-/*int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+/*int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *OutMessage;
 
@@ -2520,13 +2520,13 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[13] = (daySchedule2>>16);
                     OutMessage->Buffer.BSt.Message[14] = (daySchedule2);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_TOUDayTablePos;
                     OutMessage->Buffer.BSt.Function   = Memory_TOUDayTableLen + Memory_TOUDailySched1Len + Memory_TOUDailySched2Len;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
 
@@ -2553,13 +2553,13 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[13] = (daySchedule4);
                     OutMessage->Buffer.BSt.Message[14] = (DefaultTOURate);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched1Pos;
                     OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched3Len + Memory_TOUDailySched4Len + Memory_DefaultTOURateLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2572,7 +2572,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     return NORMAL;
 }*/
 
-int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
 
     int nRet = NORMAL;
@@ -2614,13 +2614,13 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
                     OutMessage->Buffer.BSt.Message[4] = (threshold);
                     OutMessage->Buffer.BSt.Message[5] = (delay);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
                     OutMessage->Buffer.BSt.Length     = FuncRead_DisconnectConfigLen;
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2634,7 +2634,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
     return nRet;
 }
 
-int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -2690,17 +2690,17 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask>>8);
                     OutMessage->Buffer.BSt.Message[4] = (meterAlarmMask);
                     OutMessage->Buffer.BSt.Message[5] = (options);
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
                     OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMask1Pos;
                     OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMask1Len + Memory_EventFlagsMask2Len + Memory_MeterAlarmMaskLen;
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2728,11 +2728,11 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                     OutMessage->Buffer.BSt.Message[0] = (outage);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2760,11 +2760,11 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
                     OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
 
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                     OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                     OutMessage->Priority             += 1;//return to normal
                 }
             }
@@ -2779,7 +2779,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -2976,7 +2976,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, RWTP
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -3114,7 +3114,7 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, R
 }
 
 
-INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     int          status = NORMAL,
                  pointoffset;
@@ -3389,7 +3389,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -3502,7 +3502,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow,
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -3681,7 +3681,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT410::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -3705,7 +3705,7 @@ INT CtiDeviceMCT410::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &Ti
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3854,7 +3854,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3964,7 +3964,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
 }
 
 
-INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4091,7 +4091,7 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -4161,7 +4161,7 @@ INT CtiDeviceMCT410::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -4232,7 +4232,7 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4279,7 +4279,7 @@ INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4451,7 +4451,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, RWT
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4501,7 +4501,7 @@ INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, RW
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4565,7 +4565,7 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -4636,7 +4636,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 

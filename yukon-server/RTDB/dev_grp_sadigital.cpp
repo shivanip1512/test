@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.17  2006/02/24 00:19:11  tspar
+* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
+*
 * Revision 1.16  2006/02/17 17:04:34  tspar
 * CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 *
@@ -191,7 +194,7 @@ void CtiDeviceGroupSADigital::DecodeDatabaseReader(RWDBReader &rdr)
 //===================================================================================================================
 //===================================================================================================================
 
-INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;

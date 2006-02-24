@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -383,8 +383,8 @@ public:
 
     bool isTransactionComplete( void );
 
-    int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
+    int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
 
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );

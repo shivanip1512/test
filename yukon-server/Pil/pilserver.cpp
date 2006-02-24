@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -507,7 +507,7 @@ void CtiPILServer::resultThread()
     ULONG       BytesRead;
     INMESS      *InMessage = 0;
 
-    RWTPtrSlist< OUTMESS    > outList;
+    list< OUTMESS*    > outList;
     RWTPtrSlist< CtiMessage > retList;
     RWTPtrSlist< CtiMessage > vgList;
 
@@ -627,11 +627,11 @@ void CtiPILServer::resultThread()
 
                 try
                 {
-                    if(outList.entries())
+                    if(outList.size())
                     {
-                        for( i = outList.entries() ; i > 0; i-- )
+                        for( i = outList.size() ; i > 0; i-- )
                         {
-                            OutMessage = outList.get();
+                            OutMessage = outList.front();outList.pop_front();
                             OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
                             _porterOMQueue.putQueue(OutMessage);
                             OutMessage = 0;
@@ -953,8 +953,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
     RWTPtrSlist< CtiMessage >  vgList;
     RWTPtrSlist< CtiMessage >  retList;
-    RWTPtrSlist< OUTMESS >     outList;
-    RWTPtrSlist< OUTMESS >     tempOutList;
+    list< OUTMESS* >     outList;
+    list< OUTMESS* >     tempOutList;
 
     RWTPtrSlist< CtiRequestMsg >  execList;
 
@@ -1008,8 +1008,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
                 }
-
-                tempOutList.clearAndDestroy();              // Just make sure!
+                delete_list(tempOutList);
+                tempOutList.clear();              // Just make sure!
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
@@ -1030,11 +1030,12 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                         dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
                     }
                 }
-
-                for(int j = tempOutList.entries(); j > 0; j--)
+                
+                for(int j = tempOutList.size(); j > 0; j--)
                 {
                     // _porterOMQueue.putQueue(tempOutList.get());
-                    outList.insert( tempOutList.get() );
+                    outList.push_back( tempOutList.front() );
+                    tempOutList.pop_front();
                 }
 
                 if(status != NORMAL &&
@@ -1133,13 +1134,13 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
+            dout << CtiTime() << " Submitting " << outList.size() << " CtiOutMessage objects to porter" << endl;
         }
     }
 
-    for( i = outList.entries() ; i > 0; i-- )
+    for( i = outList.size() ; i > 0; i-- )
     {
-        OutMessage = outList.get();
+        OutMessage = outList.front();outList.pop_front();
         _porterOMQueue.putQueue(OutMessage);
         OutMessage = 0;
     }

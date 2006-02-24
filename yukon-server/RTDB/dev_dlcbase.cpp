@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,7 +227,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
 
 
-INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -369,7 +369,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                 NewOutMessage->TargetID = InMessage->TargetID;
                 NewOutMessage->Request.BuildIt = TRUE;
 
-                outList.insert( NewOutMessage );
+                outList.push_back( NewOutMessage );
             }
         }
     }
@@ -385,10 +385,10 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                          CtiCommandParser           &parse,
                                          OUTMESS                   *&OutMessage,
-                                         RWTPtrSlist< OUTMESS >     &tmpOutList,
+                                         list< OUTMESS* >     &tmpOutList,
                                          RWTPtrSlist< CtiMessage >  &vgList,
                                          RWTPtrSlist< CtiMessage >  &retList,
-                                         RWTPtrSlist< OUTMESS >     &outList,
+                                         list< OUTMESS* >     &outList,
                                          bool                        result )
 {
     int nRet = NoError;
@@ -400,9 +400,9 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
     CtiReturnMsg* pRet = 0;
 
-    while( !tmpOutList.isEmpty() )
+    while( !tmpOutList.empty() )
     {
-        OUTMESS *pOut = tmpOutList.get();
+        OUTMESS *pOut = tmpOutList.front(); tmpOutList.pop_front();
 
         if( pReq->RouteId() )
         {
@@ -549,7 +549,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             pOut->Request.BuildIt = TRUE;
             strncpy(pOut->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
-            outList.insert( pOut );       // May porter have mercy.
+            outList.push_back( pOut );       // May porter have mercy.
             pOut = 0;
         }
         else

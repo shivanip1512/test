@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2206,7 +2206,7 @@ unsigned long CtiProtocolION::getEventLogLastPosition( void )
 }
 
 
-int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
@@ -2224,7 +2224,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 
         OutMessage->EventCode = RESULT;
 
-        outList.append(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -2236,7 +2236,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 }
 
 
-int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolION::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 

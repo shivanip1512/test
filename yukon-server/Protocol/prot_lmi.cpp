@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/02/17 20:55:51 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ void CtiProtocolLMI::setDeadbands( const vector<unsigned> &points, const vector<
 }
 
 
-int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
     OUTMESS seriesv_outmess;
@@ -161,7 +161,7 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 
         OutMessage->EventCode = RESULT;
 
-        outList.append(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -173,7 +173,7 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 }
 
 
-int CtiProtocolLMI::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
+int CtiProtocolLMI::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
 {
     int offset = 0;
     lmi_inmess_struct &lmi_in = *((lmi_inmess_struct *)InMessage->Buffer.InMessage);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/28 16:05:13 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,18 +195,18 @@ public:
                                CtiTime&,
                                RWTPtrSlist< CtiMessage > &vgList,
                                RWTPtrSlist< CtiMessage > &retList,
-                               RWTPtrSlist< OUTMESS > &outList);
+                               list< OUTMESS* > &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );
     void           validateScanTimes(bool force = false);
 
     INT         doDeviceInit(void);
-    INT         initiateGeneralScan    (RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_General);
-    INT         initiateIntegrityScan  (RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_Integrity);
-    INT         initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_Accumulator);
+    INT         initiateGeneralScan    (list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_General);
+    INT         initiateIntegrityScan  (list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Integrity);
+    INT         initiateAccumulatorScan(list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_Accumulator);
     //  Load Profile gets a low priority so it doesn't butt heads so hard with other reads
-    INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_LoadProfile);
+    INT         initiateLoadProfileScan(list< OUTMESS* > &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
     BOOL isWindowOpen(CtiTime &aNow=CtiTime(), CtiTime &opensAt = CtiTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;

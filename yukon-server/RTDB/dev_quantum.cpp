@@ -187,7 +187,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
                                    OUTMESS *&OutMessage,
                                    RWTPtrSlist< CtiMessage > &vgList,
                                    RWTPtrSlist< CtiMessage > &retList,
-                                   RWTPtrSlist< OUTMESS > &outList,
+                                   list< OUTMESS* > &outList,
                                    INT ScanPriority )
 {
     INT status = NORMAL;
@@ -245,7 +245,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
         OutMessage->Sequence  = 0;
         OutMessage->Retry     = 3;
 
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -1842,7 +1842,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList )
+                                        list< OUTMESS* > &outList )
 {
     CHAR     temp[100],
              buffer[60];
@@ -2009,7 +2009,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
-                                               RWTPtrSlist< OUTMESS > &outList)
+                                               list< OUTMESS* > &outList)
 {
     DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
     DIALUPREPLY                   *dupRep = &InMessage->Buffer.DUPSt.DUPRep;

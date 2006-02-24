@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/11/17 19:15:56 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,28 +59,28 @@ public:
                               OUTMESS                        *&OutMessage,
                               RWTPtrSlist< CtiMessage >      &vgList,
                               RWTPtrSlist< CtiMessage >      &retList,
-                              RWTPtrSlist< OUTMESS >         &outList);
+                              list< OUTMESS* >         &outList);
 
    INT         assembleVersacomRequest(CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                    *OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
                                        RWTPtrSlist< CtiMessage >  &retList,
-                                       RWTPtrSlist< OUTMESS >      &outList);
+                                       list< OUTMESS* >      &outList);
 
    INT         assembleExpresscomRequest(CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                    *OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
                                        RWTPtrSlist< CtiMessage >  &retList,
-                                       RWTPtrSlist< OUTMESS >      &outList);
+                                       list< OUTMESS* >      &outList);
 
    INT         assembleDLCRequest(CtiRequestMsg             *pReq,
                                   CtiCommandParser          &parse,
                                   OUTMESS                   *OutMessage,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
-                                  RWTPtrSlist< OUTMESS    > &outList);
+                                  list< OUTMESS* > &outList);
 
    virtual INT  getBus() const;
    virtual INT  getCCUFixBits() const;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/17 17:04:36 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
                                   OUTMESS *&OutMessage,
                                   RWTPtrSlist< CtiMessage > &vgList,
                                   RWTPtrSlist< CtiMessage > &retList,
-                                  RWTPtrSlist< OUTMESS > &outList,
+                                  list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1691,7 +1691,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         RWTPtrSlist< CtiMessage >   &vgList,
                                         RWTPtrSlist< CtiMessage > &retList,
-                                        RWTPtrSlist< OUTMESS > &outList)
+                                        list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
 
@@ -1823,7 +1823,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
                                                RWTPtrSlist< CtiMessage >   &vgList,
                                                RWTPtrSlist< CtiMessage > &retList,
-                                               RWTPtrSlist< OUTMESS > &outList)
+                                               list< OUTMESS* > &outList)
 {
 
     DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;

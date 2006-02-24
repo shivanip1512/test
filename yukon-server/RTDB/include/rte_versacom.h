@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_versacom.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,14 +53,14 @@ public:
                                OUTMESS                        *OutMessage,
                                RWTPtrSlist< CtiMessage >      &vgList,
                                RWTPtrSlist< CtiMessage >      &retList,
-                               RWTPtrSlist< OUTMESS >         &outList);
+                               list< OUTMESS* >         &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
                               RWTPtrSlist< CtiMessage >      &vgList,
                               RWTPtrSlist< CtiMessage >      &retList,
-                              RWTPtrSlist< OUTMESS >         &outList);
+                              list< OUTMESS* >         &outList);
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);

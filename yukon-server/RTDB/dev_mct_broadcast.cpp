@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/02/17 17:04:35 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/24 00:19:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,10 +52,10 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
                                            OUTMESS                   *&OutMessage,
                                            RWTPtrSlist< CtiMessage >  &vgList,
                                            RWTPtrSlist< CtiMessage >  &retList,
-                                           RWTPtrSlist< OUTMESS >     &outList )
+                                           list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
-    RWTPtrSlist< OUTMESS > tmpOutList;
+    list< OUTMESS* > tmpOutList;
 
     switch( parse.getCommand( ) )
     {
@@ -111,7 +111,7 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
     {
         if(OutMessage != NULL)
         {
-            tmpOutList.append( OutMessage );
+            tmpOutList.push_back( OutMessage );
             OutMessage = NULL;
         }
 
@@ -127,7 +127,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
                                             OUTMESS                        *&OutMessage,
                                             RWTPtrSlist< CtiMessage >      &vgList,
                                             RWTPtrSlist< CtiMessage >      &retList,
-                                            RWTPtrSlist< OUTMESS >         &outList)
+                                            list< OUTMESS* >         &outList)
 {
     bool  found = false;
     INT   function = 0;
@@ -197,7 +197,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
                                             OUTMESS                        *&OutMessage,
                                             RWTPtrSlist< CtiMessage >      &vgList,
                                             RWTPtrSlist< CtiMessage >      &retList,
-                                            RWTPtrSlist< OUTMESS >         &outList)
+                                            list< OUTMESS* >         &outList)
 {
     bool  found = false;
     INT   nRet = NoError;
@@ -279,7 +279,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
             if( stringContainsIgnoreCase(parse.getCommandStr()," all") )
             {
                 //  the MCT 400 message is in ADDITION to the normal command
-                outList.append(MCT400OutMessage);
+                outList.push_back(MCT400OutMessage);
             }
             else
             {
@@ -310,7 +310,7 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                                            OUTMESS                        *&OutMessage,
                                            RWTPtrSlist< CtiMessage >      &vgList,
                                            RWTPtrSlist< CtiMessage >      &retList,
-                                           RWTPtrSlist< OUTMESS >         &outList)
+                                           list< OUTMESS* >         &outList)
 {
     INT    nRet = NoError,
            i;
@@ -486,7 +486,7 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
     return found;
 }
 
-INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 

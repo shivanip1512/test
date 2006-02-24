@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/24 00:19:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  OUTMESS                        *&OutMessage,
                                  RWTPtrSlist< CtiMessage >      &vgList,
                                  RWTPtrSlist< CtiMessage >      &retList,
-                                 RWTPtrSlist< OUTMESS >         &outList)
+                                 list< OUTMESS* >         &outList)
 {
     INT nRet = NoMethod;
 
@@ -120,7 +120,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                          OUTMESS                        *&OutMessage,
                                          RWTPtrSlist< CtiMessage >      &vgList,
                                          RWTPtrSlist< CtiMessage >      &retList,
-                                         RWTPtrSlist< OUTMESS >         &outList)
+                                         list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -262,7 +262,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                      OUTMESS                        *&OutMessage,
                                      RWTPtrSlist< CtiMessage >      &vgList,
                                      RWTPtrSlist< CtiMessage >      &retList,
-                                     RWTPtrSlist< OUTMESS >         &outList)
+                                     list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -452,7 +452,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                        OUTMESS                        *&OutMessage,
                                        RWTPtrSlist< CtiMessage >      &vgList,
                                        RWTPtrSlist< CtiMessage >      &retList,
-                                       RWTPtrSlist< OUTMESS >         &outList)
+                                       list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
     string resultString;

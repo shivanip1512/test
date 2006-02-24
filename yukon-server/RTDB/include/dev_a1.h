@@ -532,7 +532,7 @@ public:
                            OUTMESS *&OutMessage,
                            RWTPtrSlist< CtiMessage > &vgList,
                            RWTPtrSlist< CtiMessage > &retList,
-                           RWTPtrSlist< OUTMESS > &outList,
+                           list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
 
    virtual INT generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList );
@@ -541,8 +541,8 @@ public:
    virtual INT decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
    virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
 
-   virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-   virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+   virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
+   virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
 
    INT   getA1ClassOffset(UINT Key, VOID *ptr);
    INT   getA1FuncOffset(UINT Key, VOID *ptr);

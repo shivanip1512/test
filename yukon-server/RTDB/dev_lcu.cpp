@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
 }
 
 
-INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -153,11 +153,11 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             status = lcuScanInternalStatus(OutMessage);
 
             // Put the built up OUTMESS into the Slist
-            outList.insert(OutMessage);
+            outList.push_back(OutMessage);
             OutMessage = NULL;
 
             status = lcuScanExternalStatus(pNewOutMessage);
-            outList.insert(pNewOutMessage);
+            outList.push_back(pNewOutMessage);
         }
         else
         {
@@ -166,7 +166,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             status = lcuScanAll(OutMessage);
 
             // Put the single built up OUTMESS into the Slist
-            outList.insert(OutMessage);
+            outList.push_back(OutMessage);
             OutMessage = NULL;
         }
     }
@@ -178,7 +178,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -188,7 +188,7 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         status = lcuFreeze(OutMessage);
 
         // Put the single built up OUTMESS into the Slist
-        outList.insert(OutMessage);
+        outList.push_back(OutMessage);
         OutMessage = NULL;
     }
     else
@@ -199,12 +199,12 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return status;
 }
 
-INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceLCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
@@ -344,7 +344,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = InMessage->EventCode & 0x7fff;
 
@@ -537,7 +537,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
 }
 
 
-INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = NoError;
 
@@ -577,7 +577,7 @@ INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< 
     return status;
 }
 
-INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList,RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList,list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     OUTMESS *pOM = 0;
@@ -595,7 +595,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 {
                     if(!lcuLockout(OutMessage, parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_SHED) ? false : true))
                     {
-                        outList.insert( OutMessage );
+                        outList.push_back( OutMessage );
                         OutMessage = NULL;
                     }
                 }
@@ -609,7 +609,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 }
                 else
                 {
-                    outList.insert( pOM );
+                    outList.push_back( pOM );
                     pOM = 0;
                 }
             }
@@ -631,7 +631,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
             else
             {
-                outList.insert( OutMessage );
+                outList.push_back( OutMessage );
                 OutMessage = NULL;
             }
 
@@ -650,7 +650,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
             else
             {
-                outList.insert( OutMessage );
+                outList.push_back( OutMessage );
                 OutMessage = NULL;
             }
 
@@ -1053,7 +1053,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
     return pPIL;
 }
 
-CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList)
+CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTMESS* > &outList)
 {
     ULONG      i;
     string  resultString;
@@ -1182,7 +1182,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
             CtiCommandParser parse(InMessage->Return.CommandStr);
             lcuReset(OutMessage);
 
-            outList.insert( OutMessage );
+            outList.push_back( OutMessage );
         }
     }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/02/24 00:19:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -911,7 +911,12 @@ public:
       *this = aRef;
       incrementCount();
    }
-
+   
+   CtiOutMessage(const CtiOutMessage *aRef)
+   { 
+      *this = CtiOutMessage( *aRef );
+      incrementCount();
+   }
    ~CtiOutMessage()
    {
       decrementCount();

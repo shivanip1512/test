@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/17 17:04:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/24 00:19:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ void CtiDeviceGroupEnergyPro::DecodeDatabaseReader(RWDBReader &rdr)
     _expresscomGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -133,7 +133,7 @@ INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     parse.setValue("type", ProtocolEnergyProType);
     parse.setValue("serial", 0);
 
-    outList.insert( OutMessage );
+    outList.push_back( OutMessage );
     OutMessage = 0;
 
     return nRet;
@@ -237,7 +237,7 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
     return status;
 }
 
-INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
 {
     INT status = 0;
 

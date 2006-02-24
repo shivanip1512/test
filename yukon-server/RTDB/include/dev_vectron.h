@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_vectron.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/02/24 00:19:14 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -353,7 +353,7 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
+   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
    // interrogation routines
    virtual INT generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
@@ -377,13 +377,13 @@ public:
                           CtiTime &TimeNow,
                           RWTPtrSlist< CtiMessage >   &vgList,
                           RWTPtrSlist< CtiMessage > &retList,
-                          RWTPtrSlist< OUTMESS > &outList);
+                          list< OUTMESS* > &outList);
 
    virtual INT decodeResultLoadProfile ( INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  RWTPtrSlist< CtiMessage >   &vgList,
                                  RWTPtrSlist< CtiMessage > &retList,
-                                 RWTPtrSlist< OUTMESS > &outList);
+                                 list< OUTMESS* > &outList);
 
    INT decodeResultMMConfig (VectronMMConfig_t *config);
    INT decodeResultRealTime (VectronRealTimeRegister_t *localTimeDate);
