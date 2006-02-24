@@ -1002,7 +1002,7 @@ public Object getValue(Object val)
       //checkCBCSerialNumbers( serialNumber.intValue() );
 
 		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController6510 
-			|| capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController7020)
+			|| capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController702x)
 	   {
 	      
 	      Integer slave = 
@@ -1026,7 +1026,7 @@ public Object getValue(Object val)
 	      }
 		  else
 		  {
-			 com.cannontech.database.data.capcontrol.CapBankController7020 tempController = (com.cannontech.database.data.capcontrol.CapBankController7020)capBankController;	
+			 com.cannontech.database.data.capcontrol.CapBankController702x tempController = (com.cannontech.database.data.capcontrol.CapBankController702x)capBankController;	
 		  
 			 tempController.getDeviceAddress().setSlaveAddress( slave );
 			 tempController.getDeviceAddress().setPostCommWait( postWait );
@@ -1226,10 +1226,10 @@ public void setValue(Object val)
 	      getJTextFieldSlaveAddress().setText( tempController.getDeviceAddress().getSlaveAddress().toString() );
 	      getJTextFieldPostCommWait().setText( tempController.getDeviceAddress().getPostCommWait().toString() );	      
 	   }
-		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController7020 )
+		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController702x )
 		{      
-	   		com.cannontech.database.data.capcontrol.CapBankController7020 tempController 
-			 	= (com.cannontech.database.data.capcontrol.CapBankController7020)capBankController;
+	   		com.cannontech.database.data.capcontrol.CapBankController702x tempController 
+			 	= (com.cannontech.database.data.capcontrol.CapBankController702x)capBankController;
 	
 	   		getSerialNumberTextField().setText( tempController.getDeviceAddress().getMasterAddress().toString() );
 	   		getJTextFieldSlaveAddress().setText( tempController.getDeviceAddress().getSlaveAddress().toString() );
