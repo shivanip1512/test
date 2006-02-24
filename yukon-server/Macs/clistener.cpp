@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/02/22 18:05:52 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/02/24 00:18:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,12 +144,26 @@ void CtiMCClientListener::checkConnections()
 
     std::vector< CtiMCConnection* >::iterator itr = to_remove.begin();
     while ( itr != to_remove.end() )
-    {
+    {//TS   Check closer to make sure this is not skipping over connections.
         conn = *itr;
+		bool failed = true;
         conn->deleteObserver( (CtiObserver&) *this);
         conn->close();
-        itr = _connections.erase(itr);
-
+        //Can't remove itr from _connections this way. Going to have to FIND it in connections, and remove it.
+		std::vector< CtiMCConnection* >::iterator itr2 = _connections.begin();
+		while ( itr2 != _connections.end() )
+			if ( *itr2 == *itr ){
+				_connections.erase(itr2);
+				failed = false;
+				break;
+			}
+		if( failed == true )		
+		{
+			CtiLockGuard< CtiLogger > guard(dout);
+			dout << CtiTime() << "Err: Attempted to Remove an invalid connection that does not exist in the vector." << endl;
+		}
+		++itr;
+		//itr = to_remove.begin();
         if( gMacsDebugLevel & MC_DEBUG_CONN )
         {
             CtiLockGuard< CtiLogger > guard(dout);
