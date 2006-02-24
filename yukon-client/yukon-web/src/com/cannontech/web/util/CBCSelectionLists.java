@@ -8,6 +8,7 @@ import javax.faces.model.SelectItem;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -16,6 +17,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.multispeak.PointType;
 
 /**
  * A set of selection list used for many GUI's
@@ -24,20 +26,45 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  */
 public class CBCSelectionLists {
 	
-	/* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
+	/* constants for indexing the tabbed pane
+     * 
+	 */
+    public static final int CapBankControllerSetup = 7;
+    public static final int General = 0; 
+    
+    /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */
 	private static final String dateOnly = "MM-dd-yyyy";
 	private static final String dateTime = "MM-dd-yyyy HH:mm:ss";
 	private static final String dateTimeNoSeconds = "MM-dd-yyyy HH:mm";
 
+    private static final SelectItem[] pTypes = {
+      new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
+      new SelectItem(new Integer (PointTypes.STATUS_POINT), "Status"),
+      new SelectItem(new Integer (PointTypes.DEMAND_ACCUMULATOR_POINT), "Accumulator"),
+      new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated"),        
+    };
+    
+    private static final SelectItem[] pSubtypes = {
+        
+        new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Analog Output"),
+        new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Status Output"),
+        };
 
 	private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
 		new SelectItem(new Integer(PAOGroups.CAPBANKCONTROLLER), PAOGroups.getPAOTypeString(PAOGroups.CAPBANKCONTROLLER) ),
 		new SelectItem(new Integer(PAOGroups.CBC_7010), PAOGroups.getPAOTypeString(PAOGroups.CBC_7010) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7011), PAOGroups.getPAOTypeString(PAOGroups.CBC_7011) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7012), PAOGroups.getPAOTypeString(PAOGroups.CBC_7012) ),        
 		new SelectItem(new Integer(PAOGroups.CBC_7020), PAOGroups.getPAOTypeString(PAOGroups.CBC_7020) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
+        new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) ),
+        
 		new SelectItem(new Integer(PAOGroups.CBC_FP_2800), PAOGroups.getPAOTypeString(PAOGroups.CBC_FP_2800) ),
+        
 	};
 
 	private static final SelectItem[] wizardCBCPointTypes =  {
@@ -233,7 +260,10 @@ public class CBCSelectionLists {
 		return selItems;
 	}
 
-	/**
+
+    
+    
+    /**
 	 * Returns possible selection choices for GUI
 	 */
 	public SelectItem[] getCBCTypes() {
@@ -364,5 +394,13 @@ public class CBCSelectionLists {
 	public SelectItem[] getPtControlTypes() {
 		return ptControlTypes;
 	}
+
+    public SelectItem[] getPointTypes() {
+        return pTypes;
+    }
+
+    public SelectItem[] getPointSubtypes() {
+        return pSubtypes;
+    }
 
 }
