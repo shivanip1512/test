@@ -15,8 +15,9 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Parent" value="Parent: "/>
-        <x:outputText id="Parent" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
-	    
+        <x:commandLink  id="paoLink" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" actionListener="#{ptEditorForm.paoClick}">
+           <f:param name="paoID" value="#{ptEditorForm.pointBase.point.paoID}" />
+        </x:commandLink>    
 		<f:verbatim><br/><br/></f:verbatim>
 		<x:outputLabel for="Point_Name" value="Point Name: "/>
 		<x:inputText id="Point_Name" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60"
@@ -104,7 +105,7 @@
 	    <f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="calcStatRate" value="Update Rate: "/>
 		<x:selectOneMenu id="calcStatRate" value="#{ptEditorForm.pointBase.calcBase.periodicRate}" disabled="#{!ptEditorForm.calcRateEnabled}" >
-			<f:selectItems value="#{ptEditorForm.archiveIntervals}"/>
+			<f:selectItems value="#{ptEditorForm.archiveInterval}"/>
 		</x:selectOneMenu>
 		<f:verbatim></fieldset></f:verbatim>
     </f:subview>
