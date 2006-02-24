@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/24 00:18:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/24 20:30:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,44 +131,21 @@ void CtiMCClientListener::checkConnections()
     RWMutexLock::LockGuard conn_guard( _connmutex );
 
     CtiMCConnection* conn;
-    vector< CtiMCConnection* > to_remove;
 
-    for( int i = 0; i < _connections.size(); i++ )
-    {
-        conn = _connections[i];
-        if( !conn->isValid() )
-        {
-            to_remove.push_back(conn);
-        }
-    }
-
-    std::vector< CtiMCConnection* >::iterator itr = to_remove.begin();
-    while ( itr != to_remove.end() )
-    {//TS   Check closer to make sure this is not skipping over connections.
+    //Removing invalid connections.
+    std::vector< CtiMCConnection* >::iterator itr = _connections.begin();
+    while (itr != _connections.end()) {
         conn = *itr;
-		bool failed = true;
-        conn->deleteObserver( (CtiObserver&) *this);
-        conn->close();
-        //Can't remove itr from _connections this way. Going to have to FIND it in connections, and remove it.
-		std::vector< CtiMCConnection* >::iterator itr2 = _connections.begin();
-		while ( itr2 != _connections.end() )
-			if ( *itr2 == *itr ){
-				_connections.erase(itr2);
-				failed = false;
-				break;
-			}
-		if( failed == true )		
-		{
-			CtiLockGuard< CtiLogger > guard(dout);
-			dout << CtiTime() << "Err: Attempted to Remove an invalid connection that does not exist in the vector." << endl;
-		}
-		++itr;
-		//itr = to_remove.begin();
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " Removing invalid connection." << endl;
-        }
+        if ( !conn->isValid() ){
+            itr = _connections.erase(itr);
+            delete conn;
+            if( gMacsDebugLevel & MC_DEBUG_CONN )
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << CtiTime() << " Removing invalid connection." << endl;
+            }
+        }else
+            ++itr;
     }
 }
 
