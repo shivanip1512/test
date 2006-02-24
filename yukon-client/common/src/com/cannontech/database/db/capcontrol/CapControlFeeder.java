@@ -16,11 +16,13 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 	private String mapLocationID = "0";  //old integer default
 	private Integer strategyID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
+    private String multiMonitorControl = "N";
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID",
-		"MapLocationID", "StrategyID", "CurrentVoltLoadPointID"
+		"MapLocationID", "StrategyID", "CurrentVoltLoadPointID",
+        "MultiMonitorControl"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "FeederID" };
@@ -56,7 +58,8 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 		{
 			getFeederID(), getCurrentVarLoadPointID(),
 			getCurrentWattLoadPointID(), getMapLocationID(),
-			getStrategyID(), getCurrentVoltLoadPointID()
+			getStrategyID(), getCurrentVoltLoadPointID(),
+            getMultiMonitorControl()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -295,6 +298,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 			setMapLocationID( (String) results[2] );
 			setStrategyID( (Integer) results[3] );
 			setCurrentVoltLoadPointID( (Integer) results[4] );
+            setMultiMonitorControl((String) results[5]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -348,7 +352,8 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 		Object setValues[]= 
 		{ 
 			getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
-			getMapLocationID(), getStrategyID(), getCurrentVoltLoadPointID()
+			getMapLocationID(), getStrategyID(), getCurrentVoltLoadPointID(),
+            getMultiMonitorControl()
 		};
 	
 	
@@ -384,5 +389,15 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 	public void setCurrentVoltLoadPointID(Integer integer) {
 		currentVoltLoadPointID = integer;
 	}
+
+
+    public String getMultiMonitorControl() {
+        return multiMonitorControl;
+    }
+
+
+    public void setMultiMonitorControl(String multiMonitorControl) {
+        this.multiMonitorControl = multiMonitorControl;
+    }
 
 }

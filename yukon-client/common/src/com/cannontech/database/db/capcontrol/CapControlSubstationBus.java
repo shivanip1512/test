@@ -23,13 +23,14 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private Integer altSubPAOId = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer switchPointID =   new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String dualBusEnabled = "N";
+    private String multiMonitorControl = "N";
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"CurrentVarLoadPointID",
 			"CurrentWattLoadPointID", "MapLocationID", "StrategyID",
 			"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
-			"DualBusEnabled" };
+			"DualBusEnabled", "MultiMonitorControl"};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID"};
 
@@ -67,7 +68,7 @@ public void add() throws java.sql.SQLException
 				getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
 				getMapLocationID(), getStrategyID(),
 				getCurrentVoltLoadPointID(), getAltSubPAOId(),
-				getSwitchPointID(), getDualBusEnabled()};
+				getSwitchPointID(), getDualBusEnabled(), getMultiMonitorControl()};
 
 	add( TABLE_NAME, addValues );
 }
@@ -138,6 +139,7 @@ public void retrieve() throws java.sql.SQLException
 		setAltSubPAOId((Integer)results[5]);
 		setSwitchPointID((Integer)results[6]);
 		setDualBusEnabled((String)results[7]);
+        setMultiMonitorControl((String)results[8]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -192,7 +194,7 @@ public void update() throws java.sql.SQLException
 		getCurrentVarLoadPointID(),
 				getCurrentWattLoadPointID(), getMapLocationID(),
 				getStrategyID(), getCurrentVoltLoadPointID(),
-				getAltSubPAOId(), getSwitchPointID(),getDualBusEnabled() };
+				getAltSubPAOId(), getSwitchPointID(),getDualBusEnabled(), getMultiMonitorControl() };
 
 
 	Object constraintValues[] = { getSubstationBusID()};
@@ -330,5 +332,15 @@ public void update() throws java.sql.SQLException
 	public void setAltSubPAOId(Integer altSubPAOId) {
 		this.altSubPAOId = altSubPAOId;
 	}
+
+
+    public String getMultiMonitorControl() {
+        return multiMonitorControl;
+    }
+
+
+    public void setMultiMonitorControl(String multiMonitorControl) {
+        this.multiMonitorControl = multiMonitorControl;
+    }
 
 }
