@@ -1,10 +1,18 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
 
 /**
  * Insert the type's description here.
@@ -28,16 +36,16 @@ public static Integer[] getAllDeviceIDs()
 	
 	synchronized(cache)
 	{
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort(devices);
-		java.util.ArrayList ids = new java.util.ArrayList(devices.size());
+		List devices = cache.getAllDevices();
+		Collections.sort(devices);
+		ArrayList retList = new ArrayList(devices.size());
 
 		for(int i=0;i<devices.size();i++)
 		{
-			ids.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
-		}		
-		
-		return (Integer[])ids.toArray();
+            retList.add( new Integer( ((LiteYukonPAObject)devices.get(i)).getYukonID() ) );
+		}	
+        Integer[] ids = new Integer[retList.size()];
+		return (Integer[])retList.toArray(ids);
 	}
 }
 /**
@@ -193,4 +201,19 @@ public static LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceNa
 	return null;
 }
 
+public static List getDevicesByPort(int portId)
+{
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    List devices = cache.getDevicesByCommPort(portId);
+        
+    return devices;  
+}
+public static List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    
+    List devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
+        
+    return devicesByAddress;
+}
+ 
 }
