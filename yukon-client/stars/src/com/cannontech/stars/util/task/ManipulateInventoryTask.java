@@ -186,12 +186,10 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
                 if (newWarehouseID != null && Warehouse.getWarehouseFromInventoryID(invDB.getInventoryID()) != newDevStateID)
                 {
-                    boolean didItMove = Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID(), newWarehouseID.intValue());
-                    if(didItMove)
-                        hasChanged = true;
+                    Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID().intValue(), newWarehouseID.intValue());
+                    hasChanged = true;
                 }
-                
-            
+
                 if( hasChanged)
                 {
                     hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
@@ -236,7 +234,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
                 
             }
-            catch (TransactionException e) 
+            catch (Exception e) 
             {
                 CTILogger.error( e.getMessage(), e );
                 hardwareSet.add( liteHw );
