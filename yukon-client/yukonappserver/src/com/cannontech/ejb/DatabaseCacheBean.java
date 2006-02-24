@@ -842,4 +842,13 @@ public class DatabaseCacheBean implements IDatabaseCache
 	{
 		return getCache().getAllSettlementConfigsMap();
 	}
+
+    public List getDevicesByCommPort(int portId) {
+      
+         return getCache().getDevicesByCommPort(portId);
+    }
+
+    public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+        return getCache().getDevicesByDeviceAddress(masterAddress, slaveAddress);
+    }
 }
