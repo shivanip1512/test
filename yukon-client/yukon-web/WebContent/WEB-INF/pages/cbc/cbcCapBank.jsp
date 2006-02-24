@@ -1,6 +1,15 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+<%@ page import="com.cannontech.web.editor.point.PointForm" %>
+<%@ page import="com.cannontech.web.util.*" %>
+
+
+<%
+
+PointForm ptEditorForm =
+    (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
+%>
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
 
@@ -115,228 +124,22 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
 
 		</h:column>
 
-
-
-		<h:column>
-		    <f:verbatim><br/><fieldset><legend>Controller Information</legend></f:verbatim>
-
-			<x:outputText id="warnNoCBC" styleClass="alert" rendered="#{!capControlForm.controllerCBC}"
-					value="No CBC information avaible since the controller is not a CBC" />
-
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlType" value="Type: " title="Type of the controller based on the point selected from the point list"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
-			<x:outputText id="cntrlType" styleClass="staticLabel"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-					value="#{capControlForm.CBControllerEditor.paoCBC.PAOType}" />
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlPt" value="Point Name: " title="Name of the controller point selected from the point list"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
-			<x:outputText id="cntrlPt" styleClass="staticLabel"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-					value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].pointName}" />
-
-
-			<x:panelGroup id="editCBCCheck" rendered="#{capControlForm.controllerCBC}" >
-				<f:verbatim><br/><br/></f:verbatim>
-				<h:selectBooleanCheckbox id="editCntrl" value="#{capControlForm.editingController}"
-						onclick="submit();" />
-				<x:outputLabel for="editCntrl" value="Edit Controller" title="Allows editing of the controller this CapBank currently uses" />
-			</x:panelGroup>
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlDev" value="Device Name: " title="Controller device selected from the point list"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
-			<x:inputText id="cntrlDevEd" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"
-					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
-					value="#{capControlForm.CBControllerEditor.paoCBC.PAOName}" />
-
-
-
-	<x:panelGroup id="editCBC" rendered="#{capControlForm.controllerCBC}" >
-			<x:panelGroup id="oneWayCBC" rendered="#{!capControlForm.CBControllerEditor.twoWay}">
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" />
-				<x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"
-						value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" >
-					<f:validateLongRange minimum="0" maximum="9999999999" />
-				</x:inputText>
-
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses" />
-				<x:selectOneMenu id="cntrlRoute" value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.routeID}"
-						disabled="#{!capControlForm.editingController}" >
-					<f:selectItem itemLabel="(none)" itemValue="0"/>
-					<f:selectItems value="#{selLists.routes}"/>
-				</x:selectOneMenu>
-			</x:panelGroup>
-
-
-			<x:panelGroup id="twoWayCBC" rendered="#{capControlForm.CBControllerEditor.twoWay}" >
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlMast" value="Master Address: " title="Integer address of the controller device in the field" />
-				<x:inputText id="cntrlMast" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"
-						value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.masterAddress}" >
-					<f:validateLongRange minimum="0" maximum="9999999999" />
-				</x:inputText>
-
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlMSlav" value="Slave Address: " title="Integer address of the controller device in the field" />
-				<x:inputText id="cntrlMSlav" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"						
-						value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.slaveAddress}" >
-					<f:validateLongRange minimum="0" maximum="9999999999" />
-				</x:inputText>
-
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlComChann" value="Comm. Channel: " title="Communication channel the conroller uses" />
-				<x:selectOneMenu id="cntrlComChann" value="#{capControlForm.CBControllerEditor.paoCBC.deviceDirectCommSettings.portID}"
-						disabled="#{!capControlForm.editingController}" >
-					<f:selectItem itemLabel="(none)" itemValue="0"/>
-					<f:selectItems value="#{selLists.commChannels}"/>
-				</x:selectOneMenu>
-
-				<f:verbatim><br/></f:verbatim>
-				<x:outputLabel for="cntrlCommW" value="Post Comm. Wait: " title="How long to wait after communications" />
-				<x:inputText id="cntrlCommW" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"
-						value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.postCommWait}" >
-					<f:validateLongRange minimum="0" maximum="99999" />
-				</x:inputText>
-
-
-				<h:panelGrid id="scanGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
-				
-					<h:column>
-					<f:verbatim><br/></f:verbatim>
-					<h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
-							valueChangeListener="#{capControlForm.showScanRate}"
-							value="#{capControlForm.CBControllerEditor.editingIntegrity}"
-							immediate="true"
-							disabled="#{!capControlForm.editingController}" />
-					<x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" />
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="integrityInterval" value="Interval: " title="How often this scan should occur"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
-					<x:selectOneMenu id="integrityInterval"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].intervalRate}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItems value="#{capControlForm.timeInterval}"/>
-					</x:selectOneMenu>
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="integrityAltInterval" value="Alt. Interval: " title="An alternate scan rate that can be less or more than the primary scan rate"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
-					<x:selectOneMenu id="integrityAltInterval"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].alternateRate}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItems value="#{capControlForm.timeInterval}"/>
-					</x:selectOneMenu>
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="integrityGrp" value="Scan Group: " title="A way to group scans into a common collection"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}" />
-					<x:selectOneMenu id="integrityGrp"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Integrity'].scanGroup}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItem itemLabel="Default" itemValue="0" />
-						<f:selectItem itemLabel="First" itemValue="1" />
-						<f:selectItem itemLabel="Second" itemValue="2" />
-					</x:selectOneMenu>
-					</h:column>
-
-
-					<h:column>
-					<f:verbatim><br/></f:verbatim>
-					<h:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();"
-							valueChangeListener="#{capControlForm.showScanRate}"
-							value="#{capControlForm.CBControllerEditor.editingException}"
-							immediate="true"
-							disabled="#{!capControlForm.editingController}" />
-					<x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" />
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="exceptionInterval" value="Interval: " title="How often this scan should occur"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
-					<x:selectOneMenu id="exceptionInterval"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].intervalRate}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItems value="#{capControlForm.timeInterval}"/>
-					</x:selectOneMenu>
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="exceptionAltInterval" value="Alt. Interval: " title="An alternate scan rate that can be less or more than the primary scan rate"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
-					<x:selectOneMenu id="exceptionAltInterval"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].alternateRate}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItems value="#{capControlForm.timeInterval}"/>
-					</x:selectOneMenu>
-					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="exceptionGrp" value="Scan Group: " title="A way to group scans into a common collection"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}" />
-					<x:selectOneMenu id="exceptionGrp"
-							rendered="#{not empty capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception']}"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceScanRateMap['Exception'].scanGroup}"
-							disabled="#{!capControlForm.editingController}" >
-						<f:selectItem itemLabel="Default" itemValue="0" />
-						<f:selectItem itemLabel="First" itemValue="1" />
-						<f:selectItem itemLabel="Second" itemValue="2" />
-					</x:selectOneMenu>
-					</h:column>
-					
-				</h:panelGrid>
-
-			</x:panelGroup>
-	</x:panelGroup>
-
-
-			<f:verbatim></fieldset></f:verbatim>
-
-
-		    <f:verbatim><br/><fieldset><legend>Information</legend></f:verbatim>
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="CapBank_Address" value="Address: " title="Geographical location of this CapBank" />
-			<x:inputText id="CapBank_Address" value="#{capControlForm.PAOBase.location}" required="true" maxlength="64" />
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="capMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
-			<x:inputText id="capMapLocID" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" />
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="bankMan" value="Switch Manufacture: " title="What company manufactured this item"/>
-			<x:selectOneMenu id="bankMan" value="#{capControlForm.PAOBase.capBank.switchManufacture}" >
-				<f:selectItem itemValue="(none)"/>
-				<f:selectItem itemValue="ABB"/>
-				<f:selectItem itemValue="Cannon Tech"/>
-				<f:selectItem itemValue="Cooper"/>
-				<f:selectItem itemValue="Trinetics"/>
-				<f:selectItem itemValue="Siemens"/>
-				<f:selectItem itemValue="Westinghouse"/>
-			</x:selectOneMenu>
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlerType" value="Controller Type: " title="What type of switch this item is"/>
-			<x:selectOneMenu id="cntrlerType" value="#{capControlForm.PAOBase.capBank.controllerType}" >
-				<f:selectItem itemValue="(none)"/>
-				<f:selectItem itemValue="CTI DLC"/>
-				<f:selectItem itemValue="CTI Paging"/>
-				<f:selectItem itemValue="CTI FM"/>
-				<f:selectItem itemValue="FP Paging"/>
-				<f:selectItem itemValue="Telemetric"/>
-			</x:selectOneMenu>
-
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="bankType" value="Type of Switch: " title="What type of switch this item is"/>
-			<x:selectOneMenu id="bankType" value="#{capControlForm.PAOBase.capBank.typeOfSwitch}" >
-				<f:selectItem itemValue="(none)"/>
-				<f:selectItem itemValue="Oil"/>
-				<f:selectItem itemValue="Vacuum"/>
-			</x:selectOneMenu>
-
-			<f:verbatim></fieldset></f:verbatim>
-
+        <h:column>
+        <f:verbatim><br/><fieldset><legend>Control Point Editors</legend><br></f:verbatim>
+            <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>
+            <x:commandLink id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
+                           actionListener="#{ptEditorForm.paoClick}" title="Click on the link to edit the CBC">
+            <f:param name="paoID" value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID}"/>
+          </x:commandLink>    
+          <f:verbatim>
+          <br> <br>
+          </f:verbatim>
+          <x:outputText value="Point : " title="Click on the link to edit the Point"/>
+          <x:commandLink id="PointEditor" value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].pointName}"
+                           actionListener="#{capControlForm.CBControllerEditor.pointClick}" title="Click on the link to edit the Point">
+            <f:param name="ptID" value="#{capControlForm.PAOBase.capBank.controlPointID}"/>
+          </x:commandLink>    
+        <f:verbatim></fieldset></f:verbatim>
 		</h:column>
 	
 
