@@ -72,7 +72,7 @@ public abstract class DBEditorForm
 	protected void updateDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
 
 		if( facesMsg == null ) facesMsg = new FacesMessage();
-		
+        
 		try {
 			Transaction t = Transaction.createTransaction( Transaction.UPDATE, db );
 			t.execute();
@@ -81,16 +81,18 @@ public abstract class DBEditorForm
 		}
 		catch( TransactionException e ) {
 			CTILogger.error( e.getMessage(), e );
-			facesMsg.setDetail( "Error updating the database, " + e.getMessage() );
+			if (facesMsg == null) {
+            facesMsg.setDetail( "Error updating the database, " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
-
+            }
 			throw e; //chuck this thing up
 		}
 		catch( Exception e ) {
 			CTILogger.error( e.getMessage(), e );
-			facesMsg.setDetail( "Unable to update the database, " + e.getMessage() );
+			if (facesMsg == null) {
+            facesMsg.setDetail( "Unable to update the database, " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
-
+            }
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
 		
@@ -109,7 +111,9 @@ public abstract class DBEditorForm
 
 			generateDBChangeMsg( db, DBChangeMsg.CHANGE_TYPE_ADD );
 		}
-		catch( TransactionException e ) {
+		
+        
+        catch( TransactionException e ) {
 			CTILogger.error( e.getMessage(), e );
 			facesMsg.setDetail( "Error insert into the database, " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );

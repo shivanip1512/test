@@ -1,10 +1,13 @@
 package com.cannontech.web.editor.point;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
@@ -15,26 +18,37 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AlarmCatFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.web.wizard.PointWizardModel;
 
 /**
  * @author ryan
@@ -67,7 +81,7 @@ public class PointForm extends DBEditorForm
 	//status point specific editor
 	private PointStatusEntry pointStatusEntry = null;
 
-
+	private PointWizardModel wizData = null;
 
 
 	//init our static data with real values
@@ -84,7 +98,9 @@ public class PointForm extends DBEditorForm
 	public PointForm()
 	{
 		super();
+      
 	}
+	
 
 
 	public SelectItem[] getInitialStates() {
@@ -281,6 +297,20 @@ public class PointForm extends DBEditorForm
 		return CtiUtilities.NONE_ZERO_ID;
 	}
 
+    /**
+     * initializes model data. sets parent id of the point
+     * @param parentId
+     */
+    public void initWizard(Integer parentId) {
+        
+        if (wizData == null) {
+            wizData = new PointWizardModel();
+        }
+        wizData.setParentId(parentId);
+        
+    }
+    
+    
 	/**
 	 * Restores the object from the database
 	 *
@@ -304,7 +334,9 @@ public class PointForm extends DBEditorForm
 		initItem();
 	}
 
-	protected void initItem() {
+
+    
+    protected void initItem() {
 
 		if( retrieveDBPersistent() == null )
 			return;
@@ -334,6 +366,33 @@ public class PointForm extends DBEditorForm
 
 		initItem();
 	}
+    
+    
+    public String create() {
+        String edType = "pointEditor";
+        FacesMessage fcsMessage = new FacesMessage();
+        int pointType = getWizData().getPointType();
+        String name = getWizData().getName();
+        Integer paoId = getWizData().getParentId();
+        
+        try {
+            fcsMessage.setDetail("Database add was SUCCESSFUL");
+            PointBase point = PointUtil.createPoint(pointType, name, paoId);    
+            initItem( point.getPoint().getPointID() );
+             
+        }catch (TransactionException e){
+            fcsMessage.setDetail("ERROR creating point -- PointForm.create" + e.getMessage());
+            edType =  "";
+        }
+        finally{
+            //set the Context
+            FacesContext.getCurrentInstance()
+            .addMessage("cti_db_add", fcsMessage);
+        }
+        return edType;
+    }
+
+
 
 	/**
 	 * All possible panels for this editor go here. Set visible panels
@@ -375,10 +434,14 @@ public class PointForm extends DBEditorForm
 	
 				break;
 			
-			case PointTypes.ACCUMULATOR_DEMAND:			
+			case PointTypes.DEMAND_ACCUMULATOR_POINT:			
 				getVisibleTabs().put( "PointAccum", new Boolean(true) );
 				break;
-			
+                
+            case PointTypes.PULSE_ACCUMULATOR_POINT:           
+                getVisibleTabs().put( "PointAccum", new Boolean(true) );
+                break;
+             
 			case PointTypes.CALCULATED_POINT:
 				getVisibleTabs().put( "PointCalc", new Boolean(true) );
 				updateTypeChanged(
@@ -641,6 +704,39 @@ public class PointForm extends DBEditorForm
 
 		return pointFDREntry;
 	}
+    
+    public void paoClick(ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        try {
+            String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+            .get("paoID");
+            String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
+            String location = "cbcBase.jsf?type=" + type + "&" + "itemid=" + itemId;
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. PointForm:paoClick. " + e.getMessage());
+        }
+        finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("pao_click", fm);
+            }
+        }
+    }
+
+    public PointWizardModel getWizData() {
+        if (wizData == null)
+            return new PointWizardModel();
+        else
+            return wizData;
+    }
+
+
+    public void setWizData(PointWizardModel wizData) {
+        this.wizData = wizData;
+    }
 
 
 }

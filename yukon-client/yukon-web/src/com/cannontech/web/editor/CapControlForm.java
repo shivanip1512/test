@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
@@ -23,6 +22,7 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
+import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
@@ -31,6 +31,9 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController701x;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -47,6 +50,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
@@ -59,9 +63,11 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.point.PointLists;
+import com.cannontech.web.exceptions.FormWarningException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.SubBus;
 
 /**
@@ -120,6 +126,8 @@ public class CapControlForm extends DBEditorForm {
 
     
 	private boolean isDualSubBusEdited;
+    
+    private int selectedPanelIndex;
 
 	/**
 	 * default constructor
@@ -173,19 +181,16 @@ public class CapControlForm extends DBEditorForm {
 	 * Hold a the KwkvarPaos SelectableItems in memory for quicker access.
 	 */
 	public SelectItem[] getKwkvarPaos() {
-
+        
 		if (kwkvarPaos == null) {
-
 			PointLists pLists = new PointLists();
 			LiteYukonPAObject[] lPaos = pLists
 					.getPAOsByUofMPoints(PointUnits.CAP_CONTROL_VAR_UOMIDS);
-
 			SelectItem[] temp = new SelectItem[lPaos.length];
 			for (int i = 0; i < temp.length; i++)
 				temp[i] = new SelectItem( // value, label
 						new Integer(lPaos[i].getLiteID()), lPaos[i]
 								.getPaoName());
-
 			// add the none PAObject to this list
 			kwkvarPaos = new SelectItem[temp.length + 1];
 			kwkvarPaos[0] = new SelectItem(new Integer(
@@ -193,7 +198,6 @@ public class CapControlForm extends DBEditorForm {
 					LiteYukonPAObject.LITEPAOBJECT_NONE.getPaoName());
 			System.arraycopy(temp, 0, kwkvarPaos, 1, temp.length);
 		}
-
 		return kwkvarPaos;
 	}
 
@@ -496,11 +500,7 @@ public class CapControlForm extends DBEditorForm {
         updateDualBusEnabled();
     }
 
-/*	public void setVARscrollOffsetTop(String rscrollOffsetTop) {
 
-		this.VARscrollOffsetTop = rscrollOffsetTop;
-
-	}*/
 
 	/**
 	 * Event fired when the Watt Point selection has changed
@@ -532,16 +532,17 @@ public class CapControlForm extends DBEditorForm {
 
 		if (getDbPersistent() instanceof CapBank) {
 
-			((CapBank) getDbPersistent()).getCapBank().setControlPointID(
-					new Integer(val));
+			com.cannontech.database.db.capcontrol.CapBank capBank = ((CapBank) getDbPersistent()).getCapBank();
+            capBank.setControlPointID(new Integer(val));
 
-			((CapBank) getDbPersistent()).getCapBank().setControlDeviceID(
-					new Integer(PointFuncs.getLitePoint(
-							((CapBank) getDbPersistent()).getCapBank()
-									.getControlPointID().intValue())
-							.getPaobjectID()));
-
-			resetCBCEditor();
+			int controlPointId = capBank.getControlPointID().intValue();
+            int paoId = PointFuncs.getLitePoint(controlPointId).getPaobjectID();
+            Integer ctlPointid = new Integer(paoId);
+            
+            capBank.setControlDeviceID(ctlPointid);
+			//cbControllerEditor = new CBControllerEditor(ctlPointid);
+            getCBControllerEditor();
+            
 		}
 	}
 
@@ -588,7 +589,7 @@ public class CapControlForm extends DBEditorForm {
 		// break;
 		}
 
-		setDbPersistent(dbObj);
+		setDbPersistent(dbObj);        
 		initItem();
 	}
 
@@ -614,11 +615,13 @@ public class CapControlForm extends DBEditorForm {
 		if (getDbPersistent() instanceof YukonPAObject) {
 			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID()
 					.intValue();
+            
 			initPanels(PAOGroups.getPAOType(((YukonPAObject) getDbPersistent())
 					.getPAOCategory(), ((YukonPAObject) getDbPersistent())
 					.getPAOType()));
 
-		} else if (getDbPersistent() instanceof PointBase) {
+			
+        } else if (getDbPersistent() instanceof PointBase) {
 			itemID = ((PointBase) getDbPersistent()).getPoint().getPointID()
 					.intValue();
 			initPanels(PointTypes.getType(((PointBase) getDbPersistent())
@@ -681,8 +684,9 @@ public class CapControlForm extends DBEditorForm {
 	 * Reset the CBC device data, forcing them to be reInited
 	 */
 	private void resetCBCEditor() {
-		setCBControllerEditor(null);
-		setEditingController(false);
+		//setCBControllerEditor(null);
+        getCBControllerEditor().retrieveDB();
+        setEditingController(false);
 	}
 
 	/**
@@ -693,18 +697,18 @@ public class CapControlForm extends DBEditorForm {
 	private void initPanels(int paoType) {
 
 		// all panels that are always displayed
-		getVisibleTabs().put("General", new Boolean(true));
+		getVisibleTabs().put("General", Boolean.TRUE);
 
 		// all type specifc panels
-		getVisibleTabs().put("GeneralPAO", new Boolean(true));
-		getVisibleTabs().put("BaseCapControl", new Boolean(false));
-		getVisibleTabs().put("CBCSubstation", new Boolean(false));
-		getVisibleTabs().put("CBCFeeder", new Boolean(false));
-		getVisibleTabs().put("CBCCapBank", new Boolean(false));
-		getVisibleTabs().put("CBCType", new Boolean(false));
-		getVisibleTabs().put("CBCController", new Boolean(false));
-		getVisibleTabs().put("GeneralSchedule", new Boolean(false));
-		getVisibleTabs().put("CBCSchedule", new Boolean(false));
+		getVisibleTabs().put("GeneralPAO", Boolean.TRUE);
+		getVisibleTabs().put("BaseCapControl", Boolean.FALSE);
+		getVisibleTabs().put("CBCSubstation", Boolean.FALSE);
+		getVisibleTabs().put("CBCFeeder", Boolean.FALSE);
+		getVisibleTabs().put("CBCCapBank", Boolean.FALSE);
+		getVisibleTabs().put("CBCType", Boolean.FALSE);
+		getVisibleTabs().put("CBCController", Boolean.FALSE);
+		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
+		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
 
 		switch (paoType) {
 
@@ -712,12 +716,12 @@ public class CapControlForm extends DBEditorForm {
 			setEditorTitle("Substation Bus");
 			setPaoDescLabel("Geographical Name");
 			setChildLabel("Feeders");
-			getVisibleTabs().put("CBCSubstation", new Boolean(true));
-			break;
+			getVisibleTabs().put("CBCSubstation", Boolean.TRUE);
+            break;
 
 		case PAOGroups.CAP_CONTROL_FEEDER:
 			setEditorTitle("Feeder");
-			getVisibleTabs().put("CBCFeeder", new Boolean(true));
+			getVisibleTabs().put("CBCFeeder", Boolean.TRUE);
 			setPaoDescLabel(null);
 			setChildLabel("CapBanks");
 			break;
@@ -725,7 +729,7 @@ public class CapControlForm extends DBEditorForm {
 		case PAOGroups.CAPBANK:
 			setEditorTitle("Capacitor Bank");
 			setPaoDescLabel("Street Location");
-			getVisibleTabs().put("CBCCapBank", new Boolean(true));
+			getVisibleTabs().put("CBCCapBank", Boolean.TRUE);
 			break;
 
 		case PAOGroups.CAPBANKCONTROLLER:
@@ -733,31 +737,39 @@ public class CapControlForm extends DBEditorForm {
 		case PAOGroups.DNP_CBC_6510:
 		case PAOGroups.CBC_EXPRESSCOM:
 		case PAOGroups.CBC_7010:
-		case PAOGroups.CBC_7020:
+        case PAOGroups.CBC_7011:
+        case PAOGroups.CBC_7012:
+        case PAOGroups.CBC_7020:
+        case PAOGroups.CBC_7022:
+        case PAOGroups.CBC_7023:
+        case PAOGroups.CBC_7024:                         
 			setEditorTitle("CBC");
 			setPaoDescLabel(null);
 
-			getVisibleTabs().put("CBCType", new Boolean(true));
+			getVisibleTabs().put("CBCType", Boolean.TRUE);
 
 			// ------------------------------------------------------------------------------
 			// todo: Boolean should be TRUE, but this CBC panel is not currently
 			// working, will fix later
 			// ------------------------------------------------------------------------------
-			getVisibleTabs().put("CBCController", new Boolean(false));
+			getVisibleTabs().put("CBCController", Boolean.TRUE);
 			break;
 
 		case DBEditorTypes.PAO_SCHEDULE:
 			setEditorTitle("Schedule");
-			getVisibleTabs().put("GeneralPAO", new Boolean(false));
-			getVisibleTabs().put("GeneralSchedule", new Boolean(true));
-			getVisibleTabs().put("CBCSchedule", new Boolean(true));
+			getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
+			getVisibleTabs().put("GeneralSchedule", Boolean.TRUE);
+			getVisibleTabs().put("CBCSchedule", Boolean.TRUE);
 			break;
 
 		// -------- todo ----------
 		case PointTypes.ANALOG_POINT:
 			break;
 
-		default:
+        case PointTypes.STATUS_POINT:
+            break;
+
+        default:
 			throw new IllegalArgumentException(
 					"Unknown PAO type given, PAO type = " + paoType);
 		}
@@ -772,8 +784,18 @@ public class CapControlForm extends DBEditorForm {
 	// return (YukonPAObject)getDbPersistent();
 	// }
 	public DBPersistent getPAOBase() {
-		return getDbPersistent();
-	}
+		if (isEditingController())
+        {
+		    if (getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankController701x) 
+            {
+		        return getCBControllerEditor().getPaoCBC();
+            }
+                
+        }
+        
+            return getDbPersistent();
+        
+     }
 
 	/**
 	 * Fired when the kwkvarPaos component is changed
@@ -836,13 +858,33 @@ public class CapControlForm extends DBEditorForm {
 			String successfulUpdateMsg = "Database update was SUCCESSFUL";
 			facesMsg.setDetail(successfulUpdateMsg);
 			if (isEditingController()) {
-				
-				updateDBObject(getCBControllerEditor().getPaoCBC(), facesMsg);
-				
+                try {
+      
+                    getCBControllerEditor().checkForErrors();
+                    
+                }
+                catch (FormWarningException e) {
+                    String errorString = e.getMessage();
+                    facesMsg.setDetail(errorString);
+                    facesMsg.setSeverity(FacesMessage.SEVERITY_WARN);
+                } 
+                //if the editing occured outside CBCEditor i.e Cap Bank Editor
+                //then update DB with the changes made
+                DBPersistent dbPers = getCBControllerEditor().getPaoCBC();
+                updateDBObject(dbPers, facesMsg);
+                //if the editing did occur in the CBC Editor then
+                //make sure the object is not overwritten later
+                if ((getDbPersistent() instanceof CapBankController702x) || 
+                        (getDbPersistent() instanceof CapBankController)){
+                    
+                    
+                    setDbPersistent(dbPers);
+                    
+                
+                }
 
-				// clear out the memory of CBCs structures
-				resetCBCEditor();
-			}
+                
+            }
 			
             if (isDualSubBusEdited()) {
 
@@ -866,7 +908,9 @@ public class CapControlForm extends DBEditorForm {
             updateDBObject(getDbPersistent(), facesMsg);
             
 		} catch (TransactionException te) {
-			// do nothing since the appropriate actions was taken in the super
+            String errorString = te.getMessage();
+            facesMsg.setDetail(errorString);
+            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		} finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update",
 					facesMsg);
@@ -914,8 +958,15 @@ public class CapControlForm extends DBEditorForm {
 
 		SmartMultiDBPersistent smartMulti = cbObjCreator.createChildItems(
 				paoType, new Integer(parentID));
+        
+  
 
 		addDBObject(smartMulti, facesMsg);
+        
+            
+
+        
+        
 	}
 
 	/**
@@ -935,14 +986,16 @@ public class CapControlForm extends DBEditorForm {
 
 		// set the parent to use the newly created supporting items
 		if (dbObj instanceof CapBank && getWizData().isCreateNested()) {
-
 			// set the CapBanks ControlDeviceID to be the ID of the CBC we just
 			// created
-			((CapBank) dbObj).getCapBank().setControlDeviceID(
-					((YukonPAObject) smartMulti.getOwnerDBPersistent())
-							.getPAObjectID());
-
-			// find the first status point in our CBC and assign its ID to our
+			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
+            ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
+            if (pao instanceof CapBankController702x) {
+			       DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);
+                   CBControllerEditor.insertPointsIntoDB(pointVector);  
+            }
+			
+            // find the first status point in our CBC and assign its ID to our
 			// CapBank
 			// for control purposes
 			StatusPoint statusPt = (StatusPoint) SmartMultiDBPersistent
@@ -986,6 +1039,7 @@ public class CapControlForm extends DBEditorForm {
 			} else {
 				dbObj = (YukonPAObject) CCYukonPAOFactory
 						.createCapControlPAO(paoType);
+                
 
 				((YukonPAObject) dbObj).setDisabled(getWizData().getDisabled()
 						.booleanValue());
@@ -995,6 +1049,7 @@ public class CapControlForm extends DBEditorForm {
 				if (DeviceTypesFuncs.cbcHasPort(paoType))
 					((ICapBankController) dbObj).setCommID(getWizData()
 							.getPortID());
+                
 
 				createPreItems(paoType, dbObj, facesMsg);
 
@@ -1006,12 +1061,19 @@ public class CapControlForm extends DBEditorForm {
 
 			// creates any extra db objects if need be
 			createPostItems(paoType, itemID, facesMsg);
-
+            
+            
+     
 			facesMsg.setDetail("Database add was SUCCESSFUL");
 
 			// init this form with the newly created DB object wich should be in
 			// the cache
 			initItem(itemID, editorType);
+            //create points for the CBC702x device   
+            if (dbObj instanceof CapBankController702x){
+                    DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
+                    CBControllerEditor.insertPointsIntoDB(pointVector);  
+                }
 
 			// redirect to this form as the editor for this new DB object
 			return "cbcEditor";
@@ -1037,8 +1099,9 @@ public class CapControlForm extends DBEditorForm {
 		Boolean isChecked = (Boolean) ev.getNewValue();
 
 		// find out if this device is TwoWay (used for 2 way CBCs)
-		if (isControllerCBC() && getCBControllerEditor().isTwoWay()) {
 
+        if (isControllerCBC() && getCBControllerEditor().isTwoWay()) {
+		    
 			TwoWayDevice twoWayDev = (TwoWayDevice) getCBControllerEditor()
 					.getPaoCBC();
 
@@ -1068,20 +1131,20 @@ public class CapControlForm extends DBEditorForm {
 	 * Returns the editor object for the internal CBC editor
 	 */
 	public CBControllerEditor getCBControllerEditor() {
-
+	   
 		if (cbControllerEditor == null) {
-
-			if (getDbPersistent() instanceof CapBank) {
-
-				int paoId = PointFuncs.getLitePoint(
-						((CapBank) getDbPersistent()).getCapBank()
-								.getControlPointID().intValue())
-						.getPaobjectID();
-
-				cbControllerEditor = new CBControllerEditor(paoId);
-			}
-		}
-
+            int paoId = itemID;			
+            if (getDbPersistent() instanceof CapBank) {
+				com.cannontech.database.db.capcontrol.CapBank capBank = ((CapBank) getDbPersistent()).getCapBank();             
+                paoId = capBank.getControlDeviceID().intValue();                		
+                }            
+            if ((getDbPersistent() instanceof CapBankController702x) ||
+            (getDbPersistent() instanceof CapBankController)){
+                setEditingController(true);
+                }            
+           cbControllerEditor = new CBControllerEditor(paoId);
+        }
+        
 		return cbControllerEditor;
 	}
 
@@ -1526,7 +1589,16 @@ public class CapControlForm extends DBEditorForm {
 						.getLiteYukonPAO(paoID).getType());
 		}
 
-		return false;
+        //support for the TwoWay devices
+        else if (getDbPersistent() instanceof YukonPAObject){
+            
+            int paoID = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+            return DeviceTypesFuncs.isCapBankController(PAOFuncs.getLiteYukonPAO(paoID));
+            
+            }
+     
+
+           return false;
 	}
 
 	/**
@@ -1617,9 +1689,9 @@ public class CapControlForm extends DBEditorForm {
 	}
 
 	public TreeNode getSwitchPointList() {
-	    TreeNode rootData;
+	    TreeNode rootData = new TreeNodeBase("root","Switch Points", false);
         Set points = PointLists.getAllTwoStateStatusPoints();
-        rootData = JSFTreeUtils.createPAOTreeFromPointList(points);
+        rootData = JSFTreeUtils.createPAOTreeFromPointList(points, rootData);
         
         return rootData;
     }
@@ -1775,5 +1847,19 @@ public class CapControlForm extends DBEditorForm {
     public void setOffsetMap(Map offsetMap) {
         this.offsetMap = offsetMap;
     }
+
+
+    public int getSelectedPanelIndex() {
+        if (isEditingController())
+        {
+            
+            return CBCSelectionLists.CapBankControllerSetup;
+        }
+        else
+        {
+         return CBCSelectionLists.General;   
+        }
+     }
+   
     
 }
