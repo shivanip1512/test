@@ -13,8 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class JSFTreeUtils {
 
-    public static TreeNode createPAOTreeFromPointList(Set points) {
-        TreeNode rootData = new TreeNodeBase("root", "Points Tree", false);
+    public static TreeNode createPAOTreeFromPointList(Set points, TreeNode root) {
+        TreeNode rootData = root;
 
         HashMap deviceMap = new HashMap(100);
 
@@ -49,6 +49,21 @@ public class JSFTreeUtils {
         }
 
         return rootData;
+    }
+    
+    
+    //function that will create a tree from the node and the list - basically attach points to the node
+    public static TreeNode createTreeFromPointList(Set points, TreeNode root){
+        for (Iterator iter = points.iterator(); iter.hasNext();) {
+            LitePoint litePoint = (LitePoint) iter.next();
+            
+            TreeNodeBase leaf = new TreeNodeBase("points",
+                                                 litePoint.getPointName(),
+                                                 String.valueOf(litePoint.getPointID()),
+                                                 true);
+            root.getChildren().add(leaf);
+        }
+        return root;
     }
 
 }
