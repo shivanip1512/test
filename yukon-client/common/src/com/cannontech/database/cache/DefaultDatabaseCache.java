@@ -836,6 +836,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
         return getDBCache().getContactsByEmail(email);
     }
     
+
     public LiteContactNotification getAContactNotifByNotifID(int contNotifyID) {
         return getDBCache().getAContactNotifByNotifID(contNotifyID);
     }
@@ -866,5 +867,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	{
 		return getDBCache().getAllSettlementConfigsMap();
 	}
+    
+    public List getDevicesByCommPort(int portId) {
+        return getDBCache().getDevicesByCommPort(portId);
+
+    }
+
+    public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+        return getDBCache().getDevicesByDeviceAddress(masterAddress, slaveAddress);
+
+    }
 
 }
