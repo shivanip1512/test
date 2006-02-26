@@ -47,7 +47,7 @@
 	                            	</span> 
 	                            	<table width="300" border="0" cellspacing="0" cellpadding="1" class="TableCell">
 		                              	<tr> 
-		                                	<td align="right" width="88" class="SubtitleHeader">*Type:</td>
+		                                	<td align="right" width="88" class="SubtitleHeader">Type:</td>
 		                                	<td width="210"> 
 			                                  	<select name="MeterType" onchange="setContentChanged(true)">
 				                                   	<c:forEach var="meterType" items="${meterBean.availableMeterTypes.yukonListEntries}">
