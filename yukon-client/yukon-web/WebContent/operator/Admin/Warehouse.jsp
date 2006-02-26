@@ -25,75 +25,75 @@
 			</c:if>
 		</div>
 		
-		<table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
-        	<tr> 
-              	<td class="HeaderCell">Edit Warehouse Information</td>
-            </tr>
-        </table>
-        <form name="form1" method="POST" action='<c:out value="${param.contextPath}"/>/servlet/StarsAdmin'>
+		<form name="form1" method="POST" action='<c:out value="${param.contextPath}"/>/servlet/StarsAdmin'>
 	        <input type="hidden" name="action" value="UpdateWarehouse">
 			<c:set target="${wareAdmin}" property="currentWarehouseID" value="${param.Warehouse}" />
 			<input type="hidden" name="WarehouseID" value='<c:out value="${param.Warehouse}"/>'>
-	        <table width="600" border="1" cellspacing="0" cellpadding="5" align="center">
+	        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
+        		<tr> 
+              		<td class="HeaderCell">Edit Warehouse Information</td>
+            	</tr>
+        	</table>
+	        <table width="500" border="1" cellspacing="0" cellpadding="5" align="center">
 	        	<tr>
-		        	<td width="90" class="TableCell"> 
+		        	<td width="20%" class="TableCell"> 
 		            	<div align="right">Warehouse Name:</div>
 		                </td>
-		            <td width="210"> 
+		            <td width="80%"> 
 		                <input type="text" name="warehouseName" maxlength="30" size="24" value='<c:out value="${wareAdmin.currentWarehouse.warehouseName}"/>' onchange="setContentChanged(true)">
 		            </td>
 		        </tr>
 	            <tr> 
-	                <td width="90" class="TableCell"> 
+	                <td width="20%" class="TableCell"> 
 	                  <div align="right">Address 1:</div>
 	                </td>
-	                <td width="210"> 
+	                <td width="80%"> 
 	                  <input type="text" name="addr1" maxlength="40" size="24" value='<c:out value="${wareAdmin.currentAddress.locationAddress1}"/>' onchange="setContentChanged(true)">
 	                </td>
 	          	</tr>
 	          	<tr> 
-	                <td width="90" class="TableCell"> 
+	                <td width="20%" class="TableCell"> 
 	                  <div align="right">Address 2:</div>
 	                </td>
-	                <td width="210"> 
+	                <td width="80%"> 
 	                  <input type="text" name="addr2" maxlength="40" size="24" value='<c:out value="${wareAdmin.currentAddress.locationAddress2}"/>' onchange="setContentChanged(true)">
 	                </td>
 		     	</tr>
 		       	<tr> 
-	                <td width="90" class="TableCell"> 
+	                <td width="20%" class="TableCell"> 
 	                  <div align="right">City:</div>
 	                </td>
-	                <td width="210"> 
+	                <td width="80%"> 
 	                  <input type="text" name="city" maxlength="30" size="24" value='<c:out value="${wareAdmin.currentAddress.cityName}"/>' onchange="setContentChanged(true)">
 	                </td>
 	           	</tr>
 				<tr> 
-	                <td width="90" class="TableCell"> 
+	                <td width="20%" class="TableCell"> 
 	                  <div align="right">State:</div>
 	                </td>
-	                <td width="210"> 
+	                <td width="80%"> 
 	                  <input type="text" name="state" maxlength="2" size="14" value='<c:out value="${wareAdmin.currentAddress.stateCode}"/>' onchange="setContentChanged(true)">
 	                </td>
 	          	</tr>
 	            <tr> 
-	                <td width="90" class="TableCell"> 
+	                <td width="20%" class="TableCell"> 
 	                  <div align="right">Zip:</div>
 	                </td>
-	                <td width="210"> 
+	                <td width="80%"> 
 	                  <input type="text" name="zip" maxlength="12" size="14" value='<c:out value="${wareAdmin.currentAddress.zipCode}"/>' onchange="setContentChanged(true)">
 	                </td>
 	         	</tr>
 	         	<tr> 
-	            	<td width="90" class="TableCell"> 
+	            	<td width="20%" class="TableCell"> 
 	              		<div align="right">Notes:</div>
 	            	</td>
-	            	<td width="210"> 
+	            	<td width="80%"> 
 	              		<textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><c:out value="${wareAdmin.currentWarehouse.notes}"/></textarea>
 	            	</td>
 	          	</tr>
 			</table>
 			
-			<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+			<table width="500" border="0" cellspacing="0" cellpadding="5" align="center">
 		        <tr>
 		          <td width="290" align="right"> 
 		            <input type="submit" name="Submit" value="Submit">
