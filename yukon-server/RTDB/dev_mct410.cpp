@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2006/02/27 22:41:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3334,8 +3334,19 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         if( valid_data )  //  valid
         {
-            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT410_Sspec &&
-                getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_SspecRev_TOUPeak_Min )
+            bool kw_valid = true;
+
+            //  if it's a TOU read and the MCT isn't at least at MCT410_SspecRev_TOUPeak_Min, we omit the data
+            if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+            {
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) != MCT410_Sspec ||
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < MCT410_SspecRev_TOUPeak_Min )
+                {
+                    kw_valid = false;
+                }
+            }
+
+            if( kw_valid )
             {
                 if( kw_point )
                 {
