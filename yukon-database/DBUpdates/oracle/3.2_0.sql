@@ -1,6 +1,7 @@
 /******************************************/
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
+set scan off;
 
 delete from yukonuserrole where rolepropertyid = -10105 or rolepropertyid = -10106 or rolepropertyid = -10106 or rolepropertyid = -10112;
 

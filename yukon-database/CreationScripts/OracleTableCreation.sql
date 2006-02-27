@@ -1,8 +1,11 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/22/2006 4:59:19 PM                         */
+/* Created on:     2/27/2006 8:30:16 AM                         */
 /*==============================================================*/
+
+
+set scan off
 
 
 drop view SubstationAddress_View;
