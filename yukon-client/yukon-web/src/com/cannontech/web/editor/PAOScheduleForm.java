@@ -137,4 +137,10 @@ public class PAOScheduleForm extends DBEditorForm {
 		currentSchedID = i;
 	}
 
+
+    protected void checkForErrors() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

@@ -21,5 +21,10 @@ public class DeleteFormPoint extends DeleteForm
 		return LiteFactory.createDBPersistent( PointFuncs.getLitePoint(itemID) );		
 	}
 
+    protected void checkForErrors() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
 
 }

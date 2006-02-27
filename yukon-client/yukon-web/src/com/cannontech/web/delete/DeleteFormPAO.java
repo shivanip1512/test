@@ -18,4 +18,10 @@ public class DeleteFormPAO extends DeleteForm
 		return PAOFactory.createPAObject( itemID );		
 	}
 
+
+    protected void checkForErrors() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

@@ -254,5 +254,7 @@ public abstract class DBEditorForm
 	public void setEditorTitle(String string) {
 		editorTitle = string;
 	}
+    
+    protected abstract void checkForErrors ()  throws Exception;
 
 }

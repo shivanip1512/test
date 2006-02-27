@@ -65,6 +65,9 @@ import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.FormWarningException;
+import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
+import com.cannontech.web.exceptions.PortDoesntExistException;
+import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
@@ -860,9 +863,8 @@ public class CapControlForm extends DBEditorForm {
 			facesMsg.setDetail(successfulUpdateMsg);
 			if (isEditingController()) {
                 try {
-      
-                    getCBControllerEditor().checkForErrors();
-                    
+                   
+                    checkForErrors();
                 }
                 catch (FormWarningException e) {
                     String errorString = e.getMessage();
@@ -1864,6 +1866,11 @@ public class CapControlForm extends DBEditorForm {
          return CBCSelectionLists.General;   
         }
      }
+
+    protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, 
+                                           SameMasterSlaveCombinationException { 
+        getCBControllerEditor().checkForErrors();
+    }
    
     
 }

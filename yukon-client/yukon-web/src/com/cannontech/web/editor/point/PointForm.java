@@ -39,6 +39,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.database.data.point.PointOffsetUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.ScalarPoint;
@@ -47,6 +48,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.editor.DBEditorForm;
+import com.cannontech.web.exceptions.InvalidPointOffsetException;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.PointWizardModel;
 
@@ -649,12 +651,14 @@ public class PointForm extends DBEditorForm
 		FacesMessage facesMsg = new FacesMessage();
 
 		try {
-			updateDBObject( getDbPersistent(), facesMsg );
-			
+			checkForErrors();
+            updateDBObject( getDbPersistent(), facesMsg );
 			facesMsg.setDetail( "Database update was SUCCESSFULL" );
 		}
 		catch( TransactionException te ) {
-			//do nothing since the appropriate actions was taken in the super
+            String errorString = te.getMessage();
+            facesMsg.setDetail(errorString);
+            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		}
 		finally {
 			FacesContext.getCurrentInstance().addMessage("cti_db_update", facesMsg);		
@@ -738,5 +742,13 @@ public class PointForm extends DBEditorForm
         this.wizData = wizData;
     }
 
-
+    protected void checkForErrors() throws InvalidPointOffsetException {
+        int offset = getPointBase().getPoint().getPointOffset();
+        int type = PointTypes.getType (getPointBase().getPoint().getPointType());
+        Integer paoId = getWizData().getParentId();
+        
+        if (!PointOffsetUtils.isValidPointOffset(offset,paoId ,type)) {
+            throw new InvalidPointOffsetException("The point offset if invalid for " + getPointBase().getPoint().getPointType() +  " point type. Consider increasing offset");
+        }
+     }
 }

@@ -45,4 +45,10 @@ public class EditorForm extends DBEditorForm
 		editorType = string;
 	}
 
+
+    protected void checkForErrors() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
