@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.16  2006/02/27 23:58:29  tspar
+      Phase two of RWTPtrSlist replacement.
+
       Revision 1.15  2006/02/24 00:19:10  tspar
       First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
 
@@ -184,8 +187,8 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
 INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg *pReq,
                                      CtiCommandParser &parse,
                                      OUTMESS *&OutMessage,
-                                     RWTPtrSlist< CtiMessage > &vgList,
-                                     RWTPtrSlist< CtiMessage > &retList,
+                                     list< CtiMessage* > &vgList,
+                                     list< CtiMessage* > &retList,
                                      list< OUTMESS* > &outList,
                                      INT ScanPriority)
 {
@@ -238,7 +241,7 @@ USHORT CtiDeviceAlphaPPlus::calculateStartingByteCountForCurrentScanState (int a
 }
 
 
-INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     AlphaPPlusLoadProfile_t *localLP      = ((AlphaPPlusLoadProfile_t*)_loadProfileBuffer);
     AlphaPPlusScanData_t    *localData    = ((AlphaPPlusScanData_t *)_dataBuffer);
@@ -573,7 +576,7 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
     return retCode;
 }
 
-INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     AlphaPPlusLoadProfile_t * ptr = (AlphaPPlusLoadProfile_t *)_loadProfileBuffer;
     int               retCode = NORMAL;
@@ -954,7 +957,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
 
 INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                                              INT      commReturnValue,
-                                             RWTPtrSlist< CtiMessage > &traceList)
+                                             list< CtiMessage* > &traceList)
 {
 
     INT         iClass;
@@ -1062,21 +1065,21 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                     {
                         trace.setBrightYellow();
                         trace.setTrace( CtiTime().asString().c_str() );
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
                         msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                         trace.setTrace(msg);
-                        traceList.insert (trace.replicateMessage());
+                        traceList.push_back (trace.replicateMessage());
                     }
                     else if (ret_length)
                     {
                         trace.setBrightYellow();
                         trace.setTrace( CtiTime().asString().c_str() );
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
                         msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                         trace.setTrace(msg);
-                        traceList.insert (trace.replicateMessage());
+                        traceList.push_back (trace.replicateMessage());
                     }
 
                     // decline attempts remaining first thing
@@ -1211,21 +1214,21 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                         {
                             trace.setBrightYellow();
                             trace.setTrace( CtiTime().asString().c_str() );
-                            traceList.insert(trace.replicateMessage());
+                            traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
                             msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                             trace.setTrace(msg);
-                            traceList.insert (trace.replicateMessage());
+                            traceList.push_back (trace.replicateMessage());
                         }
                         else if (ret_length)
                         {
                             trace.setBrightYellow();
                             trace.setTrace( CtiTime().asString().c_str() );
-                            traceList.insert(trace.replicateMessage());
+                            traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
                             msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                             trace.setTrace(msg);
-                            traceList.insert (trace.replicateMessage());
+                            traceList.push_back (trace.replicateMessage());
                         }
 
                         // decline attempts remaining first thing
@@ -1326,7 +1329,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 }
 
 
-INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT retCode= NORMAL;
     INT         iClass;
@@ -1433,21 +1436,21 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                     {
                         trace.setBrightYellow();
                         trace.setTrace( CtiTime().asString().c_str() );
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
                         msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                         trace.setTrace(msg);
-                        traceList.insert (trace.replicateMessage());
+                        traceList.push_back (trace.replicateMessage());
                     }
                     else if (ret_length)
                     {
                         trace.setBrightYellow();
                         trace.setTrace( CtiTime().asString().c_str() );
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                         trace.setBrightRed();
                         msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                         trace.setTrace(msg);
-                        traceList.insert (trace.replicateMessage());
+                        traceList.push_back (trace.replicateMessage());
                     }
 
                     // decline attempts remaining first thing
@@ -1632,21 +1635,21 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                         {
                             trace.setBrightYellow();
                             trace.setTrace( CtiTime().asString().c_str() );
-                            traceList.insert(trace.replicateMessage());
+                            traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
                             msg = string (" CRC error for ") + getName() + string(" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string("\n");
                             trace.setTrace(msg);
-                            traceList.insert (trace.replicateMessage());
+                            traceList.push_back (trace.replicateMessage());
                         }
                         else if (ret_length)
                         {
                             trace.setBrightYellow();
                             trace.setTrace( CtiTime().asString().c_str() );
-                            traceList.insert(trace.replicateMessage());
+                            traceList.push_back(trace.replicateMessage());
                             trace.setBrightRed();
                             msg = string ("  Byte count mis-match  ") + getName() + string (" while reading class ") + string(itoa(getReadClass(),traceBuffer,10)) + string ("\n");
                             trace.setTrace(msg);
-                            traceList.insert (trace.replicateMessage());
+                            traceList.push_back (trace.replicateMessage());
                         }
 
                         // decline attempts remaining first thing
@@ -1788,8 +1791,8 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
 
 INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
                                              CtiTime &TimeNow,
-                                             RWTPtrSlist< CtiMessage >   &vgList,
-                                             RWTPtrSlist< CtiMessage > &retList,
+                                             list< CtiMessage* >   &vgList,
+                                             list< CtiMessage* > &retList,
                                              list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
@@ -1948,7 +1951,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
 
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1963,8 +1966,8 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
 
 INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                                   CtiTime &TimeNow,
-                                                  RWTPtrSlist< CtiMessage >   &vgList,
-                                                  RWTPtrSlist< CtiMessage > &retList,
+                                                  list< CtiMessage* >   &vgList,
+                                                  list< CtiMessage* > &retList,
                                                   list< OUTMESS* > &outList)
 {
 
@@ -2101,7 +2104,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

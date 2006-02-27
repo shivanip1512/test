@@ -111,22 +111,22 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
    string getDescription(const CtiCommandParser & parse) const;
 
-   virtual INT generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 
-   INT traceOut(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage = FALSE);
+   INT traceOut(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
 
    CtiDeviceWctpTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;

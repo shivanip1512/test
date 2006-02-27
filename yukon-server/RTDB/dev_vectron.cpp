@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,8 +93,8 @@ CtiDeviceVectron& CtiDeviceVectron::setCommandPacket (INT aCmd)
 INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
@@ -119,7 +119,7 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
 
 
 
-INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -257,7 +257,7 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
 }
 
 
-INT CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     USHORT retCode=NORMAL;
 
@@ -297,7 +297,7 @@ INT CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessa
     return retCode;
 }
 
-INT CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int               retCode = NORMAL;
@@ -437,7 +437,7 @@ INT CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlis
 }
 
 
-INT CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int               retCode = NORMAL;
@@ -491,7 +491,7 @@ INT CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiM
     return retCode;
 }
 
-INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     // make this easier to read in the following code
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
@@ -945,7 +945,7 @@ INT CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
 }
 
 
-INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int retCode = NORMAL;
@@ -1104,7 +1104,7 @@ INT CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
 }
 
 
-INT CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     USHORT retCode = NORMAL;
@@ -1184,7 +1184,7 @@ INT CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
 }
 
 
-INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 
 {
     int               retCode    = NORMAL;
@@ -1513,7 +1513,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
     return retCode;
 }
 
-INT CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     VectronLoadProfileMessage_t *localLP      = ((VectronLoadProfileMessage_t*)_loadProfileBuffer);
@@ -1580,7 +1580,7 @@ INT CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
 
 
 
-INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     int               retCode  = NORMAL;
     SchlMeterStruct   MeterSt;
@@ -1689,8 +1689,8 @@ INT CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
 INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                                         CtiTime &TimeNow,
-                                        RWTPtrSlist< CtiMessage >   &vgList,
-                                        RWTPtrSlist< CtiMessage > &retList,
+                                        list< CtiMessage* >   &vgList,
+                                        list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
@@ -1804,7 +1804,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
 
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1821,8 +1821,8 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
 
 INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
-                                               RWTPtrSlist< CtiMessage >   &vgList,
-                                               RWTPtrSlist< CtiMessage > &retList,
+                                               list< CtiMessage* >   &vgList,
+                                               list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
@@ -2000,7 +2000,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

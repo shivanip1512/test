@@ -530,19 +530,19 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* > &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
 
-   virtual INT generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList );
-   virtual INT generateCommandScan( CtiXfer  &Transfe, RWTPtrSlist< CtiMessage > &tListr );
+   virtual INT generateCommandLoadProfile( CtiXfer  &Transfer, list< CtiMessage* > &traceList );
+   virtual INT generateCommandScan( CtiXfer  &Transfe, list< CtiMessage* > &tListr );
 
-   virtual INT decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
-   virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
-   virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
+   virtual INT decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+   virtual INT decodeResultScan (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
    INT   getA1ClassOffset(UINT Key, VOID *ptr);
    INT   getA1FuncOffset(UINT Key, VOID *ptr);

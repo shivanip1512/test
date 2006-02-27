@@ -266,7 +266,7 @@ CtiDeviceDR87& CtiDeviceDR87::setNumberOfIncompleteMsgs (INT aNumberOfIncomplete
 
 
 
-INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -357,7 +357,7 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
     return retCode;
 }
 
-INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     USHORT retCode=NORMAL;
 
@@ -398,7 +398,7 @@ INT CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage 
 }
 
 
-INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     int               retCode = NORMAL;
 
@@ -467,7 +467,7 @@ INT CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMess
 }
 
 
-INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     BYTEUSHORT worker;
     INT retVal = NORMAL;
@@ -529,7 +529,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< Ct
     return retVal;
 }
 
-INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     int               retCode = NORMAL;
     DR87LoadProfile_t * localLP = (DR87LoadProfile_t*)iLoadProfileBuffer;
@@ -766,7 +766,7 @@ INT CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< 
 
 
 
-INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
 //   BYTE  Command;
     int cnt=0;
@@ -837,7 +837,7 @@ INT CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnVa
 
 
 
-INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -880,7 +880,7 @@ INT CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTP
     return retCode;
 }
 
-INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     int retCode = NORMAL,x;
     int msgDecodeRetVal;
@@ -1041,7 +1041,7 @@ INT CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, 
     return retCode;
 }
 
-INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     int retCode = NORMAL,x;
     int msgDecodeRetVal;
@@ -1342,8 +1342,8 @@ INT CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturn
 INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
                                CtiCommandParser &parse,
                                OUTMESS *&OutMessage,
-                               RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList,
+                               list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList,
                                INT ScanPriority)
 {
@@ -1493,8 +1493,8 @@ INT CtiDeviceDR87::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalBytes)
 
 INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
                                  CtiTime &TimeNow,
-                                 RWTPtrSlist< CtiMessage >   &vgList,
-                                 RWTPtrSlist< CtiMessage > &retList,
+                                 list< CtiMessage* >   &vgList,
+                                 list< CtiMessage* > &retList,
                                  list< OUTMESS* > &outList)
 {
 
@@ -1561,8 +1561,8 @@ INT  CtiDeviceDR87::ResultDecode(INMESS *InMessage,
 
 INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
                                 CtiTime &TimeNow,
-                                RWTPtrSlist< CtiMessage >   &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+                                list< CtiMessage* >   &vgList,
+                                list< CtiMessage* > &retList,
                                 list< OUTMESS* > &outList)
 {
     {
@@ -1597,7 +1597,7 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1611,8 +1611,8 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
 
 INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                                      CtiTime &TimeNow,
-                                     RWTPtrSlist< CtiMessage >   &vgList,
-                                     RWTPtrSlist< CtiMessage > &retList,
+                                     list< CtiMessage* >   &vgList,
+                                     list< CtiMessage* > &retList,
                                      list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
@@ -1722,7 +1722,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1738,8 +1738,8 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 
 INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                                             CtiTime &TimeNow,
-                                            RWTPtrSlist< CtiMessage >   &vgList,
-                                            RWTPtrSlist< CtiMessage > &retList,
+                                            list< CtiMessage* >   &vgList,
+                                            list< CtiMessage* > &retList,
                                             list< OUTMESS* > &outList)
 {
     int retCode = NORMAL;
@@ -1888,7 +1888,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

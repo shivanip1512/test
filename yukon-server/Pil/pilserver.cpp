@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -508,8 +508,8 @@ void CtiPILServer::resultThread()
     INMESS      *InMessage = 0;
 
     list< OUTMESS*    > outList;
-    RWTPtrSlist< CtiMessage > retList;
-    RWTPtrSlist< CtiMessage > vgList;
+    list< CtiMessage* > retList;
+    list< CtiMessage* > vgList;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -604,7 +604,7 @@ void CtiPILServer::resultThread()
                     // We need response strings from someone.  How can we get a list of results back?
 
                     string bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
-                    retList.insert( CTIDBG_new CtiReturnMsg(0,
+                    retList.push_back( CTIDBG_new CtiReturnMsg(0,
                                                             string(InMessage->Return.CommandStr),
                                                             bufstr,
                                                             InMessage->EventCode,
@@ -638,9 +638,9 @@ void CtiPILServer::resultThread()
                         }
                     }
 
-                    if( retList.entries() > 0 )
+                    if( retList.size() > 0 )
                     {
-                        if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.entries())
+                        if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -653,22 +653,25 @@ void CtiPILServer::resultThread()
                         CtiCommandParser parse( cmdstr );
                         if(parse.getFlags() & CMD_FLAG_UPDATE)
                         {
-                            for(i = 0; i < retList.entries(); i++)
+                            std::list< CtiMessage* >::iterator itr = retList.begin();
+                            while ( itr != retList.end() ) 
+                            //for(i = 0; i < retList.size(); i++)
                             {
-                                CtiMessage *&pMsg = retList.at(i);
+                                CtiMessage *&pMsg = *itr;
 
                                 if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
                                 {
-                                    vgList.append(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
+                                    vgList.push_back(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
                                 }
+                                ++itr;
                             }
                         }
                     }
 
 
-                    while( (i = retList.entries()) > 0 )
+                    while( (i = retList.size()) > 0 )
                     {
-                        CtiMessage *pRet = retList.get();
+                        CtiMessage *pRet = retList.front();retList.pop_front();
 
                         if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
                         {
@@ -691,9 +694,9 @@ void CtiPILServer::resultThread()
                         }
                     }
 
-                    while( (i = vgList.entries()) > 0 )
+                    while( (i = vgList.size()) > 0 )
                     {
-                        pVg = vgList.get();
+                        pVg = vgList.front();vgList.pop_front();
                         VanGoghConnection.WriteConnQue(pVg);
                     }
                 }
@@ -951,12 +954,12 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     int i = 0;
     int status = NoError;
 
-    RWTPtrSlist< CtiMessage >  vgList;
-    RWTPtrSlist< CtiMessage >  retList;
+    list< CtiMessage* >  vgList;
+    list< CtiMessage* >  retList;
     list< OUTMESS* >     outList;
     list< OUTMESS* >     tempOutList;
 
-    RWTPtrSlist< CtiRequestMsg >  execList;
+    list< CtiRequestMsg* >  execList;
 
     extern CtiLocalConnect PilToPorter;
 
@@ -983,11 +986,12 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     try
     {
         CtiDeviceSPtr Dev;
-        for(i = 0; i < execList.entries(); i++)
+        std::list< CtiRequestMsg* >::iterator itr = execList.begin();
+        while( itr != execList.end() )
         {
             Dev.reset();
 
-            CtiRequestMsg *&pExecReq = execList[i];
+            CtiRequestMsg *&pExecReq = *itr;
             Dev = DeviceManager->getEqual(pExecReq->DeviceId());
 
             if(Dev)
@@ -1081,6 +1085,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     }
                 }
             }
+            ++itr;
         }
     }
     catch(...)
@@ -1095,13 +1100,13 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << retList.entries() << " CtiReturnMsg objects to client" << endl;
+            dout << CtiTime() << " Submitting " << retList.size() << " CtiReturnMsg objects to client" << endl;
         }
     }
 
-    while( (i = retList.entries()) > 0 )
+    while( (i = retList.size()) > 0 )
     {
-        pcRet = (CtiReturnMsg*)retList.removeFirst();
+        pcRet = (CtiReturnMsg*)retList.front();retList.pop_front();
 
         if(pcRet->Status() == NORMAL || i > 1) pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
 
@@ -1149,19 +1154,24 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << vgList.entries() << " CtiMessage objects to dispatch" << endl;
+            dout << CtiTime() << " Submitting " << vgList.size() << " CtiMessage objects to dispatch" << endl;
         }
     }
 
-    while( (i = vgList.entries()) > 0 )
+    while( (i = vgList.size()) > 0 )
     {
-        pVg = vgList.get();
+        pVg = vgList.front();vgList.pop_front();
         VanGoghConnection.WriteConnQue((CtiMessage*)pVg);
     }
 
-    vgList.clearAndDestroy();
-    retList.clearAndDestroy();
-    execList.clearAndDestroy();
+    delete_list(vgList);
+    vgList.clear();
+
+    delete_list(retList);
+    retList.clear();
+
+    delete_list(execList);
+    execList.clear();
 
     return status;
 }
@@ -1298,7 +1308,7 @@ void CtiPILServer::vgConnThread()
 }
 
 
-INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList)
+INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
     INT status = NORMAL;
     INT i;
@@ -1401,7 +1411,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                 pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                execList.insert( pNew );
+                execList.push_back( pNew );
             }
 
             {
@@ -1444,7 +1454,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                 pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                execList.insert( pNew );
+                execList.push_back( pNew );
             }
 
             {
@@ -1561,9 +1571,9 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(execList.entries() == 0)
+    if(execList.size() == 0)
     {
-        execList.insert( pReq );
+        execList.push_back( pReq );
         pReq = NULL;
     }
 
@@ -1612,7 +1622,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
     return;
 }
 
-INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList)
+INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
     INT status = NORMAL;
     int i;
@@ -1697,7 +1707,7 @@ void CtiPILServer::putQueue(CtiMessage *Msg)
 }
 
 
-void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList)
+void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
     bool shed = false;
     try
@@ -1736,7 +1746,7 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
                     CtiMessage *pMsg = sptr->rsvpToDispatch(true);
                     if(pMsg)
                     {
-                        vgList.insert(pMsg);
+                        vgList.push_back(pMsg);
                     }
 
                     {

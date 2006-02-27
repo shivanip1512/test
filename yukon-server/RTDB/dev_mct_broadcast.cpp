@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,8 +50,8 @@ void CtiDeviceMCTBroadcast::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
                                            CtiCommandParser           &parse,
                                            OUTMESS                   *&OutMessage,
-                                           RWTPtrSlist< CtiMessage >  &vgList,
-                                           RWTPtrSlist< CtiMessage >  &retList,
+                                           list< CtiMessage* >  &vgList,
+                                           list< CtiMessage* >  &retList,
                                            list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
@@ -105,7 +105,7 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command. (" + string(__FILE__) + ")";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec( )) );
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec( )) );
     }
     else
     {
@@ -125,8 +125,8 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
 INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq,
                                             CtiCommandParser               &parse,
                                             OUTMESS                        *&OutMessage,
-                                            RWTPtrSlist< CtiMessage >      &vgList,
-                                            RWTPtrSlist< CtiMessage >      &retList,
+                                            list< CtiMessage* >      &vgList,
+                                            list< CtiMessage* >      &retList,
                                             list< OUTMESS* >         &outList)
 {
     bool  found = false;
@@ -195,8 +195,8 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
 INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq,
                                             CtiCommandParser               &parse,
                                             OUTMESS                        *&OutMessage,
-                                            RWTPtrSlist< CtiMessage >      &vgList,
-                                            RWTPtrSlist< CtiMessage >      &retList,
+                                            list< CtiMessage* >      &vgList,
+                                            list< CtiMessage* >      &retList,
                                             list< OUTMESS* >         &outList)
 {
     bool  found = false;
@@ -308,8 +308,8 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                                            CtiCommandParser               &parse,
                                            OUTMESS                        *&OutMessage,
-                                           RWTPtrSlist< CtiMessage >      &vgList,
-                                           RWTPtrSlist< CtiMessage >      &retList,
+                                           list< CtiMessage* >      &vgList,
+                                           list< CtiMessage* >      &retList,
                                            list< OUTMESS* >         &outList)
 {
     INT    nRet = NoError,
@@ -486,7 +486,7 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
     return found;
 }
 
-INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 

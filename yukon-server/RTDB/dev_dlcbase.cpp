@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddres
 LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, bool expectMore )
+INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore )
 {
     CtiReturnMsg *tmpVGRetMsg = NULL;
     CtiMultiMsg_vec subMsgs;
@@ -141,7 +141,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
       {
          if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().entries() > 0)
          {
-            retList.append( ReturnMsg );
+            retList.push_back( ReturnMsg );
          }
          else
          {
@@ -172,7 +172,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
                         ((CtiPointDataMsg *)(subMsgs[i]))->setTags( TAG_POINT_MUST_ARCHIVE );
                 }
 
-                vgList.append( tmpVGRetMsg );
+                vgList.push_back( tmpVGRetMsg );
             }
             else
             {
@@ -201,7 +201,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
                 if( tmpVGRetMsg != NULL )
                 {
-                    vgList.append( tmpVGRetMsg );
+                    vgList.push_back( tmpVGRetMsg );
                 }
             }
 
@@ -212,7 +212,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
                 retMsg->setExpectMore();
             }
 
-            retList.append( retMsg );
+            retList.push_back( retMsg );
 
             retVal = TRUE;
         }
@@ -227,7 +227,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
 
 
-INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -346,7 +346,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 
             retMsg->setResultString(resultString);
 
-            retList.append(retMsg);
+            retList.push_back(retMsg);
         }
 
         //  Find the next route and resubmit request to porter
@@ -386,8 +386,8 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                          CtiCommandParser           &parse,
                                          OUTMESS                   *&OutMessage,
                                          list< OUTMESS* >     &tmpOutList,
-                                         RWTPtrSlist< CtiMessage >  &vgList,
-                                         RWTPtrSlist< CtiMessage >  &retList,
+                                         list< CtiMessage* >  &vgList,
+                                         list< CtiMessage* >  &retList,
                                          list< OUTMESS* >     &outList,
                                          bool                        result )
 {
@@ -449,7 +449,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                     string actn = parse.getActionItems()[offset];
                     string desc = getDescription(parse);
 
-                    vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                    vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
             }
 
@@ -573,7 +573,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
         if(pRet)
         {
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
 
         if( pOut )

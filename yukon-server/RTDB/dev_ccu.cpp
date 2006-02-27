@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 }
 
 
-INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -158,13 +158,13 @@ INT CtiDeviceCCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
+INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
     resetScanFlag(ScanRateGeneral);
@@ -190,7 +190,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 
             if( pLoop != NULL )
             {
-                retList.insert(pLoop);
+                retList.push_back(pLoop);
             }
             break;
         }
@@ -210,7 +210,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 
             if( pLoop != NULL )
             {
-                retList.insert(pLoop);
+                retList.push_back(pLoop);
             }
             break;
         }
@@ -236,8 +236,8 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  CtiCommandParser               &parse,
                                  OUTMESS                        *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >      &vgList,
-                                 RWTPtrSlist< CtiMessage >      &retList,
+                                 list< CtiMessage* >      &vgList,
+                                 list< CtiMessage* >      &retList,
                                  list< OUTMESS* >         &outList)
 {
     INT nRet = NORMAL;
@@ -276,7 +276,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                 else
                 {
                     nRet = NoMethod;
-                    retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                    retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                             string(OutMessage->Request.CommandStr),
                                                             string("Non-711 CCUs do not support this command"),
                                                             nRet,
@@ -304,7 +304,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("CCU Devices do not support this command (yet?)"),
                                                     nRet,

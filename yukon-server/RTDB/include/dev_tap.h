@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,28 +97,28 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
    string getDescription(const CtiCommandParser & parse) const;
 
-   virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT generateCommandHandshake(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+   virtual INT generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommand(CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponse(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *outMess);
    virtual INT freeDataBins();
 
    virtual CtiDeviceIED& setInitialState(const LONG oldid);
 
-   INT traceOut(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList);
-   INT traceIn(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage = FALSE);
+   INT traceOut(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList);
+   INT traceIn(PCHAR Message, ULONG Count, list< CtiMessage* > &traceList, BOOL CompletedMessage = FALSE);
 
    INT printChar( string &Str, CHAR Char );
    bool devicePacingExceeded();

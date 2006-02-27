@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,8 +93,8 @@ void CtiRouteVersacom::DecodeVersacomDatabaseReader(RWDBReader &rdr)
 INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                      CtiCommandParser               &parse,
                                      OUTMESS                        *&OutMessage,
-                                     RWTPtrSlist< CtiMessage >      &vgList,
-                                     RWTPtrSlist< CtiMessage >      &retList,
+                                     list< CtiMessage* >      &vgList,
+                                     list< CtiMessage* >      &retList,
                                      list< OUTMESS* >         &outList)
 {
 #define ABUFSIZE 40
@@ -235,7 +235,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
 
@@ -244,7 +244,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -263,8 +263,8 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                                               CtiCommandParser               &parse,
                                               OUTMESS                        *OutMessage,
-                                              RWTPtrSlist< CtiMessage >      &vgList,
-                                              RWTPtrSlist< CtiMessage >      &retList,
+                                              list< CtiMessage* >      &vgList,
+                                              list< CtiMessage* >      &retList,
                                               list< OUTMESS* >         &outList)
 {
     INT            status = NORMAL;
@@ -352,7 +352,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {

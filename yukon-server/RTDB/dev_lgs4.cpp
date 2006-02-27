@@ -219,7 +219,7 @@ CtiDeviceLandisGyrS4& CtiDeviceLandisGyrS4::setCurrentLPDate (ULONG aDate)
 
 
 
-INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -254,7 +254,7 @@ INT CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSl
     return retCode;
 }
 
-INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     USHORT retCode=NORMAL;
 
@@ -296,7 +296,7 @@ INT CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiM
 }
 
 
-INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     int               retCode = NORMAL;
     BYTEUSHORT checkSum;
@@ -453,7 +453,7 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< 
 }
 
 
-INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     int               retCode = NORMAL;
     LGS4LProfileConfig_t * localLPConfig = (LGS4LProfileConfig_t*)iLoadProfileConfig;
@@ -624,7 +624,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtr
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
 //   BYTE  Command;
 
@@ -650,7 +650,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, INT commR
 
 
 
-INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -694,7 +694,7 @@ INT CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, INT commReturnValu
 }
 
 
-INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     int               retCode    = NORMAL;
     LGS4LoadProfile_t    *localLP         = ((LGS4LoadProfile_t *)iLoadProfileBuffer);
@@ -894,7 +894,7 @@ INT CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, INT commReturn
     return retCode;
 }
 
-INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     int               retCode    = NORMAL;
     LGS4LProfileConfig_t *localLPConfig   = ((LGS4LProfileConfig_t*)iLoadProfileConfig);
@@ -1293,8 +1293,8 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
 INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
                                       CtiCommandParser &parse,
                                       OUTMESS *&OutMessage,
-                                      RWTPtrSlist< CtiMessage > &vgList,
-                                      RWTPtrSlist< CtiMessage > &retList,
+                                      list< CtiMessage* > &vgList,
+                                      list< CtiMessage* > &retList,
                                       list< OUTMESS* > &outList,
                                       INT ScanPriority)
 {
@@ -1822,8 +1822,8 @@ INT CtiDeviceLandisGyrS4::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotal
 
 INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
                                         CtiTime &TimeNow,
-                                        RWTPtrSlist< CtiMessage >   &vgList,
-                                        RWTPtrSlist< CtiMessage > &retList,
+                                        list< CtiMessage* >   &vgList,
+                                        list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList)
 {
 
@@ -1891,8 +1891,8 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
 
 INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
                                        CtiTime &TimeNow,
-                                       RWTPtrSlist< CtiMessage >   &vgList,
-                                       RWTPtrSlist< CtiMessage > &retList,
+                                       list< CtiMessage* >   &vgList,
+                                       list< CtiMessage* > &retList,
                                        list< OUTMESS* > &outList)
 {
     {
@@ -1927,7 +1927,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1942,8 +1942,8 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
 
 INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
                                             CtiTime &TimeNow,
-                                            RWTPtrSlist< CtiMessage >   &vgList,
-                                            RWTPtrSlist< CtiMessage > &retList,
+                                            list< CtiMessage* >   &vgList,
+                                            list< CtiMessage* > &retList,
                                             list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
@@ -2045,7 +2045,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
 
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -2060,8 +2060,8 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
 
 INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                    CtiTime &TimeNow,
-                                                   RWTPtrSlist< CtiMessage >   &vgList,
-                                                   RWTPtrSlist< CtiMessage > &retList,
+                                                   list< CtiMessage* >   &vgList,
+                                                   list< CtiMessage* > &retList,
                                                    list< OUTMESS* > &outList)
 {
     DIALUPREQUEST     *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
@@ -2597,7 +2597,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

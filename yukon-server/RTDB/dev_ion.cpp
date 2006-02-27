@@ -108,7 +108,7 @@ string CtiDeviceION::getDescription(const CtiCommandParser &parse) const
 }
 
 
-INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -254,7 +254,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), 1, CtiTime(), 86400, 100);
 
                     hist->setMessagePriority(hist->getMessagePriority() + 1);
-                    vgList.insert(hist);
+                    vgList.push_back(hist);
 
                     if(point->isPseudoPoint())
                     {
@@ -265,7 +265,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                                             StatusPointType,
                                                                             string("This point has been controlled"));
                         pData->setUser(pReq->getUser());
-                        vgList.insert(pData);
+                        vgList.push_back(pData);
                     }
 
                     OutMessage->ExpirationTime = CtiTime().seconds() + point->getControlExpirationTime();
@@ -317,7 +317,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         retmsg->setExpectMore(true);
 
-        retList.insert(retmsg);
+        retList.push_back(retmsg);
 
         //  fills in OutMessage with eventlog position and current command,
         //    then appends to outlist, consuming the outmessage
@@ -334,7 +334,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                         string(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,
@@ -382,7 +382,7 @@ void CtiDeviceION::initEventLogPosition( void )
     }
 }
 
-INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -408,7 +408,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
 
 
-INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -433,7 +433,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan accumulator");
@@ -458,7 +458,7 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 }
 
 
-int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
+int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> pointData;
@@ -714,14 +714,14 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
 
     return ErrReturn;
 }
 
 
-void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList,
+void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,
                                        RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, string &returnInfo, bool expectMore )
 {
     CtiReturnMsg *retMsg, *vgMsg;
@@ -792,7 +792,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, RWTP
             tmpSignal->setId(point->getID());
 
             //  only send to Dispatch
-            vgList.append(tmpSignal->replicateMessage());
+            vgList.push_back(tmpSignal->replicateMessage());
         }
         else
         {
@@ -821,12 +821,12 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, RWTP
         retMsg->setExpectMore();
     }
 
-    retList.append(retMsg);
-    vgList.append(vgMsg);
+    retList.push_back(retMsg);
+    vgList.push_back(vgMsg);
 }
 
 
-INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL, ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -915,7 +915,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< 
 
         retMsg->setResultString(resultString);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
 
     return retCode;

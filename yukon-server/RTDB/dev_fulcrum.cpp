@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,8 +45,8 @@
 INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
@@ -71,7 +71,7 @@ INT CtiDeviceFulcrum::GeneralScan(CtiRequestMsg *pReq,
 
 
 
-INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     USHORT retCode = NORMAL;
 
@@ -206,7 +206,7 @@ INT CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist<
 }
 
 
-INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     USHORT retCode=NORMAL;
@@ -326,7 +326,7 @@ INT CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , RWTPtrSlist< CtiMess
     return retCode;
 }
 
-INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int               retCode = NORMAL;
@@ -467,7 +467,7 @@ INT CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, RWTPtrSlis
 }
 
 
-INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int               retCode = NORMAL;
@@ -605,7 +605,7 @@ INT CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, RWTPtrSlist< CtiM
     return retCode;
 }
 
-INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     // make this easier to read in the following code
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
@@ -1065,7 +1065,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     int retCode = NORMAL;
@@ -1225,7 +1225,7 @@ INT CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, INT commRetur
 }
 
 
-INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlMeterStruct   MeterSt;
     USHORT retCode = NORMAL;
@@ -1305,7 +1305,7 @@ INT CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, R
 
 
 
-INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commReturnValue, list< CtiMessage* > &traceList)
 
 {
     int               retCode    = NORMAL;
@@ -1638,7 +1638,7 @@ INT CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer,INT commRetur
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     FulcrumLoadProfileMessage_t *localLProfile      = ((FulcrumLoadProfileMessage_t*)_loadProfileBuffer);
     SchlMeterStruct   MeterSt;
@@ -1752,7 +1752,7 @@ INT CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
 }
 
 
-INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     SchlumbergerLProfileInput_t *localMMInputs      = ((SchlumbergerLProfileInput_t *)_massMemoryRequestInputs);
     SchlLoadProfile_t           *localMMLoadProfile = ((SchlLoadProfile_t *)_massMemoryLoadProfile);
@@ -1842,8 +1842,8 @@ INT CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
 INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                                         CtiTime &TimeNow,
-                                        RWTPtrSlist< CtiMessage >   &vgList,
-                                        RWTPtrSlist< CtiMessage > &retList,
+                                        list< CtiMessage* >   &vgList,
+                                        list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList)
 {
     char tmpCurrentState = InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1];
@@ -1945,7 +1945,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
 
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -1963,8 +1963,8 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
 
 INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
-                                               RWTPtrSlist< CtiMessage >   &vgList,
-                                               RWTPtrSlist< CtiMessage > &retList,
+                                               list< CtiMessage* >   &vgList,
+                                               list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
 
@@ -2125,7 +2125,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

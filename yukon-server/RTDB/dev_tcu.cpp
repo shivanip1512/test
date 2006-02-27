@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,8 +81,8 @@ static char StatusPointNames55[][40] = {
 INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
                               CtiCommandParser &parse,
                               OUTMESS *&OutMessage,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
+                              list< CtiMessage* > &vgList,
+                              list< CtiMessage* > &retList,
                               list< OUTMESS* > &outList,
                               INT ScanPriority)
 {
@@ -110,8 +110,8 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
 INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
                                 CtiCommandParser &parse,
                                 OUTMESS *&OutMessage,
-                                RWTPtrSlist< CtiMessage > &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+                                list< CtiMessage* > &vgList,
+                                list< CtiMessage* > &retList,
                                 list< OUTMESS* > &outList,
                                 INT ScanPriority)
 {
@@ -121,8 +121,8 @@ INT CtiDeviceTCU::IntegrityScan(CtiRequestMsg *pReq,
 
 INT CtiDeviceTCU::ResultDecode(INMESS *InMessage,
                                CtiTime &TimeNow,
-                               RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList,
+                               list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList)
 {
 #if 0
@@ -160,7 +160,7 @@ INT CtiDeviceTCU::TCUScanAll (OUTMESS* OutMessage)            /* Priority to pla
 }
 
 /* Routine to decode returned TCU message and update database */
-INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< CtiMessage > &retList)
+INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList)
 {
    /* Misc. definitions */
    ULONG i;
@@ -207,7 +207,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< 
                }
                else
                {
-                  retList.insert( Msg );
+                  retList.push_back( Msg );
                }
             }
             else
@@ -225,7 +225,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< 
             if(Msg != NULL)
             {
                // Msg->dump();
-               retList.insert(Msg);
+               retList.push_back(Msg);
             }
          }
          break;
@@ -245,7 +245,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< 
 
          if(pLoop != NULL)
          {
-            retList.insert(pLoop);
+            retList.push_back(pLoop);
          }
 
          break;
@@ -270,8 +270,8 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< 
 INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  CtiCommandParser               &parse,
                                  OUTMESS                        *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >      &vgList,
-                                 RWTPtrSlist< CtiMessage >      &retList,
+                                 list< CtiMessage* >      &vgList,
+                                 list< CtiMessage* >      &retList,
                                  list< OUTMESS* >         &outList)
 {
    INT nRet = NORMAL;
@@ -292,7 +292,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          // Get a control request done maybe?
          if((nRet = TCUControl(OutMessage, &VSt)) != 0)
          {
-            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+            vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
                                            string("Control Request for TCU failed"),
@@ -312,7 +312,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                   OutMessage->Request.SOE,
                                                   CtiMultiMsg_vec());
 
-            retList.insert( eMsg );
+            retList.push_back( eMsg );
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -338,7 +338,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                dout << CtiTime() << " error scanning " << getName()<< endl;
             }
 
-            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+            vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
                                            string("Scan All Request for TCU failed"),
@@ -346,7 +346,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            SignalEvent,
                                            pReq->getUser()));
 
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                              string(OutMessage->Request.CommandStr),
                                              string("Scan All Request for TCU failed"),
                                              nRet,
@@ -389,7 +389,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                      dout << CtiTime() << " error looping " << getName()<< endl;
                   }
-                  retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                  retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                    string(OutMessage->Request.CommandStr),
                                                    string(getName() + " / ping failed to TCU"),
                                                    nRet,
@@ -420,7 +420,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          nRet = NoExecuteRequestMethod;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
-         retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+         retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                           string(OutMessage->Request.CommandStr),
                                           string("TCU Devices do not support this command (yet?)"),
                                           nRet,

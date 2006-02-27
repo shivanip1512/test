@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@
 
 using namespace std;
 
-INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("loop");
@@ -70,13 +70,13 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     return status;
 }
 
-INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
+INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,  INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
 
-INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int retVal = NORMAL;
 
@@ -142,7 +142,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 
             if( retMsg != NULL )
             {
-                retList.insert(retMsg);
+                retList.push_back(retMsg);
                 retMsg = NULL;
             }
 
@@ -168,8 +168,8 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  CtiCommandParser               &parse,
                                  OUTMESS                        *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >      &vgList,
-                                 RWTPtrSlist< CtiMessage >      &retList,
+                                 list< CtiMessage* >      &vgList,
+                                 list< CtiMessage* >      &retList,
                                  list< OUTMESS* >         &outList)
 {
    INT nRet = NORMAL;
@@ -211,7 +211,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
          nRet = NoExecuteRequestMethod;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
-         retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+         retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                           string(OutMessage->Request.CommandStr),
                                           string("CCU Devices do not support this command (yet?)"),
                                           nRet,

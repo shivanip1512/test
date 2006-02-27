@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
 }
 
 
-INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -178,7 +178,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     return status;
 }
 
-INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -199,12 +199,12 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return status;
 }
 
-INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceLCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     return( GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority) );
 }
 
-INT CtiDeviceLCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     return lcuDecode(InMessage, TimeNow, vgList, retList, outList);
 }
@@ -344,7 +344,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
     return(status);
 }
 
-INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = InMessage->EventCode & 0x7fff;
 
@@ -421,14 +421,14 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
 
                 if(Msg != NULL)
                 {
-                    retList.insert( Msg );
+                    retList.push_back( Msg );
                 }
 
                 Msg = lcuDecodeAnalogs(InMessage);
 
                 if(Msg != NULL)
                 {
-                    retList.insert( Msg );
+                    retList.push_back( Msg );
                 }
 
                 resetScanFlag(ScanRateGeneral);
@@ -441,7 +441,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
 
                 if(Msg != NULL)
                 {
-                    retList.insert( Msg );
+                    retList.push_back( Msg );
                 }
 
                 resetScanFlag(ScanRateGeneral);
@@ -453,21 +453,21 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
                 if(useScanFlags())
                 {
                     CtiMessage *Msg = lcuDecodeStatus(InMessage);
-                    if(Msg != NULL) retList.insert( Msg );
+                    if(Msg != NULL) retList.push_back( Msg );
 
                     Msg = lcuDecodeDigitalInputs(InMessage);
-                    if(Msg != NULL) retList.insert( Msg );
+                    if(Msg != NULL) retList.push_back( Msg );
 
                     Msg = lcuDecodeAnalogs(InMessage);
-                    if(Msg != NULL) retList.insert( Msg );
+                    if(Msg != NULL) retList.push_back( Msg );
 
                     Msg = lcuDecodeAccumulators(InMessage, outList);
-                    if(Msg != NULL) retList.insert( Msg );
+                    if(Msg != NULL) retList.push_back( Msg );
                 }
                 else
                 {
                     CtiMessage *Msg = lcuDecodeStatus(InMessage);
-                    if(Msg != NULL) retList.insert( Msg );
+                    if(Msg != NULL) retList.push_back( Msg );
                 }
 
                 resetScanFlag(ScanRateGeneral);
@@ -480,7 +480,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
 
                 if(pLoop != NULL)
                 {
-                    retList.insert(pLoop);
+                    retList.push_back(pLoop);
                 }
 
                 break;
@@ -488,7 +488,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
         case MASTERSEND:
             {
                 CtiMessage *Msg = lcuDecodeStatus(InMessage);
-                if(Msg != NULL) retList.insert( Msg );
+                if(Msg != NULL) retList.push_back( Msg );
                 break;
             }
         case MASTERLOCKOUTSET:
@@ -537,7 +537,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< Ct
 }
 
 
-INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NoError;
 
@@ -577,7 +577,7 @@ INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< 
     return status;
 }
 
-INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList,list< OUTMESS* > &outList)
+INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList,list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     OUTMESS *pOM = 0;
@@ -604,8 +604,8 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             {
                 if((pOM = lcuControl(OutMessage)) == 0)
                 {
-                    vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  CtiMultiMsg_vec()) );
+                    vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                    retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  CtiMultiMsg_vec()) );
                 }
                 else
                 {
@@ -626,8 +626,8 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     dout << CtiTime() << " error scanning " << getName()<< endl;
                 }
 
-                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
+                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -646,7 +646,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " error looping " << getName()<< endl;
                 }
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -667,7 +667,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             break;
         }
     }
@@ -1821,7 +1821,7 @@ CtiDeviceLCU& CtiDeviceLCU::operator=(const CtiDeviceLCU& aRef)
  *   This is a porter side decode used only when the OutMessage sent was RIPPLE'd and a control!
  *   It makes him pound the LCU into submission!
  */
-INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, RWTPtrSlist< CtiMessage >  &vgList)
+INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
 {
     INT status = NORMAL;
 
@@ -1834,7 +1834,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
             case MASTERSCANALL:
             case MASTERSCANINT:
                 {
-                    vgList.insert( lcuDecodeStatus(InMessage) );
+                    vgList.push_back( lcuDecodeStatus(InMessage) );
                     // FALL THROUGH FALL THROUGH....
                 }
             case MASTERSENDREPLY:

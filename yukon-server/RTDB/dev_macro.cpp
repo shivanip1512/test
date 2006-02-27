@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,9 @@
 #include "numstr.h"
 #include "rte_base.h"
 
+#include <list>
+
+using std::list;
 using namespace std;
    
 CtiDeviceMacro::CtiDeviceMacro( )  {  }
@@ -114,7 +117,7 @@ void CtiDeviceMacro::DecodeDatabaseReader( RWDBReader &rdr )
 }
 
 
-INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
     INT nRet = NORMAL;
@@ -127,7 +130,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
 
         set< LONG > executedRouteSet;
         deviceIter_t devIter(_deviceList.begin( ));
-        size_t vglistsize = vgList.entries();
+        size_t vglistsize = vgList.size();
         size_t newvglistsize = 0;
 
         const CtiCommandParser origparse = parse;
@@ -163,7 +166,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             parse = origparse;      // Reassign parse in case the last device added some clutter.
         }
 
-        newvglistsize = vgList.entries();
+        newvglistsize = vgList.size();
 
         CtiPoint *pPoint = 0;
 
@@ -178,9 +181,12 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                 /*
                  *  We claim all generated messages as having come from the device macro and not their causal device object here.
                  */
-                for(int i = newvglistsize; i > vglistsize; i-- )
+                //Switching from index 'for' loop to iterator while loop. Back to front
+                //for(int i = newvglistsize; i > vglistsize; i-- )
+                std::list< CtiMessage* >::reverse_iterator itr = vgList.rbegin();
+                while( itr != vgList.rend() )
                 {
-                    CtiMessage *&pMsg = vgList[i-1];
+                    CtiMessage *&pMsg = *itr;
 
                     if(pMsg->isA() == MSG_SIGNAL)
                     {
@@ -188,6 +194,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                         pSig->setId( pPoint->getID() );
                         pSig->setText( getDescription(parse) );
                     }
+                    ++itr;
                 }
             }
         }
@@ -292,7 +299,7 @@ bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LO
 }
 
 
-INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList)
+INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList)
 {
     CtiPoint *pPoint = NULL;
 
@@ -318,13 +325,13 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< Ct
 
         if (pData != NULL)
         {
-            vgList.insert( pData );
+            vgList.push_back( pData );
         }
     }
     return NORMAL;
 }
 
-INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
+INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
 {
     CtiPoint *pPoint;
     INT cnt = getResponsesOnTrxID();
@@ -363,7 +370,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), s);
             if (pData != NULL)
             {
-                vgList.insert( pData );
+                vgList.push_back( pData );
             }
         }
     }
@@ -372,7 +379,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
 }
 
 
-INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList )
+INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 

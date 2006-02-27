@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,8 +105,8 @@ void CtiRouteXCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &s
 INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                                 CtiCommandParser            &parse,
                                 OUTMESS                     *&OutMessage,
-                                RWTPtrSlist< CtiMessage >   &vgList,
-                                RWTPtrSlist< CtiMessage >   &retList,
+                                list< CtiMessage* >   &vgList,
+                                list< CtiMessage* >   &retList,
                                 list< OUTMESS* >      &outList)
 {
     INT      status = NORMAL;
@@ -191,8 +191,8 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
 INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                                          CtiCommandParser            &parse,
                                          OUTMESS                     *&OutMessage,
-                                         RWTPtrSlist< CtiMessage >   &vgList,
-                                         RWTPtrSlist< CtiMessage >   &retList,
+                                         list< CtiMessage* >   &vgList,
+                                         list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -338,7 +338,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -346,7 +346,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -359,8 +359,8 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
                                        CtiCommandParser            &parse,
                                        OUTMESS                     *&OutMessage,
-                                       RWTPtrSlist< CtiMessage >   &vgList,
-                                       RWTPtrSlist< CtiMessage >   &retList,
+                                       list< CtiMessage* >   &vgList,
+                                       list< CtiMessage* >   &retList,
                                        list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -404,7 +404,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -412,7 +412,7 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -432,8 +432,8 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                                              CtiCommandParser            &parse,
                                              OUTMESS                     *&OutMessage,
-                                             RWTPtrSlist< CtiMessage >   &vgList,
-                                             RWTPtrSlist< CtiMessage >   &retList,
+                                             list< CtiMessage* >   &vgList,
+                                             list< CtiMessage* >   &retList,
                                              list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -546,7 +546,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -554,7 +554,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -564,7 +564,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     return status;
 }
 
-INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT            status = NORMAL;
     bool           xmore = true;
@@ -683,7 +683,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
 
@@ -692,7 +692,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -705,8 +705,8 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                                       CtiCommandParser &parse,
                                       OUTMESS *&OutMessage,
-                                      RWTPtrSlist< CtiMessage >   &vgList,
-                                      RWTPtrSlist< CtiMessage >   &retList,
+                                      list< CtiMessage* >   &vgList,
+                                      list< CtiMessage* >   &retList,
                                       list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -831,7 +831,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -839,7 +839,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -852,8 +852,8 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                                          CtiCommandParser &parse,
                                          OUTMESS *&OutMessage,
-                                         RWTPtrSlist< CtiMessage >   &vgList,
-                                         RWTPtrSlist< CtiMessage >   &retList,
+                                         list< CtiMessage* >   &vgList,
+                                         list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -927,7 +927,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -935,7 +935,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -948,8 +948,8 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
 INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                                          CtiCommandParser &parse,
                                          OUTMESS *&OutMessage,
-                                         RWTPtrSlist< CtiMessage >   &vgList,
-                                         RWTPtrSlist< CtiMessage >   &retList,
+                                         list< CtiMessage* >   &vgList,
+                                         list< CtiMessage* >   &retList,
                                          list< OUTMESS* >      &outList)
 {
     INT            status = NORMAL;
@@ -1045,7 +1045,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         desc = "Route: " + getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -1053,7 +1053,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {

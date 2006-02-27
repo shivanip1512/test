@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.23  2006/02/27 23:58:30  tspar
+* Phase two of RWTPtrSlist replacement.
+*
 * Revision 1.22  2006/02/24 00:19:11  tspar
 * First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
 *
@@ -180,7 +183,7 @@ void CtiDeviceGroupSA305::DecodeDatabaseReader(RWDBReader &rdr)
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     ULONG etime = 0;
@@ -293,7 +296,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -309,7 +312,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {

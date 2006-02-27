@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,8 +83,8 @@ int CtiDeviceCBC::getCBCRetries( void )
 INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  CtiCommandParser               &parse,
                                  OUTMESS                        *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >      &vgList,
-                                 RWTPtrSlist< CtiMessage >      &retList,
+                                 list< CtiMessage* >      &vgList,
+                                 list< CtiMessage* >      &retList,
                                  list< OUTMESS* >         &outList)
 {
     INT nRet = NoMethod;
@@ -118,8 +118,8 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
 INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                          CtiCommandParser               &parse,
                                          OUTMESS                        *&OutMessage,
-                                         RWTPtrSlist< CtiMessage >      &vgList,
-                                         RWTPtrSlist< CtiMessage >      &retList,
+                                         list< CtiMessage* >      &vgList,
+                                         list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
@@ -190,14 +190,14 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                 else
                     resultString += "CLOSED";
 
-                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
             }
             else
             {
                 string actn = parse.getActionItems()[0];
                 string desc = getDescription(parse);
 
-                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
         else
@@ -214,7 +214,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             resultString += " performing command on route " + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -239,7 +239,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.SOE,
                                                      CtiMultiMsg_vec());
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {
@@ -260,8 +260,8 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
 INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                      CtiCommandParser               &parse,
                                      OUTMESS                        *&OutMessage,
-                                     RWTPtrSlist< CtiMessage >      &vgList,
-                                     RWTPtrSlist< CtiMessage >      &retList,
+                                     list< CtiMessage* >      &vgList,
+                                     list< CtiMessage* >      &retList,
                                      list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
@@ -306,14 +306,14 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                 else
                     resultString += "CLOSED";
 
-                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
             }
             else
             {
                 string actn = parse.getActionItems()[0];
                 string desc = getDescription(parse);
 
-                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
         else
@@ -335,7 +335,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
 
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -360,7 +360,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.SOE,
                                                      CtiMultiMsg_vec());
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {
@@ -450,8 +450,8 @@ void CtiDeviceCBC::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                        CtiCommandParser               &parse,
                                        OUTMESS                        *&OutMessage,
-                                       RWTPtrSlist< CtiMessage >      &vgList,
-                                       RWTPtrSlist< CtiMessage >      &retList,
+                                       list< CtiMessage* >      &vgList,
+                                       list< CtiMessage* >      &retList,
                                        list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
@@ -489,7 +489,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                 if( val == ((double)OPENED) ) resultString += "OPENED";
                 else resultString += "CLOSED";
 
-                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
             }
             else if( parse.isKeyValid("xcflip") )
             {
@@ -497,7 +497,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                 string actn;
                 string desc("CBC Flip Command Executed");
 
-                vgList.insert(CTIDBG_new CtiSignalMsg(pPoint->getPointID(), pReq->getSOE(), desc, actn, CapControlLogType, SignalEvent, pReq->getUser()));
+                vgList.push_back(CTIDBG_new CtiSignalMsg(pPoint->getPointID(), pReq->getSOE(), desc, actn, CapControlLogType, SignalEvent, pReq->getUser()));
             }
         }
         else if(parse.getActionItems().entries() == 1)
@@ -505,7 +505,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
             string actn = parse.getActionItems()[0];
             string desc = getDescription(parse);
 
-            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
         }
 
         /*
@@ -521,7 +521,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
 
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -546,7 +546,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                                      OutMessage->Request.SOE,
                                                      CtiMultiMsg_vec());
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {

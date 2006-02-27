@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,8 +42,8 @@ CtiDeviceMarkV::~CtiDeviceMarkV()
 INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
                                      CtiCommandParser          &parse,
                                      OUTMESS                   *&OutMessage,
-                                     RWTPtrSlist< CtiMessage > &vgList,
-                                     RWTPtrSlist< CtiMessage > &retList,
+                                     list< CtiMessage* > &vgList,
+                                     list< CtiMessage* > &retList,
                                      list< OUTMESS* >    &outList,
                                      INT                       ScanPriority )
 {
@@ -130,8 +130,8 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
 INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
                                  CtiCommandParser           &parse,
                                  OUTMESS                    *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >  &vgList,
-                                 RWTPtrSlist< CtiMessage >  &retList,
+                                 list< CtiMessage* >  &vgList,
+                                 list< CtiMessage* >  &retList,
                                  list< OUTMESS* >     &outList,
                                  INT                        ScanPriority)
 {
@@ -151,8 +151,8 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
 INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
                                      CtiCommandParser           &parse,
                                      OUTMESS                    *&OutMessage,
-                                     RWTPtrSlist< CtiMessage >  &vgList,
-                                     RWTPtrSlist< CtiMessage >  &retList,
+                                     list< CtiMessage* >  &vgList,
+                                     list< CtiMessage* >  &retList,
                                      list< OUTMESS* >     &outList,
                                      INT                        ScanPriority)
 {
@@ -171,8 +171,8 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
 
 INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   CtiTime                    &TimeNow,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* >    &outList)
 {
    vector<CtiTransdataData *> transVector;
@@ -223,8 +223,8 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 
 INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
                                  CtiTime                     &TimeNow,
-                                 RWTPtrSlist< CtiMessage >  &vgList,
-                                 RWTPtrSlist< CtiMessage >  &retList,
+                                 list< CtiMessage* >  &vgList,
+                                 list< CtiMessage* >  &retList,
                                  list< OUTMESS* >     &outList)
 {
    INT retCode = NORMAL;
@@ -255,7 +255,7 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
          pMsg->insert( GeneralScanAborted );
       }
 
-      retList.insert( pMsg );
+      retList.push_back( pMsg );
       pMsg = NULL;
    }
 
@@ -270,8 +270,8 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
 
 int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                       CtiTime                    &TimeNow,
-                                      RWTPtrSlist< CtiMessage > &vgList,
-                                      RWTPtrSlist< CtiMessage > &retList,
+                                      list< CtiMessage* > &vgList,
+                                      list< CtiMessage* > &retList,
                                       vector<CtiTransdataData *> transVector)
 {
    CtiPointDataMsg   *pData = NULL;
@@ -703,7 +703,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
          }
       }
 
-      retList.insert( pPIL );
+      retList.push_back( pPIL );
       pPIL = NULL;
 
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )

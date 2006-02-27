@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/27 23:58:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ public:
     *  These guys initiate a scan based upon the type requested.
     */
 
-   INT               TCUDecode(INMESS *InMessage, CtiTime &ScanTime, RWTPtrSlist< CtiMessage > &retList);
+   INT               TCUDecode(INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList);
    CtiReturnMsg*  TCUDecodeStatus(INMESS *InMessage);
 
    INT               TCUControl(OUTMESS*, VSTRUCT*);
@@ -67,28 +67,28 @@ public:
    virtual INT IntegrityScan(CtiRequestMsg *pReq,
                              CtiCommandParser &parse,
                              OUTMESS *&OutMessage,
-                             RWTPtrSlist< CtiMessage > &vgList,
-                             RWTPtrSlist< CtiMessage > &retList,
+                             list< CtiMessage* > &vgList,
+                             list< CtiMessage* > &retList,
                              list< OUTMESS* > &outList,
                              INT ScanPriority = MAXPRIORITY - 4);
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* > &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS*,
                             CtiTime&,
-                            RWTPtrSlist< CtiMessage >   &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
+                            list< CtiMessage* >   &vgList,
+                            list< CtiMessage* > &retList,
                             list< OUTMESS* > &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
    CtiDeviceTCU& setSendFiller(bool yesno);

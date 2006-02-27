@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,8 +74,8 @@ CtiDeviceWelco& CtiDeviceWelco::operator=(const CtiDeviceWelco& aRef)
 INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
                                     CtiCommandParser &parse,
                                     OUTMESS *&OutMessage,
-                                    RWTPtrSlist< CtiMessage > &vgList,
-                                    RWTPtrSlist< CtiMessage > &retList,
+                                    list< CtiMessage* > &vgList,
+                                    list< CtiMessage* > &retList,
                                     list< OUTMESS* > &outList,
                                     INT ScanPriority)
 {
@@ -127,7 +127,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -154,8 +154,8 @@ INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
@@ -351,7 +351,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
     return status;
 }
 
-INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     bool continue_required = false;             // This is not the last report from this device for the previous request.
     bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
@@ -1259,7 +1259,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
     {
         if(!(ReturnMsg->ResultString().empty()) || ReturnMsg->getData().size() > 0)
         {
-            retList.append( ReturnMsg );
+            retList.push_back( ReturnMsg );
         }
         else
         {
@@ -1643,8 +1643,8 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
 INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
                                 CtiTime &TimeNow,
-                                RWTPtrSlist< CtiMessage >   &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+                                list< CtiMessage* >   &vgList,
+                                list< CtiMessage* > &retList,
                                 list< OUTMESS* > &outList)
 {
     INT nRet = NoError;
@@ -1667,7 +1667,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
             pMsg->insert(GeneralScanAborted);
         }
 
-        retList.insert( pMsg );
+        retList.push_back( pMsg );
     }
 
     if(InMessage)
@@ -1713,8 +1713,8 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
 INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
+                                   list< CtiMessage* >      &vgList,
+                                   list< CtiMessage* >      &retList,
                                    list< OUTMESS* >         &outList)
 {
     INT nRet = NORMAL;
@@ -1800,7 +1800,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          CtiNumStr(TimeSt.tm_sec).zpad(2));
                 }
 
-                retList.insert( ret );
+                retList.push_back( ret );
 
                 outList.push_back(OutMessage);
                 OutMessage = NULL;
@@ -1824,7 +1824,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                              string(OutMessage->Request.CommandStr),
                                              string("Welco Devices do not support this command (yet?)"),
                                              nRet,
@@ -1866,7 +1866,7 @@ CtiDeviceWelco& CtiDeviceWelco::setDeadbandsSent(const bool b)
 }
 
 
-INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1968,7 +1968,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, CtiTime(), -1, 100 );
 
                         hist->setMessagePriority( hist->getMessagePriority() + 1 );
-                        vgList.insert( hist );
+                        vgList.push_back( hist );
 
                         if(ctlPoint->isPseudoPoint())
                         {
@@ -1979,10 +1979,10 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                                                                          StatusPointType,
                                                                          string("This point has been controlled"));
                             pData->setUser( pReq->getUser() );
-                            vgList.insert(pData);
+                            vgList.push_back(pData);
                         }
 
-                        retList.insert( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), string("Command submitted to port control")) );
+                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), string("Command submitted to port control")) );
                     }
                 }
                 else

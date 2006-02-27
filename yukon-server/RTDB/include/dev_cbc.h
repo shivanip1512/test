@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/24 00:19:13 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,30 +54,30 @@ private:
     virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
                                CtiCommandParser               &parse,
                                OUTMESS                        *&OutMessage,
-                               RWTPtrSlist< CtiMessage >      &vgList,
-                               RWTPtrSlist< CtiMessage >      &retList,
+                               list< CtiMessage* >      &vgList,
+                               list< CtiMessage* >      &retList,
                                list< OUTMESS* >         &outList);
 
 
     INT executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                CtiCommandParser               &parse,
                                OUTMESS                        *&OutMessage,
-                               RWTPtrSlist< CtiMessage >      &vgList,
-                               RWTPtrSlist< CtiMessage >      &retList,
+                               list< CtiMessage* >      &vgList,
+                               list< CtiMessage* >      &retList,
                                list< OUTMESS* >         &outList);
 
     INT executeVersacomCBC(CtiRequestMsg                  *pReq,
                            CtiCommandParser               &parse,
                            OUTMESS                        *&OutMessage,
-                           RWTPtrSlist< CtiMessage >      &vgList,
-                           RWTPtrSlist< CtiMessage >      &retList,
+                           list< CtiMessage* >      &vgList,
+                           list< CtiMessage* >      &retList,
                            list< OUTMESS* >         &outList);
 
     INT executeExpresscomCBC(CtiRequestMsg                  *pReq,
                              CtiCommandParser               &parse,
                              OUTMESS                        *&OutMessage,
-                             RWTPtrSlist< CtiMessage >      &vgList,
-                             RWTPtrSlist< CtiMessage >      &retList,
+                             list< CtiMessage* >      &vgList,
+                             list< CtiMessage* >      &retList,
                              list< OUTMESS* >         &outList);
 
 

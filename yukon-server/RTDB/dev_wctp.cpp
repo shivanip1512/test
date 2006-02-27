@@ -154,8 +154,8 @@ bool CtiDeviceWctpTerminal::getSendFiller() const
 INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           CtiCommandParser               &parse,
                                           OUTMESS                        *&OutMessage,
-                                          RWTPtrSlist< CtiMessage >      &vgList,
-                                          RWTPtrSlist< CtiMessage >      &retList,
+                                          list< CtiMessage* >      &vgList,
+                                          list< CtiMessage* >      &retList,
                                           list< OUTMESS* >         &outList)
 {
     INT nRet = NORMAL;
@@ -187,7 +187,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("TAP Devices do not support this command (yet?)"),
                                                     nRet,
@@ -479,7 +479,7 @@ CHAR* CtiDeviceWctpTerminal::trimMessage(CHAR *message)
 }
 
 
-INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiMessage* > &traceList)
 {
     ULONG i;
     string outStr;
@@ -494,26 +494,26 @@ INT CtiDeviceWctpTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< Ct
     trace.setBrightYellow();
     trace.setTrace(  CtiTime().asString().c_str() + string(" ") );
     trace.setEnd(false);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightCyan();
     trace.setTrace(  getName() + string(" ") );
     trace.setEnd(false);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightWhite();
     trace.setTrace(  string("SENT: ") );
     trace.setEnd(true);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightGreen();
     trace.setTrace( string("\"") + outStr + string("\"\n\n") );
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     return(NORMAL);
 }
 
-INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage)
+INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, list< CtiMessage* > &traceList, BOOL CompletedMessage)
 {
     ULONG i;
 
@@ -532,21 +532,21 @@ INT CtiDeviceWctpTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< Ct
         trace.setBrightYellow();
         trace.setTrace(  CtiTime().asString().c_str() + string(" ") );
         trace.setEnd(false);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightCyan();
         trace.setTrace(  getName() + string(" ") );
         trace.setEnd(false);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightWhite();
         trace.setTrace(  string("RECV: ") );
         trace.setEnd(true);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightMagenta();
         trace.setTrace( string("\"") + _inStr + string("\"\n\n") );
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         _inStr = string();     // Reset it for the next message
     }
@@ -748,7 +748,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     return len;
 }
 
-INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
     INT   status = NORMAL;
@@ -891,7 +891,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
     return status;
 }
 
-INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT status = commReturnValue;
 

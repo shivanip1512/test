@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_macro.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/27 23:58:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,8 +75,8 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/02/27 23:58:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -745,8 +745,8 @@ VOID ResultThread (VOID *Arg)
     HANDLE      evShutdown;
 
     list< OUTMESS* > outList;
-    RWTPtrSlist< CtiMessage > retList;
-    RWTPtrSlist< CtiMessage > vgList;
+    list< CtiMessage* > retList;
+    list< CtiMessage* > vgList;
 
 
     // I want an attitude!
@@ -878,15 +878,17 @@ VOID ResultThread (VOID *Arg)
                     MakePorterRequests(outList);
 
                     // Write any results generated back to VanGogh
-                    while(retList.entries())
+                    while(retList.size())
                     {
-                        VanGoghConnection.WriteConnQue(retList.get());   // I no longer manage this, the queue cleans up!
+                        VanGoghConnection.WriteConnQue(retList.front());   // I no longer manage this, the queue cleans up!
+                        retList.pop_front();
                     }
 
                     // Write any signals or misc. messages back to VanGogh!
-                    while(vgList.entries())
+                    while(vgList.size())
                     {
-                        VanGoghConnection.WriteConnQue((CtiMessage*)vgList.get());   // I no longer manage this, the queue cleans up!
+                        VanGoghConnection.WriteConnQue((CtiMessage*)vgList.front());   // I no longer manage this, the queue cleans up!
+                        vgList.pop_front();
                     }
 
                     /* Check if we should kick other thread in the pants */

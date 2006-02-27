@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -500,7 +500,7 @@ CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator
     return my_itr++;
 }
 
-bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist< CtiMessage > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
+bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMessage* > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
 {
     CtiLockGuard< CtiMutex > guard(_smartMap.getMux());
     spiterator itr_rte;
@@ -532,7 +532,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist<
                         dout << "  It will be skipped. for role generation." << endl;
                     }
 
-                    retList.insert( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
+                    retList.push_back( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
                                                       Req.CommandString(),
                                                       resStr,
                                                       BADPARAM,

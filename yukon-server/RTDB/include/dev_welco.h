@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/02/27 23:58:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,45 +67,45 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* > &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT AccumulatorScan(CtiRequestMsg *pReq,
                                CtiCommandParser &parse,
                                OUTMESS *&OutMessage,
-                               RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList,
+                               list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList,
                                INT ScanPriority = MAXPRIORITY - 3);
    virtual INT IntegrityScan(CtiRequestMsg *pReq,
                              CtiCommandParser &parse,
                              OUTMESS *&OutMessage,
-                             RWTPtrSlist< CtiMessage > &vgList,
-                             RWTPtrSlist< CtiMessage > &retList,
+                             list< CtiMessage* > &vgList,
+                             list< CtiMessage* > &retList,
                              list< OUTMESS* > &outList,
                              INT ScanPriority = MAXPRIORITY - 4);
 
    virtual INT ErrorDecode(INMESS*,
                            CtiTime&,
-                           RWTPtrSlist< CtiMessage >   &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* >   &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList);
 
    virtual INT ResultDecode(INMESS*,
                             CtiTime&,
-                            RWTPtrSlist< CtiMessage >   &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
+                            list< CtiMessage* >   &vgList,
+                            list< CtiMessage* > &retList,
                             list< OUTMESS* > &outList);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
-   virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
+   virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
    virtual INT RefreshDevicePoints();
    virtual bool clearedForScan(int scantype);

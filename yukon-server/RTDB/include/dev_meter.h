@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 00:19:13 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,31 +63,31 @@ public:
    virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                   *&OutMessage,
-                              RWTPtrSlist< CtiMessage >  &vgList,
-                              RWTPtrSlist< CtiMessage >  &retList,
+                              list< CtiMessage* >  &vgList,
+                              list< CtiMessage* >  &retList,
                               list< OUTMESS* >     &outList);
 
    /*
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT   generateCommandScan       ( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList)                     { return NoGenerateCmdMethod; };
-   virtual INT   generateCommandLoadProfile( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )                     { return NoGenerateCmdMethod; };
-   virtual INT   generateCommandSelectMeter( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )                     { return NoGenerateCmdMethod; };
+   virtual INT   generateCommandScan       ( CtiXfer &Transfer, list< CtiMessage* > &traceList)                     { return NoGenerateCmdMethod; };
+   virtual INT   generateCommandLoadProfile( CtiXfer &Transfer, list< CtiMessage* > &traceList )                     { return NoGenerateCmdMethod; };
+   virtual INT   generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMessage* > &traceList )                     { return NoGenerateCmdMethod; };
 
-   virtual INT   decodeResponseScan       ( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList ) { return NoDecodeResponseMethod; };
-   virtual INT   decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList ) { return NoDecodeResponseMethod; };
-   virtual INT   decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList ) { return NoDecodeResponseMethod; };
+   virtual INT   decodeResponseScan       ( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
+   virtual INT   decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
+   virtual INT   decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList ) { return NoDecodeResponseMethod; };
 
    virtual INT   decodeResultScan( INMESS                    *InMessage,
                                    CtiTime                    &TimeNow,
-                                   RWTPtrSlist< CtiMessage > &vgList,
-                                   RWTPtrSlist< CtiMessage > &retList,
+                                   list< CtiMessage* > &vgList,
+                                   list< CtiMessage* > &retList,
                                    list< OUTMESS* >    &outList )         { return NoResultDecodeMethod; };
    virtual INT   decodeResultLoadProfile( INMESS                    *InMessage,
                                           CtiTime                    &TimeNow,
-                                          RWTPtrSlist< CtiMessage > &vgList,
-                                          RWTPtrSlist< CtiMessage > &retList,
+                                          list< CtiMessage* > &vgList,
+                                          list< CtiMessage* > &retList,
                                           list< OUTMESS* >    &outList )  { return NoResultDecodeMethod; };
 
    virtual BOOL verifyAndAddPointToReturnMsg( LONG   aPointId,

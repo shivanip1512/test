@@ -45,8 +45,8 @@ CtiDeviceSentinel::~CtiDeviceSentinel()
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -88,7 +88,7 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
                                           pReq->TransmissionId(),
                                           pReq->UserMessageId());
           retMsg->setExpectMore(1);
-          retList.insert(retMsg);
+          retList.push_back(retMsg);
 
           retMsg = 0;
 
@@ -105,8 +105,8 @@ INT CtiDeviceSentinel::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse
    return NoError;
 }
 
-INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -206,8 +206,8 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
                                   CtiCommandParser           &parse,
                                   OUTMESS                   *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >  &vgList,
-                                  RWTPtrSlist< CtiMessage >  &retList,
+                                  list< CtiMessage* >  &vgList,
+                                  list< CtiMessage* >  &retList,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
@@ -294,7 +294,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
                                                 string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
@@ -324,7 +324,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
+INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -430,7 +430,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtr
     if( retMsg != NULL )
     {
         retMsg->setExpectMore(0);
-        retList.insert(retMsg);
+        retList.push_back(retMsg);
         retMsg = NULL;
     }
     {
@@ -511,7 +511,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
+INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList)
 {
 
@@ -737,7 +737,7 @@ CtiProtocolANSI & CtiDeviceSentinel::getSentinelProtocol( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &retList, UINT archiveFlag )
+void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag )
 {
 
     CtiReturnMsg *msgPtr;
@@ -948,7 +948,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         msgPtr = new CtiReturnMsg;
 
                         msgPtr->insert(pData);
-                        retList.insert(msgPtr);
+                        retList.push_back(msgPtr);
                         if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -998,7 +998,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 if (msgCntr >= 400 || y <= 0 )
                                 {
                                     msgCntr = 0;
-                                    retList.insert(msgPtr);
+                                    retList.push_back(msgPtr);
                                     msgPtr = NULL;
                                     if (y > 0)
                                         msgPtr = new CtiReturnMsg;
@@ -1014,7 +1014,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 y = -1;
                                 if (msgPtr->getCount() > 0)
                                 {
-                                    retList.insert(msgPtr);
+                                    retList.push_back(msgPtr);
                                 }
                             }
 
@@ -1067,7 +1067,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                                 msgPtr = new CtiReturnMsg;
                                 msgPtr->insert(pData);
 
-                                retList.insert(msgPtr);
+                                retList.push_back(msgPtr);
 
                                 if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                                 {

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ void CtiDeviceGroupEnergyPro::DecodeDatabaseReader(RWDBReader &rdr)
     _expresscomGroup.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;
@@ -162,7 +162,7 @@ string CtiDeviceGroupEnergyPro::getPutConfigAssignment(UINT modifier)
     return  assign;
 }
 
-bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &retList )
+bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList )
 {
     bool status = false;
 
@@ -226,7 +226,7 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), issue, NORMAL, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
         pRet->setExpectMore( FALSE );
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -237,11 +237,11 @@ bool CtiDeviceGroupEnergyPro::checkForEmptyParseAddressing( CtiCommandParser &pa
     return status;
 }
 
-INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupEnergyPro::ProcessResult(INMESS* InMessage, CtiTime& now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = 0;
 
-    retList.insert( CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec()));
+    retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string((char*)InMessage->Buffer.GWRSt.MsgData),  status, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec()));
 
 
     return status;

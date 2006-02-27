@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -467,7 +467,7 @@ bool CtiDeviceTnppPagingTerminal::isTransactionComplete()
     return _command == Complete;
 }
 
-INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -498,7 +498,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                 nRet = NoExecuteRequestMethod;
                 /* Set the error value in the base class. */
                 // FIX FIX FIX 092999
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                         string(OutMessage->Request.CommandStr).c_str(),
                                                         string("SNPP Devices do not support this command (yet?)").c_str(),
                                                         nRet,

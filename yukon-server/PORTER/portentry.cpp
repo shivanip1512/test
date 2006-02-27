@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1526,8 +1526,8 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
     INT i;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(OutMessage->DeviceID, OutMessage->Request.CommandStr);
-    RWTPtrSlist< CtiMessage >  vgList;
-    RWTPtrSlist< CtiMessage >  retList;
+    list< CtiMessage* >  vgList;
+    list< CtiMessage* >  retList;
 
     if(OutMessage != NULL)
     {
@@ -1575,15 +1575,16 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
                         dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
                     }
                 }
-
-                retList.clearAndDestroy();
-                vgList.clearAndDestroy();
+                delete_list(vgList);
+                delete_list(retList);
+                retList.clear();
+                vgList.clear();
             }
             else
             {
-                while( (i = retList.entries()) > 0 )
+                while( (i = retList.size()) > 0 )
                 {
-                    CtiReturnMsg *pRet = (CtiReturnMsg *)retList.get();
+                    CtiReturnMsg *pRet = (CtiReturnMsg *)retList.front();retList.pop_front();
                     CtiConnection *Conn = NULL;
 
                     if((Conn = ((CtiConnection*)pRet->getConnectionHandle())) != NULL)
@@ -1597,9 +1598,9 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
                     }
                 }
 
-                while( (i = vgList.entries()) > 0 )
+                while( (i = vgList.size()) > 0 )
                 {
-                    CtiMessage *pVg = vgList.get();
+                    CtiMessage *pVg = vgList.front();vgList.pop_front();
                     VanGoghConnection.WriteConnQue(pVg);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

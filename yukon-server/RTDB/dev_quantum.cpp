@@ -185,8 +185,8 @@ CtiDeviceQuantum &CtiDeviceQuantum::setBasePageStart( ULONG pageStart )
 INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
                                    CtiCommandParser &parse,
                                    OUTMESS *&OutMessage,
-                                   RWTPtrSlist< CtiMessage > &vgList,
-                                   RWTPtrSlist< CtiMessage > &retList,
+                                   list< CtiMessage* > &vgList,
+                                   list< CtiMessage* > &retList,
                                    list< OUTMESS* > &outList,
                                    INT ScanPriority )
 {
@@ -258,7 +258,7 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     USHORT retCode = NORMAL;
 
@@ -387,7 +387,7 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, RWTPtrSlist< 
 }
 
 
-INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
     USHORT          retCode = NORMAL;
@@ -430,7 +430,7 @@ INT CtiDeviceQuantum::generateCommand( CtiXfer &Transfer, RWTPtrSlist< CtiMessag
     return retCode;
 }
 
-INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
     int             retCode = NORMAL;
@@ -574,7 +574,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, RWTPtrSlist
 }
 
 
-INT CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::generateCommandScan( CtiXfer &Transfer, list< CtiMessage* > &traceList )
 {
     int retCode = NORMAL;
 
@@ -677,7 +677,7 @@ LONG CtiDeviceQuantum::getNextRecordLocation( LONG currentRecordAddress )
 }
 
 
-INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     //  grab the mass memory config
     QuantumConfigData_t  *mmCfg       = (QuantumConfigData_t *)_massMemoryConfig;
@@ -848,7 +848,7 @@ INT CtiDeviceQuantum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
 }
 
 
-INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct   MeterSt;
     int retCode = NORMAL;
@@ -1022,7 +1022,7 @@ INT CtiDeviceQuantum::decodeResponseHandshake( CtiXfer &Transfer, INT commReturn
 }
 
 
-INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
 {
     SchlMeterStruct MeterSt;
     USHORT retCode = NORMAL;
@@ -1067,7 +1067,7 @@ INT CtiDeviceQuantum::decodeResponse( CtiXfer &Transfer, INT commReturnValue, RW
 
 
 
-INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
 {
     int retCode = NORMAL;
     SchlMeterStruct   MeterSt;
@@ -1291,7 +1291,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
 }
 
 
-INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList )
 {
     int retCode = NORMAL;
 
@@ -1357,7 +1357,7 @@ INT CtiDeviceQuantum::decodeResponseScan( CtiXfer &Transfer, INT commReturnValue
 }
 
 
-INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     QuantumConfigData_t  *mmCfg = ((QuantumConfigData_t *)_massMemoryConfig);
 
@@ -1840,8 +1840,8 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( QuantumRawScanData_t
 
 INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                         CtiTime &TimeNow,
-                                        RWTPtrSlist< CtiMessage >   &vgList,
-                                        RWTPtrSlist< CtiMessage > &retList,
+                                        list< CtiMessage* >   &vgList,
+                                        list< CtiMessage* > &retList,
                                         list< OUTMESS* > &outList )
 {
     CHAR     temp[100],
@@ -1988,7 +1988,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     {
         if( pPIL->PointData( ).size( ) > 0 )
         {
-            retList.insert( pPIL );
+            retList.push_back( pPIL );
         }
         else
         {
@@ -2007,8 +2007,8 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
 
 INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                                                CtiTime &TimeNow,
-                                               RWTPtrSlist< CtiMessage >   &vgList,
-                                               RWTPtrSlist< CtiMessage > &retList,
+                                               list< CtiMessage* >   &vgList,
+                                               list< CtiMessage* > &retList,
                                                list< OUTMESS* > &outList)
 {
     DIALUPREQUEST                 *dupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
@@ -2188,7 +2188,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     //  send the whole mess to dispatch
     if( pPIL->PointData( ).size( ) > 0 )
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {

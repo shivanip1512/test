@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2006/02/27 22:21:32 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,13 +197,15 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
 
 CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int);
-void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(void *ptr = NULL);
 void DebugKeyEvent(KEY_EVENT_RECORD *ke);
 string GetDeviceName( ULONG id );
 void KickPIL();
 bool processInputFunction(CHAR Char);
+
+void reportOnWorkObjects();
 
 extern void QueueThread (void *);
 extern void KickerThread (void *);
@@ -1870,7 +1872,7 @@ void LoadPorterGlobals(void)
 
 
 
-void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume)
+void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume)
 {
     try
     {
@@ -1885,10 +1887,10 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
                 Sleep(100);
                 coutTryGuard.tryAcquire();
             }
-
-            for(size_t i = 0; i < traceList.entries(); i++)
+            std::list< CtiMessage* >::iterator itr = traceList.begin();
+            while ( itr != traceList.end() )
             {
-                CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
+                CtiTraceMsg *pTrace = (CtiTraceMsg*)*itr;
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
                 cout << pTrace->getTrace();
 
@@ -1896,6 +1898,7 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
                 {
                     cout << endl;
                 }
+                ++itr;
             }
 
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
@@ -1903,7 +1906,8 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
 
         if(consume)
         {
-            traceList.clearAndDestroy();
+            delete_list( traceList );
+            traceList.clear();
         }
     }
     catch(...)

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,8 +193,8 @@ public:
 
     virtual INT  ProcessResult(INMESS*,
                                CtiTime&,
-                               RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList,
+                               list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);

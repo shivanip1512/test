@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,8 +46,8 @@ static INT NoQueingDLC;
 INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                 CtiCommandParser               &parse,
                                 OUTMESS                        *&OutMessage,
-                                RWTPtrSlist< CtiMessage >      &vgList,
-                                RWTPtrSlist< CtiMessage >      &retList,
+                                list< CtiMessage* >      &vgList,
+                                list< CtiMessage* >      &retList,
                                 list< OUTMESS* >         &outList)
 {
     INT      status = NORMAL;
@@ -95,8 +95,8 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
 INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
                                          CtiCommandParser               &parse,
                                          OUTMESS                        *OutMessage,
-                                         RWTPtrSlist< CtiMessage >      &vgList,
-                                         RWTPtrSlist< CtiMessage >      &retList,
+                                         list< CtiMessage* >      &vgList,
+                                         list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
     INT            i, j;
@@ -284,7 +284,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -297,8 +297,8 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
 INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
                                     CtiCommandParser               &parse,
                                     OUTMESS                        *OutMessage,
-                                    RWTPtrSlist< CtiMessage >      &vgList,
-                                    RWTPtrSlist< CtiMessage >      &retList,
+                                    list< CtiMessage* >      &vgList,
+                                    list< CtiMessage* >      &retList,
                                     list< OUTMESS* >         &outList)
 {
     INT            i, j;
@@ -425,7 +425,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         if(parse.isTwoWay())     retReturn->setExpectMore(xmore);
         if(parse.isDisconnect()) retReturn->setExpectMore(xmore);  //  we scan afterwards, so you'd best expect another message even though it's not technically two-way
 
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -438,8 +438,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
 INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
                                          CtiCommandParser               &parse,
                                          OUTMESS                        *OutMessage,
-                                         RWTPtrSlist< CtiMessage >      &vgList,
-                                         RWTPtrSlist< CtiMessage >      &retList,
+                                         list< CtiMessage* >      &vgList,
+                                         list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
 {
     INT            i, j;
@@ -738,7 +738,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
 
             if(retReturn)
             {
-                retList.insert(retReturn);
+                retList.push_back(retReturn);
             }
         }
 
@@ -766,7 +766,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {

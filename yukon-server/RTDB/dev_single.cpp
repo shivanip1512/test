@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,8 +154,8 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
      *  actual device specific code called by that device type.
      */
 
-    RWTPtrSlist< CtiMessage > vgList;
-    RWTPtrSlist< CtiMessage > retList;
+    list< CtiMessage* > vgList;
+    list< CtiMessage* > retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan accumulator",
@@ -279,8 +279,8 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
      *  actual device specific code called by that device type.
      */
 
-    RWTPtrSlist< CtiMessage > vgList;
-    RWTPtrSlist< CtiMessage > retList;
+    list< CtiMessage* > vgList;
+    list< CtiMessage* > retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan integrity",
@@ -402,8 +402,8 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
     CtiTime   Now;
     OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
 
-    RWTPtrSlist< CtiMessage > vgList;
-    RWTPtrSlist< CtiMessage > retList;
+    list< CtiMessage* > vgList;
+    list< CtiMessage* > retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan general",
@@ -545,8 +545,8 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
      *  actual device specific code called by that device type.
      */
 
-    RWTPtrSlist< CtiMessage > vgList;
-    RWTPtrSlist< CtiMessage > retList;
+    list< CtiMessage* > vgList;
+    list< CtiMessage* > retList;
 
     CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan loadprofile",
@@ -713,8 +713,8 @@ void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &wor
 
 INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                                    CtiTime &TimeNow,
-                                   RWTPtrSlist< CtiMessage >   &vgList,
-                                   RWTPtrSlist< CtiMessage > &retList,
+                                   list< CtiMessage* >   &vgList,
+                                   list< CtiMessage* > &retList,
                                    list< OUTMESS* > &outList)
 {
     INT   nRet = InMessage->EventCode & 0x3fff;
@@ -762,7 +762,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 Ret->setExpectMore();           // Help MACS know this is intermediate.
                 Ret->setStatus( nRet );
 
-                retList.insert( Ret );
+                retList.push_back( Ret );
             }
 
             size_t cnt = outList.size();
@@ -818,7 +818,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 Ret->setExpectMore();
             }
 
-            retList.insert( Ret );
+            retList.push_back( Ret );
 
             ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
         }

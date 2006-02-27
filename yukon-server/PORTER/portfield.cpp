@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.169 $
-* DATE         :  $Date: 2006/02/27 20:53:29 $
+* REVISION     :  $Revision: 1.170 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,7 @@ extern string GetDeviceName( ULONG id );
 
 extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
-extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+extern void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 extern void commFail(CtiDeviceSPtr &Device);
 
@@ -156,11 +156,11 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, list< CtiMessage* > &traceList);
+INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, list< CtiMessage* > &traceList);
+INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
+INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
+INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList);
 
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
@@ -1296,7 +1296,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
     BYTE           *dataBuffer = NULL;
     CtiXfer        trx;
 
-    RWTPtrSlist< CtiMessage > traceList;
+    list< CtiMessage* > traceList;
 
     extern CtiConnection VanGoghConnection;
 
@@ -1473,16 +1473,18 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if ( ansi.forceProcessDispatchMsg() || !ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
-                                RWTPtrSlist< CtiReturnMsg >  retList;
-                                retList.clearAndDestroy();
+                                list< CtiReturnMsg* >  retList;
+                                delete_list(retList);
+                                retList.clear();
 
                                 kv2dev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
-                                while( !retList.isEmpty())
+                                while( !retList.empty())
                                 {
-                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.get();
+                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
                                     VanGoghConnection.WriteConnQue(retMsg);
                                 }
-                                retList.clearAndDestroy();
+                                delete_list(retList);
+                                retList.clear();
 
                                 InMessage->EventCode = NORMAL;
 
@@ -1558,16 +1560,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if ( ansi.forceProcessDispatchMsg() ||!ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
-                                RWTPtrSlist< CtiReturnMsg >  retList;
-                                retList.clearAndDestroy();
+                                list< CtiReturnMsg* >  retList;
+                                delete_list(retList);
+                                retList.clear();
 
                                 sentinelDev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
-                                while( !retList.isEmpty())
+                                while( !retList.empty())
                                 {
-                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.get();
+                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
                                     VanGoghConnection.WriteConnQue(retMsg);
+                                    
                                 }
-                                retList.clearAndDestroy();
+                                delete_list(retList);
+                                retList.clear();
 
                                 InMessage->EventCode = NORMAL;
                             }
@@ -3313,7 +3318,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
     return status;
 }
 
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist< CtiMessage > &traceList)
+INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];
@@ -3359,7 +3364,7 @@ INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist
     return status;
 }
 
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
 {
     INT            status = NORMAL;
     CtiXfer        transfer;
@@ -3458,7 +3463,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
 
 
 
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  RWTPtrSlist< CtiMessage > &traceList)
+INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  list< CtiMessage* > &traceList)
 {
     INT         status = NORMAL;
 
@@ -3503,7 +3508,7 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *
 }
 
 
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, list< CtiMessage* > &traceList)
 {
     int retCode (NORMAL);
     int i;
@@ -3549,7 +3554,7 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessag
     return retCode;
 }
 
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist< CtiMessage > &traceList)
+INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMessage* > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];

@@ -260,7 +260,7 @@ INT CtiPortDirect::outClear()
     return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
 }
 
-INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
     INT      status      = NORMAL;
 
@@ -545,7 +545,7 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
 
 
 
-INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
     INT      status = NORMAL;
     INT      i = 0;

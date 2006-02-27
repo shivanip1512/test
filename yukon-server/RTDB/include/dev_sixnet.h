@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/24 00:19:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -302,14 +302,14 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
 
-   virtual INT generateCommand    (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT generateCommand    (CtiXfer  &Transfer, list< CtiMessage* > &traceList);
+   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList);
 
    virtual INT allocateDataBins (OUTMESS *);
    virtual INT freeDataBins ();
@@ -319,14 +319,14 @@ public:
    void setupGetRecord(CtiXfer &Transfer);
    void checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfer);
 
-   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority);
-   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList,  RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
-   virtual INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
+   virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority);
+   virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList,  list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+   virtual INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
 
-   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
-   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList);
+   INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+   INT decodeResultScan(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 };
 #endif // #ifndef __DEV_SIXNET_H__

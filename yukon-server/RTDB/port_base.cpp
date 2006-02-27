@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/02/27 20:53:29 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.63  2006/02/27 23:58:31  tspar
+* Phase two of RWTPtrSlist replacement.
+*
 * Revision 1.62  2006/02/27 20:53:29  jotteson
 * Added work count functionality.
 *
@@ -124,7 +127,7 @@ void CtiPort::Dump() const
 }
 
 
-INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
+INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
 
@@ -143,14 +146,14 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                     trace.setBrightYellow();
                     trace.setTrace( CtiTime().asString().c_str() );
                     trace.setEnd(false);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
                     //  set bright cyan for the info message
                     trace.setBrightCyan();
                     msg = "  P: " + CtiNumStr(getPortID()).spad(3) + string(" / ") + getName();
                     trace.setTrace(msg);
                     trace.setEnd(false);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
                     if(Dev)
                     {
@@ -158,7 +161,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                         msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + string(" / ") + Dev->getName();
                         trace.setTrace(msg);
                         trace.setEnd(false);
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                     }
 
                     if(ErrorCode)
@@ -181,7 +184,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                     }
                     trace.setTrace(msg);
                     trace.setEnd(true);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
 
                     //  then print the formatted hex trace
@@ -196,7 +199,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                         trace.setBrightRed();
                         trace.setTrace( FormatError(ErrorCode) );
                         trace.setEnd(true);
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                         trace.setNormal();
                     }
                 }
@@ -214,7 +217,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
     return status;
 }
 
-INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
+INT CtiPort::traceXfer(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
 
@@ -235,7 +238,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiD
     return status;
 }
 
-INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr Dev, INT ErrorCode) const
+INT CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
     string msg;
@@ -253,14 +256,14 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                     trace.setBrightYellow();
                     trace.setTrace( CtiTime().asString().c_str() );
                     trace.setEnd(false);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
                     //  set bright cyan for the info message
                     trace.setBrightCyan();
                     msg = "  P: " + CtiNumStr(getPortID()).spad(3) + string(" / ") + getName();
                     trace.setTrace(msg);
                     trace.setEnd(false);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
                     if(Dev)
                     {
@@ -268,7 +271,7 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                         msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + string(" / ") + Dev->getName();
                         trace.setTrace(msg);
                         trace.setEnd(false);
-                        traceList.insert(trace.replicateMessage());
+                        traceList.push_back(trace.replicateMessage());
                     }
 
                     if(ErrorCode)
@@ -283,7 +286,7 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                     }
                     trace.setTrace(msg);
                     trace.setEnd(true);
-                    traceList.insert(trace.replicateMessage());
+                    traceList.push_back(trace.replicateMessage());
 
                     //  then print the formatted hex trace
                     trace.setBrightGreen();
@@ -310,16 +313,16 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
     ULONG width = 1;
     ULONG offset = 0;
 
-    RWTPtrSlist< CtiMessage > traceList;
+    list< CtiMessage* > traceList;
     CtiTraceMsg trace;
 
     traceBytes( Message, Length, trace, traceList);
 
     _portLog << endl;
 
-    while( traceList.entries() )
+    while( traceList.size() )
     {
-        CtiTraceMsg *pTrace = (CtiTraceMsg*)traceList.get();
+        CtiTraceMsg *pTrace = (CtiTraceMsg*)traceList.front();traceList.pop_front();
         _portLog << pTrace->getTrace();
         delete pTrace;
     }
@@ -565,7 +568,7 @@ void CtiPort::haltLog()
     }
 }
 
-INT CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
 {
     INT   status = NORMAL;
 
@@ -866,7 +869,7 @@ RWThreadFunction& CtiPort::getPortThread()
 }
 
 
-INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, list< CtiMessage* > &traceList)
 {
     INT status = NORMAL;
     ULONG i;
@@ -884,7 +887,7 @@ INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, R
             /* yes so goto CTIDBG_new line */
             trace.setTrace( string( buffer ) );
             trace.setEnd(true);
-            traceList.insert(trace.replicateMessage());
+            traceList.push_back(trace.replicateMessage());
 
             buffer[0] = '\0';
             offset = 0;
@@ -907,25 +910,27 @@ INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, R
     }
 
     trace.setTrace( string( buffer ));
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     return status;
 }
 
 
-void CtiPort::fileTraces(RWTPtrSlist< CtiMessage > &traceList) const
+void CtiPort::fileTraces(list< CtiMessage* > &traceList) const
 {
     if(gLogPorts)
     {
         CtiLockGuard<CtiLogger> portlog_guard(_portLog);
-        for(size_t i = 0; i < traceList.entries(); i++)
+        std::list< CtiMessage* >::iterator itr = traceList.begin();
+        while( itr != traceList.end() )
         {
-            CtiTraceMsg* pTrace = (CtiTraceMsg*)traceList.at(i);
+            CtiTraceMsg* pTrace = (CtiTraceMsg*)*itr;
             _portLog << pTrace->getTrace();
             if(pTrace->isEnd())
             {
                 _portLog << endl;
             }
+            ++itr;
         }
     }
 }

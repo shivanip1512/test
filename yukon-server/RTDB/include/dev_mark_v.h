@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/24 00:19:13 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -93,43 +93,43 @@ public:
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            OUTMESS                    *&OutMessage,
-                           RWTPtrSlist< CtiMessage >  &vgList,
-                           RWTPtrSlist< CtiMessage >  &retList,
+                           list< CtiMessage* >  &vgList,
+                           list< CtiMessage* >  &retList,
                            list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT LoadProfileScan(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                    *&OutMessage,
-                              RWTPtrSlist< CtiMessage >  &vgList,
-                              RWTPtrSlist< CtiMessage >  &retList,
+                              list< CtiMessage* >  &vgList,
+                              list< CtiMessage* >  &retList,
                               list< OUTMESS* >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ExecuteRequest(CtiRequestMsg              *pReq,
                               CtiCommandParser           &parse,
                               OUTMESS                    *&OutMessage,
-                              RWTPtrSlist< CtiMessage >  &vgList,
-                              RWTPtrSlist< CtiMessage >  &retList,
+                              list< CtiMessage* >  &vgList,
+                              list< CtiMessage* >  &retList,
                               list< OUTMESS* >     &outList,
                               INT                        ScanPriority=MAXPRIORITY-4);
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            RWTPtrSlist< CtiMessage > &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
+                            list< CtiMessage* > &vgList,
+                            list< CtiMessage* > &retList,
                             list< OUTMESS* >    &outList);
 
    virtual INT ErrorDecode(INMESS                     *InMessage,
                            CtiTime                     &TimeNow,
-                           RWTPtrSlist< CtiMessage >  &vgList,
-                           RWTPtrSlist< CtiMessage >  &retList,
+                           list< CtiMessage* >  &vgList,
+                           list< CtiMessage* >  &retList,
                            list< OUTMESS* >     &outList);
 
    int decodeResultScan( INMESS                    *InMessage,
                           CtiTime                    &TimeNow,
-                          RWTPtrSlist< CtiMessage > &vgList,
-                          RWTPtrSlist< CtiMessage > &retList,
+                          list< CtiMessage* > &vgList,
+                          list< CtiMessage* > &retList,
                           vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );

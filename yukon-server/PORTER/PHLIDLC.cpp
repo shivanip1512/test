@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/01/16 18:51:04 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,11 +76,11 @@ IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
           CtiDeviceSPtr &RemoteRecord,     /* ccu record */
           REMOTESEQUENCE   *RemoteSequence)   /* various ccu specific data */
 {
-    extern void DisplayTraceList( CtiPortSPtr prt, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+    extern void DisplayTraceList( CtiPortSPtr prt, list< CtiMessage* > &traceList, bool consume);
     BYTE Message[30], Reply[30];
     ULONG Count;
     ULONG i;
-    RWTPtrSlist< CtiMessage > traceList;
+    list< CtiMessage* > traceList;
 
     /* First check if the port or remote is inhibited */
     if(PortRecord->isInhibited())

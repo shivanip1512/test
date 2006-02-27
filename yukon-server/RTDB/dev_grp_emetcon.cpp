@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,8 +65,8 @@ LONG CtiDeviceGroupEmetcon::getRouteID()      // Must be defined!
 INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           CtiCommandParser               &parse,
                                           OUTMESS                        *&OutMessage,
-                                          RWTPtrSlist< CtiMessage >      &vgList,
-                                          RWTPtrSlist< CtiMessage >      &retList,
+                                          list< CtiMessage* >      &vgList,
+                                          list< CtiMessage* >      &retList,
                                           list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
@@ -121,7 +121,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                         CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                         LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
-                        vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, _lastCommand, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, _lastCommand, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }
                 }
 
@@ -163,7 +163,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                     pRet->setResultString(resultString);
                 }
 
-                retList.insert( pRet );
+                retList.push_back( pRet );
 
                 break;
             }
@@ -190,9 +190,9 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.SOE,
                                                       CtiMultiMsg_vec());
 
-                retList.insert( pRet );
+                retList.push_back( pRet );
 
-                vgList.insert( CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, OutMessage->Request.SOE, "Unsupported command", "ERROR", GeneralLogType, SignalEvent, pReq->getUser()));
+                vgList.push_back( CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, OutMessage->Request.SOE, "Unsupported command", "ERROR", GeneralLogType, SignalEvent, pReq->getUser()));
 
 
                 if(OutMessage)
@@ -223,7 +223,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.SOE,
                                               CtiMultiMsg_vec());
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {

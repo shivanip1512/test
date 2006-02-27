@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -506,8 +506,8 @@ bool CtiDeviceMCT::initCommandStore()
 INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                   CtiCommandParser           &parse,
                                   OUTMESS                   *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >  &vgList,
-                                  RWTPtrSlist< CtiMessage >  &retList,
+                                  list< CtiMessage* >  &vgList,
+                                  list< CtiMessage* >  &retList,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
@@ -584,7 +584,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
                                                 string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
@@ -617,8 +617,8 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
                               CtiCommandParser &parse,
                               OUTMESS *&OutMessage,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
+                              list< CtiMessage* > &vgList,
+                              list< CtiMessage* > &retList,
                               list< OUTMESS* > &outList,
                               INT ScanPriority)
 {
@@ -679,8 +679,8 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
                                 CtiCommandParser &parse,
                                 OUTMESS *&OutMessage,
-                                RWTPtrSlist< CtiMessage > &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+                                list< CtiMessage* > &vgList,
+                                list< CtiMessage* > &retList,
                                 list< OUTMESS* > &outList,
                                 INT ScanPriority)
 {
@@ -739,8 +739,8 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
 INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
@@ -801,8 +801,8 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
 INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* > &outList,
                                   INT ScanPriority)
 {
@@ -860,7 +860,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -874,7 +874,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
 }
 
 
-INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1110,7 +1110,7 @@ bool CtiDeviceMCT::restoreMessageRead(INMESS *InMessage, int &ioType, int &locat
     return retVal;
 }
 
-INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL;
 
@@ -1268,7 +1268,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, RWTPtrSlist< CtiM
         // send the whole mess to dispatch
         if( retMsg->PointData().size() > 0 )
         {
-            retList.insert(retMsg);
+            retList.push_back(retMsg);
         }
         else
         {
@@ -1325,8 +1325,8 @@ int CtiDeviceMCT::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int sc
 INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
                                   CtiCommandParser               &parse,
                                   OUTMESS                        *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >      &vgList,
-                                  RWTPtrSlist< CtiMessage >      &retList,
+                                  list< CtiMessage* >      &vgList,
+                                  list< CtiMessage* >      &retList,
                                   list< OUTMESS* >         &outList)
 {
     bool found = false;
@@ -1380,8 +1380,8 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
+                              list< CtiMessage* >      &vgList,
+                              list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList)
 {
     bool found = false;
@@ -1471,8 +1471,8 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
                                    CtiCommandParser           &parse,
                                    OUTMESS                   *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >  &vgList,
-                                   RWTPtrSlist< CtiMessage >  &retList,
+                                   list< CtiMessage* >  &vgList,
+                                   list< CtiMessage* >  &retList,
                                    list< OUTMESS* >     &outList )
 {
     bool found = false;
@@ -1671,8 +1671,8 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                                   CtiCommandParser               &parse,
                                   OUTMESS                        *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >      &vgList,
-                                  RWTPtrSlist< CtiMessage >      &retList,
+                                  list< CtiMessage* >      &vgList,
+                                  list< CtiMessage* >      &retList,
                                   list< OUTMESS* >         &outList)
 {
     INT    nRet = NoError,
@@ -1892,8 +1892,8 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
                                   CtiCommandParser               &parse,
                                   OUTMESS                        *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >      &vgList,
-                                  RWTPtrSlist< CtiMessage >      &retList,
+                                  list< CtiMessage* >      &vgList,
+                                  list< CtiMessage* >      &retList,
                                   list< OUTMESS* >         &outList)
 {
     bool found = false;
@@ -1979,8 +1979,8 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
+                                   list< CtiMessage* >      &vgList,
+                                   list< CtiMessage* >      &retList,
                                    list< OUTMESS* >         &outList)
 {
     bool  found = false;
@@ -2127,8 +2127,8 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
+                                   list< CtiMessage* >      &vgList,
+                                   list< CtiMessage* >      &retList,
                                    list< OUTMESS* >         &outList)
 {
     bool found = false;
@@ -2309,8 +2309,8 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
+                                   list< CtiMessage* >      &vgList,
+                                   list< CtiMessage* >      &retList,
                                    list< OUTMESS* >         &outList)
 {
     bool  found = false;
@@ -2390,7 +2390,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     {
                         errRet->setResultString("Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
                         errRet->setStatus(NoMethod);
-                        retList.insert(errRet);
+                        retList.push_back(errRet);
 
                         errRet = NULL;
                     }
@@ -2440,7 +2440,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Invalid address \"" + CtiNumStr(uadd) + string("\" for device \"") + getName() + "\", not sending";
                     errRet->setResultString(temp);
                     errRet->setStatus(NoMethod);
-                    retList.insert(errRet);
+                    retList.push_back(errRet);
                     errRet = NULL;
                 }
             }
@@ -2453,7 +2453,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Device must be set to one of the test addresses, not sending";
                     errRet->setResultString(temp);
                     errRet->setStatus(NoMethod);
-                    retList.insert(errRet);
+                    retList.push_back(errRet);
                     errRet = NULL;
                 }
             }
@@ -2495,7 +2495,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Bad address specification - Acceptable values:  Gold: [0-3], Silver [0-59]";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
             }
@@ -2525,7 +2525,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
             }
@@ -2561,7 +2561,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
             }
@@ -2736,7 +2736,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                         temp = "Invalid Load Profile interval length - must be 5, 15, 30, or 60 min";
                         errRet->setResultString( temp );
                         errRet->setStatus(NoMethod);
-                        retList.insert( errRet );
+                        retList.push_back( errRet );
                         errRet = NULL;
                     }
                     break;
@@ -2773,7 +2773,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                 temp = "Invalid Demand interval length - must be 5, 15, 30, or 60 min";
                                 errRet->setResultString( temp );
                                 errRet->setStatus(NoMethod);
-                                retList.insert( errRet );
+                                retList.push_back( errRet );
                                 errRet = NULL;
                             }
                     }
@@ -2799,7 +2799,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Invalid Demand interval length - must be between 1 and 60 min";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
             }
@@ -2929,7 +2929,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Multiplier too large - must be less than 50000";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
                 else if( multiplier < 0.0001 )
@@ -2937,7 +2937,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Multiplier too small - must be at least 0.0001";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
 
@@ -2985,7 +2985,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     temp = "Multiplier too large - must be less than 10";
                     errRet->setResultString( temp );
                     errRet->setStatus(NoMethod);
-                    retList.insert( errRet );
+                    retList.push_back( errRet );
                     errRet = NULL;
                 }
             }
@@ -3070,8 +3070,8 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
                                  CtiCommandParser               &parse,
                                  OUTMESS                        *&OutMessage,
-                                 RWTPtrSlist< CtiMessage >      &vgList,
-                                 RWTPtrSlist< CtiMessage >      &retList,
+                                 list< CtiMessage* >      &vgList,
+                                 list< CtiMessage* >      &retList,
                                  list< OUTMESS* >         &outList)
 {
     bool found = false;
@@ -3202,7 +3202,7 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3236,7 +3236,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3302,7 +3302,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3518,7 +3518,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 }
 
 
-INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3649,7 +3649,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
 
 
-INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3683,7 +3683,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlis
 }
 
 
-INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;
@@ -3717,7 +3717,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSli
 }
 
 
-INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message = NULL, string majorName = st
 INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 
-void SubmitDataToDispatch( RWTPtrSlist< CtiMessage >  &vgList );
+void SubmitDataToDispatch( list< CtiMessage* >  &vgList );
 INT ReportCompletionStateToLMGroup(CtiDeviceLCU *lcu);     // f.k.a. ReturnTrxID();
 INT RequeueLCUCommand( CtiDeviceLCU *lcu );
 bool ResetLCUsForControl(LONG PortID);
@@ -454,7 +454,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
     {
         if( Result == NORMAL )            // Successful communication
         {
-            RWTPtrSlist< CtiMessage >       vgList;
+            list< CtiMessage* >       vgList;
             CtiDeviceLCU::CtiLCUResult_t    resultCode = CtiDeviceLCU::eLCUInvalid;
 
             lcu->lcuFastScanDecode(OutMessage, InMessage, resultCode, (GlobalLCUDev != NULL), vgList); // Note: resultCode is modified here!!!
@@ -786,7 +786,7 @@ MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
     if(isLCU(dev->getType()))
     {
         CtiDeviceLCU *lcu = ( CtiDeviceLCU *)dev;
-        RWTPtrSlist< CtiMessage >  vgList;
+        list< CtiMessage* >  vgList;
 
         if( setter )
             pData = lcu->getPointSet( status );
@@ -795,7 +795,7 @@ MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
 
         if( pData )
         {
-            vgList.insert( pData );
+            vgList.push_back( pData );
             SubmitDataToDispatch( vgList );
         }
     }
@@ -1737,13 +1737,13 @@ INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
     return NORMAL;
 }
 
-void SubmitDataToDispatch  ( RWTPtrSlist< CtiMessage >  &vgList )
+void SubmitDataToDispatch  ( list< CtiMessage* >  &vgList )
 {
     extern CtiConnection VanGoghConnection;
 
-    while( vgList.entries() > 0 )
+    while( vgList.size() > 0 )
     {
-        CtiMessage *pVg = vgList.get();
+        CtiMessage *pVg = vgList.front();vgList.pop_front();
         VanGoghConnection.WriteConnQue(pVg);
     }
 
@@ -1787,8 +1787,8 @@ void Send4PartToDispatch(string Source, string MajorName, string MinorName, stri
 
     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
 
-    RWTPtrSlist< CtiMessage >  lst;
-    lst.insert( pSig );
+    list< CtiMessage* >  lst;
+    lst.push_back( pSig );
 
     SubmitDataToDispatch( lst );
 
@@ -1828,8 +1828,8 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, string majorName, string min
 
     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
 
-    RWTPtrSlist< CtiMessage >  lst;
-    lst.insert( pSig );
+    list< CtiMessage* >  lst;
+    lst.push_back( pSig );
 
     SubmitDataToDispatch( lst );
 
@@ -1838,7 +1838,7 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, string majorName, string min
 
 void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID)
 {
-    RWTPtrSlist< CtiMessage >  vgList;
+    list< CtiMessage* >  vgList;
 
     // Find the controlling group.
     CtiDeviceSPtr pGroupDev = DeviceManager.getEqual( LMGIDControl );

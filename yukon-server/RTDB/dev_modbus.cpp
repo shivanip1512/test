@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ Modbus &Modbus::operator=(const Modbus &aRef)
    return *this;
 }
 
-INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -98,7 +98,7 @@ INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 }
 
 
-INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -124,7 +124,7 @@ INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS 
 }
 
 
-INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;
 
@@ -576,7 +576,7 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     RWTPtrSlist<CtiPointDataMsg> dnpPoints;
@@ -611,7 +611,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMe
                                          InMessage->Return.TrxID,
                                          InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
     else
     {
@@ -632,14 +632,14 @@ INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMe
                                          InMessage->Return.TrxID,
                                          InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
 
     return ErrReturn;
 }
 
 
-INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL;
 
@@ -681,7 +681,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMes
                 pMsg->insert(GeneralScanAborted);
             }
 
-            retList.insert( pMsg );
+            retList.push_back( pMsg );
         }
     }
     else

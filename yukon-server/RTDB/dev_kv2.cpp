@@ -41,8 +41,8 @@ CtiDeviceKV2::~CtiDeviceKV2()
 //to the ansi protocol object to get info about the tables we know we need for a GeneralScan
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    ULONG BytesWritten;
@@ -84,7 +84,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
                                           pReq->TransmissionId(),
                                           pReq->UserMessageId());
           retMsg->setExpectMore(1);
-          retList.insert(retMsg);
+          retList.push_back(retMsg);
 
           retMsg = 0;
 
@@ -101,8 +101,8 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
    return NoError;
 }
 
-INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList,
-                               RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority )
+INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
+                               list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
 
    if( OutMessage != NULL )
@@ -248,8 +248,8 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
                                   CtiCommandParser           &parse,
                                   OUTMESS                   *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >  &vgList,
-                                  RWTPtrSlist< CtiMessage >  &retList,
+                                  list< CtiMessage* >  &vgList,
+                                  list< CtiMessage* >  &retList,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
@@ -336,7 +336,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
                                                 string(OutMessage->Request.CommandStr),
                                                 resultString,
                                                 nRet,
@@ -366,7 +366,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
+INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list < CtiMessage* >&retList,
                                 list< OUTMESS* >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
@@ -468,7 +468,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist
     if( retMsg != NULL )
     {
         retMsg->setExpectMore(0);
-        retList.insert(retMsg);
+        retList.push_back(retMsg);
         retMsg = NULL;
     }
     {
@@ -548,7 +548,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist < CtiMessage >&vgList, RWTPtrSlist< CtiMessage > &retList,
+INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
                                list< OUTMESS* > &outList)
 {
 
@@ -865,7 +865,7 @@ CtiProtocolANSI & CtiDeviceKV2::getKV2Protocol( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &retList, UINT archiveFlag )
+void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag )
 {
 
     CtiReturnMsg *msgPtr;
@@ -1066,7 +1066,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     msgPtr = new CtiReturnMsg;
 
                     msgPtr->insert(pData);
-                    retList.insert(msgPtr);
+                    retList.push_back(msgPtr);
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1116,7 +1116,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             if (msgCntr >= 400 || y <= 0 )
                             {
                                 msgCntr = 0;
-                                retList.insert(msgPtr);
+                                retList.push_back(msgPtr);
                                 msgPtr = NULL;
                                 if (y > 0)
                                     msgPtr = new CtiReturnMsg;
@@ -1132,7 +1132,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             y = -1;
                             if (msgPtr->getCount() > 0)
                             {
-                                retList.insert(msgPtr);
+                                retList.push_back(msgPtr);
                             }
                         }
 
@@ -1185,7 +1185,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             msgPtr = new CtiReturnMsg;
                             msgPtr->insert(pData);
 
-                            retList.insert(msgPtr);
+                            retList.push_back(msgPtr);
 
                             if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                             {

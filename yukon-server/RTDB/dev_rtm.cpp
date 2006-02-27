@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.17  2006/02/27 23:58:31  tspar
+* Phase two of RWTPtrSlist replacement.
+*
 * Revision 1.16  2006/02/24 00:19:12  tspar
 * First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
 *
@@ -90,7 +93,7 @@ CtiDeviceRTM::~CtiDeviceRTM()
 }
 
 
-INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -115,7 +118,7 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     string      resultString;
@@ -179,7 +182,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     }
 
                     nRet = NoExecuteRequestMethod;
-                    retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                    retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                             string(OutMessage->Request.CommandStr),
                                                             string("RTM Devices do not support this command."),
                                                             nRet,
@@ -289,7 +292,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     default:
         {
             nRet = NoExecuteRequestMethod;
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("RTM Devices do not support this command (yet?)"),
                                                     nRet,
@@ -323,7 +326,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         desc = getName();
         actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on device";
 
-        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
@@ -331,7 +334,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     if(retReturn)
     {
         if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
-        retList.insert(retReturn);
+        retList.push_back(retReturn);
     }
     else
     {
@@ -342,7 +345,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -365,7 +368,7 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
     else
     {
@@ -385,14 +388,14 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
 
     return ErrReturn;
 }
 
 
-INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL;
 
@@ -436,7 +439,7 @@ INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< 
                 pMsg->insert(GeneralScanAborted);
             }
 
-            retList.insert( pMsg );
+            retList.push_back( pMsg );
         }
     }
     else

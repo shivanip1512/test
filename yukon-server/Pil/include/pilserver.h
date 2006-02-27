@@ -74,13 +74,13 @@ public:
    void  nexusWriteThread();
    void  vgConnThread();
 
-   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
-   INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
+   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
+   INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
 
    void putQueue(CtiMessage *Msg);
 
    bool isBroken() const { return _broken; }
-   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList);
+   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList);
 
 };
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/24 00:19:13 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,20 +145,20 @@ private:
    virtual INT GeneralScan(CtiRequestMsg *pReq,
                            CtiCommandParser &parse,
                            OUTMESS *&OutMessage,
-                           RWTPtrSlist< CtiMessage > &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* > &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList,
                            INT ScanPriority = MAXPRIORITY - 4);
    virtual INT ResultDecode(INMESS *InMessage,
                             CtiTime &TimeNow,
-                            RWTPtrSlist< CtiMessage >   &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
+                            list< CtiMessage* >   &vgList,
+                            list< CtiMessage* > &retList,
                             list< OUTMESS* > &outList);
 
    virtual INT ErrorDecode(INMESS*,
                            CtiTime&,
-                           RWTPtrSlist< CtiMessage >   &vgList,
-                           RWTPtrSlist< CtiMessage > &retList,
+                           list< CtiMessage* >   &vgList,
+                           list< CtiMessage* > &retList,
                            list< OUTMESS* > &outList);
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,

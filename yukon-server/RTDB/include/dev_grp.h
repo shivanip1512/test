@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ public:
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     }
 
-    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList)
+    void reportActionItemsToDispatch(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList)
     {
         CtiTime now;
         string prevLastAction = _lastCommand;    // Save a temp copy.
@@ -109,7 +109,7 @@ public:
                     CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                     LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
-                    vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                    vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
             }
         }
@@ -117,7 +117,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    void reportControlStart(int isshed, int shedtime, int reductionratio, RWTPtrSlist< CtiMessage >  &vgList, string cmd = string("") )
+    void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
@@ -132,7 +132,7 @@ public:
             hist->setControlType( cmd );      // Could be the state group name ????
             hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);
             hist->setMessagePriority( hist->getMessagePriority() + 1 );
-            // vgList.insert( hist );
+            // vgList.push_back( hist );
             pMulti->insert(hist);
 
             if(pControlStatus->isPseudoPoint())
@@ -140,7 +140,7 @@ public:
                 // There is no physical point to observe and respect.  We lie to the control point.
                 CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)(isshed), NormalQuality, StatusPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));
                 pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                //vgList.insert(pData);
+                //vgList.push_back(pData);
                 pMulti->insert(pData);
             }
 
@@ -150,7 +150,7 @@ public:
                 CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
                 pData->setTime( CtiTime() + shedtime );
                 pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                //vgList.insert(pData);
+                //vgList.push_back(pData);
                 pMulti->insert(pData);
             }
         }
@@ -160,11 +160,11 @@ public:
         {
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));
             pData->setMessagePriority( pData->getMessagePriority() + 1 );
-            //vgList.insert(pData);
+            //vgList.push_back(pData);
             pMulti->insert(pData);
         }
 
-        vgList.insert(pMulti);
+        vgList.push_back(pMulti);
     }
 
     string getLastCommand() const

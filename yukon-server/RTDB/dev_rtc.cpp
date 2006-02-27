@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.41  2006/02/27 23:58:31  tspar
+* Phase two of RWTPtrSlist replacement.
+*
 * Revision 1.40  2006/02/24 00:19:12  tspar
 * First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
 *
@@ -200,7 +203,7 @@ CtiDeviceRTC &CtiDeviceRTC::operator=(const CtiDeviceRTC &aRef)
     return *this;
 }
 
-INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -225,7 +228,7 @@ INT CtiDeviceRTC::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -250,7 +253,7 @@ INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -295,7 +298,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     default:
         {
             nRet = NoExecuteRequestMethod;
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("RTC Devices do not support this command (yet?)"),
                                                     nRet,
@@ -322,7 +325,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 }
 
 
-INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -368,7 +371,7 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
     else
     {
@@ -388,14 +391,14 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist<
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
 
-        retList.append(retMsg);
+        retList.push_back(retMsg);
     }
 
     return ErrReturn;
 }
 
 
-INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT retCode = NORMAL;
 
@@ -437,7 +440,7 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, RWTPtrSlist< 
                 pMsg->insert(GeneralScanAborted);
             }
 
-            retList.insert( pMsg );
+            retList.push_back( pMsg );
         }
 
         delete pPIL;

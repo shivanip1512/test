@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,14 +251,14 @@ public:
     *  A paired set which implements a state machine (before/do port work/after) in conjunction with
     *  the port's function out/inMess pair.
     */
-   virtual INT generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)                        { return NoHandShakeMethod;}
-   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)     { return NoHandShakeMethod;}
+   virtual INT generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                        { return NoHandShakeMethod;}
+   virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)     { return NoHandShakeMethod;}
 
-   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)                       { return NoHandShakeMethod;}
-   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)    { return NoHandShakeMethod;}
+   virtual INT generateCommandDisconnect (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                       { return NoHandShakeMethod;}
+   virtual INT decodeResponseDisconnect (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)    { return NoHandShakeMethod;}
 
-   virtual INT generateCommand    (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)                              { return NoGenerateCmdMethod;}
-   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)               { return NoDecodeResponseMethod;}
+   virtual INT generateCommand    (CtiXfer  &Transfer, list< CtiMessage* > &traceList)                              { return NoGenerateCmdMethod;}
+   virtual INT decodeResponse (CtiXfer &Transfer,INT commReturnValue, list< CtiMessage* > &traceList)               { return NoDecodeResponseMethod;}
 
    virtual INT allocateDataBins (OUTMESS *)                                         { return MemoryError;}
    virtual INT freeDataBins ()                                                      { return MemoryError;}

@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/24 00:19:09 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ typedef map< unsigned short, device_record * > dr_address_map;
 typedef map< long,           device_record * > dr_id_map;
 
 CtiLogger portLog;
-RWTPtrSlist<CtiMessage> traceList;
+list< CtiMessage* > traceList;
 
 CtiMutex packet_mux;
 packet_queue packets;
@@ -298,20 +298,21 @@ bool getOutMessages( unsigned wait )
         {
             CtiRequestMsg msg(dr->device->getID(), "ping");
             CtiCommandParser parse(msg.CommandString());
-            RWTPtrSlist<CtiMessage> vg_list, ret_list;
+            list< CtiMessage* > vg_list, ret_list;
             list<OUTMESS*> om_list;
 
             dr->device->ExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
 
-            if( !vg_list.isEmpty() || !ret_list.isEmpty() )
+            if( !vg_list.empty() || !ret_list.empty() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - !vg_list.isEmpty() || !ret_list.isEmpty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-
-                vg_list.clearAndDestroy();
-                ret_list.clearAndDestroy();
+                delete_list( vg_list  );
+                delete_list( ret_list );
+                vg_list.clear();
+                ret_list.clear();
             }
 
             while( !om_list.empty() )
@@ -662,7 +663,7 @@ void traceOutbound( device_record *dr, int socket_status )
     trace.setBrightYellow();
     trace.setTrace( CtiTime().asString() );
     trace.setEnd(false);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     //  set bright cyan for the info message
     trace.setBrightCyan();
@@ -674,13 +675,13 @@ void traceOutbound( device_record *dr, int socket_status )
 
     trace.setTrace(msg);
     trace.setEnd(false);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     trace.setBrightCyan();
     msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + dr->device->getName();
     trace.setTrace(msg);
     trace.setEnd(false);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     if(socket_status)
     {
@@ -694,7 +695,7 @@ void traceOutbound( device_record *dr, int socket_status )
     }
     trace.setTrace(msg);
     trace.setEnd(true);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     //  then print the formatted hex trace
     trace.setBrightGreen();
@@ -806,7 +807,7 @@ void traceInbound( device_record *dr )
     trace.setBrightYellow();
     trace.setTrace( CtiTime().asString() );
     trace.setEnd(false);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     //  set bright cyan for the info message
     trace.setBrightCyan();
@@ -818,7 +819,7 @@ void traceInbound( device_record *dr )
 
     trace.setTrace(msg);
     trace.setEnd(false);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
     if(dr->device)
     {
@@ -826,7 +827,7 @@ void traceInbound( device_record *dr )
         msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + dr->device->getName();
         trace.setTrace(msg);
         trace.setEnd(false);
-        traceList.insert(trace.replicateMessage());
+        traceList.push_back(trace.replicateMessage());
     }
 
     if(dr->work.status)
@@ -849,7 +850,7 @@ void traceInbound( device_record *dr )
     }
     trace.setTrace(msg);
     trace.setEnd(true);
-    traceList.insert(trace.replicateMessage());
+    traceList.push_back(trace.replicateMessage());
 
 
     //  then print the formatted hex trace
@@ -864,7 +865,7 @@ void traceInbound( device_record *dr )
         trace.setBrightRed();
         trace.setTrace( FormatError(dr->work.status) );
         trace.setEnd(true);
-        traceList.insert(trace.replicateMessage());
+        traceList.push_back(trace.replicateMessage());
         trace.setNormal();
     }
 }
@@ -913,15 +914,16 @@ void trace( void )
     if(gLogPorts)
     {
         CtiLockGuard<CtiLogger> portlog_guard(portLog);
-
-        for(size_t i = 0; i < traceList.entries(); i++)
+        std::list< CtiMessage* >::iterator itr = traceList.begin();
+        while( itr != traceList.end() )
         {
-            CtiTraceMsg* pTrace = (CtiTraceMsg*)traceList.at(i);
+            CtiTraceMsg* pTrace = (CtiTraceMsg*)*itr;
             portLog << pTrace->getTrace();
             if(pTrace->isEnd())
             {
                 portLog << endl;
             }
+            ++itr;
         }
     }
 
@@ -935,9 +937,10 @@ void trace( void )
             coutTryGuard.tryAcquire();
         }
 
-        for(size_t i = 0; i < traceList.entries(); i++)
+        std::list< CtiMessage* >::iterator itr = traceList.begin();
+        while( itr != traceList.end() )
         {
-            CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
+            CtiTraceMsg *pTrace = ((CtiTraceMsg*)*itr);
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
             cout << pTrace->getTrace();
 
@@ -945,12 +948,13 @@ void trace( void )
             {
                 cout << endl;
             }
+            ++itr;
         }
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
     }
-
-    traceList.clearAndDestroy();
+    delete_list(traceList);
+    traceList.clear();
 }
 
 

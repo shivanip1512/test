@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
     freeDataBins();
 }
 
-INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -75,7 +75,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                     string(OutMessage->Request.CommandStr),
                                                     string("TAP Devices do not support this command (yet?)"),
                                                     nRet,
@@ -212,7 +212,7 @@ string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse
     return trelay;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT status = commReturnValue;
 
@@ -470,7 +470,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
  * It uses the current state and the Xfer InBuffer to get us to the next point
  * in the sequence.
  *-----------------------------------------------------------------------------*/
-INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT status = NORMAL;
 
@@ -667,7 +667,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
 
 
 
-INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, list< CtiMessage* > &traceList)
 {
     ULONG i;
     string outStr;
@@ -683,27 +683,27 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlis
     trace.setBrightYellow();
     trace.setTrace(  CtiTime().asString() + string(" ") );
     trace.setEnd(false);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightCyan();
     trace.setTrace(  getName() + string(" ") );
     trace.setEnd(false);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightWhite();
     trace.setTrace(  string("SENT: ") );
     trace.setEnd(false);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     trace.setBrightGreen();
     trace.setTrace( string("\"") + outStr + string("\"") );
     trace.setEnd(true);
-    traceList.insert( trace.replicateMessage() );
+    traceList.push_back( trace.replicateMessage() );
 
     return(NORMAL);
 }
 
-INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage)
+INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, list< CtiMessage* > &traceList, BOOL CompletedMessage)
 {
     ULONG i;
     if(Count && Message != NULL)
@@ -721,22 +721,22 @@ INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlis
         trace.setBrightYellow();
         trace.setTrace(  CtiTime().asString() + string(" ") );
         trace.setEnd(false);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightCyan();
         trace.setTrace(  getName() + string(" ") );
         trace.setEnd(false);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightWhite();
         trace.setTrace(  string("RECV: ") );
         trace.setEnd(false);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         trace.setBrightMagenta();
         trace.setTrace( string("\"") + _inStr + string("\"") );
         trace.setEnd(true);
-        traceList.insert( trace.replicateMessage() );
+        traceList.push_back( trace.replicateMessage() );
 
         _inStr = string();     // Reset it for the next message
     }
@@ -819,7 +819,7 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
 }
 
 
-INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
     INT   status = NORMAL;
@@ -1021,7 +1021,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
     return status;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT status = commReturnValue;
 
@@ -1156,7 +1156,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
 }
 
 
-INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list< CtiMessage* > &traceList)
 {
     INT   i;
     INT   status = NORMAL;
@@ -1274,7 +1274,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, RWTPt
     return status;
 }
 
-INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT status = commReturnValue;
 

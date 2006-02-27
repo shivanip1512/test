@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/02/27 23:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.15  2006/02/27 23:58:29  tspar
+      Phase two of RWTPtrSlist replacement.
+
       Revision 1.14  2006/02/24 00:19:10  tspar
       First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
 
@@ -208,8 +211,8 @@ bool CtiDeviceAlpha::isReturnedBufferValid (CtiXfer  &Transfer)
 INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg *pReq,
                                 CtiCommandParser &parse,
                                 OUTMESS *&OutMessage,
-                                RWTPtrSlist< CtiMessage > &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
+                                list< CtiMessage* > &vgList,
+                                list< CtiMessage* > &retList,
                                 list< OUTMESS* > &outList,
                                 INT ScanPriority)
 {
@@ -448,7 +451,7 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
    return retval;
 }
 
-INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     USHORT retCode=NORMAL;
 
@@ -527,8 +530,8 @@ INT CtiDeviceAlpha::freeDataBins  ()
 
 INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
                                  CtiTime &TimeNow,
-                                 RWTPtrSlist< CtiMessage >   &vgList,
-                                 RWTPtrSlist< CtiMessage > &retList,
+                                 list< CtiMessage* >   &vgList,
+                                 list< CtiMessage* > &retList,
                                  list< OUTMESS* > &outList)
 {
     /****************************
@@ -580,8 +583,8 @@ INT CtiDeviceAlpha::ResultDecode(INMESS *InMessage,
 
 INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
                                  CtiTime &TimeNow,
-                                 RWTPtrSlist< CtiMessage >   &vgList,
-                                 RWTPtrSlist< CtiMessage > &retList,
+                                 list< CtiMessage* >   &vgList,
+                                 list< CtiMessage* > &retList,
                                  list< OUTMESS* > &outList)
 {
     {
@@ -616,7 +619,7 @@ INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
     // send the whole mess to dispatch
     if (pPIL->PointData().size() > 0)
     {
-        retList.insert( pPIL );
+        retList.push_back( pPIL );
     }
     else
     {
@@ -628,7 +631,7 @@ INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
 }
 
 
-INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     USHORT retCode=NORMAL;
     int i;
@@ -683,7 +686,7 @@ INT CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
     return retCode;
 }
 
-INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
     BYTEULONG         passWord;
     BYTEULONG         passwordValue;
@@ -833,7 +836,7 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< C
     return retCode;
 }
 
-INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     USHORT            retCode = NORMAL;
 
@@ -962,7 +965,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
 
 
 
-INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList )
+INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessage* > &traceList )
 {
     // Terminate the session
     sprintf((PCHAR)Transfer.getOutBuffer(),"%c%c", STX, ALPHA_CMD_TERMINATE);

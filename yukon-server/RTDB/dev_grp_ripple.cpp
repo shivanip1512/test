@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
     _rippleTable.DecodeDatabaseReader(rdr);
 }
 
-INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     CHAR  Temp[80];
@@ -133,7 +133,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 
                 CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                 LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
 
@@ -148,7 +148,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
             sprintf(Temp, "ERROR %3d performing command on route %s", nRet,  Route->getName().c_str());
             pRet->setStatus(nRet);
             pRet->setResultString(Temp);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -163,7 +163,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         string Reply = string(Temp);
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -191,7 +191,7 @@ void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
     }
 }
 
-INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList )
+INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
 {
     INT count = getResponsesOnTrxID();
     CtiPoint *pPoint;
@@ -220,7 +220,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
 
             if (pData != NULL)
             {
-                vgList.insert( pData );
+                vgList.push_back( pData );
             }
         }
 
@@ -258,7 +258,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     return count;
 }
 
-INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList )
+INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList )
 {
     CtiPoint *pPoint = NULL;
 
@@ -288,7 +288,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSli
 
         if (pData != NULL)
         {
-            vgList.insert( pData );
+            vgList.push_back( pData );
         }
     }
 
@@ -323,14 +323,15 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
             {
-                RWTPtrSlist< CtiMessage > vgList;
+                list< CtiMessage* > vgList;
                 otherGroup->reportControlStart( true, otherGroup->getRippleTable().getShedTime(), 100, vgList, "control shed" );
-                if(vgList.entries())
+                if(vgList.size())
                 {
-                    CtiMessage *pMsg = vgList.removeLast();
+                    CtiMessage *pMsg = vgList.back();
                     otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
                 }
-                vgList.clearAndDestroy();
+                delete_list(vgList);
+                vgList.clear();
             }
         }
     }
@@ -367,15 +368,16 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
             bstatus = matchRippleDoubleOrders(parentDO, childDO);
             if(bstatus)
             {
-                RWTPtrSlist< CtiMessage > vgList;
+                list< CtiMessage* > vgList;
                 otherGroup->reportControlStart( false, RESTORE_DURATION, 0, vgList, "control restore" );
 
-                if(vgList.entries())
+                if(vgList.size())
                 {
-                    CtiMessage *pMsg = vgList.removeLast();
+                    CtiMessage *pMsg = vgList.back();
                     otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
                 }
-                vgList.clearAndDestroy();
+                delete_list(vgList);
+                vgList.clear();
             }
         }
     }

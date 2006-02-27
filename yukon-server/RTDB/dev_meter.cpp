@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/24 00:19:12 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2006/02/27 23:58:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,8 +150,8 @@ bool CtiDeviceMeter::shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLeng
 INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
                                    CtiCommandParser           &parse,
                                    OUTMESS                   *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >  &vgList,
-                                   RWTPtrSlist< CtiMessage >  &retList,
+                                   list< CtiMessage* >  &vgList,
+                                   list< CtiMessage* >  &retList,
                                    list< OUTMESS* >     &outList)
 {
     INT   nRet = NoError;
@@ -184,7 +184,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                         string(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,

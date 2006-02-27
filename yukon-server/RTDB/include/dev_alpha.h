@@ -209,7 +209,7 @@ public:
 
 
     // general generate functions
-    INT   generateCommandTerminate( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList );
+    INT   generateCommandTerminate( CtiXfer  &Transfer, list< CtiMessage* > &traceList );
 
     // general decode routines
 
@@ -222,28 +222,28 @@ public:
     virtual INT GeneralScan(CtiRequestMsg              *pReq,
                             CtiCommandParser           &parse,
                             OUTMESS                   *&OutMessage,
-                            RWTPtrSlist< CtiMessage >  &vgList,
-                            RWTPtrSlist< CtiMessage >  &retList,
+                            list< CtiMessage* >  &vgList,
+                            list< CtiMessage* >  &retList,
                             list< OUTMESS* >     &outList,
                             INT                         ScanPriority=MAXPRIORITY-4);
 
     virtual INT ResultDecode(INMESS                    *InMessage,
                              CtiTime                    &TimeNow,
-                             RWTPtrSlist< CtiMessage > &vgList,
-                             RWTPtrSlist< CtiMessage > &retList,
+                             list< CtiMessage* > &vgList,
+                             list< CtiMessage* > &retList,
                              list< OUTMESS* >    &outList);
     virtual INT ErrorDecode(INMESS                    *InMessage,
                             CtiTime                    &TimeNow,
-                            RWTPtrSlist< CtiMessage > &vgList,
-                            RWTPtrSlist< CtiMessage > &retList,
+                            list< CtiMessage* > &vgList,
+                            list< CtiMessage* > &retList,
                             list< OUTMESS* >    &outList);
 
     // all defined in dev_alpha.cpp
-    virtual INT generateCommand          (CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList);
-    virtual INT generateCommandHandshake (CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList);
+    virtual INT generateCommand          (CtiXfer &Transfer, list< CtiMessage* > &traceList);
+    virtual INT generateCommandHandshake (CtiXfer &Transfer, list< CtiMessage* > &traceList);
 
-    virtual INT decodeResponse          (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
-    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList);
+    virtual INT decodeResponse          (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
+    virtual INT decodeResponseHandshake (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);
     virtual INT freeDataBins();
 
 

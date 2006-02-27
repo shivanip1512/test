@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/02/24 00:19:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2006/02/27 23:58:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,8 +44,8 @@ LONG CtiDeviceGroupVersacom::getRouteID()      // Must be defined!
 INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            CtiCommandParser               &parse,
                                            OUTMESS                        *&OutMessage,
-                                           RWTPtrSlist< CtiMessage >      &vgList,
-                                           RWTPtrSlist< CtiMessage >      &retList,
+                                           list< CtiMessage* >      &vgList,
+                                           list< CtiMessage* >      &retList,
                                            list< OUTMESS* >         &outList)
 {
     INT   nRet = NoError;
@@ -128,7 +128,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
             resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
-            retList.insert( pRet );
+            retList.push_back( pRet );
         }
         else
         {
@@ -156,7 +156,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.SOE,
                                               CtiMultiMsg_vec());
 
-        retList.insert( pRet );
+        retList.push_back( pRet );
 
         if(OutMessage)
         {

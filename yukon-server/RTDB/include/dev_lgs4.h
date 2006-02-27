@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 00:19:13 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/02/27 23:58:32 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -484,32 +484,32 @@ public:
     virtual INT GeneralScan( CtiRequestMsg              *pReq,
                              CtiCommandParser           &parse,
                              OUTMESS                   *&OutMessage,
-                             RWTPtrSlist< CtiMessage >  &vgList,
-                             RWTPtrSlist< CtiMessage >  &retList,
+                             list< CtiMessage* >  &vgList,
+                             list< CtiMessage* >  &retList,
                              list< OUTMESS* >     &outList,
                              INT                         ScanPriority );
 
     virtual INT ResultDecode( INMESS                    *InMessage,
                               CtiTime                    &TimeNow,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
+                              list< CtiMessage* > &vgList,
+                              list< CtiMessage* > &retList,
                               list< OUTMESS* >    &outList );
     virtual INT ErrorDecode ( INMESS                    *InMessage,
                               CtiTime                    &TimeNow,
-                              RWTPtrSlist< CtiMessage > &vgList,
-                              RWTPtrSlist< CtiMessage > &retList,
+                              list< CtiMessage* > &vgList,
+                              list< CtiMessage* > &retList,
                               list< OUTMESS* >      &outList );
 
     // interrogation routines
-    virtual INT decodeResponseHandshake  ( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT decodeResponse           ( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT decodeResponseScan       ( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList );
+    virtual INT decodeResponseHandshake  ( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );
+    virtual INT decodeResponse           ( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );
+    virtual INT decodeResponseScan       ( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );
+    virtual INT decodeResponseLoadProfile( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );
 
-    virtual INT generateCommandHandshake  ( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT generateCommand           ( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT generateCommandScan       ( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList );
-    virtual INT generateCommandLoadProfile( CtiXfer &Transfer, RWTPtrSlist< CtiMessage > &traceList );
+    virtual INT generateCommandHandshake  ( CtiXfer &Transfer, list< CtiMessage* > &traceList );
+    virtual INT generateCommand           ( CtiXfer &Transfer, list< CtiMessage* > &traceList );
+    virtual INT generateCommandScan       ( CtiXfer &Transfer, list< CtiMessage* > &traceList );
+    virtual INT generateCommandLoadProfile( CtiXfer &Transfer, list< CtiMessage* > &traceList );
 
     virtual INT reformatDataBuffer ( BYTE *aInMessBuffer, ULONG &aBytesReceived );
     virtual INT copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes );
@@ -519,13 +519,13 @@ public:
 
     virtual INT decodeResultScan( INMESS                    *InMessage,
                                   CtiTime                    &TimeNow,
-                                  RWTPtrSlist< CtiMessage > &vgList,
-                                  RWTPtrSlist< CtiMessage > &retList,
+                                  list< CtiMessage* > &vgList,
+                                  list< CtiMessage* > &retList,
                                   list< OUTMESS* >    &outList );
     virtual INT decodeResultLoadProfile( INMESS                    *InMessage,
                                          CtiTime                    &TimeNow,
-                                         RWTPtrSlist< CtiMessage > &vgList,
-                                         RWTPtrSlist< CtiMessage > &retList,
+                                         list< CtiMessage* > &vgList,
+                                         list< CtiMessage* > &retList,
                                          list< OUTMESS* >    &outList );
 
     virtual BOOL verifyAndAddPointToReturnMsg( LONG          aPointID,
