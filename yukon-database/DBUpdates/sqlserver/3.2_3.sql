@@ -275,6 +275,13 @@ go
 alter table   Capcontrolsubstationbus alter column  multiMonitorControl char(1) not null;
 go
 
+alter table NotificationDestination drop constraint PKey_NotDestID;
+go
+alter table NotificationDestination drop column DestinationOrder;
+go
+alter table NotificationDestination add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID);
+go
+
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint
    that should exist in the database as of 3.2.3.

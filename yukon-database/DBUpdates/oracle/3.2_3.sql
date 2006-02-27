@@ -206,6 +206,9 @@ alter table Capcontrolsubstationbus add multiMonitorControl CHAR(1);
 update  Capcontrolsubstationbus set  multiMonitorControl = 'N';
 alter table   Capcontrolsubstationbus modify multiMonitorControl not null;
 
+alter table NotificationDestination drop constraint PKey_NotDestID;
+alter table NotificationDestination drop column DestinationOrder;
+alter table NotificationDestination add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID);
 
 /* @error ignore-begin */
 /* Below is an attempt to create every table and constraint
