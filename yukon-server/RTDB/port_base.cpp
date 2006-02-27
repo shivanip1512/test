@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/01/19 16:20:58 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/02/27 20:53:29 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.62  2006/02/27 20:53:29  jotteson
+* Added work count functionality.
+*
 * Revision 1.61  2006/01/19 16:20:58  jotteson
 * Fixed problem with virtual ports.
 *
@@ -598,7 +601,8 @@ _queueSlot(0),
 _queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _simulated(0),
 _sharingStatus(false),
-_sharingToggle(false)
+_sharingToggle(false),
+_communicating(false)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -1652,6 +1656,70 @@ CtiPort& CtiPort::resetDeviceQueued(LONG id)
     return *this;
 }
 
+void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
+{
+    map< LONG, int >::iterator iter;
+    try
+    {
+        _criticalSection.acquire();
+        if( (iter = _queuedWork.find(deviceID)) != _queuedWork.end() )
+        {
+            iter->second = workCount;
+        }
+        else
+        {
+            map< LONG, int >::value_type insertVal(deviceID, workCount);
+            _queuedWork.insert(insertVal);
+        }
+        _criticalSection.release();
+    }
+    catch( ... )
+    {
+        _criticalSection.release();
+    }
+}
+
+void CtiPort::setPortCommunicating(bool state)
+{
+    try
+    {
+        _criticalSection.acquire();
+        _communicating = state;
+        _criticalSection.release();
+    }
+    catch( ... )
+    {
+        _criticalSection.release();
+    }
+}
+
+int CtiPort::getWorkCount()
+{
+    int workCount = 0;
+    map< LONG, int >::iterator iter;
+    try
+    {        
+        if( _communicating )
+        {
+            workCount++;
+        }
+        workCount += queueCount();
+
+        _criticalSection.acquire();
+        for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
+        {
+            workCount += iter->second;
+        }
+        _criticalSection.release();
+    }
+    catch( ... )
+    {
+        _criticalSection.release();
+        workCount = 0;
+    }
+
+    return workCount;
+}
 
 CtiPort& CtiPort::setDevicePreload(LONG id)
 {

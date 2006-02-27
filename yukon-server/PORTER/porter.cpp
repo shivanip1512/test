@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2006/01/31 19:02:42 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2006/02/27 20:53:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,6 +249,8 @@ typedef map< LONG, LONG > CtiCommFailPoints_t;              // pair< LONG device
 static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
 
 static RWWinSockInfo  winsock;
+
+ULONG WorkCountPointOffset = 0;
 
 bool findTAPDevice(const long key, CtiDeviceSPtr devsptr, void *ptr)
 {
@@ -631,6 +633,36 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
     }
 }
 
+void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
+{
+    string printStr;
+    ULONG QueEntCnt = 0;
+
+    /* Report on the state of the queues */
+
+    if( passedPtr && !ptPort->isInhibited())
+    {
+        QueEntCnt = ptPort->getWorkCount();
+
+        *((ULONG *)passedPtr) += QueEntCnt;
+    }
+    else if( !ptPort->isInhibited() )
+    {
+        QueEntCnt = ptPort->getWorkCount();
+        /* Print out the port queue information */
+
+        printStr = CtiTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() +
+                                             " Port/Device Work Entries:  " + CtiNumStr(QueEntCnt).spad(4);
+    }
+
+    if(!printStr.empty())
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << printStr << endl;
+    }
+}
+
+
 void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
     bool yep = false;
@@ -679,6 +711,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     INT    i, j;
     extern USHORT PrintLogEvent;
     time_t last_print = 0, last_flush = 0;
+    CtiTime lastWorkReportTime;
 
     BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -1038,6 +1071,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         {
             last_flush = ::time(0);
             DeviceManager.writeDynamicPaoInfo();
+        }
+
+        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds() - 20) )
+        {
+            lastWorkReportTime = lastWorkReportTime.now();
+            reportOnWorkObjects();
         }
 
         CTISleep(250);
@@ -2171,6 +2210,11 @@ bool processInputFunction(CHAR Char)
             }
             break;
         }
+    case 0x77:              // alt-w
+        {
+            PortManager.apply( applyPortWorkReport, NULL );
+            break;
+        }
     case 0x79:              // alt-y
         {
             PortManager.apply( applyPortLoadReport, (void*)1 );
@@ -2361,3 +2405,26 @@ LONG GetCommFailPointID(LONG devid)
     return pid;
 }
 
+void reportOnWorkObjects()
+{
+    CtiPointDataMsg *pData = NULL;
+    extern CtiConnection VanGoghConnection;
+    ULONG count = 0;
+    PortManager.apply( applyPortWorkReport, &count );
+
+    if( !WorkCountPointOffset )
+    {
+        WorkCountPointOffset = GetPIDFromDeviceAndOffset(0, 1500);
+    }
+
+    if( WorkCountPointOffset )
+    {
+        pData = CTIDBG_new CtiPointDataMsg(WorkCountPointOffset, count, NormalQuality, AnalogPointType);
+    }
+
+    if(pData != NULL)
+    {
+        VanGoghConnection.WriteConnQue(pData);
+    }
+
+}

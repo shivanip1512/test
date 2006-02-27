@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.168 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.169 $
+* DATE         :  $Date: 2006/02/27 20:53:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -382,6 +382,7 @@ VOID PortThread(void *pid)
             ticks = GetTickCount();
         }
 
+        Port->setPortCommunicating();
         try
         {
             /* Execute based on wrap protocol.  Sends OutMessage and fills in InMessage */
@@ -395,6 +396,8 @@ VOID PortThread(void *pid)
             }
         }
 
+        Port->addDeviceQueuedWork( Device->getID(), Device->queuedWorkCount() );
+
         if( profiling )
         {
             ticks = GetTickCount() - ticks;
@@ -405,6 +408,8 @@ VOID PortThread(void *pid)
                 dout << CtiTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
+
+        Port->setPortCommunicating(false);
 
         //  if the device needs to schedule more work
         if( Device->hasPreloadWork() )
@@ -970,6 +975,11 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             processPreloads(Port);
 
             DeviceManager.addPortExclusion(Device->getID());
+        }
+
+        if( dqcnt )
+        {
+            Port->addDeviceQueuedWork( Device->getID(), dqcnt );
         }
 
         if( gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001 )

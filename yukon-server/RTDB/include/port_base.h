@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/12/29 22:12:41 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/02/27 20:53:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ using std::iostream;
 #include "tbl_port_base.h"
 #include "tbl_paoexclusion.h"
 #include "xfer.h"
+#include "critical_section.h"
 
 #ifdef CTIOLDSTATS
   #include "tbl_port_statistics.h"
@@ -247,6 +248,9 @@ public:
     bool getDeviceQueued() const;
     CtiPort& setDeviceQueued(LONG id);
     CtiPort& resetDeviceQueued(LONG id);
+    void addDeviceQueuedWork(long deviceID, int workCount);
+    void setPortCommunicating(bool state = true);
+    int getWorkCount();
 
     CtiPort& setDevicePreload(LONG id);
     CtiPort& resetDevicePreload(LONG id);
@@ -303,7 +307,9 @@ private:
     CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
     mutable CtiMutex            _exclusionMux;          // Used when processing the exclusion logic
+    CtiCriticalSection          _criticalSection;       // Used for out message counting
     bool                        _executing;             // Port is currently executing work...
+    bool                        _communicating;         // Port is being used for communicating
     prohibitions                _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
     CtiTime                      _lastReport;    // Last comm fail report happened here.
@@ -314,6 +320,7 @@ private:
 
     list< LONG >                _devicesQueued;
     set< LONG >                 _devicesPreloaded;
+    map< LONG, int >            _queuedWork;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 

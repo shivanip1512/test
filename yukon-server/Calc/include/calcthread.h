@@ -8,6 +8,7 @@
 #include <rw/tvdeque.h>
 #include <rw/tpdeque.h>
 #include <rw/thr/thrfunc.h>
+#include <map>
 
 #include "hashkey.h"
 #include "msg_multi.h"
@@ -37,23 +38,34 @@ public:
 
     typedef RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMap;
     typedef RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > CtiCalcPointMapIterator;
+    typedef map<long, CtiTime> PointTimeMap;
+    typedef map<long, double> HistoricalPointValueMap;
+    typedef map<CtiTime, HistoricalPointValueMap > DynamicTableData;
+    typedef map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
 
 private:
-    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints;
+    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
     RWTValDeque<long> _auAffectedPoints;
     RWTPtrDeque<CtiMultiMsg> _outbox;
     RWMutexLock _pointDataMutex;
 
     void periodicThread( void );
     void onUpdateThread( void );
+    void historicalThread( void );
     static void sendUserQuit(void *who);
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     RWThreadFunction _periodicThreadFunc;
     RWThreadFunction _onUpdateThreadFunc;
+    RWThreadFunction _historicalThreadFunc;
 
     CtiCalcThreadInterruptReason _interruptReason;
+
+    void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
+    void getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data);
+    void setHistoricalPointStore(HistoricalPointValueMap &valueMap);
+    void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
 
 public:
 
