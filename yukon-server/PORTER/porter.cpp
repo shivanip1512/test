@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2006/02/27 20:53:29 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2006/02/27 22:21:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -709,6 +709,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 {
     /* Misc Definitions */
     INT    i, j;
+    int WorkReportFrequencyInSeconds;
     extern USHORT PrintLogEvent;
     time_t last_print = 0, last_flush = 0;
     CtiTime lastWorkReportTime;
@@ -963,6 +964,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
+    if( (WorkReportFrequencyInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
+    {
+        //This is a failure case
+        WorkReportFrequencyInSeconds = 60;
+    }
+
     if(gLogPorts)
     {
         {
@@ -1073,7 +1080,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             DeviceManager.writeDynamicPaoInfo();
         }
 
-        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds() - 20) )
+        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds() - WorkReportFrequencyInSeconds) )
         {
             lastWorkReportTime = lastWorkReportTime.now();
             reportOnWorkObjects();
