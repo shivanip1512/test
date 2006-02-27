@@ -4,13 +4,9 @@
  */
 package com.cannontech.database.data.point;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310;
 import com.cannontech.database.data.device.MCT310ID;
@@ -24,13 +20,10 @@ import com.cannontech.database.data.device.MCT430A;
 import com.cannontech.database.data.device.MCT430S;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.TypeBase;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointStatus;
-import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 //import com.cannontech.stars.util.ServerUtils;
@@ -331,7 +324,8 @@ public class PointUtil {
                                                                       paoId,
                                                                       point.getPoint()
                                                                                  .getPointID(),
-                                                                      TypeBase.POINT_OFFSET,
+                                                                      PointOffsetUtils.getValidPointOffset(paoId, type),
+                                     
                                                                       PointUnits.UOMID_VOLTS,
                                                                       1.0);
            dbPersistentVector.getDBPersistentVector().add(point);
@@ -339,6 +333,7 @@ public class PointUtil {
        case PointTypes.STATUS_POINT:
            point = (StatusPoint)PointFactory.createBankStatusPt(paoId);
            point.getPoint().setPointName(name);
+           point.getPoint().setPointOffset( PointOffsetUtils.getValidPointOffset(paoId, type));
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
