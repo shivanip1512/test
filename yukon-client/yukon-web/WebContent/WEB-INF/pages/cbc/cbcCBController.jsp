@@ -4,7 +4,9 @@
 
 <f:subview id="cbcController" rendered="#{capControlForm.visibleTabs['CBCController']}" >
 
-	<h:panelGrid id="cbcBody" columns="1" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
+
+    <h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
+    
 
         <h:column rendered="#{!capControlForm.CBControllerEditor.twoWay}">
            <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
@@ -77,8 +79,6 @@
 						value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.postCommWait}" >
 					<f:validateLongRange minimum="0" maximum="99999" />
 				</x:inputText>
-                
-            
             </x:panelGroup>
                <h:panelGrid id="scanGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
                 
@@ -150,10 +150,7 @@
                         <f:selectItem itemLabel="Second" itemValue="2" />
                     </x:selectOneMenu>
                     </h:column>
-                    
-                </h:panelGrid>
-               
-               
+                </h:panelGrid>                            
                <f:verbatim>
             </fieldset>
             </f:verbatim>
@@ -161,7 +158,6 @@
             
             <h:column rendered="#{capControlForm.CBControllerEditor.twoWay}">
             <x:panelGroup>                      
-               
                 <f:verbatim>
                     <br />
                     <fieldset>
@@ -190,7 +186,6 @@
                                     <f:param name="ptID" value="#{node.identifier}" />
                                 </x:commandLink>
                             </x:panelGroup>
-
                         </f:facet>
                     </x:tree2>
                 </x:div>
