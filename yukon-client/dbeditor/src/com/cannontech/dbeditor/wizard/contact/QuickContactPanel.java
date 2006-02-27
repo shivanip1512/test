@@ -231,15 +231,21 @@ public Object getValue(Object val)
 	cnt.getContact().setContLastName( getJTextFieldLastName().getText() );
 
 	
-	//finally, set the notification data
-	com.cannontech.database.db.contact.ContactNotification cntCn =
-		new com.cannontech.database.db.contact.ContactNotification();
-		
-	cntCn.setNotification( getJTextFieldAddress().getText() );
-	cntCn.setNotificationCatID( 
-			new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
-
-	cnt.getContactNotifVect().add( cntCn );
+	//finally, set the notification data if they actually put an email address in
+    
+    if(!getJTextFieldAddress().getText().equalsIgnoreCase(""))
+    {
+    	com.cannontech.database.db.contact.ContactNotification cntCn =
+    		new com.cannontech.database.db.contact.ContactNotification();
+    		
+    	cntCn.setNotification( getJTextFieldAddress().getText() );
+    	cntCn.setNotificationCatID( 
+    			new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+    
+    	cnt.getContactNotifVect().add( cntCn );
+    }
+    
+    
 	return cnt;
 }
 
