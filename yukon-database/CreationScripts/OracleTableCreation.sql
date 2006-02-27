@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/27/2006 8:30:16 AM                         */
+/* Created on:     2/27/2006 4:54:26 PM                         */
 /*==============================================================*/
 
 
@@ -133,6 +133,8 @@ drop table CALCCOMPONENT cascade constraints;
 drop table CAPBANK cascade constraints;
 
 drop table CAPCONTROLSUBSTATIONBUS cascade constraints;
+
+drop table CCEventLog cascade constraints;
 
 drop table CCFeederBankList cascade constraints;
 
@@ -728,6 +730,25 @@ create index Indx_CSUBVPT on CAPCONTROLSUBSTATIONBUS (
 );
 
 /*==============================================================*/
+/* Table: CCEventLog                                            */
+/*==============================================================*/
+create table CCEventLog  (
+   LogID                NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   DateTime             DATE                            not null,
+   SubID                NUMBER                          not null,
+   FeederID             NUMBER                          not null,
+   EventType            NUMBER                          not null,
+   SeqID                NUMBER                          not null,
+   Value                NUMBER                          not null,
+   Text                 VARCHAR(120)                    not null,
+   UserName             VARCHAR(64)                     not null
+);
+
+alter table CCEventLog
+   add constraint PK_CCEventLog primary key (LogID);
+
+/*==============================================================*/
 /* Table: CCFeederBankList                                      */
 /*==============================================================*/
 create table CCFeederBankList  (
@@ -856,7 +877,8 @@ create table CapControlFeeder  (
    CurrentWattLoadPointID NUMBER                          not null,
    MapLocationID        VARCHAR2(64)                    not null,
    StrategyID           NUMBER                          not null,
-   CurrentVoltLoadPointID NUMBER                          not null
+   CurrentVoltLoadPointID NUMBER                          not null,
+   MultiMonitorControl  CHAR(1)                         not null
 );
 
 alter table CapControlFeeder
@@ -2567,6 +2589,7 @@ create table DynamicCCFeeder  (
    WaiveControlFlag     CHAR(1)                         not null,
    AdditionalFlags      VARCHAR2(32)                    not null,
    CurrentVoltPointValue FLOAT                           not null,
+   EventSeq             NUMBER                          not null,
    CurrVerifyCBId       NUMBER                          not null,
    CurrVerifyCBOrigState NUMBER                          not null
 );
@@ -2634,7 +2657,8 @@ create table DynamicCCSubstationBus  (
    CbInactivityTime     NUMBER                          not null,
    CurrentVoltPointValue FLOAT                           not null,
    SwitchPointStatus    CHAR(1)                         not null,
-   AltSubControlValue   FLOAT                           not null
+   AltSubControlValue   FLOAT                           not null,
+   EventSeq             NUMBER                          not null
 );
 
 alter table DynamicCCSubstationBus

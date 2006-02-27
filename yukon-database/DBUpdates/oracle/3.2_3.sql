@@ -143,7 +143,7 @@ create table CCMONITORBANKLIST  (
    PointID              NUMBER                          not null,
    DisplayOrder         NUMBER                          not null,
    Scannable            CHAR(1)                         not null,
-   NLNAvg               NUMBER                          not null,
+   NINAvg               NUMBER                          not null,
    UpperBandwith        FLOAT                           not null,
    LowerBandwith        FLOAT                           not null
 );
@@ -477,7 +477,8 @@ create table CapControlFeeder  (
    CurrentWattLoadPointID NUMBER                          not null,
    MapLocationID        VARCHAR2(64)                    not null,
    StrategyID           NUMBER                          not null,
-   CurrentVoltLoadPointID NUMBER                        not null
+   CurrentVoltLoadPointID NUMBER                        not null,
+   MultiMonitorControl  CHAR(1)                         not null
 );
 
 alter table CapControlFeeder
@@ -1321,7 +1322,10 @@ create table DynamicCCFeeder  (
    CurrentVarPointQuality NUMBER                          not null,
    WaiveControlFlag     CHAR(1)                         not null,
    AdditionalFlags      VARCHAR2(32)                    not null,
-   CurrentVoltPointValue FLOAT                          not null
+   CurrentVoltPointValue FLOAT                          not null,
+   EventSeq             NUMBER                          not null,
+   CurrVerifyCBId       NUMBER                          not null,
+   CurrVerifyCBOrigState NUMBER                         not null
 );
 
 alter table DynamicCCFeeder
@@ -1360,7 +1364,8 @@ create table DynamicCCSubstationBus  (
    CbInactivityTime     NUMBER                          not null,
    CurrentVoltPointValue FLOAT                           not null,
    SwitchPointStatus    CHAR(1)                         not null,
-   AltSubControlValue   FLOAT                           not null
+   AltSubControlValue   FLOAT                           not null,
+   EventSeq             NUMBER                          not null
 );
 
 alter table DynamicCCSubstationBus
@@ -3442,6 +3447,93 @@ create table SettlementConfig (
 
 alter table SettlementConfig
    add constraint PK_SETTLEMENTCONFIG primary key  (ConfigID);
+
+/*==============================================================*/
+/* Table: CCMONITORBANKLIST                                     */
+/*==============================================================*/
+create table CCMONITORBANKLIST  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null,
+   Scannable            CHAR(1)                         not null,
+   NINAvg               NUMBER                          not null,
+   UpperBandwith        FLOAT                           not null,
+   LowerBandwith        FLOAT                           not null
+);
+
+alter table CCMONITORBANKLIST
+   add constraint PK_CCMONITORBANKLIST primary key (BankID, PointID);
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLST_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+alter table CCMONITORBANKLIST
+   add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID);
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorBankHistory                           */
+/*==============================================================*/
+create table DynamicCCMonitorBankHistory  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   Value                FLOAT                           not null,
+   DateTime             DATE                            not null,
+   ScanInProgress       CHAR(1)                         not null
+);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+alter table DynamicCCMonitorBankHistory
+   add constraint FK_DYN_CCMONBNKHIST_BNKID foreign key (BankID)
+      references CAPBANK (DEVICEID);
+
+/*==============================================================*/
+/* Table: DynamicCCMonitorPointResponse                         */
+/*==============================================================*/
+create table DynamicCCMonitorPointResponse  (
+   BankID               NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   PreOpValue           FLOAT                           not null,
+   Delta                NUMBER                          not null
+);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_BNKID foreign key (BankID)
+      references DynamicCCCapBank (CapBankID);
+
+alter table DynamicCCMonitorPointResponse
+   add constraint FK_DYN_CCMONPTRSP_PTID foreign key (PointID)
+      references POINT (POINTID);
+
+/*==============================================================*/
+/* Table: CCEventLog                                            */
+/*==============================================================*/
+create table CCEventLog  (
+   LogID                NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   DateTime             DATE                            not null,
+   SubID                NUMBER                          not null,
+   FeederID             NUMBER                          not null,
+   EventType            NUMBER                          not null,
+   SeqID                NUMBER                          not null,
+   Value                NUMBER                          not null,
+   Text                 VARCHAR(120)                    not null,
+   UserName             VARCHAR(64)                     not null
+);
+
+alter table CCEventLog
+   add constraint PK_CCEventLog primary key (LogID);
+
 
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */

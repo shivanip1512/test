@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/22/2006 4:58:26 PM                         */
+/* Created on:     2/27/2006 4:55:19 PM                         */
 /*==============================================================*/
 
 
@@ -586,6 +586,14 @@ if exists (select 1
            where  id = object_id('CAPCONTROLSUBSTATIONBUS')
             and   type = 'U')
    drop table CAPCONTROLSUBSTATIONBUS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCEventLog')
+            and   type = 'U')
+   drop table CCEventLog
 go
 
 
@@ -2353,6 +2361,29 @@ go
 
 
 /*==============================================================*/
+/* Table: CCEventLog                                            */
+/*==============================================================*/
+create table CCEventLog (
+   LogID                numeric              not null,
+   PointID              numeric              not null,
+   DateTime             datetime             not null,
+   SubID                numeric              not null,
+   FeederID             numeric              not null,
+   EventType            numeric              not null,
+   SeqID                numeric              not null,
+   Value                numeric              not null,
+   Text                 varchar(120)         not null,
+   UserName             varchar(64)          not null
+)
+go
+
+
+alter table CCEventLog
+   add constraint PK_CCEventLog primary key  (LogID)
+go
+
+
+/*==============================================================*/
 /* Table: CCFeederBankList                                      */
 /*==============================================================*/
 create table CCFeederBankList (
@@ -2513,7 +2544,8 @@ create table CapControlFeeder (
    CurrentWattLoadPointID numeric              not null,
    MapLocationID        varchar(64)          not null,
    StrategyID           numeric              not null,
-   CurrentVoltLoadPointID numeric              not null
+   CurrentVoltLoadPointID numeric              not null,
+   MultiMonitorControl  char(1)              not null
 )
 go
 
@@ -4456,6 +4488,7 @@ create table DynamicCCFeeder (
    WaiveControlFlag     char(1)              not null,
    AdditionalFlags      varchar(32)          not null,
    CurrentVoltPointValue float                not null,
+   EventSeq             numeric              not null,
    CurrVerifyCBId       numeric              not null,
    CurrVerifyCBOrigState numeric              not null
 )
@@ -4535,7 +4568,8 @@ create table DynamicCCSubstationBus (
    CbInactivityTime     numeric              not null,
    CurrentVoltPointValue float                not null,
    SwitchPointStatus    char(1)              not null,
-   AltSubControlValue   float                not null
+   AltSubControlValue   float                not null,
+   EventSeq             numeric              not null
 )
 go
 
