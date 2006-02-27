@@ -43,6 +43,7 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -990,17 +991,20 @@ public class CapControlForm extends DBEditorForm {
 			// created
 			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
             ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
+            StatusPoint statusPt;
             if (pao instanceof CapBankController702x) {
-			       DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);
+                   MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
                    CBControllerEditor.insertPointsIntoDB(pointVector);  
-            }
-			
+                   statusPt = (StatusPoint) MultiDBPersistent
+                   .getFirstObjectOfType(StatusPoint.class, pointVector);
+            }	
             // find the first status point in our CBC and assign its ID to our
 			// CapBank
 			// for control purposes
-			StatusPoint statusPt = (StatusPoint) SmartMultiDBPersistent
+            else {
+                statusPt = (StatusPoint) SmartMultiDBPersistent
 					.getFirstObjectOfType(StatusPoint.class, smartMulti);
-
+            }
 			((CapBank) dbObj).getCapBank().setControlPointID(
 					statusPt.getPoint().getPointID());
 

@@ -13,6 +13,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan
@@ -45,11 +46,11 @@ public class CBCDBObjCreator {
 		
 		//store the objects we add to the DB
 		SmartMultiDBPersistent retSmart = new SmartMultiDBPersistent();
-
-		if( DeviceTypesFuncs.isCapBankController(paoType) ) {
+		boolean isTwoWay = CBCUtils.isTwoWay(paoType);
+        if( DeviceTypesFuncs.isCapBankController(paoType) && !isTwoWay) {
 			//create the Status Point for this CBC
 			PointBase statusPt = CapBankController.createStatusControlPoint(parentID);
-
+			
 			retSmart.addDBPersistent( statusPt );
 		}
 		

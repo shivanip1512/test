@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.AccumPointParams;
@@ -69,7 +70,7 @@ public class CBCPointFactory{
 
     }
     
-    public static DBPersistent createPointsForCBCDevice(YukonPAObject deviceCBC) {
+    public static MultiDBPersistent createPointsForCBCDevice(YukonPAObject deviceCBC) {
 
         
         MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
