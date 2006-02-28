@@ -10,6 +10,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -246,7 +247,7 @@ public class CreateServiceRequestAction implements ActionBase {
 		else if ( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
 			samToCrsStatus = "C";
        	
-       	if (samToCrsStatus != null)
+       	if (VersionTools.crsPtjIntegrationExists() && samToCrsStatus != null)
        	{
        		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
         	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());

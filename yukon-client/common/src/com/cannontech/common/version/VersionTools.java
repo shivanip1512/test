@@ -15,6 +15,7 @@ public final class VersionTools
 	public static final String KEY_YUKON_VERSION = "Yukon-Version";
 	public static final String COMMON_JAR = "common.jar";
 	
+	private static Boolean crsPtjIntegration = null;
 	public static String yukonVersion = null;
 	private static CTIDatabase db_obj = null;
 	
@@ -131,6 +132,18 @@ public static boolean starsExists()
 	//case sensitive in Oracle (very important)
 	//this is not a save check by itself anymore
 	return VersionTools.tableExists("CUSTOMERACCOUNT");
+}
+
+/**
+ * Check to see if a the required SAMToCRS_PTJ table exits in DB
+ * @return boolean
+ */
+public static boolean crsPtjIntegrationExists()
+{
+	if( crsPtjIntegration == null)
+	//case sensitive in Oracle (very important)
+		crsPtjIntegration = new Boolean(VersionTools.tableExists("SAMTOCRS_PTJ"));
+	return crsPtjIntegration;
 }
 
 public static void main ( String[] args )

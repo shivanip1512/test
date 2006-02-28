@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -140,7 +141,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
 						EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue());
-					if (samToCrsStatus != null)
+					if ( VersionTools.crsPtjIntegrationExists() && samToCrsStatus != null)
 					{
 						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
 						LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEC.getCustAccountInformation(workOrderBase.getWorkOrderBase().getAccountID().intValue(), true);

@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -140,7 +141,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 				else if ( updateOrder.getCurrentState().getEntryID()== YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
 					samToCrsStatus = "C";
 	           	
-	           	if (samToCrsStatus != null)
+	           	if (VersionTools.crsPtjIntegrationExists() && samToCrsStatus != null)
 	           	{
 	           		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
                 	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
