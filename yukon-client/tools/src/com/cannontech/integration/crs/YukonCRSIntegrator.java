@@ -12,6 +12,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -538,7 +539,7 @@ public final class YukonCRSIntegrator
     			);
                 ServerUtils.handleDBChangeMsg(dbChangeMessage);
                 
-                if( servStat == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+                if( VersionTools.crsPtjIntegrationExists() && servStat == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
                 {	//All Processed status must have an entry in SAMToCRS_PTJ             	
                 	SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ(ptjID, Integer.valueOf(accountNumber), debtorNumber, 
                 												workOrder.getWorkOrderBase().getOrderNumber(), "P", new Date(), liteYukonUser.getUsername());
