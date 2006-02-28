@@ -265,7 +265,9 @@ function confirmDelete() {
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Inventory.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
             </cti:checkProperty></td>
           <% } %>
-          <td width="25%" class="MainText">&nbsp;</td>
+          <td width="25%" class="MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/PurchaseTrack.jsp" class = "Link1" style = "text-decoration:none;">Purchasing</a></div>
+          </td>
           <form name = "invSearchForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 		    <input type="hidden" name="action" value="SearchInventory">
 			<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">

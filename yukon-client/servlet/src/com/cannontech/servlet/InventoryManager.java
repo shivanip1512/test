@@ -15,20 +15,15 @@ import com.cannontech.common.constants.*;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.*;
-import com.cannontech.database.DatabaseTypes;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
+import com.cannontech.database.db.stars.purchasing.PurchasePlan;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -183,6 +178,12 @@ public class InventoryManager extends HttpServlet {
             manipulateResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
             manipulateSelectedResults( user, req, session );
+        else if (action.equalsIgnoreCase("PurchaseChange"))
+            handlePurchaseChange( user, req, session );
+        else if (action.equalsIgnoreCase("RequestNewPurchasePlan"))
+            requestNewPurchasePlan( user, req, session );
+        else if (action.equalsIgnoreCase("LoadPurchasePlan"))
+            loadPurchasePlan( user, req, session );
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1381,7 +1382,7 @@ public class InventoryManager extends HttpServlet {
         if(filterTexts == null)
         {
             iBean.setFilterByList(filters);
-            session.setAttribute("inventoryBean", iBean);
+            //session.setAttribute("inventoryBean", iBean);
             session.setAttribute( ServletUtils.FILTER_INVEN_LIST, filters );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no filters defined.");
             redirect = referer;
@@ -1475,7 +1476,7 @@ public class InventoryManager extends HttpServlet {
             }
             
             mBean.setActionsApplied(appliedActions);
-            session.setAttribute("manipBean", mBean);
+            //session.setAttribute("manipBean", mBean);
             session.setAttribute(ServletUtils.ATT_REDIRECT, redir);
             session.setAttribute(ServletUtils.ATT_REFERRER, redir);
             redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
@@ -1486,7 +1487,7 @@ public class InventoryManager extends HttpServlet {
     {
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
         iBean.setViewResults(!iBean.getViewResults());
-        session.setAttribute("inventoryBean", iBean);
+        //session.setAttribute("inventoryBean", iBean);
         
         redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
     }
@@ -1556,7 +1557,12 @@ public class InventoryManager extends HttpServlet {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Meter information could not be saved to the database.  Transaction failed.");
         }
         
-        redirect = req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
+        if(referer.contains("Consumer"))
+        {
+            redirect = req.getContextPath() + "/operator/Consumer/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
+        }
+        else
+            redirect = req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
     }
     
     private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
@@ -1591,5 +1597,88 @@ public class InventoryManager extends HttpServlet {
     private void manipulateResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {
         redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
+    }
+    
+    private void handlePurchaseChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        PurchasePlan currentPlan = pBean.getCurrentPlan();
+        
+        currentPlan.setPlanName(req.getParameter("name"));
+        currentPlan.setPoDesignation(req.getParameter("poNumber"));
+        currentPlan.setAccountingCode(req.getParameter("accountingCode"));
+        
+        String[] scheduleIDs = req.getParameterValues("schedules");
+        List<DeliverySchedule> newList = new ArrayList<DeliverySchedule>();
+        
+        for(int i = 0; i < currentPlan.getDeliverySchedules().size(); i++)
+        {
+            boolean isFound = false;
+            int inc = 0;
+            
+            for(int j = 0; j < scheduleIDs.length; j++)
+            {
+                if(scheduleIDs[j].compareTo(currentPlan.getDeliverySchedules().get(i).getScheduleID().toString()) == 0)
+                {
+                    isFound = true;
+                    newList.add(currentPlan.getDeliverySchedules().get(i));
+                    break;
+                }
+            }
+            
+            if(!isFound)
+            {
+                
+            }
+        }
+            
+        
+        try
+        {
+            //new meter
+            if(currentPlan.getPurchaseID() == null)
+            {
+                currentPlan.setPurchaseID(PurchasePlan.getNextPurchaseID());
+                currentPlan.setEnergyCompanyID(pBean.getEnergyCompany().getEnergyCompanyID());
+                Transaction.createTransaction(Transaction.INSERT, currentPlan).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New purchase plan added to database.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentPlan).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Purchase plan successfully updated in the database.");
+            }
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Purchase plan could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+    }
+    
+    private void requestNewPurchasePlan(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentPlan(new PurchasePlan());
+        
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+    }
+    
+    private void loadPurchasePlan(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<PurchasePlan> purchasePlans = pBean.getAvailablePlans();
+        Integer idToLoad = new Integer(req.getParameter("plans"));
+        
+        for(int j = 0; j < purchasePlans.size(); j++)
+        {
+            if(purchasePlans.get(j).getPurchaseID().compareTo(idToLoad) == 0)
+                pBean.setCurrentPlan(purchasePlans.get(j));
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
     }
 }
