@@ -32,7 +32,7 @@
     		<br clear="all">
     	</div>
     	
-		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager">
+		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
 	    	<input type="hidden" name="action" value="MeterProfileSave">
  	    	<table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
             	<tr> 
@@ -123,7 +123,7 @@
 	 	   	<table width="600" border="0" cellspacing="0" cellpadding="5" align="right">
 	        	<tr>
 	           		<td width="60%">  
-						<input type="submit" name="Submit" value="Save Meter">
+						<input type="button" name="Submit" value="Save Meter" onclick="validate(this.form)">
 					</td>
 	            	<td width="40%">
 	                	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">

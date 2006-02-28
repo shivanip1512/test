@@ -34,7 +34,7 @@
     		<br clear="all">
     	</div>
     	
-		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="prepareSubmit(this)">
+		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
 	    	<input type="hidden" name="action" value="MeterProfileSave">
  	    	<table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
             	<tr> 
@@ -238,7 +238,7 @@
 				form.insertAdjacentHTML("beforeEnd", html);
 			}
 			
-			form.submit();
+			return validate(form);
 		}
 	</script>
 </cti:standardPage>          
