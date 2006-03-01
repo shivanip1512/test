@@ -70,6 +70,7 @@ public void delete() throws java.sql.SQLException
 	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
     delete( "PAOOwner", "ChildID", getPAObjectID() );
     delete( UserPaoOwner.TABLE_NAME, "PaoID", getPAObjectID() );
+    delete( "DynamicPAOInfo", "PAObjectID", getPAObjectID() );
 
 	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
 	
