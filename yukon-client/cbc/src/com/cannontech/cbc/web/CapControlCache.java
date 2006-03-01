@@ -25,6 +25,7 @@ import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.CapControlFeeder;
@@ -303,7 +304,7 @@ public synchronized LiteWrapper[] getOrphanedCapBanks()
 		retVal[i] = new LiteWrapper(
 				PAOFuncs.getLiteYukonPAO(capBank.getDeviceID().intValue()) );
 	}
-
+    Arrays.sort(retVal, LiteComparators.liteNameComparator);
 	return retVal;
 }
 
