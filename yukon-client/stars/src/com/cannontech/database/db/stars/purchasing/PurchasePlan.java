@@ -16,8 +16,6 @@ public class PurchasePlan extends DBPersistent {
     private String accountingCode = "";
     private Date timePeriod;
     
-    private List<DeliverySchedule> deliverySchedules;
-
     public static final String CONSTRAINT_COLUMNS[] = { "PurchaseID" };
 
     public static final String SETTER_COLUMNS[] = { "EnergyCompanyID", "PlanName", "PoDesignation", "AccountingCode", "TimePeriod"};
@@ -39,28 +37,15 @@ public void add() throws java.sql.SQLException
                             getAccountingCode(), getTimePeriod()};
 
     add( TABLE_NAME, setValues );
-    
-    for(int i = 0; i < getDeliverySchedules().size(); i++)
-    {
-        getDeliverySchedules().get(i).setPurchasePlanID(getPurchaseID());
-        getDeliverySchedules().get(i).add();
-    }
+
 }
 
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getPurchaseID() };
 
-    for(int i = 0; i < getDeliverySchedules().size(); i++)
-    {
-        getDeliverySchedules().get(i).setPurchasePlanID(getPurchaseID());
-        getDeliverySchedules().get(i).delete();
-    }
-        
-    
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
-
 
 public void retrieve() throws java.sql.SQLException 
 {
@@ -79,7 +64,6 @@ public void retrieve() throws java.sql.SQLException
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
     
-    setDeliverySchedules(DeliverySchedule.getAllDeliverySchedulesForAPlan(purchaseID));
 }
 
 
@@ -91,11 +75,7 @@ public void update() throws java.sql.SQLException
     Object constraintValues[] = { getPurchaseID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-    
-    for(int i = 0; i < getDeliverySchedules().size(); i++)
-    {
-        getDeliverySchedules().get(i).update();
-    }
+
 }
 
 public static Integer getNextPurchaseID()
@@ -146,7 +126,6 @@ public static List<PurchasePlan> getAllPurchasePlans(Integer energyCompanyID)
                 currentPlan.setAccountingCode( stmt.getRow(i)[4].toString());
                 currentPlan.setTimePeriod(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
                 
-                currentPlan.setDeliverySchedules(DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID()));
                 plans.add(currentPlan);
             }
         }
@@ -191,7 +170,6 @@ public static List<PurchasePlan> getAllPurchasePlansForAllMembers(Integer ecID, 
                 currentPlan.setAccountingCode( stmt.getRow(i)[4].toString());
                 currentPlan.setTimePeriod(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
                 
-                currentPlan.setDeliverySchedules(DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID()));
                 plans.add(currentPlan);
             }
         }
@@ -255,16 +233,5 @@ public String getPlanName() {
 public void setPlanName(String planName) {
     this.planName = planName;
 }
-
-public List<DeliverySchedule> getDeliverySchedules() {
-    if(deliverySchedules == null)
-        deliverySchedules = new ArrayList<DeliverySchedule>();
-    return deliverySchedules;
-}
-
-public void setDeliverySchedules(List<DeliverySchedule> deliverySchedules) {
-    this.deliverySchedules = deliverySchedules;
-}
-
 
 }

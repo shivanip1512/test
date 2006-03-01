@@ -1,7 +1,7 @@
 package com.cannontech.stars.web.bean;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -9,8 +9,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.report.ServiceCompany;
-import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
-import com.cannontech.database.db.stars.purchasing.PurchasePlan;
+import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 
@@ -24,7 +23,11 @@ public class PurchaseBean
     private List<PurchasePlan> availablePlans;
     private int numberOfPlans;
     private PurchasePlan currentPlan;
+    private List<DeliverySchedule> availableSchedules;
     private DeliverySchedule currentSchedule;
+    private List<ScheduleTimePeriod> availableTimePeriods;
+    private ScheduleTimePeriod currentTimePeriod;
+    private String currentPredictedShipDate;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -83,7 +86,7 @@ public class PurchaseBean
     public PurchasePlan getCurrentPlan() 
     {
         /**
-         * Grab the most recently created plan in the db.
+         * Usually the most recently created plan in the db.
          */
         if(currentPlan == null)
         {
@@ -109,8 +112,50 @@ public class PurchaseBean
     }
 
     public int getNumberOfPlans() {
-        return availablePlans.size();
+        numberOfPlans = availablePlans.size();
+        return numberOfPlans;
     }
 
-    
+    public List<DeliverySchedule> getAvailableSchedules() 
+    {
+        availableSchedules = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
+        return availableSchedules;
+    }
+
+    public void setAvailableSchedules(List<DeliverySchedule> availableSchedules) {
+        this.availableSchedules = availableSchedules;
+    }
+
+    public List<ScheduleTimePeriod> getAvailableTimePeriods() 
+    {
+        availableTimePeriods = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
+        return availableTimePeriods;
+    }
+
+    public void setAvailableTimePeriods(List<ScheduleTimePeriod> availableTimePeriods) 
+    {
+        this.availableTimePeriods = availableTimePeriods;
+    }
+
+    public ScheduleTimePeriod getCurrentTimePeriod() 
+    {
+        return currentTimePeriod;
+    }
+
+    public void setCurrentTimePeriod(ScheduleTimePeriod currentTimePeriod) 
+    {
+        this.currentTimePeriod = currentTimePeriod;
+    }
+
+    public String getCurrentPredictedShipDate() 
+    {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentPredictedShipDate = datePart.format(currentTimePeriod.getPredictedShipDate());
+        return currentPredictedShipDate;
+    }
+
+    public void setCurrentPredictedShipDate(String currentPredictedShipDate) {
+        this.currentPredictedShipDate = currentPredictedShipDate;
+    }
+
 }

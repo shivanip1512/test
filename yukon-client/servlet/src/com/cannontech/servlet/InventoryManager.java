@@ -22,8 +22,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
-import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
-import com.cannontech.database.db.stars.purchasing.PurchasePlan;
+import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -178,12 +177,31 @@ public class InventoryManager extends HttpServlet {
             manipulateResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
             manipulateSelectedResults( user, req, session );
+        /**
+         * Purchasing...this should go in its own servlet sometime soon.
+         */
         else if (action.equalsIgnoreCase("PurchaseChange"))
-            handlePurchaseChange( user, req, session );
+            handlePurchasePlanChange( user, req, session );
         else if (action.equalsIgnoreCase("RequestNewPurchasePlan"))
             requestNewPurchasePlan( user, req, session );
         else if (action.equalsIgnoreCase("LoadPurchasePlan"))
             loadPurchasePlan( user, req, session );
+        else if (action.equalsIgnoreCase("RequestNewDeliverySchedule"))
+            requestNewDeliverySchedule( user, req, session );
+        else if (action.equalsIgnoreCase("LoadDeliverySchedule"))
+            loadDeliverySchedule( user, req, session );
+        else if (action.equalsIgnoreCase("DeliveryScheduleChange"))
+            handleDeliveryScheduleChange( user, req, session );
+        else if (action.equalsIgnoreCase("RequestNewTimePeriod"))
+            requestNewTimePeriod( user, req, session );
+        else if (action.equalsIgnoreCase("LoadTimePeriod"))
+            loadTimePeriod( user, req, session );
+        else if (action.equalsIgnoreCase("TimePeriodChange"))
+            handleTimePeriodChange( user, req, session );
+        /*else if (action.equalsIgnoreCase("RequestNewShipment"))
+            requestNewShipment( user, req, session );
+        else if (action.equalsIgnoreCase("LoadShipment"))
+            loadShipment( user, req, session );*/
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1599,7 +1617,7 @@ public class InventoryManager extends HttpServlet {
         redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
     }
     
-    private void handlePurchaseChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    private void handlePurchasePlanChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {
         PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
         PurchasePlan currentPlan = pBean.getCurrentPlan();
@@ -1609,33 +1627,11 @@ public class InventoryManager extends HttpServlet {
         currentPlan.setAccountingCode(req.getParameter("accountingCode"));
         
         String[] scheduleIDs = req.getParameterValues("schedules");
-        List<DeliverySchedule> newList = new ArrayList<DeliverySchedule>();
-        
-        for(int i = 0; i < currentPlan.getDeliverySchedules().size(); i++)
-        {
-            boolean isFound = false;
-            int inc = 0;
-            
-            for(int j = 0; j < scheduleIDs.length; j++)
-            {
-                if(scheduleIDs[j].compareTo(currentPlan.getDeliverySchedules().get(i).getScheduleID().toString()) == 0)
-                {
-                    isFound = true;
-                    newList.add(currentPlan.getDeliverySchedules().get(i));
-                    break;
-                }
-            }
-            
-            if(!isFound)
-            {
-                
-            }
-        }
-            
+        List<DeliverySchedule> oldList = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
         
         try
         {
-            //new meter
+            //new purchase plan
             if(currentPlan.getPurchaseID() == null)
             {
                 currentPlan.setPurchaseID(PurchasePlan.getNextPurchaseID());
@@ -1648,11 +1644,36 @@ public class InventoryManager extends HttpServlet {
                 Transaction.createTransaction(Transaction.UPDATE, currentPlan).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Purchase plan successfully updated in the database.");
             }
+            
+            //only really have to worry about deletes: updates and news have already been added
+            for(int i = 0; i < oldList.size(); i++)
+            {
+                boolean isFound = false;
+                if(scheduleIDs != null)
+                {
+                    for(int j = 0; j < scheduleIDs.length; j++)
+                    {
+                        if(scheduleIDs[j].compareTo(oldList.get(i).getScheduleID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*
+                 * In old list only, must have been removed
+                 */
+                if(!isFound)
+                {
+                    Transaction.createTransaction(Transaction.DELETE, oldList.get(i)).execute();
+                }
+            }
         }
         catch (TransactionException e) 
         {
             CTILogger.error( e.getMessage(), e );
             e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Purchase plan could not be saved to the database.  Transaction failed.");
         }
         
@@ -1680,5 +1701,165 @@ public class InventoryManager extends HttpServlet {
         }
         
         redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+    }
+    
+    private void requestNewDeliverySchedule(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentSchedule(new DeliverySchedule());
+        pBean.getCurrentSchedule().setPurchasePlanID(pBean.getCurrentPlan().getPurchaseID());
+        
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+    }
+    
+    private void loadDeliverySchedule(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<DeliverySchedule> schedules = pBean.getAvailableSchedules();
+        Integer idToLoad = new Integer(req.getParameter("schedules"));
+        
+        for(int j = 0; j < schedules.size(); j++)
+        {
+            if(schedules.get(j).getScheduleID().compareTo(idToLoad) == 0)
+                pBean.setCurrentSchedule(schedules.get(j));
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+    }
+    
+    private void handleDeliveryScheduleChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        DeliverySchedule currentSchedule = pBean.getCurrentSchedule();
+        
+        currentSchedule.setScheduleName(req.getParameter("name"));
+        currentSchedule.setModelID(new Integer(req.getParameter("modelType")));
+        
+        String[] timeIDs = req.getParameterValues("times");
+        List<ScheduleTimePeriod> oldList = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
+        
+        String[] shipmentIDs = req.getParameterValues("shipments");
+        //List<ScheduleTimePeriod> oldList = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
+        
+        try
+        {
+            //new schedule
+            if(currentSchedule.getScheduleID() == null)
+            {
+                currentSchedule.setScheduleID(DeliverySchedule.getNextScheduleID());
+                currentSchedule.setPurchasePlanID(pBean.getCurrentPlan().getPurchaseID());
+                Transaction.createTransaction(Transaction.INSERT, currentSchedule).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New delivery schedule added to this purchase plan.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentSchedule).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Delivery schedule successfully updated in the database.");
+            }
+            
+            //only really have to worry about deletes: updates and news have already been added
+            for(int i = 0; i < oldList.size(); i++)
+            {
+                boolean isFound = false;
+                
+                if(timeIDs != null)
+                {    
+                    for(int j = 0; j < timeIDs.length; j++)
+                    {
+                        if(timeIDs[j].compareTo(oldList.get(i).getTimePeriodID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*
+                 * In old list only, must have been removed
+                 */
+                if(!isFound)
+                {
+                    Transaction.createTransaction(Transaction.DELETE, oldList.get(i)).execute();
+                }
+            }
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delivery schedule could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
+    }
+    
+    private void requestNewTimePeriod(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentTimePeriod(new ScheduleTimePeriod());
+        pBean.getCurrentTimePeriod().setScheduleID(pBean.getCurrentSchedule().getScheduleID());
+        
+        redirect = req.getContextPath() + "/operator/Hardware/ScheduleTimePeriod.jsp";
+    }
+    
+    private void loadTimePeriod(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<ScheduleTimePeriod> times = pBean.getAvailableTimePeriods();
+        Integer idToLoad = new Integer(req.getParameter("times"));
+        
+        for(int j = 0; j < times.size(); j++)
+        {
+            if(times.get(j).getTimePeriodID().compareTo(idToLoad) == 0)
+                pBean.setCurrentTimePeriod(times.get(j));
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/ScheduleTimePeriod.jsp";
+    }
+    
+    private void handleTimePeriodChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        ScheduleTimePeriod currentPeriod = pBean.getCurrentTimePeriod();
+        
+        currentPeriod.setScheduleID(pBean.getCurrentSchedule().getScheduleID());
+        currentPeriod.setTimePeriodName(req.getParameter("name"));
+        currentPeriod.setQuantity(new Integer(req.getParameter("quantity")));
+        Date shipDate = ServletUtil.parseDateStringLiberally( req.getParameter("shipDate"), pBean.getEnergyCompany().getDefaultTimeZone());
+        if (shipDate == null)
+        {
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid start date '" + req.getParameter("StartDate") + "'");
+            redirect = req.getContextPath() + "/operator/Hardware/ScheduleTimePeriod.jsp";
+        }
+        
+        currentPeriod.setPredictedShipDate(shipDate);
+        
+        try
+        {
+            /**
+             * new time period
+             */
+            if(currentPeriod.getTimePeriodID() == null)
+            {
+                currentPeriod.setTimePeriodID(ScheduleTimePeriod.getNextTimePeriodID());
+                Transaction.createTransaction(Transaction.INSERT, currentPeriod).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New time projection added to this delivery schedule.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentPeriod).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Time projection successfully updated in the database.");
+            }
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Time projection could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
     }
 }

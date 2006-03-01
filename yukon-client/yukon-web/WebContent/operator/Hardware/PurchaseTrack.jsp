@@ -34,7 +34,7 @@
 			<br>
 			<table id="edittopsection" align="center" width="500" border="0" cellspacing="0" cellpadding="1" class="TableCell">
 		    	<tr> 
-					<td width="30%" class="SubtitleHeader">Current Plan:</td>
+					<td width="30%" class="SubtitleHeader">Change Plan View:</td>
 					<td width="60%">
 						<select id="plans" name="plans" onchange="setContentChanged(true)">
 							<c:forEach var="plan" items="${purchaseBean.availablePlans}">
@@ -44,7 +44,7 @@
 						<INPUT id="load" type="Button" name="load" value="Load Plan" onclick="loadPlan(this.form)"/>
 					</td>
 					<td width="10%">
-						<INPUT type="Button" name="new" value="New Plan" onclick="createNew(this.form)" />
+						<INPUT type="Button" name="new" value="New Plan" onclick="createNewPlan(this.form)" />
 					</td>
 				</tr>
 			</table>
@@ -88,41 +88,43 @@
 	                  <div align="right">Created on:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <div align="left"><c:out value="${purchaseBean.currentPlan.timePeriod}"/></div>
+	                  <div align="left" class="fieldinfo"><c:out value="${purchaseBean.currentPlan.timePeriod}"/></div>
 	                </td>
 		     	</tr>
 	        </table>
 	        <br>
 	        <br>
-	        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
-        		<tr> 
-              		<td class="HeaderCell">Assigned Delivery Schedules</td>
-            	</tr>
-        	</table>
-        	<table width="500" border="1" cellspacing="0" cellpadding="5" align="center">
-        		<tr>
-        			<td width="20%">
-						<div align="right">
-							<INPUT type="Button" name="edit" value="Edit" />
-							<INPUT type="Button" name="delete" value="Delete" />
-						</div>
-					</td> 
-					<td width="60%" valign="top" class="TableCell"><br>
-	                    <div align="center">
-	                    	<select id="assigned" name="assigned" size="5" style="width:250">
-	                        	<c:forEach var="sched" items="${purchaseBean.currentPlan.deliverySchedules}">
-									<option value='<c:out value="${sched.scheduleID}"/>'> <c:out value="${sched.scheduleName}"/> </option>
-								</c:forEach>
-							</select>
-						</div>
-            		</td>
-                    <td width="20%">
-            			<div align="left">
-            				<INPUT type="Button" name="newAvailable" value="New" />
-            			</div>
-            		</td>
-            	</tr>
-			</table>
+	        <div id="onlyavailableaftercreation">
+		        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
+	        		<tr> 
+	              		<td class="HeaderCell">Assigned Delivery Schedules</td>
+	            	</tr>
+	        	</table>
+	        	<table width="500" border="1" cellspacing="0" cellpadding="5" align="center">
+	        		<tr>
+	        			<td width="20%">
+							<div align="right">
+								<INPUT type="Button" name="edit" value="Edit" onclick="loadSchedule(this.form)" />
+								<INPUT type="Button" name="delete" value="Remove" onclick="removeSched()"/>
+							</div>
+						</td> 
+						<td width="60%" valign="top" class="TableCell"><br>
+		                    <div align="center">
+		                    	<select id="schedules" name="schedules" size="5" style="width:250">
+		                        	<c:forEach var="sched" items="${purchaseBean.availableSchedules}">
+										<option value='<c:out value="${sched.scheduleID}"/>'> <c:out value="${sched.scheduleName}"/> </option>
+									</c:forEach>
+								</select>
+							</div>
+	            		</td>
+	                    <td width="20%">
+	            			<div align="left">
+	            				<INPUT type="Button" name="newAssigned" value="New" onclick="createNewSchedule(this.form)" />
+	            			</div>
+	            		</td>
+	            	</tr>
+				</table>
+			</div>
 			<br>
 			<br>
 			<table width="500" border="0" cellspacing="0" cellpadding="5" align="center">
@@ -144,10 +146,11 @@
 		function init() 
 		{
 			document.getElementById("newtopsection").style.display = "none";
-			
+			 
 			<c:if test="${purchaseBean.currentPlan.purchaseID == null}">
 				document.getElementById("edittopsection").style.display = "none";
 				document.getElementById("newtopsection").style.display = "";
+				document.getElementById("onlyavailableaftercreation").style.display = "none";
 			</c:if>
 		}
 		
@@ -162,7 +165,7 @@
 			return true;
 		}
 		
-		function createNew(form)
+		function createNewPlan(form)
 		{
 			form.action.value = "RequestNewPurchasePlan"; 
 			form.submit();			
@@ -172,6 +175,35 @@
 		{
 			form.action.value = "LoadPurchasePlan"; 
 			form.submit();	
+		}
+		
+		function createNewSchedule(form)
+		{
+			form.action.value = "RequestNewDeliverySchedule"; 
+			form.submit();			
+		}
+		
+		function loadSchedule(form)
+		{
+			var assignList = document.getElementById("schedules");
+			
+			if (assignList.selectedIndex >= 0) 
+			{
+				form.action.value = "LoadDeliverySchedule";
+				form.submit();
+			}
+		}
+		
+		function removeSched()
+		{
+			var assignList = document.getElementById("schedules");
+			var idx = assignList.selectedIndex;
+									
+			if (assignList.selectedIndex >= 0) 
+			{
+				assignList.remove(idx);
+				setContentChanged(true);
+			}
 		}
 		
 		function back(form)
@@ -188,7 +220,7 @@
 		
 		function prepareSubmit(form) 
 		{
-			var assignedSchedules = document.getElementById("assigned").options;
+			var assignedSchedules = document.getElementById("schedules").options;
 			
 			for (idx = 0; idx < assignedSchedules.length; idx++) 
 			{

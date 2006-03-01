@@ -36,24 +36,13 @@ public void add() throws java.sql.SQLException
         setScheduleID(getNextScheduleID());
     
     add( TABLE_NAME, setValues );
-    
-    for(int i = 0; i < getTimePeriods().size(); i++)
-    {
-        getTimePeriods().get(i).setScheduleID(getScheduleID());
-        getTimePeriods().get(i).add();
-    }
+
 }
 
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getScheduleID() };
 
-    for(int i = 0; i < getTimePeriods().size(); i++)
-    {
-        getTimePeriods().get(i).setScheduleID(getScheduleID());
-        getTimePeriods().get(i).delete();
-    }
-        
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
@@ -73,7 +62,6 @@ public void retrieve() throws java.sql.SQLException
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
     
-    setTimePeriods(ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(getScheduleID()));
 }
 
 
@@ -85,13 +73,9 @@ public void update() throws java.sql.SQLException
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     
-    for(int i = 0; i < getTimePeriods().size(); i++)
-    {
-        getTimePeriods().get(i).update();
-    }
 }
 
-public Integer getNextScheduleID()
+public static Integer getNextScheduleID()
 {
     Integer nextID = new Integer(0);
     
@@ -168,11 +152,6 @@ public Integer getScheduleID() {
 
 public void setScheduleID(Integer scheduleID) {
     this.scheduleID = scheduleID;
-    
-    for(int i = 0; i < getTimePeriods().size(); i++)
-    {
-        getTimePeriods().get(i).setScheduleID(scheduleID);
-    }
 }
 
 public String getScheduleName() {
@@ -181,17 +160,6 @@ public String getScheduleName() {
 
 public void setScheduleName(String scheduleName) {
     this.scheduleName = scheduleName;
-}
-
-public List<ScheduleTimePeriod> getTimePeriods() {
-    if(timePeriods == null)
-        timePeriods = new ArrayList<ScheduleTimePeriod>();
-    
-    return timePeriods;
-}
-
-public void setTimePeriods(List<ScheduleTimePeriod> timePeriods) {
-    this.timePeriods = timePeriods;
 }
 
 

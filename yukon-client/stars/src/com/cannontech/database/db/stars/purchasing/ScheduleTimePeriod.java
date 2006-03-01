@@ -9,14 +9,15 @@ import com.cannontech.database.db.DBPersistent;
 
 public class ScheduleTimePeriod extends DBPersistent {
 
+    private Integer timePeriodID;
     private Integer scheduleID; 
     private String timePeriodName;
     private Integer quantity = CtiUtilities.NONE_ZERO_ID;
     private Date predictedShipDate = new Date();
     
-    public static final String CONSTRAINT_COLUMNS[] = { "ScheduleID" };
+    public static final String CONSTRAINT_COLUMNS[] = { "TimePeriodID" };
 
-    public static final String SETTER_COLUMNS[] = { "TimePeriodName", "Quantity", "PredictedShipDate"};
+    public static final String SETTER_COLUMNS[] = { "ScheduleID", "TimePeriodName", "Quantity", "PredictedShipDate"};
 
     public static final String TABLE_NAME = "ScheduleTimePeriod";
     
@@ -27,7 +28,7 @@ public ScheduleTimePeriod() {
 
 public void add() throws java.sql.SQLException 
 {
-    Object setValues[] = { getScheduleID(), getTimePeriodName(), 
+    Object setValues[] = { getTimePeriodID(), getScheduleID(), getTimePeriodName(), 
                     getQuantity(), getPredictedShipDate()};
 
     add( TABLE_NAME, setValues );
@@ -35,7 +36,7 @@ public void add() throws java.sql.SQLException
 
 public void delete() throws java.sql.SQLException 
 {
-    Object constraintValues[] = { getScheduleID() };
+    Object constraintValues[] = { getTimePeriodID() };
 
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
@@ -43,15 +44,16 @@ public void delete() throws java.sql.SQLException
 
 public void retrieve() throws java.sql.SQLException 
 {
-    Object constraintValues[] = { getScheduleID() };
+    Object constraintValues[] = { getTimePeriodID() };
 
     Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
     if( results.length == SETTER_COLUMNS.length )
     {
-        setTimePeriodName( (String) results[0] );
-        setQuantity( (Integer) results[1] );
-        setPredictedShipDate( (Date) results[2] );
+        setScheduleID( (Integer) results[0] );
+        setTimePeriodName( (String) results[1] );
+        setQuantity( (Integer) results[2] );
+        setPredictedShipDate( (Date) results[3] );
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -60,11 +62,34 @@ public void retrieve() throws java.sql.SQLException
 
 public void update() throws java.sql.SQLException 
 {
-    Object setValues[] = { getTimePeriodName(), getQuantity(), getPredictedShipDate()};
+    Object setValues[] = { getScheduleID(), getTimePeriodName(), getQuantity(), getPredictedShipDate()};
     		
-    Object constraintValues[] = { getScheduleID() };
+    Object constraintValues[] = { getTimePeriodID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+}
+
+public static Integer getNextTimePeriodID()
+{
+    Integer nextID = new Integer(0);
+    
+    SqlStatement stmt = new SqlStatement("SELECT MAX(TIMEPERIODID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            nextID = new Integer(stmt.getRow(0)[0].toString());
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return nextID;
 }
 
 /**
@@ -74,7 +99,7 @@ public static List<ScheduleTimePeriod> getAllTimePeriodsForDeliverySchedule(Inte
 {
     List<ScheduleTimePeriod> periods = new ArrayList<ScheduleTimePeriod>();
     
-    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE ENERGYCOMPANYID = " + schedID + " ORDER BY PREDICTEDSHIPDATE DESC", CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE SCHEDULEID = " + schedID + " ORDER BY PREDICTEDSHIPDATE DESC", CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -84,13 +109,14 @@ public static List<ScheduleTimePeriod> getAllTimePeriodsForDeliverySchedule(Inte
         {
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
-                ScheduleTimePeriod currentPlan = new ScheduleTimePeriod();
-                currentPlan.setScheduleID( new Integer(stmt.getRow(i)[0].toString()));
-                currentPlan.setTimePeriodName( stmt.getRow(i)[1].toString());
-                currentPlan.setQuantity( new Integer(stmt.getRow(i)[2].toString()));
-                currentPlan.setPredictedShipDate(new Date(((java.sql.Timestamp)stmt.getRow(i)[3]).getTime()));
+                ScheduleTimePeriod currentPeriod = new ScheduleTimePeriod();
+                currentPeriod.setTimePeriodID( new Integer(stmt.getRow(i)[0].toString()));
+                currentPeriod.setScheduleID( new Integer(stmt.getRow(i)[1].toString()));
+                currentPeriod.setTimePeriodName( stmt.getRow(i)[2].toString());
+                currentPeriod.setQuantity( new Integer(stmt.getRow(i)[3].toString()));
+                currentPeriod.setPredictedShipDate(new Date(((java.sql.Timestamp)stmt.getRow(i)[4]).getTime()));
                 
-                periods.add(currentPlan);
+                periods.add(currentPeriod);
             }
         }
     }
@@ -132,6 +158,14 @@ public Date getPredictedShipDate() {
 
 public void setPredictedShipDate(Date predictedShipDate) {
     this.predictedShipDate = predictedShipDate;
+}
+
+public Integer getTimePeriodID() {
+    return timePeriodID;
+}
+
+public void setTimePeriodID(Integer timePeriodID) {
+    this.timePeriodID = timePeriodID;
 }
 
 
