@@ -37,6 +37,7 @@ public class MeterHardwareBase extends InventoryBase {
 	}
 
 	public void delete() throws java.sql.SQLException {
+		delete( "LMHardwareToMeterMapping", "MeterInventoryID", getInventoryBase().getInventoryID() );
 		getMeterHardwareBase().delete();
 		super.deleteInventoryBase();
 	}
