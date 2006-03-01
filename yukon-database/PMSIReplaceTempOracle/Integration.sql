@@ -183,3 +183,7 @@ create table FailureSAM_MassSwitchChangeout (
 
 alter table SAM_MassSwitchChangeout
    add constraint PK_FAILSWITCHCHANGEOUT primary key (PremiseNumber, OldSerialNumber);
+   
+insert into YukonServices values( -7, 'CRS_Integration', 'com.cannontech.jmx.services.DynamicCRSIntegrator', '(none)', '(none)' );
+
+update YukonServices set ServiceID = 7 where ServiceID = -7;   
