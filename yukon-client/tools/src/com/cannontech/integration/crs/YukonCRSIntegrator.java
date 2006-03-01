@@ -468,11 +468,24 @@ public final class YukonCRSIntegrator
     			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
         		if( meterHardwareBase == null)
         			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+        		else	//check controllable device is attached to meter
+        		{
+        			boolean swithAssigned = MeterHardwareBase.hasSwitchAssigned(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
+        			if (!swithAssigned)
+        				errorMsg.append("MeterNumber (" + meterNumber + ") has no controllable device attached for account " + accountNumber + "; ");
+        		}
             	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
             	{
             		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
             		meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
-        			errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+            		if( meterHardwareBase == null)
+            			errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+            		else	//check controllable device is attached to meter
+            		{
+            			boolean swithAssigned = MeterHardwareBase.hasSwitchAssigned(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
+            			if (!swithAssigned)
+            				errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
+            		}
             	}
             	
 				//Stop here, too many error to update anything data.
@@ -481,8 +494,6 @@ public final class YukonCRSIntegrator
 					YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
 					continue;
             	}
-
-            	//TODO verify controllable device attached to the service
     		}
         	
         	//No errors, create work order!
