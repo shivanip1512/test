@@ -26,6 +26,8 @@ using namespace std;
 #include "pt_base.h"
 #include "ptconnect.h"
 
+#include "utility.h"
+
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef)
 {
    LockGuard guard(monitor());
@@ -41,9 +43,10 @@ CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgMsg)
 {
    CtiReturnMsg* ConnMgrMsg = NULL;
-
-   for(int i=0; i < ConnectionManagerCollection.entries(); i++)
+   std::list<CtiConnectionManager*>::iterator itr = ConnectionManagerCollection.begin();
+   while ( itr != ConnectionManagerCollection.end() )
    {
+      CtiConnectionManager* CtiM = *itr;
       try
       {
          LockGuard guard(monitor());
@@ -57,10 +60,10 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
             {
                ConnMgrMsg->PointData().push_back(pData);
 
-               (ConnectionManagerCollection[i])->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
+               CtiM->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " Posting point " << ChgMsg.getId() << " to local connection " << (ConnectionManagerCollection[i])->getClientName() << endl;
+                  dout << CtiTime() << " Posting point " << ChgMsg.getId() << " to local connection " << CtiM->getClientName() << endl;
                }
             }
             else
@@ -83,7 +86,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << CtiTime() << " Failed to post change event, the client has shutdown. " << endl;
             }
-            RemoveConnectionManager((ConnectionManagerCollection[i]));
+            RemoveConnectionManager(CtiM);
          }
          else if(msg.errorNumber() == RWNETECONNABORTED)
          {
@@ -91,7 +94,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << CtiTime() << " Connection Aborted, Removing from list." << endl;
             }
-            RemoveConnectionManager((ConnectionManagerCollection[i]));
+            RemoveConnectionManager(CtiM);
          }
          else
          {
@@ -107,6 +110,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
           }
          break;
       }
+      ++itr;
    }
 
    return 0;
@@ -118,34 +122,38 @@ CtiPointConnection::CtiPointConnection()
 
 CtiPointConnection::~CtiPointConnection()
 {
-   // Blow away everything. // Connection Managers must be deleted by VanGogh
-   ConnectionManagerCollection.clear();
+    // Blow away everything. // Connection Managers must be deleted by VanGogh
+    delete_list(ConnectionManagerCollection);
+    ConnectionManagerCollection.clear();
 }
 
 void CtiPointConnection::AddConnectionManager(CtiConnectionManager *cm)
 {
    LockGuard guard(monitor());
-   ConnectionManagerCollection.insert(cm);
+   ConnectionManagerCollection.push_back(cm);
 }
 void CtiPointConnection::RemoveConnectionManager(CtiConnectionManager *cm)
 {
    LockGuard guard(monitor());
-
-   if(ConnectionManagerCollection.contains(cm))
-   {
-        ConnectionManagerCollection.removeAll(cm);
-    }
+   bool present = false;
+   std::list< CtiConnectionManager* >::iterator itr = ConnectionManagerCollection.begin();
+   while(itr != ConnectionManagerCollection.end() ){
+       if ( *itr == cm) {//Note  this is removing based off the pointer address
+           itr = ConnectionManagerCollection.erase(itr);
+       }else
+           ++itr;
+   }
 }
 
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg& Msg);
 
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef);
 
-RWTPtrSlist<CtiConnectionManager>& CtiPointConnection::getManagerList()
+list<CtiConnectionManager*>& CtiPointConnection::getManagerList()
 {
     return ConnectionManagerCollection;
 }
-RWTPtrSlist<CtiConnectionManager>  CtiPointConnection::getManagerList() const
+list<CtiConnectionManager*>  CtiPointConnection::getManagerList() const
 {
     return ConnectionManagerCollection;
 }

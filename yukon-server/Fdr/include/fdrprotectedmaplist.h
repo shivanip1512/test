@@ -27,7 +27,7 @@
 
 // forward class declarations
 
-typedef RWTPtrSlist<CtiFDRPoint>  FDRIdMapList;
+typedef list<CtiFDRPoint*>  FDRIdMapList;
 class IM_EX_FDRBASE CtiFDRProtectedIdMapList 
 {                                    
 

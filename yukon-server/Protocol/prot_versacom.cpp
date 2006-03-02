@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,9 +44,9 @@ INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
     USHORT Value  = (USHORT)iValue;
 
     if((Nibble & 0x0001))
-        _vst[_last]->Message[Nibble / 2] |= Value & 0x000f;
+        _vst.back()->Message[Nibble / 2] |= Value & 0x000f;
     else
-        _vst[_last]->Message[Nibble / 2] |= (Value << 4) & 0x00f0;
+        _vst.back()->Message[Nibble / 2] |= (Value << 4) & 0x00f0;
 
     return(NORMAL);
 }
@@ -54,25 +54,25 @@ INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)
 
 INT CtiProtocolVersacom::initVersacomMessage()
 {
-    _vst[_last]->Nibbles = 2;
+    _vst.back()->Nibbles = 2;
 
-    ::memset (_vst[_last]->Message, 0, MAX_VERSACOM_MESSAGE);
+    ::memset (_vst.back()->Message, 0, MAX_VERSACOM_MESSAGE);
 
     _addressMode = 0;
 
-    if(!(_vst[_last]->Address))
+    if(!(_vst.back()->Address))
     {
         /* Check if we are to use utility addressing */
-        if(_vst[_last]->UtilityID)
+        if(_vst.back()->UtilityID)
             _addressMode |= 0x0008;
 
-        if(_vst[_last]->Section)
+        if(_vst.back()->Section)
             _addressMode |= 0x0004;
 
-        if(_vst[_last]->Class)
+        if(_vst.back()->Class)
             _addressMode |= 0x0002;
 
-        if(_vst[_last]->Division)
+        if(_vst.back()->Division)
             _addressMode |= 0x0001;
     }
 
@@ -91,30 +91,30 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
     ULONG    ComputeTime;
 
 
-    switch(_vst[_last]->CommandType)
+    switch(_vst.back()->CommandType)
     {
     case VCONTROL:
         {
             setNibble(0, VCONTROL);
 
             /* Leave room for the count */
-            _vst[_last]->Nibbles++;
+            _vst.back()->Nibbles++;
             /* build up the control actions */
             for(i = 0; i < 3; i++)
             {
                 Mask = 0;
-                if(_vst[_last]->Load[i].Relay[0])
+                if(_vst.back()->Load[i].Relay[0])
                     Mask |= 0x0004;
-                if(_vst[_last]->Load[i].Relay[1])
+                if(_vst.back()->Load[i].Relay[1])
                     Mask |= 0x0002;
-                if(_vst[_last]->Load[i].Relay[2])
+                if(_vst.back()->Load[i].Relay[2])
                     Mask |= 0x0001;
                 if(Mask)
                 {
-                    if(_vst[_last]->Load[i].ControlType)
+                    if(_vst.back()->Load[i].ControlType)
                         Mask |= 0x0008;
-                    setNibble(_vst[_last]->Nibbles++, Mask);
-                    setNibble(_vst[_last]->Nibbles++, _vst[_last]->Load[i].TimeCode);
+                    setNibble(_vst.back()->Nibbles++, Mask);
+                    setNibble(_vst.back()->Nibbles++, _vst.back()->Load[i].TimeCode);
                 }
                 else
                 {
@@ -136,9 +136,9 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             setNibble ( 0, VINITIATOR);
             /* see if this is ripple */
             if(isLCU(_transmitterType))
-                setNibble ( 1, _vst[_last]->Initiator);
+                setNibble ( 1, _vst.back()->Initiator);
             else
-                setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Initiator);
+                setNibble ( _vst.back()->Nibbles++, _vst.back()->Initiator);
 
             break;
         }
@@ -147,19 +147,19 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             setNibble ( 0, VCONFIG);
 
             /* set the configuration type */
-            setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.ConfigType >> 4);
-            setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.ConfigType);
+            setNibble ( _vst.back()->Nibbles++, _vst.back()->VConfig.ConfigType >> 4);
+            setNibble ( _vst.back()->Nibbles++, _vst.back()->VConfig.ConfigType);
 
             /* Now load the data */
             for(i = 0; i < 10; i++)
             {
                 if((i & 0x0001))
                 {
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.Data[i / 2]);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->VConfig.Data[i / 2]);
                 }
                 else
                 {
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VConfig.Data[i / 2] >> 4);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->VConfig.Data[i / 2] >> 4);
                 }
             }
             break;
@@ -173,7 +173,7 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             {
                 if((i & 0x0001))
                 {
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VData.Data[i / 2]);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->VData.Data[i / 2]);
                 }
                 else
                 {
@@ -181,10 +181,10 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << hex << setw(2) << (int)_vst[_last]->VData.Data[i / 2] << endl;
+                        dout << hex << setw(2) << (int)_vst.back()->VData.Data[i / 2] << endl;
                     }
                     #endif
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->VData.Data[i / 2] >> 4);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->VData.Data[i / 2] >> 4);
                 }
             }
 
@@ -193,31 +193,31 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
     case VCOUNTRESET:
         setNibble ( 0, VCOUNTRESET);
 
-        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->CountReset >> 4);
-        setNibble (  _vst[_last]->Nibbles++, _vst[_last]->CountReset);
+        setNibble ( _vst.back()->Nibbles++, _vst.back()->CountReset >> 4);
+        setNibble (  _vst.back()->Nibbles++, _vst.back()->CountReset);
         break;
 
 
     case VSERVICE:
         setNibble ( 0, VSERVICE);
-        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Service);
+        setNibble ( _vst.back()->Nibbles++, _vst.back()->Service);
         break;
 
     case VEX_SERVICE:
         {
-            USHORT flag = (_vst[_last]->ExService.Cancel ? 0x0004 : 0x0000) | (_vst[_last]->ExService.LED_Off ? 0x0002 : 0x0000);
+            USHORT flag = (_vst.back()->ExService.Cancel ? 0x0004 : 0x0000) | (_vst.back()->ExService.LED_Off ? 0x0002 : 0x0000);
 
             setNibble ( 0, VADDITIONAL);
-            setNibble ( _vst[_last]->Nibbles++, VSERVICE);  // Service is a 9 as-is EX_SERVICE.. Pay attention.
-            setNibble ( _vst[_last]->Nibbles++, flag);
+            setNibble ( _vst.back()->Nibbles++, VSERVICE);  // Service is a 9 as-is EX_SERVICE.. Pay attention.
+            setNibble ( _vst.back()->Nibbles++, flag);
 
-            if(!(_vst[_last]->ExService.Cancel))
+            if(!(_vst.back()->ExService.Cancel))
             {
-                USHORT offtime = _vst[_last]->ExService.TOOS_Time;
-                setNibble ( _vst[_last]->Nibbles++, offtime >> 12);
-                setNibble ( _vst[_last]->Nibbles++, offtime >> 8);
-                setNibble ( _vst[_last]->Nibbles++, offtime >> 4);
-                setNibble ( _vst[_last]->Nibbles++, offtime);
+                USHORT offtime = _vst.back()->ExService.TOOS_Time;
+                setNibble ( _vst.back()->Nibbles++, offtime >> 12);
+                setNibble ( _vst.back()->Nibbles++, offtime >> 8);
+                setNibble ( _vst.back()->Nibbles++, offtime >> 4);
+                setNibble ( _vst.back()->Nibbles++, offtime);
             }
 
             {
@@ -229,24 +229,24 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
         }
     case VPROPOGATION:
         setNibble ( 0, VPROPOGATION);
-        setNibble ( _vst[_last]->Nibbles++, _vst[_last]->PropDIT);
+        setNibble ( _vst.back()->Nibbles++, _vst.back()->PropDIT);
         break;
 
     case VDATA:
         {
             setNibble ( 0, VDATA);
 
-            if(_vst[_last]->VData.DataType)
-                _vst[_last]->VData.Data[0] |= 0x80;
+            if(_vst.back()->VData.DataType)
+                _vst.back()->VData.Data[0] |= 0x80;
             else
-                _vst[_last]->VData.Data[0] &= 0x7f;
+                _vst.back()->VData.Data[0] &= 0x7f;
 
             for(i = 0; i < 6; i++)
             {
-                _vst[_last]->Message[i+1] = _vst[_last]->VData.Data[i];
+                _vst.back()->Message[i+1] = _vst.back()->VData.Data[i];
             }
 
-            _vst[_last]->Nibbles += 12;
+            _vst.back()->Nibbles += 12;
 
             break;
         }
@@ -254,25 +254,25 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
         {
             setNibble ( 0, EXDATA);
             // Nibble 1 has been set in init as addressing mode!
-            setNibble ( 2, (_vst[_last]->VData.DataLength >> 1) & 0x000f);
-            setNibble ( 3, ((_vst[_last]->VData.DataLength << 3) & 0x0008) | (_vst[_last]->VData.DataType & 0x0007));
+            setNibble ( 2, (_vst.back()->VData.DataLength >> 1) & 0x000f);
+            setNibble ( 3, ((_vst.back()->VData.DataLength << 3) & 0x0008) | (_vst.back()->VData.DataType & 0x0007));
 
 
-            if(_vst[_last]->VData.DataLength < 1)
+            if(_vst.back()->VData.DataLength < 1)
             {
-                _vst[_last]->VData.DataLength = 1;
+                _vst.back()->VData.DataLength = 1;
             }
-            else if(_vst[_last]->VData.DataLength > 31)
+            else if(_vst.back()->VData.DataLength > 31)
             {
-                _vst[_last]->VData.DataLength = 31;
-            }
-
-            for(i = 0; i < _vst[_last]->VData.DataLength; i++)
-            {
-                _vst[_last]->Message[i + 2] = _vst[_last]->VData.Data[i];
+                _vst.back()->VData.DataLength = 31;
             }
 
-            _vst[_last]->Nibbles += 2 + (_vst[_last]->VData.DataLength * 2);
+            for(i = 0; i < _vst.back()->VData.DataLength; i++)
+            {
+                _vst.back()->Message[i + 2] = _vst.back()->VData.Data[i];
+            }
+
+            _vst.back()->Nibbles += 2 + (_vst.back()->VData.DataLength * 2);
 
             // dumpMessageBuffer();
 
@@ -283,36 +283,36 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             setNibble ( 0, VECONTROL );
 
             /* Calculate the delay time */
-            if(_vst[_last]->ELoad.DelayUntil <= LongTime ())
-                _vst[_last]->ELoad.DelayUntil = 0;
+            if(_vst.back()->ELoad.DelayUntil <= LongTime ())
+                _vst.back()->ELoad.DelayUntil = 0;
             else
-                _vst[_last]->ELoad.DelayUntil -= LongTime ();
+                _vst.back()->ELoad.DelayUntil -= LongTime ();
 
             /* figure out the relays */
-            Mask = _vst[_last]->ELoad.Relay;
+            Mask = _vst.back()->ELoad.Relay;
 
-            if(_vst[_last]->ELoad.ControlType)
+            if(_vst.back()->ELoad.ControlType)
                 Mask |= 0x0008;
 
             /* xRRR - (bit 3 == 1) discrete command, (bits 2,1,0) relays */
-            setNibble ( _vst[_last]->Nibbles++, Mask);
+            setNibble ( _vst.back()->Nibbles++, Mask);
 
-            if(_vst[_last]->ELoad.ControlType)
+            if(_vst.back()->ELoad.ControlType)
             {
                 /* figure out what order of magnitude out control is */
-                if(_vst[_last]->ELoad.ControlTime <= 3825L)
+                if(_vst.back()->ELoad.ControlTime <= 3825L)
                 {
                     Flag = 0;
                     Divisor = 15L;
-                    if(_vst[_last]->ELoad.ControlTime % 15L)
-                        _vst[_last]->ELoad.ControlTime += 15L;
+                    if(_vst.back()->ELoad.ControlTime % 15L)
+                        _vst.back()->ELoad.ControlTime += 15L;
                 }
-                else if(_vst[_last]->ELoad.ControlTime <= 15300L)
+                else if(_vst.back()->ELoad.ControlTime <= 15300L)
                 {
                     Flag = 1;
                     Divisor = 60L;
-                    if(_vst[_last]->ELoad.ControlTime % 60L)
-                        _vst[_last]->ELoad.ControlTime += 60L;
+                    if(_vst.back()->ELoad.ControlTime % 60L)
+                        _vst.back()->ELoad.ControlTime += 60L;
                 }
                 #if 1
                 /*
@@ -320,73 +320,73 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                  *  The means 65535 hhs / 7200 hhs/hr ~= 9 hours max control.
                  *  Limit all controls to 9 hours like the switches. (9hrs = 32400 seconds by the way)
                  */
-                else if(_vst[_last]->ELoad.ControlTime <= 32400)
+                else if(_vst.back()->ELoad.ControlTime <= 32400)
                 {
                     Flag = 2;
                     Divisor = 300L;
-                    if(_vst[_last]->ELoad.ControlTime % 300L)
-                        _vst[_last]->ELoad.ControlTime += 300L;
+                    if(_vst.back()->ELoad.ControlTime % 300L)
+                        _vst.back()->ELoad.ControlTime += 300L;
                 }
                 else
                 {
                     Flag = 2;
                     Divisor = 300L;
-                    _vst[_last]->ELoad.ControlTime = 32400;
+                    _vst.back()->ELoad.ControlTime = 32400;
                 }
                 #else
-                else if(_vst[_last]->ELoad.ControlTime <= 76500L)
+                else if(_vst.back()->ELoad.ControlTime <= 76500L)
                 {
                     Flag = 2;
                     Divisor = 300L;
-                    if(_vst[_last]->ELoad.ControlTime % 300L)
-                        _vst[_last]->ELoad.ControlTime += 300L;
+                    if(_vst.back()->ELoad.ControlTime % 300L)
+                        _vst.back()->ELoad.ControlTime += 300L;
                 }
-                else if(_vst[_last]->ELoad.ControlTime <= 229500L)
+                else if(_vst.back()->ELoad.ControlTime <= 229500L)
                 {
                     Flag = 3;
                     Divisor = 900L;
-                    if(_vst[_last]->ELoad.ControlTime % 900L)
-                        _vst[_last]->ELoad.ControlTime += 900L;
+                    if(_vst.back()->ELoad.ControlTime % 900L)
+                        _vst.back()->ELoad.ControlTime += 900L;
                 }
                 else
                 {
                     Flag = 3;
                     Divisor = 900L;
-                    _vst[_last]->ELoad.ControlTime = 229500L;
+                    _vst.back()->ELoad.ControlTime = 229500L;
                 }
                 #endif
 
                 Mask = Flag << 2;
 
-                if(_vst[_last]->ELoad.RandomTime)
+                if(_vst.back()->ELoad.RandomTime)
                     Mask |= 0x0002;
-                if(_vst[_last]->ELoad.DelayUntil)
+                if(_vst.back()->ELoad.DelayUntil)
                     Mask |= 0x0001;
 
                 /* FLAG */
-                setNibble ( _vst[_last]->Nibbles++, Mask);
+                setNibble ( _vst.back()->Nibbles++, Mask);
 
                 /* CONTROL - set the control time */
-                setNibble ( _vst[_last]->Nibbles++, (USHORT) (_vst[_last]->ELoad.ControlTime / Divisor) >> 4);
+                setNibble ( _vst.back()->Nibbles++, (USHORT) (_vst.back()->ELoad.ControlTime / Divisor) >> 4);
 
-                setNibble ( _vst[_last]->Nibbles++, (USHORT) (_vst[_last]->ELoad.ControlTime / Divisor));
+                setNibble ( _vst.back()->Nibbles++, (USHORT) (_vst.back()->ELoad.ControlTime / Divisor));
 
                 /* see if we need randomization */
-                if(_vst[_last]->ELoad.RandomTime)
+                if(_vst.back()->ELoad.RandomTime)
                 {
-                    if(_vst[_last]->ELoad.RandomTime % Divisor)
-                        _vst[_last]->ELoad.RandomTime += Divisor;
-                    Mask = (USHORT) (_vst[_last]->ELoad.RandomTime / Divisor);
+                    if(_vst.back()->ELoad.RandomTime % Divisor)
+                        _vst.back()->ELoad.RandomTime += Divisor;
+                    Mask = (USHORT) (_vst.back()->ELoad.RandomTime / Divisor);
                     if(Mask > 15)
                         Mask = 15;
 
                     /* RAND */
-                    setNibble ( _vst[_last]->Nibbles++, Mask);
+                    setNibble ( _vst.back()->Nibbles++, Mask);
                 }
             }
             else
             {
-                ComputeTime = _vst[_last]->ELoad.Window;
+                ComputeTime = _vst.back()->ELoad.Window;
 
                 /* get the divisor and the flag*/
                 if(ComputeTime < 945L)
@@ -445,126 +445,126 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                 }
 
                 Mask = Flag << 2;
-                if(ComputeTime || _vst[_last]->ELoad.Count)
+                if(ComputeTime || _vst.back()->ELoad.Count)
                     Mask |= 0x0002;
-                if(_vst[_last]->ELoad.DelayUntil)
+                if(_vst.back()->ELoad.DelayUntil)
                     Mask |= 0x0001;
 
                 /* FLAG */
-                setNibble ( _vst[_last]->Nibbles++, Mask);
+                setNibble ( _vst.back()->Nibbles++, Mask);
 
                 /* figure out if this is a bump or cycling */
-                if(_vst[_last]->ELoad.CycleType)
+                if(_vst.back()->ELoad.CycleType)
                 {
                     /* Bump */
                     Mask = 0x0080;
-                    if(_vst[_last]->ELoad.Percent < 0)
+                    if(_vst.back()->ELoad.Percent < 0)
                     {
-                        _vst[_last]->ELoad.Percent = 0 - _vst[_last]->ELoad.Percent;
+                        _vst.back()->ELoad.Percent = 0 - _vst.back()->ELoad.Percent;
                     }
                     else
                         Mask |= 0x0040;
 
-                    if(_vst[_last]->ELoad.Percent > 50)
-                        _vst[_last]->ELoad.Percent = 50;
+                    if(_vst.back()->ELoad.Percent > 50)
+                        _vst.back()->ELoad.Percent = 50;
 
-                    Mask |= _vst[_last]->ELoad.Percent & 0x003f;
+                    Mask |= _vst.back()->ELoad.Percent & 0x003f;
 
                 }
                 else
                 {
                     /* Cycling */
                     Mask = 0;
-                    if(_vst[_last]->ELoad.Percent > 100)
-                        _vst[_last]->ELoad.Percent = 100;
-                    if(_vst[_last]->ELoad.Percent < 0)
-                        _vst[_last]->ELoad.Percent = 0;
+                    if(_vst.back()->ELoad.Percent > 100)
+                        _vst.back()->ELoad.Percent = 100;
+                    if(_vst.back()->ELoad.Percent < 0)
+                        _vst.back()->ELoad.Percent = 0;
 
-                    Mask |= _vst[_last]->ELoad.Percent & 0x007f;
+                    Mask |= _vst.back()->ELoad.Percent & 0x007f;
 
                 }
 
                 /* PERCENT High byte */
-                setNibble ( _vst[_last]->Nibbles++, Mask >> 4);
+                setNibble ( _vst.back()->Nibbles++, Mask >> 4);
 
                 /* PERCENT Low byte */
-                setNibble ( _vst[_last]->Nibbles++, Mask);
+                setNibble ( _vst.back()->Nibbles++, Mask);
 
-                if(ComputeTime || _vst[_last]->ELoad.Count)
+                if(ComputeTime || _vst.back()->ELoad.Count)
                 {
                     /* change the times into what will be sent */
-                    if(_vst[_last]->ELoad.Window > 56700L)
-                        _vst[_last]->ELoad.Window = 56700L;
+                    if(_vst.back()->ELoad.Window > 56700L)
+                        _vst.back()->ELoad.Window = 56700L;
 
-                    if(_vst[_last]->ELoad.Window % Divisor)
-                        _vst[_last]->ELoad.Window += (USHORT)Divisor;
+                    if(_vst.back()->ELoad.Window % Divisor)
+                        _vst.back()->ELoad.Window += (USHORT)Divisor;
 
-                    _vst[_last]->ELoad.Window /= (USHORT)Divisor;
+                    _vst.back()->ELoad.Window /= (USHORT)Divisor;
 
                     /* Put them in the message */
 
                     /* WINDOW */
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->ELoad.Window >> 2);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->ELoad.Window >> 2);
 
                     /* WINDOW / COUNT */
                     setNibble (
-                              _vst[_last]->Nibbles++,
-                              (_vst[_last]->ELoad.Window << 2) |
-                              ((_vst[_last]->ELoad.Count >> 4) & 0x0003));
+                              _vst.back()->Nibbles++,
+                              (_vst.back()->ELoad.Window << 2) |
+                              ((_vst.back()->ELoad.Count >> 4) & 0x0003));
 
                     /* COUNT */
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->ELoad.Count);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->ELoad.Count);
 
                 }
             }
 
             /* see if we need delay */
-            if(_vst[_last]->ELoad.DelayUntil)
+            if(_vst.back()->ELoad.DelayUntil)
             {
-                if(_vst[_last]->ELoad.DelayUntil < 945L)
+                if(_vst.back()->ELoad.DelayUntil < 945L)
                 {
                     Flag = 0;
                     Divisor = 15L;
-                    if(_vst[_last]->ELoad.DelayUntil % 15L)
-                        _vst[_last]->ELoad.DelayUntil += 15L;
+                    if(_vst.back()->ELoad.DelayUntil % 15L)
+                        _vst.back()->ELoad.DelayUntil += 15L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil == 945L)
+                else if(_vst.back()->ELoad.DelayUntil == 945L)
                 {
                     Flag = 0;
                     Divisor = 15L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil < 3780L)
+                else if(_vst.back()->ELoad.DelayUntil < 3780L)
                 {
                     Flag = 1;
                     Divisor = 60L;
-                    if(_vst[_last]->ELoad.DelayUntil % 60L)
-                        _vst[_last]->ELoad.DelayUntil += 60L;
+                    if(_vst.back()->ELoad.DelayUntil % 60L)
+                        _vst.back()->ELoad.DelayUntil += 60L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil == 3780L)
+                else if(_vst.back()->ELoad.DelayUntil == 3780L)
                 {
                     Flag = 1;
                     Divisor = 60L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil < 18900L)
+                else if(_vst.back()->ELoad.DelayUntil < 18900L)
                 {
                     Flag = 2;
                     Divisor = 300L;
-                    if(_vst[_last]->ELoad.DelayUntil % 300L)
-                        _vst[_last]->ELoad.DelayUntil += 300L;
+                    if(_vst.back()->ELoad.DelayUntil % 300L)
+                        _vst.back()->ELoad.DelayUntil += 300L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil == 18900L)
+                else if(_vst.back()->ELoad.DelayUntil == 18900L)
                 {
                     Flag = 2;
                     Divisor = 300L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil < 56700L)
+                else if(_vst.back()->ELoad.DelayUntil < 56700L)
                 {
                     Flag = 3;
                     Divisor = 900L;
-                    if(_vst[_last]->ELoad.DelayUntil % 900L)
-                        _vst[_last]->ELoad.DelayUntil += 900L;
+                    if(_vst.back()->ELoad.DelayUntil % 900L)
+                        _vst.back()->ELoad.DelayUntil += 900L;
                 }
-                else if(_vst[_last]->ELoad.DelayUntil == 56700L)
+                else if(_vst.back()->ELoad.DelayUntil == 56700L)
                 {
                     Flag = 3;
                     Divisor = 900L;
@@ -573,17 +573,17 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                 {
                     Flag = 3;
                     Divisor = 900L;
-                    _vst[_last]->ELoad.DelayUntil = 56700L;
+                    _vst.back()->ELoad.DelayUntil = 56700L;
                 }
 
                 Mask = Flag << 6;
-                Mask |= ((USHORT) (_vst[_last]->ELoad.DelayUntil / Divisor)) & 0x003f;
+                Mask |= ((USHORT) (_vst.back()->ELoad.DelayUntil / Divisor)) & 0x003f;
 
                 /* DELAY High byte */
-                setNibble ( _vst[_last]->Nibbles++, Mask >> 4);
+                setNibble ( _vst.back()->Nibbles++, Mask >> 4);
 
                 /* DELAY Low byte */
-                setNibble ( _vst[_last]->Nibbles++, Mask);
+                setNibble ( _vst.back()->Nibbles++, Mask);
 
             }
 
@@ -609,13 +609,13 @@ INT CtiProtocolVersacom::assembleAddressing()
     ULONG IAddress = 0;
 
     /* Now go ahead and figure out the addressing */
-    switch(_vst[_last]->CommandType)
+    switch(_vst.back()->CommandType)
     {
     /* Handle the special cases */
     case VSCRAM:
         if(isLCU(_transmitterType))
         {
-            if(!(_addressMode) && !(_vst[_last]->Address))
+            if(!(_addressMode) && !(_vst.back()->Address))
                 break;
         }
     case VINITIATOR:
@@ -624,7 +624,7 @@ INT CtiProtocolVersacom::assembleAddressing()
 
     default:
         {
-            if(_addressMode == 0 && _vst[_last]->Address == 0)    // We have no addressing information
+            if(_addressMode == 0 && _vst.back()->Address == 0)    // We have no addressing information
             {
                 /*
                  *  OK, if the user types serial and doesn't specify an address, what should happen???
@@ -639,47 +639,47 @@ INT CtiProtocolVersacom::assembleAddressing()
             /* Now build up the addressing */
             if(_addressMode)
             {
-                if(_vst[_last]->UtilityID)
+                if(_vst.back()->UtilityID)
                 {
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->UtilityID >> 4);
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->UtilityID);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->UtilityID >> 4);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->UtilityID);
                 }
 
-                if(_vst[_last]->Section)
+                if(_vst.back()->Section)
                 {
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Section >>4);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->Section >>4);
 
-                    setNibble ( _vst[_last]->Nibbles++, _vst[_last]->Section);
+                    setNibble ( _vst.back()->Nibbles++, _vst.back()->Section);
                 }
 
                 /* Now we will build a long word with class and division in it as appropriate */
                 /* This will end up being treated just like a unique address */
-                if(_vst[_last]->Class)
+                if(_vst.back()->Class)
                 {
-                    if(_vst[_last]->Division)
+                    if(_vst.back()->Division)
                     {
-                        _vst[_last]->Address =  (ULONG) _vst[_last]->Class & 0x0000000f;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 4) & 0x000000f0;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 4) & 0x00000f00;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 8) & 0x0000f000;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 8) & 0x000f0000;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 12) & 0x00f00000;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Class) << 12) & 0x0f000000;
-                        _vst[_last]->Address |= (((ULONG) _vst[_last]->Division) << 16) & 0xf0000000;
+                        _vst.back()->Address =  (ULONG) _vst.back()->Class & 0x0000000f;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Division) << 4) & 0x000000f0;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Class) << 4) & 0x00000f00;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Division) << 8) & 0x0000f000;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Class) << 8) & 0x000f0000;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Division) << 12) & 0x00f00000;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Class) << 12) & 0x0f000000;
+                        _vst.back()->Address |= (((ULONG) _vst.back()->Division) << 16) & 0xf0000000;
                     }
                     else
-                        _vst[_last]->Address = _vst[_last]->Class;
+                        _vst.back()->Address = _vst.back()->Class;
                 }
                 else
                 {
-                    if(_vst[_last]->Division)
-                        _vst[_last]->Address = _vst[_last]->Division;
+                    if(_vst.back()->Division)
+                        _vst.back()->Address = _vst.back()->Division;
                     else
-                        _vst[_last]->Address = 0L;
+                        _vst.back()->Address = 0L;
                 }
             }
 
-            if(_vst[_last]->Address)
+            if(_vst.back()->Address)
             {
                 ULONG i;
                 ULONG Nibbles;
@@ -687,7 +687,7 @@ INT CtiProtocolVersacom::assembleAddressing()
                 /* Invert the beast */
                 IAddress = 0L;
                 for(i = 0; i < 32; i++)
-                    IAddress |= ((_vst[_last]->Address >> i) & 0x00000001) << (31 - i);
+                    IAddress |= ((_vst.back()->Address >> i) & 0x00000001) << (31 - i);
 
                 /* find out how many nibbles we need to load */
                 for(i = 0; i < 8; i++)
@@ -701,7 +701,7 @@ INT CtiProtocolVersacom::assembleAddressing()
                 /* Load it into the message */
                 for(i = 0; i < Nibbles; i++)
                 {
-                    setNibble ( _vst[_last]->Nibbles++, (USHORT) (IAddress >> ((7 - i) * 4)));
+                    setNibble ( _vst.back()->Nibbles++, (USHORT) (IAddress >> ((7 - i) * 4)));
                 }
             }
 
@@ -727,15 +727,21 @@ INT CtiProtocolVersacom::updateVersacomMessage()
 
 VSTRUCT CtiProtocolVersacom::getVStruct(INT pos) const
 {
-    return *_vst[pos];
+    std::list< VSTRUCT* >::const_iterator itr = _vst.begin();
+    for( int x = 0; x != pos; x++)
+        ++itr;
+    return **itr;
 }
 VSTRUCT& CtiProtocolVersacom::getVStruct(INT pos)
 {
-    return *_vst[pos];
+    std::list< VSTRUCT* >::iterator itr = _vst.begin();
+    for( int x = 0; x != pos; x++)
+        ++itr;
+    return **itr;
 }
 CtiProtocolVersacom& CtiProtocolVersacom::setVStruct(const VSTRUCT &aVst)
 {
-    *_vst[_last] = aVst;
+    *_vst.back() = aVst;
 
     return *this;
 }
@@ -778,22 +784,22 @@ INT    CtiProtocolVersacom::VersacomShedCommand(UINT controltime, UINT relaymask
 {
     INT i, mask;
 
-    _vst[_last]->CommandType           = VCONTROL;
-    _vst[_last]->Load[0].ControlType   = TRUE;
-    _vst[_last]->Load[0].TimeCode      = VersacomControlDuration(_vst[_last]->Load[0].ControlType, controltime);
+    _vst.back()->CommandType           = VCONTROL;
+    _vst.back()->Load[0].ControlType   = TRUE;
+    _vst.back()->Load[0].TimeCode      = VersacomControlDuration(_vst.back()->Load[0].ControlType, controltime);
 
-    if(_vst[_last]->RelayMask != 0)
+    if(_vst.back()->RelayMask != 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
-        relaymask = _vst[_last]->RelayMask;
+        relaymask = _vst.back()->RelayMask;
     }
 
     for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
-        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+        _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -805,24 +811,24 @@ INT    CtiProtocolVersacom::VersacomShedCommandEx(UINT controltime,   // = 0,
                                                   UINT rand,          // = 120,
                                                   UINT delay)         // = 0)
 {
-    _vst[_last]->CommandType           = VECONTROL;
-    _vst[_last]->ELoad.ControlType     = 1;           // Discrete (shed) control
-    _vst[_last]->ELoad.CycleType       = 0;
+    _vst.back()->CommandType           = VECONTROL;
+    _vst.back()->ELoad.ControlType     = 1;           // Discrete (shed) control
+    _vst.back()->ELoad.CycleType       = 0;
 
-    if(_vst[_last]->RelayMask != 0 && relay == 0)
+    if(_vst.back()->RelayMask != 0 && relay == 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
-        relay = _vst[_last]->RelayMask;
+        relay = _vst.back()->RelayMask;
     }
 
 
-    _vst[_last]->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
-    _vst[_last]->ELoad.ControlTime     = controltime; // VersacomControlDurationEx(_vst[_last]->ELoad.ControlType, controltime);
-    _vst[_last]->ELoad.RandomTime      = rand;
-    _vst[_last]->ELoad.DelayUntil      = delay;
+    _vst.back()->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
+    _vst.back()->ELoad.ControlTime     = controltime; // VersacomControlDurationEx(_vst.back()->ELoad.ControlType, controltime);
+    _vst.back()->ELoad.RandomTime      = rand;
+    _vst.back()->ELoad.DelayUntil      = delay;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -834,27 +840,27 @@ INT    CtiProtocolVersacom::VersacomCycleCommandEx(UINT percent,      // = 0,
                                                    UINT repeat,       // = 8,
                                                    UINT delay)        // = 0)
 {
-    _vst[_last]->CommandType           = VECONTROL;
+    _vst.back()->CommandType           = VECONTROL;
 
-    _vst[_last]->ELoad.ControlType     = 0;           // cycle control
-    _vst[_last]->ELoad.CycleType       = 0;           // Cycle (not Bump) command
+    _vst.back()->ELoad.ControlType     = 0;           // cycle control
+    _vst.back()->ELoad.CycleType       = 0;           // Cycle (not Bump) command
 
-    if(_vst[_last]->RelayMask != 0 && relay == 0)
+    if(_vst.back()->RelayMask != 0 && relay == 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
 
-        relay = _vst[_last]->RelayMask;
+        relay = _vst.back()->RelayMask;
     }
 
-    _vst[_last]->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
-    _vst[_last]->ELoad.Percent         = percent;     // 0 - 100, 127 means terminate!
+    _vst.back()->ELoad.Relay           = relay;       // relay number or zero for ALL relays!
+    _vst.back()->ELoad.Percent         = percent;     // 0 - 100, 127 means terminate!
 
-    _vst[_last]->ELoad.Window          = (((period < 1) ? 30 : period) * 60); // VersacomControlDurationEx(_vst[_last]->ELoad.ControlType, period);
-    _vst[_last]->ELoad.Count           = repeat;
-    _vst[_last]->ELoad.DelayUntil      = delay;
+    _vst.back()->ELoad.Window          = (((period < 1) ? 30 : period) * 60); // VersacomControlDurationEx(_vst.back()->ELoad.ControlType, period);
+    _vst.back()->ELoad.Count           = repeat;
+    _vst.back()->ELoad.DelayUntil      = delay;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -864,22 +870,22 @@ INT    CtiProtocolVersacom::VersacomCycleCommand(UINT controltime, UINT relaymas
 {
     INT i, mask;
 
-    _vst[_last]->CommandType           = VCONTROL;
-    _vst[_last]->Load[0].ControlType   = FALSE;
-    _vst[_last]->Load[0].TimeCode      = VersacomControlDuration(_vst[_last]->Load[0].ControlType, controltime);
+    _vst.back()->CommandType           = VCONTROL;
+    _vst.back()->Load[0].ControlType   = FALSE;
+    _vst.back()->Load[0].TimeCode      = VersacomControlDuration(_vst.back()->Load[0].ControlType, controltime);
 
-    if(_vst[_last]->RelayMask != 0 && relaymask == 0)
+    if(_vst.back()->RelayMask != 0 && relaymask == 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
-        relaymask = _vst[_last]->RelayMask;
+        relaymask = _vst.back()->RelayMask;
     }
 
     for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
-        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+        _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -1057,22 +1063,22 @@ INT    CtiProtocolVersacom::VersacomRestoreCommand(UINT relaymask)
 {
     INT i, mask;
 
-    _vst[_last]->CommandType           = VCONTROL;
-    _vst[_last]->Load[0].ControlType   = TRUE;
-    _vst[_last]->Load[0].TimeCode      = 0;           // Restore from shed!
+    _vst.back()->CommandType           = VCONTROL;
+    _vst.back()->Load[0].ControlType   = TRUE;
+    _vst.back()->Load[0].TimeCode      = 0;           // Restore from shed!
 
-    if(_vst[_last]->RelayMask != 0)
+    if(_vst.back()->RelayMask != 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
-        relaymask = _vst[_last]->RelayMask;
+        relaymask = _vst.back()->RelayMask;
     }
 
     for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
-        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+        _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -1083,22 +1089,22 @@ INT    CtiProtocolVersacom::VersacomTerminateCommand(UINT relaymask)
 {
     INT i, mask;
 
-    _vst[_last]->CommandType           = VCONTROL;
-    _vst[_last]->Load[0].ControlType   = FALSE;
-    _vst[_last]->Load[0].TimeCode      = 0;           // Terminate the cycle command!
+    _vst.back()->CommandType           = VCONTROL;
+    _vst.back()->Load[0].ControlType   = FALSE;
+    _vst.back()->Load[0].TimeCode      = 0;           // Terminate the cycle command!
 
-    if(_vst[_last]->RelayMask != 0)
+    if(_vst.back()->RelayMask != 0)
     {
         /*
          *  This means we set this in a higher level of context and the actual relaymask
          *  passed in should be ignored...
          */
-        relaymask = _vst[_last]->RelayMask;
+        relaymask = _vst.back()->RelayMask;
     }
 
     for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
-        _vst[_last]->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
+        _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -1111,15 +1117,15 @@ INT    CtiProtocolVersacom::VersacomCapacitorControlCommand(BOOL Trip)
      *  This is a TRIP opreation if TripClose != 0.
      */
 
-    _vst[_last]->CommandType           = VDATA;
+    _vst.back()->CommandType           = VDATA;
 
-    _vst[_last]->VData.DataType        = 0;        // ASCII, not TRL.
-    _vst[_last]->VData.Data[0]         = 0x71;
-    _vst[_last]->VData.Data[1]         = ( (Trip == 0) ? 0x80 : 0x40);   // close == 0x80, trip == 0x40
-    _vst[_last]->VData.Data[2]         = 0x00;
-    _vst[_last]->VData.Data[3]         = 0x00;
-    _vst[_last]->VData.Data[4]         = 0x00;
-    _vst[_last]->VData.Data[5]         = 0x00;
+    _vst.back()->VData.DataType        = 0;        // ASCII, not TRL.
+    _vst.back()->VData.Data[0]         = 0x71;
+    _vst.back()->VData.Data[1]         = ( (Trip == 0) ? 0x80 : 0x40);   // close == 0x80, trip == 0x40
+    _vst.back()->VData.Data[2]         = 0x00;
+    _vst.back()->VData.Data[3]         = 0x00;
+    _vst.back()->VData.Data[4]         = 0x00;
+    _vst.back()->VData.Data[5]         = 0x00;
 
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -1132,15 +1138,15 @@ INT    CtiProtocolVersacom::VersacomVoltageControlCommand(BOOL Enable)
      *  This is a ENABLE opreation if Enable != 0.
      */
 
-    _vst[_last]->CommandType           = VDATA;
+    _vst.back()->CommandType           = VDATA;
 
-    _vst[_last]->VData.DataType        = 0;        // ASCII, not TRL.
-    _vst[_last]->VData.Data[0]         = 0x71;
-    _vst[_last]->VData.Data[1]         = ( (Enable == 0) ? 0xD0 : 0xE0);
-    _vst[_last]->VData.Data[2]         = 0x00;
-    _vst[_last]->VData.Data[3]         = 0x00;
-    _vst[_last]->VData.Data[4]         = 0x00;
-    _vst[_last]->VData.Data[5]         = 0x00;
+    _vst.back()->VData.DataType        = 0;        // ASCII, not TRL.
+    _vst.back()->VData.Data[0]         = 0x71;
+    _vst.back()->VData.Data[1]         = ( (Enable == 0) ? 0xD0 : 0xE0);
+    _vst.back()->VData.Data[2]         = 0x00;
+    _vst.back()->VData.Data[3]         = 0x00;
+    _vst.back()->VData.Data[4]         = 0x00;
+    _vst.back()->VData.Data[5]         = 0x00;
 
 
     /* OK this is all set-up for the builder to manhandle now! */
@@ -1153,8 +1159,8 @@ INT    CtiProtocolVersacom::VersacomInitiatorCommand(UINT Initiator)
      *  This is a ENABLE opreation if EnableDiasable != 0.
      */
 
-    _vst[_last]->CommandType           = VINITIATOR;
-    _vst[_last]->Initiator             = (USHORT) Initiator;
+    _vst.back()->CommandType           = VINITIATOR;
+    _vst.back()->Initiator             = (USHORT) Initiator;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -1173,7 +1179,7 @@ INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
      *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
      *-------------------------------------------------------------------------*/
 
-    _vst[_last]->CommandType           = VSERVICE;
+    _vst.back()->CommandType           = VSERVICE;
 
     if( serviceflag & VC_SERVICE_T_IN && serviceflag & VC_SERVICE_T_OUT )
     {
@@ -1191,7 +1197,7 @@ INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
         serviceflag &=  ~VC_SERVICE_C_OUT;     // Get rid of this!
     }
 
-    _vst[_last]->Service               = (USHORT)(serviceflag & VC_SERVICE_MASK);
+    _vst.back()->Service               = (USHORT)(serviceflag & VC_SERVICE_MASK);
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -1200,11 +1206,11 @@ INT    CtiProtocolVersacom::VersacomServiceCommand(UINT serviceflag)
 INT CtiProtocolVersacom::VersacomExtendedServiceCommand(bool cancel, bool led_off, int offtimeinhours )
 {
 
-    _vst[_last]->CommandType = VEX_SERVICE;
+    _vst.back()->CommandType = VEX_SERVICE;
 
-    _vst[_last]->ExService.Cancel = (cancel ? TRUE : FALSE);
-    _vst[_last]->ExService.LED_Off = (led_off ? TRUE : FALSE);
-    _vst[_last]->ExService.TOOS_Time = (USHORT)offtimeinhours;
+    _vst.back()->ExService.Cancel = (cancel ? TRUE : FALSE);
+    _vst.back()->ExService.LED_Off = (led_off ? TRUE : FALSE);
+    _vst.back()->ExService.TOOS_Time = (USHORT)offtimeinhours;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -1219,13 +1225,13 @@ INT    CtiProtocolVersacom::VersacomConfigLEDCommand(BYTE leds)
      * VC_LOAD_LED_ENABLED
      */
 
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)VCT_LEDConfig;
-    _vst[_last]->VConfig.Data[0]       = (BYTE)(leds & 0xE0 );
-    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)VCT_LEDConfig;
+    _vst.back()->VConfig.Data[0]       = (BYTE)(leds & 0xE0 );
+    _vst.back()->VConfig.Data[1]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[2]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[3]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[4]       = (BYTE)0x00;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -1234,15 +1240,15 @@ INT    CtiProtocolVersacom::VersacomConfigLEDCommand(BYTE leds)
 INT CtiProtocolVersacom::VersacomDataCommand(BYTE *message, INT len)
 {
     int i;
-    _vst[_last]->CommandType           = ((len > 6) ? EXDATA : VDATA);
+    _vst.back()->CommandType           = ((len > 6) ? EXDATA : VDATA);
 
     for(i = 0; i < len && i < 30; i++)
     {
-        _vst[_last]->VData.Data[i]      = (BYTE)message[i];
+        _vst.back()->VData.Data[i]      = (BYTE)message[i];
     }
 
-    _vst[_last]->VData.DataLength      = (USHORT)i;
-    _vst[_last]->VData.DataType        = 0;                 // Make it BE ASCII.
+    _vst.back()->VData.DataLength      = (USHORT)i;
+    _vst.back()->VData.DataType        = 0;                 // Make it BE ASCII.
 
     return updateVersacomMessage();
 }
@@ -1251,12 +1257,12 @@ INT CtiProtocolVersacom::VersacomConfigCommand(UINT configtype, BYTE *cfg)
 {
     int i;
 
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)configtype;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)configtype;
 
     for(i = 0; i < 5; i++)
     {
-        _vst[_last]->VConfig.Data[i]      = (BYTE)cfg[i];
+        _vst.back()->VConfig.Data[i]      = (BYTE)cfg[i];
     }
 
     return updateVersacomMessage();
@@ -1266,9 +1272,9 @@ INT CtiProtocolVersacom::VersacomFillerCommand(BYTE uid)
 {
     int i;
 
-    _vst[_last]->CommandType = VFILLER;
-    _vst[_last]->Address = 0;
-    _vst[_last]->UtilityID = uid;
+    _vst.back()->CommandType = VFILLER;
+    _vst.back()->Address = 0;
+    _vst.back()->UtilityID = uid;
 
     return updateVersacomMessage();
 }
@@ -1277,12 +1283,12 @@ INT CtiProtocolVersacom::VersacomRawConfigCommand(const BYTE *cfg)
 {
     int i;
 
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)cfg[0];
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)cfg[0];
 
     for(i = 0; i < 5; i++)
     {
-        _vst[_last]->VConfig.Data[i]      = (BYTE)cfg[i + 1];
+        _vst.back()->VConfig.Data[i]      = (BYTE)cfg[i + 1];
     }
 
     return updateVersacomMessage();
@@ -1298,8 +1304,8 @@ INT CtiProtocolVersacom::VersacomPropagationCommand(BYTE propmask)
      * VC_PROPDISPLAY
      */
 
-    _vst[_last]->CommandType           = VPROPOGATION;
-    _vst[_last]->PropDIT               = (USHORT)(propmask & 0x07);
+    _vst.back()->CommandType           = VPROPOGATION;
+    _vst.back()->PropDIT               = (USHORT)(propmask & 0x07);
 
     return updateVersacomMessage();
 }
@@ -1310,13 +1316,13 @@ INT CtiProtocolVersacom::VersacomConfigPropagationTimeCommand(BYTE duration)
     {
         duration = 9;
     }
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)VCT_PropDisplayTime;
-    _vst[_last]->VConfig.Data[0]       = (BYTE)duration;
-    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)VCT_PropDisplayTime;
+    _vst.back()->VConfig.Data[0]       = (BYTE)duration;
+    _vst.back()->VConfig.Data[1]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[2]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[3]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[4]       = (BYTE)0x00;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -1338,8 +1344,8 @@ INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
      * VC_RESETPROPAGATIONCOUNT
      */
 
-    _vst[_last]->CommandType           = VCOUNTRESET;
-    _vst[_last]->CountReset            = (USHORT)(resetmask);
+    _vst.back()->CommandType           = VCOUNTRESET;
+    _vst.back()->CountReset            = (USHORT)(resetmask);
 
     return updateVersacomMessage();
 }
@@ -1352,8 +1358,8 @@ INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
     if(newvst)
     {
         *newvst = vTemp;
-        _vst.insert(newvst);
-        _last = _vst.entries() - 1;      // This is the one we are working on?
+        _vst.push_back(newvst);
+        _last = _vst.size() - 1;      // This is the one we are working on?
     }
     else
         status = MEMORY;
@@ -1363,9 +1369,9 @@ INT CtiProtocolVersacom::primeAndAppend(const VSTRUCT &vTemp)
 
 void CtiProtocolVersacom::removeLastVStruct()
 {
-    if(_vst.entries())
+    if(_vst.size())
     {
-        VSTRUCT *vst = _vst.removeLast();
+        VSTRUCT *vst = _vst.back();_vst.pop_back();
         delete vst;
     }
 
@@ -1417,13 +1423,13 @@ void CtiProtocolVersacom::dumpMessageBuffer()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        for(int i = 0; i < (_vst[_last]->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
+        for(int i = 0; i < (_vst.back()->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
         {
             if(i && !(i % 8))
             {
                 dout << endl;
             }
-            dout << hex << setw(2) << (INT)(_vst[_last]->Message[i]) << " ";
+            dout << hex << setw(2) << (INT)(_vst.back()->Message[i]) << " ";
         }
         dout << dec << endl;
     }
@@ -1992,13 +1998,13 @@ INT    CtiProtocolVersacom::VersacomConfigColdLoadCommand(INT relay, INT seconds
         halfs = 0xFE00;
     }
 
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_ColdLoadPickupR1 + relay - 1);
-    _vst[_last]->VConfig.Data[0]       = HIBYTE(halfs);
-    _vst[_last]->VConfig.Data[1]       = LOBYTE(halfs);
-    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)(VCT_ColdLoadPickupR1 + relay - 1);
+    _vst.back()->VConfig.Data[0]       = HIBYTE(halfs);
+    _vst.back()->VConfig.Data[1]       = LOBYTE(halfs);
+    _vst.back()->VConfig.Data[2]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[3]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[4]       = (BYTE)0x00;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -2013,13 +2019,13 @@ INT    CtiProtocolVersacom::VersacomConfigScramTimeCommand(INT relay, INT second
         halfs = 0xFE00;
     }
 
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_ScramTimeR1 + relay - 1);
-    _vst[_last]->VConfig.Data[0]       = HIBYTE(halfs);
-    _vst[_last]->VConfig.Data[1]       = LOBYTE(halfs);
-    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)(VCT_ScramTimeR1 + relay - 1);
+    _vst.back()->VConfig.Data[0]       = HIBYTE(halfs);
+    _vst.back()->VConfig.Data[1]       = LOBYTE(halfs);
+    _vst.back()->VConfig.Data[2]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[3]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[4]       = (BYTE)0x00;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -2032,13 +2038,13 @@ INT    CtiProtocolVersacom::VersacomConfigCycleRepeatsCommand(INT relay, USHORT 
     {
         repeats = 255;
     }
-    _vst[_last]->CommandType           = VCONFIG;
-    _vst[_last]->VConfig.ConfigType    = (USHORT)(VCT_CycleRepeatsR1 + relay - 1);
-    _vst[_last]->VConfig.Data[0]       = (BYTE)repeats;
-    _vst[_last]->VConfig.Data[1]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[2]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[3]       = (BYTE)0x00;
-    _vst[_last]->VConfig.Data[4]       = (BYTE)0x00;
+    _vst.back()->CommandType           = VCONFIG;
+    _vst.back()->VConfig.ConfigType    = (USHORT)(VCT_CycleRepeatsR1 + relay - 1);
+    _vst.back()->VConfig.Data[0]       = (BYTE)repeats;
+    _vst.back()->VConfig.Data[1]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[2]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[3]       = (BYTE)0x00;
+    _vst.back()->VConfig.Data[4]       = (BYTE)0x00;
 
     /* OK this is all set-up for the builder to manhandle now! */
     return updateVersacomMessage();
@@ -2133,11 +2139,11 @@ INT CtiProtocolVersacom::VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec
     int pos = 0;
     USHORT mask = 0;
 
-    _vst[_last]->CommandType  = VFULLADDRESS;
+    _vst.back()->CommandType  = VFULLADDRESS;
 
-    _vst[_last]->VData.Data[i++] = uid;
-    _vst[_last]->VData.Data[i++] = aux;
-    _vst[_last]->VData.Data[i++] = sec;
+    _vst.back()->VData.Data[i++] = uid;
+    _vst.back()->VData.Data[i++] = aux;
+    _vst.back()->VData.Data[i++] = sec;
 
     /*
      *  Nice.  The bits must be end-for-ended to match the parsed class and division!.
@@ -2151,8 +2157,8 @@ INT CtiProtocolVersacom::VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec
         }
     }
 
-    _vst[_last]->VData.Data[i++] = HIBYTE( mask );
-    _vst[_last]->VData.Data[i++] = LOBYTE( mask );
+    _vst.back()->VData.Data[i++] = HIBYTE( mask );
+    _vst.back()->VData.Data[i++] = LOBYTE( mask );
 
 
     /*
@@ -2169,10 +2175,10 @@ INT CtiProtocolVersacom::VersacomFullAddressCommand(BYTE uid, BYTE aux, BYTE sec
         }
     }
 
-    _vst[_last]->VData.Data[i++] = HIBYTE( mask );
-    _vst[_last]->VData.Data[i++] = LOBYTE( mask );
+    _vst.back()->VData.Data[i++] = HIBYTE( mask );
+    _vst.back()->VData.Data[i++] = LOBYTE( mask );
 
-    _vst[_last]->VData.Data[i++] = (svc << 4);   // Put it in the hinibble so the unwind can be general...  This is only a bit awkward.
+    _vst.back()->VData.Data[i++] = (svc << 4);   // Put it in the hinibble so the unwind can be general...  This is only a bit awkward.
 
     return updateVersacomMessage();
 }

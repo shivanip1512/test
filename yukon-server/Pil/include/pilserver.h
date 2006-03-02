@@ -39,7 +39,7 @@ private:
    RWThreadFunction              _nexusWriteThread;
 
    CtiMutex                      _inMux;            // Protects the _inList.
-   RWTPtrSlist< INMESS    >      _inList;           // Nexus dumps out into this list!
+   list< INMESS*    >            _inList;           // Nexus dumps out into this list!
 
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
@@ -58,7 +58,8 @@ public:
 
    virtual ~CtiPILServer()
    {
-       _inList.clearAndDestroy();
+       delete_list(_inList);
+       _inList.clear();
    }
 
    virtual void  clientShutdown(CtiConnectionManager *&CM);

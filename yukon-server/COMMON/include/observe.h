@@ -22,6 +22,9 @@
 
 #include "types.h"
 #include "dlldefs.h"
+#include <list>
+#include "utility.h"
+using std::list;
 
 class CtiObservable;
 
@@ -62,7 +65,7 @@ public:
 protected:
     CtiObservable();
 
-    RWTPtrSlist<CtiObserver> _observers;
+    list< CtiObserver* > _observers;
     BOOL _haschanged;
 
     BOOL _notifyenabled;

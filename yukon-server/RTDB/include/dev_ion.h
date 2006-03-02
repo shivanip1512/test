@@ -96,7 +96,7 @@ public:
     INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    virtual void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, RWTPtrSlist<CtiPointDataMsg> &pointData, RWTPtrSlist<CtiSignalMsg> &eventData, string &returnInfo, bool expectMore = false );
+    virtual void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &pointData, list<CtiSignalMsg*> &eventData, string &returnInfo, bool expectMore = false );
 };
 
 #endif //  #ifndef __DEV_ION_H__

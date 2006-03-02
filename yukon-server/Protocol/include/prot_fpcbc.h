@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_fpcbc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,10 @@
 #include "dllbase.h"
 #include "dlldefs.h"
 
+#include <list>
+#include "utility.h"
+using std::list;
+
 
 class IM_EX_PROT CtiProtocolFisherPierceCBC
 {
@@ -31,7 +35,7 @@ protected:
 
    INT      _last;
 
-   RWTPtrSlist< FPSTRUCT >  _fst;
+   list< FPSTRUCT* >  _fst;
 
 
 private:
@@ -50,14 +54,15 @@ public:
     {
        if(this != &aRef)
        {
-          _fst.clearAndDestroy();
+          delete_list(_fst);
+          _fst.clear();
 
           for( int i = 0; i < aRef.entries(); i++ )
           {
              FPSTRUCT *Fst = CTIDBG_new FPSTRUCT;
              ::memcpy((void*)Fst, &aRef.getFPStruct(i), sizeof(FPSTRUCT));
 
-             _fst.insert( Fst );
+             _fst.push_back( Fst );
           }
        }
        return *this;
@@ -65,7 +70,7 @@ public:
 
     INT   entries() const
     {
-       return _fst.entries();
+       return _fst.size();
     }
 
     FPSTRUCT                getFPStruct(INT pos = 0) const;

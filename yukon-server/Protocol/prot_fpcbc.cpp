@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,8 +74,8 @@ void CtiProtocolFisherPierceCBC::advanceAndPrime(const FPSTRUCT &fTemp)
 {
     FPSTRUCT *newfpst = CTIDBG_new FPSTRUCT;
     *newfpst = fTemp;
-    _fst.insert(newfpst);
-    _last = _fst.entries() - 1;
+    _fst.push_back(newfpst);
+    _last = _fst.size() - 1;
 
     return;
 }
@@ -115,16 +115,16 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
         /*
          *  This is a ENABLE opreration if iNum != 0.
          */
-
+        FPSTRUCT* last_ptr = _fst.back();
         if(iNum == 0)  // Disable
         {
-            _fst[_last]->u.PCC.F[0] = '0';
-            _fst[_last]->u.PCC.F[1] = '7';
+            last_ptr->u.PCC.F[0] = '0';
+            last_ptr->u.PCC.F[1] = '7';
         }
         else if(iNum == 1)
         {
-            _fst[_last]->u.PCC.F[0] = '0';
-            _fst[_last]->u.PCC.F[1] = '6';
+            last_ptr->u.PCC.F[0] = '0';
+            last_ptr->u.PCC.F[1] = '6';
         }
         else
         {
@@ -139,7 +139,8 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     {
         // Oh my, this one failed.... we should get rid of the 'prime' FPSTRUCT since it was never
         // modified
-        _fst.clearAndDestroy();
+        delete_list(_fst);
+        _fst.clear();
     }
 
     return status;
@@ -181,8 +182,8 @@ INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
     {
         ::memcpy((void*)fpst, &FPstTemplate, sizeof(FPSTRUCT));
 
-        _fst.insert( fpst );
-        _last = _fst.entries() - 1;      // Which one are we working on?
+        _fst.push_back( fpst );
+        _last = _fst.size() - 1;      // Which one are we working on?
     }
     else
     {
@@ -199,25 +200,35 @@ INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
 *-------------------------------------------------------------------------*/
 INT CtiProtocolFisherPierceCBC::capacitorControlCommand(BOOL Trip)
 {
+    FPSTRUCT* last_ptr = _fst.back();
     if(Trip)      // Then trip/open it
     {
-        _fst[_last]->u.PCC.F[0] = '0';
-        _fst[_last]->u.PCC.F[1] = '2';
+        last_ptr->u.PCC.F[0] = '0';
+        last_ptr->u.PCC.F[1] = '2';
     }
     else      // Then close it
     {
-        _fst[_last]->u.PCC.F[0] = '0';
-        _fst[_last]->u.PCC.F[1] = '3';
+        last_ptr->u.PCC.F[0] = '0';
+        last_ptr->u.PCC.F[1] = '3';
     }
 
     return NORMAL;
 }
 
 FPSTRUCT CtiProtocolFisherPierceCBC::getFPStruct(INT pos) const
-{
-    return *_fst[pos];
+{   int x = 0;
+    std::list<FPSTRUCT*>::const_iterator itr = _fst.begin();
+    while( x != pos ){
+       ++itr;++x;
+    }
+    return **itr;
 }
 FPSTRUCT& CtiProtocolFisherPierceCBC::getFPStruct(INT pos)
-{
-    return *_fst[pos];
+{   
+    int x = 0;
+    std::list<FPSTRUCT*>::iterator itr = _fst.begin();
+    while( x != pos ){
+       ++itr;++x;
+    }
+    return **itr;
 }

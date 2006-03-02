@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,11 +16,16 @@
 #pragma warning( disable : 4786)
 
 
+
 #include <rw/tpslist.h>
 
 #include "dsm2.h"
 #include "dllbase.h"
 #include "cmdparse.h"
+
+#include <list>
+using std::list;
+#include "utility.h"
 
 // Versacom protocol debg settings for cparm "PROTOCOL_VERSACOM_DEBUG"
 #define PROTOCOL_DEBUG_NIBBLES         0x00000001
@@ -136,7 +141,7 @@ protected:
    INT      _addressMode;           // Bookkeeping info used to build a full message
    INT      _last;
 
-   RWTPtrSlist< VSTRUCT >  _vst;
+   list< VSTRUCT* >  _vst;
 
 private:
 
@@ -179,26 +184,28 @@ public:
 
    virtual ~CtiProtocolVersacom()
    {
-      _vst.clearAndDestroy();
+       delete_list(_vst);
+      _vst.clear();
    }
 
    INT   entries() const
    {
-      return _vst.entries();
+      return _vst.size();
    }
 
    CtiProtocolVersacom& operator=(const CtiProtocolVersacom& aRef)
    {
       if(this != &aRef)
-      {
-         _vst.clearAndDestroy();
+      { 
+         delete_list(_vst);
+         _vst.clear();
 
          for( int i = 0; i < aRef.entries(); i++ )
          {
             VSTRUCT *Vst = CTIDBG_new VSTRUCT;
             ::memcpy((void*)Vst, &aRef.getVStruct(i), sizeof(VSTRUCT));
 
-            _vst.insert( Vst );
+            _vst.push_back( Vst );
          }
 
          _transmitterType  = aRef.getTransmitterType();

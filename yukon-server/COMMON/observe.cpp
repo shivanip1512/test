@@ -50,7 +50,7 @@ CtiObservable::~CtiObservable()
 ---------------------------------------------------------------------------*/
 void CtiObservable::addObserver(CtiObserver& observer)
 {
-    _observers.insert(&observer);
+    _observers.push_back(&observer);
 }
 
 /*---------------------------------------------------------------------------
@@ -61,7 +61,14 @@ void CtiObservable::addObserver(CtiObserver& observer)
 -----------------------------------------------------------------------------*/
 void CtiObservable::deleteObserver(CtiObserver& observer)
 {
-    _observers.remove(&observer);
+   for (std::list<CtiObserver*>::iterator itr = _observers.begin(); itr != _observers.end(); itr++) {
+        if (**itr == observer) {
+            _observers.erase(itr);
+            break;
+        }
+   }
+
+
 }
 
 /*---------------------------------------------------------------------------
@@ -72,6 +79,7 @@ void CtiObservable::deleteObserver(CtiObserver& observer)
 ---------------------------------------------------------------------------*/
 void CtiObservable::deleteObservers()
 {
+    delete_list(_observers);
     _observers.clear();
 }
 
@@ -86,9 +94,11 @@ void CtiObservable::notifyObservers()
 {
     if( hasChanged() && isNotifyEnabled() )
     {
-        for( int i = _observers.entries(); i > 0; i-- )
+        std::list< CtiObserver* >::iterator itr = _observers.begin();
+        while( itr != _observers.end() )
         {
-             _observers[i-1]->update(*this);
+            CtiObserver* ptr = *itr;
+             ptr->update(*this);
         }
 
         clearChanged();
@@ -136,7 +146,7 @@ BOOL CtiObservable::hasChanged() const
 ---------------------------------------------------------------------------*/
 UINT CtiObservable::countObservers() const
 {
-    return _observers.entries();
+    return _observers.size();
 }
 
 /*---------------------------------------------------------------------------

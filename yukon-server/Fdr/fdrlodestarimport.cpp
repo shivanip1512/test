@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.19 $
-*    DATE         :  $Date: 2006/02/17 17:04:31 $
+*    REVISION     :  $Revision: 1.20 $
+*    DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.20  2006/03/02 23:03:19  tspar
+      Phase Three: Final  phase of RWTPtrSlist replacement.
+
       Revision 1.19  2006/02/17 17:04:31  tspar
       CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
 
@@ -199,7 +202,7 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
 	return(Quality);
 }
 
-bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, RWTPtrSlist< CtiMultiMsg > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval)
+bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval)
 {
     bool returnBool = true;
     int msgCnt = 0;
@@ -248,7 +251,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         if (msgCnt >= 500 || i == (nbrPoints - 1) || i > nbrPoints)
         {
             msgCnt = 0;
-            dispatchList.insert(msgPtr);
+            dispatchList.push_back(msgPtr);
             msgPtr = NULL;
             if (i < nbrPoints)
                 msgPtr = new CtiMultiMsg;
@@ -271,7 +274,8 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() <<"returning FALSE!!!" << endl;
         }
-        dispatchList.clearAndDestroy();
+        delete_list(dispatchList);
+        dispatchList.clear();
         returnBool = false;
     }
     //multiDispatchMsg = NULL;
@@ -810,15 +814,16 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                          if( multiDispatchMsg->getCount() > 0 )
                                          {
                                              secondsPerInterval = getlodeStarSecsPerInterval();
-                                             RWTPtrSlist< CtiMultiMsg > dispatchList;
-                                             dispatchList.clearAndDestroy();
+                                             list< CtiMultiMsg* > dispatchList;
+                                             delete_list(dispatchList);
+                                             dispatchList.clear();
                                              if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval) )
                                              {
                                                  CtiMultiMsg *dispatchMsg = NULL;
 
-                                                 while( !dispatchList.isEmpty())
+                                                 while( !dispatchList.empty())
                                                  {       
-                                                     dispatchMsg = dispatchList.get();
+                                                     dispatchMsg = dispatchList.front();dispatchList.pop_front();
                                                      queueMessageToDispatch(dispatchMsg);
                                                  }
                                                  //dispatchList.clearAndDestroy();
@@ -829,8 +834,9 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                                  }
                                              }
                                              else
-                                             {
-                                                 dispatchList.clearAndDestroy();
+                                             {  
+                                                 delete_list(dispatchList);
+                                                 dispatchList.clear();
                                                  if (multiDispatchMsg != NULL)
                                                  {
                                                      delete multiDispatchMsg;
@@ -873,16 +879,18 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  if( multiDispatchMsg->getCount() > 0 )
                                  {   
                                      secondsPerInterval = getlodeStarSecsPerInterval();
-                                     RWTPtrSlist< CtiMultiMsg > dispatchList;
-                                     dispatchList.clearAndDestroy();
+                                     list< CtiMultiMsg* > dispatchList;
+                                     delete_list(dispatchList);
+                                     dispatchList.clear();
                                      if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval) )
                                      {
-                                         while( !dispatchList.isEmpty())
+                                         while( !dispatchList.empty())
                                          {       
-                                             CtiMultiMsg *dispatchMsg = (CtiMultiMsg*)dispatchList.get();
+                                             CtiMultiMsg *dispatchMsg = (CtiMultiMsg*)dispatchList.front();dispatchList.pop_front();
                                              queueMessageToDispatch(dispatchMsg);
                                          }
-                                         dispatchList.clearAndDestroy();
+                                         delete_list(dispatchList);
+                                         dispatchList.clear();
                                      }
                                      else
                                      {

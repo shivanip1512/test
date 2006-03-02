@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/03/02 23:03:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ static CtiTime  LastPorterOutTime;
 static CtiTime  LastPorterInTime;
 
 static CtiMutex inmessMux;
-static RWTPtrSlist< INMESS > inmessList;
+static list< INMESS* > inmessList;
 
 const CtiTime   MAXTime(YUKONEOT);
 
@@ -788,17 +788,17 @@ VOID ResultThread (VOID *Arg)
         do
         {
             // Let's go look at the inbound sList, if we can!
-            while( inmessList.isEmpty() && !ScannerQuit)
+            while( inmessList.empty() && !ScannerQuit)
             {
                 Sleep( 500 );
             }
 
-            if( !ScannerQuit && !inmessList.isEmpty() )
+            if( !ScannerQuit && !inmessList.empty() )
             {
                 CtiLockGuard< CtiMutex > ilguard( inmessMux, 15000 );
                 if(ilguard.isAcquired())
                 {
-                    InMessage = inmessList.get();
+                    InMessage = inmessList.front();inmessList.pop_front();
                 }
                 else
                 {
@@ -996,7 +996,7 @@ VOID NexusThread (VOID *Arg)
             if(InMessage != 0)
             {
                 CtiLockGuard< CtiMutex > inguard( inmessMux );
-                inmessList.append( InMessage );
+                inmessList.push_back( InMessage );
                 InMessage = 0;
             }
         }

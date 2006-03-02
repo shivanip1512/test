@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,7 +213,7 @@ bool CtiProtocolLMI::hasInboundData( void )
 }
 
 
-void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, string &info )
+void CtiProtocolLMI::getInboundData( list< CtiPointDataMsg* > &pointList, string &info )
 {
     int i = 1;
     CtiPointDataMsg *pdm;
@@ -227,7 +227,7 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         pdm->setTime(_transmitter_power_time);
         pdm->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
-        pointList.append(pdm);
+        pointList.push_back(pdm);
 
         _transmitter_power      = -1;
         _transmitter_power_time =  0;

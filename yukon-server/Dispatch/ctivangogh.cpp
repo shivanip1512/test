@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.128 $
-* DATE         :  $Date: 2006/02/20 22:26:42 $
+* REVISION     :  $Revision: 1.129 $
+* DATE         :  $Date: 2006/03/02 23:03:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2323,8 +2323,8 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManage
         {
             CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
             if(pPC != NULL)
-            {
-                if( pPC->getManagerList().contains(&Conn) )
+            { 
+                if( list_contains(pPC->getManagerList(), (CtiConnectionManager*)&Conn ) )
                 {
                     bStatus = TRUE;
                 }
@@ -2539,7 +2539,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
                     if(pPC != NULL)
                     {
-                        if( pPC->getManagerList().contains(&VGCM) || (VGCM.isRegForChangeType(TempPoint->getType())))
+                        if( list_contains(pPC->getManagerList(), (CtiConnectionManager*)&VGCM ) || (VGCM.isRegForChangeType(TempPoint->getType())))
                         {
                             CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
                                                                                pDyn->getValue(),

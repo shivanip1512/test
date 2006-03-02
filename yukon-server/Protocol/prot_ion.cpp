@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2311,7 +2311,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList
 }
 
 
-void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, string &returnedInfo )
+void CtiProtocolION::getInboundData( list< CtiPointDataMsg* > &pointList, list< CtiSignalMsg* > &signalList, string &returnedInfo )
 {
     vector< ion_pointdata_struct >::const_iterator p_itr;
     vector< CtiIONLogArray * >::const_iterator       e_itr;
@@ -2331,7 +2331,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         pointdata->setTime(CtiTime((*p_itr).time));
         pointdata->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
-        pointList.append(pointdata);
+        pointList.push_back(pointdata);
     }
 
     //  ACH/FIX:  this should be moved to porter-side...  he should be the one sending the event logs, and keeping track of current event log position
@@ -2378,7 +2378,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
                     signal = CTIDBG_new CtiSignalMsg(EventLogPointOffset, 0, desc, action, GeneralLogType);
                     signal->setMessageTime(CtiTime(tmpRecord->getTimestamp()->getSeconds() ));
 
-                    signalList.append(signal);
+                    signalList.push_back(signal);
                 }
             }
         }
@@ -2399,7 +2399,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
         pointdata = new CtiPointDataMsg(EventLogPointOffset, maxEventRecord, NormalQuality, AnalogPointType, msg, TAG_POINT_MUST_ARCHIVE);
 
-        pointList.append(pointdata);
+        pointList.push_back(pointdata);
     }
 }
 

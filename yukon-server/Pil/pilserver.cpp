@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -525,7 +525,7 @@ void CtiPILServer::resultThread()
         try
         {
             // Let's go look at the inbound sList, if we can!
-            while( _inList.isEmpty() && !bServerClosing)
+            while( _inList.empty() && !bServerClosing)
             {
                 Sleep( 500 );
 
@@ -542,13 +542,13 @@ void CtiPILServer::resultThread()
                 }
             }
 
-            if( !bServerClosing && !_inList.isEmpty() )
+            if( !bServerClosing && !_inList.empty() )
             {
                 CtiLockGuard< CtiMutex > ilguard( _inMux, 15000 );
 
                 if(ilguard.isAcquired())
                 {
-                    InMessage = _inList.get();
+                    InMessage = _inList.front();_inList.pop_front();
                 }
                 else
                 {
@@ -825,7 +825,7 @@ void CtiPILServer::nexusThread()
         if(InMessage)
         {
             CtiLockGuard< CtiMutex > inguard( _inMux );
-            _inList.append( InMessage );
+            _inList.push_back( InMessage );
             InMessage = 0;
         }
     } /* End of for */

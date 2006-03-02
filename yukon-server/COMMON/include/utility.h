@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/24 00:19:09 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/03/02 23:03:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -267,5 +267,27 @@ inline void delete_list( std::list<T> *V )
    for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
         delete *itr;
    }
+}
+template < class T >
+inline bool list_contains( std::list<T> V, T x )
+{
+
+   for (std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+        if (**itr == *x) {
+            return true;
+        }
+   }
+   return false;
+}
+template < class T >
+inline bool list_contains( std::list<T> *V, T x )
+{
+
+   for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
+        if (**itr == *x) {
+            return true;
+        }
+   }
+   return false;
 }
 #endif // #ifndef __UTILITY_H__

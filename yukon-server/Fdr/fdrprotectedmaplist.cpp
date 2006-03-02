@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrprotectedmaplist.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrprotectedmaplist.cpp,v $
+      Revision 1.5  2006/03/02 23:03:19  tspar
+      Phase Three: Final  phase of RWTPtrSlist replacement.
+
       Revision 1.4  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -80,7 +83,7 @@ CtiFDRProtectedIdMapList& CtiFDRProtectedIdMapList::operator=( const CtiFDRProte
     {
         CtiLockGuard<CtiMutex> guard(iMux);  
         iPointList = other.getIdMapList();
-#if 0
+#if 0  //If you remove this   below needs to be changed to deal with a std::list from RWptrSlist.
         iPointList.clearAndDestroy();
 
         for (int x=0; x < other.getIdMapList().entries(); x++)

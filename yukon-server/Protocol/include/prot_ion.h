@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -389,7 +389,7 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, string &returnedInfo );
+    void getInboundData( list< CtiPointDataMsg* > &pointList, list< CtiSignalMsg* > &signalList, string &returnedInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;

@@ -24,7 +24,7 @@
 #include <windows.h>
 #include <iostream>
 #include <functional>
-
+#include <list>
 
 #include <rw/tphdict.h>
 #include <rw/tpslist.h>
@@ -35,7 +35,8 @@
 
 #include "dlldefs.h"
 #include "hashkey.h"
-
+#include "utility.h"
+using std::list;
 
 /*
  *  These are the Configuration Parameters for the Port Real Time Database
@@ -60,7 +61,7 @@ protected:
    // This is a keyed Mapping which does not allow duplicates!
    RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > Map;
 
-   RWTPtrSlist< T > _orphans;
+   list< T* > _orphans;
 
    int _dberrorcode;
 
@@ -75,7 +76,8 @@ public:
    virtual ~CtiRTDB()
    {
       LockGuard guard(monitor());
-      _orphans.clearAndDestroy();       // Clean up the leftovers if there are any.
+      delete_list(_orphans);
+      _orphans.clear();       // Clean up the leftovers if there are any.
       Map.clearAndDestroy();
    }
 
@@ -94,7 +96,7 @@ public:
        if(temp)
        {
            status = true;
-           _orphans.insert( temp );     // Save this guy out so we know we found him
+           _orphans.push_back( temp );     // Save this guy out so we know we found him
        }
        else
        {
@@ -160,8 +162,8 @@ public:
    {
        int count = 0;
 
-       RWTPtrSlist< CtiHashKey >       deleteKeys;
-       RWTPtrSlist< CtiDeviceBase >    deleteObjs;
+       list< CtiHashKey* >       deleteKeys;
+       list< CtiDeviceBase* >    deleteObjs;
 
        CtiRTDBIterator mapitr(Map);
        CtiDeviceBase   *pdev = 0;
@@ -175,18 +177,21 @@ public:
            if((*removeFunc)(pdev, d))
            {
                count++;
-               deleteKeys.insert(pkey);
-               deleteObjs.insert(pdev);
+               deleteKeys.push_back(pkey);
+               deleteObjs.push_back(pdev);
            }
        }
-
-       for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
+       std::list<>::iterator itr = deleteKeys.begin();
+       while( itr != deleteKeys.end() )
+       //for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
        {
-           Map.remove(deleteKeys[kpos]);
+           itr = Map.erase(itr);
        }
 
-       deleteKeys.clearAndDestroy();
-       deleteObjs.clearAndDestroy();
+       delete_list(deleteKeys);
+       delete_list(deleteObjs);
+       deleteKeys.clear();
+       deleteObjs.clear();
 
        return count;
    }

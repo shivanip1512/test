@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/03/02 23:03:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,7 @@ public:
     INT ErrorDecode (INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT ResultDecode(INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, RWTPtrSlist<CtiPointDataMsg> &points, string &info );
+    void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info );
 
     CtiMutex& getExclusionMux();
     bool hasExclusions() const;

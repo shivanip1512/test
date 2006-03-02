@@ -105,8 +105,6 @@ class CtiTime;
 
 
 // forward class declarations
-//typedef RWTPtrSlist<CtiFDRSocketLayer>  InetConnectionList;
-//typedef RWTPtrSlist<string>  InetClientList;
 
 class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 {                                    

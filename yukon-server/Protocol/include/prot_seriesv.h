@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,7 +263,7 @@ public:
     int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
 
     bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+    void getInboundPoints( list< CtiPointDataMsg* > &pointList );
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest( OUTMESS *OutMessage );

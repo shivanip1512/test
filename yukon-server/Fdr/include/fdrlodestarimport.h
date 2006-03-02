@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/12/20 17:17:16 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.10  2006/03/02 23:03:19  tspar
+      Phase Three: Final  phase of RWTPtrSlist replacement.
+
       Revision 1.9  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -64,6 +67,8 @@
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
 #include "fdrlodestarinfo.h"
+#include <list>
+using std::list;
 
 class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRTDB< CtiFDRPoint >
 {
@@ -115,7 +120,7 @@ public:
     USHORT ForeignToYukonQuality (string aQuality);
     CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
-    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, RWTPtrSlist< CtiMultiMsg > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval);
+    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);

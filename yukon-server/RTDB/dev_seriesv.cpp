@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/02 23:03:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -245,7 +245,7 @@ INT CtiDeviceSeriesV::ErrorDecode( INMESS *InMessage, CtiTime &Now, list< CtiMes
 INT CtiDeviceSeriesV::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> seriesvPoints;
+    list<CtiPointDataMsg*> seriesvPoints;
 
     string resultString;
     CtiReturnMsg *retMsg;

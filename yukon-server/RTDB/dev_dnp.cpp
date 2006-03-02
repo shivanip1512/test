@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -904,7 +904,6 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
     CtiReturnMsg *retMsg;
 

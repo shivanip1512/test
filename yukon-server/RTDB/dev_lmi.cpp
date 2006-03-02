@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/03/02 23:03:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -311,7 +311,7 @@ INT CtiDeviceLMI::ErrorDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessage
 INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> points;
+    list<CtiPointDataMsg*> points;
 
     string resultString, info;
     CtiReturnMsg *retMsg;
@@ -331,7 +331,7 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMessag
     return 0;
 }
 
-void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, RWTPtrSlist<CtiPointDataMsg> &points, string &info )
+void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info )
 {
     CtiReturnMsg    *retMsg,
                     *vgMsg;
@@ -349,9 +349,9 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list<
 
     double tmpValue;
 
-    while( !points.isEmpty() )
+    while( !points.empty() )
     {
-        tmpMsg = points.removeFirst();
+        tmpMsg = points.front();points.pop_front();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId()+1, tmpMsg->getType())) != NULL )

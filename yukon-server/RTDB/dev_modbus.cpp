@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/02 23:03:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -579,7 +579,6 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> dnpPoints;
 
     CtiReturnMsg *retMsg;
 

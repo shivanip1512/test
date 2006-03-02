@@ -461,8 +461,8 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> pointData;
-    RWTPtrSlist<CtiSignalMsg>    eventData;
+    list<CtiPointDataMsg*> pointData;
+    list<CtiSignalMsg*>    eventData;
     string returnInfo;
 
     bool expectMore = false;
@@ -722,7 +722,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
 
 void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList,
-                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, string &returnInfo, bool expectMore )
+                                       list<CtiPointDataMsg*> &points, list<CtiSignalMsg*> &events, string &returnInfo, bool expectMore )
 {
     CtiReturnMsg *retMsg, *vgMsg;
 
@@ -734,9 +734,9 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
     retMsg->setUserMessageId(InMessage->Return.UserID);
     vgMsg->setUserMessageId (InMessage->Return.UserID);
 
-    while( !points.isEmpty() )
+    while( !points.empty() )
     {
-        CtiPointDataMsg *tmpMsg = points.get();
+        CtiPointDataMsg *tmpMsg = points.front();points.pop_front();
 
         CtiPointBase    *point;
         double           value;
@@ -782,9 +782,9 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
         }
     }
 
-    while( !events.isEmpty() )
+    while( !events.empty() )
     {
-        CtiSignalMsg *tmpSignal = events.get();
+        CtiSignalMsg *tmpSignal = events.front();events.pop_front();
         CtiPointBase *point;
 
         if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) != NULL )

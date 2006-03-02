@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/03/02 23:03:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ class IM_EX_CTIVANGOGH CtiPointConnection : public RWMonitor< RWRecursiveLock< R
 protected:
 
    // Vector of managers who care about this point.
-   RWTPtrSlist<CtiConnectionManager>   ConnectionManagerCollection;
+   list<CtiConnectionManager*>   ConnectionManagerCollection;
 
 public:
 
@@ -50,8 +50,8 @@ public:
 
    CtiPointConnection& operator=(const CtiPointConnection &aRef);
 
-   RWTPtrSlist<CtiConnectionManager>& getManagerList();
-   RWTPtrSlist<CtiConnectionManager>  getManagerList() const;
+   list<CtiConnectionManager*>& getManagerList();
+   list<CtiConnectionManager*>  getManagerList() const;
 };
 
 #endif // __PTCONNECT_H__
