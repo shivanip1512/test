@@ -11,32 +11,32 @@ import com.cannontech.database.db.DBPersistent;
 
 public class CRSToSAM_PTJ extends DBPersistent {
 
-    private Integer ptjID; 
-    private Integer premiseNumber;
-    private String debtorNumber;
-    private String ptjType;
-    private Date timestamp;
-    private String consumptionType;
-    private Character servUtilityType;
-    private String notes;       
-    private String streetAddress1;       
-    private String streetAddress2;
-    private String cityName;       
-    private String stateCode;       
-    private String zipCode;     
-    private String firstName;       
-    private String lastName;        
-    private String homePhone;       
-    private String workPhone;       
-    private String crsContactPhone;
-    private String crsLoggedUser;
-    private Character presenceRequired;
-    private Character airConditioner;
-    private Character waterHeater;
-    private String serviceNumber;
-    private String meterNumber;
+    private Integer ptjID = null; 
+    private Integer premiseNumber = null;
+    private String debtorNumber = null;
+    private String ptjType = "";
+    private Date timestamp = null;
+    private String consumptionType = "";
+    private Character servUtilityType = null;
+    private String notes = "";
+    private String streetAddress1 = "";       
+    private String streetAddress2 = "";
+    private String cityName = "";
+    private String stateCode = "";       
+    private String zipCode = "";     
+    private String firstName = "";       
+    private String lastName = "";        
+    private String homePhone = "";       
+    private String workPhone = "";       
+    private String crsContactPhone = "";
+    private String crsLoggedUser = "";
+    private Character presenceRequired = null;
+    private Character airConditioner = null;
+    private Character waterHeater = null;
+    private String serviceNumber = "";
+    private String meterNumber = "";
 
-    private ArrayList additionalMeters;
+    private ArrayList<CRSToSAM_PTJAdditionalMeters> additionalMeters;
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
     public static final String SETTER_COLUMNS[] = { "PTJID", "PremiseNumber", "DebtorNumber", "PTJType", "Timestamp",
@@ -67,7 +67,7 @@ public void setDbConnection(Connection newValue) {
 	super.setDbConnection(newValue);
 	for (int i = 0; i < getAdditionalMeters().size(); i++)
 	{
-		CRSToSAM_PTJAdditionalMeters addtlMeter = (CRSToSAM_PTJAdditionalMeters)getAdditionalMeters().get(i);
+		CRSToSAM_PTJAdditionalMeters addtlMeter = getAdditionalMeters().get(i);
 		addtlMeter.setDbConnection(newValue);
 	}
 
@@ -75,7 +75,7 @@ public void setDbConnection(Connection newValue) {
 public void delete() throws java.sql.SQLException 
 {
 	for (int i = 0; i < getAdditionalMeters().size(); i++)
-		((CRSToSAM_PTJAdditionalMeters)getAdditionalMeters().get(i)).delete();
+		getAdditionalMeters().get(i).delete();
 
     Object constraintValues[] = { getPTJID() };
 
@@ -149,32 +149,56 @@ public static ArrayList getAllCurrentPTJEntries()
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
             	CRSToSAM_PTJ currentEntry = new CRSToSAM_PTJ();
-                currentEntry.setPTJID( new Integer(stmt.getRow(i)[0].toString()));
-                currentEntry.setPremiseNumber( new Integer(stmt.getRow(i)[1].toString()));
-                currentEntry.setDebtorNumber( stmt.getRow(i)[2].toString());
-                currentEntry.setPTJType( stmt.getRow(i)[3].toString());
-                currentEntry.setTimestamp(new Date(((java.sql.Timestamp)stmt.getRow(i)[4]).getTime()));
-                currentEntry.setConsumptionType( stmt.getRow(i)[5].toString());
-                currentEntry.setServUtilityType( new Character(stmt.getRow(i)[6].toString().charAt(0)) );
-                currentEntry.setNotes( stmt.getRow(i)[7].toString());
-                currentEntry.setStreetAddress1( stmt.getRow(i)[8].toString());  
-                currentEntry.setStreetAddress2( stmt.getRow(i)[9].toString());
-                currentEntry.setCityName( stmt.getRow(i)[10].toString());      
-                currentEntry.setStateCode( stmt.getRow(i)[11].toString());
-                currentEntry.setZipCode( stmt.getRow(i)[12].toString());
-                currentEntry.setFirstName( stmt.getRow(i)[13].toString());  
-                currentEntry.setLastName( stmt.getRow(i)[14].toString());
-                currentEntry.setHomePhone( stmt.getRow(i)[15].toString());
-                currentEntry.setWorkPhone( stmt.getRow(i)[16].toString());
-                currentEntry.setCRSContactPhone( stmt.getRow(i)[17].toString());
-                currentEntry.setCRSLoggedUser( stmt.getRow(i)[18].toString());
-                currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[18].toString().charAt(0)) );
-                currentEntry.setAirConditioner( new Character(stmt.getRow(i)[20].toString().charAt(0)) );
-                currentEntry.setWaterHeater( new Character(stmt.getRow(i)[21].toString().charAt(0)) );
-                currentEntry.setServiceNumber( stmt.getRow(i)[22].toString());
-                currentEntry.setMeterNumber( stmt.getRow(i)[23].toString());
+            	if (stmt.getRow(i)[0] != null)
+            		currentEntry.setPTJID( new Integer(stmt.getRow(i)[0].toString()));
+            	if (stmt.getRow(i)[1] != null)
+            		currentEntry.setPremiseNumber( new Integer(stmt.getRow(i)[1].toString()));
+            	if (stmt.getRow(i)[2] != null)
+            		currentEntry.setDebtorNumber( stmt.getRow(i)[2].toString());
+            	if (stmt.getRow(i)[3] != null)
+            		currentEntry.setPTJType( stmt.getRow(i)[3].toString());
+            	if (stmt.getRow(i)[4] != null)
+            		currentEntry.setTimestamp(new Date(((java.sql.Timestamp)stmt.getRow(i)[4]).getTime()));
+            	if (stmt.getRow(i)[5] != null)
+            		currentEntry.setConsumptionType( stmt.getRow(i)[5].toString());
+            	if (stmt.getRow(i)[6] != null)
+            		currentEntry.setServUtilityType( new Character(stmt.getRow(i)[6].toString().charAt(0)) );
+            	if (stmt.getRow(i)[7] != null)
+            		currentEntry.setNotes( stmt.getRow(i)[7].toString());
+            	if (stmt.getRow(i)[8] != null)
+            		currentEntry.setStreetAddress1( stmt.getRow(i)[8].toString());
+            	if (stmt.getRow(i)[9] != null)
+            		currentEntry.setStreetAddress2( stmt.getRow(i)[9].toString());
+            	if (stmt.getRow(i)[10] != null)
+            		currentEntry.setCityName( stmt.getRow(i)[10].toString());
+            	if (stmt.getRow(i)[11] != null)
+            		currentEntry.setStateCode( stmt.getRow(i)[11].toString());
+            	if (stmt.getRow(i)[12] != null)
+            		currentEntry.setZipCode( stmt.getRow(i)[12].toString());
+            	if (stmt.getRow(i)[13] != null)
+            		currentEntry.setFirstName( stmt.getRow(i)[13].toString());
+            	if (stmt.getRow(i)[14] != null)
+            		currentEntry.setLastName( stmt.getRow(i)[14].toString());
+            	if (stmt.getRow(i)[15] != null)
+            		currentEntry.setHomePhone( stmt.getRow(i)[15].toString());
+            	if (stmt.getRow(i)[16] != null)
+            		currentEntry.setWorkPhone( stmt.getRow(i)[16].toString());
+            	if (stmt.getRow(i)[17] != null)
+            		currentEntry.setCRSContactPhone( stmt.getRow(i)[17].toString());
+            	if (stmt.getRow(i)[18] != null)
+            		currentEntry.setCRSLoggedUser( stmt.getRow(i)[18].toString());
+            	if (stmt.getRow(i)[19] != null)
+            		currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[18].toString().charAt(0)) );
+            	if (stmt.getRow(i)[20] != null)
+            		currentEntry.setAirConditioner( new Character(stmt.getRow(i)[20].toString().charAt(0)) );
+            	if (stmt.getRow(i)[21] != null)
+            		currentEntry.setWaterHeater( new Character(stmt.getRow(i)[21].toString().charAt(0)) );
+            	if (stmt.getRow(i)[22] != null)
+            		currentEntry.setServiceNumber( stmt.getRow(i)[22].toString());
+            	if (stmt.getRow(i)[23] != null)
+            		currentEntry.setMeterNumber( stmt.getRow(i)[23].toString());
                 
-                ArrayList addtlMeters = (ArrayList)ptjToAddtlMetersMap.get(currentEntry.getPTJID());
+                ArrayList<CRSToSAM_PTJAdditionalMeters> addtlMeters = (ArrayList<CRSToSAM_PTJAdditionalMeters>)ptjToAddtlMetersMap.get(currentEntry.getPTJID());
                 if( addtlMeters != null)	//found an ArrayList of CRSToSam_PTJAdditionalMeters
                 	currentEntry.setAdditionalMeters(addtlMeters);
                 changes.add(currentEntry);
@@ -381,13 +405,13 @@ public void setZipCode(String zipCode) {
 	this.zipCode = zipCode;
 }
 
-public ArrayList getAdditionalMeters() {
+public ArrayList<CRSToSAM_PTJAdditionalMeters> getAdditionalMeters() {
 	if( additionalMeters == null)
-		additionalMeters = new ArrayList();
+		additionalMeters = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
 	return additionalMeters;
 }
 
-public void setAdditionalMeters(ArrayList additionalMeters) {
+public void setAdditionalMeters(ArrayList<CRSToSAM_PTJAdditionalMeters> additionalMeters) {
 	this.additionalMeters = additionalMeters;
 }
 }

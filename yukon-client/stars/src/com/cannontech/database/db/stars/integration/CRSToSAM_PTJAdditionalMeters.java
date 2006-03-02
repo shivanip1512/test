@@ -100,7 +100,7 @@ public static ArrayList getAllCurrentPTJAdditionalMeterEntries()
 public static HashMap retrieveAllCurrentPTJAdditionalMeterEntriesMap()
 {
 	HashMap ptjToAdditionMeterMap = new HashMap();
-    ArrayList changes = new ArrayList();
+    ArrayList<CRSToSAM_PTJAdditionalMeters> changes = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME , CtiUtilities.getDatabaseAlias());
     
