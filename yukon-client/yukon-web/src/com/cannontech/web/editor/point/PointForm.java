@@ -7,9 +7,11 @@ import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
@@ -49,7 +51,9 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.web.util.JSFNavUtil;
 import com.cannontech.web.wizard.PointWizardModel;
 
 /**
@@ -712,12 +716,14 @@ public class PointForm extends DBEditorForm
     public void paoClick(ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         try {
+            String path = "/editor/cbcBase.jsf";
             String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
             .get("paoID");
             String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
-            String location = "cbcBase.jsf?type=" + type + "&" + "itemid=" + itemId;
+            String query = "?type=" + type + "&" + "itemid=" + itemId;
+            String location = path + query;               
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
-            FacesContext.getCurrentInstance().responseComplete();
+            FacesContext.getCurrentInstance().responseComplete();            
         } 
 
         catch (IOException e) {
