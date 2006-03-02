@@ -37,7 +37,7 @@ String css = "tableCell";
 %>
 	<cti:titledContainer title="Substation">
 
-			<table id="subTable" width="100%" border="0" cellspacing="0"
+			<table id="subTable" width="98%" border="0" cellspacing="0"
 				cellpadding="0">
 				<tr class="columnHeader lAlign">
 					<th>Sub Name</th>
@@ -110,7 +110,7 @@ if( subBus != null ) {
 	<cti:titledContainer title="Feeders">
 
 			<div class="scrollSmall">
-			<table id="fdrTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
 				<form id="fdrForm" action="feeders.jsp" method="post">
 				<tr class="columnHeader lAlign">
 					<th><input type="checkbox" name="chkAllFdrsBx"
@@ -182,7 +182,7 @@ for( int i = 0; i < feeders.length; i++ )
 	<cti:titledContainer title="Capacitor Banks">
 
 		<div class="scrollSmall">
-			<table id="capBankTable" width="100%" border="0" cellspacing="0" cellpadding="0" >
+			<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 				<form id="capBankForm" action="feeders.jsp" method="post">
 				<tr class="columnHeader lAlign">
 					<th><input type="checkbox" name="chkAllBanksBx"
