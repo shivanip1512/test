@@ -9,7 +9,7 @@ a.menuLink:active {
 }
 
 .submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
-a.submenuLink:hover, legend, .editorHeader {
+a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 	color: #006699;
 }
 
@@ -79,13 +79,16 @@ a.submenuLink:hover, legend, .editorHeader {
 	height: 200px;
 }
 
-.scrollSmallWidthSet {
-	overflow: scroll;
-	height: 200px;
-	width:  390px;
+.widthSet,.scrollSmallWidthSet,.scrollVerySmall {
+  width:  390px;  
 }
 
-legend {
+.scrollSmallWidthSet {
+	overflow: scroll;
+	height: 200px;	
+}
+
+legend, .legendLikeLabel{
 	font-size: 14px;
 	background-color: #E7EFF7;
 }
@@ -229,4 +232,13 @@ legend {
 	padding: 0;
 	
 	}
+    
+.bigFont {
+    font-size: 20px;
+}
+.scrollVerySmall {
+    height: 50 px; 
+}
+
+ 
 
