@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.129 $
-* DATE         :  $Date: 2006/03/02 23:03:18 $
+* REVISION     :  $Revision: 1.130 $
+* DATE         :  $Date: 2006/03/02 23:37:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,19 +199,23 @@ string& TrimAlarmTagText(string& text)
 
     temp = rstr + gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
     pos = text.find(temp);
-    text.replace(pos,temp.length(),"");
+    if (pos != -1)
+        text.replace(pos,temp.length(),"");
 
     temp = rstr + gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_INACTIVE_ALARM_TEXT", "Condition Inactive") + ")";
     pos = text.find(temp);
-    text.replace(pos,temp.length(),"");
+    if (pos != -1)
+        text.replace(pos,temp.length(),"");
 
     temp = rstr + gConfigParms.getValueAsString("DISPATCH_ACK_ALARM_TEXT", "Acknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
     pos = text.find(temp);
-    text.replace(pos,temp.length(),"");
+    if (pos != -1)
+        text.replace(pos,temp.length(),"");
 
     temp = rstr + "Cleared";
     pos = text.find(temp);
-    text.replace(pos,temp.length(),"");
+    if (pos != -1)
+        text.replace(pos,temp.length(),"");
 
     return text;
 }
