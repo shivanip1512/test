@@ -52,16 +52,16 @@ public class CBCPointFactory{
        new StatusPointParams(29,"Neutral Lockout"),
         
         //analog
-        new AnalogPointParams(0.1, 5,"Voltage"),
-        new AnalogPointParams(0.1, 6,"High Voltage"),
-        new AnalogPointParams(0.1, 7,"Low Voltage"),
-        new AnalogPointParams(0.1, 8,"Delta Voltage"),
-        new AnalogPointParams(1.0, 9, "Analog Input 1"),
-        new AnalogPointParams(0.1, 10, "Temperature"),      
+        new AnalogPointParams(0.1, 5,"Voltage", PointUnits.UOMID_VOLTS),
+        new AnalogPointParams(0.1, 6,"High Voltage", PointUnits.UOMID_VOLTS),
+        new AnalogPointParams(0.1, 7,"Low Voltage", PointUnits.UOMID_VOLTS),
+        new AnalogPointParams(0.1, 8,"Delta Voltage", PointUnits.UOMID_VOLTS),
+        new AnalogPointParams(1.0, 9, "Analog Input 1", PointUnits.UOMID_UNDEF),
+        new AnalogPointParams(0.1, 10, "Temperature", PointUnits.UOMID_TEMP_F),      
         //accumulator
-        new AccumPointParams(1.0, 1, "Total op count"),
-        new AccumPointParams(1.0, 2, "OV op count"),
-        new AccumPointParams(1.0, 3, "UV op count")
+        new AccumPointParams(1.0, 1, "Total op count", PointUnits.UOMID_COUNTS),
+        new AccumPointParams(1.0, 2, "OV op count", PointUnits.UOMID_COUNTS),
+        new AccumPointParams(1.0, 3, "UV op count", PointUnits.UOMID_COUNTS)
       
    };
 
@@ -122,8 +122,9 @@ public class CBCPointFactory{
                                                                      point.getPoint()
                                                                           .getPointID(),
                                                                      array_element.getOffset(),
-                                                                     PointUnits.UOMID_UNDEF,
+                                                                     ((AnalogPointParams) array_element).getUofm(),
                                                                      ((AnalogPointParams) array_element).getMult());
+                
                 break;
 
             case PointTypes.PULSE_ACCUMULATOR_POINT:
@@ -134,7 +135,7 @@ public class CBCPointFactory{
                                                                               point.getPoint()
                                                                                    .getPointID(),
                                                                               array_element.getOffset(),
-                                                                              PointUnits.UOMID_UNDEF,
+                                                                              ((AccumPointParams) array_element).getUofm(),
                                                                               ((AccumPointParams) array_element).getMult());
 
                 
