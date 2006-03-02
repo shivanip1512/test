@@ -10,20 +10,20 @@ import com.cannontech.common.util.CtiUtilities;
 public class CRSToSAM_PremiseMeterChange extends DBPersistent {
 
     private Integer changeID; 
-    private Integer premiseNumber;
-    private String newDebtorNumber;
-    private String transID;     
-    private String streetAddress1;   
-    private String streetAddress2;
-    private String cityName;       
-    private String stateCode;       
-    private String zipCode;     
-    private String firstName;       
-    private String lastName;        
-    private String homePhone;       
-    private String workPhone;       
-    private String oldMeterNumber;  
-    private String newMeterNumber;
+    private Integer premiseNumber = null;
+    private String newDebtorNumber = "";
+    private String transID = "";     
+    private String streetAddress1 = "";   
+    private String streetAddress2 = "";
+    private String cityName = "";       
+    private String stateCode = "";       
+    private String zipCode = "";     
+    private String firstName = "";       
+    private String lastName = "";        
+    private String homePhone = "";       
+    private String workPhone = "";       
+    private String oldMeterNumber = "";  
+    private String newMeterNumber = "";
 
     public static final String CONSTRAINT_COLUMNS[] = { "ChangeID" };
 
@@ -258,20 +258,34 @@ public static ArrayList getAllCurrentPremiseMeterChangeEntries()
             {
                 CRSToSAM_PremiseMeterChange currentEntry = new CRSToSAM_PremiseMeterChange();
                 currentEntry.setChangeID(new Integer(stmt.getRow(i)[0].toString()));
-                currentEntry.setPremiseNumber(new Integer(stmt.getRow(i)[1].toString()));
-                currentEntry.setNewDebtorNumber(stmt.getRow(i)[2].toString());
-                currentEntry.setTransID(stmt.getRow(i)[3].toString());
-                currentEntry.setStreetAddress1(stmt.getRow(i)[4].toString());
-                currentEntry.setStreetAddress2(stmt.getRow(i)[5].toString());
-                currentEntry.setCityName(stmt.getRow(i)[6].toString());
-                currentEntry.setStateCode(stmt.getRow(i)[7].toString());
-                currentEntry.setZipCode(stmt.getRow(i)[8].toString());
-                currentEntry.setFirstName(stmt.getRow(i)[9].toString());
-                currentEntry.setLastName(stmt.getRow(i)[10].toString());
-                currentEntry.setHomePhone(stmt.getRow(i)[11].toString());
-                currentEntry.setWorkPhone(stmt.getRow(i)[12].toString());
-                currentEntry.setOldMeterNumber(stmt.getRow(i)[13].toString());
-                currentEntry.setNewMeterNumber(stmt.getRow(i)[14].toString());
+                if(stmt.getRow(i)[1] != null)
+                    currentEntry.setPremiseNumber(new Integer(stmt.getRow(i)[1].toString()));
+                if(stmt.getRow(i)[2] != null)
+                    currentEntry.setNewDebtorNumber(stmt.getRow(i)[2].toString());
+                if(stmt.getRow(i)[3] != null)
+                    currentEntry.setTransID(stmt.getRow(i)[3].toString());
+                if(stmt.getRow(i)[4] != null)
+                    currentEntry.setStreetAddress1(stmt.getRow(i)[4].toString());
+                if(stmt.getRow(i)[5] != null)
+                    currentEntry.setStreetAddress2(stmt.getRow(i)[5].toString());
+                if(stmt.getRow(i)[6] != null)
+                    currentEntry.setCityName(stmt.getRow(i)[6].toString());
+                if(stmt.getRow(i)[7] != null)
+                    currentEntry.setStateCode(stmt.getRow(i)[7].toString());
+                if(stmt.getRow(i)[8] != null)
+                    currentEntry.setZipCode(stmt.getRow(i)[8].toString());
+                if(stmt.getRow(i)[9] != null)
+                    currentEntry.setFirstName(stmt.getRow(i)[9].toString());
+                if(stmt.getRow(i)[10] != null)    
+                    currentEntry.setLastName(stmt.getRow(i)[10].toString());
+                if(stmt.getRow(i)[11] != null)
+                    currentEntry.setHomePhone(stmt.getRow(i)[11].toString());
+                if(stmt.getRow(i)[12] != null)    
+                    currentEntry.setWorkPhone(stmt.getRow(i)[12].toString());
+                if(stmt.getRow(i)[13] != null)    
+                    currentEntry.setOldMeterNumber(stmt.getRow(i)[13].toString());
+                if(stmt.getRow(i)[14] != null)
+                    currentEntry.setNewMeterNumber(stmt.getRow(i)[14].toString());
                 
                 changes.add(currentEntry);
             }
