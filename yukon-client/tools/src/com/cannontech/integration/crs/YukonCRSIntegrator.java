@@ -203,10 +203,10 @@ public final class YukonCRSIntegrator
     	{
             StringBuffer errorMsg = new StringBuffer("");
             currentEntry = (CRSToSAM_PremiseMeterChange)entries.get(j);
-            String accountNumber = currentEntry.getPremiseNumber().toString();
             
-            if(accountNumber.length() > 0)
+            if(currentEntry.getPremiseNumber() != null && currentEntry.getPremiseNumber().toString().length() > 0)
             {
+                String accountNumber = currentEntry.getPremiseNumber().toString();
                 CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
                 //Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
                 ContactNotification workNotify = null;
