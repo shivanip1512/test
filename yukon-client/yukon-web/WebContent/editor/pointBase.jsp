@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.point.PointForm" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
-<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
@@ -17,11 +16,16 @@
     //****
 
     int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
+    String parentId = JSFParamUtil.getJSFReqParam("parentId");
 
-
-    if( id != PAOGroups.INVALID ) {
-        PointForm ptEditorForm =
+    PointForm ptEditorForm =
             (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
+
+    if (parentId != null) {
+
+        ptEditorForm.initWizard(new Integer(parentId));
+    }
+    if( id != PAOGroups.INVALID ) {
 
         ptEditorForm.initItem( id );
     }
