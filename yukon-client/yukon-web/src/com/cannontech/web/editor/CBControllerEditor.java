@@ -30,6 +30,7 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
@@ -281,8 +282,11 @@ public class CBControllerEditor {
     public void pointClick (ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         try {
+            //make sure the point form will have the pao id
+            //of the cbc 
+            String red = "pointBase.jsf?parentId=" + getPaoCBC().getPAObjectID().toString() + "&itemid=";
             String val = JSFParamUtil.getJSFReqParam("ptID");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("pointBase.jsf?itemid=" + val);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(red + val);
             FacesContext.getCurrentInstance().responseComplete();
         } 
         catch (IOException e) {
