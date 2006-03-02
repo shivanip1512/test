@@ -1921,7 +1921,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
 	{
 		if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
-			allContacts = null;
+			//allContacts = null;
 		}
 		retLBase = null;
 	}
