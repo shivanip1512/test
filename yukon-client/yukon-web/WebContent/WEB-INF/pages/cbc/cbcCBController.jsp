@@ -84,6 +84,11 @@
                 
                     <h:column>
                     <f:verbatim><br/></f:verbatim>
+                    <h:selectBooleanCheckbox id="scanIntegrityChk" onclick="submit();"
+                            valueChangeListener="#{capControlForm.showScanRate}"
+                            value="#{capControlForm.CBControllerEditor.editingIntegrity}"
+                            immediate="true" disabled="#{!capControlForm.CBControllerEditor.editingController}"/>
+                    <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="scanIntegrityChk" value="Class 0,1,2,3 Scan" title="Integrity scan type" />
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="integrityInterval" value="Interval: " title="How often this scan should occur"
@@ -116,8 +121,12 @@
                     </x:selectOneMenu>
                     </h:column>
 
-
                     <h:column>
+                    <f:verbatim><br/></f:verbatim>
+                    <h:selectBooleanCheckbox id="scanExceptionChk" onclick="submit();"
+                            valueChangeListener="#{capControlForm.showScanRate}"
+                            value="#{capControlForm.CBControllerEditor.editingException}"
+                            immediate="true" disabled="#{!capControlForm.CBControllerEditor.editingController}"/>
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="scanExceptionChk" value="Class 1,2,3 Scan" title="Exception scan type" />
                     <f:verbatim><br/></f:verbatim>
