@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/01/31 19:04:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/03/02 16:36:45 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,12 @@ struct DirectDataKeeper
 {
     BYTE *data;
     UINT len;
+};
+
+enum ReadFlags
+{
+    NOFLAG = 0,
+    MESSAGE_PEEK
 };
 
 class IM_EX_CTIBASE CtiLocalConnect : public CtiConnect
@@ -61,7 +67,7 @@ public:
     bool  CTINexusValid    () const;
 
     int   CtiLocalConnectOpen    ();
-    INT   CtiLocalConnectRead    (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut);
+    INT   CtiLocalConnectRead    (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
 
     bool setMatchingConnection( CtiLocalConnect &connection );
 };

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/01/31 19:04:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/03/02 16:36:45 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,7 +98,6 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
 INT CtiLocalConnect::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     int retVal = 0;
-    DirectDataKeeper *data;
 
     if( BRead )
     {
@@ -113,7 +112,24 @@ INT CtiLocalConnect::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeO
     return retVal;
 }
 
-INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
+INT CtiLocalConnect::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
+{
+    int retVal = 0;
+
+    if( BRead )
+    {
+        *BRead = 0;
+    }
+
+    if( _nexusState && buf && len )
+    {
+        retVal = _directConnection->CtiLocalConnectRead(buf, len, BRead, 0, MESSAGE_PEEK);
+    }
+
+    return retVal;
+}
+
+INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags)
 {
     int retVal = 1;
     ULONG count = 0;
@@ -141,10 +157,14 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
         {
             data = &(_outQueue.front());
             memcpy(buf, data->data, len);
-            delete [] data->data;
-            _outQueue.pop();
             *BRead = len;
             retVal = 0;
+
+            if( flags != MESSAGE_PEEK )
+            {
+                delete [] data->data;
+                _outQueue.pop();
+            }
         }
         catch(...)
         {
@@ -160,11 +180,6 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
     }
 
     return retVal;
-}
-
-INT CtiLocalConnect::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
-{
-    return 0;
 }
 
 bool  CtiLocalConnect::CTINexusValid() const
