@@ -1,9 +1,11 @@
 package com.cannontech.web.editor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,9 +13,11 @@ import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModel;
@@ -68,7 +72,10 @@ import com.cannontech.web.exceptions.FormWarningException;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.web.util.JSFNavUtil;
+import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -132,6 +139,8 @@ public class CapControlForm extends DBEditorForm {
 	private boolean isDualSubBusEdited;
     
     private int selectedPanelIndex;
+    
+    private String paoName = "";
 
 	/**
 	 * default constructor
@@ -544,8 +553,8 @@ public class CapControlForm extends DBEditorForm {
             Integer ctlPointid = new Integer(paoId);
             
             capBank.setControlDeviceID(ctlPointid);
-			//cbControllerEditor = new CBControllerEditor(ctlPointid);
-            getCBControllerEditor();
+			cbControllerEditor = new CBControllerEditor(ctlPointid);
+            //getCBControllerEditor();
             
 		}
 	}
@@ -1871,6 +1880,39 @@ public class CapControlForm extends DBEditorForm {
                                            SameMasterSlaveCombinationException { 
         getCBControllerEditor().checkForErrors();
     }
-   
     
+    public String getPaoName() {
+        
+        return ((YukonPAObject)getDbPersistent()).getPAOName();
+    }
+    
+    public LitePoint[] getCapBankPointList() {
+
+        return PAOFuncs.getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID());
+        
+    }
+    
+    public void capBankPointClick (ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        try {
+            //make sure the point form will have the pao id
+            //of the cbc 
+            String red = "pointBase.jsf?parentId=" + ((YukonPAObject)getDbPersistent()).getPAObjectID().toString() + "&itemid=";
+            String val = JSFParamUtil.getJSFReqParam("ptID");
+            FacesContext.getCurrentInstance().getExternalContext().redirect(red + val);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+        }
+        finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("point_click", fm);
+            }
+        }
+    }
+  
+    
+    
+
 }
