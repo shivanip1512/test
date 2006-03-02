@@ -53,7 +53,8 @@ for (var i=0; i < button_ids.length; i++)
             <h:form id="editorForm">
 
             <f:verbatim><br/></f:verbatim>
-            <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor"/>
+            <x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Editor:" /> 
+            <x:outputText styleClass="bigFont" value="#{capControlForm.paoName}"/>
             <f:verbatim><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true"
                     styleClass="smallResults" errorClass="errorResults" layout="table"/>
