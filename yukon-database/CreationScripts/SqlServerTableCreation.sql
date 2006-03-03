@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/3/2006 4:22:14 PM                          */
+/* Created on:     3/3/2006 5:02:13 PM                          */
 /*==============================================================*/
 
 
@@ -6619,7 +6619,6 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
-insert into pointalarming values (100,  '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0);     
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key  (PointID)
 go

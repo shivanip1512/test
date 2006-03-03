@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2006 4:23:05 PM                          */
+/* Created on:     3/3/2006 5:01:08 PM                          */
 /*==============================================================*/
 
 
@@ -4298,7 +4298,6 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
-insert into pointalarming values (100,  '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0);     
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key (PointID);
 
