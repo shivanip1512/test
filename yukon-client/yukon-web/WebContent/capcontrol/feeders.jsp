@@ -109,20 +109,23 @@ if( subBus != null ) {
 
 	<cti:titledContainer title="Feeders">
 
+    <form id="fdrForm" action="feeders.jsp" method="post">
+       <table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr class="columnHeader lAlign">
+         <td><input type="checkbox" name="chkAllFdrsBx"
+              onclick="checkAll(this, 'cti_chkbxFdrs');" /> Feeder Name</td>
+         <td>State</td>
+         <td>Target</td>
+         <td>VAR Load / Est.</td>
+         <td>Date/Time</td>
+         <td>PFactor / Est.</td>
+         <td>Watts / Volts</td>
+         <td>Daily / Max Ops</td>
+         </tr>
+       </table>
+
 			<div class="scrollSmall">
 			<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
-				<form id="fdrForm" action="feeders.jsp" method="post">
-				<tr class="columnHeader lAlign">
-					<th><input type="checkbox" name="chkAllFdrsBx"
-						onclick="checkAll(this, 'cti_chkbxFdrs');" /> Feeder Name</th>
-					<th>State</th>
-					<th>Target</th>
-					<th>VAR Load / Est.</th>
-					<th>Date/Time</th>
-					<th>PFactor / Est.</th>
-					<th>Watts / Volts</th>
-					<th>Daily / Max Ops</th>
-				</tr>
 <%
 css = "tableCell";
 for( int i = 0; i < feeders.length; i++ )
@@ -171,34 +174,42 @@ for( int i = 0; i < feeders.length; i++ )
 				</tr>
 <% } %>
 
-				</form>
+				
 			</table>
 			</div>
+            </form>
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdrHeaderTable');    }, false);
+</script>
 
 			</cti:titledContainer>
 
 	<br>
 
 	<cti:titledContainer title="Capacitor Banks">
+         <form id="capBankForm" action="feeders.jsp" method="post">
+             <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+             <tr class="columnHeader lAlign">
+                <td><input type="checkbox" name="chkAllBanksBx"
+                    onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)
+                    <img class="rAlign popupImg" src="images\question.gif"
+                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
+                </td>
+                <td>State <img class="rAlign popupImg" src="images\question.gif"
+                        onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
+                </td>
+                <td>Bank Address</td>
+                <td>Date/Time</td>
+                <td>Bank Size</td>
+                <td>Parent Feeder</td>
+                <td>Op Count</td>
+              </tr>
+             </table>
 
 		<div class="scrollSmall">
 			<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
-				<form id="capBankForm" action="feeders.jsp" method="post">
-				<tr class="columnHeader lAlign">
-					<th><input type="checkbox" name="chkAllBanksBx"
-						onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)
-						<img class="rAlign popupImg" src="images\question.gif"
-			      			onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
-					</th>
-					<th>State <img class="rAlign popupImg" src="images\question.gif"
-				      		onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
-					</th>
-					<th>Bank Address</th>
-					<th>Date/Time</th>
-					<th>Bank Size</th>
-					<th>Parent Feeder</th>
-					<th>Op Count</th>
-				</tr>
+
+
 
 <%
 css = "tableCell";
@@ -269,11 +280,15 @@ for( int i = 0; i < capBanks.length; i++ )
 					</td>
 				</tr>
 				<% } %>
-				</form>
+				
 			</table>
 		</div>
-
-			</cti:titledContainer>
+    </form>
+<script type="text/javascript">
+Event.observe(window, 'load', function() { new CtiNonScrollTable('capBankTable','capBankHeaderTable');    }, false);
+</script>
+            
+            </cti:titledContainer>
 
 
 
