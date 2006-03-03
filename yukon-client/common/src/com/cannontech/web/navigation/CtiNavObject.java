@@ -1,5 +1,7 @@
 package com.cannontech.web.navigation;
 
+import java.util.Stack;
+
 /**
  * @author jdayton
  *
@@ -20,6 +22,8 @@ public class CtiNavObject
 	 * It is used to aid in member management for Energy Company Administration.
 	 */
 	private boolean memberECAdmin;
+    
+    private Stack history;
 	
 	public CtiNavObject()
 	{
@@ -109,5 +113,11 @@ public class CtiNavObject
 	public void setModuleLabel(String string) {
 		moduleLabel = string;
 	}
+
+    public Stack getHistory() { 
+        if (history == null)
+            history = new Stack();
+        return history;
+    }
 
 }
