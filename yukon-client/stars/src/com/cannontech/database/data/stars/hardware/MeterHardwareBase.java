@@ -372,7 +372,7 @@ public class MeterHardwareBase extends InventoryBase {
     
     public String getDeviceLabel()
     {
-        if(this.getDeviceLabel() == "")
+        if(this.getDeviceLabel().equals(""))
         {
             return meterHardwareBase.getMeterNumber();
         }
