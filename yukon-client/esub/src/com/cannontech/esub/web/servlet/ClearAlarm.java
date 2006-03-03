@@ -1,7 +1,6 @@
 package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -13,28 +12,30 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
-import com.cannontech.message.util.Command;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Command;
 
 /**
- * Clears an alarm off a given point.
- * Requires an instance of com.cannontech.esub.web.SessionInfo to be in the session
+ * Clears an alarm off a list of device ids, point ids, and alarm category ids
  * 
  * One of the following is required:
- * pointid		- The point id (NOT IMPLEMENTED YET)
- * deviceid		- The device id
+ * pointid		- Comma separated list of point ids
+ * deviceid		- Comma seperated list of device ids
+ * alarmcategoryid - Comma seperated list of alarm category ids
  * @author alauinger
  */
 public class ClearAlarm extends HttpServlet {
 
 	// Parameter Names
-	private static final String POINT_ID = "pointid";
 	private static final String DEVICE_ID = "deviceid";
-		
+	private static final String POINT_ID = "pointid";
+	private static final String ALARMCATEGORY_ID = "alarmcategoryid";
+	
 	/**
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
@@ -42,40 +43,88 @@ public class ClearAlarm extends HttpServlet {
 		throws ServletException, IOException {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);	
-		Writer out = resp.getWriter();
 		
-		String pointID = req.getParameter(POINT_ID); 
-				
-/*		if(pointID != null) {
-			clearPoint(Integer.parseInt(pointID), user);
-		}
-*/		
-		String deviceID = req.getParameter(DEVICE_ID);
-		if(deviceID != null) {
-			ackDevice(Integer.parseInt(deviceID), user);
-		}
+		int[] deviceIds = StringUtils.parseIntString(req.getParameter(DEVICE_ID));
+		int[] pointIds = StringUtils.parseIntString(req.getParameter(POINT_ID)); 
+		int[] alarmCategoryIds = StringUtils.parseIntString(req.getParameter(ALARMCATEGORY_ID));
 		
-		if(pointID == null && deviceID == null) {
-			out.write("error");
-			return;
+		// A single Command message can ackknowledge any number of Signals(alarms)
+		// Create one, fill it up, then send it to Dispatch
+		Command cmd = createAckCommand(user);
+		for(int i = 0; i < deviceIds.length; i++) {
+			ackDevice(deviceIds[i], cmd);
 		}
+		for(int i = 0; i < pointIds.length; i++) {
+			ackPoint(pointIds[i], cmd);
+		}
+		for(int i = 0; i < alarmCategoryIds.length; i++) {
+			ackAlarmCategory(alarmCategoryIds[i], cmd);
+		}
+		Util.getConnToDispatch().write(cmd);
 }
-
-	private void clearPoint(int pointID, LiteYukonUser user) {
-/*		Command cmd = makeCommandMsg(pointID,user);
-		if(cmd != null) {
-			Util.getConnToDispatch().write(cmd);
-		}
-*/
-	}
 	
+
 	/** 
-	 * build up a command message to acknowledge all the points on a device
+	 * Add signals to an acknowledge command message for a given device.
 	 * and send it
 	 * @param deviceID
 	 * @param user
 	 */
-	private void ackDevice(int deviceID, LiteYukonUser user) {
+	private void ackDevice(int deviceId, Command cmd) {
+		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceId);
+		for (int i = 0; i < points.length; i++) {
+			LitePoint point = points[i];
+			ackPoint(point.getPointID(), cmd);	
+		}
+	}
+	
+	/**
+	 * Add signals to an acknowledge command message for a given point
+	 * @param pointId
+	 * @param cmd
+	 */
+	private void ackPoint(int pointId, Command cmd) {
+		PointChangeCache pcc = PointChangeCache.getPointChangeCache();		
+		List sigList = pcc.getSignals(pointId);
+		ackSignals(sigList, cmd);
+	}
+	
+	/**
+	 * Add signals to an acknowledge command message for a given
+	 * alarm category
+	 * @param alarmCategoryId
+	 * @param cmd
+	 */
+	private void ackAlarmCategory(int alarmCategoryId, Command cmd) {
+		PointChangeCache pcc = PointChangeCache.getPointChangeCache();		
+		List sigList = pcc.getSignalsForCategory(alarmCategoryId);		
+		ackSignals(sigList, cmd);
+	}
+	
+	/**
+	 * Takes a list of Signals and adds them to an acknowledge
+	 * Command message.
+	 * @param signalList
+	 * @param cmd
+	 */
+	private void ackSignals(List signalList, Command cmd) {
+		Vector argList = cmd.getOpArgList();
+		if(signalList != null) {
+			Iterator iter = signalList.iterator();
+			while(iter.hasNext()) {
+				Signal sig = (Signal) iter.next();
+				argList.add(new Integer(sig.getPointID()));
+				argList.add(new Integer(sig.getCondition()));
+			}
+		}				
+	}
+	
+	/**
+	 * Creates a Command message to acknowledge signals
+	 * @param user	Yukon user to attach to the Command
+	 * @return
+	 */
+	private Command createAckCommand(LiteYukonUser user) {
 		Command cmd = new Command();
 		cmd.setOperation(Command.ACKNOWLEGDE_ALARM);
 		Vector argList = new Vector();
@@ -83,21 +132,6 @@ public class ClearAlarm extends HttpServlet {
 		cmd.setUserName(user.getUsername());
 		
 		argList.add(new Integer(-1));
-		
-		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceID);
-		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
-		for(int i = points.length-1; i >= 0; i--) {
-			List sigList = (List) pcc.getSignals(points[i].getPointID());
-			if(sigList != null) {
-				Iterator iter = sigList.iterator();
-				while(iter.hasNext()) {
-					Signal sig = (Signal) iter.next();
-					argList.add(new Integer(sig.getPointID()));
-					argList.add(new Integer(sig.getCondition()));
-				}
-			}
-		}
-		
-		Util.getConnToDispatch().write(cmd);			
+		return cmd;
 	}
 }

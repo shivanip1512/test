@@ -1,8 +1,5 @@
 package com.cannontech.esub;
 
-import java.util.HashMap;
-import java.util.Vector;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.ScalarPoint;

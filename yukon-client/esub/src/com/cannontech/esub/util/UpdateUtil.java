@@ -22,7 +22,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
- * 
+ * TODO:  find commonolities and merge with displayupdater
  * @author alauinger
  */
 public class UpdateUtil {
@@ -148,8 +148,6 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {
-			LitePoint lp = PointFuncs.getLitePoint(pointID);			
-				
 			boolean foundOne = false;
 			Iterator sigIter = pcc.getSignals(pointID).iterator();			
 			while(sigIter.hasNext()) {
@@ -177,7 +175,7 @@ public class UpdateUtil {
 			PointData pData = pcc.getValue(pointID);
 	
 			if (pData != null) {
-				LiteState ls = StateFuncs.getLiteState((int) lp.getStateGroupID(), (int) pData.getValue());	
+				LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());	
 				if( ls != null ) {			
 					text += ls.getStateText();
 					prev = true;
@@ -207,7 +205,7 @@ public class UpdateUtil {
 	
 	public static boolean isControllable(int pointID) {
 		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
-		int tags = (int) pcc.getTags(pointID);		
+		int tags = pcc.getTags(pointID);		
 		return ((tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
 				!((tags & Signal.MASK_ANY_CONTROL_DISABLE) != 0);
 	}

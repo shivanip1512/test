@@ -35,7 +35,6 @@ class EditorActions {
 	public static final String OPEN_DRAWING = "OPEN DRAWING";
 	public static final String SAVE_DRAWING = "SAVE DRAWING";
 	public static final String SAVE_AS_DRAWING = "SAVE AS DRAWING";
-//	public static final String EXPORT_DRAWING = "EXPORT DRAWING";
 	public static final String DRAWING_PROPERTIES = "DRAWING PROPERTIES";
 	public static final String EXIT_EDITOR = "EXIT EDITOR";
 	public static final String MAGNETIC_GRID = "MAGNETIC GRID";

@@ -17,17 +17,6 @@ import com.cannontech.clientutils.CTILogger;
  * @author alauinger
  */
 public class TimerFilter implements Filter {
-
-	// Save the filter config for getting at servlet context
-	private FilterConfig config;
-	
-	/**
-	 * @see javax.servlet.Filter#init(FilterConfig)
-	 */
-	public void init(FilterConfig fc) throws ServletException {
-		config = fc;
-	}
-
 	/**
 	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
@@ -48,13 +37,7 @@ public class TimerFilter implements Filter {
 
     	CTILogger.info(name + ": " + (after - before) + "ms");
   	}
-	
 
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
-	public void destroy() {
-		config = null;
-	}
-
+	public void destroy() { }
+	public void init(FilterConfig arg0) throws ServletException { }
 }

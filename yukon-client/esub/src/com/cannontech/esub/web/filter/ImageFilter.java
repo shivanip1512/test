@@ -10,12 +10,10 @@ import java.util.Iterator;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -46,11 +44,8 @@ public class ImageFilter implements Filter {
 		ServletResponse resp,
 		FilterChain chain)
 		throws IOException, ServletException {
-			
-		ServletContext sc = config.getServletContext();
 		
 		HttpServletRequest hreq = (HttpServletRequest)req;
-		HttpServletResponse hres = (HttpServletResponse)resp;
 		 
 		String uri = hreq.getRequestURI();
 		String conPath = hreq.getContextPath();
@@ -61,7 +56,7 @@ public class ImageFilter implements Filter {
 		}
 		
 		String imgPath= uri.replaceFirst(conPath, "");
-		
+        
 		if( imgPath.startsWith("/esub/images/") ) {	
 			ensureImageExists(URLDecoder.decode(config.getServletContext().getRealPath(imgPath),"UTF-8"));	
 			chain.doFilter(req,resp);		

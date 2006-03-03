@@ -9,23 +9,21 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Random;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.AlarmTextElement;
@@ -52,15 +50,15 @@ import com.loox.jloox.LxRectangle;
  */
 public class SVGGenerator {
 	
-	private static final String DTD = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
-	
 	private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+	private static final String adobeNS = "http://www.adobe.com/svg10-extensions";
 	private static final String xlinkNS = "http://www.w3.org/1999/xlink";
-	
-	private static final Random randomGen = new Random(System.currentTimeMillis());
 	
 	private SVGOptions genOptions;
 	
+	// Used to generate as well as accumulate javascript during genreation.
+	private JS jsGenerator = new JS();
+		
 	public SVGGenerator() {
 		this(new SVGOptions());
 	} 
@@ -86,51 +84,21 @@ public class SVGGenerator {
 	 	
 	 	DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
 	 	SVGDocument doc = (SVGDocument) impl.createDocument(svgNS, "svg", null);
-		
+
+	 	ProcessingInstruction pi = doc.createProcessingInstruction("xml-stylesheet", "href=\"esub.css\" type=\"text/css\""); 
+	 	doc.insertBefore(pi, doc.getDocumentElement());
+	 	
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
-		svgRoot.setAttributeNS(null, "xmlns","http://www.w3.org/2000/svg");
-		svgRoot.setAttributeNS(null, "xmlns:xlink", "http://www.w3.org/1999/xlink");
+		svgRoot.setAttributeNS(null, "xmlns", svgNS);
+		svgRoot.setAttributeNS(null, "xmlns:xlink", xlinkNS);
+		svgRoot.setAttributeNS(null, "xmlns:a", adobeNS);
+		svgRoot.setAttributeNS(null, "a:timeline", "independent");
 		svgRoot.setAttributeNS(null, "viewBox", "0 0 " + d.getMetaElement().getDrawingWidth() + " " + d.getMetaElement().getDrawingHeight());
-		
-		if(genOptions.isScriptingEnabled()) {
-			Element e = doc.createElementNS(null, "script");
-			e.setAttributeNS(null, "type", "text/ecmascript");
-			CDATASection cdata = doc.createCDATASection(JS.JS);
-			e.appendChild(cdata);
-			svgRoot.appendChild(e);
-		}
-		
-		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {			
-	 		svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
-	 		 	
-			Element scriptElem = doc.createElementNS(null, "script");
-			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "refresh.js");
-			svgRoot.appendChild(scriptElem);
-			
-			scriptElem = doc.createElementNS(null, "script");
-			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "updateGraph.js");
-			svgRoot.appendChild(scriptElem);
-			
-			scriptElem = doc.createElementNS(null, "script");	
-			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "action.js");
-			svgRoot.appendChild(scriptElem);
-						
-			scriptElem = doc.createElementNS(null, "script");	
-			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "point.js");
-			svgRoot.appendChild(scriptElem);
-			
-			scriptElem = doc.createElementNS(null, "script");	
-			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "xmlhttp.js");
-			svgRoot.appendChild(scriptElem);
-		}
+		svgRoot.setAttributeNS(null, "displayName", d.getFileName());
 		
 		Element backRect = doc.createElementNS(svgNS, "rect");
+		backRect.setAttributeNS(null, "id", "backgroundRect");
 		backRect.setAttributeNS(null, "width", "100%");
 		backRect.setAttributeNS(null, "height", "100%");
 		backRect.setAttributeNS(null, "color", "#000000");
@@ -142,11 +110,54 @@ public class SVGGenerator {
 			if(elem != null)
 				svgRoot.appendChild(elem);
 		}
-	
+
+		// If there is any accumulated scripting insert it now
+		if(genOptions.isScriptingEnabled()) {
+			Element e = doc.createElementNS(null, "script");
+			e.setAttributeNS(null, "type", "text/ecmascript");
+			CDATASection cdata = doc.createCDATASection(jsGenerator.getScript());
+			e.appendChild(cdata);
+			svgRoot.insertBefore(e, svgRoot.getFirstChild());
+		}
+		
+		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {			
+	 		svgRoot.setAttributeNS(null, "onload", "_onload(evt)");
+
+	 		svgRoot.insertBefore(createScriptElement(doc, "refresh.js"), svgRoot.getFirstChild());
+	 		svgRoot.insertBefore(createScriptElement(doc, "updateGraph.js"), svgRoot.getFirstChild());
+	 		svgRoot.insertBefore(createScriptElement(doc, "action.js"), svgRoot.getFirstChild());
+	 		svgRoot.insertBefore(createScriptElement(doc, "point.js"), svgRoot.getFirstChild());
+	 		svgRoot.insertBefore(createScriptElement(doc, "xmlhttp.js"), svgRoot.getFirstChild());
+	 		svgRoot.insertBefore(createScriptElement(doc, "cgui_lib.js"), svgRoot.getFirstChild());
+		}	
+
+		if(genOptions.isAudioEnabled()) {
+			// Generate the audio elemnt if necessary, but do not start it
+			// The client script will be responsible for enabling the audio
+			// TODO: Figure out a way to not play a sound without specifying a
+			// wav file that sounds like silence.
+			// The current method of toggling between sound and no sound
+			// is to change the href from a wav file that makes sound to
+			// one that doesn't.  The rub is that the silent file has to be 
+			// good, it can't not exist or just be empty otherwise the 
+			// plugin seems to not want to play any sounds again.  humph.
+			Element audioElem = doc.createElementNS(adobeNS, "a:audio");
+			audioElem.setAttributeNS(null, "id", "audioElement");
+			audioElem.setAttributeNS(null, "xlink:href", "silence.wav");
+			audioElem.setAttributeNS(null, "repeatCount", "indefinite");
+			svgRoot.insertBefore(audioElem, svgRoot.getFirstChild());
+		}
+
 		OutputFormat format  = new OutputFormat( doc, "ISO-8859-1", true );   //Serialize DOM
+		format.setIndenting(true);
+		format.setMethod("xml");
+		
         XMLSerializer    serial = new XMLSerializer(writer, format);
-        serial.asDOMSerializer();                            // As a DOM Serializer
-        serial.serialize( doc.getDocumentElement() );                           		
+        serial.asDOMSerializer();                            
+        serial.serialize( doc );    
+        
+        // clean up in case this object is reused.
+        jsGenerator.reset();
 	}
 	
 	private Element createElement(SVGDocument doc, LxComponent comp) {
@@ -224,9 +235,6 @@ public class SVGGenerator {
 	}
 	
 	private Element createDynamicText(SVGDocument doc, DynamicText text)  {
-		//Ignore stroke color for now, always use fill color
-		//could become a problem, pay attention
-		Rectangle2D r = text.getBounds2D();
 		
 		int x = (int) Math.round(text.getBaseLinePoint1().getX());
 		int y = (int) Math.round(text.getBaseLinePoint1().getY());
@@ -398,9 +406,6 @@ public class SVGGenerator {
 	}	
 	
 	private Element createStaticText(SVGDocument doc, StaticText text) {
-		//Ignore stroke color for now, always use fill color
-		//could become a problem, pay attention
-		Rectangle2D r = text.getBounds2D();
 
 		int x = (int) Math.round(text.getBaseLinePoint1().getX());
 		int y = (int) Math.round(text.getBaseLinePoint1().getY());
@@ -432,7 +437,14 @@ public class SVGGenerator {
 		return textElem;		
 	}
 	
-	private Element createAlarmsTable(SVGDocument doc, CurrentAlarmsTable table) {
+	/**
+	 * Creates an alarm table element.  
+	 * @param doc
+	 * @param table
+	 * @param alarmAudio	Add an attribute to the table to indicate alarm audio should play
+	 * @return
+	 */
+	public Element createAlarmsTable(SVGDocument doc, CurrentAlarmsTable table) {
 		Rectangle2D r = table.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
@@ -440,36 +452,41 @@ public class SVGGenerator {
 		int width = (int) r.getMaxX() - x; 
 		int height = (int) r.getMaxY() - y;
 
-		int ackX = width - 80;
-		int ackY = 18;
 					
 		Element retElement = null;
-				
+
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
+		
 		table.getTable().draw(svgGenerator, new Rectangle(width, height));
 		retElement = svgGenerator.getRoot();
-				
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
-						
+		
+		int[] deviceIds = table.getDeviceIds();
+		int[] pointIds = table.getPointIds();
+		int[] alarmCategoryIds = table.getAlarmCategoryIds();
+		
+		String deviceIdList = buildIdList(deviceIds);
+		String pointIdList = buildIdList(pointIds);
+		String alarmCategoryIdList = buildIdList(alarmCategoryIds);
+		
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
 		retElement.setAttributeNS(null, "y", Integer.toString(y));
 		retElement.setAttributeNS(null, "width", Integer.toString(width));
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
 		retElement.setAttributeNS(null, "object", "table");
-		retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
- 		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID()));
-				
+		retElement.setAttributeNS(null, "deviceid", deviceIdList);
+		retElement.setAttributeNS(null, "pointid", pointIdList);
+		retElement.setAttributeNS(null, "alarmcategoryid", alarmCategoryIdList);
+		
 		if(genOptions.isEditEnabled()) {
-			Element text = doc.createElementNS(svgNS,"text");
-			text.setAttributeNS(null, "fill","rgb(0,125,122)");
-			text.setAttributeNS(null, "x", Integer.toString(ackX));
-			text.setAttributeNS(null, "y", Integer.toString(ackY));
-			text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
-	 		text.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
-			text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
-			Text theText = doc.createTextNode("Acknowledge Alarms");
-			text.insertBefore(theText,null);
-			retElement.appendChild(text);
+			int ackX = x + 5;
+			int ackY = y + 6;
+
+			String ackAlarmArgs = "'" + deviceIdList + "','" + pointIdList + "','" + alarmCategoryIdList + "'";
+			jsGenerator.createButton(ackX, ackY, 150, 16, false, false, false, "CGUI.root", "Acknowledge Alarms", "acknowledgeAlarm(" + ackAlarmArgs + ");");
+			
+			int muteX = x + 170;
+			int muteY = y + 6;
+			jsGenerator.createButton(muteX, muteY, 150, 16, false, false, false, "CGUI.root", "Mute", "toggleMute();");		
 		}
 		
 		return retElement;		
@@ -477,10 +494,7 @@ public class SVGGenerator {
 	
 	
 	private Element createAlarmText(SVGDocument doc, AlarmTextElement alarmText) {
-	  	//		Ignore stroke color for now, always use fill color
-	  	//could become a problem, pay attention
-		Rectangle2D r = alarmText.getBounds2D();
-		
+
 		int x = (int) Math.round(alarmText.getBaseLinePoint1().getX());
 		int y = (int) Math.round(alarmText.getBaseLinePoint1().getY());
 		
@@ -503,20 +517,14 @@ public class SVGGenerator {
 		Color defaultColor = alarmText.getDefaultTextColor();
 		Color alarmColor = alarmText.getAlarmTextColor();
 		
-		StringBuffer idBuf = new StringBuffer("");
-		LitePoint[] points = alarmText.getPoints();
-		
-		if(points.length > 0) {
-			idBuf.append(Integer.toString(points[0].getPointID()));
-		}
-		
-		for(int i = 1; i < points.length; i++) {
-			idBuf.append(',');
-			idBuf.append(Integer.toString(points[i].getPointID()));
-		}
-		
+		int[] deviceIds = alarmText.getDeviceIds();
+		int[] pointIds = alarmText.getPointIds();
+		int[] alarmCategoryIds = alarmText.getAlarmCategoryIds();
+
 		Element textElem = doc.createElementNS(svgNS, "text");
-		textElem.setAttributeNS(null, "id", idBuf.toString());
+		textElem.setAttributeNS(null, "deviceid", buildIdList(deviceIds));
+		textElem.setAttributeNS(null, "pointid", buildIdList(pointIds));
+		textElem.setAttributeNS(null, "alarmcategoryid", buildIdList(alarmCategoryIds));
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + alarmText.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + alarmText.getFont().getSize() + ";opacity:" + opacity + ";");
@@ -528,7 +536,24 @@ public class SVGGenerator {
 		
 		return textElem;					
 	}
-			
+		
+	/**
+	 * Create a String that is a comma seperated list of integer ids
+	 * @param ids
+	 * @return
+	 */
+	private String buildIdList(int[] ids) {
+		StringBuffer idBuf = new StringBuffer(ids.length*4);
+		if(ids.length > 0) {
+			idBuf.append(Integer.toString(ids[0]));
+		}
+		for (int i = 1; i < ids.length; i++) {
+			idBuf.append(',');
+			idBuf.append(Integer.toString(ids[i]));
+		}
+		return idBuf.toString();
+	}
+	
 	/**
 	 * Builds up a svg path string given a shape and the center of the element.
 	 * @param s
@@ -564,4 +589,18 @@ public class SVGGenerator {
 		}
 		return pathStr;		
 	}		
+	
+	/**
+	 * Convience method to create an script element for use in
+	 * building the document
+	 * @param doc	
+	 * @param jsFileName
+	 * @return
+	 */
+	private Element createScriptElement(Document doc, String jsFileName) {
+		Element elem = doc.createElementNS(null, "script");
+		elem.setAttributeNS(null, "type", "text/ecmascript");
+		elem.setAttributeNS(xlinkNS, "xlink:href", jsFileName);
+		return elem;
+	}
 }

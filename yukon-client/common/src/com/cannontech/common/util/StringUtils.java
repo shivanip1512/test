@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import java.util.StringTokenizer;
+
 public final class StringUtils {
     /**
      * StringUtils constructor comment.
@@ -93,5 +95,25 @@ public final class StringUtils {
         return groupIdStr;
     }
     
+    /**
+	 * Parase a comma separated string into an int[]
+	 * @param s
+	 * @return
+	 */
+	public static int[] parseIntString(String s) {
+		if(s == null) {
+			return new int[0];
+		}
+		
+		StringTokenizer tok = new StringTokenizer(s, ",", false);
+
+		int n = tok.countTokens();
+		int[] intArr = new int[n];
+		for(int i = 0; i < intArr.length; i++) {
+			String intStr = tok.nextToken();
+			intArr[i] = Integer.parseInt(intStr);
+		}
+		return intArr;
+	}
 
 }

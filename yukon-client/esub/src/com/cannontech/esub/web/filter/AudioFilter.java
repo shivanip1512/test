@@ -12,20 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Forwards all request for any file matching this filter
- * the /js directory
+ * the /audio directory
  * 
  * @author alauinger
  */
-public class JSFilter implements Filter {
+public class AudioFilter implements Filter {
 
 	private FilterConfig config;
 	
 	/**
 	 * @see javax.servlet.Filter#init(FilterConfig)
 	 */
-	public void init(FilterConfig fc) throws ServletException { 
-        config = fc;   
-    }
+	public void init(FilterConfig fc) throws ServletException {
+		config = fc;
+	}
 
 	/**
 	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
@@ -35,24 +35,25 @@ public class JSFilter implements Filter {
 		ServletResponse resp,
 		FilterChain chain)
 		throws IOException, ServletException {
-			
+				
+		
 		HttpServletRequest hreq = (HttpServletRequest)req;
 		 
 		String uri = hreq.getRequestURI();
 		String conPath = hreq.getContextPath();
 
-		if(!(uri.endsWith(".js"))) {
+		if(!(uri.endsWith(".wav"))) {
 			chain.doFilter(req,resp);
 			return;
 		}
 		
-		String jsPath= uri.replaceFirst(conPath, "");
-		if( jsPath.startsWith("/esub/js/") ) {					
+		String audioPath= uri.replaceFirst(conPath, "");
+		if( audioPath.startsWith("/esub/audio/") ) {					
 			chain.doFilter(req,resp);		
 		}
 		else {
-			jsPath = jsPath.substring(jsPath.lastIndexOf("/"));
-			config.getServletContext().getRequestDispatcher("/esub/js" + jsPath).forward(req, resp);
+			audioPath = audioPath.substring(audioPath.lastIndexOf("/"));
+			config.getServletContext().getRequestDispatcher("/esub/audio" + audioPath).forward(req, resp);
 		}
 			
 	}

@@ -4,7 +4,8 @@
 package com.cannontech.esub.util;
 
 /**
- * A bunch of javascript functions are stuff in here.
+ * JS can be used to accumulate Javascript that will go on to an esub display.
+ * Used during svg generation.
  * @author aaron
   */
 class JS {
@@ -56,6 +57,99 @@ class JS {
 	"}\n" +
 	"function followLink(url) {\n" +	
 	"	location = url;\n" + 
+	"}\n" +
+	"function _onload(evt) {\n" +
+	"   CGUI.init();" +
+	"   buildGUI();" +
+	"   refresh(evt);" +
+	"}\n";
+	
+	private static final String CGUIHeader = 	
+	"function buildGUI() {\n";
+	private static final String CGUIFooter = 
 	"}\n";
 
+	// Increment this each time a button is created to give it a unique variable name
+	private int buttonNum;
+	
+	// The javascript for CGUI widgets accumulates here
+	private StringBuffer guiBuf;
+
+	public JS() {
+		reset();
+	}
+	
+	public String getScript() {
+		StringBuffer scriptBuf = new StringBuffer(JS.length()+CGUIHeader.length()+guiBuf.length()+CGUIFooter.length());
+		scriptBuf.append(JS).append(CGUIHeader).append(guiBuf).append(CGUIFooter);
+		return scriptBuf.toString();
+	}
+	
+	public void createButton(int x, int y, 
+							int width, int height, 
+							boolean toggleType, boolean disabled, boolean selected,
+							String parentElement, String text, String action) {
+		String buttonNumStr = Integer.toString(buttonNum);
+		String buttonVar = "button" + buttonNumStr;
+		String buttonHandler = "buttonHandler" + buttonNumStr;
+				
+		// Create a click handler
+		guiBuf	.append("var ")
+				.append(buttonHandler)
+				.append(" = new Object();\n")
+				.append(buttonHandler)
+				.append(".handleEvent = function(evt) { ")
+				.append(action)
+				.append(" }\n");
+		
+		// Create the button
+		guiBuf	.append("var ")
+				.append(buttonVar)
+				.append(" = new Button(")
+				.append(Integer.toString(width))
+				.append(',')
+				.append(Integer.toString(height))
+				.append(",'")
+				.append(text)
+				.append("',")
+				.append(buttonHandler)
+				.append(");\n");
+		
+		// Set its location
+		guiBuf	.append(buttonVar)
+				.append(".setAnchor(")
+				.append(parentElement)
+				.append(",'left',")
+				.append(Integer.toString(x))
+				.append(",'top',")
+				.append(Integer.toString(y))
+				.append(");\n");
+		
+		if(toggleType) {
+			guiBuf	.append(buttonVar)
+					.append(".enableToggle(\"true\");\n");
+		}
+		
+		if(disabled) {
+			guiBuf	.append(buttonVar)
+					.append(".disable()\n");
+		}
+		
+		if(selected) {
+			guiBuf	.append(buttonVar)
+					.append(".select()\n");
+		}
+		// Add it to its parent
+		guiBuf	.append(buttonVar)
+				.append(".addToParent(")
+				.append(parentElement)
+				.append(");\n");
+		
+		buttonNum++;
+	}
+	
+	public void reset() {
+		buttonNum = 1;
+		guiBuf = new StringBuffer();
+	}
 }

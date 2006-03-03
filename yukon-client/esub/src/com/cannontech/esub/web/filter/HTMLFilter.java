@@ -1,6 +1,5 @@
 package com.cannontech.esub.web.filter;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -19,7 +18,6 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
-import com.cannontech.esub.util.HTMLOptions;
 
 /**
  * Forwards all request for any file that matches this filter to

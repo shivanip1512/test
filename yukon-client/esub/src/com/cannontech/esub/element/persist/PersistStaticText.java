@@ -39,15 +39,10 @@ public class PersistStaticText extends BasePersistElement {
 					
 					String fontName = LxSaveUtils.readString(in);
         			int fontSize = LxSaveUtils.readInt(in);
-        
         			elem.setFont(fontName, fontSize);
+        			
+        			Color c = PersistUtils.readColor(in);
 
-        			//read color
-        			int r = LxSaveUtils.readInt(in);
-        			int g = LxSaveUtils.readInt(in);
-        			int b = LxSaveUtils.readInt(in);
-
-        			Color c = new Color(r, g, b);
         			elem.setPaint(c);
 	                elem.setLinkTo( LxSaveUtils.readString(in) );
 				}
@@ -65,16 +60,12 @@ public class PersistStaticText extends BasePersistElement {
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
 			StaticText elem = (StaticText) drawingElem;
-			//save font					
+
 			Font f = elem.getFont();
             LxSaveUtils.writeString(out, f.getFontName() );
         	LxSaveUtils.writeInt(out, f.getSize() );
 
-			//save color
-			Color textColor = (Color) elem.getPaint();
-        	LxSaveUtils.writeInt(out, textColor.getRed());
-        	LxSaveUtils.writeInt(out, textColor.getGreen());
-        	LxSaveUtils.writeInt(out, textColor.getBlue());
+			PersistUtils.writeColor(out, (Color)elem.getPaint());			
         
             LxSaveUtils.writeString(out, elem.getLinkTo() );
 		}

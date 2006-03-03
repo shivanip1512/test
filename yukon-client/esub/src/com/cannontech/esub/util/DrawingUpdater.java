@@ -1,10 +1,13 @@
 package com.cannontech.esub.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimerTask;
 
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AlarmFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -24,7 +27,8 @@ import com.loox.jloox.LxView;
  * A runnable which updates its drawing on each call
  * to run.
  * 
-  * Designed to be used from say a timer
+ * Designed to be used from say a timer
+ * TODO:  This update code should probably be factored out, this is kinda ugly
  * @author alauinger
  */
 public class DrawingUpdater extends TimerTask {
@@ -35,13 +39,10 @@ public class DrawingUpdater extends TimerTask {
 	// Graphs are too expensive to always generate, set to false when only generating svg
 	private boolean updateGraphs = false;
 	
-	/**
-	 * Constructor for DrawingUpdater.
-	 */
-	public DrawingUpdater() {
-		super();
-	}
-
+    public DrawingUpdater() {
+        super();
+    }
+    
 	/**
 	 * Method DrawingUpdater.
 	 * @param d - Drawing to update
@@ -58,7 +59,7 @@ public class DrawingUpdater extends TimerTask {
 				DefaultDatabaseCache.getInstance().getAllDevices();
 				DefaultDatabaseCache.getInstance().getAllPoints();
 				DefaultDatabaseCache.getInstance().getAllStateGroupMap();
-drawing.getLxGraph().startUndoEdit("update");				
+				drawing.getLxGraph().startUndoEdit("update");				
 				// keep track if we changed anything
 				boolean change = false; 
 								
@@ -118,16 +119,36 @@ drawing.getLxGraph().startUndoEdit("update");
 						if(comp[i] instanceof AlarmTextElement) {
 							AlarmTextElement te =(AlarmTextElement) comp[i];
 							boolean inAlarm = false;
-							LitePoint[] points = te.getPoints();
-							if(points != null) {
-								for(int j = 0; j < points.length; j++) {
-									Iterator sigIter = pcc.getSignals(points[j].getPointID()).iterator();
-									while(sigIter.hasNext()) {
-										Signal sig = (Signal) sigIter.next();
-										if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
-											inAlarm = true;
-										}
+
+							int[] deviceIds = te.getDeviceIds();
+							for(int j = 0; j < deviceIds.length; j++) {
+								List deviceSignals = AlarmFuncs.getSignalsForPao(deviceIds[j]);
+								for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
+									Signal signal  = (Signal) iter.next();
+									if(TagUtils.isAlarmUnacked(signal.getTags())) {
+										inAlarm = true;
 									}
+								}
+							}
+							
+							int[] pointIds = te.getPointIds();
+							for(int j = 0; !inAlarm && j < pointIds.length; j++) {
+								List pointSignals = AlarmFuncs.getSignalsForPoint(pointIds[j]);
+								for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
+									Signal signal = (Signal) iter.next();
+									if(TagUtils.isAlarmUnacked(signal.getTags())) {
+										inAlarm = true;
+									}
+								}
+							}
+							int[] alarmCategoryIds = te.getAlarmCategoryIds();
+							for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
+								List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryIds[j]);
+								for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+									Signal signal = (Signal) iter.next();
+									if(TagUtils.isAlarmUnacked(signal.getTags())) {
+										inAlarm = true;
+									}									
 								}
 							}
 							

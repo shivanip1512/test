@@ -2,9 +2,8 @@ package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -12,7 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.cache.functions.AlarmFuncs;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
@@ -23,7 +24,9 @@ import com.cannontech.message.dispatch.message.Signal;
  * Otherwise style2 will be returned.
  * 
  * Required Parameters:
- * id - 		The list of point ids, comma separated ie "32,43,54"
+ * deviceid - 		The list of device ids, comma separated ie "32,43,54"
+ * pointid -		The list of point ids
+ * alarmcategoryid - The list of alarm category ids
  * style1 -		The style to return if none of the points are in alarm
  * style2 - 	The style to return if at least one of the points are in alarm
  *
@@ -33,43 +36,70 @@ import com.cannontech.message.dispatch.message.Signal;
  */
 public class AlarmTextStyleServlet extends HttpServlet {
 
-	private static final String POINT_ID_KEY = "id";
+	private static final String DEVICE_ID_KEY = "deviceid";
+	private static final String POINT_ID_KEY = "pointid";
+	private static final String ALARMCATEGORY_ID_KEY = "alarmcategoryid";
 	private static final String FILL1_KEY = "fill1";
 	private static final String FILL2_KEY = "fill2";
 		
 	/**
+	 * TODO: combine this updating code and the same in DrawingUpdater
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		String idStr = req.getParameter(POINT_ID_KEY);
+		String deviceIdStr = req.getParameter(DEVICE_ID_KEY);
+		String pointIdStr = req.getParameter(POINT_ID_KEY);
+		String alarmCategoryStr = req.getParameter(ALARMCATEGORY_ID_KEY);
 		String fill1 = req.getParameter(FILL1_KEY);
 		String fill2 = req.getParameter(FILL2_KEY);
 	
 		/* check if any of the points are in alarm*/		
-		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
-		int[] pointIDs = parseIDString(idStr);				
+		int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
+		int[] pointIds = StringUtils.parseIntString(pointIdStr);	
+		int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryStr);
+		
 		boolean inAlarm = false;
 		
-		done:
-		for(int i = 0; i < pointIDs.length; i++) {
-
-			Iterator sigIter = pcc.getSignals(pointIDs[i]).iterator();
-			while(sigIter.hasNext()) {
-				Signal sig = (Signal) sigIter.next();
-				if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+		breakDevice:
+		for(int j = 0; j < deviceIds.length; j++) {
+			List deviceSignals = AlarmFuncs.getSignalsForPao(deviceIds[j]);
+			for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
+				Signal signal  = (Signal) iter.next();
+				if(TagUtils.isAlarmUnacked(signal.getTags())) {
 					inAlarm = true;
-					break done;
+					break breakDevice;
 				}
 			}
-			
+		}
+		breakPoint:
+		for(int j = 0; !inAlarm && j < pointIds.length; j++) {
+			List pointSignals = AlarmFuncs.getSignalsForPoint(pointIds[j]);
+			for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
+				Signal signal = (Signal) iter.next();
+				if(TagUtils.isAlarmUnacked(signal.getTags())) {
+					inAlarm = true;
+					break breakPoint;
+				}
+			}
+		}
+		breakAlarmCategory:
+		for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
+			List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryIds[j]);
+			for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+				Signal signal = (Signal) iter.next();
+				if(TagUtils.isAlarmUnacked(signal.getTags())) {
+					inAlarm = true;
+					break breakAlarmCategory;
+				}									
+			}
 		}
 		
 		/* write the correct svg style */
 		Writer writer = resp.getWriter();
 		
-		if(!inAlarm) {		
+		if(!inAlarm) { 
 			writer.write(fill1);
 		}
 		else {
@@ -85,28 +115,4 @@ public class AlarmTextStyleServlet extends HttpServlet {
 	public void init(ServletConfig cfg) throws ServletException {
 		super.init(cfg);							
 	}
-	
-	/**
-	 * Parase a comma separated list of point ids into an int[]
-	 * @param s
-	 * @return
-	 */
-	private int[] parseIDString(String s) {
-		StringTokenizer tok = new StringTokenizer(s, ",", false);
-		
-		ArrayList idList = new ArrayList(20);
-		while(tok.hasMoreTokens()) {
-			String tokStr = tok.nextToken();
-			//System.out.println(tokStr);
-			idList.add(new Integer(tokStr));
-		}
-		
-		int[] pointIDs = new int[idList.size()];
-		for(int i = 0; i < pointIDs.length; i++) {
-			pointIDs[i] = ((Integer) idList.get(i)).intValue();
-		}
-		
-		return pointIDs;
-	}
-
 }

@@ -76,6 +76,13 @@ public class CheckNode extends DBTreeNode
 		}
 
 	}
+    
+    public void setSelectedProgramatic(boolean isSelected)
+    {
+        
+        this.isSelected = isSelected;
+        
+    }
 
 	private void collectCheckedObjects(Vector checkedNodes)
 	{

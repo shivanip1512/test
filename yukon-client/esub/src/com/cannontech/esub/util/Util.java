@@ -410,7 +410,6 @@ public class Util {
 			}
 			else {
 				if(f.getName().endsWith(".jlx")) {
-					long start = System.currentTimeMillis();
 					//Drawing drawing = new Drawing();
 					CTILogger.info(f.getCanonicalPath() + " -> " + outDir.getCanonicalPath());
 					drawing.load(f.getCanonicalPath());

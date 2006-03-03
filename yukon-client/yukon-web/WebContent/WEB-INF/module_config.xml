@@ -139,6 +139,10 @@
     <skin name="standard"/>
   </module>
   
+  <module name="esub">
+  	<skin name="esub"/>
+  </module>
+  
   <module name="stars">
     <skin name="purple"/>
   </module>

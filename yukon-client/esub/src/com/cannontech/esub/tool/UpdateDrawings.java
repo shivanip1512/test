@@ -10,6 +10,7 @@ import com.cannontech.esub.Drawing;
 
 /**
  * Recursively load and save drawings.
+ * Can be used to update an entire set of drawings.
  * @author aaron
  */
 public class UpdateDrawings implements Runnable {

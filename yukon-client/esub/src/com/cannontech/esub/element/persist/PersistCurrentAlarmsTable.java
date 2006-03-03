@@ -14,7 +14,7 @@ import com.loox.jloox.LxSaveUtils;
 public class PersistCurrentAlarmsTable extends BasePersistElement {
 	
 	// Only create one of these	
-	private static PersistElement  instance = null;
+	private static PersistElement instance = null;
 	
 	public static synchronized PersistElement getInstance() {
 		if(instance ==  null) {
@@ -26,27 +26,37 @@ public class PersistCurrentAlarmsTable extends BasePersistElement {
 	 public void readFromJLX(DrawingElement drawingElem, InputStream in, int version) throws IOException  {
 	 		
 	 		CurrentAlarmsTable elem = (CurrentAlarmsTable) drawingElem;
+
 	 		switch(version) {
 	 			
 	 			case 0: {
-	 					elem.setDeviceID(LxSaveUtils.readInt(in));
+	 				int deviceId = LxSaveUtils.readInt(in);
+	 				elem.setDeviceIds(new int[] { deviceId } );
 	 			}
 	 			break;
 	 			
 	 			case 1: {
-	 					// We now store an array of device ids instead of a single id
-	 					elem.setDeviceIDs(LxSaveUtils.readIntArray(in,0));
+	 				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));
 	 			} 
+	 			
+	 			case 2: {
+	 				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));
+	 				elem.setPointIds(LxSaveUtils.readIntArray(in,0));
+	 				elem.setAlarmCategoryIds(LxSaveUtils.readIntArray(in,0));
+	 			}
 	 			break;
 	 			
 	 			default: {
 	 				throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 	 			}
-	 		}	 		
+	 		}	 
 	 }	
 	 
 	 public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version) throws IOException {
 	 		CurrentAlarmsTable elem = (CurrentAlarmsTable) drawingElem;
-			LxSaveUtils.writeIntArray(out, elem.getDeviceIDs());
+	 		
+	 		LxSaveUtils.writeIntArray(out, elem.getDeviceIds());
+	 		LxSaveUtils.writeIntArray(out, elem.getPointIds());
+	 		LxSaveUtils.writeIntArray(out, elem.getAlarmCategoryIds());
 	 }
 }

@@ -17,7 +17,6 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
-
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
@@ -80,7 +79,7 @@ public class GenJLX {
 		
 		CurrentAlarmsTable alarmsTable = new CurrentAlarmsTable();
 		alarmsTable.setCenter(506,600);
-		alarmsTable.setDeviceID(7);
+		alarmsTable.setDeviceIds(new int[] { 7 });
 		graph.add(alarmsTable);
 		
 		d.save("c:/temp/test.jlx");

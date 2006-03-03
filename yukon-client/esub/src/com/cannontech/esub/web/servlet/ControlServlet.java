@@ -95,8 +95,8 @@ public class ControlServlet extends HttpServlet {
 		/*** Start building the Command.opArgList() **************************/
 		Vector opArgList = new Vector( 4 );
 		opArgList.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
-		opArgList.addElement( new Integer((int)deviceID));
-		opArgList.addElement( new Integer((int)pointID) );
+		opArgList.addElement( new Integer(deviceID));
+		opArgList.addElement( new Integer(pointID) );
 		opArgList.addElement( new Integer(rawstate) );
 			
 		Command cmd = new Command();

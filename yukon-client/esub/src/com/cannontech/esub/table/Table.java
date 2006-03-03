@@ -21,11 +21,7 @@ public class Table {
 	private static final Color TABLE_TEXT_COLOR = Color.WHITE;
 	private static final Color COLUMN_SEPARATOR_COLOR = Color.WHITE;
 	
-	private static final int COMPONENT_INSETS = 0;
-	
 	private static final Font TITLE_FONT = new Font("Arial",Font.BOLD,12);
-	private static final Font COLUMN_HEADER_FONT = new Font("Arial",Font.PLAIN,12);
-	private static final Font TABLE_FONT = COLUMN_HEADER_FONT;
 		
 	private TableModel model;
 	private String title;
@@ -36,9 +32,6 @@ public class Table {
 		int x,y,w,h;
 		int width = (int) rect.getWidth();
 		int height = (int) rect.getHeight();
-		
-		int midX = width / 2;
-		int midY = height / 2;
 		
 		g.translate((int)rect.getMinX(),(int)rect.getMinY());
 		
@@ -51,8 +44,9 @@ public class Table {
 		g.setFont(TITLE_FONT);
 		
 		int textHeight = g.getFontMetrics().getHeight();
+		int textWidth= g.getFontMetrics().stringWidth(getTitle());
 		int titleHeaderHeight = textHeight + 10;
-		g.drawString(getTitle(), 5, titleHeaderHeight/2 + textHeight/2);
+		g.drawString(getTitle(), width/2 - textWidth/2, titleHeaderHeight/2 + textHeight/2);
 		
 	
 		// table background
@@ -99,7 +93,6 @@ public class Table {
 	  	g.setColor(TABLE_TEXT_COLOR);
 	  	for(int i = 0; i < model.getRowCount(); i++) {
 	  		text = model.getValueAt(i,col).toString();
-	  		int valWidth = fm.stringWidth(text);
 	  		g.drawString(text, x+2, y + (int)(strBounds.getHeight()*(i+1)));
 	  		
 	  	}

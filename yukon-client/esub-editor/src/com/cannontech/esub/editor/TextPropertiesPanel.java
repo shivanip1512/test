@@ -1,8 +1,8 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Font;
+import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -33,7 +33,6 @@ public class TextPropertiesPanel extends JPanel {
 	private JCheckBox ivjItalicCheckBox = null;
 	private JPanel ivjJPanel1 = null;
 	private JPanel ivjJPanel2 = null;
-	private BoxLayout ivjJPanel2BoxLayout = null;
 	private JPanel ivjJPanel3 = null;
 	private JComboBox ivjSizeComboBox = null;
 	private JLabel ivjSizeLabel = null;
@@ -659,7 +658,7 @@ public static void main(java.lang.String[] args) {
 				System.exit(0);
 			};
 		});
-		frame.show();
+		frame.setVisible(true);
 		java.awt.Insets insets = frame.getInsets();
 		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
 		frame.setVisible(true);
@@ -686,7 +685,7 @@ private void selectTextColor() {
 		}
 			);
 
-	d.show();
+	d.setVisible(true);
 	d.dispose();
 }
 /**

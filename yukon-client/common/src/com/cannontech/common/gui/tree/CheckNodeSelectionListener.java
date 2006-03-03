@@ -23,7 +23,8 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	
 	private boolean storeCheckedNodes = false;
 
-	/**
+    
+    /**
 	 * CheckedNodes is a vector for storing the "checked" objects (stored as the getUserObject() from JTree)
 	 * CheckedNodes can (obviously) only be stored if the treeModel is instanceof CheckNodeDBTreeModel
 	 * @param tree
@@ -67,9 +68,10 @@ public class CheckNodeSelectionListener extends MouseAdapter
 
 			//be sure we are an editable node
 			if (!node.isSystemReserved())
+            {
 				selectNode(node, doSelect);
-
-			// I need revalidate if node is root.  but why?
+            }
+			// I need to revalidate if it's the root node. but why?
 			if (row == 0)
 			{
 				tree.revalidate();
@@ -106,17 +108,42 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	 * using the node.setSelected(...) function.
 	 * @param node
 	 * @param selected
-	 * @param row
 	 */
 	private void selectNode(CheckNode node, boolean selected)
 	{
 		if(isStoreCheckedNodes() && tree.getModel() instanceof Checkable)
+        {
 			node.setSelected(selected, ((Checkable)tree.getModel()).getCheckedNodes());
-		else
+        }else
+        {
 			node.setSelected(selected);
-			
+        }	
 		((DefaultTreeModel) tree.getModel()).nodeChanged(node);
 	}
+    
+    /**
+     * Unchecks the parent programatically so we don't uncheck all the children as well 
+     * using the node.setSelected(...) function.
+     * @param node
+     * @param selected
+     */
+    private void selectNodeProgramatic(CheckNode node, boolean selected)
+    {
+        
+        node.setSelectedProgramatic(selected);
+        
+        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+    }
+    
+    /**
+     * Make sure this node actually has a parent before doing this
+     * @param node
+     */
+    public void uncheckParent(CheckNode node)
+    {
+        CheckNode parent = (CheckNode)node.getParent();
+        selectNodeProgramatic(parent, false);
+    }
 
 	/**
 	 * @return
@@ -133,4 +160,5 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	{
 		storeCheckedNodes = b;
 	}
+    
 }

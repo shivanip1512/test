@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.database.cache.functions.AlarmFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -30,19 +34,20 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	};
 	
 	private static final int NUM_COLUMNS = columnNames.length;
-		
-	//show alarms for these devices
-	private int[] deviceIDs = new int[] { -1 };
-		
-	//internal representation - rows contains ArrayLists
-	private ArrayList rows = new ArrayList();
+
+	//	 Consider alarms for these things
+	private int[] _deviceIds = new int[0];
+	private int[] _pointIds = new int[0];
+	private int[] _alarmCategoryIds = new int[0];
+	
+	//internal representation - _rows contains ArrayLists
+	private List _rows = new ArrayList();
 	
 	/**
 	 * @see javax.swing.table.TableModel#getRowCount()
 	 */
 	public int getRowCount() {
-		//return 3;
-		return rows.size();
+		return _rows.size();
 	}
 
 	/**
@@ -63,41 +68,54 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return ((ArrayList) rows.get(rowIndex)).get(columnIndex);
+		return ((ArrayList) _rows.get(rowIndex)).get(columnIndex);
 	}
-
+	
 	/**
 	 * Fill up with fresh data!	 * 
 	 */
 	public void refresh() {
-		rows = new ArrayList();
+        // Since a given signal can be for a device, point, and alarm category
+        // we need to only accept each signal once.
+        // Use a hashset that only accepts unique objects
+        Set allSignals = new HashSet();
+		_rows = new ArrayList();
 		
-		PointChangeCache cache = PointChangeCache.getPointChangeCache();		
-		
-		for(int i = 0; i < deviceIDs.length; i++) {
-			int deviceID = deviceIDs[i];
-			LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceID);
-	
-			for(int j = 0; j < points.length; j++) {
-				Iterator sigIter = cache.getSignals(points[j].getPointID()).iterator();
-				while(sigIter.hasNext()) {
-					Signal sig = (Signal) sigIter.next();
-					if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
-						addSignal(sig);
-					}
-				}
-			}
+		for (int i = 0; i < _deviceIds.length; i++) {
+			int deviceId = _deviceIds[i];
+			List deviceSignals = AlarmFuncs.getSignalsForPao(deviceId);
+            allSignals.addAll(deviceSignals);
 		}
 		
+		for (int i = 0; i < _pointIds.length; i++) {
+			int pointId = _pointIds[i];
+			List pointSignals = AlarmFuncs.getSignalsForPoint(pointId);
+			allSignals.addAll(pointSignals);
+		}
+		
+		for (int i = 0; i < _alarmCategoryIds.length; i++) {
+			int alarmCategoryId = _alarmCategoryIds[i];
+			List alarmCategorySignals = AlarmFuncs.getSignalsForAlarmCategory(alarmCategoryId);
+			allSignals.addAll(alarmCategorySignals);
+		}
+		
+        for (Iterator iter = allSignals.iterator(); iter.hasNext();) {
+            Signal signal = (Signal) iter.next();
+            addSignal(signal);
+        }
+        
 		sortRows();
 	}	
-	
+
 	/**
 	 * Add a row to the table based on this signal
 	 * @param s
 	 */
 	private void addSignal(Signal s) {
-		int pointID = (int) s.getPointID();
+	    if(!TagUtils.isAlarmUnacked(s.getTags())) {
+	        return;
+        }
+		int pointID = s.getPointID();
 		LitePoint point = PointFuncs.getLitePoint(pointID);
 		
 		int devID = point.getPaobjectID();
@@ -109,11 +127,11 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		row.add(point.getPointName());
 		row.add(s.getDescription());	
 		//row.add(s.getUserName());
-		rows.add(row);			
+		_rows.add(row);		
 	}
 	
 	private void sortRows() {
-		Collections.sort(rows, new Comparator() {
+		Collections.sort(_rows, new Comparator() {
 			public int compare(Object a, Object b) {
 				ArrayList rowA = (ArrayList) a;
 				ArrayList rowB = (ArrayList) b;
@@ -123,35 +141,33 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		}
 		);
 	}
-
-	/**
-	 * Returns the deviceID.
-	 * @return int
-	 */
-	public int getDeviceID() {
-		return getDeviceIDs()[0];
+	
+	public int[] getAlarmCategoryIds() {
+		return _alarmCategoryIds;
 	}
-
-	/**
-	 * Sets the deviceID.
-	 * @param deviceID The deviceID to set
-	 */
-	public void setDeviceID(int deviceID) {
-		setDeviceIDs(new int[] { deviceID } );
+	public void setAlarmCategoryIds(int[] alarmCategoryIds) {
+        if(alarmCategoryIds == null) {
+            alarmCategoryIds = new int[0];
+        }
+		_alarmCategoryIds = alarmCategoryIds;
 	}
-
-	/**
-	 * Returns the array of device IDs
-	 * @return int[]
-	 */
-	public int[] getDeviceIDs() {
-		return deviceIDs;
+	public int[] getDeviceIds() {
+		return _deviceIds;
+	}
+	public void setDeviceIds(int[] deviceIds) {
+        if(deviceIds == null) {
+            deviceIds = new int[0];
+        }
+		_deviceIds = deviceIds;
+	}
+	public int[] getPointIds() {
+		return _pointIds;
+	}
+	public void setPointIds(int[] pointIds) {
+        if(pointIds == null) {
+            pointIds = new int[0];
+        }
+		_pointIds = pointIds;
 	}
 	
-	/** Sets the array of deviceIDs
-	 * @param deviceIDs the array of deviceIDs
-	 */
-	public void setDeviceIDs(int[] deviceIDs) {
-		this.deviceIDs = deviceIDs;
-	}
 }

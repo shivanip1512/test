@@ -25,8 +25,8 @@ public class CurrentAlarmsTableEditor
 	public CurrentAlarmsTableEditor() {
 		super();
 		setName("CurrentAlarmsTableEditor");
-		setPreferredSize(new java.awt.Dimension(300, 200));
-		setSize(300,200);
+		setPreferredSize(new java.awt.Dimension(600, 400));
+		setSize(600,400);
 		
 		getCurrentAlarmsTableEditorPanel().addDataInputPanelListener(this);
 		checkValidity();

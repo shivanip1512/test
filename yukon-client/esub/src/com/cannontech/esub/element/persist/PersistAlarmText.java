@@ -3,15 +3,10 @@
   */
 package com.cannontech.esub.element.persist;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.DrawingElement;
 import com.loox.jloox.LxSaveUtils;
@@ -44,38 +39,23 @@ public class PersistAlarmText extends BasePersistElement {
 			switch(version) {
 		
 			case 1: {
-								
-				elem.setDefaultTextColor(   new Color(
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in) ));
-											
-				elem.setAlarmTextColor(		new Color(
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in) ));
+				elem.setDefaultTextColor(PersistUtils.readColor(in));
+				elem.setAlarmTextColor(PersistUtils.readColor(in));
 				
-				//TODO This could become very inefficient when a lot of points exist, be smarter
-				int[] pointIDs = LxSaveUtils.readIntArray(in,0);
-				if(pointIDs == null)
-					pointIDs = new int[0];
-					
-				ArrayList pointsList = new ArrayList(pointIDs.length);
-				//
-				for(int i = 0; i < pointIDs.length; i++) {
-					LitePoint lp = PointFuncs.getLitePoint(pointIDs[i]);
-					if(lp != null) {
-						pointsList.add(lp);
-					}
-					else {
-						CTILogger.info("PersistentAlarmText couldn't load point id: " + pointIDs[i]);
-					}
-				}
-				LitePoint[] points = new LitePoint[pointsList.size()];
-				pointsList.toArray(points);
-				elem.setPoints(points);
+				elem.setPointIds(LxSaveUtils.readIntArray(in,0));
+				
 				elem.setLinkTo(LxSaveUtils.readString(in));
+			}
+			
+			case 2: {
+				elem.setDefaultTextColor(PersistUtils.readColor(in));
+				elem.setAlarmTextColor(PersistUtils.readColor(in));
+
+				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));
+				elem.setPointIds(LxSaveUtils.readIntArray(in,0));
+				elem.setAlarmCategoryIds(LxSaveUtils.readIntArray(in,0));
 				
+				elem.setLinkTo(LxSaveUtils.readString(in));
 			}
 			break;
 				
@@ -95,23 +75,13 @@ public class PersistAlarmText extends BasePersistElement {
 		throws IOException {
 			AlarmTextElement elem = (AlarmTextElement) drawingElem;
 			
-			Color defaultTextColor = elem.getDefaultTextColor();
-			LxSaveUtils.writeInt(out, defaultTextColor.getRed());
-			LxSaveUtils.writeInt(out, defaultTextColor.getGreen());
-			LxSaveUtils.writeInt(out, defaultTextColor.getBlue());
+			PersistUtils.writeColor(out, elem.getDefaultTextColor());
+			PersistUtils.writeColor(out, elem.getAlarmTextColor());
 			
-			Color alarmTextColor = elem.getAlarmTextColor();
-			LxSaveUtils.writeInt(out, alarmTextColor.getRed());
-			LxSaveUtils.writeInt(out, alarmTextColor.getGreen());
-			LxSaveUtils.writeInt(out, alarmTextColor.getBlue());
-			
-			LitePoint[] points = elem.getPoints();
-			int[] pointIDs = new int[points.length];
-			for(int i = 0; i < points.length; i++) {
-				pointIDs[i] = points[i].getPointID();
-			}
-			
-			LxSaveUtils.writeIntArray(out, pointIDs, pointIDs.length);
+			LxSaveUtils.writeIntArray(out, elem.getDeviceIds());
+			LxSaveUtils.writeIntArray(out, elem.getPointIds());
+			LxSaveUtils.writeIntArray(out, elem.getAlarmCategoryIds());
+
 			LxSaveUtils.writeString(out, elem.getLinkTo());
 	}
 

@@ -14,23 +14,20 @@ var alarmTextID = 'alarmText';
 var graphRefreshRate = 360 * 1000;
 var pointRefreshRate  = 15 * 1000; 
 var tableRefreshRate  = 15 * 1000; 
+var alarmAudioCheckRate = 5 * 1000;
 
 var allDynamicTextElem = new Array();
 var allAlarmTextElem = new Array();
 var allStateImageElem = new Array();
 var allDynamicGraphElem = new Array();
 
+/* Onload, store all the things that we might be displaying alarms for */
+var allAlarmDeviceIds = "";
+var allAlarmPointIds = "";
+var allAlarmAlarmCategoryIds = "";
+
 /* rectangle to indicate an image is a link */
 var selectedRect = null;
-
-/*
- * If set to true, dynamic elements will update
- * otherwise not.  Do this if you want to keep
- * the dom from moving while you wait for in put for example
- */
-function setEnableUpdate(b) {
-	doUpdates = b;
-}
 
 /* refresh needs to be called once and it will set up
    periodic updates */   
@@ -49,9 +46,22 @@ function refresh(evt) {
 		
 		if(elemID == alarmTextID) {
 			allAlarmTextElem.push(dynText.item(i));
+			allAlarmDeviceIds += dynText.item(i).getAttribute('deviceid') + ',';
+			allAlarmPointIds += dynText.item(i).getAttribute('pointid') + ',';
+			allAlarmAlarmCategoryIds += dynText.item(i).getAttribute('alarmcategoryid') +',';
 		}
 	}
 	
+	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
+	for(i=0; i < dynSVG.getLength(); i++ ) {
+		var svgElement = dynSVG.item(i);
+		if(svgElement.getAttribute('elementID') == alarmsTableID) {
+			allAlarmDeviceIds += svgElement.getAttribute('deviceid') + ',';
+			allAlarmPointIds += svgElement.getAttribute('pointid') + ',';
+			allAlarmAlarmCategoryIds += svgElement.getAttribute('alarmcategoryid') +',';			
+		}
+	}
+		
 	dynImages = SVGDoc.getElementsByTagName('image');	
 	for(var j=0; j<dynImages.getLength(); j++)
 	{
@@ -65,9 +75,12 @@ function refresh(evt) {
 		}		
 	}
 	
+	updateAllTables();
+	
 	setInterval('updateAllPoints()', pointRefreshRate);
 	setInterval('updateAllGraphs()', graphRefreshRate); 
 	setInterval('updateAllTables()', tableRefreshRate);
+	setInterval('checkAlarmAudio(allAlarmDeviceIds, allAlarmPointIds, allAlarmAlarmCategoryIds)', alarmAudioCheckRate);
 } //end refresh
 
 function updateAllPoints() {
@@ -83,23 +96,17 @@ function updateAllPoints() {
 	for(i = 0; i < allStateImageElem.length; i++) {
 		updateImage(allStateImageElem[i]);
 	}
-//	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
 } //end updatePoints
 
 function updateAllGraphs() {
 	var i;
- //jalert("doing it");
 	for(i = 0; i < allDynamicGraphElem.length; i++) {
-
 		updateGraph(allDynamicGraphElem[i]);
 	}
-	
-//	setTimeout('updateAllGraphs()', graphRefreshRate); 
 } //end updateGraphs
 
 function updateAllTables() {
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
-	
 	for(i=0; i < dynSVG.getLength(); i++ ) {
 		var svgElement = dynSVG.item(i);
 		if(svgElement.getAttribute('elementID') == alarmsTableID) {
@@ -109,10 +116,30 @@ function updateAllTables() {
 			continue;
 		}
 	}
-//	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
 } //end updateTables
 
+function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
+	var url = 	"/servlet/AlarmAudioServlet?" +
+			"deviceid=" + deviceIds +
+			"&pointid=" + pointIds +
+			"&alarmcategoryid=" + alarmCategoryIds +
+			"&rand=" + Math.random();
 
+	getURL(url, fn3);
+
+	function fn3(obj) {
+		if(!obj.success) {
+			alert('Alarm audio request failed.  Please restart your browser if this continues.');
+		}
+		else		
+		if(obj.content == 'true') {
+			playAlarmAudio();
+		}
+		else {
+			stopAlarmAudio();
+		}
+	}	 
+}
 
 /* update an individual graph */
 function updateGraph(node) {
@@ -134,25 +161,43 @@ function updateGraph(node) {
 			                      //the plugin won't actually hit the server
 
 	node.setAttributeNS(xlinkNS, 'xlink\:href', url);
-//alert("just set url");	
 } //end updateGraph
 
 /* update an individual table */
 function updateAlarmsTable(node,url) {
+	var deviceIds = node.getAttribute('deviceid');
+	var pointIds = node.getAttribute('pointid');
+	var alarmCategoryIds = node.getAttribute('alarmcategoryid');
+	
 	url =		'/servlet/AlarmsTableGenerator?' +
-				'deviceid=' + node.getAttribute('deviceid') +
+				'deviceid=' + deviceIds +
+				'&pointid=' + pointIds +
+				'&alarmcategoryid=' + alarmCategoryIds +
 				'&x=' + node.getAttribute('x') + 
 				'&y=' + node.getAttribute('y') +
 				'&width=' + node.getAttribute('width') +
-				'&height=' + node.getAttribute('height');		
+				'&height=' + node.getAttribute('height') +
+				'&rand=' + Math.random();		
+				
+				
 	getURL(url,fn2);
 	
 	function fn2(obj) {   
+		if(!obj.success) {
+			alert('Alarm table request failed.  Please restart your browser if this continues.');		
+			return;
+		}
+			
 		var Newnode = parseXML(obj.content, SVGDoc);
 
 		if(findChild(node) != null) {
 			SVGDoc.documentElement.removeChild(node);
-			SVGDoc.documentElement.appendChild(Newnode);		
+			// svg has no z-index that I can find and appears to use the painters algorithm 
+			// to draw elements.  That is svg draws the elements in the order they appear in the dom.
+			// If we just append the new table we will possibly cover up some buttons
+			// But we have to insert it after the black background rect, phew.
+			var b = SVGDoc.getElementById("backgroundRect");
+			SVGDoc.documentElement.insertBefore(Newnode, b.getNextSibling());
 		}
 	} // end f2
 } // end updateAlarmsTable
@@ -165,9 +210,8 @@ function updateNode(node) {
 	}
 
 	function fn(obj) {
-		
 		if(obj.content) {
-		node.getFirstChild().setData(obj.content);
+			node.getFirstChild().setData(obj.content);
 		}	
 	}
 } //end updateNode
@@ -190,25 +234,21 @@ function updateImage(node) {
 
 /* update a single alarm text element */
 function updateAlarmText(node) {
-	var pointIDs = node.getAttribute('id');
+
+	var deviceIds = node.getAttribute('deviceid');
+	var pointIds = node.getAttribute('pointid');
+	var alarmCategoryIds = node.getAttribute('alarmcategoryid');
+
 	var fill1 = node.getAttribute('fill1');
 	var fill2 = node.getAttribute('fill2');
 
-	if(pointIDs.length > 0) {
-		url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'id=' + pointIDs + '&fill1=' + fill1 + '&fill2=' + fill2);
-		getURL(url,fn);	
-	}
-	
+	url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'deviceid=' + deviceIds + '&pointid=' + pointIds + '&alarmcategoryid=' + alarmCategoryIds + '&fill1=' + fill1 + '&fill2=' + fill2);
+	getURL(url,fn);	
+
 	/* Handle the getURL to the AlarmTextStyleServlet */
 	function fn(obj) {
 		if(obj.content) {
-			node.getStyle().setProperty('fill', obj.content);
+			node.getStyle().setProperty('fill', obj.content);			
 		}
 	}
-}
-
-
-
-function suppressErrors() {
-	return true;
 }

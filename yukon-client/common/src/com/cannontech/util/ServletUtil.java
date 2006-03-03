@@ -1003,16 +1003,22 @@ public static Date roundToMinute(Date toRound) {
 	 * @param name_
 	 * @return
 	 */
-	public synchronized static String getParm( HttpServletRequest req_, String name_ )
-	{
-		String s = req_.getParameter(name_);
-			
-		return 
-			( s == null 
-			? null : 
-				(s.length() <= 0 ? null : s) );		
+	public synchronized static String getParameter( HttpServletRequest req_, String name_ ) {
+        return getParameter(req_, name_, null);
 	}
 
+    /**
+     * Convenience method to get a servlet parameter.
+     * @param req
+     * @param parameterName
+     * @param defaultValue
+     * @return
+     */
+    public synchronized static String getParameter(HttpServletRequest req, String parameterName, String defaultValue) {
+        String s= req.getParameter(parameterName);
+        return (s == null || s.length() == 0 ? defaultValue : s);
+    }
+    
     /**
      * Convert a string into the capitalized format.
      * @return String

@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.Timer;
 
 import javax.swing.ImageIcon;
@@ -37,17 +36,15 @@ import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.esub.*;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.roles.application.EsubEditorRole;
-
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxMouseAdapter;
@@ -163,8 +160,7 @@ public class Editor extends JPanel {
 	 * @param elem com.loox.jloox.LxElement
 	 */
 	void editElement(final LxComponent elem) {
-		boolean retVal = false;
-		
+
 		//no more updates for a bit
 		stopUpdating();
 		
@@ -204,7 +200,7 @@ public class Editor extends JPanel {
 			propertyDialog.setContentPane(editor);		
 			propertyDialog.pack();
 			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-			propertyDialog.show();
+			propertyDialog.setVisible(true);
 			getDrawing().getLxGraph().cancelUndoEdit();
 			
 			// start the updates again
@@ -260,7 +256,6 @@ public class Editor extends JPanel {
 		editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
-		EditorKeys editorKeys = new EditorKeys(editorActions);
 		final JMenuBar menuBar = editorMenus.getMenuBar();
 		final JPopupMenu popupMenu = editorMenus.getPopupMenu();
 		JToolBar toolBar = editorToolBar.getToolBar();
@@ -425,7 +420,7 @@ public class Editor extends JPanel {
 		frame.getContentPane().add(editor);
 		editor.setFrameTitle("Untitled");
 		frame.pack();
-		frame.show();
+		frame.setVisible(true);
 
 		
 		//get this stuff loaded into the cache asap
@@ -502,7 +497,6 @@ public class Editor extends JPanel {
 
 		int result = 0;
 		if (getDrawing().isModified()) {
-			JOptionPane option = new JOptionPane();
 			result =
 				JOptionPane.showConfirmDialog(
 					null,
@@ -684,10 +678,5 @@ public class Editor extends JPanel {
 	 */
 	public UndoManager getUndoManager() {
 		return undoManager;
-	}
-
-	public static void haveFun() {
-		Connection conn = PoolManager.getInstance().getConnection("yukon");
-	
 	}
 }

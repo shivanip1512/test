@@ -1,5 +1,7 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.List;
+
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.db.point.PointAlarming;
@@ -71,5 +73,15 @@ public final class AlarmCatFuncs
 		}	
 
 	}
+    
+    // method to return a List of LiteAlarmCategories
+    public static List getAlarmCategories() 
+    {
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        
+        List alarmList = cache.getAllAlarmCategories();
+        
+        return alarmList;
+    }
 
 }

@@ -1,10 +1,27 @@
 package com.cannontech.esub.editor.element;
 
-import java.util.Iterator;
+import java.awt.Dimension;
+import java.awt.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.*;
 
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.text.Position;
+import javax.swing.tree.*;
+
+import com.cannontech.common.gui.tree.*;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.cache.functions.*;
+import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.database.model.*;
+import com.cannontech.dbeditor.editor.user.LiteBaseNode;
+import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.user.UserUtils;
+
 
 /**
  * Insert the type's description here.
@@ -14,9 +31,21 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class CurrentAlarmsTableEditorPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private com.cannontech.esub.element.CurrentAlarmsTable alarmsTable;
 	
-	private javax.swing.JLabel ivjAlarmCategoriesLabel = null;
-	private javax.swing.JComboBox ivjJComboBox1 = null;
-	private javax.swing.JPanel ivjJPanel1 = null;
+	private JLabel ivjDeviceListLabel = null;
+    private JLabel ivjAlarmCategoryListLabel = null;
+	private JComboBox ivjJComboBox1 = null;
+	private JPanel ivjJPanel1 = null;
+    private JTree selectionJTreeDevices = null;
+    private JTree selectionJTreeAlarms = null;
+    private JScrollPane ivjJScrollPaneDevices = null;
+    private JScrollPane ivjJScrollPaneAlarms = null;
+    private CheckNodeSelectionListener deviceNodeListener = null;
+    private CheckNodeSelectionListener alarmNodeListener = null;
+    private List alarmCategoryList = null;
+    private java.util.HashMap hashmap = null;
+    
+    
+    
 /**
  * CurrentAlarmsTableEditorPanel constructor comment.
  */
@@ -24,17 +53,18 @@ public CurrentAlarmsTableEditorPanel() {
 	super();
 	initialize();
 }
+
 /**
  * Return the AlarmCategoriesLabel property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getAlarmCategoriesLabel() {
-	if (ivjAlarmCategoriesLabel == null) {
+private javax.swing.JLabel getDeviceListLabel() {
+	if (ivjDeviceListLabel == null) {
 		try {
-			ivjAlarmCategoriesLabel = new javax.swing.JLabel();
-			ivjAlarmCategoriesLabel.setName("AlarmCategoriesLabel");
-			ivjAlarmCategoriesLabel.setText("Devices:");
+            ivjDeviceListLabel = new javax.swing.JLabel();
+            ivjDeviceListLabel.setName("DeviceListLabel");
+            ivjDeviceListLabel.setText("Devices:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -43,8 +73,32 @@ private javax.swing.JLabel getAlarmCategoriesLabel() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjAlarmCategoriesLabel;
+	return ivjDeviceListLabel;
 }
+
+
+/**
+ * Return the AlarmCategoriesLabel property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getAlarmCategoryListLabel() {
+    if (ivjAlarmCategoryListLabel == null) {
+        try {
+            ivjAlarmCategoryListLabel = new javax.swing.JLabel();
+            ivjAlarmCategoryListLabel.setName("AlarmCategoryListLabel");
+            ivjAlarmCategoryListLabel.setText("Alarm Categories:");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return ivjAlarmCategoryListLabel;
+}
+
 /**
  * 
  */
@@ -84,28 +138,330 @@ private static void getBuilderData() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBox1() {
-	if (ivjJComboBox1 == null) {
-		try {
-			ivjJComboBox1 = new javax.swing.JComboBox();
-			ivjJComboBox1.setName("JComboBox1");
-			// user code begin {1}
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized(cache) {
-				Iterator iter = cache.getAllDevices().iterator();
-				while(iter.hasNext()) {
-					ivjJComboBox1.addItem(iter.next());
-				}
-			} 
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBox1;
+//private javax.swing.JComboBox getJComboBox1() {
+//	if (ivjJComboBox1 == null) {
+//		try {
+//			ivjJComboBox1 = new javax.swing.JComboBox();
+//			ivjJComboBox1.setName("JComboBox1");
+//			// user code begin {1}
+//			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+//			synchronized(cache) {
+//				Iterator iter = cache.getAllDevices().iterator();
+//				while(iter.hasNext()) {
+//					ivjJComboBox1.addItem(iter.next());
+//				}
+//			} 
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjJComboBox1;
+//}
+
+/**
+ * Return the JScrollPaneAlarms property value.
+ * @return javax.swing.JScrollPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JScrollPane getJScrollPaneAlarms() {
+    if ( ivjJScrollPaneAlarms == null ) 
+    {
+        try 
+        {
+            ivjJScrollPaneAlarms = new javax.swing.JScrollPane();
+            ivjJScrollPaneAlarms.setName( "JScrollPaneAlarms" );
+            getJScrollPaneAlarms().setViewportView(getJTreeAlarms());
+            ivjJScrollPaneAlarms.setPreferredSize(new Dimension (100, 250));
+            // user code begin {1}
+            // user code end
+        } catch ( java.lang.Throwable ivjExc ) 
+        {
+            // user code begin {2}
+            // user code end
+            handleException( ivjExc );
+        }
+    }
+    return ivjJScrollPaneAlarms;
 }
+
+private java.awt.List getAlarmCategoryList()
+{
+    //TODO  write this stuff idiot
+    if ( alarmCategoryList == null )
+    {
+        // generate our list of Alarm Categories
+        alarmCategoryList = (List) com.cannontech.database.cache.functions.AlarmCatFuncs.getAlarmCategories();
+        Collections.sort((java.util.List) alarmCategoryList, LiteComparators.liteStringComparator);
+    }
+    
+    return alarmCategoryList;
+}
+
+/**
+ * Return the JScrollPaneDevices property value.
+ * @return javax.swing.JScrollPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JScrollPane getJScrollPaneDevices() {
+    if ( ivjJScrollPaneDevices == null ) 
+    {
+        try 
+        {
+            ivjJScrollPaneDevices = new javax.swing.JScrollPane();
+            ivjJScrollPaneDevices.setName( "JScrollPaneDevices" );
+            getJScrollPaneDevices().setViewportView(getJTreeDevices());
+            ivjJScrollPaneDevices.setPreferredSize(new Dimension (100, 250));
+            // user code begin {1}
+            // user code end
+        } catch ( java.lang.Throwable ivjExc ) 
+        {
+            // user code begin {2}
+            // user code end
+            handleException( ivjExc );
+        }
+    }
+    return ivjJScrollPaneDevices;
+}
+
+
+/**
+ * This method was created in VisualAge.
+ * @return CTITreeMode
+ */
+private DeviceCheckBoxTreeModel getDeviceJTreeModel() 
+{
+    return (DeviceCheckBoxTreeModel)getJTreeDevices().getModel();
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return CTITreeMode
+ */
+private AlarmCategoryCheckBoxTreeModel getAlarmJTreeModel() 
+{
+    return (AlarmCategoryCheckBoxTreeModel)getJTreeAlarms().getModel();
+}
+
+/**
+ * Return the JTreeAlarms property value.
+ * @return javax.swing.JTree
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTree getJTreeAlarms() 
+{
+    if (selectionJTreeAlarms == null) {
+        try {
+            selectionJTreeAlarms = new javax.swing.JTree();
+            selectionJTreeAlarms.setName("JTreeNodes");
+            //selectionJTree.setBounds(0, 0, 165, 243);
+            selectionJTreeAlarms.setBounds(0, 0, 300, 400);
+            // user code begin {1}
+            
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Alarm Categories");
+            //DeviceCheckBoxTreeModel checkModel = new DeviceCheckBoxTreeModel(true);
+            selectionJTreeAlarms.setModel( new AlarmCategoryCheckBoxTreeModel() );
+            selectionJTreeAlarms.setCellRenderer( new CheckRenderer() );
+            //selectionJTree.setRootVisible( false );
+            selectionJTreeAlarms.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+            getAlarmJTreeModel().update();
+            
+            //expand the root
+            selectionJTreeAlarms.expandPath( new TreePath(root.getPath()) );
+            
+            selectionJTreeAlarms.addMouseListener( getAlarmNodeListener() );
+            
+            selectionJTreeAlarms.addMouseListener( new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    alarmValueChanged( null );
+                }
+            });
+
+            //setRoleTabledEnabled(false);            
+
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return selectionJTreeAlarms;
+}
+
+/**
+ * Return the JTree1 property value.
+ * @return javax.swing.JTree
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTree getJTreeDevices() {
+    if (selectionJTreeDevices == null) {
+        try {
+            selectionJTreeDevices = new javax.swing.JTree();
+            selectionJTreeDevices.setName("JTreeNodes");
+            selectionJTreeDevices.setBounds(0, 0, 300, 400);
+            // user code begin {1}
+            
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Devices/Points");
+            
+            selectionJTreeDevices.setModel( new DeviceCheckBoxTreeModel(true) );
+            selectionJTreeDevices.setCellRenderer( new CheckRenderer() );
+            selectionJTreeDevices.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+            getDeviceJTreeModel().update();
+            
+            selectionJTreeDevices.addMouseListener( getDeviceNodeListener());
+            
+            selectionJTreeDevices.addMouseListener( new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    deviceValueChanged( null );
+                }
+            });
+
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return selectionJTreeDevices;
+}
+/**
+ * Return the CheckNodeSelectionListener property value.
+ * @return com.cannontech.common.gui.tree.CheckNodeSelectionListener
+ */
+private CheckNodeSelectionListener getDeviceNodeListener()
+{
+    if( deviceNodeListener == null )
+    {
+        deviceNodeListener = new CheckNodeSelectionListener( getJTreeDevices(), true);
+    }
+    return deviceNodeListener;
+}
+
+/**
+ * Return the CheckNodeSelectionListener property value.
+ * @return com.cannontech.common.gui.tree.CheckNodeSelectionListener
+ */
+private CheckNodeSelectionListener getAlarmNodeListener()
+{
+    if( alarmNodeListener == null )
+    {
+        alarmNodeListener = new CheckNodeSelectionListener( getJTreeAlarms() );
+    }
+    return alarmNodeListener;
+}
+
+/**
+ * This method checks for extra work to do like checking or unchecking parents after a tree
+ * selection and then updates the panel.
+ */
+public void deviceValueChanged(TreeSelectionEvent e) 
+{
+    int selRow = getJTreeDevices().getMaxSelectionRow();
+    if( selRow != -1) 
+    {
+        CheckNode node = ( CheckNode )getJTreeDevices().getPathForRow( selRow ).getLastPathComponent();
+        if( !node.isSelected( )) // we are doing an uncheck
+        {
+            CheckNode parent = (CheckNode)node.getParent();
+            
+            // only uncheck parents if they infact checked currently
+            if( parent != null  && parent.isSelected() )  
+            {
+                //uncheck our parents until we hit the root
+                while( node.getParent() != null ) 
+                {
+                    getDeviceNodeListener().uncheckParent(node);
+                    if( parent.getLevel() == 0 )
+                    {
+                        break;
+                    }
+                    node = (CheckNode)node.getParent();
+                }
+            }
+            
+        }else if ( (CheckNode)node.getParent() != null ) // we don't care if the root got clicked
+        {
+            //  Here we check to see if we need to set our parent as checked and if we do, we continue to check are 
+            //  parent's parent until we either find an unchecked child or we get to the root, confusing as hell.
+            
+            boolean cont = true;
+            while(cont)
+            {
+                cont = checkParent(node);
+                node = (CheckNode)node.getParent();
+            }
+            
+        }
+        
+    }
+    
+    fireInputUpdate();
+}
+
+/**
+ * This methdod looks at all the siblings of "node" to see whether we need to set node's parent as checked,
+ * returning true if we another round of parent checking is needed, false if our parent is actually the root.
+ * Return the ret property value.
+ * @return boolean ret
+ */
+private boolean checkParent(CheckNode node)
+{
+    boolean ret = true;
+    
+    //  since we're doing a set checked on this guy, see if all our siblings are also checked, if so check the parent
+    int children = node.getSiblingCount();
+    CheckNode parent = (CheckNode)node.getParent();
+    CheckNode check = (CheckNode)parent.getFirstChild();
+    
+    for ( int i = 0; i < children; i++ )
+    {
+        if ( !check.isSelected() )
+        {
+            // at least one of our siblings isn't checked so we don't care anymore
+            return false;
+        }else 
+        {
+            if ( check.getNextSibling() == null )
+            {
+                // we are the last node and we are checked so now we can set the parent as checked
+                parent.setSelected( true );
+                if( parent.getLevel() == 0 )                
+                {
+                    // the parent is the root and we are done
+                    return false;
+                }else
+                {
+                    // we've set our parent and we can return for more checking fun
+                    break;
+                }
+                
+            }
+        }
+        check = (CheckNode) check.getNextSibling();
+        
+    }
+    
+    return ret;
+}
+
+public void alarmValueChanged(TreeSelectionEvent e) 
+{
+    int selRow = getJTreeAlarms().getMaxSelectionRow();
+    if( selRow != -1 ) 
+    {
+        TreeNode node = ( TreeNode )getJTreeAlarms().getPathForRow( selRow ).getLastPathComponent();
+    }
+    fireInputUpdate();
+}
+
 /**
  * Return the JPanel1 property value.
  * @return javax.swing.JPanel
@@ -120,9 +476,48 @@ private javax.swing.JPanel getJPanel1() {
 			ivjJPanel1 = new javax.swing.JPanel();
 			ivjJPanel1.setName("JPanel1");
 			ivjJPanel1.setBorder(ivjLocalBorder);
-			ivjJPanel1.setLayout(new java.awt.FlowLayout());
-			ivjJPanel1.add(getAlarmCategoriesLabel());
-			getJPanel1().add(getJComboBox1(), getJComboBox1().getName());
+			ivjJPanel1.setLayout(new java.awt.GridBagLayout());
+            
+            java.awt.GridBagConstraints constraintsDeviceListLabel = new java.awt.GridBagConstraints();
+            constraintsDeviceListLabel.gridx = 0; constraintsDeviceListLabel.gridy = 0;
+            constraintsDeviceListLabel.gridwidth = 1;
+            constraintsDeviceListLabel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsDeviceListLabel.weightx = 1.0;
+            constraintsDeviceListLabel.weighty = 1.0;
+            constraintsDeviceListLabel.insets = new java.awt.Insets(5, 5, 0, 5);
+            ivjJPanel1.add(getDeviceListLabel(), constraintsDeviceListLabel);
+            
+            java.awt.GridBagConstraints constraintsAlarmCategoryListLabel = new java.awt.GridBagConstraints();
+            constraintsAlarmCategoryListLabel.gridx = 1; constraintsAlarmCategoryListLabel.gridy = 0;
+            constraintsAlarmCategoryListLabel.gridwidth = 1;
+            constraintsAlarmCategoryListLabel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsAlarmCategoryListLabel.weightx = 1.0;
+            constraintsAlarmCategoryListLabel.weighty = 1.0;
+            constraintsAlarmCategoryListLabel.insets = new java.awt.Insets(5, 5, 0, 5);
+            ivjJPanel1.add(getAlarmCategoryListLabel(), constraintsAlarmCategoryListLabel);
+
+            java.awt.GridBagConstraints constraintsJScrollPaneDevices = new java.awt.GridBagConstraints();
+            constraintsJScrollPaneDevices.gridx = 0; constraintsJScrollPaneDevices.gridy = 1;
+            constraintsJScrollPaneDevices.gridwidth = 1;
+            constraintsJScrollPaneDevices.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsJScrollPaneDevices.weightx = 1.0;
+            constraintsJScrollPaneDevices.weighty = 1.0;
+            constraintsJScrollPaneDevices.insets = new java.awt.Insets(0, 5, 5, 5);
+            ivjJPanel1.add(getJScrollPaneDevices(), constraintsJScrollPaneDevices);
+            
+            java.awt.GridBagConstraints constraintsJScrollPaneAlarms = new java.awt.GridBagConstraints();
+            constraintsJScrollPaneAlarms.gridx = 1; constraintsJScrollPaneAlarms.gridy = 1;
+            constraintsJScrollPaneAlarms.gridwidth = 1;
+            constraintsJScrollPaneAlarms.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsJScrollPaneAlarms.weightx = 1.0;
+            constraintsJScrollPaneAlarms.weighty = 1.0;
+            constraintsJScrollPaneAlarms.insets = new java.awt.Insets(0, 5, 5, 5);
+            ivjJPanel1.add(getJScrollPaneAlarms(), constraintsJScrollPaneAlarms);
+            
+			//getJPanel1().add(getJComboBox1(), getJComboBox1().getName());
+            ivjJPanel1.setPreferredSize(new Dimension ( 300, 400 ));
+            
+            
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -139,10 +534,89 @@ private javax.swing.JPanel getJPanel1() {
  * @param o java.lang.Object
  */
 public Object getValue(Object o) {
-	LiteYukonPAObject device = (LiteYukonPAObject) getJComboBox1().getSelectedItem();
-	alarmsTable.setDeviceID(device.getYukonID());
+    // create our arrays of selected devices and points
+    
+    CheckNode deviceRoot = (CheckNode)getJTreeDevices().getModel().getRoot();
+    CheckNode alarmRoot = (CheckNode)getJTreeAlarms().getModel().getRoot();
+    Enumeration deviceChildren = deviceRoot.children();
+    Enumeration alarmChildren = alarmRoot.children();
+    
+    ArrayList<Integer> pointids = new ArrayList<Integer>();
+    ArrayList<Integer> deviceids = new ArrayList<Integer>();
+    ArrayList<Integer> alarmcatids = new ArrayList<Integer>();
+    
+    while( deviceChildren.hasMoreElements())
+    {
+        CheckNode currentDeviceNode = (CheckNode)deviceChildren.nextElement();
+        if(currentDeviceNode.isSelected())
+        {
+            LiteYukonPAObject device = (LiteYukonPAObject) currentDeviceNode.getUserObject();
+            deviceids.add(device.getYukonID());
+            
+        }else
+        {
+            Enumeration categories = currentDeviceNode.children();
+            while( categories.hasMoreElements() )
+            {
+                CheckNode category = (CheckNode)categories.nextElement();
+                if(category.isSelected())
+                {
+                    Enumeration points = category.children();
+                    while(points.hasMoreElements())
+                    {
+                        CheckNode currentPointNode = (CheckNode)points.nextElement();
+                        if(currentPointNode.isSelected())
+                        {
+                            LitePoint point = (LitePoint) currentPointNode.getUserObject();
+                            
+                            pointids.add( point.getLiteID());
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    while( alarmChildren.hasMoreElements())
+    {
+        CheckNode currentAlarmNode = (CheckNode)alarmChildren.nextElement();
+        if(currentAlarmNode.isSelected())
+        {
+            LiteAlarmCategory alarmcat = (LiteAlarmCategory) currentAlarmNode.getUserObject();
+            alarmcatids.add(alarmcat.getLiteID());
+        }
+    }
+    
+    //  we have to do this since we need to set an array of actual primitive ints
+    int[] pointarray = new int[pointids.size()];
+    int[] alarmarray = new int[alarmcatids.size()];
+    int[] devicearray = new int[deviceids.size()];
+    
+    
+    for(int j = 0; j < pointids.size(); j++)
+    {
+        pointarray[j] = pointids.get(j);
+    }
+    
+    for(int j = 0; j < alarmcatids.size(); j++)
+    {
+        alarmarray[j] = alarmcatids.get(j);
+    }
+    
+    for(int j = 0; j < deviceids.size(); j++)
+    {
+        devicearray[j] = deviceids.get(j);
+    }
+    
+    alarmsTable.setAlarmCategoryIds(alarmarray);
+    alarmsTable.setPointIds(pointarray);
+    
+    alarmsTable.setDeviceIds(devicearray);
+    
 	return alarmsTable;
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -163,7 +637,8 @@ private void initialize() {
 		// user code end
 		setName("CurrentAlarmsTableEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
-		setSize(386, 256);
+		//setSize(386, 256);
+        setSize(300, 400);
 
 		java.awt.GridBagConstraints constraintsJPanel1 = new java.awt.GridBagConstraints();
 		constraintsJPanel1.gridx = 0; constraintsJPanel1.gridy = 0;
@@ -210,7 +685,38 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) {
 	alarmsTable = (com.cannontech.esub.element.CurrentAlarmsTable) o;
-	LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(alarmsTable.getDeviceID());
-	getJComboBox1().setSelectedItem(device);
+	int[] deviceids = alarmsTable.getDeviceIds();
+    int[] pointids = alarmsTable.getPointIds();
+    int[] alarmcatids = alarmsTable.getAlarmCategoryIds();
+    
+    for( int i = 0; i < alarmcatids.length; i++ )
+    {
+        CheckNode currentAlarmNode = (CheckNode) getAlarmJTreeModel().getAlarmCategorybyID(alarmcatids[i]);
+        if(currentAlarmNode != null)
+        {
+            currentAlarmNode.setSelected(true);
+        }
+        
+    }
+    
+    for( int i = 0; i < pointids.length; i++ )
+    {
+        CheckNode currentPointNode = (CheckNode) getDeviceJTreeModel().getPointbyID(pointids[i]);
+        if(currentPointNode != null)
+        {
+            currentPointNode.setSelected(true);
+        }
+        
+    }
+    
+    for( int i = 0; i < deviceids.length; i++ )
+    {
+        CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceids[i]);
+        if( currentDeviceNode != null)
+        {
+            currentDeviceNode.setSelected(true);
+        }
+        
+    }
 }
 }

@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Properties;
 
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistCurrentAlarmsTable;
@@ -15,12 +14,15 @@ import com.cannontech.esub.table.Table;
 import com.loox.jloox.LxAbstractRectangle;
 
 /**
+ * An alarms table displays information about alarms in a tabular format.  Any combination
+ * of devices, points, and alarm categories can contribute alarms to the table.
+ * 
  * @author alauinger
  */
 public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
 	
 	private static final String ELEMENT_ID = "alarmsTable";
-	private static final int CURRENT_VERSION = 0;
+	private static final int CURRENT_VERSION = 2;
 	
 	private static final String TABLE_TITLE = "Unacknowledged Alarms";
 	private static final int DEFAULT_WIDTH = 1000;
@@ -28,12 +30,10 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 
 	private transient Drawing drawing = null;
 	private String linkTo = null;
-	
-	private Properties props = new Properties();
 
 	private Table table;
 	private int version = CURRENT_VERSION;
-		
+
 	public CurrentAlarmsTable() {
 		getTable().setTitle(TABLE_TITLE);
 		
@@ -62,6 +62,11 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 		drawing = d;
 	}
 
+	public boolean hasActiveAlarms() {
+		return true;
+		//return ((PointAlarmTableModel) getTable().getModel()).getRowCount() > 0;
+	}
+	
 	protected void paintElement(Graphics2D g) {					
 		super.paintElement(g);
 		
@@ -90,20 +95,6 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 		this.table = alarmTable;
 	}
 
-
-	/**
-	 * @see com.cannontech.esub.editor.element.DrawingElement#getElementProperties()
-	 */
-	public Properties getElementProperties() {
-		return props;
-	}
-
-	/**
-	 * @see com.cannontech.esub.editor.element.DrawingElement#setElementProperties(Properties)
-	 */
-	public void setElementProperties(Properties props) {
-		this.props = props;
-	}
 	/**
      * @see com.loox.jloox.LxComponent#readFromJLX(InputStream, String)
      */
@@ -120,38 +111,6 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
         super.saveAsJLX(out);    
         PersistCurrentAlarmsTable.getInstance().saveAsJLX(this,out);
     }
-
-	/**
-	 * Returns an array of device IDs
-	 * @return int[]
-	 */
-	public int[] getDeviceIDs() {
-		return ((PointAlarmTableModel) getTable().getModel()).getDeviceIDs();
-	}
-	
-	/** 
-	 * Sets the array of device IDs
-	 * @param deviceIDs The array of device IDs to set
-	 */
-	public void setDeviceIDs(int[] deviceIDs) {
-		((PointAlarmTableModel) getTable().getModel()).setDeviceIDs(deviceIDs);
-	}
-	
-	/**
-	 * Returns the deviceID.
-	 * @return int
-	 */
-	public int getDeviceID() {
-		return ((PointAlarmTableModel) getTable().getModel()).getDeviceID();
-	}
-
-	/**
-	 * Sets the deviceID.
-	 * @param deviceID The deviceID to set
-	 */
-	public void setDeviceID(int deviceID) {
-		((PointAlarmTableModel) getTable().getModel()).setDeviceID(deviceID);
-	}
 
 	/**
 	 * Returns the linkTo.
@@ -190,4 +149,33 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	public String getElementID() {
 		return ELEMENT_ID;
 	}
+		
+	public int[] getAlarmCategoryIds() {
+		return ((PointAlarmTableModel) table.getModel()).getAlarmCategoryIds();
+	}
+
+
+	public void setAlarmCategoryIds(int[] alarmCategoryIds) {
+		((PointAlarmTableModel) table.getModel()).setAlarmCategoryIds(alarmCategoryIds);
+	}
+
+
+	public int[] getDeviceIds() {
+		return ((PointAlarmTableModel) table.getModel()).getDeviceIds();		
+	}
+
+
+	public void setDeviceIds(int[] deviceIds) {
+		((PointAlarmTableModel) table.getModel()).setDeviceIds(deviceIds);		
+	}
+
+
+	public int[] getPointIds() {
+		return ((PointAlarmTableModel) table.getModel()).getPointIds();		
+	}
+
+
+	public void setPointIds(int[] pointIds) {
+		((PointAlarmTableModel) table.getModel()).setPointIds(pointIds);				
+	}	
 }

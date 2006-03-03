@@ -7,12 +7,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistAlarmText;
+
 import com.loox.jloox.LxAbstractText;
 
 /**
+ * An alarm text element is a text string that changes colors depending on whether
+ * an alarm is present or not.  Any combination of devices, points, and alarm categories
+ * can be chosen as the basis for determining whether an alarm is present.
+ * 
  * @author aaron
  */
 public class AlarmTextElement
@@ -21,18 +25,21 @@ public class AlarmTextElement
 	
 	private static final String ELEMENT_ID = "alarmText";
 	
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 	static final Font DEFAULT_FONT = new Font("arial", java.awt.Font.BOLD, 12);
     static final Color DEFAULT_COLOR = Color.white;
     static final Color DEFAULT_ALARM_COLOR = Color.red;
 
-	private Color defaultTextColor = DEFAULT_COLOR;
-	private Color alarmTextColor = DEFAULT_ALARM_COLOR;
+	private Color _defaultTextColor = DEFAULT_COLOR; 
+	private Color _alarmTextColor = DEFAULT_ALARM_COLOR;
 		
-   	private LitePoint[] points = new LitePoint[0];
+	// Consider alarms for these things
+	private int[] _deviceIds = new int[0];
+	private int[] _pointIds = new int[0];
+	private int[] _alarmCategoryIds = new int[0];
 			
-	private String linkTo = null;
-	private int version = CURRENT_VERSION;
+	private String _linkTo = null;
+	private int _version = CURRENT_VERSION;
 	
 	private Drawing drawing = null;
 	
@@ -44,14 +51,14 @@ public class AlarmTextElement
 	 * @see com.cannontech.esub.element.DrawingElement#getVersion()
 	 */
 	public int getVersion() {
-		return version;
+		return _version;
 	}
 
 	/* 
 	 * @see com.cannontech.esub.element.DrawingElement#setVersion(int)
 	 */
 	public void setVersion(int newVer) {
-		version = newVer;
+		_version = newVer;
 	}
 
 	/* 
@@ -79,14 +86,14 @@ public class AlarmTextElement
 	 * @see com.cannontech.esub.element.DrawingElement#getLinkTo()
 	 */
 	public String getLinkTo() {
-		return linkTo;
+		return _linkTo;
 	}
 
 	/* 
 	 * @see com.cannontech.esub.element.DrawingElement#setLinkTo(java.lang.String)
 	 */
 	public void setLinkTo(String linkTo) {
-		this.linkTo = linkTo;
+		this._linkTo = linkTo;
 	}
 	
 	/* 
@@ -106,48 +113,63 @@ public class AlarmTextElement
 	}
 
 	/**
-	 * @return LitePoint[] 
-	 */
-	public LitePoint[] getPoints() {
-		return points;
-	}
-
-	/**
-	 * @param points
-	 */
-	public void setPoints(LitePoint[] points) {
-		this.points = points;
-	}
-
-	/**
 	 * @return
 	 */
 	public Color getAlarmTextColor() {
-		return alarmTextColor;
-	}
+		return _alarmTextColor;
+	}	
 
 	/**
 	 * @return
 	 */
 	public Color getDefaultTextColor() {
-		return defaultTextColor;
+		return _defaultTextColor;
 	}
 
 	/**
 	 * @param color
 	 */
 	public void setAlarmTextColor(Color color) {
-		alarmTextColor = color;
+		_alarmTextColor = color;
 	}
 
 	/**
 	 * @param color
 	 */
 	public void setDefaultTextColor(Color color) {
-		defaultTextColor = color;
+		_defaultTextColor = color;
 	}
 
 	public String getElementID() {
 		return ELEMENT_ID;
+	}
+	public int[] getAlarmCategoryIds() {
+		return _alarmCategoryIds;
+	}
+	public void setAlarmCategoryIds(int[] alarmCategoryIds) {
+        if(alarmCategoryIds == null) {
+            alarmCategoryIds = new int[0];
+        }
+		_alarmCategoryIds = alarmCategoryIds;
+	}
+    
+	public int[] getDeviceIds() {
+		return _deviceIds;
+	}
+	public void setDeviceIds(int[] deviceIds) {
+        if(deviceIds == null) {
+            deviceIds = new int[0];
+        }
+		_deviceIds = deviceIds;
+	}
+    
+	public int[] getPointIds() {
+		return _pointIds;
+	}
+	public void setPointIds(int[] pointIds) {
+        if(pointIds == null) {
+            pointIds = new int[0];
+        }
+		_pointIds = pointIds;
 	}
 }

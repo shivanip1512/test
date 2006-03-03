@@ -1,0 +1,34 @@
+rect.barface { fill:url(#InactiveFace); stroke:url(#gradientBorder); }
+rect.InactiveFrameTitle{fill:url(#ActiveFace); stroke:url(#gradientBorder);}
+rect.ActiveFrameTitle{fill:url(#InactiveFace); stroke:url(#gradientBorder);}
+
+rect.buttonface { fill:url(#InactiveFace); stroke:darkgrey; }
+rect.buttonfacedep { fill:grey; stroke:black;}
+rect.buttonfacedisabled { fill:red; stroke:url(#gradientAltBorder); }
+rect.buttonfacehover { fill:url(#InactiveFace);
+                            stroke:black;}
+
+rect.mybuttonface { fill:url(#InactiveFace); stroke:url(#gradientBorder); }
+rect.mybuttonfacedep { fill:url(#InactiveFace);; stroke:url(#gradientAltBorder);}
+rect.mybuttonfacedisabled { fill:red; stroke:url(#gradientAltBorder); }
+rect.mybuttonfacehover { fill:url(#gradientAltFace);
+                            stroke:url(#gradientBorder);}
+
+text.mybuttontext { fill:cyan;filter:url(#DropShadow);font-weight:bold }
+
+text.mytitletext { fill:yellow;filter:url(#DropShadow);font-size:20;font-weight:bold }
+
+text.buttontext { fill:black; }
+
+rect.framebackground { fill:url(#InactiveFace); stroke:url(#gradientBorder) }
+rect.paneface { fill:url(#InactiveFace);}
+rect.contentface { fill:white;}
+
+
+text.label { fill:white; }
+
+rect.menuitem { fill:url(#InactiveFace); }
+text.menuitemtext { fill:white; }
+
+rect.tooltipface { }
+text.tooltiptext { }

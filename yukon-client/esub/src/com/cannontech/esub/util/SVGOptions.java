@@ -3,6 +3,7 @@
   */
 package com.cannontech.esub.util;
 
+
 /**
  * Encapsulates the SVG generation options used by SVGGenerator
  * @author aaron
@@ -15,7 +16,8 @@ public class SVGOptions {
 	private boolean scriptingEnabled = false;
 	private boolean editEnabled = false;
 	private boolean controlEnabled = false;
-		
+	private boolean audioEnabled = false;
+
 	/**
 	 * @return
 	 */
@@ -70,6 +72,14 @@ public class SVGOptions {
 	 */
 	public void setScriptingEnabled(boolean b) {
 		scriptingEnabled = b;
+	}
+
+	public boolean isAudioEnabled() {
+		return audioEnabled;
+	}
+
+	public void setAudioEnabled(boolean audioEnabled) {
+		this.audioEnabled = audioEnabled;
 	}
 
 }

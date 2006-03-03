@@ -1,12 +1,29 @@
 package com.cannontech.esub.editor.element;
 
+import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
+import javax.swing.*;
 import javax.swing.JColorChooser;
+import javax.swing.JScrollPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
+import com.cannontech.common.gui.tree.*;
+import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
+import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.model.AlarmCategoryCheckBoxTreeModel;
+import com.cannontech.database.model.DeviceCheckBoxTreeModel;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.AlarmTextElement;
 
@@ -15,7 +32,7 @@ import com.cannontech.esub.element.AlarmTextElement;
  * Creation date: (5/8/2003 5:22:35 PM)
  * @author: 
  */
-public class AlarmTextElementEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.TreeSelectionListener {
+public class AlarmTextElementEditorPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjAlarmColorLabel = null;
 	private javax.swing.JButton ivjDefaultColorButton = null;
 	private javax.swing.JLabel ivjDefaultColorLabel = null;
@@ -23,13 +40,19 @@ public class AlarmTextElementEditorPanel extends com.cannontech.common.gui.util.
 	private javax.swing.JLabel ivjDefaultFontLabel = null;
 	private javax.swing.JTextField ivjDefaultTextTextField = null;
 	private LinkToPanel ivjLinkToPanel = null;
-	private PointSelectionPanel ivjPointSelectionPanel = null;
 	private javax.swing.JPanel ivjTextPanel = null;
 	private javax.swing.JLabel ivjTextLabel = null;
 	private javax.swing.JComboBox ivjTextSizeComboBox = null;
 	private javax.swing.JLabel ivjTextSizeLabel = null;
 	private javax.swing.JButton ivjAlarmColorButton = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+    
+    private JScrollPane ivjJScrollPaneDevices = null;
+    private JScrollPane ivjJScrollPaneAlarms = null;
+    private JTree selectionJTreeDevices = null;
+    private JTree selectionJTreeAlarms = null;
+    private CheckNodeSelectionListener deviceNodeListener = null;
+    private CheckNodeSelectionListener alarmNodeListener = null;
 	
 	private JColorChooser colorChooser;
 	private static final int[] availableFontSizes = {
@@ -390,26 +413,7 @@ private LinkToPanel getLinkToPanel() {
 	}
 	return ivjLinkToPanel;
 }
-/**
- * Return the PointSelectionPanel property value.
- * @return com.cannontech.esub.editor.element.PointSelectionPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private PointSelectionPanel getPointSelectionPanel() {
-	if (ivjPointSelectionPanel == null) {
-		try {
-			ivjPointSelectionPanel = new com.cannontech.esub.editor.element.PointSelectionPanel();
-			ivjPointSelectionPanel.setName("PointSelectionPanel");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjPointSelectionPanel;
-}
+
 /**
  * Return the DefaultTextLabel property value.
  * @return javax.swing.JLabel
@@ -575,8 +579,85 @@ public Object getValue(Object o) {
 	alarmTextElement.setDefaultTextColor(getDefaultColorButton().getBackground());											
 	alarmTextElement.setAlarmTextColor(getAlarmColorButton().getBackground());
 	
-	LitePoint[] selectedPoints = getPointSelectionPanel().getSelectedPoints();
-	alarmTextElement.setPoints(selectedPoints);
+    
+// create our arrays of selected devices and points
+    
+    CheckNode deviceRoot = (CheckNode)getJTreeDevices().getModel().getRoot();
+    CheckNode alarmRoot = (CheckNode)getJTreeAlarms().getModel().getRoot();
+    Enumeration deviceChildren = deviceRoot.children();
+    Enumeration alarmChildren = alarmRoot.children();
+    
+    ArrayList<Integer> pointids = new ArrayList<Integer>();
+    ArrayList<Integer> deviceids = new ArrayList<Integer>();
+    ArrayList<Integer> alarmcatids = new ArrayList<Integer>();
+    
+    while( deviceChildren.hasMoreElements())
+    {
+        CheckNode currentDeviceNode = (CheckNode)deviceChildren.nextElement();
+        if(currentDeviceNode.isSelected())
+        {
+            LiteYukonPAObject device = (LiteYukonPAObject) currentDeviceNode.getUserObject();
+            deviceids.add(device.getYukonID());
+            
+        }else
+        {
+            Enumeration categories = currentDeviceNode.children();
+            while( categories.hasMoreElements() )
+            {
+                CheckNode category = (CheckNode)categories.nextElement();
+                if(category.isSelected())
+                {
+                    Enumeration points = category.children();
+                    while(points.hasMoreElements())
+                    {
+                        CheckNode currentPointNode = (CheckNode)points.nextElement();
+                        if(currentPointNode.isSelected())
+                        {
+                            LitePoint point = (LitePoint) currentPointNode.getUserObject();
+                            
+                            pointids.add( point.getLiteID());
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    while( alarmChildren.hasMoreElements())
+    {
+        CheckNode currentAlarmNode = (CheckNode)alarmChildren.nextElement();
+        if(currentAlarmNode.isSelected())
+        {
+            LiteAlarmCategory alarmcat = (LiteAlarmCategory) currentAlarmNode.getUserObject();
+            alarmcatids.add(alarmcat.getLiteID());
+        }
+    }
+    
+    //  we have to do this since we need to set an array of actual primitive ints
+    int[] pointarray = new int[pointids.size()];
+    int[] alarmarray = new int[alarmcatids.size()];
+    int[] devicearray = new int[deviceids.size()];
+    
+    
+    for(int j = 0; j < pointids.size(); j++)
+    {
+        pointarray[j] = pointids.get(j);
+    }
+    
+    for(int j = 0; j < alarmcatids.size(); j++)
+    {
+        alarmarray[j] = alarmcatids.get(j);
+    }
+    
+    for(int j = 0; j < deviceids.size(); j++)
+    {
+        devicearray[j] = deviceids.get(j);
+    }
+    
+    alarmTextElement.setPointIds(pointarray);
+    alarmTextElement.setDeviceIds(devicearray);
+    alarmTextElement.setAlarmCategoryIds(alarmarray);
 	return alarmTextElement;											
 }
 
@@ -614,30 +695,43 @@ private void initialize() {
 		setSize(467, 611);
 
 		java.awt.GridBagConstraints constraintsLinkToPanel = new java.awt.GridBagConstraints();
+        constraintsLinkToPanel.gridwidth = 2;
 		constraintsLinkToPanel.gridx = 0; constraintsLinkToPanel.gridy = 0;
 		constraintsLinkToPanel.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsLinkToPanel.insets = new java.awt.Insets(4, 4, 4, 4);
 		add(getLinkToPanel(), constraintsLinkToPanel);
 
 		java.awt.GridBagConstraints constraintsTextPanel = new java.awt.GridBagConstraints();
+        constraintsTextPanel.gridwidth = 2;
 		constraintsTextPanel.gridx = 0; constraintsTextPanel.gridy = 1;
 		constraintsTextPanel.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsTextPanel.insets = new java.awt.Insets(4, 4, 4, 4);
 		add(getTextPanel(), constraintsTextPanel);
-
-		java.awt.GridBagConstraints constraintsPointSelectionPanel = new java.awt.GridBagConstraints();
-		constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 2;
-		constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsPointSelectionPanel.weightx = 1.0;
-		constraintsPointSelectionPanel.weighty = 1.0;
-		constraintsPointSelectionPanel.insets = new java.awt.Insets(4, 4, 4, 4);
-		add(getPointSelectionPanel(), constraintsPointSelectionPanel);
+        
+        java.awt.GridBagConstraints constraintsDeviceScrollPane = new java.awt.GridBagConstraints();
+        constraintsDeviceScrollPane.gridwidth = 1;
+        constraintsDeviceScrollPane.gridx = 0; constraintsDeviceScrollPane.gridy = 2;
+        constraintsDeviceScrollPane.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsDeviceScrollPane.weightx = 1.0;
+        constraintsDeviceScrollPane.weighty = 1.0;
+        constraintsDeviceScrollPane.insets = new java.awt.Insets(4, 4, 4, 4);
+        add(getJScrollPaneDevices(), constraintsDeviceScrollPane);
+        
+        java.awt.GridBagConstraints constraintsAlarmScrollPane = new java.awt.GridBagConstraints();
+        constraintsAlarmScrollPane.gridwidth = 1;
+        constraintsAlarmScrollPane.gridx = 1; constraintsAlarmScrollPane.gridy = 2;
+        constraintsAlarmScrollPane.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsAlarmScrollPane.weightx = 1.0;
+        constraintsAlarmScrollPane.weighty = 1.0;
+        constraintsAlarmScrollPane.insets = new java.awt.Insets(4, 4, 4, 4);
+        add(getJScrollPaneAlarms(), constraintsAlarmScrollPane);
+        
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
+
 	Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 	for( int i = 0; i < fonts.length; i++ ) {
 		getDefaultFontComboBox().addItem(fonts[i].getFontName());
@@ -677,7 +771,7 @@ public void setValue(Object o) {
 	AlarmTextElement elem = (AlarmTextElement) o;
 	
 	getLinkToPanel().setLinkTo(elem.getLinkTo());
-		
+	
 	getDefaultTextTextField().setText(elem.getText());
 	
 	for( int i = 0; i < getDefaultFontComboBox().getItemCount(); i++ ) {
@@ -685,13 +779,13 @@ public void setValue(Object o) {
 			getDefaultFontComboBox().setSelectedIndex(i);
 		}
 	}
-
+	
 	for( int i = 0; i < getTextSizeComboBox().getItemCount(); i++ ) {
 		if( ((Integer) getTextSizeComboBox().getItemAt(i)).intValue() == elem.getFont().getSize() ) {
 			getTextSizeComboBox().setSelectedIndex(i);
 		}
 	}
-
+	
 	Color textColor = (java.awt.Color) elem.getDefaultTextColor();
 	getDefaultColorButton().setBackground(textColor);
 	colorChooser.setColor(textColor);
@@ -699,24 +793,331 @@ public void setValue(Object o) {
 	textColor = elem.getAlarmTextColor();
 	getAlarmColorButton().setBackground(textColor);
 	colorChooser.setColor(textColor);
-	
-	getPointSelectionPanel().refresh();
-	getPointSelectionPanel().selectPoints(elem.getPoints());
+    
+    int[] deviceids = elem.getDeviceIds();
+    int[] pointids = elem.getPointIds();
+    int[] alarmcatids = elem.getAlarmCategoryIds();
+    
+    for( int i = 0; i < alarmcatids.length; i++ )
+    {
+        CheckNode currentAlarmNode = (CheckNode) getAlarmJTreeModel().getAlarmCategorybyID(alarmcatids[i]);
+        if(currentAlarmNode != null)
+        {
+            currentAlarmNode.setSelected(true);
+        }
+        
+    }
+    
+    for( int i = 0; i < pointids.length; i++ )
+    {
+        CheckNode currentPointNode = (CheckNode) getDeviceJTreeModel().getPointbyID(pointids[i]);
+        if(currentPointNode != null)
+        {
+            currentPointNode.setSelected(true);
+        }
+        
+    }
+    
+    for( int i = 0; i < deviceids.length; i++ )
+    {
+        CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceids[i]);
+        if( currentDeviceNode != null)
+        {
+            currentDeviceNode.setSelected(true);
+        }
+        
+    }
 	
 	alarmTextElement = elem;
 }
-	/** 
-	  * Called whenever the value of the selection changes.
-	  * @param e the event that characterizes the change.
-	  */
-public void valueChanged(javax.swing.event.TreeSelectionEvent e) {
-	fireInputUpdate();
+
+/**
+ * Return the JScrollPaneDevices property value.
+ * @return javax.swing.JScrollPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JScrollPane getJScrollPaneDevices() {
+    if ( ivjJScrollPaneDevices == null ) 
+    {
+        try 
+        {
+            ivjJScrollPaneDevices = new javax.swing.JScrollPane();
+            ivjJScrollPaneDevices.setName( "JScrollPaneDevices" );
+            getJScrollPaneDevices().setViewportView(getJTreeDevices());
+            ivjJScrollPaneDevices.setPreferredSize(new Dimension (100, 250));
+            
+            // user code begin {1}
+            // user code end
+        } catch ( java.lang.Throwable ivjExc ) 
+        {
+            // user code begin {2}
+            // user code end
+            handleException( ivjExc );
+        }
+    }
+    return ivjJScrollPaneDevices;
 }
-	/* (non-Javadoc)
-	 * @see com.cannontech.common.gui.util.DataInputPanel#isInputValid()
-	 */
-	public boolean isInputValid() {
-		return (getPointSelectionPanel().getSelectedPoint() != null);
-	}
+
+/**
+ * Return the JScrollPaneDevices property value.
+ * @return javax.swing.JScrollPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JScrollPane getJScrollPaneAlarms() {
+    if ( ivjJScrollPaneAlarms == null ) 
+    {
+        try 
+        {
+            ivjJScrollPaneAlarms = new javax.swing.JScrollPane();
+            ivjJScrollPaneAlarms.setName( "JScrollPaneDevices" );
+            getJScrollPaneAlarms().setViewportView(getJTreeAlarms());
+            ivjJScrollPaneAlarms.setPreferredSize(new Dimension (100, 250));
+            // user code begin {1}
+            // user code end
+        } catch ( java.lang.Throwable ivjExc ) 
+        {
+            // user code begin {2}
+            // user code end
+            handleException( ivjExc );
+        }
+    }
+    return ivjJScrollPaneAlarms;
+}
+
+/**
+ * Return the JTree1 property value.
+ * @return javax.swing.JTree
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTree getJTreeDevices() {
+    if (selectionJTreeDevices == null) {
+        try {
+            selectionJTreeDevices = new javax.swing.JTree();
+            selectionJTreeDevices.setName("JTreeNodes");
+            selectionJTreeDevices.setBounds(0, 0, 300, 400);
+            // user code begin {1}
+            
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Devices/Points");
+            
+            selectionJTreeDevices.setModel( new DeviceCheckBoxTreeModel(true) );
+            selectionJTreeDevices.setCellRenderer( new CheckRenderer() );
+            selectionJTreeDevices.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+            getDeviceJTreeModel().update();
+            
+            selectionJTreeDevices.addMouseListener( getDeviceNodeListener());
+            
+            selectionJTreeDevices.addMouseListener( new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    deviceValueChanged( null );
+                }
+            });
+
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return selectionJTreeDevices;
+}
+
+/**
+ * Return the JTreeAlarms property value.
+ * @return javax.swing.JTree
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTree getJTreeAlarms() 
+{
+    if (selectionJTreeAlarms == null) {
+        try {
+            selectionJTreeAlarms = new javax.swing.JTree();
+            selectionJTreeAlarms.setName("JTreeNodes");
+            //selectionJTree.setBounds(0, 0, 165, 243);
+            selectionJTreeAlarms.setBounds(0, 0, 300, 400);
+            // user code begin {1}
+            
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Alarm Categories");
+            //DeviceCheckBoxTreeModel checkModel = new DeviceCheckBoxTreeModel(true);
+            selectionJTreeAlarms.setModel( new AlarmCategoryCheckBoxTreeModel() );
+            selectionJTreeAlarms.setCellRenderer( new CheckRenderer() );
+            //selectionJTree.setRootVisible( false );
+            selectionJTreeAlarms.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
+            getAlarmJTreeModel().update();
+            
+            //expand the root
+            selectionJTreeAlarms.expandPath( new TreePath(root.getPath()) );
+            
+            selectionJTreeAlarms.addMouseListener( getAlarmNodeListener() );
+            
+            selectionJTreeAlarms.addMouseListener( new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    alarmValueChanged( null );
+                }
+            });
+
+            //setRoleTabledEnabled(false);            
+
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return selectionJTreeAlarms;
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return CTITreeMode
+ */
+private DeviceCheckBoxTreeModel getDeviceJTreeModel() 
+{
+    return (DeviceCheckBoxTreeModel)getJTreeDevices().getModel();
+}
+
+/**
+ * This method was created in VisualAge.
+ * @return CTITreeMode
+ */
+private AlarmCategoryCheckBoxTreeModel getAlarmJTreeModel() 
+{
+    return (AlarmCategoryCheckBoxTreeModel)getJTreeAlarms().getModel();
+}
+
+/**
+ * Return the CheckNodeSelectionListener property value.
+ * @return com.cannontech.common.gui.tree.CheckNodeSelectionListener
+ */
+private CheckNodeSelectionListener getDeviceNodeListener()
+{
+    if( deviceNodeListener == null )
+    {
+        deviceNodeListener = new CheckNodeSelectionListener( getJTreeDevices(), true);
+    }
+    return deviceNodeListener;
+}
+
+/**
+ * Return the CheckNodeSelectionListener property value.
+ * @return com.cannontech.common.gui.tree.CheckNodeSelectionListener
+ */
+private CheckNodeSelectionListener getAlarmNodeListener()
+{
+    if( alarmNodeListener == null )
+    {
+        alarmNodeListener = new CheckNodeSelectionListener( getJTreeAlarms() );
+    }
+    return alarmNodeListener;
+}
+
+/**
+ * This method checks for extra work to do like checking or unchecking parents after a tree
+ * selection and then updates the panel.
+ */
+public void deviceValueChanged(TreeSelectionEvent e) 
+{
+    int selRow = getJTreeDevices().getMaxSelectionRow();
+    if( selRow != -1) 
+    {
+        CheckNode node = ( CheckNode )getJTreeDevices().getPathForRow( selRow ).getLastPathComponent();
+        if( !node.isSelected( )) // we are doing an uncheck
+        {
+            CheckNode parent = (CheckNode)node.getParent();
+            
+            // only uncheck parents if they are infact checked currently
+            if( parent != null  && parent.isSelected() )  
+            {
+                //uncheck our parents until we hit the root
+                while( node.getParent() != null ) 
+                {
+                    getDeviceNodeListener().uncheckParent(node);
+                    if( parent.getLevel() == 0 )
+                    {
+                        break;
+                    }
+                    node = (CheckNode)node.getParent();
+                }
+            }
+            
+        }else if ( (CheckNode)node.getParent() != null ) // we don't care if the root got clicked
+        {
+            //  Here we check to see if we need to set our parent as checked and if we do, we continue to check are 
+            //  parent's parent until we either find an unchecked child or we get to the root, confusing as hell.
+            
+            boolean cont = true;
+            while(cont)
+            {
+                cont = checkParent(node);
+                node = (CheckNode)node.getParent();
+            }
+            
+        }
+        
+    }
+    
+    fireInputUpdate();
+}
+
+public void alarmValueChanged(TreeSelectionEvent e) 
+{
+    int selRow = getJTreeAlarms().getMaxSelectionRow();
+    if( selRow != -1 ) 
+    {
+        TreeNode node = ( TreeNode )getJTreeAlarms().getPathForRow( selRow ).getLastPathComponent();
+    }
+    fireInputUpdate();
+}
+
+/**
+ * This methdod looks at all the siblings of "node" to see whether we need to set node's parent as checked,
+ * returning true if we another round of parent checking is needed, false if our parent is actually the root.
+ * Return the ret property value.
+ * @return boolean ret
+ */
+private boolean checkParent(CheckNode node)
+{
+    boolean ret = true;
+    
+    //  since we're doing a set checked on this guy, see if all our siblings are also checked, if so check the parent
+    int children = node.getSiblingCount();
+    CheckNode parent = (CheckNode)node.getParent();
+    CheckNode check = (CheckNode)parent.getFirstChild();
+    
+    for ( int i = 0; i < children; i++ )
+    {
+        if ( !check.isSelected() )
+        {
+            // at least one of our siblings isn't checked so we don't care anymore
+            return false;
+        }else 
+        {
+            if ( check.getNextSibling() == null )
+            {
+                // we are the last node and we are checked so now we can set the parent as checked
+                parent.setSelected( true );
+                if( parent.getLevel() == 0 )                
+                {
+                    // the parent is the root and we are done
+                    return false;
+                }else
+                {
+                    // we've set our parent and we can return for more checking fun
+                    break;
+                }
+                
+            }
+        }
+        check = (CheckNode) check.getNextSibling();
+        
+    }
+    
+    return ret;
+}
 
 }

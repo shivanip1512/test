@@ -193,14 +193,6 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 
 	/**
-	 * Sets the graph.
-	 * @param graph The graph to set
-	 */
-	private void setCTIGraph(Graph graph) {
-		this.ctiGraph = graph;
-	}
-
-	/**
 	 * Returns the trendType.
 	 * @return int
 	 */
@@ -248,13 +240,6 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			}
 
 			resetDisplayRange();
-			Date start = ServletUtil.getStartingDateOfInterval(getCurrentStartDate(),getDisplayPeriod());
-			Date end = ServletUtil.getEndingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()); 
-			//System.out.println(start);
-			//System.out.println(end);
-					
-			//gDef.getGraphDefinition().setStartDate(start);
-			//gDef.getGraphDefinition().setStopDate(end);
 				
 			Graph graph = getCTIGraph();
 			graph.setStartDate(getCurrentStartDate());
@@ -313,9 +298,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 */
 	private void resetDisplayRange() {		
 		Date start = ServletUtil.getToday();
-		String period = getDisplayPeriod();
 		setCurrentStartDate(start);		
-		
 	}
 	
 	public boolean shouldUpdate() {			
