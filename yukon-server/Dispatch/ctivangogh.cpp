@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.130 $
-* DATE         :  $Date: 2006/03/02 23:37:31 $
+* REVISION     :  $Revision: 1.131 $
+* DATE         :  $Date: 2006/03/03 18:35:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1364,7 +1364,7 @@ void CtiVanGogh::VGArchiverThread()
     CtiTime   TimeNow;
     CtiTime  lastTickleTime((unsigned long) 0);
     CtiTime  lastReportTime((unsigned long) 0);
-    
+
     UINT sanity = 0;
 
 
@@ -1533,7 +1533,7 @@ void CtiVanGogh::VGTimedOperationThread()
         dout << CtiTime() << " Dispatch Timed Operation Thread shutting down" << endl;
     }
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
-        
+
     return;
 }
 
@@ -3196,7 +3196,7 @@ INT CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMultiWrapper
         CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
 
         for(; pMulti->getData().end() != itr; )
-        {   
+        {
             pMyMsg = (CtiMessage*)*itr;
             status = checkDataStateQuality( pMyMsg, aWrap );
             itr++;
@@ -4845,6 +4845,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
 
                     {
                         CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update");
+                        pTagSig->setUser(user);
                         pTagSig->setMessagePriority(15);
                         pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
                         postMessageToClients(pTagSig);
