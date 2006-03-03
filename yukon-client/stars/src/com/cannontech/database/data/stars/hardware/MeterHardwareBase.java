@@ -369,4 +369,14 @@ public class MeterHardwareBase extends InventoryBase {
         
         return truth;
     }
+    
+    public String getDeviceLabel()
+    {
+        if(this.getDeviceLabel() == "")
+        {
+            return meterHardwareBase.getMeterNumber();
+        }
+        
+        return getDeviceLabel();
+    }
 }
