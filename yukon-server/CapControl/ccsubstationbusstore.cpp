@@ -4356,6 +4356,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
                 }
 
+                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << "SUBBUS: " << subBusName <<" has been deleted." << endl;
@@ -4422,6 +4423,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
                 _paobject_feeder_map.erase(feederToDelete->getPAOId());
                 _feeder_subbus_map.erase(feederToDelete->getPAOId());
 
+                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << "FEEDER: " << feederName <<" has been deleted." << endl;
@@ -4511,9 +4513,12 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     capBankToDelete = NULL;
                 }
                 else
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "CAPBANK: " << capBankName <<" has been deleted." << endl;
+                {   
+                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << "CAPBANK: " << capBankName <<" has been deleted." << endl;
+                    }
                 }
             }
             catch(...)
