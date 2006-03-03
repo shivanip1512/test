@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/01/30 20:29:27 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2006/03/03 18:35:31 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.13  2006/03/03 18:35:31  cplender
+* Altered exclusion logic for Ripple groups and LCU processing
+*
 * Revision 1.12  2006/01/30 20:29:27  jotteson
 * Fixed exclusion bug comparing a time and a device id. Removed un-necessary if loop.
 *
@@ -281,6 +284,11 @@ void CtiDeviceExclusion::setExecutingUntil(CtiTime set)
     return;
 }
 
+/*
+ *  Determines if this device is exclusion prohibited by any other device.  The passed in time is used to remove expired time exclusions
+ *  The passed in device id if non-zero is used to determine if the indicated id is prohibiting the execution (true return).
+ *  If did = zero, any exclusion returns bool true.
+ */
 bool CtiDeviceExclusion::isExecutionProhibited(const CtiTime &now, LONG did)
 {
     bool prohibited = false;

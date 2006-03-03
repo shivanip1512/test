@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/03/03 18:35:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using std::vector;
 #include "dsm2.h"
 #include "dev_idlc.h"
 #include "mgr_point.h"
+#include "mutex.h"
 
 #define SEQUENCE_ACTIVE    1000
 #define MISSED      1001
@@ -99,8 +100,8 @@ private:
     static ULONG         _lcuWithToken;         // This is the most recent LCU to pass through containsExclusionBlock successfully.
     static ULONG         _lcuSlowScanDelay;
 
-    static RWMutexLock   _staticMux;
-    static RWMutexLock   _lcuExclusionMux;     // Must be acquired before examining exclusion lists
+    static CtiMutex      _staticMux;
+    static CtiMutex      _lcuExclusionMux;     // Must be acquired before examining exclusion lists
 
     string            _lastCommand;
 
@@ -152,7 +153,7 @@ public:
     CtiReturnMsg*  lcuDecodeAccumulators(INMESS *InMessage, list< OUTMESS* > &outList);
 
 
-    RWMutexLock&   getLCUExclusionMux();
+    CtiMutex& getLCUExclusionMux();
 
     void           verifyControlLockoutState(INMESS *InMessage);
     bool           isLCUAlarmed(INMESS *InMessage);

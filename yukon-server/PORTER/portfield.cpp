@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.170 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.171 $
+* DATE         :  $Date: 2006/03/03 18:35:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2737,7 +2737,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     INT deviceID = OutMessage->DeviceID;
     INT targetID = OutMessage->TargetID;
 
-    if( (CommResult != NORMAL) ||
+    if( (CommResult != NORMAL && CommResult != ErrPortSimulated) ||
         (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
            (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ))
     {
@@ -2877,6 +2877,15 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     if(status == RETRY_SUBMITTED)
     {
         statisticsNewAttempt( port, deviceID, targetID, CommResult );
+    }
+    else if(CommResult == ErrPortSimulated)
+    {
+        // There is no retry submitted on a simulated port??
+        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     else if(CommResult != NORMAL)
     {
@@ -3783,12 +3792,8 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
                 if( DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
                 {
-                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Device->getName() << " might be able to execute." << endl;
-                    }
                     bStatus = TRUE;     // This device is locked in as executable!!!
+                    Device->setExecuting();
                 }
             }
             else

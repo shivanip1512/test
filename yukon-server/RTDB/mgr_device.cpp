@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2005/12/20 17:20:26 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2006/03/03 18:35:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -416,7 +416,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
 
         devname = p->getName();
         std::transform(devname.begin(), devname.end(), devname.begin(), ::tolower);
-        
+
 
         if( devname == cmpname )
         {
@@ -1826,8 +1826,8 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                             }
 
                             deviceexclusion = anxiousDevice->getExclusion().getCycleTimeExclusion();                             // Pass this out to the callee as the device which blocked us first!
-                            busted = true;
-                            bstatus = false;
+                            busted = true;          // Window is closed!
+                            bstatus = false;        // Cannot execute.
                         }
                     }
 
@@ -1842,11 +1842,11 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                         {
                         case (CtiTablePaoExclusion::ExFunctionIdExclusion):
                             {
-                                device = getEqual(paox.getExcludedPaoId());
+                                device = getEqual(paox.getExcludedPaoId());  // grab the excludable device
 
                                 if(device)
                                 {
-                                    if(device->isExecuting())
+                                    if(device->isExecuting())               // is the excludable executing?  This would block anxiousDevice.
                                     {
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
@@ -1855,16 +1855,20 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
                                         anxiousDeviceBlocksThisVector.clear();             // Cannot use the list to block other devices.
-                                        bstatus = false;
+                                        busted = true;              // 20060228 CGP.  // Prevent additional loops.
                                         break;                      // we cannot go
                                     }
-                                    else if( !device->isExecutionProhibited(now, anxiousDevice->getID()) )
+                                    else if( device->isExecutionProhibited(now, anxiousDevice->getID()) )  // This asks if anxiousDevice is already blocking "device".  We don't add it a second time.
                                     {
-                                        bstatus = true;             // Do not remark a device excluded by this id a second time.
+                                        if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Device " << device->getName() << " is already blocked by " << anxiousDevice->getName() << endl;
+                                        }
                                     }
                                     else
                                     {
-                                        anxiousDeviceBlocksThisVector.push_back(device);
+                                        anxiousDeviceBlocksThisVector.push_back(device);    // Throw a copy of the shptr onto this vector to be marked out if we succeed.
                                     }
                                 }
 
@@ -1888,6 +1892,14 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                 break;
                             }
                         }
+                    }
+
+                    /*
+                     *  If we get through all proximity exclusion devices and no one is running, we MAY execute.
+                     */
+                    if(!busted && itr == exvector.end())
+                    {
+                        bstatus = true;                     // we may execute in this case.
                     }
 
                     //
@@ -1923,6 +1935,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                     dout << CtiTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
                 }
                 anxiousDevice->getExclusion().setExecutingUntil(anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
+                anxiousDevice->setExecuting(true);
             }
         }
     }

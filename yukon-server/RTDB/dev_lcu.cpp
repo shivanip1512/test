@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2006/03/03 18:35:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,8 +81,8 @@ ULONG         CtiDeviceLCU::_lcuStartStopCrossings  = 44L;
 ULONG         CtiDeviceLCU::_lcuBitCrossings        = 16L;
 ULONG         CtiDeviceLCU::_lcuDutyCyclePercent    = 4L;
 ULONG         CtiDeviceLCU::_lcuSlowScanDelay       = 2500L;
-RWMutexLock   CtiDeviceLCU::_staticMux;
-RWMutexLock   CtiDeviceLCU::_lcuExclusionMux;
+CtiMutex      CtiDeviceLCU::_staticMux;
+CtiMutex      CtiDeviceLCU::_lcuExclusionMux;
 
 
 CtiDeviceLCU::CtiDeviceLCU(INT type) :
@@ -1338,7 +1338,7 @@ ULONG CtiDeviceLCU::lcuTime(OUTMESS *&OutMessage, UINT lcuType)
         initLCUGlobals();
     }
 
-    RWMutexLock::LockGuard guard(_staticMux);
+    CtiLockGuard<CtiMutex> guard(_staticMux);
     ULONG Seconds = 0;
 
 #ifdef REALTIME
@@ -1409,7 +1409,7 @@ void CtiDeviceLCU::initLCUGlobals()
 
     if(!_lcuGlobalsInit)
     {
-        RWMutexLock::LockGuard guard(_staticMux);
+        CtiLockGuard<CtiMutex> guard(_staticMux);
 
 
         if( !(str = gConfigParms.getValueAsString("DSM2_LANDGMINIMUMTIME")).empty() )
@@ -1803,7 +1803,7 @@ bool CtiDeviceLCU::isLCUAlarmed( INMESS *InMessage )
     return bAlarmed;
 }
 
-RWMutexLock& CtiDeviceLCU::getLCUExclusionMux()
+CtiMutex& CtiDeviceLCU::getLCUExclusionMux()
 {
     return _lcuExclusionMux;
 }
@@ -1824,6 +1824,35 @@ CtiDeviceLCU& CtiDeviceLCU::operator=(const CtiDeviceLCU& aRef)
 INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, CtiLCUResult_t &resultCode, bool globalControlAvailable, list< CtiMessage* >  &vgList)
 {
     INT status = NORMAL;
+
+    // Pretend for the simulated ports!
+    if(InMessage->EventCode & 0x3ffff == ErrPortSimulated)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        if(getNextCommandTime() > CtiTime())
+        {
+            Sleep(1000);
+            setFlags( LCUWASTRANSMITTING );
+            resultCode = eLCUFastScan;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << getName() << " \"BUSY\" scanning for \"NOT-BUSY\"  SIMULATE!!!" << endl;
+            }
+        }
+        else
+        {
+            resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
+            resultCode = eLCUDeviceControlComplete;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << getName() << " HAS COMPLETED AND GONE IDLE! SIMULATE!!!" << endl;
+            }
+        }
+    }
 
     if(InMessage->InLength > 0)
     {
@@ -2017,6 +2046,9 @@ void CtiDeviceLCU::lcuResetFlagsAndTags()
     setNextCommandTime( PASTDATE );
     setNumberStarted( 0 );
     releaseToken();
+
+    removeInfiniteProhibit(getID());
+    setExecuting(false);
 }
 
 
@@ -2185,7 +2217,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
 
 void CtiDeviceLCU::assignToken(ULONG id)
 {
-    RWMutexLock::LockGuard guard(_staticMux);
+    CtiLockGuard<CtiMutex> guard(_staticMux);
 
     if( CtiDeviceLCU::excludeALL() )
     {
@@ -2195,13 +2227,13 @@ void CtiDeviceLCU::assignToken(ULONG id)
 
 void CtiDeviceLCU::releaseToken()
 {
-    RWMutexLock::LockGuard guard(_staticMux);
+    CtiLockGuard<CtiMutex> guard(_staticMux);
     _lcuWithToken = 0;
 }
 
 ULONG CtiDeviceLCU::whoHasToken()
 {
-    RWMutexLock::LockGuard guard(_staticMux);
+    CtiLockGuard<CtiMutex> guard(_staticMux);
     return _lcuWithToken;
 }
 
@@ -2209,7 +2241,7 @@ bool CtiDeviceLCU::tokenIsAvailable(ULONG id_whosasking)
 {
     bool ret = false;
 
-    RWMutexLock::LockGuard guard(_staticMux);
+    CtiLockGuard<CtiMutex> guard(_staticMux);
 
     if( !CtiDeviceLCU::excludeALL() || _lcuWithToken == 0 || _lcuWithToken == id_whosasking)
     {
