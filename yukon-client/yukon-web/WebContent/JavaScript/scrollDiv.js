@@ -39,7 +39,6 @@ function addSmartScrolling(hidden_id, div_id, indx_id, comp_id){
 	       }	    
     }
 	div_el.onscroll = function () {hidden_el.value = div_el.scrollTop + 1;};
-	toggleDivs();
 	});
 }
 
