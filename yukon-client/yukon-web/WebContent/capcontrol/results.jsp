@@ -3,6 +3,7 @@
 <cti:standardPage title="Search Results" module="capcontrol">
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
+<%@ page import="com.cannontech.web.util.*" %>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
@@ -80,10 +81,20 @@ for( int i = 0; i < items.length; i++ )
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=item.getItemID()%>"/>
 		<% } else { %>
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
-		<% } %>
-				<%=item.toString()%></td>
-				<td><%=item.getItemType()%></td>
-				<td><%=item.getDescription()%></td>
+		<% } 
+        String[] columns = {item.toString(), item.getItemType(), item.getDescription()};
+        SearchResultsTableRow row = new SearchResultsTableRow (columns); 
+     
+        TableRowFormater formater = new TableRowFormater();
+        formater.setTableRow(row);
+        
+        row = (SearchResultsTableRow)formater.formatRow();
+        
+        %>
+				<%=row.getCell(0)%></td>
+				<td><%=row.getCell(1)%></td>
+
+				<td><%= row.getCell(2)%></td>
 				<td>
 	<% 
 		
