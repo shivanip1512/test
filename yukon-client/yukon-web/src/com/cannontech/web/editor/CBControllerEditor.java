@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
 
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeNode;
@@ -30,6 +31,7 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
@@ -286,11 +288,19 @@ public class CBControllerEditor {
             //of the cbc 
             String red = "pointBase.jsf?parentId=" + getPaoCBC().getPAObjectID().toString() + "&itemid=";
             String val = JSFParamUtil.getJSFReqParam("ptID");
-            FacesContext.getCurrentInstance().getExternalContext().redirect(red + val);
+            String location = red + val;            
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil util = CBCNavigationUtil.getInstanceOf(session);
+            util.bookmarkLocation(location);
+            //go to the next page
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
         catch (IOException e) {
             fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+        } catch (Exception e) {
+            //some code to handle null session 
         }
         finally{
             if(fm.getDetail() != null) {

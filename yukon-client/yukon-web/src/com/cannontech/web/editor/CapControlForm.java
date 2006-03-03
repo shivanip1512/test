@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,11 +12,10 @@ import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModel;
@@ -55,7 +53,6 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
@@ -65,6 +62,7 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.point.PointLists;
@@ -72,13 +70,10 @@ import com.cannontech.web.exceptions.FormWarningException;
 import com.cannontech.web.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.web.exceptions.PortDoesntExistException;
 import com.cannontech.web.exceptions.SameMasterSlaveCombinationException;
-import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCSelectionLists;
-import com.cannontech.web.util.JSFNavUtil;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.SubBus;
 
 /**
@@ -1867,13 +1862,12 @@ public class CapControlForm extends DBEditorForm {
     public int getSelectedPanelIndex() {
         if (isEditingController())
         {
-            
-            return CBCSelectionLists.CapBankControllerSetup;
-        }
-        else
-        {
-         return CBCSelectionLists.General;   
-        }
+           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x)
+               return CBCSelectionLists.CapBankControllerSetup;
+        }       
+        else if (getDbPersistent() instanceof CapBank)
+            return CBCSelectionLists.CapBankSetup;    
+        return CBCSelectionLists.General;   
      }
 
     protected void checkForErrors() throws PortDoesntExistException, MultipleDevicesOnPortException, 
@@ -1899,11 +1893,18 @@ public class CapControlForm extends DBEditorForm {
             //of the cbc 
             String red = "pointBase.jsf?parentId=" + ((YukonPAObject)getDbPersistent()).getPAObjectID().toString() + "&itemid=";
             String val = JSFParamUtil.getJSFReqParam("ptID");
-            FacesContext.getCurrentInstance().getExternalContext().redirect(red + val);
+            String location = red + val;
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil util = CBCNavigationUtil.getInstanceOf(session);
+            util.bookmarkLocation(location);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
         catch (IOException e) {
             fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+        } catch (Exception e) {
+            //add some code to handle null session exception
         }
         finally{
             if(fm.getDetail() != null) {

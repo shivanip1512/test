@@ -9,8 +9,8 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.web.util.JSFParamUtil;
 
 /**
  * @author ryan
@@ -31,23 +31,31 @@ public class CtiNavActionListener implements ActionListener {
 				
 				String red = "";
 
-				//redirect to our module redirect page first, if it set, else
+                red = CBCNavigationUtil.goBack();
+                    if (!red.equalsIgnoreCase("")) {
+                        ctiNav.setNavigation(red);           
+                        
+                    }
+                
+                //redirect to our module redirect page first, if it set, else
 				// we return to the module exit page
-				if( ctiNav.getModuleRedirectPage() != null ) {
-					red = ctiNav.getModuleRedirectPage();
-					ctiNav.setModuleRedirectPage( null );
+                    else if( ctiNav.getModuleRedirectPage() != null ) {
+                        red = ctiNav.getModuleRedirectPage();
+                        ctiNav.setModuleRedirectPage( null );
 				}
 				else {
 					red = ctiNav.getModuleExitPage();
 				}
 
 				context.getExternalContext().redirect( red );
+                context.responseComplete();
 			}
 			else
 				CTILogger.warn("CtiNavObject not found in session, ignoring redirect request" );
 
 			
-			context.responseComplete();
+           
+         
 
 		} catch( IOException ioe ) {
 			CTILogger.error("Unable to redirect request", ioe );

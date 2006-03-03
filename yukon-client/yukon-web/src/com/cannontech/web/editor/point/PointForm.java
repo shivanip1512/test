@@ -1,17 +1,15 @@
 package com.cannontech.web.editor.point;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
@@ -20,40 +18,31 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AlarmCatFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
-import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointOffsetUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorTypes;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.exceptions.InvalidPointOffsetException;
-import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCSelectionLists;
-import com.cannontech.web.util.JSFNavUtil;
 import com.cannontech.web.wizard.PointWizardModel;
 
 /**
@@ -716,18 +705,25 @@ public class PointForm extends DBEditorForm
     public void paoClick(ActionEvent ae){
         FacesMessage fm = new FacesMessage();
         try {
+            //go to the next page
             String path = "/editor/cbcBase.jsf";
             String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
             .get("paoID");
             String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
             String query = "?type=" + type + "&" + "itemid=" + itemId;
-            String location = path + query;               
-            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            String location = path + query;                                       
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil util = CBCNavigationUtil.getInstanceOf(session);
+            util.bookmarkLocation(location);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);            
             FacesContext.getCurrentInstance().responseComplete();            
         } 
 
         catch (IOException e) {
             fm.setDetail("ERROR - Couldn't redirect. PointForm:paoClick. " + e.getMessage());
+        } catch (Exception e) {
+            //code to handle null session
         }
         finally{
             if(fm.getDetail() != null) {
