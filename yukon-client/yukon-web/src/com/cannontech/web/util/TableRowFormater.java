@@ -38,7 +38,7 @@ public class TableRowFormater {
             for (int i = 0; i < (columnName.length() - cellContent.length()); i++) {
                 cellContent += "&nbsp;";
             }
-            cellContent += "&nbsp;&nbsp;&nbsp;";
+            cellContent += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         }
         return cellContent;
     }
