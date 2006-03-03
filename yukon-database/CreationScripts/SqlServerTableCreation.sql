@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/27/2006 4:55:19 PM                         */
+/* Created on:     3/3/2006 4:22:14 PM                          */
 /*==============================================================*/
 
 
@@ -1242,6 +1242,14 @@ if exists (select 1
            where  id = object_id('EnergyCompanyOperatorLoginList')
             and   type = 'U')
    drop table EnergyCompanyOperatorLoginList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EsubDisplayIndex')
+            and   type = 'U')
+   drop table EsubDisplayIndex
 go
 
 
@@ -4943,6 +4951,21 @@ go
 
 
 /*==============================================================*/
+/* Table: EsubDisplayIndex                                      */
+/*==============================================================*/
+create table EsubDisplayIndex (
+   SearchKey            varchar(500)         not null,
+   DisplayUrl           varchar(500)         not null
+)
+go
+
+
+alter table EsubDisplayIndex
+   add constraint PK_ESUBDISPLAYINDEX primary key  (SearchKey)
+go
+
+
+/*==============================================================*/
 /* Table: FDRInterface                                          */
 /*==============================================================*/
 create table FDRInterface (
@@ -6369,6 +6392,7 @@ INSERT into point values( -5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N
 INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 alter table POINT
    add constraint Key_PT_PTID primary key  (POINTID)
 go
@@ -6417,6 +6441,7 @@ create table POINTANALOG (
 go
 
 
+insert into pointanalog values( 100, 0, 'None', 1, 0 );
 alter table POINTANALOG
    add constraint PK_POINTANALOG primary key  (POINTID)
 go
@@ -6484,6 +6509,7 @@ create table POINTUNIT (
 go
 
 
+insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30);
 alter table POINTUNIT
    add constraint PK_POINTUNITID primary key  (POINTID)
 go
@@ -6593,6 +6619,7 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
+insert into pointalarming values (100,  '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0);     
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key  (PointID)
 go

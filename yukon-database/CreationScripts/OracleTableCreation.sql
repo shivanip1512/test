@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/27/2006 4:54:26 PM                         */
+/* Created on:     3/3/2006 4:23:05 PM                          */
 /*==============================================================*/
 
 
@@ -297,6 +297,8 @@ drop table EnergyCompany cascade constraints;
 drop table EnergyCompanyCustomerList cascade constraints;
 
 drop table EnergyCompanyOperatorLoginList cascade constraints;
+
+drop table EsubDisplayIndex cascade constraints;
 
 drop table FDRInterface cascade constraints;
 
@@ -741,8 +743,8 @@ create table CCEventLog  (
    EventType            NUMBER                          not null,
    SeqID                NUMBER                          not null,
    Value                NUMBER                          not null,
-   Text                 VARCHAR(120)                    not null,
-   UserName             VARCHAR(64)                     not null
+   Text                 VARCHAR2(120)                   not null,
+   UserName             VARCHAR2(64)                    not null
 );
 
 alter table CCEventLog
@@ -2956,6 +2958,17 @@ alter table EnergyCompanyOperatorLoginList
    add constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID);
 
 /*==============================================================*/
+/* Table: EsubDisplayIndex                                      */
+/*==============================================================*/
+create table EsubDisplayIndex  (
+   SearchKey            VARCHAR2(500)                   not null,
+   DisplayUrl           VARCHAR2(500)                   not null
+);
+
+alter table EsubDisplayIndex
+   add constraint PK_ESUBDISPLAYINDEX primary key (SearchKey);
+
+/*==============================================================*/
 /* Table: FDRInterface                                          */
 /*==============================================================*/
 create table FDRInterface  (
@@ -4106,6 +4119,7 @@ INSERT into point values( -5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N
 INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 alter table POINT
    add constraint Key_PT_PTID primary key (POINTID);
 
@@ -4142,6 +4156,7 @@ create table POINTANALOG  (
    DATAOFFSET           FLOAT                           not null
 );
 
+insert into pointanalog values( 100, 0, 'None', 1, 0 );
 alter table POINTANALOG
    add constraint PK_POINTANALOG primary key (POINTID);
 
@@ -4197,6 +4212,7 @@ create table POINTUNIT  (
    LowReasonabilityLimit FLOAT                           not null
 );
 
+insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30);
 alter table POINTUNIT
    add constraint PK_POINTUNITID primary key (POINTID);
 
@@ -4282,6 +4298,7 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
+insert into pointalarming values (100,  '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0);     
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key (PointID);
 
