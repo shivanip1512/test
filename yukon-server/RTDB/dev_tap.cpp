@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2006/03/03 18:35:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,6 +215,12 @@ string CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse
 INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT status = commReturnValue;
+
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     switch( getCurrentState() )
     {
@@ -474,6 +480,12 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< C
 {
     INT status = NORMAL;
 
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     switch( getCurrentState() )
     {
     case StateHandshakeInitialize:            // Look for any unsolicited ID= Message first... (no outbound CR's)
@@ -508,6 +520,10 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, list< C
             }
 
             setAttemptsRemaining( TAPCOUNT_N1 );         // Repeat this operation this many times before err-abort
+
+            if(gConfigParms.isTrue("TAPTERM_FORCE_HANDSHAKESENDSTART"))
+                setPreviousState(StateHandshakeSendStart);   // Let anyone find us back... 20060227 CGP
+
             setCurrentState(StateHandshakeDecodeStart);
 
             break;
@@ -824,6 +840,12 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
     INT   i;
     INT   status = NORMAL;
 
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     switch( getCurrentState() )
     {
     case StateHandshakeComplete:
@@ -1027,6 +1049,12 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
 
     if( status == NORMAL )     // Communications must have been successful
     {
+        if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         switch( getCurrentState() )
         {
         case StateScanDecode3:
@@ -1161,6 +1189,17 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, list<
     INT   i;
     INT   status = NORMAL;
 
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". Log On Needed " << getLogOnNeeded() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if(gConfigParms.isTrue("TAPTERM_FORCE_EOT"))
+    {
+        setLogOnNeeded(TRUE);
+    }
+
     if( getLogOnNeeded() == TRUE )
     {
         switch( getCurrentState() )
@@ -1280,6 +1319,12 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
 
     if( status == NORMAL )     // Communications must have been successful
     {
+        if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
 
         switch( getCurrentState() )
@@ -1387,6 +1432,12 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
     else                                                                 // Device is already online and init
     {
         setCurrentState(StateHandshakeComplete);
+    }
+
+    if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " setInitialState() => oldID = " << oldid << ". Current state " << getCurrentState() << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;
