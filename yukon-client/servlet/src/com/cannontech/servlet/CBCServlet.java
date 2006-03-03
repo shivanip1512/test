@@ -18,10 +18,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -158,8 +160,12 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 			if( "nav".equalsIgnoreCase(type) ) {
 				//handle navigation here
 				redirectURL = createNavigation( req );
-
-				CTILogger.debug("servlet nav to: " + redirectURL );
+                //code to memorize the position of the page we
+                //are at and the page we are going to
+                CBCNavigationUtil util = CBCNavigationUtil.getInstanceOf(session);
+                util.bookmarkLocation(redirectURL);
+                
+                CTILogger.debug("servlet nav to: " + redirectURL );
 			}
 			else {
 				//by default, treat this as a XML request
