@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.esub.util.UpdateUtil;
 
 /**
@@ -51,8 +50,6 @@ public class DynamicTextServlet extends HttpServlet {
 				
 		int id = Integer.parseInt(idStr);
 		int dattrib = Integer.parseInt(displayAttribStr);
-				
-		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 		
 		Writer writer = resp.getWriter();		
 		writer.write(UpdateUtil.getDynamicTextString(id, dattrib));

@@ -75,12 +75,13 @@ public class SVGGenerator extends HttpServlet {
 							
 				boolean canEdit = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
 				boolean canControl = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
-				
+
 				SVGOptions svgOptions = new SVGOptions();
 				svgOptions.setStaticSVG(false);
 				svgOptions.setScriptingEnabled(true);
 				svgOptions.setEditEnabled(canEdit);
 				svgOptions.setControlEnabled(canControl);
+				svgOptions.setAudioEnabled(true); // TODO set to role property value
 				
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator(svgOptions);				
 				gen.generate(w, d);	
