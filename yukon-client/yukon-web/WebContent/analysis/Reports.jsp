@@ -12,6 +12,7 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+<%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
@@ -21,7 +22,7 @@
 	StarsYukonUser starsYukonUser = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=EnergyCompanyFuncs.getEnergyCompany(lYukonUser).getEnergyCompanyID()%>"/>
+	<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(EnergyCompanyFuncs.getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:EnergyCompanyFuncs.getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="type" param="type"/>
