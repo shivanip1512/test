@@ -130,15 +130,16 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
             <x:div forceId="true" id = "CapBankPointsDiv" styleClass="scrollVerySmall">
              <x:dataList forceId="true" id="CapBankPointsList" var="item" value="#{capControlForm.capBankPointList}" layout="unorderedList" styleClass="listWithNoBullets">                    
                <x:panelGroup>
+                <f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
                   <x:commandLink id="ptLink" value="#{item.pointName}" actionListener="#{capControlForm.capBankPointClick}">
                      <f:param name="ptID" value="#{item.liteID}" />
                   </x:commandLink>
                </x:panelGroup>
              </x:dataList>
           </x:div>
-            
+            <f:verbatim><br><br></f:verbatim>
             <f:verbatim></fieldset></f:verbatim>
-                    <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
+                    <f:verbatim><br/><fieldset><legend>Contoller Configuration</legend></f:verbatim>
                         <f:verbatim><br/></f:verbatim> 
                          <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>
                             <x:commandLink id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
