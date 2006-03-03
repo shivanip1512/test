@@ -832,6 +832,15 @@
 		<row><td>sigsrctest.exe</td><td>Test Applications</td><td>sigsrctest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\sigsrctest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>singlesignonvalve.jsp</td><td>Tomcat</td><td>singleSignOnValve.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\valve\singleSignOnValve.jsp</td><td>1</td><td>NewSubFolder27</td></row>
 		<row><td>singlesignonvalveform.class</td><td>Tomcat</td><td>SingleSignOnValveForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\valve\SingleSignOnValveForm.class</td><td>1</td><td>NewSubFolder46</td></row>
+		<row><td>spring_aop.jar</td><td>Common Bin</td><td>spring-aop.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-aop.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_beans.jar</td><td>Common Bin</td><td>spring-beans.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-beans.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_context.jar</td><td>Common Bin</td><td>spring-context.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-context.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_core.jar</td><td>Common Bin</td><td>spring-core.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-core.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_dao.jar</td><td>Common Bin</td><td>spring-dao.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-dao.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_hibernate.jar</td><td>Common Bin</td><td>spring-hibernate.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-hibernate.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_jdbc.jar</td><td>Common Bin</td><td>spring-jdbc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-jdbc.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_orm.jar</td><td>Common Bin</td><td>spring-orm.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-orm.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>spring_web.jar</td><td>Common Bin</td><td>spring-web.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\spring-web.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>sqlserver.jar</td><td>Common Bin</td><td>SqlServer.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\SqlServer.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>startup.bat</td><td>Tomcat</td><td>startup.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\bin\startup.bat</td><td>1</td><td>NewSubFolder4</td></row>
 		<row><td>startup.sh</td><td>Tomcat</td><td>startup.sh</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\bin\startup.sh</td><td>1</td><td>NewSubFolder4</td></row>
