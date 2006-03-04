@@ -15,6 +15,8 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.ModelFactory;
 
@@ -238,12 +240,18 @@ public class CapControlEventLogModel extends ReportModelBase
 		    switch( columnIndex)
 			{
 				case SUB_BUS_NAME_COLUMN:
+					if( ccStatData.getSubBusPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
+						return null;
 				    return PAOFuncs.getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
 
 				case FEEDER_NAME_COLUMN:
+					if( ccStatData.getFeederPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
+						return null;
 				    return PAOFuncs.getYukonPAOName(ccStatData.getFeederPaoID().intValue());
 				
 				case CAP_BANK_NAME_COLUMN:
+					if( ccStatData.getCapBankPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
+						return null;
 					return PAOFuncs.getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
 				case STATUS_VALUE_COLUMN:
