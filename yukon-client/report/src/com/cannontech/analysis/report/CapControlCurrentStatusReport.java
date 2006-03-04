@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.geom.Point2D;
 
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -18,7 +19,8 @@ import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.CapControlStatusModel;
+import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
+import com.cannontech.analysis.tablemodel.MeterReadModel;
 
 /**
  * Created on Dec 15, 2003
@@ -27,15 +29,15 @@ import com.cannontech.analysis.tablemodel.CapControlStatusModel;
  *  
  * @author snebben
  */
-public class CapControlStatusReport extends YukonReportBase
+public class CapControlCurrentStatusReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf CapControlStatusModel.
 	 */
-	public CapControlStatusReport()
+	public CapControlCurrentStatusReport()
 	{
-		this(new CapControlStatusModel());
+		this(new CapControlCurrentStatusModel());
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class CapControlStatusReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf CapControlStatusModel.
 	 * @param data_ - CapControlStatusModel TableModel data
 	 */
-	public CapControlStatusReport(CapControlStatusModel model_)
+	public CapControlCurrentStatusReport(CapControlCurrentStatusModel model_)
 	{
 		super();
 		setModel(model_);
@@ -60,8 +62,8 @@ public class CapControlStatusReport extends YukonReportBase
 		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
-		CapControlStatusModel reportModel = new CapControlStatusModel();
-		YukonReportBase dbReport = new CapControlStatusReport(reportModel);
+		CapControlCurrentStatusModel reportModel = new CapControlCurrentStatusModel();
+		YukonReportBase dbReport = new CapControlCurrentStatusReport(reportModel);
 		dbReport.getModel().collectData();
 	
 		//Create the report
@@ -83,6 +85,42 @@ public class CapControlStatusReport extends YukonReportBase
 		dialog.setModal(true);
 		dialog.pack();
 		dialog.setVisible(true);
+	}
+	/**
+	 * Create a Group for CollectionGroup  
+	 * @return Group
+	 */
+	private Group createCollGrpGroup()
+	{
+	    final Group collGrpGroup = new Group();
+	    collGrpGroup.setName( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
+	    collGrpGroup.addField( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN));
+
+	    GroupHeader header = ReportFactory.createGroupHeaderDefault();
+
+	    LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
+	    factory.setText(factory.getText() + ":");
+	    header.addElement(factory.createElement());
+
+	    TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
+	    tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the posX location
+	    header.addElement(tfactory.createElement());
+
+	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
+
+	    for (int i = MeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
+	    {
+	        factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
+		    header.addElement(factory.createElement());
+		}
+	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
+	    collGrpGroup.setHeader(header);
+
+
+	  	GroupFooter footer = ReportFactory.createGroupFooterDefault();
+	  	collGrpGroup.setFooter(footer);
+	  	return collGrpGroup;
 	}
 	/**
 	 * Create a Group for Column Headings only.  
@@ -157,15 +195,15 @@ public class CapControlStatusReport extends YukonReportBase
 	{
 		super.getExpressions();
 		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName(CapControlStatusModel.SUB_BUS_NAME_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setField(CapControlStatusModel.SUB_BUS_NAME_STRING);
-		hideItem.setElement(CapControlStatusModel.SUB_BUS_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setName(CapControlCurrentStatusModel.SUB_BUS_NAME_STRING + ReportFactory.NAME_HIDDEN);
+		hideItem.setField(CapControlCurrentStatusModel.SUB_BUS_NAME_STRING);
+		hideItem.setElement(CapControlCurrentStatusModel.SUB_BUS_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
-		hideItem.setName(CapControlStatusModel.FEEDER_NAME_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setField(CapControlStatusModel.FEEDER_NAME_STRING);
-		hideItem.setElement(CapControlStatusModel.FEEDER_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setName(CapControlCurrentStatusModel.FEEDER_NAME_STRING + ReportFactory.NAME_HIDDEN);
+		hideItem.setField(CapControlCurrentStatusModel.FEEDER_NAME_STRING);
+		hideItem.setElement(CapControlCurrentStatusModel.FEEDER_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 		
 		return expressions;

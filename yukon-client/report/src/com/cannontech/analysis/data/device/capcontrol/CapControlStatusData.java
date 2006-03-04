@@ -16,33 +16,59 @@ import java.util.Date;
  */
 public class CapControlStatusData
 {
-	private Integer capBankPaoID = null;
 	private Integer subBusPaoID = null;
+	private Integer capBankPaoID = null;
 	private Integer feederPaoID = null;
 	private Integer controlStatus = null;
-	private Date lastChangeDateTime = null;
+	private Date changeDateTime = null;
 	private Integer controlOrder = null;
+	private String pointName = null;
+	private String eventText = null;
 	/**
 	 * 
 	 */
 	public CapControlStatusData() {
 		super();
 	}
+
 	/**
+	 * Constructor used for CapControlCurrentStatus
 	 * @param capBankPaoID
 	 * @param subBusPaoID
 	 * @param feederPaoID
 	 * @param controlStatus
-	 * @param lastChangeDateTime
+	 * @param changeDateTime
+	 * @param controlOrder
 	 */
-	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date lastChangeDateTime, Integer controlOrder) {
+	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, Integer controlStatus, Date changeDateTime, Integer controlOrder) {
 		super();
 		this.capBankPaoID = capBankPaoID;
 		this.subBusPaoID = subBusPaoID;
 		this.feederPaoID = feederPaoID;
 		this.controlStatus = controlStatus;
-		this.lastChangeDateTime = lastChangeDateTime;
+		this.changeDateTime = changeDateTime;
 		this.controlOrder = controlOrder;
+	}
+	
+	/**
+	 * Constructor used for CapControlEventLog
+	 * @param capBankPaoID
+	 * @param subBusPaoID
+	 * @param feederPaoID
+	 * @param pointName
+	 * @param changeDateTime
+	 * @param eventText
+	 * @param controlStatus
+	 */
+	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, String pointName, Date changeDateTime, String eventText, Integer controlStatus) {
+		super();
+		this.capBankPaoID = capBankPaoID;
+		this.subBusPaoID = subBusPaoID;
+		this.feederPaoID = feederPaoID;
+		this.pointName = pointName;
+		this.changeDateTime = changeDateTime;
+		this.eventText = eventText;
+		this.controlStatus = controlStatus;
 	}
 	public Integer getCapBankPaoID()
 	{
@@ -56,9 +82,9 @@ public class CapControlStatusData
 	{
 		return feederPaoID;
 	}
-	public Date getLastChangeDateTime()
+	public Date getChangeDateTime()
 	{
-		return lastChangeDateTime;
+		return changeDateTime;
 	}
 	public Integer getSubBusPaoID()
 	{
@@ -70,6 +96,12 @@ public class CapControlStatusData
 	public Integer getControlOrder()
 	{
 		return controlOrder;
+	}
+	public String getPointName() {
+		return pointName;
+	}
+	public String getEventText() {
+		return eventText;
 	}
 
 }

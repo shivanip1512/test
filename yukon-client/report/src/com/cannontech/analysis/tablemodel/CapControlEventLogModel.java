@@ -22,7 +22,7 @@ import com.cannontech.database.model.ModelFactory;
  * Created on Nov 11, 2005
  * @author snebben
  */
-public class CapControlStatusModel extends ReportModelBase
+public class CapControlEventLogModel extends ReportModelBase
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;
@@ -31,15 +31,18 @@ public class CapControlStatusModel extends ReportModelBase
 	public final static int SUB_BUS_NAME_COLUMN = 0;
 	public final static int FEEDER_NAME_COLUMN = 1;
 	public final static int CAP_BANK_NAME_COLUMN = 2;
-	public final static int CONTROL_STATUS_COLUMN = 3;	
-	public final static int LAST_STATUS_CHANGE_TIME_COLUMN = 4;
+	public final static int EVENT_DATE_TIME_COLUMN = 3;
+	public final static int STATUS_VALUE_COLUMN = 4;
+	public final static int EVENT_TEXT_COLUMN = 5;
+
 	
 	/** String values for column representation */
-	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
 	public final static String SUB_BUS_NAME_STRING = "Substation Bus";
 	public final static String FEEDER_NAME_STRING = "Cap Feeder";
-	public final static String CONTROL_STATUS_STRING = "Status";
-	public final static String LAST_STATUS_CHANGE_TIME_STRING  = "Status Changed Date/Time";
+	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
+	public final static String EVENT_DATE_TIME_STRING  = "Event Date/Time";
+	public final static String STATUS_VALUE_STRING = "Status";
+	public final static String EVENT_TEXT_STRING = "Event";
 	
 	private int[] controlStates = null;
 	
@@ -49,7 +52,7 @@ public class CapControlStatusModel extends ReportModelBase
 	private static final int ALL_CAP_CONTROL_STATES = -1;	//use some invalid number
 	
 	/** A string for the title of the data */
-	private static String title = "Cap Bank Status Report";
+	private static String title = "Cap Control Schedule Activity Report";
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
 	{
@@ -70,10 +73,9 @@ public class CapControlStatusModel extends ReportModelBase
 
 				if( thisValStr.equalsIgnoreCase(anotherValStr))
 				{
-					//Order by control Order
-					int thisVal = data1.getControlOrder().intValue();
-					int anotherVal = data2.getControlOrder().intValue();
-					return ( thisVal <anotherVal ? -1 : (thisVal ==anotherVal ? 0 : 1));
+//					Order by CapBank
+					thisValStr = PAOFuncs.getYukonPAOName(data1.getCapBankPaoID().intValue());
+					anotherValStr = PAOFuncs.getYukonPAOName(data2.getCapBankPaoID().intValue());
 				}
 			}
 			return (thisValStr.compareToIgnoreCase(anotherValStr));
@@ -86,7 +88,7 @@ public class CapControlStatusModel extends ReportModelBase
 	/**
 	 * Default Constructor
 	 */
-	public CapControlStatusModel()
+	public CapControlEventLogModel()
 	{
 		super();
 		setFilterModelTypes(new int[]{
@@ -102,16 +104,17 @@ public class CapControlStatusModel extends ReportModelBase
 	{
 		try
 		{
-			Integer capBankPaoID = new Integer(rset.getInt(1));
-			Integer subBusPaoID = new Integer(rset.getInt(2));
-			Integer feederPaoID = new Integer(rset.getInt(3));
-			Integer controlStatus = new Integer(rset.getInt(4));
-			java.sql.Timestamp lastChangedateTime = rset.getTimestamp(5);
-			Integer controlOrder = new Integer(rset.getInt(6));
-			
+			Integer subBusPaoID = new Integer(rset.getInt(1));
+			Integer feederPaoID = new Integer(rset.getInt(2));
+			Integer capBankPaoID = new Integer(rset.getInt(3));
+			String pointName = new String(rset.getString(4));
+			java.sql.Timestamp changedateTime = rset.getTimestamp(5);
+			String eventText = new String(rset.getString(6));
+			Integer controlStatus = new Integer(rset.getInt(7));
+						
 			CapControlStatusData ccStatusData= new CapControlStatusData(
-			        capBankPaoID, subBusPaoID, feederPaoID,
-			        controlStatus, new Date(lastChangedateTime.getTime()), controlOrder);
+			        capBankPaoID, subBusPaoID, feederPaoID, pointName,
+			        new Date(changedateTime.getTime()), eventText, controlStatus);
 			getData().add(ccStatusData);
 		}
 		catch(java.sql.SQLException e)
@@ -126,26 +129,32 @@ public class CapControlStatusModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, CCFBL.CONTROLORDER " +
-				" FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL " +
-				" WHERE CCF.FEEDERID = CCFBL.FEEDERID " +
-				" AND DCC.CAPBANKID = CCFBL.DEVICEID");
+		StringBuffer sql = new StringBuffer	("SELECT CCLOG.SUBID, CCLOG.FEEDERID, P.PAOBJECTID, P.POINTNAME, CCLOG.DATETIME, CCLOG.TEXT, CCLOG.VALUE, CCLOG.SEQID, EVENTTYPE " +
+											" FROM CCEVENTLOG CCLOG, POINT P " +
+											" WHERE CCLOG.POINTID = P.POINTID " +
+											" AND EVENTTYPE != 4 " +	//!= 4 is to remove the op increment logs
+											" AND CCLOG.SEQID IN (SELECT DISTINCT CCLOG2.SEQID FROM CCEVENTLOG CCLOG2" +
+												" WHERE CCLOG2.EVENTTYPE = 7 " +	//7 is for the start of a schedule
+												" AND CCLOG2.DATETIME > ? " + 
+												" AND CCLOG2.DATETIME <= ?");
 				if (getPaoIDs() != null && getPaoIDs().length > 0)
 				{
-				    sql.append(" AND CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+				    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
 				    for (int i = 1; i < getPaoIDs().length; i++)
 				        sql.append(" , " + getPaoIDs()[i]);
 				            
 				    sql.append(")");
 				}
+				sql.append(" ) ");	//ending paren for IN statement
 				if (getControlStates() != null && getControlStates().length > 0)
 				{
-				    sql.append(" AND DCC.CONTROLSTATUS IN ( " + getControlStates()[0] +" ");
+				    sql.append(" AND VALUE IN ( " + getControlStates()[0] +" ");
 				    for (int i = 1; i < getControlStates().length; i++)
 				        sql.append(" , " + getControlStates()[i]);
 				            
 				    sql.append(")");
 				}
+				sql.append(" ORDER BY LOGID ");
 		return sql;
 	}
 		
@@ -177,6 +186,9 @@ public class CapControlStatusModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
+				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -215,15 +227,6 @@ public class CapControlStatusModel extends ReportModelBase
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	public String getDateRangeString()
-	{
-		//Use current date 
-		return getDateFormat().format(new java.util.Date());
-	}
-
-	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)
@@ -243,11 +246,14 @@ public class CapControlStatusModel extends ReportModelBase
 				case CAP_BANK_NAME_COLUMN:
 					return PAOFuncs.getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
-				case CONTROL_STATUS_COLUMN:
+				case STATUS_VALUE_COLUMN:
 					return StateFuncs.getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
-
-				case LAST_STATUS_CHANGE_TIME_COLUMN:
-					return ccStatData.getLastChangeDateTime();
+					
+				case EVENT_TEXT_COLUMN:
+					return ccStatData.getEventText();
+					
+				case EVENT_DATE_TIME_COLUMN:
+					return ccStatData.getChangeDateTime();
 			}
 		}
 		return null;
@@ -264,9 +270,10 @@ public class CapControlStatusModel extends ReportModelBase
 			    SUB_BUS_NAME_STRING,
 			    FEEDER_NAME_STRING,
 			    CAP_BANK_NAME_STRING,
-			    CONTROL_STATUS_STRING,
-			    LAST_STATUS_CHANGE_TIME_STRING
-			};
+			    EVENT_DATE_TIME_STRING,
+			    STATUS_VALUE_STRING,
+			    EVENT_TEXT_STRING
+			   	};
 		}
 		return columnNames;
 	}
@@ -282,8 +289,9 @@ public class CapControlStatusModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
+				Date.class,
 				String.class,
-				Date.class
+				String.class
 			};
 		}
 		return columnTypes;
@@ -298,10 +306,11 @@ public class CapControlStatusModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				new ColumnProperties(0, 1, 160, null),
-				new ColumnProperties(160, 1, 160, null),
-				new ColumnProperties(320, 1, 160, null),
-				new ColumnProperties(480, 1, 100, null),
-				new ColumnProperties(580, 1, 120, null)
+				new ColumnProperties(0, 1, 130, null),
+				new ColumnProperties(130, 1, 130, null),
+				new ColumnProperties(260, 1, 90, null),
+				new ColumnProperties(350, 1, 90, null),
+				new ColumnProperties(440, 1, 260, null)
 			};
 		}
 		return columnProperties;
@@ -315,21 +324,6 @@ public class CapControlStatusModel extends ReportModelBase
 		return title;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
-	 */
-	public boolean useStartDate()
-	{
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
-	 */
-	public boolean useStopDate()
-	{
-		return false;
-	}
 	/**
 	 * @return
 	 */
@@ -384,7 +378,7 @@ public class CapControlStatusModel extends ReportModelBase
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
 			html += "          <td><input type='checkbox' name='"+ATT_CAP_CONTROL_STATE +"' value='" + i + "' " + "' onclick='document.reportForm."+ATT_All_CAP_CONTROL_STATE+".checked = false;'" +  
-			 (i>1 && i < 6? "checked" : "") + ">" + liteStates[i].getStateText() + LINE_SEPARATOR;
+			 (i>3 && i < 6? "checked" : "") + ">" + liteStates[i].getStateText() + LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;
 			html += "        </tr>" + LINE_SEPARATOR;
 		}

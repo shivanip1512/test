@@ -9,8 +9,9 @@ package com.cannontech.analysis;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
+import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
-import com.cannontech.analysis.tablemodel.CapControlStatusModel;
+import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -86,16 +87,17 @@ public class ReportTypes
 	public static final int CBC_BANK_DATA = 22;
 	public static final int CAP_CONTROL_NEW_ACTIVITY_DATA = 23;
 	public static final int CAP_CONTROL_STATUS_DATA = 24;
+	public static final int CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA = 25;
 
-	public static final int POINT_DATA_INTERVAL_DATA = 25;	//Coincidental
-	public static final int POINT_DATA_SUMMARY_DATA = 26;	//Peaks/Usage
+	public static final int POINT_DATA_INTERVAL_DATA = 26;	//Coincidental
+	public static final int POINT_DATA_SUMMARY_DATA = 27;	//Peaks/Usage
 	
-	public static final int LOAD_CONTROL_VERIFICATION_DATA = 27;
+	public static final int LOAD_CONTROL_VERIFICATION_DATA = 28;
 	
 	//Custom Settlement data.  Determined by EnergyCompanyID
-	public static final int HECO_LMEVENT_SUMMARY_DATA = 28;
-	public static final int HECO_MONTHLY_BILLING_DATA = 29;
-	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 30;
+	public static final int HECO_LMEVENT_SUMMARY_DATA = 29;
+	public static final int HECO_MONTHLY_BILLING_DATA = 30;
+	public static final int HECO_CUSTOMER_MONTHLY_BILLING_DATA = 31;
 	public static final int HECO_DSMIS_DATA = 31;
 	
 	private static Class[] typeToClassMap =
@@ -128,7 +130,8 @@ public class ReportTypes
 		
 		CapBankListModel.class,
 		CapControlNewActivityModel.class,
-		CapControlStatusModel.class,
+		CapControlCurrentStatusModel.class,
+		CapControlEventLogModel.class,
 		
 		PointDataIntervalModel.class,
 		PointDataSummaryModel.class,
@@ -173,6 +176,7 @@ public class ReportTypes
 	public static final String CAPBANK_DATA_STRING = "CapBank Details";
 	public static final String CAP_CONTROL_NEW_ACTIVITY_STRING = "Cap Control New Activity";
 	public static final String CAP_CONTROL_STATUS_STRING = "Cap Control Status";
+	public static final String CAP_CONTROL_SCHEDULE_EVENT_LOG_STRING = "Cap Control Schedule Activity Report";
 	
 	public static final String POINT_DATA_INTERVAL_DATA_STRING = "PointData Interval";
 	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
@@ -218,6 +222,7 @@ public class ReportTypes
 		CAPBANK_DATA_STRING,
 		CAP_CONTROL_NEW_ACTIVITY_STRING,
 		CAP_CONTROL_STATUS_STRING,
+		CAP_CONTROL_SCHEDULE_EVENT_LOG_STRING,
 		
 		POINT_DATA_INTERVAL_DATA_STRING,
 		POINT_DATA_SUMMARY_DATA_STRING,
@@ -272,7 +277,7 @@ public class ReportTypes
 	private static int[] amrGroupReportTypes = new int[]{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA};
 	private static int[] statGroupReportTypes = new int[]{STATISTIC_DATA};
 	private static int[] lmGroupReportTypes = new int[]{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA};
-	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA};
+	private static int[] capControlGroupReportTypes = new int[]{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA, CAP_CONTROL_SCHEDULE_EVENT_LOG_DATA};
 	private static int[] databaseGroupReportTypes = new int[]{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA};
 	private static int[] starsGroupReportTypes = new int[]{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
 			STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
