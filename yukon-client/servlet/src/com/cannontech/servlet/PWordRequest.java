@@ -28,13 +28,13 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 	 */
 	public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 	{
-		String userName = ServletUtil.getParm( req, "USERNAME");
-		String email = ServletUtil.getParm( req, "EMAIL");
-		String fName = ServletUtil.getParm( req, "FIRST_NAME");
-		String lName = ServletUtil.getParm( req, "LAST_NAME");
-		String accNum = ServletUtil.getParm( req, "ACCOUNT_NUM");		
-		String notes = ServletUtil.getParm( req, "NOTES");
-        String energyComp = ServletUtil.getParm( req, "ENERGY_COMPANY");
+		String userName = ServletUtil.getParameter( req, "USERNAME");
+		String email = ServletUtil.getParameter( req, "EMAIL");
+		String fName = ServletUtil.getParameter( req, "FIRST_NAME");
+		String lName = ServletUtil.getParameter( req, "LAST_NAME");
+		String accNum = ServletUtil.getParameter( req, "ACCOUNT_NUM");		
+		String notes = ServletUtil.getParameter( req, "NOTES");
+        String energyComp = ServletUtil.getParameter( req, "ENERGY_COMPANY");
 
 
 		RequestPword reqPword = createRequest( 

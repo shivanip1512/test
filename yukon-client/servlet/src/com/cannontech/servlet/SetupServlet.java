@@ -396,26 +396,26 @@ public class SetupServlet extends HttpServlet
 		final String dbal = CtiUtilities.getDatabaseAlias();
 		boolean hasChanged = false;
 		
-		String userName = ServletUtil.getParm( req, "db_user_name");
+		String userName = ServletUtil.getParameter( req, "db_user_name");
 		hasChanged |= !userName.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.USER) );
 
-		String initConns = ServletUtil.getParm( req, "db_initconns");
+		String initConns = ServletUtil.getParameter( req, "db_initconns");
 		hasChanged |= !initConns.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.INITCONNS) );
 		
-		String maxConns = ServletUtil.getParm( req, "max_initconns");
+		String maxConns = ServletUtil.getParameter( req, "max_initconns");
 		hasChanged |= !maxConns.equalsIgnoreCase( PoolManager.getInstance().getProperty(PoolManager.MAXCONNS) );
 
-		String pword = ServletUtil.getParm( req, "db_user_password");
+		String pword = ServletUtil.getParameter( req, "db_user_password");
 		if( pword == null ) //if not present, use the old pwrod
 			pword = PoolManager.getInstance().getProperty(PoolManager.PASSWORD);
 
 		hasChanged |= !pword.equals( PoolManager.getInstance().getProperty(PoolManager.PASSWORD) );
 
 		
-		String url = ServletUtil.getParm( req, "db_url");
-		String port = ServletUtil.getParm( req, "db_port");		
-		String driver = ServletUtil.getParm( req, "db_driver");
-		String service = ServletUtil.getParm( req, "db_service");
+		String url = ServletUtil.getParameter( req, "db_url");
+		String port = ServletUtil.getParameter( req, "db_port");		
+		String driver = ServletUtil.getParameter( req, "db_driver");
+		String service = ServletUtil.getParameter( req, "db_service");
 		
 
 		//icky poooh
