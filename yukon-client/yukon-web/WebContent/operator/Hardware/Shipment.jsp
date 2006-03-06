@@ -76,8 +76,8 @@
 	                </td>
 	                <td width="80%"> 
 	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentOrderingDate}"/>' onchange="setContentChanged(true)">
-	   				  	<a href="javascript:openCalendar(document.getElementById('shipDate'))"
-							onMouseOver="window.status='Ship Date Calendar';return true;"
+	   				  	<a href="javascript:openCalendar(document.getElementById('orderingDate'))"
+							onMouseOver="window.status='Date Ordered Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
 	                </td>
@@ -100,8 +100,8 @@
 	                </td>
 	                <td width="80%"> 
 	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentReceivingDate}"/>' onchange="setContentChanged(true)">
-	   				  	<a href="javascript:openCalendar(document.getElementById('shipDate'))"
-							onMouseOver="window.status='Ship Date Calendar';return true;"
+	   				  	<a href="javascript:openCalendar(document.getElementById('receivingDate'))"
+							onMouseOver="window.status='Date Received Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
 	                </td>
