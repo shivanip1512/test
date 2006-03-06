@@ -9,6 +9,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.report.ServiceCompany;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
@@ -20,14 +21,34 @@ public class PurchaseBean
     private LiteYukonUser currentUser = null;
     private List<LiteStarsEnergyCompany> availableMembers;
     private YukonSelectionList availableDeviceTypes;
+    private List<Warehouse> availableWarehouses;
+    
     private List<PurchasePlan> availablePlans;
     private int numberOfPlans;
     private PurchasePlan currentPlan;
+    
     private List<DeliverySchedule> availableSchedules;
     private DeliverySchedule currentSchedule;
+    private String currentQuotedPricePerUnit;
+    
     private List<ScheduleTimePeriod> availableTimePeriods;
     private ScheduleTimePeriod currentTimePeriod;
     private String currentPredictedShipDate;
+    
+    private List<Shipment> availableShipments;
+    private Shipment currentShipment;
+    private String currentShipDate;
+    private String currentOrderingDate;
+    private String currentReceivingDate;
+    private String currentActualPricePerUnit;
+    private String currentSalesTax;
+    private String currentShippingCharges;
+    private String currentOtherCharges;
+    private String currentTotal;
+    private String currentAmountPaid;
+    
+    private List<Invoice> availableInvoices;
+    private Invoice currentInvoice;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -158,4 +179,98 @@ public class PurchaseBean
         this.currentPredictedShipDate = currentPredictedShipDate;
     }
 
+    public List<Shipment> getAvailableShipments() {
+        availableShipments = Shipment.getAllShipmentsForDeliverySchedule(currentSchedule.getScheduleID());
+        return availableShipments;
+    }
+
+    public void setAvailableShipments(List<Shipment> availableShipments) {
+        this.availableShipments = availableShipments;
+    }
+
+    public Shipment getCurrentShipment() {
+        return currentShipment;
+    }
+
+    public void setCurrentShipment(Shipment currentShipment) {
+        this.currentShipment = currentShipment;
+    }
+
+    public String getCurrentQuotedPricePerUnit() {
+        currentQuotedPricePerUnit = String.valueOf(currentSchedule.getQuotedPricePerUnit());
+        return currentQuotedPricePerUnit;
+    }
+    
+    public String getCurrentShipDate() 
+    {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentShipDate = datePart.format(currentShipment.getShipDate());
+        return currentShipDate;
+    }
+
+    public List<Warehouse> getAvailableWarehouses()
+    {
+        if(availableWarehouses == null)
+            availableWarehouses = energyCompany.getAllWarehousesDownward();
+        return availableWarehouses;
+    }
+    
+    public String getCurrentOrderingDate() 
+    {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentOrderingDate = datePart.format(currentShipment.getOrderedDate());
+        return currentOrderingDate;
+    }
+    
+    public String getCurrentReceivingDate() 
+    {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentReceivingDate = datePart.format(currentShipment.getReceivedDate());
+        return currentReceivingDate;
+    }
+    
+    public String getCurrentActualPricePerUnit() {
+        currentActualPricePerUnit = String.valueOf(currentShipment.getActualPricePerUnit());
+        return currentActualPricePerUnit;
+    }
+    
+    public String getCurrentSalesTax() {
+        currentSalesTax = String.valueOf(currentShipment.getSalesTax());
+        return currentSalesTax;
+    }
+    
+    public String getCurrentShippingCharges() {
+        currentShippingCharges = String.valueOf(currentShipment.getShippingCharges());
+        return currentShippingCharges;
+    }
+    
+    public String getCurrentOtherCharges() {
+        currentOtherCharges = String.valueOf(currentShipment.getOtherCharges());
+        return currentOtherCharges;
+    }
+    
+    public String getCurrentTotal() {
+        currentTotal = String.valueOf(currentShipment.getSalesTotal());
+        return currentTotal;
+    }
+    
+    public String getCurrentAmountPaid() {
+        currentAmountPaid = String.valueOf(currentShipment.getAmountPaid());
+        return currentAmountPaid;
+    }
+
+    public Invoice getCurrentInvoice() {
+        return currentInvoice;
+    }
+
+    public void setCurrentInvoice(Invoice currentInvoice) {
+        this.currentInvoice = currentInvoice;
+    }
+
+    public List<Invoice> getAvailableInvoices() {
+        availableInvoices = Invoice.getAllInvoicesForPurchasePlan(currentPlan.getPurchaseID());
+        return availableInvoices;
+    }
+    
+    
 }
