@@ -7,6 +7,7 @@ import javax.faces.el.VariableResolver;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -30,11 +31,11 @@ public class CtiNavActionListener implements ActionListener {
 			if( ctiNav != null ) {
 				
 				String red = "";
-
-                red = CBCNavigationUtil.goBack();
+				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+                CBCNavigationUtil navigationUtil = new CBCNavigationUtil();
+                red = navigationUtil.goBack(session);
                     if (!red.equalsIgnoreCase("")) {
-                        ctiNav.setNavigation(red);           
-                        
+                        ctiNav.setNavigation(red);                                   
                     }
                 
                 //redirect to our module redirect page first, if it set, else

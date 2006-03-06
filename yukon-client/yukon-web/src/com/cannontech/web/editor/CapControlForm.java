@@ -1896,8 +1896,8 @@ public class CapControlForm extends DBEditorForm {
             String location = red + val;
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil util = CBCNavigationUtil.getInstanceOf(session);
-            util.bookmarkLocation(location);
+            CBCNavigationUtil util = new CBCNavigationUtil();
+            util.bookmarkLocation(location, session);
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
