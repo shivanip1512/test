@@ -551,10 +551,10 @@ private javax.swing.JComboBox getJComboBoxOption1() {
 			ivjJComboBoxOption1 = new javax.swing.JComboBox();
 			ivjJComboBoxOption1.setName("JComboBoxOption1");
 			ivjJComboBoxOption1.setOpaque(true);
-			ivjJComboBoxOption1.setMaximumSize(new java.awt.Dimension(130, 28));
-			ivjJComboBoxOption1.setPreferredSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption1.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption1.setPreferredSize(new java.awt.Dimension(130, 30));
 			ivjJComboBoxOption1.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxOption1.setMinimumSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption1.setMinimumSize(new java.awt.Dimension(130, 30));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -576,10 +576,10 @@ private javax.swing.JComboBox getJComboBoxOption2() {
 			ivjJComboBoxOption2 = new javax.swing.JComboBox();
 			ivjJComboBoxOption2.setName("JComboBoxOption2");
 			ivjJComboBoxOption2.setOpaque(true);
-			ivjJComboBoxOption2.setMaximumSize(new java.awt.Dimension(130, 28));
-			ivjJComboBoxOption2.setPreferredSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption2.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption2.setPreferredSize(new java.awt.Dimension(130, 30));
 			ivjJComboBoxOption2.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxOption2.setMinimumSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption2.setMinimumSize(new java.awt.Dimension(130, 30));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -601,10 +601,10 @@ private javax.swing.JComboBox getJComboBoxOption3() {
 			ivjJComboBoxOption3 = new javax.swing.JComboBox();
 			ivjJComboBoxOption3.setName("JComboBoxOption3");
 			ivjJComboBoxOption3.setOpaque(true);
-			ivjJComboBoxOption3.setMaximumSize(new java.awt.Dimension(130, 28));
-			ivjJComboBoxOption3.setPreferredSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption3.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption3.setPreferredSize(new java.awt.Dimension(130, 30));
 			ivjJComboBoxOption3.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxOption3.setMinimumSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption3.setMinimumSize(new java.awt.Dimension(130, 30));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -626,10 +626,10 @@ private javax.swing.JComboBox getJComboBoxOption4() {
 			ivjJComboBoxOption4 = new javax.swing.JComboBox();
 			ivjJComboBoxOption4.setName("JComboBoxOption4");
 			ivjJComboBoxOption4.setOpaque(true);
-			ivjJComboBoxOption4.setMaximumSize(new java.awt.Dimension(130, 28));
-			ivjJComboBoxOption4.setPreferredSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption4.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption4.setPreferredSize(new java.awt.Dimension(130, 30));
 			ivjJComboBoxOption4.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxOption4.setMinimumSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption4.setMinimumSize(new java.awt.Dimension(130, 30));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -651,10 +651,10 @@ private javax.swing.JComboBox getJComboBoxOption5() {
 			ivjJComboBoxOption5 = new javax.swing.JComboBox();
 			ivjJComboBoxOption5.setName("JComboBoxOption5");
 			ivjJComboBoxOption5.setOpaque(true);
-			ivjJComboBoxOption5.setMaximumSize(new java.awt.Dimension(130, 28));
-			ivjJComboBoxOption5.setPreferredSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption5.setMaximumSize(new java.awt.Dimension(130, 30));
+			ivjJComboBoxOption5.setPreferredSize(new java.awt.Dimension(130, 30));
 			ivjJComboBoxOption5.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxOption5.setMinimumSize(new java.awt.Dimension(130, 28));
+			ivjJComboBoxOption5.setMinimumSize(new java.awt.Dimension(130, 30));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -853,7 +853,7 @@ private javax.swing.JPanel getJPanelDataParameters() {
 			constraintsJComboBoxOption2.weightx = 1.0;
 			constraintsJComboBoxOption2.ipadx = 72;
 			constraintsJComboBoxOption2.ipady = -9;
-			constraintsJComboBoxOption2.insets = new java.awt.Insets(4, 0, 2, 26);
+			constraintsJComboBoxOption2.insets = new java.awt.Insets(2, 0, 2, 26);
 			getJPanelDataParameters().add(getJComboBoxOption2(), constraintsJComboBoxOption2);
 
 			java.awt.GridBagConstraints constraintsJComboBoxOption3 = new java.awt.GridBagConstraints();
@@ -863,7 +863,7 @@ private javax.swing.JPanel getJPanelDataParameters() {
 			constraintsJComboBoxOption3.weightx = 1.0;
 			constraintsJComboBoxOption3.ipadx = 72;
 			constraintsJComboBoxOption3.ipady = -9;
-			constraintsJComboBoxOption3.insets = new java.awt.Insets(3, 0, 2, 26);
+			constraintsJComboBoxOption3.insets = new java.awt.Insets(2, 0, 2, 26);
 			getJPanelDataParameters().add(getJComboBoxOption3(), constraintsJComboBoxOption3);
 
 			java.awt.GridBagConstraints constraintsJComboBoxOption4 = new java.awt.GridBagConstraints();
