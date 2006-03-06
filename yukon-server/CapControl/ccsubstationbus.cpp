@@ -4493,6 +4493,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _verificationStrategy
             << _capBankToVerifyInactivityTime
             << _currentvoltloadpointvalue
+            << _switchOverStatus  
+            << _altSubControlValue
             << _eventSeq;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
