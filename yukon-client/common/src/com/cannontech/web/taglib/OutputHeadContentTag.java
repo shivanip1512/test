@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.util.ServletUtil;
@@ -23,9 +22,11 @@ import com.cannontech.web.menu.ModuleBase;
  */
 public class OutputHeadContentTag extends BodyTagSupport {
     List layoutScriptFiles = null;
+    List layoutCssFiles = null;
 
     public int doStartTag() throws JspException {
         layoutScriptFiles = new ArrayList();
+        layoutCssFiles = new ArrayList();
         return EVAL_BODY_BUFFERED;
     }
     
@@ -89,6 +90,9 @@ public class OutputHeadContentTag extends BodyTagSupport {
     }
     
     private void handleCssFiles() throws IOException {
+        pageContext.getOut().write("\n<!-- Layout CSS files -->\n");
+        outputCssFiles(layoutCssFiles);
+        
         ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
                                                                       PageContext.REQUEST_SCOPE);
         pageContext.getOut().write("\n<!-- Module files from XML config -->\n");
@@ -115,6 +119,10 @@ public class OutputHeadContentTag extends BodyTagSupport {
     }
     public void addScriptFile(String link) {
         layoutScriptFiles.add(link);
+    }
+
+    public void addCSSFile(String link) {
+        layoutCssFiles.add(link);
     }
 
 

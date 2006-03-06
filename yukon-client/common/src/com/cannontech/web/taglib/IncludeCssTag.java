@@ -10,9 +10,19 @@ public class IncludeCssTag extends TagSupport {
         return SKIP_BODY;
     }
     public int doEndTag() throws JspException {
-        StandardPageTag tag = (StandardPageTag) TagSupport.findAncestorWithClass(this, StandardPageTag.class);
-        tag.addCSSFile(getLink());
-        return EVAL_PAGE;
+        StandardPageTag spTag = (StandardPageTag) TagSupport.findAncestorWithClass(this, StandardPageTag.class);
+        if (spTag != null) {
+            spTag.addCSSFile(getLink());
+            return EVAL_PAGE;
+        }
+        
+        OutputHeadContentTag ohcTag = (OutputHeadContentTag) TagSupport.findAncestorWithClass(this, OutputHeadContentTag.class);
+        if (ohcTag != null) {
+            ohcTag.addCSSFile(getLink());
+            return EVAL_PAGE;
+        }
+
+        throw new JspException("includeScript tag is only supported within standardPage and outputHeadContent tags");
     }
 
     public String getLink() {
