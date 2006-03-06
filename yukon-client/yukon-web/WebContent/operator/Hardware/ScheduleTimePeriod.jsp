@@ -81,13 +81,13 @@
 			<br>
 			<table width="500" border="0" cellspacing="0" cellpadding="5" align="center">
 	        	<tr>
-	           		<td width="20%"></td>
+	           		<td width="10%"></td>
 	           		<td width="40%">  
 						<input type="submit" name="Submit" value="Submit">
 					</td>
-	            	<td width="40%">
+	            	<td width="50%">
 	                	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
-	                  	<input type="button" name="Back" value="Back" onclick="back(this.form)">
+	                  	<input type="button" name="Back" value="Back To Schedule" onclick="back(this.form)">
 	              	</td>
 	          	</tr>
 			</table> 

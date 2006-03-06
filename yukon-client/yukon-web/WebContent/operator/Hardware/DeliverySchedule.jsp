@@ -58,6 +58,30 @@
 						</select>
 	                </td>
 	          	</tr>
+	          	<tr>
+		        	<td width="20%" class="TableCell"> 
+		            	<div align="right">Style Number:</div>
+		                </td>
+		            <td width="80%"> 
+		                <input type="text" name="styleNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.styleNumber}"/>' onchange="setContentChanged(true)">
+		            </td>
+		        </tr>
+		      	<tr>
+		        	<td width="20%" class="TableCell"> 
+		            	<div align="right">Order Number:</div>
+		                </td>
+		            <td width="80%"> 
+		                <input type="text" name="orderNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.orderNumber}"/>' onchange="setContentChanged(true)">
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td width="20%" class="TableCell"> 
+		            	<div align="right">Estimated Price Per Unit:</div>
+		                </td>
+		            <td width="80%"> 
+		                <input type="text" name="pricePerUnit" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentQuotedPricePerUnit}"/>' onchange="setContentChanged(true)">
+		            </td>
+		        </tr>
 	          	<tr> 
 	                <td width="20%" class="TableCell"> 
 	                  <div align="right">Filing:</div>
@@ -67,7 +91,6 @@
 	                </td>
 		     	</tr>
 	        </table>
-	        <br>
 	        <br>
 		    <div id="onlyavailableaftercreation">
 		        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -100,7 +123,6 @@
 	            	</tr>
 				</table>
 		        <br>
-		        <br>
 		        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
 	        		<tr> 
 	              		<td class="HeaderCell">Assigned Shipments</td>
@@ -117,8 +139,8 @@
 						<td width="60%" valign="top" class="TableCell"><br>
 		                    <div align="center">
 		                    	<select id="shipments" name="shipments" size="5" style="width:250">
-		                        	<c:forEach var="sched" items="${purchaseBean.availableSchedules}">
-										<option value='<c:out value="${sched.scheduleID}"/>'> <c:out value="${sched.scheduleName}"/> </option>
+		                        	<c:forEach var="ship" items="${purchaseBean.availableShipments}">
+										<option value='<c:out value="${ship.shipmentID}"/>'> Serial #: <c:out value="${ship.serialNumberStart}"/> to <c:out value="${ship.serialNumberEnd}"/> </option>
 									</c:forEach>
 								</select>
 							</div>
@@ -132,7 +154,6 @@
 				</table>
 			</div> 
 			<br>
-			<br>
 			<table width="500" border="0" cellspacing="0" cellpadding="5" align="center">
 	        	<tr>
 	           		<td width="20%"></td>
@@ -141,7 +162,7 @@
 					</td>
 	            	<td width="40%">
 	                	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
-	                  	<input type="button" name="Back" value="Back" onclick="back(this.form)">
+	                  	<input type="button" name="Back" value="Back To Plan" onclick="back(this.form)">
 	              	</td>
 	          	</tr>
 			</table> 
