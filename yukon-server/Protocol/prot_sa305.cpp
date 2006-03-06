@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/01/03 20:23:38 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2006/03/06 21:44:55 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.22  2006/03/06 21:44:55  cplender
+* Added syntax and code for the adaptive alg. and for the frequency change putconfig.
+*
 * Revision 1.21  2006/01/03 20:23:38  tspar
 * Moved non RW string utilities from rwutil.h to utility.h
 *
@@ -437,17 +440,41 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
         }
         else if(_period <= 30.0)
         {
-            if(_percentageOff <= 16.7)
+            if(_startBits == 5 && _percentageOff <= 5.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 54; // 1.5/30
+            }
+            else if(_startBits == 5 && _percentageOff <= 10.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 55; // 3/30
+            }
+            else if(_startBits == 5 && _percentageOff <= 15.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 56; // 4.5/30
+            }
+            else if(_percentageOff <= 16.7)
             {
                 strategy = 4; // 000100b 5/30
+            }
+            else if(_startBits == 5 && _percentageOff <= 20.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 57; // 6/30
             }
             else if(_percentageOff <= 25)
             {
                 strategy = 5; // 000101b 7.5/30
             }
+            else if(_startBits == 5 && _percentageOff <= 30.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 58; // 9/30
+            }
             else if(_percentageOff <= 33.3)
             {
                 strategy = 6; // 000110b 10/30
+            }
+            else if(_startBits == 5 && _percentageOff <= 35.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            {
+                strategy = 59; // 10.5/30
             }
             else if(_percentageOff <= 40)
             {
@@ -967,6 +994,11 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         {
             addBits(12, 5);
             addBits(5, 8);
+        }
+        else if( 0 <= (val = parse.getiValue("sa_frequency",-1)) )
+        {
+            addBits(16, 5);
+            addBits(val, 8);
         }
         else if( 0 <= (val = parse.getiValue("sa_datatype",-1)) )
         {
@@ -1601,11 +1633,11 @@ CtiProtocolSA305& CtiProtocolSA305::setStartBits(int val)
 
 int CtiProtocolSA305::getPadBits() const
 {
-    return _startBits;
+    return _padBits;
 }
 CtiProtocolSA305& CtiProtocolSA305::setPadBits(int val)
 {
-    _startBits = val & 0x00000003;  // Two bits.
+    _padBits = val & 0x00000003;  // Two bits.
     return *this;
 }
 

@@ -37,8 +37,8 @@ static boost::regex   re_anynum  (str_anynum);
 
 CtiCommandParser::CtiCommandParser(const string str) :
   _cmdString(str)
-{   
-	_actionItems.clear();
+{
+    _actionItems.clear();
     _cmd.clear();
     doParse(_cmdString);
 }
@@ -145,7 +145,7 @@ void  CtiCommandParser::parse()
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
                 token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-				_cmd["device"] = CtiParseValue( token, -1 );
+                _cmd["device"] = CtiParseValue( token, -1 );
             }
 
             CmdStr.replace(re_name, "");
@@ -263,8 +263,8 @@ void  CtiCommandParser::parse()
     }
 
     resolveProtocolType(CmdStr);
-    
-    
+
+
     if(CmdStr.contains(" noqueue"))
     {
         _cmd["noqueue"] = CtiParseValue("true");
@@ -276,7 +276,7 @@ void  CtiCommandParser::parse()
             _cmd["xcpriority"] = CtiParseValue( atoi(strnum.c_str()) );            // Expresscom only supports a 0 - 3 priority 0 highest.
         }
     }
-    
+
 
     if(!(cmdstr = tok()).empty())
     {
@@ -311,7 +311,7 @@ void  CtiCommandParser::parse()
         {
             _cmd["command"] = CtiParseValue( cmdstr, PutConfigRequest );
             doParsePutConfig(CmdStr);
-            
+
         }
         else if(cmdstr == "loop" || cmdstr == "ping")  //  so "ping" is just an alias
         {
@@ -1198,7 +1198,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 
 void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 {
-	CtiString CmdStr(_CmdStr);
+    CtiString CmdStr(_CmdStr);
     CtiString   temp2;
     CtiString   token;
     boost::regex    re_rolenum("role *" + str_num);
@@ -1388,11 +1388,11 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
 
-    boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]"); 
-    CtiString CmdStr(_CmdStr);                            
+    boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    CtiString CmdStr(_CmdStr);
     CtiString   temp2;
     CtiString   token;
-    
+
     CtiTokenizer   tok(CmdStr);
     token = tok(); // Get the first one into the hopper....
 
@@ -1513,7 +1513,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         case ProtocolExpresscomType:
             {
-                
+
                 doParsePutConfigExpresscom(CmdStr);
                 break;
             }
@@ -1549,7 +1549,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         }
     }
-    
+
     else
     {
         // Something went WAY wrong....
@@ -3136,7 +3136,7 @@ RWTValSlist< string >& CtiCommandParser::getActionItems()
 
 void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 {
-	CtiString CmdStr(_CmdStr);    
+    CtiString CmdStr(_CmdStr);
     int loopcnt;
     CtiString         token;
 
@@ -4902,6 +4902,14 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             else if(CmdStr.contains(" freeze pcd"))
             {
                 _cmd["sa_freezepcd"] = TRUE;
+            }
+            else if(CmdStr.contains(" primary freq"))
+            {
+                _cmd["sa_frequency"] = 0;
+            }
+            else if(CmdStr.contains(" secondary freq"))
+            {
+                _cmd["sa_frequency"] = 1;
             }
             else if(!(temp = CmdStr.match(" rawdata " + str_num + " " + str_num)).empty())
             {
