@@ -2255,7 +2255,6 @@ public void setValue(Object o)
 	else
 		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_FIXED_SHED));
 
-
 	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
 			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), t.getRefreshRate().intValue() );
 		

@@ -18,17 +18,16 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
 	//Contains CheckNodes (hopefully) values.  DOES NOT CONTAIN THE PARENT!!!
 	private Vector checkedNodes = null;
     private boolean showPoints = true;
-
+    
     //a Vector only needed to store temporary things
     private java.util.List pointTempList = new java.util.Vector(20);
-
+    
     //a mutable lite point used for comparisons
-    private static final LitePoint DUMMY_LITE_POINT = 
-                    new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
+    private static final LitePoint DUMMY_LITE_POINT = new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
     
     private HashMap deviceMap = null;
     private HashMap pointMap = null;
-		
+	
 	/**
 	 * DeviceTreeModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
@@ -75,39 +74,42 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/27/2002 10:17:05 AM)
-	 * @param lp com.cannontech.database.data.lite.LitePoint
-	 * @param dTreeNode com.cannontech.database.model.DummyTreeNode
+	 * @param pointNode LitePoint
+	 * @param typeNode DBTreeNode
+     * @param text String
+     * @param deviceNode DBTreeNode
 	 */
-	protected DBTreeNode addDummyTreeNode(LitePoint lp, 
-						DBTreeNode node, String text, DBTreeNode deviceNode ) 
+	protected DBTreeNode addDummyTreeNode(LitePoint pointNode, DBTreeNode typeNode, String text, DBTreeNode deviceNode ) 
 	{
-		if( node == null)
+		if( typeNode == null)
 		{
 			DBTreeNode retNode = getNewNode(text);
-	
+			
 			int indx = -1;
 			for( int i = 0 ; i < deviceNode.getChildCount(); i++ )
+            {
 				if( deviceNode.getChildAt(i).equals(retNode) )
 				{
 					indx = i;
 					break;
 				}
-					
+            }
 			if( indx >= 0 )
-				node = (CheckNode)deviceNode.getChildAt(indx);
+            {
+                typeNode = (CheckNode)deviceNode.getChildAt(indx);
+            }
 			else
-				node = retNode;
+            {
+                typeNode = retNode;
+            }
 		}
 		
-        CheckNode newNode = (CheckNode) getNewNode(lp);
+        CheckNode newNode = (CheckNode) getNewNode(pointNode);
         LitePoint point = (LitePoint) newNode.getUserObject();
 		pointMap.put(point.getLiteID(), newNode);
-        node.add(newNode);
-        System.out.println("Point added to map: "+ point);
-		//node.add( getNewNode(lp) );
-		//updateTreeNodeStructure( node );
-	
-		return node;
+        typeNode.add(newNode);
+        
+		return typeNode;
 	}
 	
 	/**
@@ -119,7 +121,7 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
 			checkedNodes = new Vector();
 		return checkedNodes;
 	}
-		
+	
 	/**
 	 * @param vector
 	 */
@@ -143,16 +145,16 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
     //   Override me if you want a sub class to do something different.
     protected synchronized void runUpdate() 
     {
-        com.cannontech.database.cache.DefaultDatabaseCache cache =
-            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
         synchronized (cache)
         {
-            java.util.List devices = getCacheList(cache);
-            java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-            java.util.List points = null;
+            List devices = getCacheList(cache);
             
-            // build our device map 
+            ListIterator deviceIter = devices.listIterator();
+            Collections.sort(devices, LiteComparators.liteStringComparator);
+            
+            List points = null;
             
             deviceMap = new HashMap();
             pointMap = new HashMap();
@@ -167,47 +169,44 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
             
             int deviceDevID;
             int deviceClass;
-            for (int i = 0; i < devices.size(); i++)
+            
+            while(deviceIter.hasNext())
             {
-                if( isDeviceValid(
-                        ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getCategory(),
-                        ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass(),
-                        ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() ) )
+                LiteYukonPAObject currentDevice = (LiteYukonPAObject) deviceIter.next();
+                
+                if( isDeviceValid( currentDevice.getCategory(), currentDevice.getPaoClass(), currentDevice.getType() ) )
                 {
-                    DBTreeNode deviceNode = getNewNode(devices.get(i));
+                    DBTreeNode deviceNode = getNewNode(currentDevice);
                     
-                    LiteYukonPAObject device = (LiteYukonPAObject) devices.get(i);
-                    deviceMap.put( device.getLiteID(), deviceNode );
+                    
+                    deviceMap.put( currentDevice.getLiteID(), deviceNode );
                     
                     rootNode.add(deviceNode);
                     
                     if (showPoints)
                     {
-                        deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)).getYukonID();
+                        deviceDevID = currentDevice.getYukonID();
                         
                         //change our dummy points device ID to the current DeviceID
                         DUMMY_LITE_POINT.setPaobjectID(deviceDevID);
                         
-                        //for(int i=0;i<points.size();i++)
-                        
                         java.util.Collections.sort(points, LiteComparators.litePointDeviceIDComparator);
-
                         
+                        int res = Collections.binarySearch( points, DUMMY_LITE_POINT, LiteComparators.litePointDeviceIDComparator );
                         
-                        int res = java.util.Collections.binarySearch( points, DUMMY_LITE_POINT, LiteComparators.litePointDeviceIDComparator );
-
                         if( res >= 0 )
-
-                        deviceNode.setWillHaveChildren(true);
+                        {
+                            deviceNode.setWillHaveChildren(true);
+                        }
+                        
                         TreePath path = new TreePath(deviceNode.getPath());
                         treePathWillExpand(path);
-                        //sortChildNodes( deviceNode, SORT_POINT_OFFSET );
-
+                        
                     }
                     
                 }
 
-            } //for loop
+            } //while loop
 
         } //synch
 
@@ -223,25 +222,34 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
     public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType) 
     {
         if( parentNode == null )
+        {
             return;
-
+        }
         //we only sort points, for now............
-
         //default the sorting to the POINT_NAME comparator
-        java.util.Comparator comp = com.cannontech.database.data.lite.LiteComparators.liteStringComparator;
+        
+        Comparator comp = LiteComparators.liteStringComparator;
+        
         if( sortType == SORT_POINT_OFFSET )
-            comp = com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator;
-
-        java.util.Vector liteObjects = new java.util.Vector( parentNode.getChildCount() );
+        {
+            comp = LiteComparators.litePointPointOffsetComparator;
+        }
+        
+        Vector liteObjects = new Vector( parentNode.getChildCount() );
+        
         for( int i = 0 ; i < parentNode.getChildCount(); i++ )
+        {
             liteObjects.add( ((DBTreeNode)parentNode.getChildAt(i)).getUserObject() );
-
-        java.util.Collections.sort( liteObjects, comp );
-
+        }
+        
+        Collections.sort( liteObjects, comp );
         parentNode.removeAllChildren();
-        for( int i = 0 ; i < liteObjects.size(); i++ )
-            parentNode.add( getNewNode(liteObjects.get(i) ) );
 
+        for( int i = 0 ; i < liteObjects.size(); i++ )
+        {
+            parentNode.add( getNewNode(liteObjects.get(i) ) );
+        }
+        
         updateTreeNodeStructure( parentNode );
     }
     
@@ -327,7 +335,6 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
         DBTreeNode anNode = null, stNode = null;
         DBTreeNode accDmndNode = null, accPulsNode = null;
         DBTreeNode calcNode = null;
-
         
         //the points in the pointList are added to the device node
         //pseudo points are added to the end of the list if sorting by point offset
@@ -335,7 +342,7 @@ public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkabl
         for (int j = 0; j < pointTempList.size(); j++)
         {
             LitePoint lp = (LitePoint) pointTempList.get(j);
-
+            
             if( lp.getPointType() == PointTypes.ANALOG_POINT)
             {
                 anNode = addDummyTreeNode( lp, anNode, "Analog", deviceNode );

@@ -256,15 +256,12 @@ private javax.swing.JTree getJTreeAlarms()
         try {
             selectionJTreeAlarms = new javax.swing.JTree();
             selectionJTreeAlarms.setName("JTreeNodes");
-            //selectionJTree.setBounds(0, 0, 165, 243);
             selectionJTreeAlarms.setBounds(0, 0, 300, 400);
             // user code begin {1}
             
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Alarm Categories");
-            //DeviceCheckBoxTreeModel checkModel = new DeviceCheckBoxTreeModel(true);
             selectionJTreeAlarms.setModel( new AlarmCategoryCheckBoxTreeModel() );
             selectionJTreeAlarms.setCellRenderer( new CheckRenderer() );
-            //selectionJTree.setRootVisible( false );
             selectionJTreeAlarms.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
             getAlarmJTreeModel().update();
             
@@ -280,9 +277,7 @@ private javax.swing.JTree getJTreeAlarms()
                     alarmValueChanged( null );
                 }
             });
-
-            //setRoleTabledEnabled(false);            
-
+            
             // user code end
         } catch (java.lang.Throwable ivjExc) {
             // user code begin {2}
@@ -593,7 +588,6 @@ public Object getValue(Object o) {
     int[] alarmarray = new int[alarmcatids.size()];
     int[] devicearray = new int[deviceids.size()];
     
-    
     for(int j = 0; j < pointids.size(); j++)
     {
         pointarray[j] = pointids.get(j);
@@ -611,7 +605,6 @@ public Object getValue(Object o) {
     
     alarmsTable.setAlarmCategoryIds(alarmarray);
     alarmsTable.setPointIds(pointarray);
-    
     alarmsTable.setDeviceIds(devicearray);
     
 	return alarmsTable;

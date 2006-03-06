@@ -3,13 +3,12 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.*;
 
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.*;
 
 public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Checkable
 {
@@ -37,40 +36,6 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
     protected DBTreeNode getNewNode(Object obj)
     {
         return new CheckNode(obj);
-    }
-    
-    /**
-     * Insert the method's description here.
-     * Creation date: (2/27/2002 10:17:05 AM)
-     * @param ac com.cannontech.database.data.lite.LitePoint
-     * @param dTreeNode com.cannontech.database.model.DummyTreeNode
-     */
-    protected DBTreeNode addDummyTreeNode(LiteAlarmCategory ac, 
-                        DBTreeNode node, String text, DBTreeNode deviceNode ) 
-    {
-        if( node == null)
-        {
-            DBTreeNode retNode = getNewNode(text);
-    
-            int indx = -1;
-            for( int i = 0 ; i < deviceNode.getChildCount(); i++ )
-                if( deviceNode.getChildAt(i).equals(retNode) )
-                {
-                    indx = i;
-                    break;
-                }
-                    
-            if( indx >= 0 )
-                node = (CheckNode)deviceNode.getChildAt(indx);
-            else
-                node = retNode;
-        }
-            
-    
-        node.add( getNewNode(ac) );
-        //updateTreeNodeStructure( node );
-    
-        return node;
     }
     
     /**
@@ -109,10 +74,9 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
            cache.getAllLoadManagement()
 
         Override this method when using a differnt List
-        */
+    */
        
-    protected synchronized java.util.List getCacheList(
-            com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+    protected synchronized List getCacheList(DefaultDatabaseCache cache ) 
     {
         return cache.getAllAlarmCategories();
     }
@@ -121,32 +85,37 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
      * Insert the method's description here.
      * Creation date: (4/16/2002 5:16:19 PM)
      */
-//     Override me if you want a sub class to do something different.
+    // Override me if you want a sub class to do something different.
     protected synchronized void runUpdate() 
     {
         DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
+        
         synchronized (cache)
         {
-            java.util.List alarmCats = getCacheList(cache);
-            java.util.Collections.sort(alarmCats, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+            List alarmCats = getCacheList(cache);
+            Collections.sort(alarmCats, LiteComparators.liteStringComparator);
+            ListIterator alarmCatsIter = alarmCats.listIterator();
             
-            // build our hash map of alarm categories on creation
             alarmCategoryMap = new HashMap();
             
             DBTreeNode rootNode = (DBTreeNode) getRoot();
             rootNode.removeAllChildren();
-
+            
             int deviceDevID;
             int deviceClass;
-            for (int i = 0; i < alarmCats.size(); i++)
+            
+            while ( alarmCatsIter.hasNext())
             {
-                DBTreeNode deviceNode = getNewNode(alarmCats.get(i));
-                rootNode.add(deviceNode);
-                LiteAlarmCategory alarmCategory = (LiteAlarmCategory) alarmCats.get(i);
-                alarmCategoryMap.put( alarmCategory.getLiteID(), deviceNode );
+                LiteAlarmCategory alarmCategory = (LiteAlarmCategory)alarmCatsIter.next();
+                // exclude the "(none)" entry
+                if( !alarmCategory.getCategoryName().equalsIgnoreCase(CtiUtilities.STRING_NONE))
+                {
+                    DBTreeNode deviceNode = getNewNode(alarmCategory);
+                    rootNode.add(deviceNode);
+                    alarmCategoryMap.put( alarmCategory.getLiteID(), deviceNode );
+                }
             } //for loop
-
+            
         } //synch
         reload();   
     }
