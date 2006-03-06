@@ -13,12 +13,14 @@ public class DeliverySchedule extends DBPersistent {
     private Integer purchasePlanID;
     private String scheduleName;
     private Integer modelID = CtiUtilities.NONE_ZERO_ID;
+    private String styleNumber = "";
+    private String orderNumber = "";
+    private Double quotedPricePerUnit = new Double(0.00);
     
-    private List<ScheduleTimePeriod> timePeriods;
-
     public static final String CONSTRAINT_COLUMNS[] = { "ScheduleID" };
 
-    public static final String SETTER_COLUMNS[] = { "PurchasePlanID", "ScheduleName", "ModelID"};
+    public static final String SETTER_COLUMNS[] = { "PurchasePlanID", "ScheduleName", "ModelID",
+                    "StyleNumber", "OrderNumber", "QuotedPricePerUnit"};
 
     public static final String TABLE_NAME = "DeliverySchedule";
     
@@ -30,7 +32,8 @@ public DeliverySchedule() {
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getScheduleID(), getPurchasePlanID(), 
-            getScheduleName(), getModelID(), };
+            getScheduleName(), getModelID(), getStyleNumber(), getOrderNumber(),
+            getQuotedPricePerUnit()};
 
     if(getScheduleID() == null)
         setScheduleID(getNextScheduleID());
@@ -58,6 +61,9 @@ public void retrieve() throws java.sql.SQLException
         setPurchasePlanID( (Integer) results[0] );
         setScheduleName( (String) results[1] );
         setModelID( (Integer) results[2] );
+        setStyleNumber( (String) results[3]);
+        setOrderNumber( (String) results[4] );
+        setQuotedPricePerUnit( (Double) results[5] );
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -67,8 +73,9 @@ public void retrieve() throws java.sql.SQLException
 
 public void update() throws java.sql.SQLException 
 {
-    Object setValues[] = { getPurchasePlanID(), getScheduleName(), getModelID()};
-    		
+    Object setValues[] = { getPurchasePlanID(), getScheduleName(), getModelID(), 
+            getStyleNumber(), getOrderNumber(), getQuotedPricePerUnit()};
+    
     Object constraintValues[] = { getScheduleID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -117,6 +124,9 @@ public static List<DeliverySchedule> getAllDeliverySchedulesForAPlan(Integer pur
                 currentSchedule.setPurchasePlanID( new Integer(stmt.getRow(i)[1].toString()));
                 currentSchedule.setScheduleName( stmt.getRow(i)[2].toString());
                 currentSchedule.setModelID( new Integer(stmt.getRow(i)[3].toString()));
+                currentSchedule.setStyleNumber( stmt.getRow(i)[4].toString() );
+                currentSchedule.setOrderNumber( stmt.getRow(i)[5].toString() );
+                currentSchedule.setQuotedPricePerUnit( new Double(stmt.getRow(i)[6].toString()));
                 
                 schedules.add(currentSchedule);
             }
@@ -160,6 +170,30 @@ public String getScheduleName() {
 
 public void setScheduleName(String scheduleName) {
     this.scheduleName = scheduleName;
+}
+
+public String getOrderNumber() {
+    return orderNumber;
+}
+
+public void setOrderNumber(String orderNumber) {
+    this.orderNumber = orderNumber;
+}
+
+public Double getQuotedPricePerUnit() {
+    return quotedPricePerUnit;
+}
+
+public void setQuotedPricePerUnit(Double quotedPricePerUnit) {
+    this.quotedPricePerUnit = quotedPricePerUnit;
+}
+
+public String getStyleNumber() {
+    return styleNumber;
+}
+
+public void setStyleNumber(String styleNumber) {
+    this.styleNumber = styleNumber;
 }
 
 
