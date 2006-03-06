@@ -60,11 +60,13 @@
 
    <table id="headerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
  	 <tr class="columnHeader lAlign">
- 	 <td>Name</td>
- 	 <td>Item Type</td>
- 	 <td>Description</td>
- 	 <td>Parent</td>
- 	 </tr>
+ 	 <%
+      String[] names = SearchResultsTableRow.getColumnNames();
+     for (int j=0; j < names.length; j++) {
+     %>
+     <td><%=names[j]%></td>
+     <%}%>
+     </tr>
  </table>
 <div class="scrollLarge">          
 <table id="resTable" width="98%" border="0" cellspacing="0" cellpadding="0">
@@ -84,12 +86,7 @@ for( int i = 0; i < items.length; i++ )
 		<% } 
         String[] columns = {item.toString(), item.getItemType(), item.getDescription()};
         SearchResultsTableRow row = new SearchResultsTableRow (columns); 
-     
-        TableRowFormater formater = new TableRowFormater();
-        formater.setTableRow(row);
-        
-        row = (SearchResultsTableRow)formater.formatRow();
-        
+        row.format();        
         %>
 				<%=row.getCell(0)%></td>
 				<td><%=row.getCell(1)%></td>
