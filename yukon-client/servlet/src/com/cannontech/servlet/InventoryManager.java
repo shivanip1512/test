@@ -198,10 +198,18 @@ public class InventoryManager extends HttpServlet {
             loadTimePeriod( user, req, session );
         else if (action.equalsIgnoreCase("TimePeriodChange"))
             handleTimePeriodChange( user, req, session );
-        /*else if (action.equalsIgnoreCase("RequestNewShipment"))
+        else if (action.equalsIgnoreCase("RequestNewShipment"))
             requestNewShipment( user, req, session );
         else if (action.equalsIgnoreCase("LoadShipment"))
-            loadShipment( user, req, session );*/
+            loadShipment( user, req, session );
+        else if (action.equalsIgnoreCase("ShipmentChange"))
+            handleShipmentChange( user, req, session );
+        else if (action.equalsIgnoreCase("RequestNewInvoice"))
+            requestNewInvoice( user, req, session );
+        else if (action.equalsIgnoreCase("LoadInvoice"))
+            loadInvoice( user, req, session );
+        /*else if (action.equalsIgnoreCase("InvoiceChange"))
+            handleInvoiceChange( user, req, session );*/
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1626,9 +1634,6 @@ public class InventoryManager extends HttpServlet {
         currentPlan.setPoDesignation(req.getParameter("poNumber"));
         currentPlan.setAccountingCode(req.getParameter("accountingCode"));
         
-        String[] scheduleIDs = req.getParameterValues("schedules");
-        List<DeliverySchedule> oldList = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
-        
         try
         {
             //new purchase plan
@@ -1645,7 +1650,13 @@ public class InventoryManager extends HttpServlet {
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Purchase plan successfully updated in the database.");
             }
             
-            //only really have to worry about deletes: updates and news have already been added
+            /**
+             * Delivery Schedules --
+             * Only really have to worry about deletes: updates and news have already been added
+             **/
+            String[] scheduleIDs = req.getParameterValues("schedules");
+            List<DeliverySchedule> oldList = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
+            
             for(int i = 0; i < oldList.size(); i++)
             {
                 boolean isFound = false;
@@ -1666,6 +1677,36 @@ public class InventoryManager extends HttpServlet {
                 if(!isFound)
                 {
                     Transaction.createTransaction(Transaction.DELETE, oldList.get(i)).execute();
+                }
+            }
+            
+            /**
+             * Invoices --
+             * Only really have to worry about deletes: updates and news have already been added
+             **/
+            String[] invoiceIDs = req.getParameterValues("invoices");
+            List<Invoice> oldInvoiceList = Invoice.getAllInvoicesForPurchasePlan(currentPlan.getPurchaseID());
+            
+            for(int i = 0; i < oldInvoiceList.size(); i++)
+            {
+                boolean isFound = false;
+                if(invoiceIDs != null)
+                {
+                    for(int j = 0; j < invoiceIDs.length; j++)
+                    {
+                        if(invoiceIDs[j].compareTo(oldInvoiceList.get(i).getInvoiceID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*
+                 * In old list only, must have been removed
+                 */
+                if(!isFound)
+                {
+                    Transaction.createTransaction(Transaction.DELETE, oldInvoiceList.get(i)).execute();
                 }
             }
         }
@@ -1734,12 +1775,9 @@ public class InventoryManager extends HttpServlet {
         
         currentSchedule.setScheduleName(req.getParameter("name"));
         currentSchedule.setModelID(new Integer(req.getParameter("modelType")));
-        
-        String[] timeIDs = req.getParameterValues("times");
-        List<ScheduleTimePeriod> oldList = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
-        
-        String[] shipmentIDs = req.getParameterValues("shipments");
-        //List<ScheduleTimePeriod> oldList = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
+        currentSchedule.setStyleNumber(req.getParameter("styleNumber"));
+        currentSchedule.setOrderNumber(req.getParameter("orderNumber"));
+        currentSchedule.setQuotedPricePerUnit(new Double(req.getParameter("pricePerUnit")));
         
         try
         {
@@ -1757,7 +1795,13 @@ public class InventoryManager extends HttpServlet {
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Delivery schedule successfully updated in the database.");
             }
             
-            //only really have to worry about deletes: updates and news have already been added
+            /**
+             * Time periods --
+             * Only really have to worry about deletes: updates and news have already been added
+             */
+            String[] timeIDs = req.getParameterValues("times");
+            List<ScheduleTimePeriod> oldList = ScheduleTimePeriod.getAllTimePeriodsForDeliverySchedule(currentSchedule.getScheduleID());
+          
             for(int i = 0; i < oldList.size(); i++)
             {
                 boolean isFound = false;
@@ -1779,6 +1823,37 @@ public class InventoryManager extends HttpServlet {
                 if(!isFound)
                 {
                     Transaction.createTransaction(Transaction.DELETE, oldList.get(i)).execute();
+                }
+            }
+            
+            /**
+             * Shipments --
+             * Only really have to worry about deletes: updates and news have already been added
+             */
+            String[] shipmentIDs = req.getParameterValues("shipments");
+            List<Shipment> oldShipList = Shipment.getAllShipmentsForDeliverySchedule(currentSchedule.getScheduleID());
+            
+            for(int i = 0; i < oldShipList.size(); i++)
+            {
+                boolean isFound = false;
+                
+                if(shipmentIDs != null)
+                {    
+                    for(int j = 0; j < shipmentIDs.length; j++)
+                    {
+                        if(shipmentIDs[j].compareTo(oldShipList.get(i).getShipmentID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*
+                 * In old list only, must have been removed
+                 */
+                if(!isFound)
+                {
+                    Transaction.createTransaction(Transaction.DELETE, oldShipList.get(i)).execute();
                 }
             }
         }
@@ -1829,7 +1904,7 @@ public class InventoryManager extends HttpServlet {
         if (shipDate == null)
         {
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
-            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid start date '" + req.getParameter("StartDate") + "'");
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid ship date '" + req.getParameter("ShipDate") + "'");
             redirect = req.getContextPath() + "/operator/Hardware/ScheduleTimePeriod.jsp";
         }
         
@@ -1861,5 +1936,117 @@ public class InventoryManager extends HttpServlet {
         }
         
         redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+    }
+    
+    private void requestNewShipment(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentShipment(new Shipment());
+        
+        redirect = req.getContextPath() + "/operator/Hardware/Shipment.jsp";
+    }
+    
+    private void loadShipment(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<Shipment> shipments = pBean.getAvailableShipments();
+        Integer idToLoad = new Integer(req.getParameter("shipments"));
+        
+        for(int j = 0; j < shipments.size(); j++)
+        {
+            if(shipments.get(j).getShipmentID().compareTo(idToLoad) == 0)
+                pBean.setCurrentShipment(shipments.get(j));
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/Shipment.jsp";
+    }
+    
+    private void handleShipmentChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        Shipment currentShipment = pBean.getCurrentShipment();
+        
+        currentShipment.setShipmentNumber(req.getParameter("name"));
+        currentShipment.setWarehouseID(new Integer(req.getParameter("warehouse")));
+        
+        /*TODO
+         * Going to do some automation here
+         * A: Need to check for existence of serial numbers already in the system
+         * B: Create new with currentState = Ordered in appropriate warehouse
+         * C: Probably will need to spin off a process task so we can time it
+         * */
+        currentShipment.setSerialNumberStart(req.getParameter("serialStart"));
+        currentShipment.setSerialNumberEnd(req.getParameter("serialEnd"));
+        
+        Date orderedDate = ServletUtil.parseDateStringLiberally( req.getParameter("orderingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
+        Date shipDate = ServletUtil.parseDateStringLiberally( req.getParameter("shipDate"), pBean.getEnergyCompany().getDefaultTimeZone());
+        Date receivedDate = ServletUtil.parseDateStringLiberally( req.getParameter("receivingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
+        if (shipDate == null)
+        {
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid start date '" + req.getParameter("StartDate") + "'");
+            redirect = req.getContextPath() + "/operator/Hardware/ScheduleTimePeriod.jsp";
+        }
+        
+        currentShipment.setShipDate(shipDate);
+        currentShipment.setReceivedDate(receivedDate);
+        currentShipment.setOrderedDate(orderedDate);
+        
+        currentShipment.setActualPricePerUnit(new Double(req.getParameter("pricePerUnit")));
+        currentShipment.setSalesTax(new Double(req.getParameter("salesTax")));
+        currentShipment.setShippingCharges(new Double(req.getParameter("shippingCharges")));
+        currentShipment.setOtherCharges(new Double(req.getParameter("otherCharges")));
+        currentShipment.setSalesTotal(new Double(req.getParameter("total")));
+        currentShipment.setAmountPaid(new Double(req.getParameter("amountPaid")));
+        
+        try
+        {
+            /**
+             * new time period
+             */
+            if(currentShipment.getShipmentID() == null)
+            {
+                currentShipment.setShipmentID(Shipment.getNextShipmentID());
+                Transaction.createTransaction(Transaction.INSERT, currentShipment).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New shipment added to this delivery schedule.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentShipment).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Shipment successfully updated in the database.");
+            }
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Shipment could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+    }
+    
+    private void requestNewInvoice(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        pBean.setCurrentInvoice(new Invoice());
+        
+        redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
+    }
+    
+    private void loadInvoice(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    { 
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        List<Invoice> invoices = pBean.getAvailableInvoices();
+        Integer idToLoad = new Integer(req.getParameter("invoices"));
+        
+        for(int j = 0; j < invoices.size(); j++)
+        {
+            if(invoices.get(j).getInvoiceID().compareTo(idToLoad) == 0)
+                pBean.setCurrentInvoice(invoices.get(j));
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
     }
 }
