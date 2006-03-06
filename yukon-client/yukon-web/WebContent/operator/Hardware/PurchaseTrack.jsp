@@ -47,6 +47,16 @@
 						<INPUT type="Button" name="new" value="New Plan" onclick="createNewPlan(this.form)" />
 					</td>
 				</tr>
+			 	<!-- 
+					<tr>
+						<td width="30%"> </td>
+						<td width="30%"> </td>
+						<td width="30%">
+							<INPUT id="deletePlan" type="Button" name="deletePlan" value="Delete" onclick="deletePlan(this.form)"/>
+						</td>
+						<td width="10%"> </td>
+					</tr>
+				-->		
 			</table>
 			<div id="newtopsection" align="center">
 	    		<span class="ConfirmMsg">Please create a new purchase plan below.</span>
@@ -93,7 +103,6 @@
 		     	</tr>
 	        </table>
 	        <br>
-	        <br>
 	        <div id="onlyavailableaftercreation">
 		        <table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
 	        		<tr> 
@@ -124,8 +133,37 @@
 	            		</td>
 	            	</tr>
 				</table>
+				<br>
+				<table width="500" border="1" cellspacing="0" cellpadding="0" align="center">
+	        		<tr> 
+	              		<td class="HeaderCell">Plan Invoices</td>
+	            	</tr>
+	        	</table>
+	        	<table width="500" border="1" cellspacing="0" cellpadding="5" align="center">
+	        		<tr>
+	        			<td width="20%">
+							<div align="right">
+								<INPUT type="Button" name="edit" value="Edit" onclick="loadInvoice(this.form)" />
+								<INPUT type="Button" name="delete" value="Remove" onclick="removeInvoice()"/>
+							</div>
+						</td> 
+						<td width="60%" valign="top" class="TableCell"><br>
+		                    <div align="center">
+		                    	<select id="invoices" name="invoices" size="5" style="width:250">
+		                        	<c:forEach var="invoice" items="${purchaseBean.availableInvoices}">
+										<option value='<c:out value="${invoice.InvoiceID}"/>'> <c:out value="${invoice.invoiceDesignation}"/> </option>
+									</c:forEach>
+								</select>
+							</div>
+	            		</td>
+	                    <td width="20%">
+	            			<div align="left">
+	            				<INPUT type="Button" name="newAssigned" value="New" onclick="createNewInvoice(this.form)" />
+	            			</div>
+	            		</td>
+	            	</tr>
+				</table>
 			</div>
-			<br>
 			<br>
 			<table width="500" border="0" cellspacing="0" cellpadding="5" align="center">
 	        	<tr>
@@ -177,6 +215,12 @@
 			form.submit();	
 		}
 		
+		function deletePlan(form)
+		{
+			form.action.value = "DeletePurchasePlan"; 
+			alert("Permission violation: Deletion of purchase plans is restricted at this time.");
+		}
+		
 		function createNewSchedule(form)
 		{
 			form.action.value = "RequestNewDeliverySchedule"; 
@@ -197,6 +241,35 @@
 		function removeSched()
 		{
 			var assignList = document.getElementById("schedules");
+			var idx = assignList.selectedIndex;
+									
+			if (assignList.selectedIndex >= 0) 
+			{
+				assignList.remove(idx);
+				setContentChanged(true);
+			}
+		}
+		
+		function createNewInvoice(form)
+		{
+			form.action.value = "RequestNewInvoice"; 
+			form.submit();			
+		}
+		
+		function loadInvoice(form)
+		{
+			var assignList = document.getElementById("invoices");
+			
+			if (assignList.selectedIndex >= 0) 
+			{
+				form.action.value = "LoadInvoice";
+				form.submit();
+			}
+		}
+		
+		function removeInvoice()
+		{
+			var assignList = document.getElementById("invoices");
 			var idx = assignList.selectedIndex;
 									
 			if (assignList.selectedIndex >= 0) 
