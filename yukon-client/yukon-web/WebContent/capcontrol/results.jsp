@@ -60,12 +60,10 @@
 
    <table id="headerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
  	 <tr class="columnHeader lAlign">
- 	 <%
-      String[] names = SearchResultsTableRow.getColumnNames();
-     for (int j=0; j < names.length; j++) {
-     %>
-     <td><%=names[j]%></td>
-     <%}%>
+ 	 <td>Name</td>
+     <td>Item Type</td>
+     <td>Description</td>
+     <td>Parent</td>    
      </tr>
  </table>
 <div class="scrollLarge">          
@@ -83,15 +81,11 @@ for( int i = 0; i < items.length; i++ )
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=item.getItemID()%>"/>
 		<% } else { %>
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
-		<% } 
-        String[] columns = {item.toString(), item.getItemType(), item.getDescription()};
-        SearchResultsTableRow row = new SearchResultsTableRow (columns); 
-        row.format();        
-        %>
-				<%=row.getCell(0)%></td>
-				<td><%=row.getCell(1)%></td>
+		<% }  %>
+				<%=item.toString()%></td>
+				<td><%=item.getItemType()%></td>
 
-				<td><%= row.getCell(2)%></td>
+				<td><%= item.getDescription()%></td>
 				<td>
 	<% 
 		

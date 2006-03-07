@@ -524,8 +524,10 @@ var colNum = myrow.cells.length;
 
 for(i=0;i < colNum - 1; i++) {
 
-hdrRow.getElementsByTagName('td').item(i).width =
-							myrow.cells[i].offsetWidth;
+maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
+hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
+myrow.cells[i].width = maxWidth;
+                                                        
 }
 
 }

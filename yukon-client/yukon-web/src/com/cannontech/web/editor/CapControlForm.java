@@ -1876,14 +1876,17 @@ public class CapControlForm extends DBEditorForm {
     }
     
     public String getPaoName() {
-        
-        return ((YukonPAObject)getDbPersistent()).getPAOName();
+        if ((YukonPAObject)getDbPersistent() != null) {
+            return ((YukonPAObject)getDbPersistent()).getPAOName();
+        }
+        else {
+            return "";
+        }
     }
     
     public LitePoint[] getCapBankPointList() {
-
-        return PAOFuncs.getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID());
         
+        return PAOFuncs.getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID());        
     }
     
     public void capBankPointClick (ActionEvent ae){
@@ -1896,8 +1899,7 @@ public class CapControlForm extends DBEditorForm {
             String location = red + val;
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil util = new CBCNavigationUtil();
-            util.bookmarkLocation(location, session);
+            CBCNavigationUtil.bookmarkLocation(location, session);
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 

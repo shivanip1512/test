@@ -32,8 +32,7 @@ public class CtiNavActionListener implements ActionListener {
 				
 				String red = "";
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-                CBCNavigationUtil navigationUtil = new CBCNavigationUtil();
-                red = navigationUtil.goBack(session);
+                red = CBCNavigationUtil.goBack(session);
                     if (!red.equalsIgnoreCase("")) {
                         ctiNav.setNavigation(red);                                   
                     }

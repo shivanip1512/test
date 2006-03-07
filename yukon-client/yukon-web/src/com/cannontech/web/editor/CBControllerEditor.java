@@ -291,8 +291,7 @@ public class CBControllerEditor {
             String location = red + val;            
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil util = new CBCNavigationUtil();
-            util.bookmarkLocation(location, session);
+            CBCNavigationUtil.bookmarkLocation(location, session);
             //go to the next page
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
