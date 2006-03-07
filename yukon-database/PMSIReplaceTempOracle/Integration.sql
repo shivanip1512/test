@@ -150,39 +150,33 @@ alter table CRSToSAM_PTJAdditionalMeters
    add constraint FK_PTJADDMTRS_CRSTOSAMPTJ foreign key (PTJID)
       references CRSToSAM_PTJ (PTJID)
 
-
 /*==============================================================*/
-/* Table: SAM_MassSwitchChangeout                 		*/
+/* Table: SwitchReplacement                                     */
 /*==============================================================*/
-create table SAM_MassSwitchChangeout (
-   PremiseNumber	NUMBER				null,
-   OldSerialNumber	VARCHAR2(30)			null,
-   NewSerialNumber	VARCHAR2(30)			null,
-   ServiceCompanyID	NUMBER				null,
-   InstallDate		DATE    			null,
-   ApplianceTypeID	NUMBER				null
+create table SwitchReplacement(
+   ReplacementID		NUMBER							not null,
+   SerialNumber			VARCHAR2(10)                    not null,
+   WOType				VARCHAR2(20)                    not null,
+   DeviceType           VARCHAR2(30)                    not null
 );
 
-alter table SAM_MassSwitchChangeout
-   add constraint PK_MASSSWITCHCHANGEOUT primary key (PremiseNumber, OldSerialNumber);
-
+alter table SwitchReplacement 
+   add constraint PK_SwitchReplace primary key (ReplacementID);
 
 /*==============================================================*/
-/* Table: FailureSAM_MassSwitchChangeout                 	*/
+/* Table: Failure_SwitchReplacement                             */
 /*==============================================================*/
-create table FailureSAM_MassSwitchChangeout (
-   PremiseNumber	NUMBER				null,
-   OldSerialNumber	VARCHAR2(30)			null,
-   NewSerialNumber	VARCHAR2(30)			null,
-   ServiceCompanyID	NUMBER				null,
-   InstallDate		DATE    			null,
-   ApplianceTypeID	NUMBER				null,
-   ErrorMsg		VARCHAR2(1024)			null,
-   DateTime		DATE    			null	
+create table Failure_SwitchReplacement(
+   ReplacementID		NUMBER							not null,
+   SerialNumber			VARCHAR2(10)                    not null,
+   WOType				VARCHAR2(20)                    not null,
+   DeviceType           VARCHAR2(30)                    not null,
+   ErrorMsg				VARCHAR2(1024)					not null,
+   DateTime             DATE                            not null
 );
 
-alter table SAM_MassSwitchChangeout
-   add constraint PK_FAILSWITCHCHANGEOUT primary key (PremiseNumber, OldSerialNumber);
+alter table Failure_SwitchReplacement 
+   add constraint PK_Fail_SwitchReplace primary key (ReplacementID);
    
 insert into YukonServices values( -7, 'CRS_Integration', 'com.cannontech.jmx.services.DynamicCRSIntegrator', '(none)', '(none)' );
 
