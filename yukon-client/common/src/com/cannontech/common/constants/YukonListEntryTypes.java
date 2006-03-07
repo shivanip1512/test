@@ -198,6 +198,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SO_FILTER_BY_STATUS			= 3501;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE		= 3502;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY		= 3503;
+	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES	= 3504;
 	
 	public static final int YUK_DEF_ID_RATE_SCHED_J					= 3601;
 	public static final int YUK_DEF_ID_RATE_SCHED_PS				= 3602;
