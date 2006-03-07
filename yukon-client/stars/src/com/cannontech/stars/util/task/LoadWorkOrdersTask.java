@@ -91,8 +91,11 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 			
 			sql = "SELECT EB.EVENTID, USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP, ORDERID " +
 			" FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
-			com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO " +
+			com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO, " +
+			" ECToWorkOrderMapping map " + 
 			" WHERE EB.EVENTID = EWO.EVENTID " +
+			" AND map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + 
+			" AND MAP.WORKORDERID = EWO.ORDERID " +
 			" ORDER BY EB.EVENTID, EVENTTIMESTAMP";
 			
 			stmt = conn.createStatement();
