@@ -898,6 +898,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
             int op;
             CtiMultiMsg *msgMulti;
             CtiPointDataMsg *pData;
+            CtiSignalMsg *pSignal;
             int x;
 
             switch( message->isA( ) )
@@ -1026,11 +1027,21 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                 break;
 
             case MSG_SIGNAL:
-                // not an error
-                if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+                    _lastDispatchMessageTime = CtiTime::now();
+
+                    pSignal = (CtiSignalMsg *)message;
+                    if( pSignal->getId() )
+                    {
+                        calcThread->pointSignal( pSignal->getId(), pSignal->getTags() );
+                    }
+                    _dispatchConnectionBad = false;
+                
+                    if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+                    }
                 }
                 break;
 

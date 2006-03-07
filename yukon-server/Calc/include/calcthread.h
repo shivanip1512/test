@@ -83,6 +83,7 @@ public:
                                string &operationType, double constantValue, string &functionName );
     void appendCalcPoint( long pointID );
     void pointChange( long changedID, double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags );
+    void pointSignal( long changedID, unsigned newTags );
 
     BOOL isACalcPointID(const long aPointID);
     BOOL isAPeriodicCalcPointID(const long aPointID);

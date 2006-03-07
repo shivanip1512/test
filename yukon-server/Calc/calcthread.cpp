@@ -91,6 +91,36 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
     }
 }
 
+void CtiCalculateThread::pointSignal( long changedID, unsigned newTags )
+{
+    try
+    {
+        RWMutexLock::LockGuard msgLock(_pointDataMutex);
+        RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
+        CtiHashKey hashKey(changedID);
+
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
+        if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - Point Data ID: " << changedID << " Tags: " << newTags << endl;
+        }
+
+        if(pointPtr)
+        {
+            if( newTags != pointPtr->getPointTags() )
+            {
+                pointPtr->setPointTags( newTags );      // Update the pointStore.
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
 
 void CtiCalculateThread::periodicThread( void )
 {

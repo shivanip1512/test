@@ -148,6 +148,11 @@ protected:
         _regress.append(make_pair(_pointTime.seconds(), _pointValue));
     };
 
+    void setPointTags( unsigned newTags )
+    {
+        _pointTags = newTags;
+    }
+
     void appendDependent( long dependentID, PointUpdateType updateType )
     {
         struct depStore newDependent;
