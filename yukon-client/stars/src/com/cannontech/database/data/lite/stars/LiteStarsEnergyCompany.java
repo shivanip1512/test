@@ -29,7 +29,6 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
-import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -157,7 +156,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private ArrayList pubPrograms = null;		// List of LiteLMProgramWebPublishing
 	private ArrayList appCategories = null;		// List of LiteApplianceCategory
-	private ArrayList serviceCompanies = null;	// List of LiteServiceCompany
+	private ArrayList<LiteServiceCompany> serviceCompanies = null;	// List of LiteServiceCompany
 	private ArrayList substations = null;		// List of LiteSubstation
 	private ArrayList selectionLists = null;	// List of YukonSelectionList
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
@@ -893,14 +892,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return getYukonListEntry(listName, yukonDefID);
 	}
 	
-	public synchronized ArrayList getServiceCompanies() {
+	public synchronized ArrayList<LiteServiceCompany> getServiceCompanies() {
 		if (serviceCompanies == null) {
 			com.cannontech.database.data.stars.report.ServiceCompany[] companies =
 					com.cannontech.database.data.stars.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyID() );
 			
-			serviceCompanies = new ArrayList();
+			serviceCompanies = new ArrayList<LiteServiceCompany>();
 			for (int i = 0; i < companies.length; i++)
-				serviceCompanies.add( StarsLiteFactory.createLite(companies[i]) );
+				serviceCompanies.add( (LiteServiceCompany)StarsLiteFactory.createLite(companies[i]) );
 			
 			CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyID() );
 		}
@@ -908,17 +907,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return serviceCompanies;
 	}
 	
-	public ArrayList getAllServiceCompanies() {
-		ArrayList companies = new ArrayList( getServiceCompanies() );
+	public ArrayList<LiteServiceCompany> getAllServiceCompanies() {
+		ArrayList<LiteServiceCompany> companies = new ArrayList<LiteServiceCompany>( getServiceCompanies() );
 		if (getParent() != null)
 			companies.addAll( 0, getParent().getAllServiceCompanies() );
 		
 		return companies;
 	}
     
-    public List<ServiceCompany> getAllServiceCompaniesDownward() 
+    public ArrayList<LiteServiceCompany> getAllServiceCompaniesDownward() 
     {
-        List<ServiceCompany> companies = new ArrayList<ServiceCompany>( getAllServiceCompanies() );
+        ArrayList<LiteServiceCompany> companies = new ArrayList<LiteServiceCompany>( getAllServiceCompanies() );
         
         if(getChildren() != null)
         {
@@ -1409,7 +1408,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteServiceCompany getServiceCompany(int serviceCompanyID) {
-		ArrayList serviceCompanies = getAllServiceCompanies();
+		ArrayList<LiteServiceCompany> serviceCompanies = getAllServiceCompanies();
 		for (int i = 0; i < serviceCompanies.size(); i++) {
 			LiteServiceCompany serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
 			if (serviceCompany.getCompanyID() == serviceCompanyID)
