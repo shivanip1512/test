@@ -8,9 +8,9 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
-import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
@@ -22,7 +22,7 @@ public class ManipulationBean
     private LiteYukonUser currentUser = null;
     private ArrayList availableMembers;
     private YukonSelectionList availableDeviceTypes;
-    private List<ServiceCompany> availableServiceCompanies;
+    private List<LiteServiceCompany> availableServiceCompanies;
     private YukonSelectionList availableDeviceStates;
     private List<Warehouse> availableWarehouses;
     private YukonListEntry defaultActionSelection;
@@ -76,7 +76,7 @@ public class ManipulationBean
         return availableDeviceTypes;
     }
     
-    public List<ServiceCompany> getAvailableServiceCompanies()
+    public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();

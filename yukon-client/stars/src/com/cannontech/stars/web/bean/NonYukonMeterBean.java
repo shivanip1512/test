@@ -9,9 +9,9 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
-import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -23,7 +23,7 @@ public class NonYukonMeterBean
     private LiteYukonUser currentUser = null;
     private ArrayList availableMembers;
     private YukonSelectionList availableMeterTypes;
-    private List<ServiceCompany> availableServiceCompanies;
+    private List<LiteServiceCompany> availableServiceCompanies;
     private MeterHardwareBase currentMeter;
     private int currentMeterID = -1;
     private YukonSelectionList voltages;
@@ -81,7 +81,7 @@ public class NonYukonMeterBean
         return availableMeterTypes;
     }
     
-    public List<ServiceCompany> getAvailableServiceCompanies()
+    public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
