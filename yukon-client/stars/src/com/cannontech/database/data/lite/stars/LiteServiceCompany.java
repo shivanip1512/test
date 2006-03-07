@@ -1,7 +1,10 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
+
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 /**
  * @author yao
@@ -19,6 +22,8 @@ public class LiteServiceCompany extends LiteBase {
 	private String mainFaxNumber = null;
 	private int primaryContactID = 0;
 	private String hiType = null;
+	
+	private ArrayList<ServiceCompanyDesignationCode> designationCodes = null;
 	
 	public LiteServiceCompany() {
 		super();
@@ -133,6 +138,17 @@ public class LiteServiceCompany extends LiteBase {
 	 */
 	public void setPrimaryContactID(int primaryContactID) {
 		this.primaryContactID = primaryContactID;
+	}
+
+	public ArrayList<ServiceCompanyDesignationCode> getDesignationCodes() {
+		if( designationCodes == null)
+			designationCodes = new ArrayList<ServiceCompanyDesignationCode>();
+		return designationCodes;
+	}
+
+	public void setDesignationCodes(
+			ArrayList<ServiceCompanyDesignationCode> designationCodes) {
+		this.designationCodes = designationCodes;
 	}
 
 }

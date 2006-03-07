@@ -1,7 +1,6 @@
 package com.cannontech.database.data.stars.report;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -27,6 +26,7 @@ public class ServiceCompany extends DBPersistent {
     private com.cannontech.database.data.customer.Contact primaryContact = null;
     
     private Integer energyCompanyID = null;
+    private ArrayList<ServiceCompanyDesignationCode> designationCodes = null;
 
     public ServiceCompany() {
         super();
@@ -58,13 +58,15 @@ public class ServiceCompany extends DBPersistent {
 				new String[] {"ItemID", "MappingCategory"},
 				new Object[] {getServiceCompany().getCompanyID(), "ServiceCompany"});
     	
-        getServiceCompany().delete();
-        
         getAddress().setAddressID( getServiceCompany().getAddressID() );
     	getAddress().delete();
     	
     	getPrimaryContact().setContactID( getServiceCompany().getPrimaryContactID() );
     	getPrimaryContact().delete();
+	
+	   	ServiceCompanyDesignationCode.deleteDesignationCode(getServiceCompany().getCompanyID().intValue(), getDbConnection()); 
+    	
+        getServiceCompany().delete();
     }
 
     public void add() throws java.sql.SQLException {
@@ -105,6 +107,8 @@ public class ServiceCompany extends DBPersistent {
         
         getPrimaryContact().setContactID( getServiceCompany().getPrimaryContactID() );
         getPrimaryContact().retrieve();
+        
+        setDesignationCodes(ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(getServiceCompany().getCompanyID().intValue()));
     }
 	/**
 	 * Returns the serviceCompany.
@@ -198,7 +202,8 @@ public class ServiceCompany extends DBPersistent {
     			Object[] row = stmt.getRow(i);
     			companies[i] = new ServiceCompany();
     			
-    			companies[i].setCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    			Integer companyID = new Integer(((java.math.BigDecimal) row[0]).intValue()) ;
+    			companies[i].setCompanyID( companyID);
     			companies[i].getServiceCompany().setCompanyName( (String) row[1] );
     			companies[i].getServiceCompany().setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
     			companies[i].getServiceCompany().setMainPhoneNumber( (String) row[3] );
@@ -206,6 +211,7 @@ public class ServiceCompany extends DBPersistent {
     			companies[i].getServiceCompany().setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
     			companies[i].getServiceCompany().setHIType( (String) row[6] );
     			companies[i].setEnergyCompanyID(energyCompanyID);
+    			companies[i].setDesignationCodes(ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID.intValue()));
     		}
     		return companies;
     	}
@@ -215,4 +221,14 @@ public class ServiceCompany extends DBPersistent {
     	
     	return null;
     }
+
+	public ArrayList<ServiceCompanyDesignationCode> getDesignationCodes() {
+		if( designationCodes == null)
+			designationCodes = new ArrayList<ServiceCompanyDesignationCode>();
+		return designationCodes;
+	}
+
+	public void setDesignationCodes(ArrayList<ServiceCompanyDesignationCode> designationCodes) {
+		this.designationCodes = designationCodes;
+	}
 }
