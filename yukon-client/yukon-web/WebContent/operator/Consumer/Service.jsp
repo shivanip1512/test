@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
@@ -6,7 +7,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
+<%
+int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+%>
 <script language="JavaScript">
 function validate(form) {
 	if (form.OrderNo != null && form.OrderNo.value == "") {
@@ -15,6 +18,18 @@ function validate(form) {
 	}
 	return true;
 }
+
+function changeStatus(form) {
+	if( form.CurrentState.value == "<%= statusPending %>" )
+	{
+		document.getElementById("ServComp")[0].selected = true;
+		document.getElementById("ServComp").disabled = true;
+	}
+	else {
+		document.getElementById("ServComp").disabled = false;
+	}
+}
+
 </script>
 </head>
 
@@ -60,57 +75,25 @@ function validate(form) {
 %>
                         <tr> 
                           <td width="100" class="SubtitleHeader"> 
-                            <div align="right">*Service Order #:</div>
+                            <div align="right">*Work Order #:</div>
                           </td>
                           <td width="248"> 
                             <input type="text" name="OrderNo" size="14" maxlength="20" onchange="setContentChanged(true)">
                           </td>
                         </tr>
-<%
-	}
-%>
-                        <tr> 
-                          <td width="100" class="TableCell"> 
-                            <div align="right">Date Reported:</div>
-                          </td>
-                          <td width="248"> 
-                            <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
-                            - 
-                            <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
-                          </td>
-                        </tr>
+						<% } %>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Service Type:</div>
                           </td>
                           <td width="248"> 
                             <select name="ServiceType" onchange="setContentChanged(true)">
-                              <%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
-	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
-%>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
-	}
-%>
-                            </select>
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="100" class="TableCell"> 
-                            <div align="right">Assign to:</div>
-                          </td>
-                          <td width="248"> 
-                            <select name="ServiceCompany" onchange="setContentChanged(true)">
-                              <%
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany company = companies.getStarsServiceCompany(i);
-%>
-                              <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
-                              <%
-	}
-%>
+                              <% StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
+                              	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
+                              		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
+                              %>
+                              	<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <% } %>
                             </select>
                           </td>
                         </tr>
@@ -120,6 +103,51 @@ function validate(form) {
                           </td>
                           <td width="248"> 
                             <input type="text" name="OrderedBy" size="14" onchange="setContentChanged(true)">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Addtl Order #:</div>
+                          </td>
+                          <td width="248"> 
+                            <input type="text" name="AddtlOrderNumber" size="14" onchange="setContentChanged(true)">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="30%" class="TableCell"> 
+                            <div align="right">Current State:</div>
+                          </td>
+                          <td width="70%"> 
+                            <select name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
+                            <% StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
+                            	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
+                            		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
+                            %>
+                              <option value="<%= entry.getEntryID() %>" ><%= entry.getContent() %></option>
+                            <% } %>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="30%" align="right" class="TableCell">Event Date:</td>
+                          <td width="70%"> 
+                            <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
+                            - 
+                            <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Assign to:</div>
+                          </td>
+                          <td width="248"> 
+                            <select id="ServComp" name="ServiceCompany" onchange="setContentChanged(true)" disabled>
+                              <% for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+									StarsServiceCompany company = companies.getStarsServiceCompany(i);
+							  %>
+                              	<option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+                              <% } %>
+                            </select>
                           </td>
                         </tr>
                         <tr> 
