@@ -306,6 +306,20 @@ BOOL CtiCalc::ready( void )
                 }
             }
         }
+
+        //We think we can go, but are any of our components disabled?
+        if( isReady )
+        {
+            CtiPointStore* pointStore = CtiPointStore::getInstance();
+  
+            //Is the calc point itself disabled?
+            CtiHashKey hashKey(_pointId);
+            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+            if(componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
+            {
+                isReady = false;
+            }
+        }
     }
     catch(...)
     {

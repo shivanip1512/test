@@ -220,6 +220,10 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
 
             component_quality = componentPointPtr->getPointQuality();
             component_time = componentPointPtr->getPointTime();
+            if(componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
+            {
+                component_quality = QuestionableQuality;
+            }
         }
     }
     else
