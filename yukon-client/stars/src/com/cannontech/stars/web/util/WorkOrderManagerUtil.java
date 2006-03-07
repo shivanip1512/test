@@ -38,8 +38,8 @@ public class WorkOrderManagerUtil {
 			starsOrder.setAccountID( Integer.parseInt(req.getParameter("AccountID")) );
 		if (req.getParameter("OrderNo") != null)
 			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
-		if (req.getParameter("AddtlOrderNo") != null)
-			starsOrder.setAddtlOrderNumber( req.getParameter("AddtlOrderNo") );		
+		if (req.getParameter("AddtlOrderNumber") != null)
+			starsOrder.setAddtlOrderNumber( req.getParameter("AddtlOrderNumber") );		
 		if (req.getParameter("ActionTaken") != null)
 			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll(System.getProperty("line.separator"), "<br>") );
 		starsOrder.setOrderedBy( req.getParameter("OrderedBy") );
@@ -60,7 +60,7 @@ public class WorkOrderManagerUtil {
 		}
 		
 		//TODO Currently using the DateReported field to hold the current state's date.  This should be changed since this field is deprecated. 
-		if (req.getParameter("DateEventTimestamp").length() > 0) {
+		if (req.getParameter("DateEventTimestamp")!= null && req.getParameter("DateEventTimestamp").length() > 0) {
 			Date dateReported = ServletUtils.parseDateTime(
 					req.getParameter("DateEventTimestamp"), req.getParameter("TimeEventTimestamp"), tz );
 			if (dateReported == null)
