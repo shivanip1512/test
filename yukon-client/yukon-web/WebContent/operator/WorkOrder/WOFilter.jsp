@@ -28,7 +28,7 @@
 	<c:set target="${filterBean}" property="filterListName" value="${filterListName}" />
 	
 	<div class="standardpurplesidebox"> 
-		<% String pageName = "Filter.jsp"; %>
+		<% String pageName = "WOFilter.jsp"; %>
 		<%@ include file="include/Nav.jsp" %>
 	</div>
 
