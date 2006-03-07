@@ -45,6 +45,8 @@ import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
+import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 
 public final class YukonCRSIntegrator 
 {
@@ -220,7 +222,7 @@ public final class YukonCRSIntegrator
                 String streetAddress2 = currentEntry.getStreetAddress2();
                 String cityName = currentEntry.getCityName();
                 String state = currentEntry.getStateCode();
-                String zipCode = currentEntry.getZipCode();
+                String zipCode = currentEntry.getZipCode().substring(0, 5);
                 String customerNumber = currentEntry.getNewDebtorNumber();
                 String alternateTrackingNumber = currentEntry.getTransID();
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
@@ -318,7 +320,7 @@ public final class YukonCRSIntegrator
             String streetAddress2 = currentEntry.getStreetAddress2( );
             String cityName = currentEntry.getCityName( );      
             String stateCode = currentEntry.getStateCode( );
-            String zipCode = currentEntry.getZipCode( );
+            String zipCode = currentEntry.getZipCode().substring(0, 5);
             String firstName = currentEntry.getFirstName( );  
             String lastName = currentEntry.getLastName( );
             String homePhone = currentEntry.getHomePhone( );
@@ -332,6 +334,12 @@ public final class YukonCRSIntegrator
             //TODO Meter Number support on install
             String meterNumber = currentEntry.getMeterNumber( );
 
+//            CMP = Company Use
+//            CO = Commercial
+//            DO = Domestic (Residential)
+//            IN = Industrial
+//            MFG = Manufacturing
+//            MNC = Municipal            
             if( !(consumType.equalsIgnoreCase("CO") || consumType.equalsIgnoreCase("DO") || 
             	consumType.equalsIgnoreCase("IN") || consumType.equalsIgnoreCase("CMP") ||
             	consumType.equalsIgnoreCase("MNC") || consumType.equalsIgnoreCase("MFG") ) ){
@@ -501,8 +509,7 @@ public final class YukonCRSIntegrator
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
-        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
-            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
+        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING) )
         		servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED;
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, servStat);
 
@@ -528,13 +535,16 @@ public final class YukonCRSIntegrator
             eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
            	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
 
-           	//And...every new ACT/DEACT Work Order has a Processed Event
-        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_ACTIVATION_STRING) ||
-            		ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
+           	//And...every new DEACT Work Order has a Processed Event
+        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING))
         	{
                 workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED);
                 eventWorkOrder = EventUtils.buildEventWorkOrder(liteYukonUser.getUserID(), workStatusEntry.getEntryID(), workOrder.getWorkOrderBase().getOrderID().intValue());
                	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
+               	
+//               	SwitchCommand switchCommand = new SwitchCommand();
+               	
+//               	SwitchCommandQueue.getInstance().addCommand(SwitchCommand.)
         	}
 
         	try
