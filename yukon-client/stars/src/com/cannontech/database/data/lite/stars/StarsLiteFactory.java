@@ -624,12 +624,7 @@ public class StarsLiteFactory {
 		liteCompany.setMainFaxNumber( company.getServiceCompany().getMainFaxNumber() );
 		liteCompany.setPrimaryContactID( company.getServiceCompany().getPrimaryContactID().intValue() );
 		liteCompany.setHiType( company.getServiceCompany().getHIType() );
-		/*for (int i = 0; i < company.getDesignationCodes().size(); i++)
-		{
-			LiteServiceCompanyDesignationCode lscdc = new LiteServiceCompanyDesignationCode();
-			setLiteServiceCompanyDesignationCode(lscdc, (ServiceCompanyDesignationCode)company.getDesignationCodes().get(i));
-			liteCompany.getDesignationCodes().add(lscdc);
-		}*/
+		liteCompany.setDesignationCodes( company.getDesignationCodes());
 	}
 
 	public static void setLiteServiceCompanyDesignationCode(LiteServiceCompanyDesignationCode liteCompanyDesignCode, ServiceCompanyDesignationCode servCompDesignCode) {
@@ -1095,14 +1090,7 @@ public class StarsLiteFactory {
 		company.getServiceCompany().setMainFaxNumber( liteCompany.getMainFaxNumber() );
 		company.getServiceCompany().setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
 		company.getServiceCompany().setHIType( liteCompany.getHiType() );
-
-/*		for (int i = 0; i < liteCompany.getDesignationCodes().size(); i++)
-		{
-			ServiceCompanyDesignationCode scdc = new ServiceCompanyDesignationCode();
-			setServiceCompanyDesignationCode(scdc, (LiteServiceCompanyDesignationCode)liteCompany.getDesignationCodes().get(i));
-			company.getDesignationCodes().add(scdc);
-		}
-*/
+		company.setDesignationCodes(liteCompany.getDesignationCodes());
 	}
 
 	public static void setServiceCompanyDesignationCode(ServiceCompanyDesignationCode servCompDesignCode, LiteServiceCompanyDesignationCode liteServCompDesignCode) {
