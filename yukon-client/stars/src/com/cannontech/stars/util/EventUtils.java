@@ -47,6 +47,8 @@ public class EventUtils
         
         eventBase.getEventBase().setUserID(new Integer(userID));
         eventBase.getEventBase().setActionID(new Integer(actionID));
+        if( eventDate == null)
+        	eventDate = new Date();
         eventBase.getEventBase().setEventTimestamp(eventDate);
         
         try
