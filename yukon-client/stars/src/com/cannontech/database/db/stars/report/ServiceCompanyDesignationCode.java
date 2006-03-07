@@ -119,9 +119,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getServiceCompanyDesignationCodes(int companyID)
+public static ArrayList<ServiceCompanyDesignationCode> getServiceCompanyDesignationCodes(int companyID)
 {
-    ArrayList codes = new ArrayList();
+    ArrayList<ServiceCompanyDesignationCode> codes = new ArrayList<ServiceCompanyDesignationCode>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE SERVICECOMPANYID = " + companyID + " ORDER BY DESIGNATIONCODEVALUE", CtiUtilities.getDatabaseAlias());
     
