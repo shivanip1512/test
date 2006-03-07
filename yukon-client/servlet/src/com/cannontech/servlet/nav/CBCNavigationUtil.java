@@ -10,19 +10,16 @@ public class CBCNavigationUtil {
         super();
     }
 
-    public void bookmarkLocation(String redirectURL, HttpSession session) {
-        CtiNavObject navObject = getNavObject(session);
+    public static void bookmarkLocation(String redirectURL, HttpSession session) {
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
         navObject.getHistory().push(navObject.getCurrentPage());
         navObject.setNavigation(redirectURL);
     }
-                
-    private CtiNavObject getNavObject(HttpSession session) {
-            return (CtiNavObject) session.getAttribute("CtiNavObject");
-    }
-        
-    public String goBack(HttpSession session) {        
-        if (getNavObject(session).getHistory().size() >= 1)
-            return (String) getNavObject(session).getHistory().pop();
+                        
+    public static String goBack(HttpSession session) {        
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");        
+        if (navObject.getHistory().size() >= 1)
+            return (String) navObject.getHistory().pop();
         else
             return "";  
     }  
