@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
@@ -66,19 +67,19 @@ function checkOrderNo(form) {
             </div>
             <br>
 			<table width="95%" border="1" cellspacing="0" cellpadding="1" align="center">
-              <tr> 
-                <td width="13%" class="HeaderCell" nowrap>Order # </td>
-                <td width="13%" class="HeaderCell">Date/Time</td>
-                <td width="10%" class="HeaderCell">Type</td>
-                <td width="10%" class="HeaderCell">Status</td>
-                <td width="8%" class="HeaderCell" nowrap>By Who</td>
+              <tr>
+                <td width="12%" class="HeaderCell" nowrap>Order # </td>
+                <td width="12%" class="HeaderCell">Date/Time</td>
+                <td width="12%" class="HeaderCell">Type</td>
+                <td width="12%" class="HeaderCell">State</td>
+                <td width="12%" class="HeaderCell" nowrap>Ordered By</td>
                 <td width="12%" class="HeaderCell">Assigned</td>
-                <td width="34%" class="HeaderCell">Desription</td>
+                 <td width="28%" class="HeaderCell">Desription</td>
               </tr>
               <%
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
-		
+		LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(order.getOrderID(), true);
 		String companyName = "";
 		for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
 			if (companies.getStarsServiceCompany(j).getCompanyID() == order.getServiceCompany().getEntryID()) {
@@ -88,14 +89,14 @@ function checkOrderNo(form) {
 		}
 %>
               <tr valign="middle"> 
-                <td width="13%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
-                <td width="13%" class="TableCell"><%= ServletUtils.formatDate(order.getDateReported(), dateTimeFormat) %></td>
-                <td width="10%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(order.getServiceType().getEntryID()).getEntryText()) %></td>
-                <td width="10%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
-                <td width="8%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getOrderedBy()) %></td>
+                <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(order.getServiceType().getEntryID()).getEntryText()) %></td>
+                <td width="12%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getOrderedBy()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(companyName) %></td>
-                <td width="34%"> 
-                  <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                <td width="28%"> 
+                  <textarea name="Description" rows="2" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                 </td>
               </tr>
               <%
