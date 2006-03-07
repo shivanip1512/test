@@ -1,11 +1,7 @@
 package com.cannontech.database.db.stars.report;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
-import com.cannontech.database.data.lite.stars.LiteServiceCompanyDesignationCode;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.stars.ECToGenericMapping;
 
 
 /**
@@ -181,15 +177,4 @@ public class ServiceCompany extends DBPersistent {
 	public void setHIType(String hiType) {
 		this.hiType = hiType;
 	}
-
-	/*public ArrayList getDesignationCodes() {
-		if( designationCodes == null)
-			designationCodes = new ArrayList();
-		return designationCodes;
-	}
-
-	public void setDesignationCodes(ArrayList designationCodes) {
-		this.designationCodes = designationCodes;
-	}*/
-
 }
