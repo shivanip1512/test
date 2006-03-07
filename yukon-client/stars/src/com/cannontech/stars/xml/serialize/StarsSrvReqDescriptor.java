@@ -182,6 +182,44 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         
+        //-- _addtlOrderNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_addtlOrderNumber", "AddtlOrderNumber", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSrvReq target = (StarsSrvReq) object;
+                return target.getAddtlOrderNumber();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSrvReq target = (StarsSrvReq) object;
+                    target.setAddtlOrderNumber( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _addtlOrderNumber
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- _serviceType
         desc = new XMLFieldDescriptorImpl(ServiceType.class, "_serviceType", "ServiceType", NodeType.Element);
         handler = (new XMLFieldHandler() {
