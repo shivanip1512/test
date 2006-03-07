@@ -9,6 +9,7 @@
 	StarsServiceRequest order = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteEC);
 	
 	int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+	int statusAssigned = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
 	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
 	int statusCompleted = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 	int statusCancelled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
@@ -114,6 +115,35 @@ function changeStatus(form) {
 		resetOrder(form);
 		showDateDiv(form, "EventTimestamp");
 	}
+}
+
+function changeServiceCompany(form) {
+	if( form.ServiceCompany.value == "<%= liteOrder.getServiceCompanyID()%>" )
+	{
+		var group = document.getElementById("CurrentState");
+		for (var i = 0; i < group.length; i++) {
+			if( group[i].value == <%= order.getCurrentState().getEntryID()%>)
+			{
+				group[i].selected = true;	
+			}
+		}
+	}
+	else {
+		if (!confirm("A Change to Service Company also changes the Current State to Assigned.\r\nYou may override the Current State change after pressing OK."))
+		{
+			form.ServiceCompany.value = "<%= liteOrder.getServiceCompanyID()%>";
+			return false;	
+		}
+		
+		var group = document.getElementById("CurrentState");
+		for (var i = 0; i < group.length; i++) {
+			if( group[i].value == <%= statusAssigned%>)
+			{
+				group[i].selected = true;	
+			}
+		}
+	}
+	changeStatus(form);
 }
 
 function init() {
@@ -237,7 +267,7 @@ function sendWorkOrder() {
                                   <div align="right">Addtl Order #:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="AddtlOrderNo" size="14" value="<%= order.getAddtlOrderNumber() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%= order.getAddtlOrderNumber() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               
@@ -246,7 +276,7 @@ function sendWorkOrder() {
                                   <div align="right">Assigned to:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="ServiceCompany" onchange="setContentChanged(true)">
+                                  <select name="ServiceCompany" onchange="changeServiceCompany(this.form);setContentChanged(true)">
                                     <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
@@ -259,7 +289,7 @@ function sendWorkOrder() {
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right">Description:</div>
+                                  <div align="right">Notes:</div>
                                 </td>
                                 <td width="70%"> 
                                   <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
@@ -280,7 +310,7 @@ function sendWorkOrder() {
                                   <div align="right">Current State:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
+                                  <select id="CurrentStateID" name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
                                     <%
 	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
 	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
