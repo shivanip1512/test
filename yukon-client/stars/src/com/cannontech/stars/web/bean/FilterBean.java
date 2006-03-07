@@ -8,14 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 
 public class FilterBean 
@@ -25,7 +26,8 @@ public class FilterBean
     private YukonSelectionList availableFilters;
     private ArrayList availableMembers;
     private YukonSelectionList availableDeviceTypes;
-    private List<ServiceCompany> availableServiceCompanies;
+    private List<LiteServiceCompany> availableServiceCompanies;
+    private List<ServiceCompanyDesignationCode> availableDesignationCodes;
     private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
    
@@ -90,13 +92,24 @@ public class FilterBean
         return availableDeviceTypes;
     }
     
-    public List<ServiceCompany> getAvailableServiceCompanies()
+    public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
         if(availableServiceCompanies == null)
             availableServiceCompanies = energyCompany.getAllServiceCompaniesDownward();
         return availableServiceCompanies;
     }
-    
+
+    public List<ServiceCompanyDesignationCode> getAvailableDesignationCodes()
+    {
+        if(availableDesignationCodes == null)
+        {
+        	availableDesignationCodes = new ArrayList<ServiceCompanyDesignationCode>();
+        	for(int i = 0; i < getAvailableServiceCompanies().size(); i++)
+        		availableDesignationCodes.addAll(getAvailableServiceCompanies().get(i).getDesignationCodes());
+        }
+        return availableDesignationCodes;
+    }
+
     public List<Warehouse> getAvailableWarehouses()
     {
         if(availableWarehouses == null)
