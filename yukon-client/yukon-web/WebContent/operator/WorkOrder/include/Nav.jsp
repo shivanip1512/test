@@ -1,8 +1,10 @@
+<%@ page import="java.util.Hashtable" %>
 <%
 	// Table of [link, label, page name(optional)]
-	String linkTable[][] = {{"SOList.jsp", "Show All"},
-						  {"CreateOrder.jsp", "New Order"},
-						  {"Report.jsp", "Report"}
+	String linkTable[][] = {{"CreateOrder.jsp", "New Order"},
+						  {"Report.jsp", "Report"},
+						  {"WOFilter.jsp", "Edit Filters"},
+						  {"WorkOrder.jsp", "View Work Orders"}
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
@@ -31,12 +33,19 @@
     <td> 
       <div align="left"><span class="NavHeader">Work Orders</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-<cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_SHOW_ALL %>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("SOList.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("SOList.jsp"))[1] %></td>
+		  <tr> 
+            <td width="10"><%= ((String[]) links.get("WOFilter.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("WOFilter.jsp"))[1] %></td>
           </tr>
-</cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_SHOW_ALL %>">
+          <tr> 
+            <% if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { %>
+            <% } else {%>
+            	<td width="10"><%= ((String[]) links.get("WorkOrder.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("WorkOrder.jsp"))[1] %></td>
+	        <% } %>
+          </tr>
+		  </cti:checkProperty>        
 <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_CREATE_NEW %>">
           <tr> 
             <td width="10"><%= ((String[]) links.get("CreateOrder.jsp"))[0] %></td>
