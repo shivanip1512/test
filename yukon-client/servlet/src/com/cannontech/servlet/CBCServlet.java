@@ -162,8 +162,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 				redirectURL = createNavigation( req );
                 //code to memorize the position of the page we
                 //are at and the page we are going to
-                CBCNavigationUtil util = new CBCNavigationUtil();
-                util.bookmarkLocation(redirectURL, session);
+                CBCNavigationUtil.bookmarkLocation(redirectURL, session);
                 
                 CTILogger.debug("servlet nav to: " + redirectURL );
 			}
