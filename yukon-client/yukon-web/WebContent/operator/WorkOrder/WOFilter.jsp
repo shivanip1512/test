@@ -7,6 +7,7 @@
 	
 	<!-- FILTER TYPES (will be accessible with JSTL tags after they are declared) -->
  	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY).toString());%>
+ 	<%pageContext.setAttribute("filterDesignationCodes", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES).toString());%>
  	<%pageContext.setAttribute("filterServiceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE).toString());%>
  	<%pageContext.setAttribute("filterServiceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS).toString());%>
 
@@ -61,6 +62,13 @@
 	                    	<select id='<c:out value="${filterServiceCompany}"/>1' name='<c:out value="${filterServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="serviceCompany" items="${filterBean.availableServiceCompanies}">
 									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
+								</c:forEach>
+	                      	</select>
+	                    </div>
+	                    <div id='<c:out value="${filterDesignationCodes}"/>' style="display:none" > 
+	                    	<select id='<c:out value="${filterDesignationCodes}"/>1' name='<c:out value="${filterDesignationCodes}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <c:forEach var="designationCode" items="${filterBean.availableDesignationCodes}">
+									<option value='<c:out value="${designationCode.designationCodeID}"/>'> <c:out value="${designationCode.designationCodeValue}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
@@ -186,6 +194,7 @@
 			selectedFilterType = filterBy;
 			var type = document.MForm.FilterType;
 			document.getElementById('<c:out value="${filterServiceCompany}"/>').style.display = "none";
+			document.getElementById('<c:out value="${filterDesignationCodes}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceStatus}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
