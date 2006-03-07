@@ -1831,6 +1831,7 @@ public class StarsLiteFactory {
 		starsOrder.setOrderedBy( StarsUtils.forceNotNull(liteOrder.getOrderedBy()) );
 		starsOrder.setDescription( StarsUtils.forceNotNull(liteOrder.getDescription()) );
 		starsOrder.setActionTaken( StarsUtils.forceNotNull(liteOrder.getActionTaken()) );
+		starsOrder.setAddtlOrderNumber( StarsUtils.forceNotNull(liteOrder.getAdditionalOrderNumber()) );
 		
 		return starsOrder;
 	}
