@@ -26,12 +26,15 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
@@ -247,7 +250,7 @@ public class WorkOrderBean {
 		if( getFilters() != null){
 		for (int i = 0; i < getFilters().size(); i++)
 		{
-			ArrayList filteredWorkOrders = new ArrayList();
+			ArrayList<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
 			FilterWrapper filter = getFilters().get(i);
 			Integer filterTypeID = new Integer(filter.getFilterTypeID());
             Integer specificFilterID = new Integer(filter.getFilterID());			
@@ -268,6 +271,21 @@ public class WorkOrderBean {
 				{
 					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
 					if (liteOrder.getWorkTypeID() == specificFilterID)
+						filteredWorkOrders.add( liteOrder );
+				}
+				workOrders = filteredWorkOrders;
+			}
+			else if( filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES)
+			{
+				for (int j = 0; j < workOrders.size(); j++)
+				{
+					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+					LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteOrder.getAccountID(), true);
+					LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
+					
+					//The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
+					String tempCode = filter.getFilterText().substring(filter.getFilterText().lastIndexOf(" ")+1);
+					if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
 						filteredWorkOrders.add( liteOrder );
 				}
 				workOrders = filteredWorkOrders;
