@@ -106,8 +106,8 @@ function closeOrder(form) {
 function changeStatus(form) {
 	if( form.CurrentState.value == "<%= liteOrder.getCurrentStateID()%>" )
 	{
-		form.elements["DateEventTimestamp"].value = "<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart) %>";
-		form.elements["TimeEventTimestamp"].value = "<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat) %>";
+		form.elements["DateEventTimestamp"].value = "<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>";
+		form.elements["TimeEventTimestamp"].value = "<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>";
 		document.getElementById("DivEventTimestamp").disabled = true;
 	}
 	else {
@@ -182,7 +182,7 @@ function sendWorkOrder() {
             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell1">
               <tr>
                 <td width="5">&nbsp;</td>
-                <td><a href="SOList.jsp" class="Link2">[Back to List]</a></td>
+                <td><a href="WorkOrder.jsp" class="Link2">[Back to List]</a></td>
               </tr>
               <tr>
                 <td width="5">&nbsp;</td>
@@ -331,9 +331,9 @@ function sendWorkOrder() {
                           <tr> 
                             <td width="30%" align="right" class="TableCell">Event Date:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart) %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="DateEventTimestamp" size="14" value="<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat) %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>" disabled onchange="setContentChanged(true)">
                             </td>
                           </tr>
                         </table>
