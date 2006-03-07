@@ -2247,7 +2247,7 @@ public void setValue(Object o)
 			getJComboBoxShedTimeDigits(), getJComboBoxShedTimeUnits(), t.getShedTime().intValue() );
 	}
 	
-	getJComboBoxNumGroups().setSelectedItem( t.getNumberOfGroups() );
+    getJComboBoxNumGroups().setSelectedIndex( t.getNumberOfGroups() );
 	
 	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
 	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
