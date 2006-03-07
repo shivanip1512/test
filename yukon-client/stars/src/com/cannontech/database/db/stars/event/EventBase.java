@@ -11,11 +11,11 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class EventBase extends DBPersistent {
 
-    private Integer eventID;
-    private Integer userID;
-    private Integer systemCategoryID;
-    private Integer actionID;
-    private Date eventTimestamp;
+    private Integer eventID = null;
+    private Integer userID = null;
+    private Integer systemCategoryID = null;
+    private Integer actionID = null;
+    private Date eventTimestamp = null;
     
     public static final String CONSTRAINT_COLUMNS[] = { "EventID" };
 
@@ -39,9 +39,11 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
-public void delete() throws java.sql.SQLException {}
+public void delete() throws java.sql.SQLException {
+    Object[] constraintValues = { getEventID() };
 
-
+    delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+}
 public Integer getNextEventID() throws SQLException 
 {
     SqlStatement stmt = new SqlStatement("SELECT MAX(EVENTID) + 1 FROM " + TABLE_NAME, getDbConnection());
