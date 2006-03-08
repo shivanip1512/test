@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/03/08 17:42:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@ public:
 
    int inThreadConnectNexus();
    int outThreadValidateNexus();
+   void shutDown();
 
 
 

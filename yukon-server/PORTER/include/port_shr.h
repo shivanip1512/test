@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/16 14:49:35 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/08 17:42:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,6 +85,7 @@ public:
    CtiPortShare& decRequestCount();
 
    virtual void interruptBlockingAPI();
+   virtual void shutDown() {};
 
    shared_ptr< CtiPort > getPort();
 

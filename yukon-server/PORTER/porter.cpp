@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2006/03/08 17:42:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1125,6 +1125,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         //  delete/stop the shared ports
         while(PortShareManager.size() > 0)
         {
+            PortShareManager.back()->shutDown();
             delete PortShareManager.back();
             PortShareManager.pop_back();
         }
