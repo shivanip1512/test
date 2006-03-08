@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+import java.util.List;
 import java.util.Vector;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
@@ -13,9 +14,11 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
 
 public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -864,14 +867,35 @@ private void initialize() {
 	
 	// user code end
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
  */
-public boolean isInputValid() 
-{
-	return true;
+public boolean isInputValid() {
+    // check to see if any of our programs are already assigned to another
+    boolean ret = true;
+
+    Vector unassignedPrgIDs = LMProgram.getUnassignedPrograms();
+
+    for (int i = 0; i < getJTableModel().getRowCount(); i++) {
+        ControlAreaProgramTableModel.ProgramRow row = getJTableModel().getRowAt(i);
+
+        Integer programID = row.getProgramList().getLmProgramDeviceID();
+        if (unassignedPrgIDs.contains(programID)) {
+            ret = true;
+        } else {
+            setErrorString("One of the programs is already assigned to a control area.");
+
+            ret = false;
+            break;
+        }
+
+    }
+
+    return ret;
 }
+
 /**
  * Comment
  */
@@ -886,12 +910,12 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( getJTableProgram().isEditing() )
 		getJTableProgram().getDefaultEditor(Integer.class).stopCellEditing();
 
-	com.cannontech.database.db.device.lm.LMControlAreaProgram programList = new com.cannontech.database.db.device.lm.LMControlAreaProgram();
+	LMControlAreaProgram programList = new LMControlAreaProgram();
 	programList.setStartPriority( new Integer( ((Number)getJCSpinFieldPriority().getValue()).intValue() ) );
 	programList.setStopPriority( new Integer( ((Number)getJCSpinFieldStopOrder().getValue()).intValue() ) );
 
 	// this is set to the LMPrograms deviceID
-	programList.setLmProgramDeviceID( new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonID() ) );
+	programList.setLmProgramDeviceID( new Integer( ((LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonID() ) );
 	
  	/*if( getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
  	{
@@ -901,9 +925,12 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	 	getJCSpinFieldPriority().setValue( getNextStartOrder() );
 	}
  	else*/
-	if( ! getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
+
+	if( ! getJTableModel().addRow( programList, (LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
+    {
  		javax.swing.JOptionPane.showMessageDialog( this, "That Program is already in the list.", "Duplicate Program", javax.swing.JOptionPane.INFORMATION_MESSAGE );
- 	
+    }
+	
 	//autoscroll to show new additions
 	getJTableProgram().scrollRectToVisible( new java.awt.Rectangle(
 		0,
