@@ -132,6 +132,7 @@ public final class YukonCRSIntegrator
     					
     					ArrayList premMeterChanges = YukonToCRSFuncs.readCRSToSAM_PremiseMeterChange();
     					ArrayList incomingPTJs = YukonToCRSFuncs.readCRSToSAM_PTJ();
+//    					ArrayList switchReplacements = YukonToCRSFuncs.readSwitchReplacement();
                                             
     					/**
                          * if no crs integration entries of any kind, report this and go back to waiting
@@ -356,9 +357,9 @@ public final class YukonCRSIntegrator
         	LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         	LiteYukonUser liteYukonUser = null;
         	YukonListEntry workTypeEntry = null;
-        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(currentEntry.getZipCode());
+        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(zipCode);
         	if( serviceCompany == null)
-        		errorMsg.append("No serviceCompany found for zipcode " + currentEntry.getZipCode() + "; ");
+        		errorMsg.append("No serviceCompany found for zipcode " + zipCode + "; ");
         	else
         	{
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
