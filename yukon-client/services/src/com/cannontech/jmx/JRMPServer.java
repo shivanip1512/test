@@ -4,14 +4,21 @@ import java.io.IOException;
 import java.sql.*;
 
 import javax.management.*;
-
-import mx4j.tools.adaptor.http.HttpAdaptor;
-import mx4j.tools.adaptor.http.XSLTProcessor;
+//
+//import mx4j.tools.adaptor.http.HttpAdaptor;
+//import mx4j.tools.adaptor.http.XSLTProcessor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.jmx.services.DynamicCBCOneLine;
+import com.cannontech.jmx.services.DynamicCRSIntegrator;
+import com.cannontech.jmx.services.DynamicCalcHist;
+import com.cannontech.jmx.services.DynamicImp;
+import com.cannontech.jmx.services.DynamicPriceServer;
+import com.cannontech.jmx.services.DynamicWebGraph;
+import com.cannontech.notif.server.NotificationServer;
 import com.cannontech.util.MBeanUtil;
 
 /**
@@ -66,7 +73,21 @@ public class JRMPServer
 				try
 				{
 					ObjectName name = new ObjectName( ":name=" + rset.getString(2).trim() );
-					server.createMBean( rset.getString(3).trim(), name, null);
+					String serviceName = rset.getString(2);
+					if(serviceName.equalsIgnoreCase("Notification_Server"))	
+						server.registerMBean( new NotificationServer(), name);
+					else if(serviceName.equalsIgnoreCase("WebGraph"))
+						server.registerMBean( new DynamicWebGraph(), name);
+					else if(serviceName.equalsIgnoreCase("Calc_Historical"))
+						server.registerMBean( new DynamicCalcHist(), name);
+					else if(serviceName.equalsIgnoreCase("CBC_OneLine_Gen"))
+						server.registerMBean( new DynamicCBCOneLine(), name);
+					else if(serviceName.equalsIgnoreCase("MCT410_BulkImporter"))
+						server.registerMBean( new DynamicImp(), name);
+					else if(serviceName.equalsIgnoreCase("Price_Server"))
+						server.registerMBean( new DynamicPriceServer(), name);
+					else if(serviceName.equalsIgnoreCase("CRS_Integration"))
+						server.registerMBean( new DynamicCRSIntegrator(), name);
 					
 					//better have a start() method defined in the class!
 					server.invoke(name, "start", null, null);
