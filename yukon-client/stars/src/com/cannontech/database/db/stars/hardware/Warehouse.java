@@ -23,6 +23,7 @@ public class Warehouse extends DBPersistent {
     public static final String SETTER_COLUMNS[] = { "WarehouseName","AddressID", "Notes", "EnergyCompanyID" };
 
     public static final String TABLE_NAME = "Warehouse";
+    public static final String MAPPING_TABLE_NAME = "INVENTORYTOWAREHOUSEMAPPING";
 
 
 public Warehouse() {
@@ -182,7 +183,7 @@ public static List<Integer> getAllInventoryInAWarehouse(int warehouseID)
 {
     List<Integer> inventory = new ArrayList<Integer>();
     
-    SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM INVENTORYTOWAREHOUSEMAPPING WHERE WAREHOUSEID = " + warehouseID, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("SELECT INVENTORYID FROM " + MAPPING_TABLE_NAME + " WHERE WAREHOUSEID = " + warehouseID, CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -208,7 +209,7 @@ public static Integer getWarehouseFromInventoryID(int invenID)
 {
     Integer warehouseID = new Integer(-1);
     
-    SqlStatement stmt = new SqlStatement("SELECT WAREHOUSEID FROM INVENTORYTOWAREHOUSEMAPPING WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("SELECT WAREHOUSEID FROM " + MAPPING_TABLE_NAME + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -234,7 +235,7 @@ public static String getWarehouseNameFromInventoryID(int invenID)
 {
     String name = "";
     
-    SqlStatement stmt = new SqlStatement("SELECT W.WAREHOUSENAME FROM WAREHOUSE W, INVENTORYTOWAREHOUSEMAPPING IWP WHERE IWP.WAREHOUSEID = W.WAREHOUSEID AND IWP.INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("SELECT W.WAREHOUSENAME FROM " + TABLE_NAME + " W, " + MAPPING_TABLE_NAME + " IWP WHERE IWP.WAREHOUSEID = W.WAREHOUSEID AND IWP.INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -260,7 +261,7 @@ public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWareho
 {
     boolean success = false;
     
-    SqlStatement stmt = new SqlStatement("UPDATE WAREHOUSE SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("UPDATE " + TABLE_NAME + " SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -274,5 +275,31 @@ public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWareho
     }
     
     return success;
+}
+
+public static Integer getEnergyCompanyIDFromWarehouseID(Integer houseID)
+{
+    Integer energyCompanyID = new Integer(0);
+    
+    SqlStatement stmt = new SqlStatement("SELECT ENERGYCOMPANYID FROM " + TABLE_NAME + " WHERE WAREHOUSEID = " + houseID.toString(), CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                energyCompanyID = (new Integer(stmt.getRow(i)[0].toString()));
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return energyCompanyID;
 }
 }
