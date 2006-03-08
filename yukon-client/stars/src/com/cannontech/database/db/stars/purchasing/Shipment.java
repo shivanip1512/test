@@ -12,8 +12,8 @@ public class Shipment extends DBPersistent {
     private Integer shipmentID;
     private String shipmentNumber;
     private Integer warehouseID = new Integer(0);
-    private String serialNumberStart;
-    private String serialNumberEnd;
+    private String serialNumberStart = "";
+    private String serialNumberEnd = "";
     private Date shipDate = new Date();
     private Double actualPricePerUnit = new Double(0.00);
     private Double salesTotal = new Double(0.00);
@@ -31,7 +31,8 @@ public class Shipment extends DBPersistent {
                 "OrderedDate", "ReceivedDate"};
 
     public static final String TABLE_NAME = "Shipment";
-    public static final String MAPPING_TABLE_NAME = "ScheduleShipmentMapping";
+    public static final String SCHED_MAPPING_TABLE_NAME = "ScheduleShipmentMapping";
+    public static final String INVOICE_MAPPING_TABLE_NAME = "InvoiceShipmentMapping";
     
 
 public Shipment() {
@@ -51,6 +52,10 @@ public void delete() throws java.sql.SQLException
 {
     Object constraintValues[] = { getShipmentID() };
 
+    delete( INVOICE_MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    
+    delete( SCHED_MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
@@ -124,7 +129,103 @@ public static List<Shipment> getAllShipmentsForDeliverySchedule(Integer shipID)
     List<Shipment> shipments = new ArrayList<Shipment>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE SHIPMENTID IN (SELECT SHIPMENTID FROM " + 
-                                         MAPPING_TABLE_NAME + " WHERE SCHEDULEID = " + shipID + ") ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
+                                         SCHED_MAPPING_TABLE_NAME + " WHERE SCHEDULEID = " + shipID + ") ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                Shipment currentShipment = new Shipment();
+                currentShipment.setShipmentID( new Integer(stmt.getRow(i)[0].toString()));
+                currentShipment.setShipmentNumber( stmt.getRow(i)[1].toString() );
+                currentShipment.setWarehouseID( new Integer(stmt.getRow(i)[2].toString() ));
+                currentShipment.setSerialNumberStart( stmt.getRow(i)[3].toString() );
+                currentShipment.setSerialNumberEnd( stmt.getRow(i)[4].toString() );
+                currentShipment.setShipDate(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
+                currentShipment.setActualPricePerUnit( new Double(stmt.getRow(i)[6].toString()));
+                currentShipment.setSalesTotal( new Double(stmt.getRow(i)[7].toString()) );
+                currentShipment.setSalesTax( new Double(stmt.getRow(i)[8].toString()) );
+                currentShipment.setOtherCharges( new Double(stmt.getRow(i)[9].toString()) );
+                currentShipment.setShippingCharges( new Double(stmt.getRow(i)[10].toString()) );
+                currentShipment.setAmountPaid( new Double(stmt.getRow(i)[11].toString()) );
+                currentShipment.setOrderedDate( new Date(((java.sql.Timestamp)stmt.getRow(i)[12]).getTime()) );
+                currentShipment.setReceivedDate( new Date(((java.sql.Timestamp)stmt.getRow(i)[13]).getTime()) );
+                
+                shipments.add(currentShipment);
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return shipments;
+}
+
+/**
+ * Sort by ordered date so that it is easy to show the most recent
+ */
+public static List<Shipment> getAllShipmentsForInvoice(Integer invoiceID)
+{
+    List<Shipment> shipments = new ArrayList<Shipment>();
+    
+    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE SHIPMENTID IN (SELECT SHIPMENTID FROM " + 
+                                         INVOICE_MAPPING_TABLE_NAME + " WHERE INVOICEID = " + invoiceID + ") ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
+    
+    try
+    {
+        stmt.execute();
+        
+        if( stmt.getRowCount() > 0 )
+        {
+            for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+                Shipment currentShipment = new Shipment();
+                currentShipment.setShipmentID( new Integer(stmt.getRow(i)[0].toString()));
+                currentShipment.setShipmentNumber( stmt.getRow(i)[1].toString() );
+                currentShipment.setWarehouseID( new Integer(stmt.getRow(i)[2].toString() ));
+                currentShipment.setSerialNumberStart( stmt.getRow(i)[3].toString() );
+                currentShipment.setSerialNumberEnd( stmt.getRow(i)[4].toString() );
+                currentShipment.setShipDate(new Date(((java.sql.Timestamp)stmt.getRow(i)[5]).getTime()));
+                currentShipment.setActualPricePerUnit( new Double(stmt.getRow(i)[6].toString()));
+                currentShipment.setSalesTotal( new Double(stmt.getRow(i)[7].toString()) );
+                currentShipment.setSalesTax( new Double(stmt.getRow(i)[8].toString()) );
+                currentShipment.setOtherCharges( new Double(stmt.getRow(i)[9].toString()) );
+                currentShipment.setShippingCharges( new Double(stmt.getRow(i)[10].toString()) );
+                currentShipment.setAmountPaid( new Double(stmt.getRow(i)[11].toString()) );
+                currentShipment.setOrderedDate( new Date(((java.sql.Timestamp)stmt.getRow(i)[12]).getTime()) );
+                currentShipment.setReceivedDate( new Date(((java.sql.Timestamp)stmt.getRow(i)[13]).getTime()) );
+                
+                shipments.add(currentShipment);
+            }
+        }
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+    }
+    
+    return shipments;
+}
+
+/**
+ * 
+ * Need to make sure that only shipments under the same plan are returned.
+ */
+public static List<Shipment> getAllUnassignedShipmentsForInvoiceUse(Integer planID)
+{
+    List<Shipment> shipments = new ArrayList<Shipment>();
+    
+    SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " WHERE SHIPMENTID IN (SELECT SHIPMENTID FROM " + 
+                                         SCHED_MAPPING_TABLE_NAME + " WHERE SCHEDULEID IN (SELECT SCHEDULEID FROM "+ 
+                                         DeliverySchedule.TABLE_NAME + " WHERE PURCHASEPLANID = " + planID + ")) AND SHIPMENTID " +
+                                                "NOT IN (SELECT SHIPMENTID FROM " + INVOICE_MAPPING_TABLE_NAME + 
+                                                " ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
     
     try
     {
