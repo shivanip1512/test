@@ -3,8 +3,7 @@ package com.cannontech.stars.web.bean;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.constants.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -46,9 +45,19 @@ public class PurchaseBean
     private String currentOtherCharges;
     private String currentTotal;
     private String currentAmountPaid;
+    private boolean allowSerialNumberInput;
+    private LiteStarsEnergyCompany serialNumberMember; 
+    private Warehouse serialNumberWarehouse;
+    private YukonListEntry serialNumberDeviceState;
+    private YukonListEntry serialNumberDeviceType;
     
     private List<Invoice> availableInvoices;
+    private List<Shipment> assignedInvoiceShipments;
+    private List<Shipment> allUnassignedInvoiceShipments;
     private Invoice currentInvoice;
+    private String currentSubmittedDate;
+    private boolean isCurrentlyAuthorized;
+    private boolean hasCurrentlyPaid;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -271,6 +280,83 @@ public class PurchaseBean
         availableInvoices = Invoice.getAllInvoicesForPurchasePlan(currentPlan.getPurchaseID());
         return availableInvoices;
     }
+
+    public String getCurrentSubmittedDate() {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentSubmittedDate = datePart.format(currentInvoice.getDateSubmitted());
+        return currentSubmittedDate;
+    }
+
+    public boolean isCurrentlyAuthorized() {
+        isCurrentlyAuthorized = currentInvoice.getAuthorized().compareTo("Y") == 0;
+        return isCurrentlyAuthorized;
+    }
+
+    public boolean hasCurrentlyPaid() {
+        hasCurrentlyPaid = currentInvoice.getHasPaid().compareTo("Y") == 0;
+        return hasCurrentlyPaid;
+    }
+
+    public boolean isAllowSerialNumberInput() {
+        allowSerialNumberInput = currentShipment.getShipmentID() == null || currentShipment.getSerialNumberStart().length() < 2 || currentShipment.getSerialNumberEnd().length() < 2;
+        return allowSerialNumberInput;
+    }
+
+    public LiteStarsEnergyCompany getSerialNumberMember() {
+        Integer ecID = Warehouse.getEnergyCompanyIDFromWarehouseID(currentShipment.getWarehouseID());
+        
+        if(ecID.compareTo(energyCompany.getEnergyCompanyID()) == 0)
+            serialNumberMember = energyCompany;
+        
+        for(int i = 0; i < getAvailableMembers().size(); i++)
+        {
+            if(getAvailableMembers().get(i).getEnergyCompanyID().compareTo(ecID) == 0)
+                serialNumberMember = getAvailableMembers().get(i);
+        }
+        
+        return serialNumberMember;
+    }
+
+    public Warehouse getSerialNumberWarehouse() {
+        
+        for(int i = 0; i < getAvailableWarehouses().size(); i++)
+        {
+            if(getAvailableWarehouses().get(i).getWarehouseID().compareTo(currentShipment.getWarehouseID()) == 0)
+                serialNumberWarehouse = getAvailableWarehouses().get(i);
+        }
+        
+        return serialNumberWarehouse;
+    }
+
+    public YukonListEntry getSerialNumberDeviceState() {
+        
+        ArrayList deviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true).getYukonListEntries();
+        for(int i = 0; i < deviceStates.size(); i++)
+        {
+            if(((YukonListEntry)deviceStates.get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED)
+                serialNumberDeviceState = ((YukonListEntry)deviceStates.get(i));
+        }
+        return serialNumberDeviceState;
+    }
     
+    public YukonListEntry getSerialNumberDeviceType() {
+        
+        ArrayList deviceTypes = getAvailableDeviceTypes().getYukonListEntries();
+        for(int i = 0; i < deviceTypes.size(); i++)
+        {
+            if(((YukonListEntry)deviceTypes.get(i)).getEntryID() == currentSchedule.getModelID())
+                serialNumberDeviceType = ((YukonListEntry)deviceTypes.get(i));
+        }
+        return serialNumberDeviceType;
+    }
     
+    public List<Shipment> getAssignedInvoiceShipments() {
+        assignedInvoiceShipments = Shipment.getAllShipmentsForInvoice(currentInvoice.getInvoiceID());
+        return assignedInvoiceShipments;
+    }
+
+    public List<Shipment> getAllUnassignedInvoiceShipments() {
+        allUnassignedInvoiceShipments = Shipment.getAllUnassignedShipmentsForInvoiceUse(currentPlan.getPurchaseID());
+        return allUnassignedInvoiceShipments;
+    }
 }
