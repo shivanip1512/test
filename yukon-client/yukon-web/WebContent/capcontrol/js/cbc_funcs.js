@@ -533,3 +533,32 @@ myrow.cells[i].width = maxWidth;
 }
 
 }
+
+function addLockButtonForButtonGroup (groupId) {
+Event.observe(window, 'load', function() {
+var button_group = document.getElementById(groupId);
+var buttons = button_group.getElementsByTagName("input");
+
+for (var i=0; i<buttons.length; i++) {
+    var button_el =  buttons.item(i);
+    lock_buttons(button_el.id);
+}
+});
+}
+
+function lock_buttons(el_id){
+var button_el = document.getElementById(el_id);
+var parent_el = document.getElementById(button_el.parentNode.id);
+var button_els = parent_el.getElementsByTagName("input");
+Event.observe(button_el, 'click', function () {
+for (var i=0; i < button_els.length; i++)
+{
+ var current_button = document.getElementById(button_els.item(i).id);
+ if (current_button.id != el_id)
+    current_button.disabled = true;
+ else
+    current_button.style.visibility = "hidden";
+}
+});
+
+}
