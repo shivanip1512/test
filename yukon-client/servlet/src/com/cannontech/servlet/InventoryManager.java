@@ -208,8 +208,11 @@ public class InventoryManager extends HttpServlet {
             requestNewInvoice( user, req, session );
         else if (action.equalsIgnoreCase("LoadInvoice"))
             loadInvoice( user, req, session );
-        /*else if (action.equalsIgnoreCase("InvoiceChange"))
-            handleInvoiceChange( user, req, session );*/
+        else if (action.equalsIgnoreCase("InvoiceChange"))
+            handleInvoiceChange( user, req, session );
+        else if (action.equalsIgnoreCase("ShipmentSNRangeAdd"))
+            addSerialNumbersForShipment( user, req, session );
+        
 		resp.sendRedirect( redirect );
 	}
 	
@@ -1965,18 +1968,10 @@ public class InventoryManager extends HttpServlet {
     {
         PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
         Shipment currentShipment = pBean.getCurrentShipment();
-        
+        boolean shipmentFailed = false;
+         
         currentShipment.setShipmentNumber(req.getParameter("name"));
         currentShipment.setWarehouseID(new Integer(req.getParameter("warehouse")));
-        
-        /*TODO
-         * Going to do some automation here
-         * A: Need to check for existence of serial numbers already in the system
-         * B: Create new with currentState = Ordered in appropriate warehouse
-         * C: Probably will need to spin off a process task so we can time it
-         * */
-        currentShipment.setSerialNumberStart(req.getParameter("serialStart"));
-        currentShipment.setSerialNumberEnd(req.getParameter("serialEnd"));
         
         Date orderedDate = ServletUtil.parseDateStringLiberally( req.getParameter("orderingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
         Date shipDate = ServletUtil.parseDateStringLiberally( req.getParameter("shipDate"), pBean.getEnergyCompany().getDefaultTimeZone());
@@ -2014,7 +2009,7 @@ public class InventoryManager extends HttpServlet {
             {
                 Transaction.createTransaction(Transaction.UPDATE, currentShipment).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Shipment successfully updated in the database.");
-            }
+             }
         }
         catch (TransactionException e) 
         {
@@ -2022,9 +2017,101 @@ public class InventoryManager extends HttpServlet {
             e.printStackTrace();
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Shipment could not be saved to the database.  Transaction failed.");
+            shipmentFailed = true;
         }
         
         redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+        
+        if(!shipmentFailed)
+        {
+            /*
+             * Going to do some automation here
+             * A: Need to check for existence of serial numbers already in the system
+             * B: Create new with currentState = Ordered in appropriate warehouse
+             * C: Probably will need to spin off a process task so we can time it
+             * */
+            String serialStart = (req.getParameter("serialStart"));
+            String serialEnd = (req.getParameter("serialEnd"));
+            
+            if(serialStart != null && serialEnd != null)
+            {
+                InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+                if(iBean == null)
+                {
+                    session.setAttribute("inventoryBean", new InventoryBean());
+                    iBean = (InventoryBean) session.getAttribute("inventoryBean");
+                }
+                
+                /*
+                 * Let's cheat a little and use the inventoryBean filtering to look for serial range.
+                 */
+                ArrayList tempList = new ArrayList();
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialStart, CtiUtilities.STRING_NONE));
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, CtiUtilities.STRING_NONE));
+                iBean.setFilterByList(tempList);
+                
+                ArrayList found = iBean.getLimitedHardwareList();
+                //failure
+                if(found == null)
+                {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Inventory was unable to determine if serial range is pre-existing.  It is unsafe to create this range.");
+                    redirect = req.getContextPath() + "/operator/Hardware/Shipment.jsp";
+                }
+                //found some, better not create this range
+                else if(found.size() > 0)
+                {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified serial range includes switches already in inventory.  Unable to create new range.");
+                    redirect = req.getContextPath() + "/operator/Hardware/Shipment.jsp";
+                }
+                else
+                {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial range has not yet been added.  Please verify the following information and click submit.");
+                    redirect = req.getContextPath() + "/operator/Hardware/ShipmentSNRangeAdd.jsp";
+                }
+                    
+            }
+            else
+                redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+        }
+    }
+    
+    private void addSerialNumbersForShipment(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        Shipment shipment = pBean.getCurrentShipment();
+        
+        TimeConsumingTask task = new AddShipmentSNRangeTask( pBean.getSerialNumberMember(), shipment.getSerialNumberStart(), shipment.getSerialNumberEnd(), new Integer(pBean.getSerialNumberDeviceState().getEntryID()), pBean.getCurrentSchedule().getModelID(), req );
+        long id = ProgressChecker.addTask( task );
+        
+        // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+        for (int i = 0; i < 5; i++) {
+            try {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e) {}
+            
+            task = ProgressChecker.getTask(id);
+            String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+            
+            if (task.getStatus() == AddSNRangeTask.STATUS_FINISHED) {
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+                ProgressChecker.removeTask( id );
+                if (redir != null) redirect = redir;
+                return;
+            }
+            
+            if (task.getStatus() == AddSNRangeTask.STATUS_ERROR) {
+                session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+                ProgressChecker.removeTask( id );
+                redirect = referer;
+                return;
+            }
+        }
+        referer = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+        redirect = req.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+        session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+        session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+        redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
     }
     
     private void requestNewInvoice(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
@@ -2048,5 +2135,85 @@ public class InventoryManager extends HttpServlet {
         }
         
         redirect = req.getContextPath() + "/operator/Hardware/Invoice.jsp";
+    }
+    
+    private void handleInvoiceChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
+        Invoice currentInvoice = pBean.getCurrentInvoice();
+        
+        currentInvoice.setInvoiceDesignation(req.getParameter("name"));
+        currentInvoice.setDateSubmitted(ServletUtil.parseDateStringLiberally( req.getParameter("dateSubmitted"), pBean.getEnergyCompany().getDefaultTimeZone()));
+        currentInvoice.setDatePaid(ServletUtil.parseDateStringLiberally( req.getParameter("datePaid"), pBean.getEnergyCompany().getDefaultTimeZone()));
+        String authorized = req.getParameter("authorized");
+        if(authorized != null)
+            currentInvoice.setAuthorized("Y");
+        else
+            currentInvoice.setAuthorized("N");
+        String hasPaid = req.getParameter("hasPaid");
+        if(hasPaid != null)
+            currentInvoice.setHasPaid("Y");
+        else
+            currentInvoice.setHasPaid("N");
+        currentInvoice.setAuthorizedBy(req.getParameter("authorizedBy"));
+        currentInvoice.setTotalQuantity(new Integer(req.getParameter("quantity")));
+                
+        try
+        {
+            //new schedule
+            if(currentInvoice.getInvoiceID() == null)
+            {
+                currentInvoice.setInvoiceID(Invoice.getNextInvoiceID());
+                currentInvoice.setPurchasePlanID(pBean.getCurrentPlan().getPurchaseID());
+                Transaction.createTransaction(Transaction.INSERT, currentInvoice).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New invoice added to this purchase plan.");
+            }
+            else
+            {
+                Transaction.createTransaction(Transaction.UPDATE, currentInvoice).execute();
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Invoice successfully updated in the database.");
+            }
+            
+            /**
+             * Shipments --
+             * Only really have to worry about deletes: updates and news have already been added
+             */
+            String[] shipmentIDs = req.getParameterValues("shipments");
+            List<Shipment> oldShipList = Shipment.getAllShipmentsForInvoice(currentInvoice.getInvoiceID());
+            
+            for(int i = 0; i < oldShipList.size(); i++)
+            {
+                boolean isFound = false;
+                
+                if(shipmentIDs != null)
+                {    
+                    for(int j = 0; j < shipmentIDs.length; j++)
+                    {
+                        if(shipmentIDs[j].compareTo(oldShipList.get(i).getShipmentID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                /*
+                 * In old list only, must have been removed
+                 * Just don't delete the whole shipment, just the mapping!!!!
+                 */
+                if(!isFound)
+                {
+                    Transaction.createTransaction(Transaction.DELETE_PARTIAL, oldShipList.get(i)).execute();
+                }
+            }
+        }
+        catch (TransactionException e) 
+        {
+            CTILogger.error( e.getMessage(), e );
+            e.printStackTrace();
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invoice could not be saved to the database.  Transaction failed.");
+        }
+        
+        redirect = req.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
     }
 }
