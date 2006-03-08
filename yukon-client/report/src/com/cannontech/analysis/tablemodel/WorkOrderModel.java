@@ -28,6 +28,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -192,33 +193,39 @@ public class WorkOrderModel extends ReportModelBase {
 				String serialNo2 = "(none)";
 				
 				Long sn1 = null;
-				try {
-					if (wo1.getInventoryID() > 0) {
-						serialNo1 = ((LiteStarsLMHardware) ec.getInventoryBrief(wo1.getInventoryID(), true)).getManufacturerSerialNumber();
-						sn1 = Long.valueOf( serialNo1 );
-					}
-				}
-				catch (NumberFormatException e) {}
-				
 				Long sn2 = null;
-				try {
-					if (wo2.getInventoryID() > 0) {
-						serialNo2 = ((LiteStarsLMHardware) ec.getInventoryBrief(wo2.getInventoryID(), true)).getManufacturerSerialNumber();
-						sn2 = Long.valueOf( serialNo2 );
+				LiteInventoryBase invBase = ec.getInventoryBrief(wo1.getInventoryID(), true);
+				if( invBase instanceof LiteStarsLMHardware)
+				{
+					try {
+						if (wo1.getInventoryID() > 0) {
+							serialNo1 = ((LiteStarsLMHardware) invBase).getManufacturerSerialNumber();
+							sn1 = Long.valueOf( serialNo1 );
+						}
 					}
+					catch (NumberFormatException e) {}
 				}
-				catch (NumberFormatException e) {}
-				
-				if (sn1 != null && sn2 != null) {
-					result = sn1.compareTo( sn2 );
-					if (result == 0) result = serialNo1.compareTo( serialNo2 );
+				invBase = ec.getInventoryBrief(wo2.getInventoryID(), true);
+				if( invBase instanceof LiteStarsLMHardware)
+				{
+					try {
+						if (wo2.getInventoryID() > 0) {
+							serialNo2 = ((LiteStarsLMHardware) invBase).getManufacturerSerialNumber();
+							sn2 = Long.valueOf( serialNo2 );
+						}
+					}
+					catch (NumberFormatException e) {}
 				}
-				else if (sn1 != null && sn2 == null)
-					return -1;
-				else if (sn1 == null && sn2 != null)
-					return 1;
-				else
-					result = serialNo1.compareTo( serialNo2 );
+					if (sn1 != null && sn2 != null) {
+						result = sn1.compareTo( sn2 );
+						if (result == 0) result = serialNo1.compareTo( serialNo2 );
+					}
+					else if (sn1 != null && sn2 == null)
+						return -1;
+					else if (sn1 == null && sn2 != null)
+						return 1;
+					else
+						result = serialNo1.compareTo( serialNo2 );
 			}
 			
 			return result;
@@ -450,7 +457,7 @@ public class WorkOrderModel extends ReportModelBase {
 					else {
 						for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 							int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
-							if (ec.getInventoryBrief(invID, true) instanceof LiteStarsLMHardware) {
+							if (ec.getInventoryBrief(invID, true) instanceof LiteInventoryBase) {
 								WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), invID );
 								getData().add( wo );
 							}
@@ -482,9 +489,10 @@ public class WorkOrderModel extends ReportModelBase {
 				la = ec.getAddress( lAcctInfo.getAccountSite().getStreetAddressID() );
 			}
 			
-			LiteStarsLMHardware lHw = null;
+			LiteInventoryBase liteInvBase = null; 
+//			LiteStarsLMHardware lHw = null;
 			if (wo.getInventoryID() > 0)
-				lHw = (LiteStarsLMHardware) ec.getInventoryBrief( wo.getInventoryID(), true );
+				liteInvBase = ec.getInventoryBrief( wo.getInventoryID(), true );
 			
 			switch (columnIndex) {
 				case EC_NAME_COLUMN:
@@ -601,23 +609,23 @@ public class WorkOrderModel extends ReportModelBase {
 					else
 						return "";
 				case SERIAL_NO_COLUMN:
-					if (lHw != null)
-						return lHw.getManufacturerSerialNumber();
+					if (liteInvBase != null && liteInvBase instanceof LiteStarsLMHardware)
+						return ((LiteStarsLMHardware)liteInvBase).getManufacturerSerialNumber();
 					else
 						return "(none)";
 				case DEVICE_TYPE_COLUMN:
-					if (lHw != null)
-						return YukonListFuncs.getYukonListEntry(lHw.getLmHardwareTypeID()).getEntryText();
+					if (liteInvBase != null && liteInvBase instanceof LiteStarsLMHardware)
+						return YukonListFuncs.getYukonListEntry(((LiteStarsLMHardware)liteInvBase).getLmHardwareTypeID()).getEntryText();
 					else
 						return "";
 				case INSTALL_DATE_COLUMN:
-					if (lHw != null)
-						return ServletUtils.formatDate( new Date(lHw.getInstallDate()), dateFormatter );
+					if (liteInvBase != null)
+						return ServletUtils.formatDate( new Date(liteInvBase.getInstallDate()), dateFormatter );
 					else
 						return "";
 				case INSTALL_COMPANY_COLUMN:
-					if (lHw != null) {
-						LiteServiceCompany ic = ec.getServiceCompany( lHw.getInstallationCompanyID() );
+					if (liteInvBase != null) {
+						LiteServiceCompany ic = ec.getServiceCompany( liteInvBase.getInstallationCompanyID() );
 						if (ic != null)
 							return ic.getCompanyName();
 						else
