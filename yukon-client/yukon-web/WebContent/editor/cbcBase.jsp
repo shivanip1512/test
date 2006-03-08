@@ -11,6 +11,7 @@
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
+<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
 <%
     //****
     // Entry point file for all operations that edit a PAObject
@@ -29,17 +30,9 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-function lock_buttons(el){
-var button_ids = ["reset_button","submit_button","return_button"];
-for (var i=0; i < button_ids.length; i++)
-{
- var current_button = document.getElementById(button_ids[i]);
- if (current_button.id != el.id)
-	current_button.disabled = true;
- else
-	current_button.style.visibility = "hidden";
-}
-}
+
+addLockButtonForButtonGroup("buttons");
+
 </script>
 </f:verbatim>
     <x:saveState id="capControlForm" value="#{capControlForm}" />
@@ -114,11 +107,11 @@ for (var i=0; i < button_ids.length; i++)
 
 
                 <f:facet name="footer">
-                    <x:panelGroup>
+                    <x:panelGroup id="buttons" forceId="true">
                         <f:verbatim><br/></f:verbatim>
-                        <x:commandButton value="Submit" action="#{capControlForm.update}" styleClass="stdButton" title="Writes this item to the database" />
-                        <x:commandButton value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
-                        <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
+                        <x:commandButton id="submit_button" value="Submit" action="#{capControlForm.update}" styleClass="stdButton" title="Writes this item to the database" />
+                        <x:commandButton id="reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
+                        <x:commandButton id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>
                     </x:panelGroup>
