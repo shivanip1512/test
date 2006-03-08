@@ -60,16 +60,31 @@
 						</select>
 	                </td>
 	          	</tr>
-	          	<tr>
-		        	<td width="20%" class="TableCell"> 
-		            	<div align="right">Serial Number Range:</div>
-		                </td>
-		            <td width="80%"> 
-		                <input type="text" name="serialStart" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>' onchange="setContentChanged(true)">
-		            	<div> to </div>
-		            	<input type="text" name="serialEnd" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>' onchange="setContentChanged(true)">
-		            </td>
-		        </tr>
+	          	<c:choose>
+					<c:when test="${purchaseBean.allowSerialNumberInput}">
+						<tr>
+				        	<td width="20%" class="TableCell"> 
+				            	<div align="right">Serial Number Range:</div>
+				                </td>
+				            <td width="80%"> 
+				                <input type="text" name="serialStart" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>' onchange="setContentChanged(true)">
+				            	<div> to </div>
+				            	<input type="text" name="serialEnd" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>' onchange="setContentChanged(true)">
+				            </td>
+			        	</tr>
+					</c:when>
+					<c:otherwise>
+						<tr>
+				        	<td width="20%" class="TableCell"> 
+				            	<div align="right">Serial Number Range:</div>
+				                </td>
+				            <td width="80%"> 
+				                <div align="left" class="fieldinfo"><c:out value="${purchaseBean.currentShipment.serialNumberStart}"/> to <c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/></div>
+				            </td>
+			        	</tr>
+					</c:otherwise>
+				</c:choose>
+					
 		        <tr> 
 	                <td width="20%" class="TableCell"> 
 	                  	<div align="right">Date Ordered:</div>
