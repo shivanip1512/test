@@ -1136,4 +1136,17 @@ public class InventoryBean {
     public void setInventoryList(ArrayList inventoryList) {
         this.inventoryList = inventoryList;
     }
+    
+    public ArrayList getLimitedHardwareList()
+    {
+        try
+        {
+            return getHardwareList(false);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        
+    }
 }
