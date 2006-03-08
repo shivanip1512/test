@@ -17,11 +17,12 @@ public class Invoice extends DBPersistent {
     private String authorizedBy = "";
     private String hasPaid = "N";
     private Date datePaid = new Date();
+    private Integer totalQuantity = new Integer(0);
     
     public static final String CONSTRAINT_COLUMNS[] = { "InvoiceID" };
 
     public static final String SETTER_COLUMNS[] = { "PurchasePlanID", "InvoiceDesignation", "DateSubmitted",
-                            "Authorized", "AuthorizedBy", "HasPaid", "DatePaid" };
+                            "Authorized", "AuthorizedBy", "HasPaid", "DatePaid", "TotalQuantity" };
 
     public static final String TABLE_NAME = "Invoice";
     public static final String MAPPING_TABLE_NAME = "InvoiceShipmentMapping";
@@ -35,7 +36,7 @@ public void add() throws java.sql.SQLException
 {
     Object setValues[] = { getInvoiceID(), getPurchasePlanID(), getInvoiceDesignation(), 
                     getDateSubmitted(), getAuthorized(), getAuthorizedBy(), getHasPaid(),
-                    getDatePaid()};
+                    getDatePaid(), getTotalQuantity()};
 
     add( TABLE_NAME, setValues );
 }
@@ -45,6 +46,13 @@ public void delete() throws java.sql.SQLException
     Object constraintValues[] = { getInvoiceID() };
 
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+}
+
+public void deletePartial() throws java.sql.SQLException 
+{
+    Object constraintValues[] = { getInvoiceID() };
+
+    delete( MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
 public void retrieve() throws java.sql.SQLException 
@@ -62,7 +70,8 @@ public void retrieve() throws java.sql.SQLException
         setAuthorizedBy( (String) results[4] );
         setHasPaid( (String) results[5] );
         setDatePaid( (Date) results[6] );
-    }
+        setTotalQuantity( (Integer) results[7]);
+    } 
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
 }
@@ -72,7 +81,7 @@ public void update() throws java.sql.SQLException
 {
     Object setValues[] = { getPurchasePlanID(), getInvoiceDesignation(), 
             getDateSubmitted(), getAuthorized(), getAuthorizedBy(), getHasPaid(),
-            getDatePaid()};		
+            getDatePaid(), getTotalQuantity()};		
     
     Object constraintValues[] = { getInvoiceID() };
 
@@ -127,7 +136,8 @@ public static List<Invoice> getAllInvoicesForPurchasePlan(Integer planID)
                 currentInvoice.setAuthorized( stmt.getRow(i)[4].toString() );
                 currentInvoice.setAuthorizedBy( stmt.getRow(i)[5].toString() );
                 currentInvoice.setHasPaid( stmt.getRow(i)[6].toString() );
-                currentInvoice.setDatePaid(new Date(((java.sql.Timestamp)stmt.getRow(i)[3]).getTime()));
+                currentInvoice.setDatePaid(new Date(((java.sql.Timestamp)stmt.getRow(i)[7]).getTime()));
+                currentInvoice.setTotalQuantity( new Integer(stmt.getRow(i)[8].toString()));
                 
                 invoices.add(currentInvoice);
             }
@@ -203,6 +213,14 @@ public String getHasPaid() {
 
 public void setHasPaid(String hasPaid) {
     this.hasPaid = hasPaid;
+}
+
+public Integer getTotalQuantity() {
+    return totalQuantity;
+}
+
+public void setTotalQuantity(Integer totalQuantity) {
+    this.totalQuantity = totalQuantity;
 }
 
 
