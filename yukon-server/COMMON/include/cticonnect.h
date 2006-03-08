@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/01/31 19:04:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2006/03/08 14:54:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,13 +45,13 @@ class IM_EX_CTIBASE CtiConnect
 public:
     virtual ~CtiConnect () {}; //The pure virtuals below make this an abstract class, the destructor needs a body.
 
-    virtual ULONG CtiGetNexusState   () = 0;
-    virtual INT CTINexusClose        () = 0;
-    virtual INT CTINexusWrite        (VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut) = 0;
-    virtual INT CTINexusRead         (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut) = 0;
-    virtual INT CTINexusPeek         (VOID *buf, ULONG len, PULONG BRead) = 0;
+    virtual ULONG CtiGetNexusState   () { return CTINEXUS_STATE_NULL; }
+    virtual INT CTINexusClose        () { return 0; }
+    virtual INT CTINexusWrite        (VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut) { return 0; }
+    virtual INT CTINexusRead         (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut) { return 0; }
+    virtual INT CTINexusPeek         (VOID *buf, ULONG len, PULONG BRead) { return 0; }
     
-    virtual bool CTINexusValid() const = 0;
+    virtual bool CTINexusValid() const { return false; }
 };
 
 #endif   // #ifdef  __CTICONNECT_H__
