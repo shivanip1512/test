@@ -554,10 +554,13 @@ Event.observe(button_el, 'click', function () {
 for (var i=0; i < button_els.length; i++)
 {
  var current_button = document.getElementById(button_els.item(i).id);
- if (current_button.id != el_id)
+ if (current_button.id != el_id) {
     current_button.disabled = true;
- else
-    current_button.style.visibility = "hidden";
+    }
+ else {    
+    setTimeout("document.getElementById('" + el_id + "').disabled=true;", 1);
+ }
+
 }
 });
 
