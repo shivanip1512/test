@@ -173,10 +173,10 @@ public class ReportTypes
 	public static final String STARS_AMR_SUMMARY_DATA_STRING = "AMR Summary Data";
 	public static final String STARS_AMR_DETAIL_DATA_STRING = "AMR Detail Data";
 	
-	public static final String CAPBANK_DATA_STRING = "CapBank Details";
+	public static final String CAPBANK_DATA_STRING = "Cap Bank Details";
 	public static final String CAP_CONTROL_NEW_ACTIVITY_STRING = "Cap Control New Activity";
-	public static final String CAP_CONTROL_STATUS_STRING = "Cap Control Status";
-	public static final String CAP_CONTROL_SCHEDULE_EVENT_LOG_STRING = "Cap Control Schedule Activity Report";
+	public static final String CAP_CONTROL_STATUS_STRING = "Cap Bank Current Status";
+	public static final String CAP_CONTROL_SCHEDULE_EVENT_LOG_STRING = "Cap Control Schedule Activity";
 	
 	public static final String POINT_DATA_INTERVAL_DATA_STRING = "PointData Interval";
 	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
