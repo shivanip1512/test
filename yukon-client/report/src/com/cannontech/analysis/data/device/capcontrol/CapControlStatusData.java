@@ -24,6 +24,7 @@ public class CapControlStatusData
 	private Integer controlOrder = null;
 	private String pointName = null;
 	private String eventText = null;
+	private Integer eventType = null;	//CCEventLog
 	/**
 	 * 
 	 */
@@ -60,7 +61,7 @@ public class CapControlStatusData
 	 * @param eventText
 	 * @param controlStatus
 	 */
-	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, String pointName, Date changeDateTime, String eventText, Integer controlStatus) {
+	public CapControlStatusData(Integer capBankPaoID, Integer subBusPaoID, Integer feederPaoID, String pointName, Date changeDateTime, String eventText, Integer controlStatus, Integer eventType) {
 		super();
 		this.capBankPaoID = capBankPaoID;
 		this.subBusPaoID = subBusPaoID;
@@ -69,6 +70,7 @@ public class CapControlStatusData
 		this.changeDateTime = changeDateTime;
 		this.eventText = eventText;
 		this.controlStatus = controlStatus;
+		this.eventType = eventType;
 	}
 	public Integer getCapBankPaoID()
 	{
@@ -102,6 +104,10 @@ public class CapControlStatusData
 	}
 	public String getEventText() {
 		return eventText;
+	}
+
+	public Integer getEventType() {
+		return eventType;
 	}
 
 }
