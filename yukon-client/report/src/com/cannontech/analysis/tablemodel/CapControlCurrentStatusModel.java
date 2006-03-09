@@ -49,7 +49,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	private static final int ALL_CAP_CONTROL_STATES = -1;	//use some invalid number
 	
 	/** A string for the title of the data */
-	private static String title = "Cap Bank Current Status Report";
+	private static String title = "Current Bank Status Report";
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
 	{
