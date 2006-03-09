@@ -418,8 +418,8 @@ public final class YukonCRSIntegrator
 	                    contactDB.setContactID(customerDB.getPrimaryContactID());
 	    				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
 	
-//	    				if(ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
-//	    	        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))
+	    				if(ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
+	    	        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))	//Per Sharon, INSTL doesn't care if meter number exists.
 	    				{
 		    				MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
 		            		if( meterHardwareBase == null)
