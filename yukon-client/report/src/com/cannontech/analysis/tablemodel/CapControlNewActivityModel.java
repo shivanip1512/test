@@ -280,12 +280,12 @@ public class CapControlNewActivityModel extends ReportModelBase
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 180, null),
-				new ColumnProperties(offset, 1, offset+=100, "MM/dd/yyyy  HH:mm:ss"),
-				new ColumnProperties(offset, 1, offset+=100, null),
-				new ColumnProperties(offset, 1, offset+=60, null),
-				new ColumnProperties(offset, 1, offset+=100, null),
-				new ColumnProperties(offset, 1, offset+=160, null),
-				new ColumnProperties(offset, 1, offset+=172, null)
+				new ColumnProperties(0, 1, 100, "MM/dd/yyyy  HH:mm:ss"),
+				new ColumnProperties(100, 1, 100, null),
+				new ColumnProperties(200, 1, 60, null),
+				new ColumnProperties(260, 1, 100, null),
+				new ColumnProperties(360, 1, 160, null),
+				new ColumnProperties(520, 1, 180, null)
 			};
 		}
 		return columnProperties;
