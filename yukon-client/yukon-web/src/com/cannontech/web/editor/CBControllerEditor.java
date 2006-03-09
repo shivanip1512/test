@@ -115,6 +115,14 @@ public class CBControllerEditor {
     public boolean isTwoWay() {
         return CBCUtils.isTwoWay(PAOGroups.getDeviceType(getPaoCBC().getPAOType()));
     }
+    
+    public boolean isOneWay() {
+        if ( !isTwoWay() && (getPaoCBC() instanceof ICapBankController) )
+            return true;
+        else
+            return false;
+        
+    }
 
     /**
      * @return
