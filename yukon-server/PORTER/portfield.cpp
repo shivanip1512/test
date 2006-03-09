@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.172 $
-* DATE         :  $Date: 2006/03/09 22:28:10 $
+* REVISION     :  $Revision: 1.173 $
+* DATE         :  $Date: 2006/03/09 22:53:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -645,7 +645,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
             if(gConfigParms.isTrue("DEBUG_TAP") && Device)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << endl;
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << endl;
             }
 
             Port->disconnect(Device, TraceFlag);
