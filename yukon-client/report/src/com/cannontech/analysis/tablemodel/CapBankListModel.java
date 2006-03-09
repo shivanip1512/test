@@ -8,6 +8,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.CBCOrderByTreeModel;
 
 /**
@@ -25,7 +27,7 @@ import com.cannontech.database.model.CBCOrderByTreeModel;
 public class CapBankListModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
+	protected final int NUMBER_COLUMNS = 8;
 	
 	/** Enum values for column representation */
 	public final static int CB_NAME_COLUMN = 0;
@@ -52,7 +54,7 @@ public class CapBankListModel extends ReportModelBase
 	protected static final String ATT_ORDER_BY = "orderBy";
 
 	/** A string for the title of the data */
-	private static String title = "Capacitor Bank Report";
+	private static String title = "Capacitor Bank Details Report";
 		
 	/**
 	 * Constructor.
@@ -80,7 +82,7 @@ public class CapBankListModel extends ReportModelBase
 				(rset.getString(5) == null ? "---" : rset.getString(5)),
 				(rset.getString(6) == null ? "---" : rset.getString(6)),
 				(rset.getString(7) == null ? "---" : rset.getString(7)),
-				(rset.getString(7) == null ? "---" : rset.getString(8))
+				(rset.getString(8) == null ? "---" : rset.getString(8))
 			};
 					
 			getData().add(values);
@@ -250,17 +252,16 @@ public class CapBankListModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
-			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, offset+=120, null),
-				new ColumnProperties(offset, 1, offset+=120, null),
-				new ColumnProperties(offset, 1, offset+=40, null),
-				new ColumnProperties(offset, 1, offset+=120, null),
-				new ColumnProperties(offset, 1, offset+=78, null),
-				new ColumnProperties(offset, 1, offset+=40, null),
-				new ColumnProperties(offset, 1, offset+=110, null),
-				new ColumnProperties(offset, 1, offset+=110, null)
+				new ColumnProperties(0, 1, 110, null),
+				new ColumnProperties(110, 1, 120, null),
+				new ColumnProperties(230, 1, 40, null),
+				new ColumnProperties(270, 1, 110, null),
+				new ColumnProperties(380, 1, 80, null),
+				new ColumnProperties(460, 1, 60, null),
+				new ColumnProperties(520, 1, 100, null),
+				new ColumnProperties(620, 1, 100, null)
 			};
 		}
 		return columnProperties;
