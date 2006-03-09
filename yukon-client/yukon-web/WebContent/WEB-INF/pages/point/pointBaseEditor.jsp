@@ -15,9 +15,7 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Parent" value="Parent: "/>
-        <x:commandLink  id="paoLink" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" actionListener="#{ptEditorForm.paoClick}">
-           <f:param name="paoID" value="#{ptEditorForm.pointBase.point.paoID}" />
-        </x:commandLink>    
+        <x:outputText  id = "Parent" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
 		<f:verbatim><br/><br/></f:verbatim>
 		<x:outputLabel for="Point_Name" value="Point Name: "/>
 		<x:inputText id="Point_Name" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60"
