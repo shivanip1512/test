@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/03/09 22:28:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1144,15 +1144,7 @@ inline LONG CtiDeviceBase::getMaxConnectTime() const
 
 inline ULONG CtiDeviceBase::getUniqueIdentifier() const
 {
-    #if 1
     return getPortID();
-    #else
-
-    if(gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS","true"))
-        return getPortID();
-    else
-        return getID();
-    #endif
 }
 
 INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, CtiTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.

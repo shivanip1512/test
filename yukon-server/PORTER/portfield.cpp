@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.171 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.172 $
+* DATE         :  $Date: 2006/03/09 22:28:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -174,6 +174,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
 static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
+static void ApplyTapLoggedOn(const long key, CtiDeviceSPtr Dev, void* vpPortId);
 static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
@@ -640,6 +641,13 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         if(slot == 0 || bDisconnect)
         {
             /* Hang Up */
+
+            if(gConfigParms.isTrue("DEBUG_TAP") && Device)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Port: " << Port->getName() << " Dev: " << Device->getName() << endl;
+            }
+
             Port->disconnect(Device, TraceFlag);
         }
     }
@@ -817,16 +825,14 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 
     status = Port->connectToDevice(Device, LastConnectedDevice, TraceFlag);
 
+    // This check tries to correct the status of the "LastConnectedDevice" so that log happens if needed.
     if(oldConnUID > 0 && oldConnUID != Device->getUniqueIdentifier())
     {
+        CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+        CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
+        if(pOldConnectedDevice)
         {
-            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-            CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
-
-            if(pOldConnectedDevice)
-            {
-                pOldConnectedDevice->setLogOnNeeded(TRUE);
-            }
+            pOldConnectedDevice->setLogOnNeeded(TRUE);
         }
     }
 
@@ -1569,7 +1575,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
                                     VanGoghConnection.WriteConnQue(retMsg);
-                                    
+
                                 }
                                 delete_list(retList);
                                 retList.clear();
@@ -1752,17 +1758,22 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                 case TYPE_TAPTERM:
                     {
-                        LONG oldid = 0L;
                         CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
 
                         Port->setTAP( TRUE );
 
                         IED->allocateDataBins(OutMessage);
-                        IED->setInitialState(oldid);
+                        IED->setInitialState(0);
 
                         if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
                         {
+                            if(!Port->isDialup())
+                            {
+                                DeviceManager.apply( ApplyTapLoggedOn, (void*)(Port->getPortID()) );
+                            }
+
                             Port->setConnectedDevice( IED->getID() );
+                            Port->setConnectedDeviceUID( IED->getUniqueIdentifier() );
 
                             status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
 
@@ -1774,12 +1785,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if( status != NORMAL && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
                             {
                                 IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
                                 Port->setConnectedDevice(0);
                             }
                             else
@@ -4131,6 +4136,18 @@ void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId)
     if( Dev->getType() == TYPE_TAPTERM && Dev->getPortID() == pid )
     {
         Dev->setLogOnNeeded( TRUE );
+    }
+
+    return;
+}
+
+void ApplyTapLoggedOn(const long key, CtiDeviceSPtr Dev, void* vpPortId)
+{
+    LONG pid = (LONG)vpPortId;
+
+    if( Dev->getType() == TYPE_TAPTERM && Dev->getPortID() == pid )
+    {
+        Dev->setLogOnNeeded( FALSE );
     }
 
     return;

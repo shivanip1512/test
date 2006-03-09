@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/03/03 18:35:45 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2006/03/09 22:28:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1414,7 +1414,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
 
 CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
 {
-    if( oldid > 0 )
+    if( oldid > 0 && getUniqueIdentifier() == oldid)
     {
         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
@@ -1422,10 +1422,10 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
             dout << "  Port has indicated a connected device swap. " << endl;
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
         }
-        setCurrentState(StateHandshakeComplete);     // TAP is already connected on this port
-        setLogOnNeeded(FALSE);                       // We will skip the logon, and proceed to <STX>
+        setCurrentState(StateHandshakeComplete);    // TAP is already connected on this port
+        setLogOnNeeded(FALSE);                      // We will skip the logon, and proceed to <STX>
     }
-    else if( getLogOnNeeded() )
+    else if( getLogOnNeeded() )                     // If this is forced on a Glenaire input, the device <NAK>s us.
     {
         setCurrentState(StateHandshakeSendStart);
     }
@@ -1570,9 +1570,7 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
             CHAR ch = getTap().getPagerNumber()[(size_t)i];
 
             if( ::isdigit(ch) )
-            {
                 num.append(char2string(ch));
-            }
         }
 
         // Now get a standard CRC
@@ -1580,14 +1578,7 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
     }
     else
     {
-        if(isDialup())
-        {
-            CSum = Inherited::getUniqueIdentifier();
-        }
-        else
-        {
-            CSum = getPortID();     // Use the port ID as a GUID for all TAPs on this port!
-        }
+        CSum = Inherited::getUniqueIdentifier();
     }
 
     return CSum;
