@@ -285,7 +285,7 @@ for( int i = 0; i < capBanks.length; i++ )
 		</div>
     </form>
 <script type="text/javascript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('capBankTable','capBankHeaderTable');    }, false);
+Event.observe(window, 'load', function() { new CtiNonScrollTable('capBankTable','capBankHeaderTable');});
 </script>
             
             </cti:titledContainer>
