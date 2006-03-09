@@ -8,7 +8,7 @@
     <h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
     
 
-        <h:column rendered="#{!capControlForm.CBControllerEditor.twoWay}">
+        <h:column rendered="#{capControlForm.CBControllerEditor.oneWay}">
            <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
             <f:verbatim><br/></f:verbatim>
 			<x:panelGroup id="oneWayCBC" >
