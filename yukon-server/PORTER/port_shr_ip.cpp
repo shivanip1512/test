@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/03/08 17:42:14 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/09 18:33:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,13 +48,34 @@ CtiPortShareIP::CtiPortShareIP(CtiPortSPtr myPort, INT listenPort) :
     set(CtiPortShareIP::INWAITFOROUT, false);
     set(CtiPortShareIP::SOCKCONNECTED, false);
     set(CtiPortShareIP::SOCKFAILED, true);
+    set(CtiPortShareIP::RUNCOMPLETE, false);
 }
 
 
 CtiPortShareIP::~CtiPortShareIP()
 {
     interrupt(SHUTDOWN);    // Make sure we don't go back into waitOnSCADAClient if that is what we are doing.
+    shutDown();
 
+    for( int i = 0; i<25; i++ )
+    {
+        //Currently a 5 second wait!
+        if( !isSet(RUNCOMPLETE) )
+        {
+            sleep(200);
+        }
+        else
+        {
+            i = 25;
+        }
+    }
+
+    if( !isSet(RUNCOMPLETE) )
+    {
+        //If you see this, and experience a deadlock, this is probably to blame.
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** PortShare refused to shutdown after 5 seconds " << FILELINE << endl;
+    }
     if(_scadaNexus.CTINexusValid())
     {
         _scadaNexus.CTINexusClose();
@@ -472,7 +493,7 @@ void CtiPortShareIP::outThread()
                         dout << CtiTime() << " Attempted send on invalid SCADA Nexus" << endl;
                     }
                 }
-                else
+                else if( !isSet(CtiThread::SHUTDOWN) )//Ignore this if we are shutting down
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -516,7 +537,14 @@ void CtiPortShareIP::run()
         _outThread = rwMakeThreadFunction(*this, &CtiPortShareIP::outThread );
         _outThread.start();
     
-        inThread();                                              //  This is where we spend our time during execution.
+        _inThread  = rwMakeThreadFunction(*this, &CtiPortShareIP::inThread );
+        _inThread.start();
+
+        while( !isSet(SHUTDOWN) )
+        {
+            sleep(250);//This wakes up on interrupt, so it shouldnt matter!
+        }
+        interrupt(CtiPortShareIP::RUNCOMPLETE);
     }
     catch(...)
     {
@@ -552,8 +580,6 @@ int CtiPortShareIP::inThreadConnectNexus()
  *-----------------------------------------------------------------------------*/
 void CtiPortShareIP::shutDown()
 {
-    interrupt(SHUTDOWN);    // Make sure we don't go back into waitOnSCADAClient if that is what we are doing.
-
     try
     {
     
@@ -565,6 +591,16 @@ void CtiPortShareIP::shutDown()
                 dout << CtiTime() << " Port Share OutThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
             }
             _outThread.terminate();
+        }
+
+        if(RW_THR_COMPLETED != _inThread.join( 250 ))
+        {
+            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS) //I hate to use this, but everywhere else in this code does...
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Port Share InThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
+            }
+            _inThread.terminate();
         }
     }
     catch(RWxmsg &msg)

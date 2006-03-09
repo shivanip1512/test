@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/03/08 17:42:14 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/09 18:33:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,9 @@ protected:
 private:
 
    RWThreadFunction _outThread;
+   RWThreadFunction _inThread;
+
+   void shutDown();
 
 public:
 
@@ -60,9 +63,6 @@ public:
 
    int inThreadConnectNexus();
    int outThreadValidateNexus();
-   void shutDown();
-
-
 
 };
 #endif // #ifndef __PORT_SHR_IP_H__

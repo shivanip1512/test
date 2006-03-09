@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/03/08 17:42:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/03/09 18:33:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,8 @@ protected:
    {
         INWAITFOROUT = CtiThread::LAST,
         SOCKCONNECTED,
-        SOCKFAILED
+        SOCKFAILED,
+        RUNCOMPLETE
    };
 
 private:
@@ -85,7 +86,6 @@ public:
    CtiPortShare& decRequestCount();
 
    virtual void interruptBlockingAPI();
-   virtual void shutDown() {};
 
    shared_ptr< CtiPort > getPort();
 
