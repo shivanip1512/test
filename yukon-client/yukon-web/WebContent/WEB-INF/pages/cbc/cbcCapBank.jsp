@@ -139,26 +139,27 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
           </x:div>
             <f:verbatim><br><br></f:verbatim>
             <f:verbatim></fieldset></f:verbatim>
-                    <f:verbatim><br/><fieldset><legend>Contoller Configuration</legend></f:verbatim>
+                    <f:verbatim><br/><fieldset><legend>Controller Configuration</legend></f:verbatim>
                         <f:verbatim><br/></f:verbatim> 
                          <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>
-                            <x:commandLink id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
+                            <x:commandLink rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID != 0}" id="CBCEditor" value="#{dbCache.allPAOsMap[dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID].paoName}"
                            actionListener="#{ptEditorForm.paoClick}" title="Click on the link to edit the CBC">
                                 <f:param name="paoID" value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID}"/>
-                            </x:commandLink> 
+                            </x:commandLink>
+                            <x:outputText styleClass="medStaticLabel" value="No Controller Selected" rendered="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].paobjectID == 0}"/> 
 
             <f:verbatim><br/></f:verbatim>
-            <x:panelGroup id="oneWayCBC" rendered="#{!capControlForm.CBControllerEditor.twoWay}">
+            <x:panelGroup id="oneWayCBC" rendered="#{capControlForm.CBControllerEditor.oneWay}">
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" />
-                <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true"
+                <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"/>
+                <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
                         value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.serialNumber}" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
                 </x:inputText>
 
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses" />
-                <x:selectOneMenu id="cntrlRoute" value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.routeID}" disabled="true">
+                <x:outputLabel for="cntrlRoute" value="Control Route: " title="Communication route the conroller uses" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"/>
+                <x:selectOneMenu id="cntrlRoute" value="#{capControlForm.CBControllerEditor.paoCBC.deviceCBC.routeID}" disabled="true" rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}">
                     <f:selectItem itemLabel="(none)" itemValue="0"/>
                     <f:selectItems value="#{selLists.routes}"/>
                 </x:selectOneMenu>
