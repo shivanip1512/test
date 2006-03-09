@@ -303,3 +303,5 @@ insert into YukonListEntry values (1346,1055,0,'Customer Type',3406);
 
 
 insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
+
+Alter table WorkOrderBase modify Description varchar(500);
