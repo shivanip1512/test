@@ -42,7 +42,7 @@ public class PointWizardModel {
     }
     
     public boolean isSubtypeNeeded(){
-        if (getPointType() == PointTypes.CALCULATED_POINT)
+        if (getPointType().intValue() == PointTypes.CALCULATED_POINT)
             return true;
         else
             return false;
