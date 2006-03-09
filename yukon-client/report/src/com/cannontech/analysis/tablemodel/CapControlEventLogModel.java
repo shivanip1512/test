@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +16,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.ModelFactory;
@@ -47,9 +47,11 @@ public class CapControlEventLogModel extends ReportModelBase
 	public final static String EVENT_TEXT_STRING = "Event";
 	
 	private int[] controlStates = null;
+	private boolean showAllActivity = false;
 	
 	private static final String ATT_CAP_CONTROL_STATE = "capControlState";
 	private static final String ATT_All_CAP_CONTROL_STATE = "capControlStateAll";
+	private static final String ATT_SCHEDULE_ACTIVITY = "scheduleActivty";
 	
 	private static final int ALL_CAP_CONTROL_STATES = -1;	//use some invalid number
 	
@@ -99,30 +101,11 @@ public class CapControlEventLogModel extends ReportModelBase
 	}
 
 	/**
-	 * Add Integer (paobjectID) objects to data, retrieved from rset.
 	 * @param ResultSet rset
 	 */
 	public void addDataRow(ResultSet rset)
 	{
-		try
-		{
-			Integer subBusPaoID = new Integer(rset.getInt(1));
-			Integer feederPaoID = new Integer(rset.getInt(2));
-			Integer capBankPaoID = new Integer(rset.getInt(3));
-			String pointName = new String(rset.getString(4));
-			java.sql.Timestamp changedateTime = rset.getTimestamp(5);
-			String eventText = new String(rset.getString(6));
-			Integer controlStatus = new Integer(rset.getInt(7));
-						
-			CapControlStatusData ccStatusData= new CapControlStatusData(
-			        capBankPaoID, subBusPaoID, feederPaoID, pointName,
-			        new Date(changedateTime.getTime()), eventText, controlStatus);
-			getData().add(ccStatusData);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+		//Result set is processed during collectData due to the unique processing of the data.
 	}
 
 	/**
@@ -134,29 +117,27 @@ public class CapControlEventLogModel extends ReportModelBase
 		StringBuffer sql = new StringBuffer	("SELECT CCLOG.SUBID, CCLOG.FEEDERID, P.PAOBJECTID, P.POINTNAME, CCLOG.DATETIME, CCLOG.TEXT, CCLOG.VALUE, CCLOG.SEQID, EVENTTYPE " +
 											" FROM CCEVENTLOG CCLOG, POINT P " +
 											" WHERE CCLOG.POINTID = P.POINTID " +
-											" AND EVENTTYPE != 4 " +	//!= 4 is to remove the op increment logs
 											" AND CCLOG.SEQID IN (SELECT DISTINCT CCLOG2.SEQID FROM CCEVENTLOG CCLOG2" +
 												" WHERE CCLOG2.EVENTTYPE = 7 " +	//7 is for the start of a schedule
 												" AND CCLOG2.DATETIME > ? " + 
 												" AND CCLOG2.DATETIME <= ?");
-				if (getPaoIDs() != null && getPaoIDs().length > 0)
-				{
-				    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
-				    for (int i = 1; i < getPaoIDs().length; i++)
-				        sql.append(" , " + getPaoIDs()[i]);
-				            
-				    sql.append(")");
-				}
-				sql.append(" ) ");	//ending paren for IN statement
-				if (getControlStates() != null && getControlStates().length > 0)
-				{
-				    sql.append(" AND VALUE IN ( " + getControlStates()[0] +" ");
-				    for (int i = 1; i < getControlStates().length; i++)
-				        sql.append(" , " + getControlStates()[i]);
-				            
-				    sql.append(")");
-				}
-				sql.append(" ORDER BY LOGID ");
+												if (getPaoIDs() != null && getPaoIDs().length > 0)
+												{
+												    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
+												    for (int i = 1; i < getPaoIDs().length; i++)
+												        sql.append(" , " + getPaoIDs()[i]);
+												            
+												    sql.append(")");
+												}
+												sql.append(" ) ");	//ending paren for IN statement
+												
+												if( !isShowAllActivity())
+													sql.append(" AND EVENTTYPE != 4 ");	//!= 4 is to remove the op increment logs
+
+
+				/*Note: Verify the control states when processing the result set instead of in the query.
+				 		Need all states if the most recent one is in getControlStates()*/
+				sql.append(" ORDER BY CCLOG.SUBID, SEQID, CCLOG.DATETIME, LOGID");
 		return sql;
 	}
 		
@@ -192,17 +173,89 @@ public class CapControlEventLogModel extends ReportModelBase
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
 				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
+				Vector tempObjects = new Vector();
+				int prevCapBankID = -1;
+				CapControlStatusData ccStatusData = null;
 				while( rset.next())
 				{
-					addDataRow(rset);
+					try
+					{
+						int capBankPaoID = rset.getInt(3);
+						if (! isShowAllActivity())	//selectively add to data Vector 
+						{
+							if( prevCapBankID != capBankPaoID)
+							{
+								if( prevCapBankID > -1)	//not the first one
+								{
+									if( prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
+									{
+										getData().addAll(tempObjects);
+									}								
+									else 
+									{
+										for (int i = 0; i < getControlStates().length; i++)
+										{
+											if( ccStatusData.getControlStatus().intValue() == getControlStates()[i])
+											{
+												getData().addAll(tempObjects);
+												break;
+											}
+										}
+									}
+									tempObjects.clear();								
+								}
+								prevCapBankID= capBankPaoID;
+							}
+						}
+						Integer subBusPaoID = new Integer(rset.getInt(1));
+						Integer feederPaoID = new Integer(rset.getInt(2));
+						String pointName = new String(rset.getString(4));
+						java.sql.Timestamp changedateTime = rset.getTimestamp(5);
+						String eventText = new String(rset.getString(6));
+						Integer controlStatus = new Integer(rset.getInt(7));
+						Integer eventType = new Integer(rset.getInt(9));
+						
+									
+						ccStatusData= new CapControlStatusData( new Integer(capBankPaoID), subBusPaoID, feederPaoID, pointName, new Date(changedateTime.getTime()), eventText, controlStatus, eventType);
+						tempObjects.add(ccStatusData);
+					}
+					catch(java.sql.SQLException e)
+					{
+						e.printStackTrace();
+					}			
 				}
-				if(getData() != null)
+				
+				//Process/Load the last entry. 
+				if( !isShowAllActivity())	//Selectively add to data Vector.
+				{
+					if( prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
+					{
+						getData().addAll(tempObjects);
+					}								
+					else 
+					{
+						for (int i = 0; i < getControlStates().length; i++)
+						{
+							if( ccStatusData.getControlStatus().intValue() == getControlStates()[i])
+							{
+								getData().addAll(tempObjects);
+								break;
+							}
+						}
+					}
+				}
+				else
+					getData().addAll(tempObjects);	//Add all objects at some point!
+				
+				tempObjects.clear();				
+
+				/*if(getData() != null)
 				{
 //					Order the records
 					Collections.sort(getData(), ccStatusDataComparator);
 					if( getSortOrder() == DESCENDING)
 					    Collections.reverse(getData());				
-				}				
+				}*/
 			}
 		}
 			
@@ -255,6 +308,8 @@ public class CapControlEventLogModel extends ReportModelBase
 					return PAOFuncs.getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
 					
 				case STATUS_VALUE_COLUMN:
+					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount
+						return new String("OpCount: " + ccStatData.getControlStatus().toString());
 					return StateFuncs.getLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 					
 				case EVENT_TEXT_COLUMN:
@@ -371,15 +426,48 @@ public class CapControlEventLogModel extends ReportModelBase
 		html += "    stateGroup[i].checked = value;" + LINE_SEPARATOR;
 		html += "  }" + LINE_SEPARATOR;
 		html += "}" + LINE_SEPARATOR;
+		
+		html += "function enableStates(form, value) {" + LINE_SEPARATOR;
+		html += "  var stateGroup = form." + ATT_CAP_CONTROL_STATE + ";" + LINE_SEPARATOR;
+		html += "  form." + ATT_All_CAP_CONTROL_STATE + ".checked = false;" + LINE_SEPARATOR;
+		html += "  form." + ATT_All_CAP_CONTROL_STATE + ".disabled = value;" + LINE_SEPARATOR;
+		html += "  document.getElementById('BankStatusID').disabled = value;" + LINE_SEPARATOR;
+		html += "  if( value ) {" + LINE_SEPARATOR;		
+		html += "    for (var i = 0; i < stateGroup.length; i++){" + LINE_SEPARATOR;
+		html += "      stateGroup[i].checked = false;" + LINE_SEPARATOR;		
+		html += "    }" + LINE_SEPARATOR;
+		html += "  } else {" + LINE_SEPARATOR;
+		html += "      stateGroup[4].checked = true;" + LINE_SEPARATOR;
+		html += "      stateGroup[5].checked = true;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;		
+		html += "}" + LINE_SEPARATOR;
 		html += "</script>" + LINE_SEPARATOR;
 			    
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
-	    
+
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Schedule Activity Detail</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='"+ATT_SCHEDULE_ACTIVITY +"' value='false' checked onclick='enableStates(document.reportForm, false);'>Ending Bank Status Activity" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='"+ATT_SCHEDULE_ACTIVITY +"' value='true' onclick='enableStates(document.reportForm, true);'>All Schedule Activity" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "        <div id='BankStatusID'>" + LINE_SEPARATOR;		
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+	
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Ending Bank Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		LiteState [] liteStates = StateFuncs.getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
@@ -394,8 +482,9 @@ public class CapControlEventLogModel extends ReportModelBase
 		html += "          <td><input type='checkbox' name='" + ATT_All_CAP_CONTROL_STATE +"' value='" + ALL_CAP_CONTROL_STATES + "' onclick='selectAllStates(document.reportForm, this.checked)'>Select All" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		
+				
 		html += "      </table>" + LINE_SEPARATOR;
+		html += "        </div>" + LINE_SEPARATOR;		
 		html += "    </td>" + LINE_SEPARATOR;
 		
 		html += "  </tr>" + LINE_SEPARATOR;
@@ -408,7 +497,11 @@ public class CapControlEventLogModel extends ReportModelBase
 	    super.setParameters(req);
 		if( req != null)
 		{
-			String param = req.getParameter(ATT_All_CAP_CONTROL_STATE);
+			String param = req.getParameter(ATT_SCHEDULE_ACTIVITY);
+			if( param != null)
+				setShowAllActivity(Boolean.valueOf(param).booleanValue());	//ALL Of them!
+			
+			param = req.getParameter(ATT_All_CAP_CONTROL_STATE);
 			if( param != null)
 				setControlStates(null);	//ALL Of them!
 			else{ 			
@@ -445,4 +538,12 @@ public class CapControlEventLogModel extends ReportModelBase
     {
         setControlStates( new int[]{controlStates});
     }
+
+	public boolean isShowAllActivity() {
+		return showAllActivity;
+	}
+
+	public void setShowAllActivity(boolean showAllActivity) {
+		this.showAllActivity = showAllActivity;
+	}
 }
