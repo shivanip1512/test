@@ -108,6 +108,8 @@ public final class CtiUtilities
 	public static final String DEFAULT_MSG_SOURCE = temp;
 
 	public static final String OUTPUT_FILE_NAME = CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
+    
+    public static String[] timeZones = null;
 
 	private static final class CTIPrintStackTraceExc extends Exception
 	{
@@ -978,18 +980,23 @@ public final static javax.swing.tree.TreePath getTreePath(javax.swing.JTree tree
  */
 public static final String[] getTimeZones()
 {
-	String[] availableIDs = TimeZone.getAvailableIDs();
-	Vector retVals = new Vector(16);
-	
-	for (int i = 0; i < availableIDs.length; i++) {
-		String zone = availableIDs[i];
-		if ( zone.matches("^US.*") || zone.matches("^Canada.*") && !zone.matches("^US.Pacific-New") ) {
-			retVals.add( zone );
-		}
-	}
-	Collections.sort(retVals, LiteComparators.liteNameComparator);
-	availableIDs = new String[retVals.size()];
-	return (String[])retVals.toArray(availableIDs);
+	if(timeZones == null)
+    {
+        String[] availableIDs = TimeZone.getAvailableIDs();
+    	Vector retVals = new Vector(16);
+    	
+    	for (int i = 0; i < availableIDs.length; i++) {
+    		String zone = availableIDs[i];
+    		if ( (zone.matches("^US.*") || zone.matches("^Canada.*")) && !zone.matches("^US.Pacific-New") ) {
+    			retVals.add( zone );
+    		}
+    	}
+    	Collections.sort(retVals, LiteComparators.liteNameComparator);
+    	availableIDs = new String[retVals.size()];
+        timeZones = (String[])retVals.toArray(availableIDs);
+    }
+	return timeZones;
+    
 }
 
 /**
