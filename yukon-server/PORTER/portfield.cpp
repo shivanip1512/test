@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.173 $
-* DATE         :  $Date: 2006/03/09 22:53:59 $
+* REVISION     :  $Revision: 1.174 $
+* DATE         :  $Date: 2006/03/10 00:28:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3145,6 +3145,14 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 pInfo->RemoteSequence.Reply = !pInfo->RemoteSequence.Reply;
             }
 
+            break;
+        }
+    case TYPE_SERIESVLMIRTU:
+        {
+            if( CommResult )
+            {
+                status = CommResult;
+            }
             break;
         }
     case TYPE_ILEXRTU:
