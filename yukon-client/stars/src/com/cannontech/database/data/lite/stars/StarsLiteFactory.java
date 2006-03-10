@@ -33,6 +33,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -1760,6 +1761,8 @@ public class StarsLiteFactory {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newEmptyStarsCustListEntry( DeviceType.class ));
 			starsInv.setLMHardware( null );
 			starsInv.setMCT( null );
+			starsInv.setMeterNumber(MeterHardwareBase.getMeterNumberFromInventoryID(liteInv.getInventoryID()));
+            
 		}
 	}
 	

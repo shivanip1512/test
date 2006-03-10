@@ -1,6 +1,7 @@
 package com.cannontech.database.db.stars.hardware;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -142,4 +143,30 @@ public class MeterHardwareBase extends DBPersistent {
 	public void setMeterTypeID(Integer meterTypeID) {
 		this.meterTypeID = meterTypeID;
 	}
+    
+    public static String getMeterNumberFromInventoryID(int invenID)
+    {
+        String meterNumber = "";
+        
+        SqlStatement stmt = new SqlStatement("SELECT METERNUMBER FROM " + TABLE_NAME + " WHERE INVENTORYID =" + invenID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                for( int i = 0; i < stmt.getRowCount(); i++ )
+                {
+                    meterNumber = stmt.getRow(i)[0].toString();
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return meterNumber;
+    }
 }

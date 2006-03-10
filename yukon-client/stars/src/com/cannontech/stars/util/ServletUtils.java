@@ -489,6 +489,8 @@ public class ServletUtils {
 				label = starsInv.getLMHardware().getManufacturerSerialNumber();
 			else if (starsInv.getMCT() != null)
 				label = starsInv.getMCT().getDeviceName();
+            else if (starsInv.getMeterNumber() != null)
+                label = starsInv.getMeterNumber();
 		}
 		
 		return label;
