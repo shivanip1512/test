@@ -298,6 +298,10 @@ public class InventoryBean {
                         LiteInventoryBase liteInv = (LiteInventoryBase)
                             (showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
                         
+                        /*TODO
+                         * This can be very slow.  Probably do this the other way around by looking up
+                         * the warehouseID from each inventoryID and comparing to the filter warehouseID
+                         */
                         warehousedInventory = Warehouse.getAllInventoryInAWarehouse(specificFilterID);
                         
                         for(int j = 0; j < warehousedInventory.size(); j++)
