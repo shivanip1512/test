@@ -149,6 +149,7 @@
 			selectedAction = type.options[type.selectedIndex].text;  
 			selectedAction += ": ";
 			selectedAction += document.getElementById(action).options[0].text;
+			selectedActionID = document.getElementById(action).options[0].value;
 		}
 		
 		function selectAction(actionID)
