@@ -3,10 +3,14 @@ package com.cannontech.database.cache.functions;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 
 /**
  * Energy company related convenience funcs
@@ -112,4 +116,30 @@ public static String getEnergyCompanyProperty(LiteYukonUser user, int roleProper
 	return AuthFuncs.getRolePropertyValue( ecUser, rolePropertyID );
 }
 
+/**
+ * Similar to a function in LiteStarsEnergyCompany that looks up a 
+ * property for an energy company. This function simply determines
+ * the energy company's user and delegates to getEnergyCompanyProperty(LiteYukonUser, int).
+ * @param ec
+ * @param rolePropertyID
+ * @return String
+ */
+public static String getEnergyCompanyProperty(LiteEnergyCompany ec, int rolePropertyID) {
+    return getEnergyCompanyProperty(getEnergyCompanyUser(ec), rolePropertyID);
+}
+
+/**
+ * Returns the time zone stored in the DEFAULT_TIME_ZONE role property
+ * associated with the company's user.
+ * @param ec
+ * @return String
+ */
+public static TimeZone getEnergyCompanyTimeZone(LiteEnergyCompany ec) {
+    String tz = getEnergyCompanyProperty(ec, EnergyCompanyRole.DEFAULT_TIME_ZONE);
+    if (StringUtils.isBlank(tz)) {
+        return TimeZone.getDefault();
+    } else {
+        return TimeZone.getTimeZone(tz);
+    }
+}
 }
