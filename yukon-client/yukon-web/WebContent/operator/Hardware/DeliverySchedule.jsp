@@ -237,6 +237,7 @@
 		function removeShipment()
 		{
 			var assignList = document.getElementById("shipments");
+			var idx = assignList.selectedIndex;
 									
 			if (assignList.selectedIndex >= 0) 
 			{
