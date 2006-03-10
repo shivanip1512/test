@@ -50,7 +50,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     boolean hasChanged = false;
     boolean devTypeChanged = false;
     boolean stateChanged = false;
-    boolean warehouseFailed = false;
+    boolean warehouseChanged = false;
 	
 	ArrayList hardwareSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
@@ -157,7 +157,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
 				StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
 				
-                if(newDevTypeID != null && hwDB.getLMHardwareTypeID().intValue() != newDevTypeID)
+                if(newDevTypeID != null && hwDB.getLMHardwareTypeID().compareTo(newDevTypeID) != 0)
                 {
 					invDB.setCategoryID( new Integer(InventoryUtils.getInventoryCategoryID(newDevTypeID.intValue(), newMember)) );
 					hwDB.setLMHardwareTypeID( newDevTypeID );
@@ -168,7 +168,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                  * We might have a problem here if the selected are not all in the same energy company.
                  * Service company IDs would then not be valid for all of them.
                  */
-				if (newServiceCompanyID != null && invDB.getInstallationCompanyID().intValue() != newServiceCompanyID)
+				if (newServiceCompanyID != null && invDB.getInstallationCompanyID().compareTo(newServiceCompanyID) != 0)
                 {
 					invDB.setInstallationCompanyID( newServiceCompanyID );
                     hasChanged = true;
@@ -178,17 +178,17 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                  * Device status can be confusing right now.  Xcel needs a static field, but previously,
                  * our code expected to take the state from the old event processing.
                  */
-                if (newDevStateID != null && invDB.getCurrentStateID().intValue() != newDevStateID)
+                if (newDevStateID != null && invDB.getCurrentStateID().compareTo(newDevStateID) != 0)
                 {
                     invDB.setCurrentStateID(newDevStateID);
                     hasChanged = true;
                     stateChanged = true;
                 }
                 
-                if (newWarehouseID != null && Warehouse.getWarehouseFromInventoryID(invDB.getInventoryID()) != newDevStateID)
+                Integer oldWarehouseID = Warehouse.getWarehouseFromInventoryID(invDB.getInventoryID());
+                if (newWarehouseID != null && oldWarehouseID.compareTo(newWarehouseID) != 0)
                 {
-                    warehouseFailed = Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID().intValue(), newWarehouseID.intValue());
-                    hasChanged = !warehouseFailed;
+                    warehouseChanged = true;
                 }
 
                 if( hasChanged )
@@ -196,7 +196,6 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                     hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
                     Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
                     StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-                    
                     
                     if (liteHw.isExtended()) {
                         liteHw.updateThermostatType();
@@ -222,7 +221,6 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                     }
                     if( stateChanged )
                         EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, invDB.getCurrentStateID().intValue(), invDB.getInventoryID().intValue());
-                        numSuccess++;
                         /*DBChangeMsg dbChangeMessage = new DBChangeMsg(
                                 workOrderBase.getWorkOrderBase().getOrderID(),
                                 DBChangeMsg.,
@@ -233,7 +231,22 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                         ServerUtils.handleDBChangeMsg(dbChangeMessage);*/
                 }
                 
+                if(warehouseChanged)
+                {
+                    Warehouse house = new Warehouse();
+                    if(oldWarehouseID.intValue() != -1)
+                    {
+                        house.setInventoryID(invDB.getInventoryID());
+                        house.setWarehouseID(oldWarehouseID);
+                        Transaction.createTransaction( Transaction.DELETE_PARTIAL, house ).execute();
+                    }
+                    
+                    house.setInventoryID(invDB.getInventoryID());
+                    house.setWarehouseID(newWarehouseID);
+                    Transaction.createTransaction( Transaction.ADD_PARTIAL, house ).execute();
+                }
                 
+                numSuccess++;
             }
             catch (Exception e) 
             {
