@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/03/02 23:03:20 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/03/10 00:46:53 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,7 +211,8 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->TargetID  = getID();
         OutMessage->Remote    = getAddress();
         OutMessage->EventCode = RESULT | ENCODED;
-        OutMessage->Retry     = 2;
+        OutMessage->Retry     = 0;  //  the retries will be handled internally by the protocol if they are necessary;
+                                    //    resubmitting the OM is unpredictable with protocol-based devices
         EstablishOutMessagePriority( OutMessage, pReq->getMessagePriority() );
 
         _lmi.sendCommRequest(OutMessage, outList);
