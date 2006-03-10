@@ -2002,6 +2002,7 @@ public class InventoryManager extends HttpServlet {
             if(currentShipment.getShipmentID() == null)
             {
                 currentShipment.setShipmentID(Shipment.getNextShipmentID());
+                currentShipment.setScheduleID(pBean.getCurrentSchedule().getScheduleID());
                 Transaction.createTransaction(Transaction.INSERT, currentShipment).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New shipment added to this delivery schedule.");
             }
@@ -2046,8 +2047,8 @@ public class InventoryManager extends HttpServlet {
                  * Let's cheat a little and use the inventoryBean filtering to look for serial range.
                  */
                 ArrayList tempList = new ArrayList();
-                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialStart, CtiUtilities.STRING_NONE));
-                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, CtiUtilities.STRING_NONE));
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialEnd, serialEnd));
+                tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
                 iBean.setFilterByList(tempList);
                 
                 ArrayList found = iBean.getLimitedHardwareList();
@@ -2065,6 +2066,9 @@ public class InventoryManager extends HttpServlet {
                 }
                 else
                 {
+                    currentShipment.setSerialNumberStart(serialStart);
+                    currentShipment.setSerialNumberEnd(serialEnd);
+                    
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial range has not yet been added.  Please verify the following information and click submit.");
                     redirect = req.getContextPath() + "/operator/Hardware/ShipmentSNRangeAdd.jsp";
                 }
@@ -2080,7 +2084,9 @@ public class InventoryManager extends HttpServlet {
         PurchaseBean pBean = (PurchaseBean) session.getAttribute("purchaseBean");
         Shipment shipment = pBean.getCurrentShipment();
         
-        TimeConsumingTask task = new AddShipmentSNRangeTask( pBean.getSerialNumberMember(), shipment.getSerialNumberStart(), shipment.getSerialNumberEnd(), new Integer(pBean.getSerialNumberDeviceState().getEntryID()), pBean.getCurrentSchedule().getModelID(), req );
+        TimeConsumingTask task = new AddShipmentSNRangeTask( pBean.getSerialNumberMember(), shipment.getSerialNumberStart(), shipment.getSerialNumberEnd(), 
+                                                             new Integer(pBean.getSerialNumberDeviceState().getEntryID()), pBean.getCurrentSchedule().getModelID(), 
+                                                             shipment.getWarehouseID(), req );
         long id = ProgressChecker.addTask( task );
         
         // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -2097,6 +2103,17 @@ public class InventoryManager extends HttpServlet {
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
                 ProgressChecker.removeTask( id );
                 if (redir != null) redirect = redir;
+                /**
+                 * Need to make sure that the newly created serial range is saved to the shipment
+                 */
+                try
+                {
+                    Transaction.createTransaction(Transaction.UPDATE, shipment).execute();
+                }
+                catch (TransactionException e) 
+                {
+                    session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Database error.  Serial range was added to inventory, but the shipment serial range fields could not be saved.");
+                }
                 return;
             }
             
@@ -2160,7 +2177,7 @@ public class InventoryManager extends HttpServlet {
                 
         try
         {
-            //new schedule
+            //new invoice
             if(currentInvoice.getInvoiceID() == null)
             {
                 currentInvoice.setInvoiceID(Invoice.getNextInvoiceID());
@@ -2176,7 +2193,7 @@ public class InventoryManager extends HttpServlet {
             
             /**
              * Shipments --
-             * Only really have to worry about deletes: updates and news have already been added
+             * For invoices, we need to worry about new and deleted ones.
              */
             String[] shipmentIDs = req.getParameterValues("shipments");
             List<Shipment> oldShipList = Shipment.getAllShipmentsForInvoice(currentInvoice.getInvoiceID());
@@ -2203,6 +2220,32 @@ public class InventoryManager extends HttpServlet {
                 if(!isFound)
                 {
                     Transaction.createTransaction(Transaction.DELETE_PARTIAL, oldShipList.get(i)).execute();
+                }
+            }
+            
+            if(shipmentIDs != null)
+            {
+                for(int j = 0; j < shipmentIDs.length; j++)
+                {
+                    boolean isFound = false;
+                    
+                    for(int i = 0; i < oldShipList.size(); i++)
+                    {
+                        if(shipmentIDs[j].compareTo(oldShipList.get(i).getShipmentID().toString()) == 0)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    
+                    /*
+                     * In new list only, must have been added
+                     */
+                    if(!isFound)
+                    {
+                        currentInvoice.setShipmentID(new Integer(shipmentIDs[j]));
+                        Transaction.createTransaction(Transaction.ADD_PARTIAL, currentInvoice).execute();
+                    }
                 }
             }
         }
