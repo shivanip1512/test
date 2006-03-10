@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/10 21:43:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3); 
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3);
             resultString += " performing command on route " + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
@@ -330,7 +330,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3); 
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3);
             resultString += " performing command on route " + Route->getName();
 
             pRet->setStatus(nRet);
@@ -431,6 +431,12 @@ void CtiDeviceCBC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceCBC::getSQL(db, keyTable, selector);
+
+    selector.where( rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7020" ) &&
+                    rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7022" ) &&
+                    rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7023" ) &&
+                    rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7024" ) &&
+                    selector.where() );
 }
 
 void CtiDeviceCBC::DecodeDatabaseReader(RWDBReader &rdr)
