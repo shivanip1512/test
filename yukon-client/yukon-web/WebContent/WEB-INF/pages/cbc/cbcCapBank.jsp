@@ -29,6 +29,21 @@ addSmartScrolling('capbankHiden', 'capbankDiv', null, null);
     <h:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
         <h:column>
+          <f:verbatim>
+             <br />
+             <br />
+              <fieldset>
+                 <legend>
+                    Cap Bank Info
+                 </legend>
+                </f:verbatim>    
+                 <x:outputLabel for="capBankAreaName" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
+                 <x:inputText id="capBankAreaName" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" styleClass="char32Label" />                
+          <f:verbatim>
+             <br />
+              </fieldset>
+          </f:verbatim>
+                        
             <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
 
             <f:verbatim><br/></f:verbatim>
