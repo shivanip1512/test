@@ -16,7 +16,7 @@ public class SAMToCRS_PTJ extends DBPersistent {
     private String statusCode;		//P-Processed, X-Cancelled, C-Completed
     private Date dateTime_Completed;
     private String starsUserName;
-    private Character extract;
+    private Character extract = null;
 
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
@@ -183,6 +183,8 @@ public void setDateTime_Completed(Date timestamp) {
 }
 
 public Character getExtract() {
+	if( extract == null)
+		extract = new Character(' ');
 	return extract;
 }
 
