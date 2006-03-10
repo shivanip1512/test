@@ -84,7 +84,7 @@
                     <x:outputLabel for="Calc_Output" value="Calc. Output: "
                             title="The calculated output only applies to calculated points"/>
                     <x:selectOneMenu id="Calc_Output" disabled="#{!ptEditorForm.wizData.subtypeNeeded}"
-                            value="#{ptEditorForm.wizData.subType}" >
+                            value="#{ptEditorForm.wizData.subType}" onchange="submit();">
                         <f:selectItems value="#{selLists.pointSubtypes}"/>
                     </x:selectOneMenu>
                     

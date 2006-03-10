@@ -7,7 +7,7 @@ public class PointWizardModel {
     private String name = null;
     private Boolean disabled = new Boolean(false);
     private Integer pointType = new Integer (PointTypes.INVALID_POINT);
-    private int subType = PointTypes.INVALID_POINT;
+    private int subType = PointTypes.CALCULATED_POINT;
     private Integer parentId = new Integer (0);
     public PointWizardModel() {
         super();
@@ -31,14 +31,16 @@ public class PointWizardModel {
         this.name = name;
     }
 
-    public Integer getPointType() {
-        
+    public Integer getPointType() {            
             return pointType;
     }
 
     public void setPointType(Integer wizPointType) {
-        
-        this.pointType = wizPointType;
+        if (isSubtypeNeeded()){
+            this.pointType = new Integer ( getSubType() );            
+        }
+        else
+            this.pointType = wizPointType;        
     }
     
     public boolean isSubtypeNeeded(){

@@ -122,7 +122,11 @@ public class PointLists {
 
                 litePoint = (LitePoint) allPoints.get(i);
 
-                if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+                int pointType = litePoint.getPointType();
+           
+                if ((pointType == PointTypes.STATUS_POINT)
+                    || pointType == PointTypes.CALCULATED_STATUS_POINT )
+                    {
                     int stateGrpId = litePoint.getStateGroupID();
                     LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
                     if (liteStateGroup.getStatesList().size() == 2) {
