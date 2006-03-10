@@ -1,25 +1,17 @@
 package com.cannontech.jmx;
 
-import java.io.IOException;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import javax.management.*;
-//
-//import mx4j.tools.adaptor.http.HttpAdaptor;
-//import mx4j.tools.adaptor.http.XSLTProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.jmx.services.DynamicCBCOneLine;
-import com.cannontech.jmx.services.DynamicCRSIntegrator;
-import com.cannontech.jmx.services.DynamicCalcHist;
-import com.cannontech.jmx.services.DynamicImp;
-import com.cannontech.jmx.services.DynamicPriceServer;
-import com.cannontech.jmx.services.DynamicWebGraph;
-import com.cannontech.notif.server.NotificationServer;
-import com.cannontech.util.MBeanUtil;
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author rneuharth
@@ -49,65 +41,38 @@ public class JRMPServer
 	/**
 	 * Start CTI MBean services here
 	 */
-	private void loadCustomServices()
+    private void loadCustomServices()
 	{
 		String sql = 
 			"SELECT ServiceID, ServiceName, ServiceClass, ParamNames, ParamValues " + 
 			"FROM YukonServices " +
 			"WHERE ServiceID > 0";
    		
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rset = null;
-        MBeanServer server = MBeanUtil.getInstance();
+        //MBeanServer server = MBeanUtil.getInstance();
 		
-		try 
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sql);
+        // NOTE:
+        // I've commented out all references to JMX and MBeans. Until we have
+        // time to do this right, they aren't really serving any purpose.
+        // --Tom
+        
+		JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+		template.query(sql, new ResultSetExtractor() {
+		    public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
+		        int cnt = 0;
+                while( rset.next() ) {
+                    if (startService(rset.getString(2), rset.getString(3))) {
+                        cnt++;
+                    }
+                }
+                
+                //make the people aware
+                if( cnt == 0 ) {
+                    CTILogger.info( " Started ZERO(0) YukonService's from the Database" );
+                }   
+		        return null;
+		    }
+		});
 			
-			int cnt = 0;
-			while( rset.next() ) 
-			{
-				try
-				{
-					ObjectName name = new ObjectName( ":name=" + rset.getString(2).trim() );
-					String serviceName = rset.getString(2);
-					if(serviceName.equalsIgnoreCase("Notification_Server"))	
-						server.registerMBean( new NotificationServer(), name);
-					else if(serviceName.equalsIgnoreCase("WebGraph"))
-						server.registerMBean( new DynamicWebGraph(), name);
-					else if(serviceName.equalsIgnoreCase("Calc_Historical"))
-						server.registerMBean( new DynamicCalcHist(), name);
-					else if(serviceName.equalsIgnoreCase("CBC_OneLine_Gen"))
-						server.registerMBean( new DynamicCBCOneLine(), name);
-					else if(serviceName.equalsIgnoreCase("MCT410_BulkImporter"))
-						server.registerMBean( new DynamicImp(), name);
-					else if(serviceName.equalsIgnoreCase("Price_Server"))
-						server.registerMBean( new DynamicPriceServer(), name);
-					else if(serviceName.equalsIgnoreCase("CRS_Integration"))
-						server.registerMBean( new DynamicCRSIntegrator(), name);
-					
-					//better have a start() method defined in the class!
-					server.invoke(name, "start", null, null);
-					
-					CTILogger.info( 
-						" SUCCESSFUL start of the " + rset.getString(2).trim() + 
-						" service from the Database" );
-
-					cnt++;
-				}
-				catch( Exception ex )
-				{
-					CTILogger.warn( "Unable to start the YukonService : " + rset.getString(2).trim(), ex ); 
-				}
-			}
-			
-			//make the people aware
-			if( cnt == 0 ) {
-                CTILogger.info( " Started ZERO(0) YukonService's from the Database" );
-            }	
             
             // start the http adapter
 //            try {
@@ -125,30 +90,45 @@ public class JRMPServer
 //                CTILogger.error("Unable to start Http JMX Adapter", e);
 //            }
          
-		}
-		catch(SQLException e ) 
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally 
-		{
-				try {
-					if( stmt != null )
-						stmt.close();
-					if( conn != null )
-						conn.close();
-				}
-				catch( java.sql.SQLException e ) {
-					CTILogger.error( e.getMessage(), e );
-				}
-		}
 				
-//		ObjectName webGName = new ObjectName("CTI-Server:name=WebGraph");
-//		server.createMBean("com.cannontech.jmx.services.DynamicWebGraph", webGName, null);
-//		server.invoke(webGName, "start", null, null); 		
 	}
 
-	public static void main(String[] args)
+	private boolean startService(String displayName, String classOrBeanName) throws SQLException {
+        try
+        {
+            //ObjectName name = new ObjectName( ":name=" + rset.getString(2).trim() );
+            String className = classOrBeanName.trim();
+            String beanPrefix = "bean:";
+            Object service = null;
+            if (className.startsWith(beanPrefix)) {
+                String beanName = className.substring(beanPrefix.length());
+                ApplicationContext context = YukonSpringHook.getServicesContext();
+                service = context.getBean(beanName);
+                //server.registerMBean(bean, name);
+            } else {
+                Class clazz = Class.forName(className);
+                service = clazz.newInstance();
+                //server.createMBean( className, name, null);
+            }
+            
+            //better have a start() method defined in the class!
+            service.getClass().getMethod("start").invoke(service);
+            //server.invoke(name, "start", null, null);
+            
+            CTILogger.info( 
+                " SUCCESSFUL start of the " + displayName + 
+                " service from the Database" );
+            
+            return true;
+        }
+        catch( Exception ex )
+        {
+            CTILogger.warn( "Unable to start the YukonService : " + displayName, ex ); 
+        }
+        return false;
+    }
+
+    public static void main(String[] args)
 	{
 		try
 		{
