@@ -64,9 +64,9 @@ public final class YukonCRSIntegrator
 	private static LogWriter logger = null;
 	
 	/**
-     * 30 minute interval for import attempts
+     * 15 minute interval for import attempts
 	 */
-	public static final int INTEGRATION_INTERVAL = 1800;
+	public static final int INTEGRATION_INTERVAL = 900;
 	//sleeper thread interval for service
 	public static final long SLEEP = 10000;
     
