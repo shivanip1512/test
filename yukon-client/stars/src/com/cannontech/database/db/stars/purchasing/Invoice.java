@@ -43,7 +43,7 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
-public void add_partial() throws java.sql.SQLException 
+public void addPartial() throws java.sql.SQLException 
 {
     Object setValues[] = { getInvoiceID(), getShipmentID() };
     

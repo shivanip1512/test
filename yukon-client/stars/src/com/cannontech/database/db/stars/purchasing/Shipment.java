@@ -48,10 +48,10 @@ public void add() throws java.sql.SQLException
                     getAmountPaid(), getOrderedDate(), getReceivedDate()};
 
     add( TABLE_NAME, setValues );
-    add_partial();
+    addPartial();
 }
 
-public void add_partial() throws java.sql.SQLException 
+public void addPartial() throws java.sql.SQLException 
 {
     Object setValues[] = { getScheduleID(), getShipmentID() };
     

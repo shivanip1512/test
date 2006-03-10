@@ -64,7 +64,7 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
-public void add_partial() throws java.sql.SQLException 
+public void addPartial() throws java.sql.SQLException 
 {
     Object setValues[] = { getWarehouseID(), getInventoryID() };
     
@@ -79,7 +79,7 @@ public void delete() throws java.sql.SQLException
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public void delete_partial() throws java.sql.SQLException 
+public void deletePartial() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getWarehouseID() };
 
