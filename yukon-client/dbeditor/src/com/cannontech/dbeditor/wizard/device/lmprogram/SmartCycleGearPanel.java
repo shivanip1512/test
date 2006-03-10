@@ -5,6 +5,10 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (8/1/2002 3:43:26 PM)
  * @author: 
  */
+import java.awt.Dimension;
+
+import javax.swing.border.EtchedBorder;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -279,7 +283,7 @@ private javax.swing.JComboBox getJComboBoxCycleCountSndType() {
 		try {
 			ivjJComboBoxCycleCountSndType = new javax.swing.JComboBox();
 			ivjJComboBoxCycleCountSndType.setName("JComboBoxCycleCountSndType");
-			ivjJComboBoxCycleCountSndType.setPreferredSize(new java.awt.Dimension(136, 23));
+			ivjJComboBoxCycleCountSndType.setPreferredSize(new java.awt.Dimension(120, 23));
 			ivjJComboBoxCycleCountSndType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxCycleCountSndType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
@@ -306,7 +310,7 @@ private javax.swing.JComboBox getJComboBoxHowToStop() {
 		try {
 			ivjJComboBoxHowToStop = new javax.swing.JComboBox();
 			ivjJComboBoxHowToStop.setName("JComboBoxHowToStop");
-			ivjJComboBoxHowToStop.setPreferredSize(new java.awt.Dimension(133, 23));
+			ivjJComboBoxHowToStop.setPreferredSize(new java.awt.Dimension(75, 23));
 			ivjJComboBoxHowToStop.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
 			ivjJComboBoxHowToStop.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );
@@ -387,7 +391,7 @@ private javax.swing.JComboBox getJComboBoxSendRateDigits() {
 			ivjJComboBoxSendRateDigits.setName("JComboBoxSendRateDigits");
 			ivjJComboBoxSendRateDigits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJComboBoxSendRateDigits.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
-			ivjJComboBoxSendRateDigits.setPreferredSize(new java.awt.Dimension(175, 23));
+			ivjJComboBoxSendRateDigits.setPreferredSize(new java.awt.Dimension(75, 23));
 			ivjJComboBoxSendRateDigits.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxSendRateDigits.setMinimumSize(new java.awt.Dimension(0, 0));
 			ivjJComboBoxSendRateDigits.setEditable(true);
@@ -428,7 +432,7 @@ private javax.swing.JComboBox getJComboBoxSendRateUnits() {
 			ivjJComboBoxSendRateUnits.setName("JComboBoxSendRateUnits");
 			ivjJComboBoxSendRateUnits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJComboBoxSendRateUnits.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
-			ivjJComboBoxSendRateUnits.setPreferredSize(new java.awt.Dimension(175, 23));
+			ivjJComboBoxSendRateUnits.setPreferredSize(new java.awt.Dimension(75, 23));
 			ivjJComboBoxSendRateUnits.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxSendRateUnits.setMinimumSize(new java.awt.Dimension(0, 0));
 			// user code begin {1}
@@ -579,6 +583,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldControlPercent() {
 			ivjJCSpinFieldControlPercent.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJCSpinFieldControlPercent.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJCSpinFieldControlPercent.setMaximumSize(new java.awt.Dimension(50, 20));
+            ivjJCSpinFieldControlPercent.setMinimumSize(new java.awt.Dimension(48, 20));
 			// user code begin {1}
 			ivjJCSpinFieldControlPercent.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -613,6 +618,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldCyclePeriod() {
 			ivjJCSpinFieldCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJCSpinFieldCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJCSpinFieldCyclePeriod.setMaximumSize(new java.awt.Dimension(50, 20));
+            ivjJCSpinFieldCyclePeriod.setMinimumSize(new java.awt.Dimension(48, 20));
 			// user code begin {1}
 			ivjJCSpinFieldCyclePeriod.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
@@ -962,10 +968,10 @@ private javax.swing.JLabel getJLabelPercentReduction() {
 			ivjJLabelPercentReduction.setName("JLabelPercentReduction");
 			ivjJLabelPercentReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJLabelPercentReduction.setText("Group Capacity Reduction %:");
-			ivjJLabelPercentReduction.setMaximumSize(new java.awt.Dimension(112, 14));
-			ivjJLabelPercentReduction.setPreferredSize(new java.awt.Dimension(112, 14));
+			ivjJLabelPercentReduction.setMaximumSize(new java.awt.Dimension(160, 14));
+			ivjJLabelPercentReduction.setPreferredSize(new java.awt.Dimension(160, 14));
 			ivjJLabelPercentReduction.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelPercentReduction.setMinimumSize(new java.awt.Dimension(112, 14));
+			ivjJLabelPercentReduction.setMinimumSize(new java.awt.Dimension(160, 14));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1059,9 +1065,9 @@ private javax.swing.JPanel getJPanelChangeMethod() {
 			ivjJPanelChangeMethod.setName("JPanelChangeMethod");
 			ivjJPanelChangeMethod.setLayout(new java.awt.GridBagLayout());
 			ivjJPanelChangeMethod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJPanelChangeMethod.setMaximumSize(new java.awt.Dimension(400, 100));
-			ivjJPanelChangeMethod.setPreferredSize(new java.awt.Dimension(335, 97));
-			ivjJPanelChangeMethod.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJPanelChangeMethod.setMaximumSize(new java.awt.Dimension(300, 75));
+			ivjJPanelChangeMethod.setPreferredSize(new java.awt.Dimension(300, 75));
+            ivjJPanelChangeMethod.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJPanelChangeMethod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 
 			java.awt.GridBagConstraints constraintsJLabelChangeDuration = new java.awt.GridBagConstraints();
@@ -1151,6 +1157,7 @@ private javax.swing.JPanel getJPanelChangeMethod() {
 			constraintsJComboBoxWhenChange.ipadx = 79;
 			constraintsJComboBoxWhenChange.insets = new java.awt.Insets(4, 5, 1, 17);
 			getJPanelChangeMethod().add(getJComboBoxWhenChange(), constraintsJComboBoxWhenChange);
+            ivjJPanelChangeMethod.setBorder(new EtchedBorder());
 			// user code begin {1}
 			jComboBoxWhenChange_ActionPerformed(null);
 			// user code end
@@ -1287,153 +1294,163 @@ private void initConnections() throws java.lang.Exception {
 private void initialize() {
 	try 
     {
-		// user code begin {1}
-		// user code end
 		setName("SmartCycleGearPanel");
-		setPreferredSize(new java.awt.Dimension(402, 430));
-		java.awt.GridBagConstraints consGridBagConstraints139 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints140 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints141 = new java.awt.GridBagConstraints();
+        setPreferredSize(new java.awt.Dimension(410, 350));
+        
+		java.awt.GridBagConstraints constraintJLabelControlPercent = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJCSpinFieldControlPercent = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJCSpinFieldCyclePeriod = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints consGridBagConstraints142 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints144 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints143 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints146 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints147 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints145 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints148 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints149 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints151 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints152 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints153 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints150 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints155 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints154 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints156 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints157 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints158 = new java.awt.GridBagConstraints();
-		consGridBagConstraints153.insets = new java.awt.Insets(5,10,10,33);
-		consGridBagConstraints153.ipadx = 4;
-		consGridBagConstraints153.gridy = 8;
-		consGridBagConstraints153.gridx = 1;
-		consGridBagConstraints141.insets = new java.awt.Insets(5,0,2,6);
-		consGridBagConstraints141.gridy = 3;
-		consGridBagConstraints141.gridx = 3;
-		consGridBagConstraints139.insets = new java.awt.Insets(7,10,6,44);
-		consGridBagConstraints139.ipadx = -7;
-		consGridBagConstraints139.gridy = 2;
-		consGridBagConstraints139.gridx = 1;
-		consGridBagConstraints142.ipady = -14;
-		consGridBagConstraints142.ipadx = -112;
-		consGridBagConstraints142.gridheight = -1;
-		consGridBagConstraints142.gridwidth = -1;
-		consGridBagConstraints142.gridy = 1;
-		consGridBagConstraints142.gridx = 1;
-		consGridBagConstraints144.insets = new java.awt.Insets(8,10,6,3);
-		consGridBagConstraints144.ipadx = 16;
-		consGridBagConstraints144.gridy = 4;
-		consGridBagConstraints144.gridx = 1;
-		consGridBagConstraints143.insets = new java.awt.Insets(7,10,6,41);
-		consGridBagConstraints143.ipadx = -4;
-		consGridBagConstraints143.gridy = 3;
-		consGridBagConstraints143.gridx = 1;
-		consGridBagConstraints140.insets = new java.awt.Insets(3,0,4,6);
-		consGridBagConstraints140.gridy = 2;
-		consGridBagConstraints140.gridx = 3;
-		consGridBagConstraints155.insets = new java.awt.Insets(4,24,3,154);
-		consGridBagConstraints155.gridwidth = 2;
-		consGridBagConstraints155.gridy = 9;
-		consGridBagConstraints155.gridx = 3;
-		consGridBagConstraints149.insets = new java.awt.Insets(3,4,2,103);
-		consGridBagConstraints149.ipady = 2;
-		consGridBagConstraints149.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints149.weightx = 1.0;
-		consGridBagConstraints149.gridwidth = 3;
-		consGridBagConstraints149.gridy = 6;
-		consGridBagConstraints149.gridx = 2;
-		consGridBagConstraints151.insets = new java.awt.Insets(3,5,71,62);
-		consGridBagConstraints151.ipady = -8;
-		consGridBagConstraints151.gridwidth = 4;
-		consGridBagConstraints151.gridy = 10;
-		consGridBagConstraints151.gridx = 1;
-		consGridBagConstraints148.insets = new java.awt.Insets(8,10,6,3);
-		consGridBagConstraints148.ipadx = 26;
-		consGridBagConstraints148.gridy = 6;
-		consGridBagConstraints148.gridx = 1;
-		consGridBagConstraints152.insets = new java.awt.Insets(6,10,4,0);
-		consGridBagConstraints152.ipady = 3;
-		consGridBagConstraints152.ipadx = 53;
-		consGridBagConstraints152.gridwidth = 2;
-		consGridBagConstraints152.gridy = 9;
-		consGridBagConstraints152.gridx = 1;
-		consGridBagConstraints150.insets = new java.awt.Insets(7,10,5,3);
-		consGridBagConstraints150.ipadx = 8;
-		consGridBagConstraints150.gridy = 7;
-		consGridBagConstraints150.gridx = 1;
-		consGridBagConstraints146.insets = new java.awt.Insets(6,10,8,20);
-		consGridBagConstraints146.ipadx = 36;
-		consGridBagConstraints146.gridy = 5;
-		consGridBagConstraints146.gridx = 1;
-		consGridBagConstraints154.insets = new java.awt.Insets(2,9,4,85);
-		consGridBagConstraints154.ipady = 2;
-		consGridBagConstraints154.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints154.weightx = 1.0;
-		consGridBagConstraints154.gridwidth = 2;
-		consGridBagConstraints154.gridy = 8;
-		consGridBagConstraints154.gridx = 3;
-		consGridBagConstraints147.insets = new java.awt.Insets(3,4,2,103);
-		consGridBagConstraints147.ipady = 2;
-		consGridBagConstraints147.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints147.weightx = 1.0;
-		consGridBagConstraints147.gridwidth = 3;
-		consGridBagConstraints147.gridy = 5;
-		consGridBagConstraints147.gridx = 2;
-		consGridBagConstraints145.insets = new java.awt.Insets(3,4,2,103);
-		consGridBagConstraints145.ipady = 2;
-		consGridBagConstraints145.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints145.weightx = 1.0;
-		consGridBagConstraints145.gridwidth = 3;
-		consGridBagConstraints145.gridy = 4;
-		consGridBagConstraints145.gridx = 2;
-		consGridBagConstraints157.insets = new java.awt.Insets(3,6,2,85);
-		consGridBagConstraints157.ipadx = -93;
-		consGridBagConstraints157.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints157.weightx = 1.0;
-		consGridBagConstraints157.gridy = 7;
-		consGridBagConstraints157.gridx = 4;
-		consGridBagConstraints158.insets = new java.awt.Insets(13,12,3,104);
-		consGridBagConstraints158.ipady = -3;
-		consGridBagConstraints158.ipadx = 99;
-		consGridBagConstraints158.gridwidth = 4;
-		consGridBagConstraints158.gridy = 1;
-		consGridBagConstraints158.gridx = 1;
-		consGridBagConstraints156.insets = new java.awt.Insets(3,4,2,164);
-		consGridBagConstraints156.ipadx = -100;
-		consGridBagConstraints156.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		consGridBagConstraints156.weightx = 1.0;
-		consGridBagConstraints156.gridwidth = 3;
-		consGridBagConstraints156.gridy = 7;
-		consGridBagConstraints156.gridx = 2;
+		java.awt.GridBagConstraints constraintJLabelCycleCntSndType = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelCyclePeriod = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelMaxCycleCnt = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxMaxCycleCount = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxCycleCountSndType = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelPeriodCount = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxPeriodCount = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJPanelChangeMethod = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelPercentReduction = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelHowToStop = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelSendRate = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxHowToStop = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxSendRateDigits = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJCheckBoxNoRamp = new java.awt.GridBagConstraints();
+        
+//      constraint for "(min)" label, no one knows why he is here? so we won't paint him for now.
+        
+//        consGridBagConstraints142.ipady = -14;
+//        consGridBagConstraints142.ipadx = -112;
+//        consGridBagConstraints142.gridheight = -1;
+//        consGridBagConstraints142.gridwidth = -1;
+//        consGridBagConstraints142.gridy = 1;
+//        consGridBagConstraints142.gridx = 1;
+        
+        constraintJCheckBoxNoRamp.insets = new java.awt.Insets(0,0,5,0);
+        constraintJCheckBoxNoRamp.ipady = -3;
+        constraintJCheckBoxNoRamp.ipadx = 200;
+        constraintJCheckBoxNoRamp.gridwidth = 3;
+        constraintJCheckBoxNoRamp.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJCheckBoxNoRamp.gridy = 1;
+        constraintJCheckBoxNoRamp.gridx = 1;
+        
+        constraintJLabelControlPercent.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelControlPercent.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelControlPercent.gridy = 2;
+        constraintJLabelControlPercent.gridx = 1;
+        
+        constraintJCSpinFieldControlPercent.insets = new java.awt.Insets(0,0,5,5);
+        constraintJCSpinFieldControlPercent.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJCSpinFieldControlPercent.gridy = 2;
+        constraintJCSpinFieldControlPercent.gridx = 2;
+        
+        constraintJLabelCyclePeriod.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelCyclePeriod.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelCyclePeriod.gridy = 3;
+        constraintJLabelCyclePeriod.gridx = 1;
+
+        constraintJCSpinFieldCyclePeriod.insets = new java.awt.Insets(0,0,5,5);
+        constraintJCSpinFieldCyclePeriod.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJCSpinFieldCyclePeriod.gridy = 3;
+        constraintJCSpinFieldCyclePeriod.gridx = 2;
+        
+        constraintJLabelCycleCntSndType.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelCycleCntSndType.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelCycleCntSndType.gridy = 4;
+        constraintJLabelCycleCntSndType.gridx = 1;
+        
+        constraintJComboBoxCycleCountSndType.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxCycleCountSndType.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxCycleCountSndType.gridwidth = 2;
+        constraintJComboBoxCycleCountSndType.gridy = 4;
+        constraintJComboBoxCycleCountSndType.gridx = 2;
+        
+        constraintJLabelMaxCycleCnt.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelMaxCycleCnt.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelMaxCycleCnt.gridy = 5;
+        constraintJLabelMaxCycleCnt.gridx = 1;
+
+        constraintJComboBoxMaxCycleCount.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxMaxCycleCount.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxMaxCycleCount.gridwidth = 2;
+        constraintJComboBoxMaxCycleCount.gridy = 5;
+        constraintJComboBoxMaxCycleCount.gridx = 2;
+        
+        constraintJLabelPeriodCount.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelPeriodCount.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelPeriodCount.gridy = 6;
+        constraintJLabelPeriodCount.gridx = 1;
+        
+        constraintJComboBoxPeriodCount.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxPeriodCount.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxPeriodCount.gridwidth = 2;
+        constraintJComboBoxPeriodCount.gridy = 6;
+        constraintJComboBoxPeriodCount.gridx = 2;
+        
+        constraintJLabelSendRate.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelSendRate.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelSendRate.gridwidth = 1;
+        constraintJLabelSendRate.gridy = 7;
+        constraintJLabelSendRate.gridx = 1;
+        
+        constraintJComboBoxSendRateDigits.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxSendRateDigits.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxSendRateDigits.gridy = 7;
+        constraintJComboBoxSendRateDigits.gridx = 2;
+        
+        constraintJComboBoxSendRateUnits.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxSendRateUnits.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxSendRateUnits.gridy = 7;
+        constraintJComboBoxSendRateUnits.gridx = 3;
+        
+        constraintJLabelHowToStop.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelHowToStop.anchor = java.awt.GridBagConstraints.WEST;
+		constraintJLabelHowToStop.gridy = 8;
+		constraintJLabelHowToStop.gridx = 1;
+        
+        constraintJComboBoxHowToStop.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxHowToStop.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxHowToStop.gridy = 8;
+        constraintJComboBoxHowToStop.gridx = 2;
+
+        constraintJLabelPercentReduction.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelPercentReduction.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelPercentReduction.gridy = 9;
+        constraintJLabelPercentReduction.gridx = 1;
+        
+		constraintJCSpinFieldPercentReduction.insets = new java.awt.Insets(0,0,5,5);
+        constraintJCSpinFieldPercentReduction.anchor = java.awt.GridBagConstraints.WEST;
+		constraintJCSpinFieldPercentReduction.gridy = 9;
+		constraintJCSpinFieldPercentReduction.gridx = 2;
+        
+		constraintJPanelChangeMethod.insets = new java.awt.Insets(0,0,5,5);
+        constraintJPanelChangeMethod.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJPanelChangeMethod.gridwidth = 3;
+		constraintJPanelChangeMethod.gridy = 10;
+		constraintJPanelChangeMethod.gridx = 1;
+        
 		setLayout(new java.awt.GridBagLayout());
-		this.add(getJLabelControlPercent(), consGridBagConstraints139);
-		this.add(getJCSpinFieldControlPercent(), consGridBagConstraints140);
-		this.add(getJCSpinFieldCyclePeriod(), consGridBagConstraints141);
-		this.add(getJLabelMin(), consGridBagConstraints142);
-		this.add(getJLabelCyclePeriod(), consGridBagConstraints143);
-		this.add(getJLabelCycleCntSndType(), consGridBagConstraints144);
-		this.add(getJComboBoxCycleCountSndType(), consGridBagConstraints145);
-		this.add(getJLabelMaxCycleCnt(), consGridBagConstraints146);
-		this.add(getJComboBoxMaxCycleCount(), consGridBagConstraints147);
-		this.add(getJLabelPeriodCount(), consGridBagConstraints148);
-		this.add(getJComboBoxPeriodCount(), consGridBagConstraints149);
-		this.add(getJLabelSendRate(), consGridBagConstraints150);
-		this.add(getJPanelChangeMethod(), consGridBagConstraints151);
-		this.add(getJLabelPercentReduction(), consGridBagConstraints152);
-		this.add(getJLabelHowToStop(), consGridBagConstraints153);
-		this.add(getJComboBoxHowToStop(), consGridBagConstraints154);
-		this.add(getJCSpinFieldPercentReduction(), consGridBagConstraints155);
-		this.add(getJComboBoxSendRateDigits(), consGridBagConstraints156);
-		this.add(getJComboBoxSendRateUnits(), consGridBagConstraints157);
-		this.add(getJCheckBoxNoRamp(), consGridBagConstraints158);
+		this.add(getJLabelControlPercent(), constraintJLabelControlPercent);
+		this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldControlPercent);
+		this.add(getJCSpinFieldCyclePeriod(), constraintJCSpinFieldCyclePeriod);
+		//this.add(getJLabelMin(), consGridBagConstraints142);
+		this.add(getJLabelCyclePeriod(), constraintJLabelCyclePeriod);
+		this.add(getJLabelCycleCntSndType(), constraintJLabelCycleCntSndType);
+		this.add(getJComboBoxCycleCountSndType(), constraintJComboBoxCycleCountSndType);
+		this.add(getJLabelMaxCycleCnt(), constraintJLabelMaxCycleCnt);
+		this.add(getJComboBoxMaxCycleCount(), constraintJComboBoxMaxCycleCount);
+		this.add(getJLabelPeriodCount(), constraintJLabelPeriodCount);
+		this.add(getJComboBoxPeriodCount(), constraintJComboBoxPeriodCount);
+		this.add(getJLabelSendRate(), constraintJLabelSendRate);
+		this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
+		this.add(getJLabelPercentReduction(), constraintJLabelPercentReduction);
+		this.add(getJLabelHowToStop(), constraintJLabelHowToStop);
+		this.add(getJComboBoxHowToStop(), constraintJComboBoxHowToStop);
+		this.add(getJCSpinFieldPercentReduction(), constraintJCSpinFieldPercentReduction);
+		this.add(getJComboBoxSendRateDigits(), constraintJComboBoxSendRateDigits);
+		this.add(getJComboBoxSendRateUnits(), constraintJComboBoxSendRateUnits);
+		this.add(getJCheckBoxNoRamp(), constraintJCheckBoxNoRamp);
 		setSize(402, 430);
     } 
     catch (java.lang.Throwable ivjExc) 
@@ -1626,6 +1643,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 		if(jCheckBoxNoRamp == null) {
 			jCheckBoxNoRamp = new javax.swing.JCheckBox();
 			jCheckBoxNoRamp.setText("No Ramp (Expresscom Only)");
+            jCheckBoxNoRamp.setPreferredSize(new Dimension (165,23));
 						
 		}
 		return jCheckBoxNoRamp;

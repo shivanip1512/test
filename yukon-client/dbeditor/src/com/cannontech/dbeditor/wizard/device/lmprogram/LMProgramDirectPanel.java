@@ -437,7 +437,7 @@ private void initialize() {
 		constraintsDirectModifyGearPanel.weighty = 1.0;
 		constraintsDirectModifyGearPanel.ipadx = 336;
 		constraintsDirectModifyGearPanel.ipady = 266;
-		constraintsDirectModifyGearPanel.insets = new java.awt.Insets(2, 52, 2, 4);
+		constraintsDirectModifyGearPanel.insets = new java.awt.Insets(2, 5, 2, 4);
 		add(getDirectModifyGearPanel(), constraintsDirectModifyGearPanel);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
