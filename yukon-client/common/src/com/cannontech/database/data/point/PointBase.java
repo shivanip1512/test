@@ -77,6 +77,8 @@ public void delete() throws java.sql.SQLException
 	delete(GraphDataSeries.tableName, "PointID", getPoint().getPointID());
 	delete("DynamicPointAlarming", "PointID", getPoint().getPointID());
 	delete(CalcComponent.TABLENAME, "ComponentPointID", getPoint().getPointID());
+    delete("TagLog", "PointID", getPoint().getPointID());
+    delete("DynamicTags", "PointID", getPoint().getPointID());
 	//delete(PointControl.TABLE_NAME, "PointID", getPoint().getPointID());
 
 	//A TDC Table that does not have a DBPersistant
