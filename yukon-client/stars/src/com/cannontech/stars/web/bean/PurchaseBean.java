@@ -56,6 +56,7 @@ public class PurchaseBean
     private List<Shipment> allUnassignedInvoiceShipments;
     private Invoice currentInvoice;
     private String currentSubmittedDate;
+    private String currentPaidDate;
     private boolean isCurrentlyAuthorized;
     private boolean hasCurrentlyPaid;
     
@@ -219,8 +220,7 @@ public class PurchaseBean
 
     public List<Warehouse> getAvailableWarehouses()
     {
-        if(availableWarehouses == null)
-            availableWarehouses = energyCompany.getAllWarehousesDownward();
+        availableWarehouses = energyCompany.getAllWarehousesDownward();
         return availableWarehouses;
     }
     
@@ -287,12 +287,18 @@ public class PurchaseBean
         return currentSubmittedDate;
     }
 
-    public boolean isCurrentlyAuthorized() {
+    public String getCurrentPaidDate() {
+        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
+        currentPaidDate = datePart.format(currentInvoice.getDatePaid());
+        return currentPaidDate;
+    }
+    
+    public boolean getIsCurrentlyAuthorized() {
         isCurrentlyAuthorized = currentInvoice.getAuthorized().compareTo("Y") == 0;
         return isCurrentlyAuthorized;
     }
 
-    public boolean hasCurrentlyPaid() {
+    public boolean getHasCurrentlyPaid() {
         hasCurrentlyPaid = currentInvoice.getHasPaid().compareTo("Y") == 0;
         return hasCurrentlyPaid;
     }
