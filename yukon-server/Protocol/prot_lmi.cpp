@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/03/10 00:45:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1254,8 +1254,10 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     }
     else if( status )
     {
-        //  retries go here eventually...  or something like that
+        //  retry logic will go here eventually
         _transaction_complete = true;
+
+        retval = status;
     }
 
     return retval;
