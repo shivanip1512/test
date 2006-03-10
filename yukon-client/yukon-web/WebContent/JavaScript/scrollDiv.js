@@ -10,17 +10,6 @@ function scrollPerNode(comp, div) {
 	return div.scrollHeight / len;
 }
 
-function toggleDivs(){
-	var checked = document.getElementById("enableDualBus").checked;
-	var subBody = document.getElementById("subBody");
-	if (checked == true){
-	   subBody.style.visibility = "visible";
-	}
-	else {
-		subBody.style.visibility = "hidden";
-	}
-}
-
 function addSmartScrolling(hidden_id, div_id, indx_id, comp_id){
 	Event.observe(window, 'load', function() {	
 	//get the hidden and div

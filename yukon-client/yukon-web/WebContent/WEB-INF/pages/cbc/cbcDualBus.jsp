@@ -22,15 +22,15 @@ Event.observe(window, 'load', toggleDivs);
 		</f:verbatim>
 	
 		<x:selectBooleanCheckbox forceId="true"  valueChangeListener="#{capControlForm.dualBusEnabledClick}" styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
-		value="#{capControlForm.enableDualBus}" onclick="toggleDivs();">
+		value="#{capControlForm.enableDualBus}" onclick="submit();">
 			<h:outputText value="Enable Dual Bus" />
 		</x:selectBooleanCheckbox>
-		<x:panelGrid forceId="true" id="subBody" columns="2" styleClass="gridLayout" rowClasses="gridCellSmall" columnClasses="gridColumn">
-			<x:panelGroup>
+		<x:panelGrid  forceId="true" id="subBody" columns="2" styleClass="gridLayout" rowClasses="gridCellSmall" columnClasses="gridColumn">
+			<x:panelGroup forceId="true" id="altSubBusPanel">
 								
-				<h:outputText styleClass="tableHeader" value="Selected Alternative SubBus: " />
-				<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" >
-				<h:outputText value="#{capControlForm.selectedSubBusFormatString}" />
+				<h:outputText styleClass="tableHeader" value="Selected Alternate SubBus: " rendered="#{capControlForm.enableDualBus}"/>
+				<x:commandLink actionListener="#{capControlForm.selectedAltSubBusClick}" rendered="#{capControlForm.enableDualBus}">
+				<h:outputText value="#{capControlForm.selectedSubBusFormatString}" rendered="#{capControlForm.enableDualBus}"/>
 				</x:commandLink>
 				<f:verbatim>
 					<br />
@@ -39,8 +39,8 @@ Event.observe(window, 'load', toggleDivs);
 							Alternative Substation Bus
 						</legend>
 				</f:verbatim>
-				<x:div forceId="true" id = "AltSubBusScrollableDiv" styleClass="scrollSmallWidthSet">
-					<x:dataList forceId="true" id="AltSubBusList" var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="listWithNoBullets">
+				<x:div forceId="true" id = "AltSubBusScrollableDiv" styleClass="scrollSmallWidthSet" rendered="#{capControlForm.enableDualBus}">
+					<x:dataList forceId="true" id="AltSubBusList" var="item" value="#{capControlForm.subBusList}" layout="unorderedList" styleClass="listWithNoBullets" rendered="#{capControlForm.enableDualBus}">
 					
 						<x:panelGroup>
 							<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2" rendered="#{capControlForm.PAOBase.capControlSubstationBus.altSubPAOId == item.liteID}" />
@@ -53,7 +53,7 @@ Event.observe(window, 'load', toggleDivs);
 				</x:div>
 			</x:panelGroup>
 			<x:panelGroup>
-				<h:outputText styleClass="tableHeader" value="Selected Switch Point:" />
+				<h:outputText styleClass="tableHeader" value="Selected Disable or Switch Point:" />
 				<x:commandLink actionListener="#{capControlForm.selectedTwoWayPointClick}">
 				<h:outputText value="#{capControlForm.selectedTwoWayPointsFormatString}" />
 				</x:commandLink>
