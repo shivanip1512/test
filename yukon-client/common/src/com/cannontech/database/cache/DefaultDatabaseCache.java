@@ -623,15 +623,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllContactNotifications()
-   {   
-      getDBCache().releaseAllContactNotifications();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
    public synchronized void releaseAllPoints()
    {   
       getDBCache().releaseAllPoints();

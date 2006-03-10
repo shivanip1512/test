@@ -181,7 +181,6 @@ public interface IDatabaseCache
 	public void releaseAllTOUSchedules();
 	public void releaseAllTOUDays();
 	public void releaseAllNotificationGroups();
-	public void releaseAllContactNotifications();
 	public void releaseAllPoints();
 	public void releaseAllStateGroups();
 	public void releaseAllUnitMeasures();

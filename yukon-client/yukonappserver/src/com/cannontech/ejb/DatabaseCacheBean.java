@@ -678,15 +678,6 @@ public class DatabaseCacheBean implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllContactNotifications()
-   {   
-      getCache().releaseAllContactNotifications();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
    public synchronized void releaseAllPoints()
    {   
       getCache().releaseAllPoints();

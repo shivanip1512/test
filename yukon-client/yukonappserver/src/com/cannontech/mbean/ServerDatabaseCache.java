@@ -36,15 +36,51 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.server.cache.*;
+import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
+import com.cannontech.yukon.server.cache.BaselineLoader;
+import com.cannontech.yukon.server.cache.CommandLoader;
+import com.cannontech.yukon.server.cache.ConfigLoader;
+import com.cannontech.yukon.server.cache.ContactLoader;
+import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
+import com.cannontech.yukon.server.cache.CustomerLoader;
+import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
+import com.cannontech.yukon.server.cache.DeviceMeterGroupLoader;
+import com.cannontech.yukon.server.cache.DeviceTypeCommandLoader;
+import com.cannontech.yukon.server.cache.EnergyCompanyLoader;
+import com.cannontech.yukon.server.cache.GearLoader;
+import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
+import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
+import com.cannontech.yukon.server.cache.LMConstraintLoader;
+import com.cannontech.yukon.server.cache.LMPAOExclusionLoader;
+import com.cannontech.yukon.server.cache.LMScenarioProgramLoader;
+import com.cannontech.yukon.server.cache.PointLimitLoader;
+import com.cannontech.yukon.server.cache.PointLoader;
+import com.cannontech.yukon.server.cache.PointUnitLoader;
+import com.cannontech.yukon.server.cache.SeasonScheduleLoader;
+import com.cannontech.yukon.server.cache.SettlementConfigLoader;
+import com.cannontech.yukon.server.cache.StateGroupLoader;
+import com.cannontech.yukon.server.cache.TOUDayLoader;
+import com.cannontech.yukon.server.cache.TOUScheduleLoader;
+import com.cannontech.yukon.server.cache.TagLoader;
+import com.cannontech.yukon.server.cache.UnitMeasureLoader;
+import com.cannontech.yukon.server.cache.UserEnergyCompanyLoader;
+import com.cannontech.yukon.server.cache.UserPoaOwnerLoader;
+import com.cannontech.yukon.server.cache.YukonGroupLoader;
+import com.cannontech.yukon.server.cache.YukonGroupRoleLoader;
+import com.cannontech.yukon.server.cache.YukonImageLoader;
+import com.cannontech.yukon.server.cache.YukonPAOLoader;
+import com.cannontech.yukon.server.cache.YukonRoleLoader;
+import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
+import com.cannontech.yukon.server.cache.YukonUserGroupLoader;
+import com.cannontech.yukon.server.cache.YukonUserLoader;
+import com.cannontech.yukon.server.cache.YukonUserRoleLoader;
+import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
+import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactNotificationLookup;
-import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
-import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 
 /**
  * All the action is here!
@@ -65,10 +101,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allPoints = null;
 	private ArrayList allUnitMeasures = null;
 	private ArrayList allNotificationGroups = null;
-	
-	//private ArrayList allUsedContactNotifications = null;
-	private ArrayList allContactNotifications = null;
-	
+		
 	private ArrayList allAlarmCategories = null;
 	private ArrayList allContacts = null;
 	private ArrayList allGraphDefinitions = null;
@@ -3191,9 +3224,6 @@ public synchronized void releaseAllCache()
 	allNotificationGroups = null;
 	allContactNotifsMap = null;
     
-	//allUsedContactNotifications = null;
-	allContactNotifications = null;
-    
 	allAlarmCategories = null;
 	allContacts = null;
 	allGraphDefinitions = null;
@@ -3369,14 +3399,6 @@ public synchronized void releaseAllLMPAOExclusions()
 public synchronized void releaseAllNotificationGroups()
 {
 	allNotificationGroups = null;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- */
-public synchronized void releaseAllContactNotifications()
-{
-	allContactNotifications = null;
 }
 
 public synchronized void releaseAllCustomers()
