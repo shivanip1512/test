@@ -47,6 +47,9 @@ public class Contactable {
      * is different depeneding on what this object is constructed from:
      * Customer, Contact of NotifDestination.
      * 
+     * If the Contactable doesn't have an associated Customer, the default TimeZone
+     * for the Energy Company will be returned.
+     * 
      * @return a TimeZone object
      */
     public TimeZone getTimeZone() {
@@ -55,9 +58,8 @@ public class Contactable {
                     .getTimeZone();
             return TimeZone.getTimeZone(tzString);
         } catch (UnknownCustomerException e) {
-            return TimeZone.getDefault();
+            return EnergyCompanyFuncs.getEnergyCompanyTimeZone(getEnergyCompany());
         }
-
     }
 
     /**
