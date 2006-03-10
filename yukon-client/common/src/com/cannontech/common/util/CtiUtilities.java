@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
 {
@@ -982,11 +983,11 @@ public static final String[] getTimeZones()
 	
 	for (int i = 0; i < availableIDs.length; i++) {
 		String zone = availableIDs[i];
-		if (zone.matches("^US.*") && !zone.matches("^US.Pacific-New")) {
+		if ( zone.matches("^US.*") || zone.matches("^Canada.*") && !zone.matches("^US.Pacific-New") ) {
 			retVals.add( zone );
 		}
 	}
-
+	Collections.sort(retVals, LiteComparators.liteNameComparator);
 	availableIDs = new String[retVals.size()];
 	return (String[])retVals.toArray(availableIDs);
 }
