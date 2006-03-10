@@ -21,6 +21,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -46,19 +47,21 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 	Integer voltageID = 0;
 	Integer companyID = 0;
 	Integer routeID = 0;
+    Integer warehouseID = 0;
 	HttpServletRequest request = null;
 	
 	ArrayList hardwareSet = new ArrayList();
 	ArrayList serialNoSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
 	
-	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, HttpServletRequest request)
+	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpServletRequest request)
 	{
 		this.energyCompany = energyCompany;
 		this.snFrom = Integer.valueOf(snFrom).intValue();
 		this.snTo = Integer.valueOf(snTo).intValue();
 		this.devTypeID = devTypeID;
         this.devStateID = devStateID;
+        this.warehouseID = warehouseID;
 		this.request = request;
 	}
 
@@ -117,7 +120,14 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				energyCompany.addInventory( liteHw );
-				
+                
+                if(warehouseID.intValue() > 0)
+                {
+                   Warehouse house = new Warehouse();
+                   house.setWarehouseID(warehouseID);
+                   house.setInventoryID(new Integer(liteHw.getInventoryID()));
+                   Transaction.createTransaction( Transaction.ADD_PARTIAL, house ).execute();
+                }
 				numSuccess++;
 			}
 			catch (com.cannontech.database.TransactionException e) {
