@@ -151,7 +151,7 @@
 		                    <div align="center">
 		                    	<select id="invoices" name="invoices" size="5" style="width:250">
 		                        	<c:forEach var="invoice" items="${purchaseBean.availableInvoices}">
-										<option value='<c:out value="${invoice.InvoiceID}"/>'> <c:out value="${invoice.invoiceDesignation}"/> </option>
+										<option value='<c:out value="${invoice.invoiceID}"/>'> <c:out value="${invoice.invoiceDesignation}"/> </option>
 									</c:forEach>
 								</select>
 							</div>
