@@ -23,6 +23,8 @@ public class Warehouse extends DBPersistent {
     public static final String SETTER_COLUMNS[] = { "WarehouseName","AddressID", "Notes", "EnergyCompanyID" };
 
     public static final String TABLE_NAME = "Warehouse";
+    
+    private Integer inventoryID;
     public static final String MAPPING_TABLE_NAME = "INVENTORYTOWAREHOUSEMAPPING";
 
 
@@ -62,11 +64,26 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
+public void add_partial() throws java.sql.SQLException 
+{
+    Object setValues[] = { getWarehouseID(), getInventoryID() };
+    
+    add( MAPPING_TABLE_NAME, setValues );
+}
+
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getWarehouseID() };
-
+    
+    delete( MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+}
+
+public void delete_partial() throws java.sql.SQLException 
+{
+    Object constraintValues[] = { getWarehouseID() };
+
+    delete( MAPPING_TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
 public Integer getWarehouseID() 
@@ -261,7 +278,7 @@ public static boolean moveInventoryToAnotherWarehouse(int invenID, int newWareho
 {
     boolean success = false;
     
-    SqlStatement stmt = new SqlStatement("UPDATE " + TABLE_NAME + " SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
+    SqlStatement stmt = new SqlStatement("UPDATE " + MAPPING_TABLE_NAME + " SET WAREHOUSEID = " + newWarehouseID + " WHERE INVENTORYID = " + invenID, CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -301,5 +318,13 @@ public static Integer getEnergyCompanyIDFromWarehouseID(Integer houseID)
     }
     
     return energyCompanyID;
+}
+
+public Integer getInventoryID() {
+    return inventoryID;
+}
+
+public void setInventoryID(Integer inventoryID) {
+    this.inventoryID = inventoryID;
 }
 }

@@ -31,6 +31,8 @@ public class Shipment extends DBPersistent {
                 "OrderedDate", "ReceivedDate"};
 
     public static final String TABLE_NAME = "Shipment";
+    
+    private Integer scheduleID;
     public static final String SCHED_MAPPING_TABLE_NAME = "ScheduleShipmentMapping";
     public static final String INVOICE_MAPPING_TABLE_NAME = "InvoiceShipmentMapping";
     
@@ -46,6 +48,14 @@ public void add() throws java.sql.SQLException
                     getAmountPaid(), getOrderedDate(), getReceivedDate()};
 
     add( TABLE_NAME, setValues );
+    add_partial();
+}
+
+public void add_partial() throws java.sql.SQLException 
+{
+    Object setValues[] = { getScheduleID(), getShipmentID() };
+    
+    add( SCHED_MAPPING_TABLE_NAME, setValues );
 }
 
 public void delete() throws java.sql.SQLException 
@@ -225,7 +235,7 @@ public static List<Shipment> getAllUnassignedShipmentsForInvoiceUse(Integer plan
                                          SCHED_MAPPING_TABLE_NAME + " WHERE SCHEDULEID IN (SELECT SCHEDULEID FROM "+ 
                                          DeliverySchedule.TABLE_NAME + " WHERE PURCHASEPLANID = " + planID + ")) AND SHIPMENTID " +
                                                 "NOT IN (SELECT SHIPMENTID FROM " + INVOICE_MAPPING_TABLE_NAME + 
-                                                " ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
+                                                ") ORDER BY ORDEREDDATE DESC", CtiUtilities.getDatabaseAlias());
     
     try
     {
@@ -373,6 +383,14 @@ public Date getReceivedDate() {
 
 public void setReceivedDate(Date receivedDate) {
     this.receivedDate = receivedDate;
+}
+
+public Integer getScheduleID() {
+    return scheduleID;
+}
+
+public void setScheduleID(Integer scheduleID) {
+    this.scheduleID = scheduleID;
 }
 
 

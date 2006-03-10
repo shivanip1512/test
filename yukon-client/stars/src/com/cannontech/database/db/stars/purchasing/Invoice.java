@@ -25,6 +25,8 @@ public class Invoice extends DBPersistent {
                             "Authorized", "AuthorizedBy", "HasPaid", "DatePaid", "TotalQuantity" };
 
     public static final String TABLE_NAME = "Invoice";
+    
+    private Integer shipmentID;
     public static final String MAPPING_TABLE_NAME = "InvoiceShipmentMapping";
     
 
@@ -39,6 +41,13 @@ public void add() throws java.sql.SQLException
                     getDatePaid(), getTotalQuantity()};
 
     add( TABLE_NAME, setValues );
+}
+
+public void add_partial() throws java.sql.SQLException 
+{
+    Object setValues[] = { getInvoiceID(), getShipmentID() };
+    
+    add( MAPPING_TABLE_NAME, setValues );
 }
 
 public void delete() throws java.sql.SQLException 
@@ -221,6 +230,14 @@ public Integer getTotalQuantity() {
 
 public void setTotalQuantity(Integer totalQuantity) {
     this.totalQuantity = totalQuantity;
+}
+
+public Integer getShipmentID() {
+    return shipmentID;
+}
+
+public void setShipmentID(Integer shipmentID) {
+    this.shipmentID = shipmentID;
 }
 
 
