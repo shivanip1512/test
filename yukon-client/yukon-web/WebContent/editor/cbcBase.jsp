@@ -98,7 +98,7 @@ addLockButtonForButtonGroup("buttons");
                     <x:panelTab id="tabSchedule" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSchedule.jsp"/>
                     </x:panelTab>
-                    <x:panelTab id="tabDualBus" label="Dual Bus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+                    <x:panelTab id="tabDualBus" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
                     <jsp:include page="/WEB-INF/pages/cbc/cbcDualBus.jsp"/>
                     </x:panelTab>		
 
