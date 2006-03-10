@@ -15,6 +15,8 @@
 	<%pageContext.setAttribute("currentUser", lYukonUser);%>
 	<c:set target="${purchaseBean}" property="currentUser" value="${currentUser}" />
  	
+ 	<script language="JavaScript" src="../../JavaScript/calendar.js"></script>
+ 	
 	<div class="standardpurplesidebox"> 
 	</div>
 
@@ -51,7 +53,7 @@
 	                  	<div align="right">Date Submitted:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentDateSubmitted}"/>' onchange="setContentChanged(true)">
+	                  <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentSubmittedDate}"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('dateSubmitted'))"
 							onMouseOver="window.status='Date Submitted Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -81,7 +83,7 @@
 								checked="checked"
 							</c:if>
 						/>
-						<input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentDatePaid}"/>' onchange="setContentChanged(true)">
+						<input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPaidDate}"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('datePaid'))"
 							onMouseOver="window.status='Date Paid Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -93,7 +95,7 @@
 		            	<div align="right">Total Quantity:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="quantity" maxlength="30" size="24" value='<c:out value="${purchaseBean.totalQuantity}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="quantity" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.totalQuantity}"/>' onchange="setContentChanged(true)">
 		            </td>
 		        </tr>
 	          	<tr> 
@@ -163,7 +165,7 @@
     <script language="JavaScript">
 		function init() 
 		{
-			<c:if test="${purchaseBean.currentSchedule.scheduleID == null}">
+			<c:if test="${purchaseBean.currentInvoice.invoiceID == null}">
 				document.getElementById("onlyavailableaftercreation").style.display = "none";
 			</c:if>
 		}
@@ -241,14 +243,8 @@
 		
 		function prepareSubmit(form) 
 		{
-			var assignedTimePeriods = document.getElementById("times").options;
 			var assignedShipments = document.getElementById("shipments").options;
 			
-			for (idx = 0; idx < assignedTimePeriods.length; idx++) 
-			{
-				var html = '<input type="hidden" name="times" value="' + assignedTimePeriods[idx].value + '">';
-				form.insertAdjacentHTML("beforeEnd", html);
-			}
 			for (idx = 0; idx < assignedShipments.length; idx++) 
 			{
 				var html = '<input type="hidden" name="shipments" value="' + assignedShipments[idx].value + '">';
