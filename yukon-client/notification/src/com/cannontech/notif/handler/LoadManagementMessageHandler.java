@@ -2,6 +2,7 @@ package com.cannontech.notif.handler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import com.cannontech.database.cache.functions.NotificationGroupFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -17,8 +18,8 @@ import com.cannontech.notif.server.NotifServerConnection;
  */
 public class LoadManagementMessageHandler extends NotifHandler {
 
-    private static final DateFormat _dateFormater = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
-    private static final DateFormat _timeFormater = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
+    private static final DateFormat _dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
+    private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
 
     public LoadManagementMessageHandler(OutputHandlerHelper helper) {
         super(helper);
@@ -70,14 +71,17 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.addData("programname", liteYukonPAO.getPaoName());
                 notif.addData("customername", contact.getCustomerName());
 
-                _timeFormater.setTimeZone(contact.getTimeZone());
-                _dateFormater.setTimeZone(contact.getTimeZone());
                 
-                notif.addData("starttime", _timeFormater.format(msg.startTime));
-                notif.addData("startdate", _dateFormater.format(msg.startTime));
-                notif.addData("stoptime", _timeFormater.format(msg.stopTime));
-                notif.addData("stopdate", _dateFormater.format(msg.stopTime));
-                
+                TimeZone timeZone = contact.getTimeZone();
+                synchronized (_timeFormatter) {
+                    _timeFormatter.setTimeZone(timeZone);
+                    _dateFormatter.setTimeZone(timeZone);
+                    
+                    notif.addData("starttime", _timeFormatter.format(msg.startTime));
+                    notif.addData("startdate", _dateFormatter.format(msg.startTime));
+                    notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
+                    notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
+                }
                 notif.addData("durationminutes", durationMinutesStr);
                 notif.addData("durationhours", durationHoursStr);
                 notif.addData("remainingminutes", remainingMinutesStr);
@@ -85,7 +89,6 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.addData("openended", openEnded ? "yes" : "no");
                 
                 notif.addData("action", actionString);
-
 
                 return notif;
             }
