@@ -18,7 +18,7 @@
 	
  	<div class="standardpurplesidebox"> 
 		<% String pageName = "MeterProfile.jsp"; %>
-		<div align="right">
+		<div align="right" class="forefront">
 			<%@ include file="include/Nav.jsp" %>
 		</div>
 		<%pageContext.setAttribute("validSwitches", validSwitches);%>
@@ -36,121 +36,114 @@
     	
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
 	    	<input type="hidden" name="action" value="MeterProfileSave">
- 	    	<table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+ 	    	<table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
             	<tr> 
-                	<td width="300" valign="top" bgcolor="#FFFFFF"> 
-                    	<table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                        	<tr>    
-                          		<td>
-	                          		<span class="SubtitleHeader">METER</span> 
-	                            	<hr>
-	                            	<span class="MainText">Edit Meter Information: <br>
-	                            	<br>
-	                            	</span> 
-	                            	<table width="300" border="0" cellspacing="0" cellpadding="1" class="TableCell">
-		                              	<tr> 
-		                                	<td align="right" width="88" class="SubtitleHeader">*Type:</td>
-		                                	<td width="210"> 
-			                                  	<select name="MeterType" onchange="setContentChanged(true)">
-				                                   	<c:forEach var="meterType" items="${meterBean.availableMeterTypes.yukonListEntries}">
-														<option value='<c:out value="${meterType.entryID}"/>'> <c:out value="${meterType.entryText}"/> </option>
-													</c:forEach>
-													<option value="0"> <c:out value="(none)"/> </option>
-			                                  	</select>
-		                                	</td>
-		                              	</tr>
-		                              	<tr> 
-			                                <td align="right" width="88" class="SubtitleHeader">*Meter 
-			                                  Number:</td>
-			                                <td width="210"> 
-			                                  	<input type="text" name="MeterNumber" size="24" onchange="setContentChanged(true)" value='<c:out value="${meterBean.currentMeter.meterHardwareBase.meterNumber}"/>'>
-			                                </td>
-		                              	</tr>
-		                          	</table>
-                       			</td>
-                   			</tr>
-                   		</table>
-					<td width="300" valign="top" bgcolor="#FFFFFF"> 
-	                	<table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-	                    	<tr> 
-	                        	<td><span class="SubtitleHeader">GENERAL INVENTORY INFO</span> 
-		                            <hr>
-		                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-		                            	<tr> 
-		                                	<td width="88" class="TableCell"> 
-		                                  		<div align="right">Label:</div>
-		                                	</td>
-		                                	<td width="210"> 
-		                                  		<input type="text" name="DeviceLabel" maxlength="30" size="24" value='<c:out value="${meterBean.currentMeter.inventoryBase.deviceLabel}"/>' onChange="setContentChanged(true)">
-		                                	</td>
-		                              	</tr>
-		                              	<tr> 
-		                                	<td width="88" class="TableCell"> 
-		                                  		<div align="right">Alt Tracking #:</div>
-		                                	</td>
-		                                	<td width="210"> 
-		                                  		<input type="text" name="AltTrackNo" maxlength="30" size="24" value='<c:out value="${meterBean.currentMeter.inventoryBase.alternateTrackingNumber}"/>' onChange="setContentChanged(true)">
-		                                	</td>
-		                              	</tr>
-		                              	<tr> 
-		                                	<td width="88" class="TableCell"> 
-		                                  		<div align="right">Voltage:</div>
-		                                	</td>
-		                                	<td width="210"> 
-		                                  		<select name="Voltage" onChange="setContentChanged(true)">
-			                                   		 <c:forEach var="voltage" items="${meterBean.voltages.yukonListEntries}">
-														<option value='<c:out value="${voltage.entryID}"/>'> <c:out value="${voltage.entryText}"/> </option>
-													</c:forEach>
-													<option value="0"> <c:out value="(none)"/> </option>
-		                                  		</select>
-		                                	</td>
-		                              	</tr>
-		                              	<tr> 
-		                                	<td width="88" class="TableCell"> 
-		                                  		<div align="right">Notes:</div>
-		                                	</td>
-		                                	<td width="210"> 
-		                                  		<textarea name="Notes" rows="3" wrap="soft" cols="28" value='<c:out value="${meterBean.currentMeter.inventoryBase.notes}"/>' class="TableCell" onChange="setContentChanged(true)"></textarea>
-		                                	</td>
-		                              	</tr>
-		                            </table>
-		                 		</td>
-		                	</tr>
-		          		</table>
+                	<td valign="top" bgcolor="#FFFFFF"> </td>
+                </tr>
+                <tr>
+                 	<td valign="top">
+	              		<span class="SubtitleHeader">METER</span> 
+	                	<hr>
+	                	<span class="MainText">Edit Meter Information: <br>
+	                	<br>
+	                	</span> 
+	                	<table width="100%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
+	                      	<tr> 
+	                        	<td align="right" width="88" class="SubtitleHeader">*Type:</td>
+	                        	<td width="210"> 
+	                              	<select name="MeterType" onchange="setContentChanged(true)">
+	                                   	<c:forEach var="meterType" items="${meterBean.availableMeterTypes.yukonListEntries}">
+											<option value='<c:out value="${meterType.entryID}"/>'> <c:out value="${meterType.entryText}"/> </option>
+										</c:forEach>
+										<option value="0"> <c:out value="(none)"/> </option>
+	                              	</select>
+	                        	</td>
+	                      	</tr>
+	                      	<tr> 
+	                            <td align="right" width="88" class="SubtitleHeader">*Meter 
+	                              Number:</td>
+	                            <td width="210"> 
+	                              	<input type="text" name="MeterNumber" size="24" onchange="setContentChanged(true)" value='<c:out value="${meterBean.currentMeter.meterHardwareBase.meterNumber}"/>'>
+	                            </td>
+	                      	</tr>
+			            </table>
+	             	</td>
+					<td> 
+	                	<span class="SubtitleHeader">GENERAL INVENTORY INFO</span> 
+                        <hr>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+                        	<tr> 
+                            	<td width="88" class="TableCell"> 
+                              		<div align="right">Label:</div>
+                            	</td>
+                            	<td width="210"> 
+                              		<input type="text" name="DeviceLabel" maxlength="30" size="24" value='<c:out value="${meterBean.currentMeter.inventoryBase.deviceLabel}"/>' onChange="setContentChanged(true)">
+                            	</td>
+                          	</tr>
+                          	<tr> 
+                            	<td width="88" class="TableCell"> 
+                              		<div align="right">Alt Tracking #:</div>
+                            	</td>
+                                	<td width="210"> 
+                                  		<input type="text" name="AltTrackNo" maxlength="30" size="24" value='<c:out value="${meterBean.currentMeter.inventoryBase.alternateTrackingNumber}"/>' onChange="setContentChanged(true)">
+                                	</td>
+                          	</tr>
+                          	<tr> 
+                            	<td width="88" class="TableCell"> 
+                              		<div align="right">Voltage:</div>
+                            	</td>
+                            	<td width="210"> 
+                              		<select name="Voltage" onChange="setContentChanged(true)">
+                                   		 <c:forEach var="voltage" items="${meterBean.voltages.yukonListEntries}">
+											<option value='<c:out value="${voltage.entryID}"/>'> <c:out value="${voltage.entryText}"/> </option>
+										</c:forEach>
+										<option value="0"> <c:out value="(none)"/> </option>
+                              		</select>
+                            	</td>
+                          	</tr>
+                          	<tr> 
+                            	<td width="88" class="TableCell"> 
+                              		<div align="right">Notes:</div>
+                            	</td>
+                            	<td width="210"> 
+                              		<textarea name="Notes" rows="3" wrap="soft" cols="28" value='<c:out value="${meterBean.currentMeter.inventoryBase.notes}"/>' class="TableCell" onChange="setContentChanged(true)"></textarea>
+                        		</td>
+                      		</tr>
+	                	</table>
 			    	</td>
-	      		</tr>
-	      		<tr>
-		      		<td width="300" valign="top" bgcolor="#FFFFFF"> 
-		            	<table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-			            	<tr> 
-            					<td>
-            						<span class="SubtitleHeader">SWITCH-TO-METER MAPPING</span> 
-                					<hr>
-                				</td>
-           					</tr>
-           					<tr> 
-                                <td width="175" valign="top" class="TableCell"> Available Switches:<br>
-                                	<select id="AvailableSwitches" name="AvailableSwitches" size="5" style="width:165">
-                                		<c:forEach var="switch" items="${meterBean.availableSwitches}">
-											<option value='<c:out value="${switch.first}"/>'> <c:out value="${switch.second}"/> </option>
-										</c:forEach>
-                                  	</select>
-                        		</td>
-                                <td width="50" align="center"> 
-                                  	<input type="button" id="AddButton" name="Remove" value=">>" onClick="addSwitch(this.form)">
-                                  	<br>
-                                  	<input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeSwitch(this.form)">
-                                </td>
-                                <td width="175" valign="top" class="TableCell"> Assigned Switches:<br>
-                                      <select id="AssignedSwitches" name="AssignedSwitches" size="5" style="width:165">
-                                      <c:forEach var="switch" items="${meterBean.assignedSwitches}">
-											<option value='<c:out value="${switch.first}"/>'> <c:out value="${switch.second}"/> </option>
-										</c:forEach>
-                                  	</select>
-                        		</td>
-                        	</tr>
-                        </table>
-              		</td>
+      			</tr>
+	      	</table>
+	      	
+	      	<table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
+ 	      		<tr>
+		      		<td valign="top" bgcolor="#FFFFFF"> 
+		            	<span class="SubtitleHeader">SWITCH-TO-METER MAPPING</span>
+		            	<hr> 
+                	</td>
+                </tr>
+            </table>
+            <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
+ 	      		<tr>
+					<td width="30%" valign="top" class="TableCell"> Available Switches:<br>
+                    	<select id="AvailableSwitches" name="AvailableSwitches" size="5" style="width:165">
+                    		<c:forEach var="switch" items="${meterBean.availableSwitches}">
+								<option value='<c:out value="${switch.first}"/>'> <c:out value="${switch.second}"/> </option>
+							</c:forEach>
+                      	</select>
+            		</td>
+                    <td width="5%"> 
+                      	<input type="button" id="AddButton" name="Remove" value=">>" onClick="addSwitch(this.form)">
+                      	<br>
+                      	<input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeSwitch(this.form)">
+                    </td>
+                    <td width="30%" valign="top" class="TableCell"> Assigned Switches:<br>
+                          <select id="AssignedSwitches" name="AssignedSwitches" size="5" style="width:165">
+                          <c:forEach var="switch" items="${meterBean.assignedSwitches}">
+								<option value='<c:out value="${switch.first}"/>'> <c:out value="${switch.second}"/> </option>
+							</c:forEach>
+                      	</select>
+            		</td>
+            		<td width="35%"></td>
               	</tr>
 	     	</table>
 	     	
