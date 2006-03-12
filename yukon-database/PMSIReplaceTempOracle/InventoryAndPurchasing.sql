@@ -3,18 +3,19 @@ create table PurchasePlan
 (
   PurchaseID		number		not null,
   EnergyCompanyID	number		not null,
-  PODesignation		varchar2(40)	null,
+  PlanName		varchar2(60)	not null,
+  PODesignation		varchar2(40)	not null,
   AccountingCode	varchar2(30)	not null,
-  TimePeriod		datetime	not null
+  TimePeriod		date		not null
 
 );
 go
 alter table PurchasePlan
-   add constraint PK_PURCHASEPLAN primary key (PurchaseID)
+   add constraint PK_PURCHASEPLAN primary key (PurchaseID);
 go
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID);
 go
 
 /*DeliverySchedule*/
@@ -23,72 +24,84 @@ create table DeliverySchedule
   ScheduleID		number		not null,
   PurchasePlanID	number		not null,
   ScheduleName		varchar2(60)	not null,
-  ModelID		number		not null
+  ModelID		number		not null,
+  StyleNumber		varchar2(60)	not null,
+  OrderNumber		varchar2(60)	not null,
+  QuotedPricePerUnit	float		not null
 );
 go
 alter table DeliverySchedule
-   add constraint PK_DELIVERYSCHED primary key (ScheduleID)
+   add constraint PK_DELIVERYSCHED primary key (ScheduleID);
 go
 alter table DeliverySchedule
    add constraint FK_DS_REF_PP foreign key (PurchasePlanID)
-      references PurchasePlan (PurchasePlanID)
+      references PurchasePlan (PurchaseID);
 go
 alter table DeliverySchedule
    add constraint FK_DS_REF_YKNLSTNTRY foreign key (ModelID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry (EntryID);
 go
 
-/*ScheduleTimePeriodMapping*/
+/*ScheduleTimePeriod*/
 create table ScheduleTimePeriod 
 (
+  TimePeriodID 		number		not null,
   ScheduleID		number		not null,
   TimePeriodName	varchar2(60)	not null,
   Quantity		number		not null,
-  PredictedShipDate	datetime	not null
+  PredictedShipDate	date	not null
 );
 go
 alter table ScheduleTimePeriod
-   add constraint PK_SCHEDTIMEMAP primary key (ScheduleID, TimePeriodName)
+   add constraint PK_SCHEDTIMEMAP primary key (TimePeriodID);
 go
 alter table ScheduleTimePeriod
    add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
-      references DeliverySchedule (ScheduleID)
+      references DeliverySchedule (ScheduleID);
 go
 
 /*Shipment*/
 create table Shipment (
   ShipmentID		number		not null,
-  ShipTo		varchar2(60)	null, 	
+  ShipmentNumber	varchar2(60)	not null,
+  WarehouseID		number		not null, 	
   SerialNumberStart	varchar2(30)	not null,
   SerialNumberEnd	varchar2(30)	not null,
-  ShipDate		datetime	null,
-  SalesTotal		
-  SalesTax
-  OtherCharges
-  ShippingCharges
-  AmountPaid				not null
+  ShipDate		date		not null,
+  ActualPricePerUnit	float		not null,
+  SalesTotal		float		not null,
+  SalesTax		float		not null,		
+  OtherCharges		float		not null,
+  ShippingCharges	float		not null,
+  AmountPaid		float		not null,
+  OrderedDate		date		not null,
+  ReceivedDate		date		not null
 );
 alter table Shipment
-   add constraint PK_SHIPMENT primary key (ShipmentID)
+   add constraint PK_SHIPMENT primary key (ShipmentID);
 go
+
+alter table Shipment
+   add constraint FK_SHPMNT_WRHSE foreign key (WarehouseID)
+      references Warehouse (WarehouseID);
 
 /*ScheduleShipmentMapping*/
 create table ScheduleShipmentMapping (
    ScheduleID	    	number         not null,
    ShipmentID          	number         not null
-)
+);
 go
 alter table ScheduleShipmentMapping
-   add constraint PK_SCHEDSHIPMAP primary key  (ScheduleID, ShipmentID)
+   add constraint PK_SCHEDSHIPMAP primary key  (ScheduleID, ShipmentID);
 go
 alter table ScheduleShipmentMapping
    add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
-      references DeliverySchedule (ScheduleID)
+      references DeliverySchedule (ScheduleID);
 go
 
 alter table ScheduleShipmentMapping
    add constraint FK_SCHDSHPMNTMAP_SHPMNT foreign key (ShipmentID)
-      references Shipment (ShipmentID)
+      references Shipment (ShipmentID);
 go
 
 /*Invoice*/
@@ -96,39 +109,39 @@ create table Invoice (
   InvoiceID		number		not null,	
   PurchasePlanID	number		not null,
   InvoiceDesignation	varchar2(60)	not null,
-  DateSubmitted		datetime	null,
+  DateSubmitted		date		not null,
   Authorized		varchar2(1)	not null,
+  AuthorizedBy		varchar2(30)    not null,
   HasPaid		varchar2(1)	not null,
-  TotalQuantity		number		null
+  DatePaid		date		not null,
+  TotalQuantity		number		not null
 );
 alter table Invoice
-   add constraint PK_INVOICE primary key (InvoiceID)
+   add constraint PK_INVOICE primary key (InvoiceID);
 go
 alter table Invoice
    add constraint FK_INVC_REF_PP foreign key (PurchasePlanID)
-      references PurchasePlan (PurchasePlanID)
+      references PurchasePlan (PurchaseID);
 go
 
 /*InvoiceShipmentMapping*/
 create table InvoiceShipmentMapping (
    InvoiceID	    	number         not null,
    ShipmentID          	number         not null
-)
+);
 go
 alter table InvoiceShipmentMapping
-   add constraint PK_INVCSHIPMAP primary key  (InvoiceID, ShipmentID)
+   add constraint PK_INVCSHIPMAP primary key  (InvoiceID, ShipmentID);
 go
 alter table InvoiceShipmentMapping
    add constraint FK_INVCSHPMNTMAP_INVC foreign key (InvoiceID)
-      references Invoice (InvoiceID)
+      references Invoice (InvoiceID);
 go
 
 alter table InvoiceShipmentMapping
    add constraint FK_INVCSHPMNTMAP_SHPMNT foreign key (ShipmentID)
-      references Shipment (ShipmentID)
+      references Shipment (ShipmentID);
 go
-
-
 
 /*Zip Code*/
 create table ServiceCompanyDesignationCode (
@@ -165,7 +178,7 @@ alter table Warehouse
 go
 alter table Warehouse
    add constraint FK_WAREHOUSE_EC foreign key (EnergyCompanyID)
-      references EnergyCompanyID (EnergyCompanyID);
+      references EnergyCompany (EnergyCompanyID);
 go
 insert into Warehouse values (0, '(none)', 0, '(none)', -1);
 
@@ -189,6 +202,7 @@ go
 
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
+
 
 /*This is for toggling on and off switch to meter assignment*/
 insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
@@ -216,14 +230,16 @@ insert into YukonListEntry values (1326,1053,0,'Member',2906);
 insert into YukonListEntry values (1327,1053,0,'Warehouse',2907);
 insert into YukonListEntry values (1328,1053,0,'Min Serial Number',2908);
 insert into YukonListEntry values (1329,1053,0,'Max Serial Number',2909);
-/*insert into YukonListEntry values (1330,1053,0,'Postal Code',2910);*/
+insert into YukonListEntry values (1330,1053,0,'Postal Code',2910);
+/*Changes Location filter type to Appliance Type*/
+update YukonListEntry set EntryText = 'Appliance Type' where YukonDefinitionID = 2903;
 
 /*New Device States*/
 alter table InventoryBase add CurrentStateID number;
 update InventoryBase set CurrentStateID = 0;
 alter table InventoryBase modify CurrentStateID number not null;
 
-update YukonSelectionList set UserUpdateAvailable = 'Y' where ListID = 1006
+update YukonSelectionList set UserUpdateAvailable = 'Y' where ListID = 1006;
 insert into YukonListEntry values (1074,1006,0,'Ordered',1704);
 insert into YukonListEntry values (1075,1006,0,'Shipped',1705);
 insert into YukonListEntry values (1076,1006,0,'Received',1706);
@@ -233,7 +249,6 @@ insert into YukonListEntry values (1079,1006,0,'Removed',1709);
 /* Substates such as Activated, Deactivated, Scrapped, etc. can be done through customizing the list*/
 /* IMPORTANT: The above added list entries are not automatically added to the database for any list other than the default list.
               Therefore, one must manually Config Energy Company to add the rest of the list entries */
-              
               
 /*Hopefully we get all updated because Hopefully they didn't change the word Service (Call)...hopefully.*/
 update yukonlistentry set yukondefinitionid = 1550 where entryid in 
