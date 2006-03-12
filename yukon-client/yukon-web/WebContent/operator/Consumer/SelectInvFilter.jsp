@@ -78,9 +78,11 @@
 								</c:forEach>
 	                      	</select>
 	                    </div>
-	                    <div id='<c:out value="${filterDeviceLocation}"/>' style="display:none"> 
-	                    	<select id='<c:out value="${filterDeviceLocation}"/>1' name='<c:out value="${filterDeviceLocation}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
+	                    <div id='<c:out value="${filterApplianceType}"/>' style="display:none"> 
+	                    	<select id='<c:out value="${filterApplianceType}"/>1' name='<c:out value="${filterApplianceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <c:forEach var="appliance" items="${filterBean.availableApplianceCategories}">
+									<option value='<c:out value="${appliance.categoryID}"/>'> <c:out value="${appliance.description}"/> </option>
+								</c:forEach>
 							</select>
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceConfig}"/>' style="display:none"> 
@@ -98,7 +100,7 @@
 	                   	<div id='<c:out value="${filterDeviceWarehouse}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceWarehouse}"/>1' name='<c:out value="${filterDeviceWarehouse}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="warehouse" items="${filterBean.availableWarehouses}">
-									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.WarehouseName}"/> </option>
+									<option value='<c:out value="${warehouse.warehouseID}"/>'> <c:out value="${warehouse.warehouseName}"/> </option>
 								</c:forEach>
 							</select>
 	                    </div>
@@ -107,6 +109,9 @@
 	               		</div>
 	               		<div id='<c:out value="${filterDeviceSerialRangeMax}"/>' style="display:none"> 
 		                    <input id='<c:out value="${filterDeviceSerialRangeMax}"/>1' type="text" name='<c:out value="${filterDeviceSerialRangeMax}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
+	               		</div>
+	               		<div id='<c:out value="${filterDevicePostalCode}"/>' style="display:none"> 
+		                    <input id='<c:out value="${filterDevicePostalCode}"/>1' type="text" name='<c:out value="${filterDevicePostalCode}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
 	               		</div>
 	                </td>
 	           	</tr>
@@ -192,17 +197,19 @@
 			document.getElementById('<c:out value="${filterDeviceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceCompany}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterDeviceStatus}"/>').style.display = "none";
-			document.getElementById('<c:out value="${filterDeviceLocation}"/>').style.display = "none";
+			document.getElementById('<c:out value="${filterApplianceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterDeviceConfig}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceMember}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceWarehouse}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMin}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMax}"/>').style.display = "none";
+ 			document.getElementById('<c:out value="${filterDevicePostalCode}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
 			var comboID = filterBy + 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
-			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>')
+			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>' ||
+							filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>')
 			{
 				selectedFilter += document.getElementById(comboID).value;
 				selectedFilterID = 0; 
@@ -343,6 +350,7 @@
 			}
 			else
 			{
+				
 				for (idx = 0; idx < filterTexts.length; idx++) 
 				{
 					var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
@@ -356,4 +364,4 @@
 			}
 		}
 	</script>
-</cti:standardPage>          
+</cti:standardPage>         

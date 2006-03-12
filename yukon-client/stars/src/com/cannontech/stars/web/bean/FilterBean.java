@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
@@ -30,6 +29,7 @@ public class FilterBean
     private List<ServiceCompanyDesignationCode> availableDesignationCodes;
     private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
+    private List<LiteApplianceCategory> availableApplianceCategories;
    
     private YukonSelectionList availableServiceTypes;
     private YukonSelectionList availableServiceStatuses;
@@ -169,6 +169,16 @@ public class FilterBean
 	public void setFilterListName(String filterListName) {
 		this.filterListName = filterListName;
 	}
+
+    public List<LiteApplianceCategory> getAvailableApplianceCategories() {
+        availableApplianceCategories = energyCompany.getAllApplianceCategories();
+        return availableApplianceCategories;
+    }
+
+    public void setAvailableApplianceCategories(
+            List<LiteApplianceCategory> availableApplianceCategories) {
+        this.availableApplianceCategories = availableApplianceCategories;
+    }
     
     
 }

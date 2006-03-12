@@ -355,7 +355,6 @@
 			}
 			else
 			{
-				
 				for (idx = 0; idx < filterTexts.length; idx++) 
 				{
 					var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
