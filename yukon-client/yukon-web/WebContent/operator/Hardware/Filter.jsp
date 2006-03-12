@@ -9,12 +9,13 @@
  	<%pageContext.setAttribute("filterDeviceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE).toString());%>
  	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY).toString());%>
  	<%pageContext.setAttribute("filterDeviceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS).toString());%>
- 	<%pageContext.setAttribute("filterDeviceLocation", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION).toString());%>
+ 	<%pageContext.setAttribute("filterApplianceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE).toString());%>
  	<%pageContext.setAttribute("filterDeviceConfig", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG).toString());%>
  	<%pageContext.setAttribute("filterDeviceMember", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER).toString());%>
  	<%pageContext.setAttribute("filterDeviceWarehouse", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
+	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -82,9 +83,11 @@
 								</c:forEach>
 	                      	</select>
 	                    </div>
-	                    <div id='<c:out value="${filterDeviceLocation}"/>' style="display:none"> 
-	                    	<select id='<c:out value="${filterDeviceLocation}"/>1' name='<c:out value="${filterDeviceLocation}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
+	                    <div id='<c:out value="${filterApplianceType}"/>' style="display:none"> 
+	                    	<select id='<c:out value="${filterApplianceType}"/>1' name='<c:out value="${filterApplianceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <c:forEach var="appliance" items="${filterBean.availableApplianceCategories}">
+									<option value='<c:out value="${appliance.categoryID}"/>'> <c:out value="${appliance.description}"/> </option>
+								</c:forEach>
 							</select>
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceConfig}"/>' style="display:none"> 
@@ -111,6 +114,9 @@
 	               		</div>
 	               		<div id='<c:out value="${filterDeviceSerialRangeMax}"/>' style="display:none"> 
 		                    <input id='<c:out value="${filterDeviceSerialRangeMax}"/>1' type="text" name='<c:out value="${filterDeviceSerialRangeMax}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
+	               		</div>
+	               		<div id='<c:out value="${filterDevicePostalCode}"/>' style="display:none"> 
+		                    <input id='<c:out value="${filterDevicePostalCode}"/>1' type="text" name='<c:out value="${filterDevicePostalCode}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
 	               		</div>
 	                </td>
 	           	</tr>
@@ -196,17 +202,19 @@
 			document.getElementById('<c:out value="${filterDeviceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceCompany}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterDeviceStatus}"/>').style.display = "none";
-			document.getElementById('<c:out value="${filterDeviceLocation}"/>').style.display = "none";
+			document.getElementById('<c:out value="${filterApplianceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterDeviceConfig}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceMember}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceWarehouse}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMin}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMax}"/>').style.display = "none";
+ 			document.getElementById('<c:out value="${filterDevicePostalCode}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
 			var comboID = filterBy + 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
-			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>')
+			if(filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>' || filterBy == '<c:out value="${filterDeviceSerialRangeMin}"/>' ||
+							filterBy == '<c:out value="${filterDeviceSerialRangeMax}"/>')
 			{
 				selectedFilter += document.getElementById(comboID).value;
 				selectedFilterID = 0; 

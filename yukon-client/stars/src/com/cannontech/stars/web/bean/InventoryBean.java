@@ -14,6 +14,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -289,6 +290,21 @@ public class InventoryBean {
         					filteredHardwares.add( hardwares.get(i) );
         			}
         		}
+                else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
+                {
+                    for (int j = 0; j < hardwares.size(); j++)
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                            (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
+                        LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true);
+                        LiteAddress liteAddr = energyCompany.getAddress( liteCustAcctInfo.getAccountSite().getStreetAddressID());
+                        
+                        //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
+                        String tempCode = specificFilterString.substring(specificFilterString.lastIndexOf(" ")+1);
+                        if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
+                            filteredHardwares.add( hardwares.get(j) );
+                    }
+                }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
                 {
                     List<Integer> warehousedInventory = new ArrayList();
@@ -343,19 +359,28 @@ public class InventoryBean {
                         }
                     }
                 }
-        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) 
+        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
                 {
-        			for (int i = 0; i < hardwares.size(); i++) 
+        			/**TODO Figure out where the big memory leak is in this guy
+                     * 
+        			 */
+                    for (int i = 0; i < hardwares.size(); i++) 
                     {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
-        				if (specificFilterID.intValue() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID
-        					|| specificFilterID.intValue() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ZERO_ID)
-        				{
-        					filteredHardwares.add( hardwares.get(i) );
-        				}
-        			}
+                        List<LiteStarsAppliance> appliances = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true).getAppliances();
+                        
+                        for(int j = 0; j < appliances.size(); j++)
+                        {
+                            if(appliances.get(j).getApplianceCategoryID() == specificFilterID.intValue() &&
+                                    appliances.get(j).getInventoryID() == liteInv.getInventoryID())
+                            {
+                                filteredHardwares.add( hardwares.get(j) );
+                                break;
+                            }
+                        }
+                    }
         		}
         		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
         			Hashtable ecHwCfgMap = new Hashtable();
