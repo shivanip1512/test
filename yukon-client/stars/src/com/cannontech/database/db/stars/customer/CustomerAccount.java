@@ -8,6 +8,8 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.customer.CICustomerBase;
+import com.cannontech.database.db.stars.hardware.InventoryBase;
+import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 
 /**
  * <p>Title: </p>
@@ -168,6 +170,60 @@ public class CustomerAccount extends DBPersistent {
     	}
     	
 		return null;
+    }
+
+    /**
+     * Use this method when the energycompany is not known.
+     * Returns an arrayList of CustomerAccount objects for the entire databse.
+     * @param serialNo
+     * @return
+     */
+    public static ArrayList<CustomerAccount> searchBySerialNumber(String serialNo) {
+
+    	ArrayList<CustomerAccount> customerAccts = new ArrayList<CustomerAccount>();
+    	
+    	String sql = "SELECT DISTINCT ACCT.ACCOUNTID, ACCT.ACCOUNTSITEID, ACCT.ACCOUNTNUMBER, ACCT.CUSTOMERID, ACCT.BILLINGADDRESSID, ACCOUNTNOTES " + 
+    				" FROM " + TABLE_NAME + " ACCT, " + InventoryBase.TABLE_NAME + " INV, " + LMHardwareBase.TABLE_NAME + " LMHB " +
+					" WHERE ACCT.ACCOUNTID = INV.ACCOUNTID " +
+					" AND INV.INVENTORYID = LMHB.INVENTORYID " + 
+					" AND UPPER(LMHB.MANUFACTURERSERIALNUMBER) = UPPER(?) " + 
+					" AND LMHB.INVENTORYID >= 0 ";
+
+		java.sql.Connection conn = null;
+    	java.sql.PreparedStatement stmt = null;
+    	java.sql.ResultSet rset = null;
+
+	    try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+    		stmt = conn.prepareStatement(sql);
+			stmt.setString(1, serialNo);
+			
+			rset = stmt.executeQuery();
+			
+			while (rset.next()) {
+                CustomerAccount account = new CustomerAccount();
+                account.setAccountID( new Integer(rset.getInt(1)) );
+                account.setAccountSiteID( new Integer(rset.getInt(2)) );
+                account.setAccountNumber( rset.getString(3) );
+                account.setCustomerID( new Integer(rset.getInt(4)) );
+                account.setBillingAddressID( new Integer(rset.getInt(5)) );
+                account.setAccountNotes( rset.getString(6));
+                customerAccts.add(account);
+			}
+    	}
+    	catch (java.sql.SQLException e) {
+    		CTILogger.error( e.getMessage(), e );
+    	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	return customerAccts;
     }
     
     public static int[] searchByCompanyName(String searchName, int energyCompanyID) 
