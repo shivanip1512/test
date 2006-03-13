@@ -86,5 +86,6 @@ public interface YukonSelectionListDefs {
     public static final String YUK_LIST_NAME_WORKORDER_ACTION = "EventWorkOrderActions";
 	
 	public static final String YUK_LIST_NAME_SETTLEMENT_TYPE = "Settlement";
+	public static final String YUK_LIST_NAME_CI_CUST_TYPE = "CICustomerType";
 	
 }

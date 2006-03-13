@@ -269,6 +269,7 @@ insert into YukonListEntry values (1114,1009,0,'Deactivation',1553);
 insert into YukonListEntry values (1115,1009,0,'Removal',1554);
 insert into YukonListEntry values (1116,1009,0,'Repair',1555);
 insert into YukonListEntry values (1117,1009,0,'Other',1556);
+insert into YukonListEntry values (1118,1009,0,'Maintenance',1557);
 
 insert into YukonListEntry values (1125,1010,0,'Assigned',1505);
 insert into YukonListEntry values (1126,1010,0,'Released',1506);
@@ -321,4 +322,10 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 
 alter table WorkOrderBase modify Description varchar(500);
-insert into YukonListEntry values (1118,1009,0,'Maintenance',1557);
+
+/* Commerical Customer Types */
+insert into YukonSelectionList values (1067,'A','(none)','Commercial Customer Types','CICustomerType','Y');
+insert into YukonListEntry values (1930,1067,0, 'Commercial', 0);
+insert into YukonListEntry values (1931,1067,0, 'Industrial', 0);
+insert into YukonListEntry values (1932,1067,0, 'Manufacturing', 0);
+insert into YukonListEntry values (1933,1067,0, 'Municipal', 0);
