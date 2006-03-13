@@ -8,10 +8,12 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -93,15 +95,16 @@ public class UpdateServiceRequestAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-        	
+        	LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+
         	StarsUpdateServiceRequest updateOrder = reqOper.getStarsUpdateServiceRequest();
-        	LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( updateOrder.getOrderID(), true );
-        	
+        	LiteWorkOrderBase liteOrder = liteStarsEC.getWorkOrderBase( updateOrder.getOrderID(), true );
+
+        	LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
+
         	if (updateOrder.getOrderNumber() != null &&
         		!updateOrder.getOrderNumber().equals( liteOrder.getOrderNumber() ) &&
-        		WorkOrderBase.orderNumberExists( updateOrder.getOrderNumber(), energyCompany.getEnergyCompanyID() ))
+        		WorkOrderBase.orderNumberExists( updateOrder.getOrderNumber(), liteStarsEC.getEnergyCompanyID() ))
         	{
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please enter a different one") );
@@ -136,19 +139,22 @@ public class UpdateServiceRequestAction implements ActionBase {
 //TODO if serviceCompany changes, change state?
 	           	if (VersionTools.crsPtjIntegrationExists())
 	           	{
+	           		YukonListEntry listEntry = YukonListFuncs.getYukonListEntry(updateOrder.getCurrentState().getEntryID());
 	           		String samToCrsStatus = null;
-		           	if( updateOrder.getCurrentState().getEntryID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+		           	if( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
 						samToCrsStatus = "P";
-					else if ( updateOrder.getCurrentState().getEntryID()== YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+					else if ( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
 						samToCrsStatus = "X";
-//					else if ( updateOrder.getCurrentState().getEntryID()== YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
+//					else if ( listEntry.getYukonDefID()  == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
 //						samToCrsStatus = "C";
 		           	if( samToCrsStatus != null)
 		           	{
 		           		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
 	                	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
 	                	samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteAcctInfo.getCustomerAccount().getAccountNumber()));
-	                	samToCrs_ptj.setPTJID(Integer.valueOf(updateOrder.getAddtlOrderNumber()));
+	                	try{
+	                		samToCrs_ptj.setPTJID(Integer.valueOf(updateOrder.getAddtlOrderNumber()));
+	                	}catch(NumberFormatException nfe){}
 	                	samToCrs_ptj.setStarsUserName(user.getYukonUser().getUsername());
 	                	samToCrs_ptj.setStatusCode(samToCrsStatus);
 	                	samToCrs_ptj.setDateTime_Completed(new Date());
@@ -161,9 +167,9 @@ public class UpdateServiceRequestAction implements ActionBase {
         	
         	if (updateOrder.hasAccountID()) {
 				// Request from WorkOrder.jsp
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteOrder.getAccountID() );
+				StarsCustAccountInformation starsAcctInfo = liteStarsEC.getStarsCustAccountInformation( liteOrder.getAccountID() );
 				if (starsAcctInfo != null) {
-					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
+					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, liteStarsEC );
 					parseResponse( starsOrder, starsAcctInfo );
 				}
         		
@@ -172,7 +178,7 @@ public class UpdateServiceRequestAction implements ActionBase {
         	}
         	
         	StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
-        	resp.setStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest(liteOrder, energyCompany) );
+        	resp.setStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC) );
             
             respOper.setStarsUpdateServiceRequestResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
