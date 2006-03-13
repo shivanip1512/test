@@ -8,11 +8,13 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -239,12 +241,13 @@ public class CreateServiceRequestAction implements ActionBase {
         EventWorkOrder eventWorkOrder = (EventWorkOrder)EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_WORKORDER, workOrder.getWorkOrderBase().getCurrentStateID().intValue(), workOrder.getWorkOrderBase().getOrderID().intValue(), eventTimestamp);
        	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
 
+       	YukonListEntry listEntry = YukonListFuncs.getYukonListEntry(workOrder.getWorkOrderBase().getCurrentStateID().intValue());
        	String samToCrsStatus = null;
-       	if( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+       	if( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
 			samToCrsStatus = "P";
-		else if ( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+		else if ( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
 			samToCrsStatus = "X";
-		else if ( workOrder.getWorkOrderBase().getCurrentStateID().intValue() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
+		else if ( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
 			samToCrsStatus = "C";
        	
        	if (VersionTools.crsPtjIntegrationExists() && samToCrsStatus != null)
@@ -252,7 +255,9 @@ public class CreateServiceRequestAction implements ActionBase {
        		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
         	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
         	samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteAcctInfo.getCustomerAccount().getAccountNumber()));
-        	samToCrs_ptj.setPTJID(Integer.valueOf(workOrder.getWorkOrderBase().getAdditionalOrderNumber()));
+        	try{
+        		samToCrs_ptj.setPTJID(Integer.valueOf(workOrder.getWorkOrderBase().getAdditionalOrderNumber()));
+        	} catch( NumberFormatException nfe){}
         	samToCrs_ptj.setStarsUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
         	samToCrs_ptj.setStatusCode(samToCrsStatus);
         	samToCrs_ptj.setDateTime_Completed(new Date());
