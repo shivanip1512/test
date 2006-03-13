@@ -316,7 +316,9 @@ insert into YukonListEntry values (1344,1055,0,'Service Type',3404);
 insert into YukonListEntry values (1345,1055,0,'Service Status',3405);
 insert into YukonListEntry values (1346,1055,0,'Customer Type',3406);
 
+insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 
 insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 
-Alter table WorkOrderBase modify Description varchar(500);
+alter table WorkOrderBase modify Description varchar(500);
+insert into YukonListEntry values (1118,1009,0,'Maintenance',1557);
