@@ -83,6 +83,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SERV_TYPE_REMOVAL			= 1554;
 	public static final int YUK_DEF_ID_SERV_TYPE_REPAIR				= 1555;
 	public static final int YUK_DEF_ID_SERV_TYPE_OTHER				= 1556;
+	public static final int YUK_DEF_ID_SERV_TYPE_MAINTENANCE		= 1557;
 	
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ACCT_NO			= 1601;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_PHONE_NO			= 1602;
