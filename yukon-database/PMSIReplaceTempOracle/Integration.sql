@@ -157,7 +157,8 @@ create table SwitchReplacement(
    ReplacementID		NUMBER							not null,
    SerialNumber			VARCHAR2(10)                    not null,
    WOType				VARCHAR2(20)                    not null,
-   DeviceType           VARCHAR2(30)                    not null
+   DeviceType           VARCHAR2(30)                    not null,
+   UserName				VARCHAR2(30)					not null
 );
 
 alter table SwitchReplacement 
@@ -171,6 +172,7 @@ create table Failure_SwitchReplacement(
    SerialNumber			VARCHAR2(10)                    not null,
    WOType				VARCHAR2(20)                    not null,
    DeviceType           VARCHAR2(30)                    not null,
+   UserName				VARCHAR2(30)					not null,
    ErrorMsg				VARCHAR2(1024)					not null,
    DateTime             DATE                            not null
 );
