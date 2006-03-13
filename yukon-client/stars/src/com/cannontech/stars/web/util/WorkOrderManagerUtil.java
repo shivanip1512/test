@@ -50,7 +50,10 @@ public class WorkOrderManagerUtil {
 		starsOrder.setServiceType( servType );
 			
 		ServiceCompany company = new ServiceCompany();
-		company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany") ) );
+		if (req.getParameter("ServiceCompany") != null ) 
+			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany") ) );
+		else
+			company.setEntryID( com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT );
 		starsOrder.setServiceCompany( company );
 		
 		if (req.getParameter("CurrentState") != null) {
