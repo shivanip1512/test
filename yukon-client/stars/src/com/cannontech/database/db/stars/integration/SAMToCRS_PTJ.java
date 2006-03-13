@@ -9,13 +9,13 @@ import com.cannontech.database.db.DBPersistent;
 
 public class SAMToCRS_PTJ extends DBPersistent {
 
-    private Integer ptjID; 
-    private Integer premiseNumber;
-    private String debtorNumber;
-    private String workOrderNumber;
-    private String statusCode;		//P-Processed, X-Cancelled, C-Completed
-    private Date dateTime_Completed;
-    private String starsUserName;
+    private Integer ptjID = new Integer(0);	//Need some default value in case this doesn't exist in the WO. 
+    private Integer premiseNumber = null;
+    private String debtorNumber = "";
+    private String workOrderNumber = "";
+    private String statusCode = "";		//P-Processed, X-Cancelled, C-Completed
+    private Date dateTime_Completed = null;
+    private String starsUserName = "";
     private Character extract = null;
 
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
