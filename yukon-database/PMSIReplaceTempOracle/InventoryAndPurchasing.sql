@@ -106,15 +106,15 @@ go
 
 /*Invoice*/
 create table Invoice (
-  InvoiceID		number		not null,	
-  PurchasePlanID	number		not null,
+  InvoiceID			number				not null,	
+  PurchasePlanID	number				not null,
   InvoiceDesignation	varchar2(60)	not null,
-  DateSubmitted		date		not null,
-  Authorized		varchar2(1)	not null,
-  AuthorizedBy		varchar2(30)    not null,
-  HasPaid		varchar2(1)	not null,
-  DatePaid		date		not null,
-  TotalQuantity		number		not null
+  DateSubmitted		date				not null,
+  Authorized		varchar2(1)			not null,
+  AuthorizedBy		varchar2(30)    	not null,
+  HasPaid			varchar2(1)			not null,
+  DatePaid			date				not null,
+  TotalQuantity		number				not null
 );
 alter table Invoice
    add constraint PK_INVOICE primary key (InvoiceID);
