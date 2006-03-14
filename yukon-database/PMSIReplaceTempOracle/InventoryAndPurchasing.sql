@@ -324,11 +324,11 @@ insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','f
 alter table WorkOrderBase modify Description varchar(500);
 
 /* Commerical Customer Types */
-insert into YukonSelectionList values (1067,'A','(none)','Commercial Customer Types','CICustomerType','Y');
-insert into YukonListEntry values (1930,1067,0, 'Commercial', 0);
-insert into YukonListEntry values (1931,1067,0, 'Industrial', 0);
-insert into YukonListEntry values (1932,1067,0, 'Manufacturing', 0);
-insert into YukonListEntry values (1933,1067,0, 'Municipal', 0);
+insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','Y');
+insert into YukonListEntry values (1930,1071,0, 'Commercial', 0);
+insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
+insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
+insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 
 alter table ciCustomerBase add CICustTypeID NUMBER;
