@@ -26,19 +26,21 @@
  	<c:set target="${filterBean}" property="assignedFilters" value="${sessionScope.WorkOrderFilters}" />
 	<%pageContext.setAttribute("filterListName", YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY);%>
 	<c:set target="${filterBean}" property="filterListName" value="${filterListName}" />
-	
+
 	<div class="standardpurplesidebox"> 
 		<% String pageName = "WOFilter.jsp"; %>
-		<%@ include file="include/Nav.jsp" %>
+		<div align="right">
+			<%@ include file="include/Nav.jsp" %>
+		</div>
 	</div>
 
 	<div class="standardcentralwhitebody">
 		<div align="center"> <br>
             <% String header = "FILTER CHOICES"; %>
             <%@ include file="include/SearchBar.jsp" %>
+    		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
     		<br clear="all">
     	</div>
-    
 <!-- Java script needed for the Calender Function--->
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
     	
