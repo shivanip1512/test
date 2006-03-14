@@ -17,11 +17,12 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	private String curtailmentAgreement = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Double curtailAmount = new Double(0.0);
 	private String companyName = null;
+	private Integer ciCustType = null;	//YukonListEntry value, YukonSelectionList->CICustomerType
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"MainAddressID", "CustomerDemandLevel", "CurtailmentAgreement",
-		"CurtailAmount", "CompanyName"
+		"CurtailAmount", "CompanyName", "CICustType"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
@@ -31,7 +32,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	private static final String GET_CUSTOMER_FROM_CONTACT_SQL =
 			"SELECT ci.CustomerID, ci.MainAddressID, " + 
 			"ci.CustomerDemandLevel, ci.CurtailmentAgreement, " + 
-			"ci.CurtailAmount, ci.CompanyName " +
+			"ci.CurtailAmount, ci.CompanyName, ci.CICustType " +
 			"FROM " + TABLE_NAME + " ci, Contact cnt, " + 
 			Customer.TABLE_NAME + " cst, CustomerAdditionalContact cac " +
 			"WHERE ci.CustomerID=cst.CustomerID " +
@@ -56,7 +57,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 		{ 
 			getCustomerID(), getMainAddressID(),
 			getCustDmdLevel(), getCurtailmentAgreement(),
-			getCurtailAmount(), getCompanyName()
+			getCurtailAmount(), getCompanyName(), getCICustType()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -256,6 +257,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 					retVal.setCurtailmentAgreement( rset.getString("CurtailmentAgreement"));
 					retVal.setCurtailAmount( new Double( rset.getFloat("CurtailAmount")));
 					retVal.setCompanyName( rset.getString("CompanyName"));
+					retVal.setCICustType( new Integer(rset.getInt("CiCustType")));
 				}					
 			}		
 		}
@@ -295,6 +297,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 			setCurtailmentAgreement( (String) results[2] );
 			setCurtailAmount( (Double)results[3] );
 			setCompanyName( (String) results[4] );
+			setCICustType( (Integer) results[5]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -328,7 +331,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 		{ 
 			getMainAddressID(),
 			getCustDmdLevel(), getCurtailmentAgreement(),
-			getCurtailAmount(), getCompanyName()
+			getCurtailAmount(), getCompanyName(), getCICustType()
 		};
 	
 		Object constraintValues[] = { getCustomerID() };
@@ -421,4 +424,10 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
         
         return "Not Available";
     }
+	public Integer getCICustType() {
+		return ciCustType;
+	}
+	public void setCICustType(Integer ciCustType) {
+		this.ciCustType = ciCustType;
+	}
 }
