@@ -8,8 +8,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
+import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -275,6 +274,38 @@ public class MeterHardwareBase extends InventoryBase {
         }
         
         return truth;
+    }
+    
+    public static ArrayList<LMHardwareBase> retrieveAssignedSwitches(int meterInvenID)
+    {
+    	ArrayList<LMHardwareBase> lmHardwares = new ArrayList<LMHardwareBase>();
+        
+        SqlStatement stmt = new SqlStatement("SELECT LMHB.INVENTORYID, LMHB.MANUFACTURERSERIALNUMBER, LMHB.LMHARDWARETYPEID, LMHB.ROUTEID, LMHB.CONFIGURATIONID " + 
+        									" FROM LMHARDWAREBASE LMHB, LMHARDWARETOMETERMAPPING MAP " + 
+        									" WHERE METERINVENTORYID = " + meterInvenID  + 
+        									" AND MAP.LMHARDWAREINVENTORYID = LMHB.INVENTORYID ", CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+        	for( int i = 0; i < stmt.getRowCount(); i++ )
+            {
+        		LMHardwareBase lmHardwareBase = new LMHardwareBase();
+        		lmHardwareBase.setInventoryID(new Integer(stmt.getRow(i)[0].toString()));
+        		lmHardwareBase.setManufacturerSerialNumber(stmt.getRow(i)[1].toString());
+        		lmHardwareBase.setLMHardwareTypeID(new Integer(stmt.getRow(i)[2].toString()));
+        		lmHardwareBase.setRouteID(new Integer(stmt.getRow(i)[3].toString()));
+        		lmHardwareBase.setConfigurationID(new Integer(stmt.getRow(i)[4].toString()));
+        		lmHardwares.add(lmHardwareBase);
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return lmHardwares;
     }
     
     /**
