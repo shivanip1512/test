@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest;
@@ -85,6 +86,10 @@ public class DeleteServiceRequestAction implements ActionBase {
 			order.setOrderID( new Integer(orderID) );
 			Transaction.createTransaction(Transaction.DELETE, order).execute();
 			energyCompany.deleteWorkOrderBase( orderID );
+			
+			//Remove the order if it is in the WorkOrderBean list.
+			WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+			woBean.getWorkOrderList().remove(liteOrder);
 			
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			boolean fromWorkOrder = false;
