@@ -18,8 +18,8 @@
 	
  	<div class="standardpurplesidebox"> 
 		<% String pageName = "MeterProfile.jsp"; %>
-		<div align="right" class="forefront">
-			<%@ include file="include/Nav.jsp" %>
+		<div align="right">
+			<%@ include file="include/Nav_Aux.jsp" %>
 		</div>
 		<%pageContext.setAttribute("validSwitches", validSwitches);%>
 		<c:set target="${meterBean}" property="currentAccountInventory" value="${validSwitches}" />

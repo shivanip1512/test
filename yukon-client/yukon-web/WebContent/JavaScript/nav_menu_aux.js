@@ -130,7 +130,7 @@ function hardwareMenuAppear(event, source, divId, num)
 	
 	if (!initHardwareMenu(currentMenu, num)) return;
 	
-	coordx = parseInt(source.offsetLeft + source.offsetWidth);
+	coordx = parseInt(source.offsetLeft + source.offsetWidth + 12);
 	coordy = parseInt(source.offsetTop + source.offsetHeight - 110);
 	basicMenuAppear(event, source, divId, coordx, coordy);
 }
