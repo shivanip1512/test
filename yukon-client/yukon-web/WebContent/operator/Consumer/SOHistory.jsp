@@ -34,7 +34,7 @@ function validate(form) {
 		return false;
 	}
 <%
-	if (order.getCurrentState().getEntryID() != statusCompleted && order.getCurrentState().getEntryID() != statusCancelled) {
+	if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {
 %>
 	if (form.CurrentState.value == "<%= statusCancelled %>") {
 		if (!confirm("Are you sure you want to cancel this service order?"))
@@ -109,7 +109,7 @@ function changeServiceCompany(form) {
 	{
 		var group = document.getElementById("CurrentState");
 		for (var i = 0; i < group.length; i++) {
-			if( group[i].value == <%= order.getCurrentState().getEntryID()%>)
+			if( group[i].value == <%= liteOrder.getCurrentStateID()%>)
 			{
 				group[i].selected = true;	
 			}
@@ -185,13 +185,13 @@ function sendWorkOrder() {
 			  <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER_DATA %>">
 			  <input type="hidden" name="fileName" value="WorkOrder">
 			  <input type="hidden" name="NoCache">
-			  <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+			  <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			</form>
 			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
 			  <input type="hidden" name="action" value="SendWorkOrder">
-              <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+              <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
@@ -207,7 +207,7 @@ function sendWorkOrder() {
 			</div>
 			<form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
 			  <input type="hidden" name="action" value="UpdateWorkOrder">
-              <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+              <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
               <table width="640" border="0" cellspacing="0" cellpadding="10" align="center">
@@ -222,7 +222,7 @@ function sendWorkOrder() {
                                 <td width="30%" class="TableCell"> 
                                   <div align="right">Work Order #:</div>
                                 </td>
-                                <td width="70%" class="MainText"><%= order.getOrderNumber() %></td>
+                                <td width="70%" class="MainText"><%= liteOrder.getOrderNumber() %></td>
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
@@ -234,7 +234,7 @@ function sendWorkOrder() {
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == order.getServiceType().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == liteOrder.getWorkTypeID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%	} %>
@@ -246,7 +246,7 @@ function sendWorkOrder() {
                                   <div align="right">Ordered By:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="OrderedBy" size="14" value="<%= order.getOrderedBy() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="OrderedBy" size="14" value="<%= liteOrder.getOrderedBy() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -254,7 +254,7 @@ function sendWorkOrder() {
                                   <div align="right">Addtl Order #:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%= order.getAddtlOrderNumber() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%= liteOrder.getAdditionalOrderNumber() %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               
@@ -267,7 +267,7 @@ function sendWorkOrder() {
                                     <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
-		String selected = (company.getCompanyID() == order.getServiceCompany().getEntryID())? "selected" : "";
+		String selected = (company.getCompanyID() == liteOrder.getServiceCompanyID())? "selected" : "";
 %>
                                     <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
                                     <%	} %>
@@ -279,7 +279,7 @@ function sendWorkOrder() {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                                 </td>
                               </tr>
 							</table>
@@ -303,7 +303,7 @@ function sendWorkOrder() {
 	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
 	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == order.getCurrentState().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == liteOrder.getCurrentStateID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%	} %>
@@ -346,7 +346,7 @@ function sendWorkOrder() {
                         <tr>
                           <td width="30%" align="right" class="TableCell">Action Taken:</td>
                           <td width="70%"> 
-                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= order.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
                         </tr>
                       </table>

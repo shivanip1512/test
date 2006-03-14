@@ -1,4 +1,5 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
@@ -89,14 +90,14 @@ function checkOrderNo(form) {
 		}
 %>
               <tr valign="middle"> 
-                <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
+                <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= liteOrder.getOrderNumber() %></a></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(order.getServiceType().getEntryID()).getEntryText()) %></td>
-                <td width="12%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getOrderedBy()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(liteOrder.getWorkTypeID()).getEntryText()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(YukonListFuncs.getYukonListEntry(liteOrder.getCurrentStateID()).getEntryText()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(liteOrder.getOrderedBy()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(companyName) %></td>
                 <td width="28%"> 
-                  <textarea name="Description" rows="2" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                  <textarea name="Description" rows="2" wrap="soft" cols="35" class="TableCell" readonly><%= liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                 </td>
               </tr>
               <%
