@@ -392,7 +392,7 @@ public class WorkOrderModel extends ReportModelBase {
 		
 		{
 			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
-			ArrayList woList = new ArrayList();
+			ArrayList<LiteWorkOrderBase> woList = new ArrayList<LiteWorkOrderBase>();
 			
 			if (getOrderID() != null) {
 				LiteWorkOrderBase liteOrder = ec.getWorkOrderBase( getOrderID().intValue(), true );
@@ -440,34 +440,39 @@ public class WorkOrderModel extends ReportModelBase {
 				}
 			}
 			
-			for (int j = 0; j < woList.size(); j++) {
-				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) woList.get(j);
+			loadData(ec, woList);
+		}
+		
+		Collections.sort( getData(), workOrderCmptor );
+	}
+	
+	public void loadData(LiteStarsEnergyCompany liteStarsEC, ArrayList<LiteWorkOrderBase> woList)
+	{
+		for (int j = 0; j < woList.size(); j++) {
+			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) woList.get(j);
+			
+			if (liteOrder.getAccountID() == 0) {
+				WorkOrder wo = new WorkOrder( liteStarsEC.getLiteID(), liteOrder.getOrderID(), 0 );
+				getData().add( wo );
+			}
+			else {
+				LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getCustAccountInformation( liteOrder.getAccountID(), true );
 				
-				if (liteOrder.getAccountID() == 0) {
-					WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), 0 );
+				if (liteAcctInfo.getInventories().size() == 0) {
+					WorkOrder wo = new WorkOrder( liteStarsEC.getLiteID(), liteOrder.getOrderID(), 0 );
 					getData().add( wo );
 				}
 				else {
-					LiteStarsCustAccountInformation liteAcctInfo = ec.getCustAccountInformation( liteOrder.getAccountID(), true );
-					
-					if (liteAcctInfo.getInventories().size() == 0) {
-						WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), 0 );
-						getData().add( wo );
-					}
-					else {
-						for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-							int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
-							if (ec.getInventoryBrief(invID, true) instanceof LiteInventoryBase) {
-								WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), invID );
-								getData().add( wo );
-							}
+					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
+						int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+						if (liteStarsEC.getInventoryBrief(invID, true) instanceof LiteInventoryBase) {
+							WorkOrder wo = new WorkOrder( liteStarsEC.getLiteID(), liteOrder.getOrderID(), invID );
+							getData().add( wo );
 						}
 					}
 				}
 			}
 		}
-		
-		Collections.sort( getData(), workOrderCmptor );
 	}
 
 	/* (non-Javadoc)
