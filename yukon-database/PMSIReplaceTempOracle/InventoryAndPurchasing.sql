@@ -331,10 +331,10 @@ insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
 insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 
-alter table ciCustomerBase add CICustTypeID NUMBER;
-update CICustomerBase set CICustTypeID = 0;
-alter table CICustomerBase modify CICustTypeID number not null;
+alter table ciCustomerBase add CICustType NUMBER;
+update CICustomerBase set CICustType = 0;
+alter table CICustomerBase modify CICustType number not null;
 go
-alter table CICustomerBase add constraint FK_CUSTTYPE_ENTRYID foreign key (CICustTypeID) 
+alter table CICustomerBase add constraint FK_CUSTTYPE_ENTRYID foreign key (CICustType) 
     references YukonListEntry (EntryID);
 go
