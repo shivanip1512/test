@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,10 +22,15 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.xml.utils.IntVector;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.analysis.gui.ReportBean;
+import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -143,10 +149,53 @@ public class WorkOrderManager extends HttpServlet {
         	viewAllResults(req, session, false);
         else if( action.equalsIgnoreCase("SortWorkOrders"))
         	sortWorkOrders(req, session);
+        else if( action.equalsIgnoreCase("CreateReport"))
+        {
+    		//A filename for downloading the report to.
+        	String ext = "pdf";
+    		String fileName = "WorkOrders";
+    		fileName += "." + ext;        	
+    		resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+    		resp.setContentType("application/pdf");
+			resp.addHeader("Content-Type", "application/pdf");
+        	JFreeReport report = createReport(user, req, session);
+    		final ServletOutputStream out = resp.getOutputStream();
+    		try {
+				ReportFuncs.outputYukonReport( report, ext, out );
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
 
 		resp.sendRedirect( redirect );
 	}
 	
+	private JFreeReport createReport(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		
+		WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+		LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		ReportBean reportBean = new ReportBean();
+		reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
+		((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
+
+		reportBean.getModel().setTimeZone(workOrderBean.getEnergyCompany().getDefaultTimeZone());
+		reportBean.getModel().setEnergyCompanyID(workOrderBean.getEnergyCompany().getEnergyCompanyID());
+
+		JFreeReport report = null;
+		//Create the report
+		try {
+			//NOTE:  Don't use the reportBean.createReport() method.  We don't want to call collectData() since we are using the filtered list instead!
+//			Create an instance of JFreeReport from the YukonReportBase
+		    YukonReportBase reportBase = ReportFuncs.createYukonReport(reportBean.getModel());
+		    report = reportBase.createReport();
+		    report.setData(reportBase.getModel());
+		} catch (FunctionInitializeException e) {
+			e.printStackTrace();
+		}
+		return report;
+	}
+
 	private void sortWorkOrders(HttpServletRequest req, HttpSession session) {
 		
 		WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
@@ -186,9 +235,7 @@ public class WorkOrderManager extends HttpServlet {
 		
 	}
 	private void applyActions(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
-    {
-
-        
+    {        
         String[] selectionIDs = req.getParameterValues("SelectionIDs");
         String[] actionTexts = req.getParameterValues("ActionTexts");
         String[] actionTypeIDs = req.getParameterValues("ActionTypeIDs");
