@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -10,8 +11,11 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -19,11 +23,15 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
+import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
@@ -130,7 +138,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 			StarsFactory.setWorkOrderBase( order, updateOrder );
         	
         	order = (com.cannontech.database.data.stars.report.WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
-        	//compare with old liteOrder before updating it.
+        	//compare with old liteOrder before updating the liteOrder too.
         	if( liteOrder.getCurrentStateID() != updateOrder.getCurrentState().getEntryID())
 			{	//New event!
 				Date eventTimestamp = updateOrder.getDateReported();
@@ -147,7 +155,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 						samToCrsStatus = "X";
 //					else if ( listEntry.getYukonDefID()  == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
 //						samToCrsStatus = "C";
-		           	if( samToCrsStatus != null)
+	           		YukonListEntry workTypeEntry = YukonListFuncs.getYukonListEntry(order.getWorkOrderBase().getWorkTypeID().intValue()); 
+		           	if( samToCrsStatus != null && workTypeEntry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE)
 		           	{
 		           		SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
 	                	samToCrs_ptj.setDebtorNumber(liteAcctInfo.getCustomer().getAltTrackingNumber());
@@ -160,6 +169,70 @@ public class UpdateServiceRequestAction implements ActionBase {
 	                	samToCrs_ptj.setDateTime_Completed(new Date());
 	                	samToCrs_ptj.setWorkOrderNumber(updateOrder.getOrderNumber());
 	                	Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
+		           	}
+		           	/* Handle config for Release Activation PTJ*/
+		           	if( listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_RELEASED)
+		           	{
+
+		           		if( workTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION)
+		           		{
+                   			int beginIndex = updateOrder.getDescription().indexOf("Meter Number: ");	//"Meter Number: " is hardcoded in the creation of the PTJ using CRSIntegrator
+                   			int endIndex = (beginIndex >= 0 ? updateOrder.getDescription().indexOf(";", beginIndex + 14) : beginIndex);
+                   			String meterNumber = "";
+                   			if( beginIndex > -1 && endIndex > -1)
+                   				meterNumber = updateOrder.getDescription().substring(beginIndex, endIndex);
+
+		           			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(updateOrder.getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyID().intValue());
+		                   	if( meterHardwareBase != null)
+		                   	{
+		    	               	ArrayList<LMHardwareBase> lmHardwares = MeterHardwareBase.retrieveAssignedSwitches(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
+		    	               	if( lmHardwares.size() > 0)
+		    	               	{
+		    	               		YukonListEntry devStateEntry = null;
+		    	               		YukonSelectionList invDevStateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+		    		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
+		    		        		{
+		    		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL)
+		    		        			{
+		    		        				devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
+		    		        				break;
+		    		        			}
+		    		        			
+		    		        		}
+		    		               	for (int i = 0; i < lmHardwares.size(); i++)
+		    		               	{
+		    		               		try{
+		    		               			//Retrieve the lmhardwarebase data object
+		    		               			LMHardwareBase hardware = lmHardwares.get(i);
+		    		               			com.cannontech.database.data.stars.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+		    		               			lmHardwareBase.setInventoryID(hardware.getInventoryID());
+		    		               			lmHardwareBase.setLMHardwareBase(hardware);
+		    		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, hardware).execute();
+		    		               			
+		    				       			//Update the lmHardwareBase data object
+		    				       			lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
+		    				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, hardware).execute();
+		    				       			
+		    				       			//Log the inventory (lmHardwarebase) state change.
+		    				       			EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+
+		    				       			//Add a config to the queue to deactivate the switch
+		    				               	SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();
+		    				       			switchCommand.setAccountID(updateOrder.getAccountID());
+		    				       			switchCommand.setCommandType(SwitchCommandQueue.SWITCH_COMMAND_ENABLE);
+		    				       			switchCommand.setEnergyCompanyID(liteStarsEC.getEnergyCompanyID().intValue());
+		    				       			switchCommand.setInfoString("Activation Release Work Order");
+		    				       			switchCommand.setInventoryID(lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+		    				       			SwitchCommandQueue.getInstance().addCommand(switchCommand, true);
+		    				       			
+		    		               		}catch(TransactionException te)
+		    		               		{
+		    		               			te.printStackTrace();
+		    		               		}
+		    		               	}
+		    	               	}
+		                   	}
+		           		}
 		           	}
 	           	}
 			}
