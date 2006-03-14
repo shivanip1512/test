@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/03/14 17:46:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,6 +153,7 @@ static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC | RCONT;
         OutMessage->ReturnNexus = NULL;
         OutMessage->SaveNexus = NULL;
+        OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
         if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
@@ -226,6 +227,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         OutMessage->InLength  = 0;
                         OutMessage->ReturnNexus = NULL;
                         OutMessage->SaveNexus   = NULL;
+                        OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                         OutMessage->Buffer.BSt.Port                = RemoteRecord->getPortID();
                         OutMessage->Buffer.BSt.Remote              = RemoteRecord->getAddress();
@@ -353,6 +355,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
+                OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -397,6 +400,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
             OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
             OutMessage->ReturnNexus = NULL;
             OutMessage->SaveNexus   = NULL;
+            OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
 
 #if 0
@@ -447,6 +451,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                     OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
                     OutMessage->ReturnNexus = NULL;
                     OutMessage->SaveNexus   = NULL;
+                    OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
@@ -476,6 +481,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
+                OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -535,6 +541,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->InLength  = 0;
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
+                OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                 OutMessage->Buffer.BSt.DlcRoute.Amp      = amp;
                 OutMessage->Buffer.BSt.DlcRoute.RepFixed = pRoute->getCCUFixBits();
@@ -615,6 +622,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus = NULL;
+                OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
                 if(PortRecord->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                 {
