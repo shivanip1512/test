@@ -14,6 +14,8 @@ import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -33,6 +35,8 @@ import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
+import com.cannontech.database.db.stars.integration.Failure_SwitchReplacement;
+import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
@@ -51,6 +55,8 @@ public class YukonToCRSFuncs
 	public static final String PTJ_TYPE_XCEL_REPAIR_STRING = "RPAIR";
 	public static final String PTJ_TYPE_XCEL_REMOVE_STRING = "REMVE";
 	public static final String PTJ_TYPE_XCEL_OTHER_STRING = "OTHER";
+	
+	public static final String PTJ_TYPE_XCEL_MAINTENANCE_STRING = "Maintenance";
 	/**
 	 * This method will bring in the contents of the CRSToSAM_PremiseMeterChange
 	 * table in the form of CRSToSAM_PremiseMeterChange (DBPersistent) objects
@@ -68,7 +74,16 @@ public class YukonToCRSFuncs
     {
         return CRSToSAM_PTJ.getAllCurrentPTJEntries();
     }
-    
+
+    /**
+     * This method will bring in the contents of the SwitchReplacement
+     * table in the form of SwitchReplacement (DBPersistent) objects
+     */
+    public static ArrayList readSwitchReplacement()
+    {
+        return SwitchReplacement.getAllSwitchReplacements();
+    }
+
     /**
      * This method will bring in the contents of the FailureCRSToSAM_PremMeterChg
      * table in the form of FailureCRSToSAM_PremMeterChg (DBPersistent) objects
@@ -535,17 +550,60 @@ public class YukonToCRSFuncs
 		return applCatID;
 	}
 
+	/**
+	 * Creates a new CustomerAccount.  If ciCustTypeEntry is null, a Residential customer is created, otherwise a CICustomerBase is created.
+	 * @param customerAccount
+	 * @param accountNumber
+	 * @param contactID
+	 * @param debtorNumber
+	 * @param presenceReq
+	 * @param streetAddress1
+	 * @param streetAddress2
+	 * @param cityName
+	 * @param stateCode
+	 * @param zipCode
+	 * @param ecID_workOrder
+	 * @param companyName
+	 * @param ciCustTypeEntry
+	 * @return
+	 * @throws TransactionException
+	 */
 	public static CustomerAccount createNewCustomerAccount(CustomerAccount customerAccount, String accountNumber, 
     													Integer contactID, String debtorNumber,
     													Character presenceReq, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode,
-    													int ecID_workOrder) throws TransactionException
+    													int ecID_workOrder, String companyName, YukonListEntry ciCustTypeEntry) throws TransactionException
     {
 		
     	com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
-		customer.getCustomer().setPrimaryContactID(contactID);
-		customer.getCustomer().setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL));
+    	if (ciCustTypeEntry != null)
+			customer = new CICustomerBase();
+		else
+			customer = new com.cannontech.database.data.customer.Customer();
+    	
+		customer.getCustomer().setPrimaryContactID( contactID );
 		customer.getCustomer().setCustomerNumber(debtorNumber);
-		
+    	
+		if (ciCustTypeEntry != null) {
+			customer.getCustomer().setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_CI) );
+			
+			((CICustomerBase)customer).getCiCustomerBase().setCompanyName( companyName);
+			((CICustomerBase)customer).getCiCustomerBase().setCICustType(ciCustTypeEntry.getEntryID());
+			
+			com.cannontech.database.db.customer.Address custAddr = ((com.cannontech.database.data.customer.CICustomerBase)customer).getAddress();
+			custAddr.setLocationAddress1(streetAddress1);
+			custAddr.setLocationAddress2(streetAddress2);
+			custAddr.setCityName(cityName);
+			custAddr.setStateCode(stateCode);
+			custAddr.setZipCode(zipCode);
+			
+			com.cannontech.database.db.company.EnergyCompany engCompany = new com.cannontech.database.db.company.EnergyCompany();
+			engCompany.setEnergyCompanyID(new Integer(ecID_workOrder));
+			((com.cannontech.database.data.customer.CICustomerBase)customer).setEnergyCompany( engCompany );
+		}
+		else {
+			customer.getCustomer().setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
+		}    	
+    	
 		//Create a new customeraccount
 		customerAccount = new CustomerAccount();
 		customerAccount.getCustomerAccount().setAccountNumber(accountNumber);
@@ -628,6 +686,8 @@ public class YukonToCRSFuncs
     	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_REPAIR_STRING))
     		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REPAIR;
     	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_OTHER_STRING))
+    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
+    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_MAINTENANCE_STRING))
     		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
     	
     	ArrayList listEntries = selectionList.getYukonListEntries();
@@ -737,6 +797,42 @@ public class YukonToCRSFuncs
         }
         CTILogger.info(errorMessage);
     }
-    
+	public static void moveToFailure_SwitchReplacement(SwitchReplacement switchEntry, String errorMessage)
+	{
+		Failure_SwitchReplacement failureSwitch = new Failure_SwitchReplacement(switchEntry, errorMessage, new Date());
 
+		try {
+			Transaction.createTransaction(Transaction.INSERT, failureSwitch).execute();
+			Transaction.createTransaction(Transaction.DELETE, switchEntry).execute();
+		} catch (TransactionException e) {
+
+			e.printStackTrace();
+		}
+		CTILogger.info(errorMessage);
+	}
+
+	/**
+	 * Returns the YukonListEntry that equalsIgnoreCase(custType) in the ciCustTypeList.
+	 * @param ciCustTypeList
+	 * @param custType
+	 * @return
+	 */
+	public static YukonListEntry getCICustTypeEntry(YukonSelectionList ciCustTypeList, String custType) {
+//      CMP = Company Use
+//      CO = Commercial
+//      DO = Domestic (Residential)
+//      IN = Industrial
+//      MFG = Manufacturing
+//      MNC = Municipal
+		YukonListEntry returnEntry = null;
+		if( custType.equalsIgnoreCase("CO"))
+			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "commercial");
+		else if( custType.equalsIgnoreCase("IN"))
+			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "industrial");
+		else if( custType.equalsIgnoreCase("MFG"))
+			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "manufacturing");
+		else if( custType.equalsIgnoreCase("MNC"))
+			returnEntry = YukonListFuncs.getYukonListEntry(ciCustTypeList, "municipal");
+		return returnEntry;
+	}    
 }
