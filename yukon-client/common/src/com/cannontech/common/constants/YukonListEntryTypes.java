@@ -98,6 +98,11 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
 	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
     public static final int YUK_DEF_ID_DEV_STAT_ORDERED             = 1704;
+    public static final int YUK_DEF_ID_DEV_STAT_SHIPPED             = 1705;
+    public static final int YUK_DEF_ID_DEV_STAT_RECEIVED            = 1706;
+    public static final int YUK_DEF_ID_DEV_STAT_ISSUED              = 1707;
+    public static final int YUK_DEF_ID_DEV_STAT_INSTALLED           = 1708;
+    public static final int YUK_DEF_ID_DEV_STAT_REMOVED             = 1709;
 	public static final int YUK_DEF_ID_MANU_UNKNOWN					= 1801;
 	public static final int YUK_DEF_ID_LOC_UNKNOWN					= 1901;
 	public static final int YUK_DEF_ID_TOW_WEEKDAY					= 2101;
