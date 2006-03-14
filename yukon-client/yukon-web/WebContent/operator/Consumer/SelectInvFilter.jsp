@@ -9,7 +9,6 @@
  	<%pageContext.setAttribute("filterDeviceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE).toString());%>
  	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY).toString());%>
  	<%pageContext.setAttribute("filterDeviceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS).toString());%>
- 	<%pageContext.setAttribute("filterDeviceLocation", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION).toString());%>
  	<%pageContext.setAttribute("filterDeviceConfig", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG).toString());%>
  	<%pageContext.setAttribute("filterDeviceMember", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER).toString());%>
  	<%pageContext.setAttribute("filterDeviceWarehouse", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE).toString());%>
