@@ -528,7 +528,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		}
 		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
 			//TODO Decide if all changes types should simply be retrieved and then updated or if we should loop through the energy companies still
-			if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
+			if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD || msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE)
 			{
 				LiteWorkOrderBase liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
 				liteWorkOrderBase.retrieve();
@@ -771,21 +771,21 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			case DBChangeMsg.CHANGE_TYPE_ADD:
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, liteWorkOrderBase.getOrderID());
+				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				liteStarsCustAcctInfo.getServiceRequestHistory().remove(liteWorkOrderBase.getOrderID());
-				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, liteWorkOrderBase.getOrderID());
+				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
+				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				liteStarsCustAcctInfo.getServiceRequestHistory().remove(liteWorkOrderBase.getOrderID());
+				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
 				break;
 		}
 	}
