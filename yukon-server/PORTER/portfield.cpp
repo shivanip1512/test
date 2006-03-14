@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.174 $
-* DATE         :  $Date: 2006/03/10 00:28:56 $
+* REVISION     :  $Revision: 1.175 $
+* DATE         :  $Date: 2006/03/14 22:34:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3974,6 +3974,11 @@ INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
+        }
+
+        if( Device && Device->hasExclusions() )
+        {
+            DeviceManager.removeInfiniteExclusion(Device);
         }
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 15000L) )
