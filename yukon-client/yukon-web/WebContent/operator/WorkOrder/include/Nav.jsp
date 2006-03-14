@@ -39,11 +39,11 @@
           </tr>
 		  <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_SHOW_ALL %>">
           <tr> 
-            <% if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { %>
-            <% } else {%>
+            <%// if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { %>
+            <%// } else {%>
             	<td width="10"><%= ((String[]) links.get("WorkOrder.jsp"))[0] %></td>
 	            <td style="padding:1"><%= ((String[]) links.get("WorkOrder.jsp"))[1] %></td>
-	        <% } %>
+	        <%// } %>
           </tr>
 		  </cti:checkProperty>        
 <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_CREATE_NEW %>">
