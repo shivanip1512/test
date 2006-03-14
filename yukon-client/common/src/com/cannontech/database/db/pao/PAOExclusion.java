@@ -296,7 +296,11 @@ public class PAOExclusion extends NestedDBPersistent
 			stat.execute( 
 					"DELETE FROM " + TABLE_NAME + 
 					" WHERE PAOid=" + paoID );
-	
+			
+            stat.execute( 
+                    "DELETE FROM " + TABLE_NAME + 
+                    " WHERE excludedpaoID=" + paoID );
+            
 			if( stat != null )
 				stat.close();
 		}
