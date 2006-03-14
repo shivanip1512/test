@@ -62,7 +62,7 @@ function showAll(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-            <% String pageName = "SOList.jsp"; %>
+            <% String pageName = "WorkOrderFilter.jsp"; %>
             <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
