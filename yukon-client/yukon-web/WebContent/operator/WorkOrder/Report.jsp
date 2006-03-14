@@ -1,6 +1,9 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.analysis.tablemodel.WorkOrderModel" %>
-<%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
+
+<jsp:useBean id="workOrderBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session"/>
+<jsp:setProperty name="workOrderBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -38,10 +41,11 @@
               <% String header = "SERVICE ORDER REPORT"; %>
               <%@ include file="include/SearchBar.jsp" %>
               
-			  <form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
-                <input type="hidden" name="ACTION" value="DownloadReport">
+			  <form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+                <input type="hidden" name="action" value="CreateReport">
                 <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER_DATA %>">
                 <input type="hidden" name="fileName" value="WorkOrder">
+                <input type="hidden" name="ext" value="pdf">
                 <input type="hidden" name="NoCache">
                 <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
@@ -52,78 +56,22 @@
                         <tr> 
                           <td> 
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell" height="111%">
-                              <tr> 
-                                <td class="HeaderCell" align="center">Report Options</td>
-                              </tr>
-                              <tr> 
-                                <td align="center">
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                    <tr>
-                                      <td width="45%" align="right">Current Status:</td>
-                                      <td width="3%">&nbsp;</td>
-                                      <td width="52%"> 
-                                        <select name="ServiceStatus">
-                                          <option value="0">Any</option>
-                                          <%
-	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
-	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
-%>
-                                          <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                          <%
-	}
-%>
-                                        </select>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                  
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td align="center">&nbsp;</td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                    <tr> 
-                                      <td width="45%" align="right">Search By:</td>
-                                      <td width="3%">&nbsp;</td>
-                                      <td width="52%"> 
-                                        <input type="radio" name="SearchColumn" value="<%= WorkOrderModel.SEARCH_COL_DATE_REPORTED %>" checked>
-                                        Date Reported<br>
-                                        <input type="radio" name="SearchColumn" value="<%= WorkOrderModel.SEARCH_COL_DATE_SCHEDULED %>">
-                                        Date Scheduled<br>
-                                        <input type="radio" name="SearchColumn" value="<%= WorkOrderModel.SEARCH_COL_DATE_CLOSED %>">
-                                        Date Closed</td>
-                                    </tr>
-                                  </table>
-                                </td>
+	                		  <tr> 
+	                    		<td class="HeaderCell" width="100%">Current Filters (<c:out value="${workOrderBean.numberOfRecords}"/> matching work orkders)</td>
+	                  		  </tr>
+	                  		  <c:forEach var="filterEntry" items="${workOrderBean.filters}">
+							  <tr>
+								<td align="left"><c:out value="${filterEntry.filterText}"/></td>
+							  </tr>
+							  </c:forEach>
+                              <tr>
+                                <td align="center"><hr></td>
                               </tr>
                               <tr>
-                                <td>&nbsp;</td>
+                                <td><input type="radio" name="type" checked value="paged" onclick='document.rptForm.ext.value="pdf";'>Paged Work Order Report (pdf)</td>
                               </tr>
-                              <tr> 
-                                <td> 
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                    <tr> 
-                                      <td align="right" width="47%">Start Date: 
-                                        <input id="startCal" type="text" name="start" value="<%= datePart.format(ServletUtil.getToday()) %>" size="8">
-                                        <a href="javascript:openCalendar(document.getElementById('rptForm').startCal)"
-						                      onMouseOver="window.status='Start Date Calendar';return true;"
-            						          onMouseOut="window.status='';return true;"> 
-                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
-                                      <td>&nbsp;</td>
-                                      <td width="47%">Stop Date: 
-                                        <input id="stopCal" type="text" name="stop" value="<%= datePart.format(ServletUtil.getTomorrow()) %>" size="8">
-                                        <a href="javascript:openCalendar(document.getElementById('rptForm').stopCal)"
-						                      onMouseOver="window.status='Stop Date Calendar';return true;"
-            						          onMouseOut="window.status='';return true;"> 
-                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
-                                        </a></td>
-                                    </tr>
-                                  </table>
-                                </td>
+                              <tr>
+                                <td><input type="radio" name="type" value="paged" onclick='document.rptForm.ext.value="csv";'>Listed Work Order Report (csv)</td>
                               </tr>
                             </table>
                           </td>
