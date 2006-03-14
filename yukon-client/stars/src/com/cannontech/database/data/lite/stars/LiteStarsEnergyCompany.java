@@ -141,7 +141,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY,
 		YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY,
 		YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE,
-		YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE		
+		YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE,
+		YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE
 	};
 	
 	
