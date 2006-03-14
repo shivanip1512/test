@@ -154,7 +154,7 @@
 					</td>
 	            	<td width="40%">
 	                	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
-	                  	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='Inventory.jsp'">
+	                  	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='Update.jsp'">
 	              	</td>
 	          	</tr>
 			</table>
