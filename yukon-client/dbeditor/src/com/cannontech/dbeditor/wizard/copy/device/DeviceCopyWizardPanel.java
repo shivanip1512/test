@@ -116,11 +116,7 @@ protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationP
  */
 public int getDeviceType()
 {
-//	if(deviceType == 0)
-//    {
-//     setDeviceType();   
-//    }
-//    
+
     return deviceType;
 }
 /**
