@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/3/2006 5:01:08 PM                          */
+/* Created on:     3/15/2006 3:59:28 PM                         */
 /*==============================================================*/
 
 
@@ -783,8 +783,8 @@ create table CCMONITORBANKLIST  (
    DisplayOrder         NUMBER                          not null,
    Scannable            CHAR(1)                         not null,
    NLNAvg               NUMBER                          not null,
-   UpperBandwith        FLOAT                           not null,
-   LowerBandwith        FLOAT                           not null
+   UpperBandwidth       FLOAT                           not null,
+   LowerBandwidth       FLOAT                           not null
 );
 
 alter table CCMONITORBANKLIST
@@ -3805,7 +3805,7 @@ create table LMProgramDirectGear  (
    RampOutPercent       NUMBER                          not null,
    FrontRampOption      VARCHAR2(80)                    not null,
    FrontRampTime        NUMBER                          not null,
-   BackRampOption       LONG RAW                        not null,
+   BackRampOption       VARCHAR2(80)                    not null,
    BackRampTime         NUMBER                          not null
 );
 
@@ -6112,7 +6112,8 @@ insert into YukonRole values(-400,'Residential Customer','Consumer','Access to r
 insert into YukonRole values (-700,'CBC Control','CapBank Control','Allows the user to control change states of the CapControl system .');
 
 /* IVR roles */
-insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
+insert into YukonRole values (-800,'IVR','Notifications','Settings for Interactive Voice Response module');
+insert into YukonRole values (-801, 'Configuration', 'Notifications', 'Configuration for Notification Server (voice and email)');
 
 /* Load Control roles */
 insert into YukonRole values(-900,'Direct Loadcontrol','Load Control','Access and usage of direct loadcontrol system');
@@ -6283,6 +6284,7 @@ insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DefaultHea
 insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
@@ -6544,11 +6546,12 @@ insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allow
 insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
 insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
 
-/* IVR Role properties */
+/* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonRoleProperty values(-80002,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
 
+/* Notification / Configuration role properties */
+insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
 
 /* Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-90000,-900,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');

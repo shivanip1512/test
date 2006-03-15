@@ -169,14 +169,14 @@ go
 alter table dynamicccfeeder add currVerifyCBId numeric;
 go
 update dynamicccfeeder  set currVerifyCBId = -1;
-go 
+go
 alter table dynamicccfeeder alter column currVerifyCBId numeric not null;
 go
 
 alter table dynamicccfeeder add currVerifyCBOrigState numeric;
 go
 update dynamicccfeeder  set currVerifyCBOrigState = 0;
-go 
+go
 alter table dynamicccfeeder alter column currVerifyCBOrigState numeric not null;
 go
 
@@ -189,8 +189,8 @@ create table CCMONITORBANKLIST (
    DisplayOrder         numeric              not null,
    Scannable            char(1)              not null,
    NINAvg               numeric              not null,
-   UpperBandwith        float                not null,
-   LowerBandwith        float                not null
+   UpperBandwidth        float                not null,
+   LowerBandwidth        float                not null
 )
 go
 
@@ -475,6 +475,7 @@ create table CAPCONTROLSUBSTATIONBUS (
    AltSubID             numeric              not null,
    SwitchPointID        numeric              not null,
    DualBusEnabled       char(1)              not null,
+   MultiMonitorControl  char(1)              not null
 )
 go
 
@@ -618,7 +619,8 @@ create table CapControlFeeder (
    CurrentWattLoadPointID numeric              not null,
    MapLocationID        varchar(64)          not null,
    StrategyID           numeric              not null,
-   CurrentVoltLoadPointID numeric            not null
+   CurrentVoltLoadPointID numeric            not null,
+   MultiMonitorControl char(1)               not null
 )
 go
 
@@ -4383,8 +4385,8 @@ create table CCMONITORBANKLIST (
    DisplayOrder         numeric              not null,
    Scannable            char(1)              not null,
    NINAvg               numeric              not null,
-   UpperBandwith        float                not null,
-   LowerBandwith        float                not null
+   UpperBandwidth        float                not null,
+   LowerBandwidth        float                not null
 )
 go
 
@@ -6165,4 +6167,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Ryan', '13-MARCH-2005', 'Manual version insert done', 3 );

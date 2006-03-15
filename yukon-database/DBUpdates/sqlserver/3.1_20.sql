@@ -19,4 +19,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'Ryan', '15-MAR-2005', 'Manual version insert done', 20);

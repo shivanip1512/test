@@ -144,8 +144,8 @@ create table CCMONITORBANKLIST  (
    DisplayOrder         NUMBER                          not null,
    Scannable            CHAR(1)                         not null,
    NINAvg               NUMBER                          not null,
-   UpperBandwith        FLOAT                           not null,
-   LowerBandwith        FLOAT                           not null
+   UpperBandwidth        FLOAT                           not null,
+   LowerBandwidth        FLOAT                           not null
 );
 
 alter table CCMONITORBANKLIST
@@ -368,6 +368,7 @@ create table CAPCONTROLSUBSTATIONBUS  (
    AltSubID             NUMBER                          not null,
    SwitchPointID        NUMBER                          not null,
    DualBusEnabled       CHAR(1)                         not null,
+   MultiMonitorControl  CHAR(1)                         not null
 );
 
 alter table CAPCONTROLSUBSTATIONBUS
@@ -3457,8 +3458,8 @@ create table CCMONITORBANKLIST  (
    DisplayOrder         NUMBER                          not null,
    Scannable            CHAR(1)                         not null,
    NINAvg               NUMBER                          not null,
-   UpperBandwith        FLOAT                           not null,
-   LowerBandwith        FLOAT                           not null
+   UpperBandwidth        FLOAT                           not null,
+   LowerBandwidth        FLOAT                           not null
 );
 
 alter table CCMONITORBANKLIST
@@ -4686,4 +4687,4 @@ insert into pointunit select max(pointID), 9, 1, 1.0E+30, -1.0E+30 from point;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.2', 'Ryan', '13-MARCH-2005', 'Manual version insert done', 3 );
