@@ -34,6 +34,7 @@ import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.menu.*;
 import com.cannontech.dbeditor.offsets.PointOffsetLegend;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
+import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -992,7 +993,11 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		//a DBPersistent must be created from the Lite object so you can copy it
 		com.cannontech.database.db.DBPersistent toCopy = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
 		if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
-			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy) );
+        {
+			DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy);
+            devicePanel.setDeviceType( toCopy );
+            showCopyWizardPanel( devicePanel );
+        }
 		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
 		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)

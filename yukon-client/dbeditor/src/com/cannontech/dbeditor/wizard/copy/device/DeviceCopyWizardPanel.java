@@ -4,6 +4,13 @@ package com.cannontech.dbeditor.wizard.copy.device;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.device.lm.*;
+import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.dbeditor.editor.device.DeviceMeterGroupEditorPanel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
 
@@ -11,7 +18,8 @@ import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPane
 /*   Objects in their getValue(Object o) method!!! */
 public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {
-	private DeviceCopyNameAddressPanel deviceCopyNameAddressPanel;
+	private DeviceMeterGroupPanel deviceMeterGroupPanel;
+    private DeviceCopyNameAddressPanel deviceCopyNameAddressPanel;
 	private DeviceCopyPointPanel deviceCopyPointPanel;
 	private CapBankCntrlCreationPanel capBankCntrlCreationPanel;
 	
@@ -88,6 +96,13 @@ protected DeviceCopyPointPanel getDeviceCopyPointPanel() {
 	return deviceCopyPointPanel;
 }
 
+protected DeviceMeterGroupPanel getDeviceMeterGroupPanel() {
+    if( deviceMeterGroupPanel == null )
+        deviceMeterGroupPanel = new DeviceMeterGroupPanel();
+        
+    return deviceMeterGroupPanel;
+}
+
 protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel getCapBankCntrlCreationPanel() {
 	if( capBankCntrlCreationPanel == null )
 		capBankCntrlCreationPanel = new CapBankCntrlCreationPanel();
@@ -101,7 +116,12 @@ protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationP
  */
 public int getDeviceType()
 {
-	return deviceType;
+//	if(deviceType == 0)
+//    {
+//     setDeviceType();   
+//    }
+//    
+    return deviceType;
 }
 /**
  * This method was created in VisualAge.
@@ -171,46 +191,70 @@ public java.awt.Dimension getMinimumSize() {
 /**
  * getNextInputPanel method comment.
  */
-protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
-	com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
+protected DataInputPanel getNextInputPanel(
+	DataInputPanel currentInputPanel)
 {
 
-	if (currentInputPanel == null)
+    if (currentInputPanel == null)
 	{
 		return getDeviceCopyNameAddressPanel();
 	}	
 	else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
 				&& getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM )
 	{	
-		getLmGroupVersacomEditorPanel().setAddresses(((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getUtilityAddress(),
-												((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getSectionAddress(),
-												((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getClassAddress(),
-												((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getDivisionAddress());
+		getLmGroupVersacomEditorPanel().setAddresses(((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getUtilityAddress(),
+												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getSectionAddress(),
+												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getClassAddress(),
+												((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getDivisionAddress());
 
-		getLmGroupVersacomEditorPanel().setRelay( ((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRelayUsage() );
+		getLmGroupVersacomEditorPanel().setRelay( ((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRelayUsage() );
 		
 		return getLmGroupVersacomEditorPanel();
 	}	
 	else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
-				 && getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON )
+				 && getDeviceType() == PAOGroups.LM_GROUP_EMETCON )
 	{
 		if (getAddressUsage().charValue() == 'S')
 		{
 
-			getGoldSilverPanel().setGoldSilverSpinnerValues(((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress(), ((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getSilverAddress());
+			getGoldSilverPanel().setGoldSilverSpinnerValues(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress(), ((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getSilverAddress());
 			return getGoldSilverPanel();
 		}	
 		else
 		{
-			getGoldPanel().setGoldSpinnerValue(((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress());
+			getGoldPanel().setGoldSpinnerValue(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getGoldAddress());
 			return getGoldPanel();
 
 		}
-	}
-	else if( currentInputPanel == getGoldSilverPanel() 
+	}else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
+            && (getDeviceType() == DeviceTypes.MCT470
+                    || getDeviceType() == DeviceTypes.MCT430S
+                    || getDeviceType() == DeviceTypes.MCT430A
+                    || getDeviceType() == DeviceTypes.MCT410IL
+                    || getDeviceType() == DeviceTypes.MCT410CL
+                    || getDeviceType() == DeviceTypes.MCT370
+                    || getDeviceType() == DeviceTypes.MCT360
+                    || getDeviceType() == DeviceTypes.MCT318L
+                    || getDeviceType() == DeviceTypes.MCT318
+                    || getDeviceType() == DeviceTypes.MCT310IM
+                    || getDeviceType() == DeviceTypes.MCT250
+                    || getDeviceType() == DeviceTypes.MCT248
+                    || getDeviceType() == DeviceTypes.MCT240
+                    || getDeviceType() == DeviceTypes.MCT213
+                    || getDeviceType() == DeviceTypes.MCT210))
+    {
+	    
+        getRoutePanel().setValue(null);
+
+        getRoutePanel().setRoute(((MCTBase)getCopyObject()).getDeviceRoutes().getRouteID());
+        
+
+        return getRoutePanel();
+        
+    }else if( currentInputPanel == getGoldSilverPanel() 
 			   || currentInputPanel == getGoldPanel() )
 	{
-		getEmetconRelayPanel().setRelay(((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRelayUsage());
+		getEmetconRelayPanel().setRelay(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRelayUsage());
 		return getEmetconRelayPanel();
 	}
 	else if( currentInputPanel == getLmGroupVersacomEditorPanel() 
@@ -218,22 +262,42 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{	
 		getRoutePanel().setValue(null);
 
-		if (getCopyObject() instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
-			getRoutePanel().setRoute(((com.cannontech.database.data.device.lm.LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRouteID());
+		if (getCopyObject() instanceof LMGroupEmetcon)
+			getRoutePanel().setRoute(((LMGroupEmetcon)getCopyObject()).getLmGroupEmetcon().getRouteID());
 		else
-			getRoutePanel().setRoute(((com.cannontech.database.data.device.lm.LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRouteID());
+			getRoutePanel().setRoute(((LMGroupVersacom)getCopyObject()).getLmGroupVersacom().getRouteID());
 
 		return getRoutePanel();
 	}
 
 	else if( (currentInputPanel == getDeviceCopyNameAddressPanel() || currentInputPanel == getDeviceCopyPointPanel()) &&
-	getDeviceType() == com.cannontech.database.data.pao.PAOGroups.CAPBANK)
+	getDeviceType() == PAOGroups.CAPBANK)
+    {
 		return getCapBankCntrlCreationPanel();
-	
-	
-	
-	else
-		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
+    }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
+                                                    || getDeviceType() == DeviceTypes.MCT430S
+                                                    || getDeviceType() == DeviceTypes.MCT430A
+                                                    || getDeviceType() == DeviceTypes.MCT410IL
+                                                    || getDeviceType() == DeviceTypes.MCT410CL
+                                                    || getDeviceType() == DeviceTypes.MCT370
+                                                    || getDeviceType() == DeviceTypes.MCT360
+                                                    || getDeviceType() == DeviceTypes.MCT318L
+                                                    || getDeviceType() == DeviceTypes.MCT318
+                                                    || getDeviceType() == DeviceTypes.MCT310IM
+                                                    || getDeviceType() == DeviceTypes.MCT250
+                                                    || getDeviceType() == DeviceTypes.MCT248
+                                                    || getDeviceType() == DeviceTypes.MCT240
+                                                    || getDeviceType() == DeviceTypes.MCT213
+                                                    || getDeviceType() == DeviceTypes.MCT210))
+    {
+        
+        getDeviceMeterGroupPanel().setValue(getCopyObject());
+        return getDeviceMeterGroupPanel();
+        
+    }else
+    {
+        throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
+    }
 }
 /**
  * This method was created in VisualAge.
@@ -261,20 +325,54 @@ public Object getValue(Object o)
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
 	
 
-	if( currentPanel == getRoutePanel() )
-	{
-		return true;
-	}
-	else if (isCapBank)
+	if (isCapBank)
+    {
 		return (currentPanel == getCapBankCntrlCreationPanel());
-	
-	else 
-	if ((currentPanel == getDeviceCopyNameAddressPanel()) && !((getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON)
-		 || (getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM)) )
+    }else if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
+                                                                 || getDeviceType() == DeviceTypes.MCT430S
+                                                                 || getDeviceType() == DeviceTypes.MCT430A
+                                                                 || getDeviceType() == DeviceTypes.MCT410IL
+                                                                 || getDeviceType() == DeviceTypes.MCT410CL
+                                                                 || getDeviceType() == DeviceTypes.MCT370
+                                                                 || getDeviceType() == DeviceTypes.MCT360
+                                                                 || getDeviceType() == DeviceTypes.MCT318L
+                                                                 || getDeviceType() == DeviceTypes.MCT318
+                                                                 || getDeviceType() == DeviceTypes.MCT310IM
+                                                                 || getDeviceType() == DeviceTypes.MCT250
+                                                                 || getDeviceType() == DeviceTypes.MCT248
+                                                                 || getDeviceType() == DeviceTypes.MCT240
+                                                                 || getDeviceType() == DeviceTypes.MCT213
+                                                                 || getDeviceType() == DeviceTypes.MCT210))
+    {
+        return false;
+    }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
+                                                                || getDeviceType() == DeviceTypes.MCT430S
+                                                                || getDeviceType() == DeviceTypes.MCT430A
+                                                                || getDeviceType() == DeviceTypes.MCT410IL
+                                                                || getDeviceType() == DeviceTypes.MCT410CL
+                                                                || getDeviceType() == DeviceTypes.MCT370
+                                                                || getDeviceType() == DeviceTypes.MCT360
+                                                                || getDeviceType() == DeviceTypes.MCT318L
+                                                                || getDeviceType() == DeviceTypes.MCT318
+                                                                || getDeviceType() == DeviceTypes.MCT310IM
+                                                                || getDeviceType() == DeviceTypes.MCT250
+                                                                || getDeviceType() == DeviceTypes.MCT248
+                                                                || getDeviceType() == DeviceTypes.MCT240
+                                                                || getDeviceType() == DeviceTypes.MCT213
+                                                                || getDeviceType() == DeviceTypes.MCT210))
+    {
+        return false;
+    }else if( currentPanel == getRoutePanel() )
+    {
+        return true;
+    }else if ((currentPanel == getDeviceCopyNameAddressPanel()) && !((getDeviceType() == PAOGroups.LM_GROUP_EMETCON)
+		 || (getDeviceType() == PAOGroups.LM_GROUP_VERSACOM)) )
 	{
 		return true;
-	}
-	else 
+	}else if( currentPanel == getDeviceMeterGroupPanel() )
+    {
+	    return true;
+    }else 
 	{ 
 		return currentPanel == getDeviceCopyNameAddressPanel();
 	}
@@ -315,7 +413,14 @@ public void setCopyObject(com.cannontech.database.db.DBPersistent newObject)
 public void setDeviceType()
 {
 
-	deviceType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(
-		((com.cannontech.database.data.device.DeviceBase) getCopyObject()).getPAOType() );
+	deviceType = PAOGroups.getDeviceType(((DeviceBase) getCopyObject()).getPAOType() );
+    
 }
+
+public void setDeviceType( DBPersistent device )
+{
+    setCopyObject(device);
+    setDeviceType();
+}
+
 }
