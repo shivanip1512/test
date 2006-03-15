@@ -28,6 +28,7 @@ public class NonYukonMeterBean
     private int currentMeterID = -1;
     private YukonSelectionList voltages;
     private List<StarsInventory> currentAccountInventory;
+    private Integer currentAccountID;
     
     /**
      * Dust this as soon as we remove xml objects such as StarsInventory
@@ -108,19 +109,12 @@ public class NonYukonMeterBean
     public List<Pair> getAvailableSwitches() 
     {
         availableSwitches = new ArrayList<Pair>();
-        boolean isAssigned = false;
         
         for (int i = 0; i < currentAccountInventory.size(); i++) 
         {
             StarsInventory inv = currentAccountInventory.get(i);
-            //this guy should be pretty small
-            for(int j = 0; j < getAssignedSwitches().size(); j++)
-            {
-                if(inv.getInventoryID() == ((Integer)getAssignedSwitches().get(i).getFirst()).intValue())
-                    isAssigned = true;
-            }
-
-            if(!isAssigned)
+            
+            if(!MeterHardwareBase.isSwitchAssignedToAnyMeters(inv.getInventoryID()))
                 availableSwitches.add(new Pair(inv.getInventoryID(), inv.getLMHardware().getManufacturerSerialNumber()));
         }
         
@@ -174,7 +168,7 @@ public class NonYukonMeterBean
         
         return assignedSwitches;
     }
-
+    
     public void setAssignedSwitches(List<Pair> assignedSwitches) 
     {
         this.assignedSwitches = assignedSwitches;
@@ -189,5 +183,13 @@ public class NonYukonMeterBean
 
     public void setCurrentAccountInventory(List<StarsInventory> currentAccountInventory) {
         this.currentAccountInventory = currentAccountInventory;
+    }
+
+    public Integer getCurrentAccountID() {
+        return currentAccountID;
+    }
+
+    public void setCurrentAccountID(Integer currentAccountID) {
+        this.currentAccountID = currentAccountID;
     }
 }

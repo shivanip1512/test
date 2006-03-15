@@ -178,7 +178,11 @@ function confirmCancel() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<% if (devTypeMCT != null) { %>
+<%if (AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
+{%>
+				create a new Meter (Create New Meter),<br>
+<%}
+else if (devTypeMCT != null) { %>
                 select a meter from the list of all MCTs (Select Meter),<br>
 <% } %>
                 or check the inventory for a specific device type and serial number 
@@ -198,7 +202,28 @@ function confirmCancel() {
                       </table>
                     </td>
                   </tr>
-<% if (devTypeMCT != null) { %>
+<%if (AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
+{%>
+				<tr> 
+                    <td> 
+                      <div align="center" class="TableCell">or</div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="40">
+                        <tr> 
+                          <td height="30"> 
+                            <div align="center">
+                              <input type="button" name="NewMeter" value="Create New Meter" onClick="location.href ='<%=request.getContextPath()%>/operator/Consumer/MeterProfile.jsp?MetRef=-1'">
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+<%}
+else if (devTypeMCT != null) { %>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>

@@ -1525,6 +1525,7 @@ public class InventoryManager extends HttpServlet {
     {
         NonYukonMeterBean mBean = (NonYukonMeterBean) session.getAttribute("meterBean");
         MeterHardwareBase currentMeter = mBean.getCurrentMeter();
+        String accountDestination = new String();
         
         currentMeter.getMeterHardwareBase().setMeterNumber(req.getParameter("MeterNumber"));
         currentMeter.getMeterHardwareBase().setMeterTypeID(new Integer(req.getParameter("MeterType")));
@@ -1539,14 +1540,17 @@ public class InventoryManager extends HttpServlet {
             if(mBean.getCurrentMeterID() == -1)
             {
                 currentMeter.setInventoryID(null);
+                currentMeter.setAccountID(mBean.getCurrentAccountID());
                 currentMeter.setEnergyCompanyID(mBean.getEnergyCompany().getEnergyCompanyID());
                 Transaction.createTransaction(Transaction.INSERT, currentMeter).execute();
-                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New meter added to inventory.");
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New meter added to inventory and this account.");
+                accountDestination = req.getContextPath() + "/operator/Consumer/Update.jsp";
             }
             else
             {
                 Transaction.createTransaction(Transaction.UPDATE, currentMeter).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Meter successfully updated in the database.");
+                accountDestination = req.getContextPath() + "/operator/Consumer/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
             }
             
             /**
@@ -1554,10 +1558,10 @@ public class InventoryManager extends HttpServlet {
              */
             String[] assignedSwitchIDs = req.getParameterValues("SwitchIDs");
             
+            boolean deleteSuccess = MeterHardwareBase.deleteAssignedSwitches(currentMeter.getInventoryBase().getInventoryID());
+                        
             if(assignedSwitchIDs != null && assignedSwitchIDs.length > 0)
             {
-                boolean deleteSuccess = MeterHardwareBase.deleteAssignedSwitches(currentMeter.getInventoryBase().getInventoryID());
-                
                 if(deleteSuccess)
                 {
                     for(int j = 0; j < assignedSwitchIDs.length; j++)
@@ -1588,7 +1592,7 @@ public class InventoryManager extends HttpServlet {
         
         if(referer.contains("Consumer"))
         {
-            redirect = req.getContextPath() + "/operator/Consumer/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
+            redirect = accountDestination;
         }
         else
             redirect = req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();

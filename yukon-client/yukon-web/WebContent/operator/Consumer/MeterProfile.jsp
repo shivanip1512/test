@@ -15,6 +15,8 @@
 	<%pageContext.setAttribute("currentUser", lYukonUser);%>
 	<c:set target="${meterBean}" property="currentUser" value="${currentUser}" />
 	<c:set target="${meterBean}" property="currentMeterID" value="${param.MetRef}" />
+	<%pageContext.setAttribute("currentAccount", account);%>
+	<c:set target="${meterBean}" property="currentAccountID" value="${currentAccount.accountID}" />
 	
  	<div class="standardpurplesidebox"> 
 		<% String pageName = "MeterProfile.jsp"; %>
