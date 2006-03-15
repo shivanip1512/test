@@ -24,8 +24,9 @@ public class TurtleFormatBase extends FileFormatBase
 	 * 
 	 * WARNING:  We could have some issues if multiple points are collecting data, the last point read in will be the ONLY 
 	 * one to show up in the file, since we only have one place holder. 
-	 * For Example:  The frozen peak demand point offsets (21-24) are all parsed into the same variable, therefore the last
+	 * For Example:  The peak demand point offsets (11) are all parsed into the same variable, therefore the last
 	 * one read in will be the only one in the file. (SN 20051010)
+	 * 2006-03-15 removed frozen peak demand (21-24)offsets per Matt.  These no longer exist and are all dumped to offset 11 for 410.
 	 * 
 	 * Creation date: (11/30/00)
 	 */
@@ -54,7 +55,7 @@ public class TurtleFormatBase extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets, validFrozenDemandAccOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets, validPeakDemandAccOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.DMG_METERNUMBER + ", " 
 				+ SQLStringBuilder.DMG_DEVICEID + ", " 
@@ -158,7 +159,7 @@ public class TurtleFormatBase extends FileFormatBase
 									lastRecord.setTime(ts);
 									lastRecord.setDate(ts);
 								}
-								else if (isKW(ptOffset) || isKW_frozenDemand(ptOffset))
+								else if (isKW(ptOffset) || isKW_peakDemand(ptOffset))
 								{
 									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
@@ -185,7 +186,7 @@ public class TurtleFormatBase extends FileFormatBase
 									record.setDate(ts);
 		
 								}
-								else if (isKW(ptOffset) || isKW_frozenDemand(ptOffset))
+								else if (isKW(ptOffset) || isKW_peakDemand(ptOffset))
 								{
 									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;

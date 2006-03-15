@@ -52,9 +52,9 @@ public abstract class FileFormatBase
 		1, 2, 3
 	};
 	
-	public static final int validFrozenDemandAccOffsets[] =
+	public static final int validPeakDemandAccOffsets[] =
 	{
-		21, 22, 23, 24
+		11 // 410, 470 (12, 13, 14 needs to be added for the other buckets at some time)
 	};
 	
 	public static final int validProfileDemandAccOffsets[] =
@@ -256,16 +256,16 @@ public abstract class FileFormatBase
 		return false;
 	}
 	/**
-	 * Returns the flag that determines if offset is valid for the static validFrozenDemandAccOffsets values.
+	 * Returns the flag that determines if offset is valid for the static validPeakDemandAccOffsets values.
 	 * Creation date: (3/11/2002 3:11:08 PM)
 	 * @return boolean
 	 * @param offset int
 	 */
-	public boolean isKW_frozenDemand(int offset) 
+	public boolean isKW_peakDemand(int offset) 
 	{
-		for (int i = 0; i < validFrozenDemandAccOffsets.length; i++)
+		for (int i = 0; i < validPeakDemandAccOffsets.length; i++)
 		{
-			if( offset == validFrozenDemandAccOffsets[i])
+			if( offset == validPeakDemandAccOffsets[i])
 				return true;
 		}
 		return false;
