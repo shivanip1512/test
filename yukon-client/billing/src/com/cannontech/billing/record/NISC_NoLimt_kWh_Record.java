@@ -5,39 +5,40 @@ package com.cannontech.billing.record;
  * Creation date: (8/24/2001 5:32:56 PM)
  * @author: 
  */
-public class NISC_5Digit_kWh_Record extends NISCRecord 
+public class NISC_NoLimt_kWh_Record extends NISCRecord 
 {
 	/**
 	 * NISC_5Digit_kWh_Record constructor comment.
 	 */
-	public NISC_5Digit_kWh_Record()
+	public NISC_NoLimt_kWh_Record()
 	{
 		super();
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
+//		some large number to override TurtleRecordBase
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_5Digit_kWh_Record constructor comment.
 	 */
-	public NISC_5Digit_kWh_Record(String newMeterNumber)
+	public NISC_NoLimt_kWh_Record(String newMeterNumber)
 	{
 		super(newMeterNumber);
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_5Digit_kWh_Record constructor comment.
 	 */
-	public NISC_5Digit_kWh_Record(String newMeterNumber, double reading, java.sql.Timestamp newTimestamp)
+	public NISC_NoLimt_kWh_Record(String newMeterNumber, double reading, java.sql.Timestamp newTimestamp)
 	{
 		super(newMeterNumber, reading, newTimestamp);
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 	/**
 	 * NISC_5Digit_kWh_Record constructor comment.
 	 */
-	public NISC_5Digit_kWh_Record(String newMeterNumber, java.sql.Timestamp newTimestamp)
+	public NISC_NoLimt_kWh_Record(String newMeterNumber, java.sql.Timestamp newTimestamp)
 	{
 		super(newMeterNumber, newTimestamp);
-		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(20);
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class NISC_5Digit_kWh_Record extends NISCRecord
 	public boolean equals(Object o) 
 	{
 		return ( (o != null) &&
-				   (o instanceof NISC_5Digit_kWh_Record) &&
-				   ((NISC_5Digit_kWh_Record)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
+				   (o instanceof NISC_NoLimt_kWh_Record) &&
+				   ((NISC_NoLimt_kWh_Record)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
 	}
 }

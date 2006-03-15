@@ -35,7 +35,7 @@ public final class FileFormatTypes {
 	public static final int NISC_TOU_KVARH = 16;
 	public static final int SEDC_yyyyMMdd = 17;
 	public static final int ATS = 18;
-	public static final int NISC_TURTLE_5_DIGIT = 19;
+	public static final int NISC_TURTLE_NO_LIMIT_KWH = 19;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -54,7 +54,7 @@ public final class FileFormatTypes {
 	public static final String NISC_TOU_KVARH_STRING = "NISC TOU (kVarH)";
 	public static final String SEDC_yyyyMMdd_STRING = "SEDC (yyyyMMdd)";
 	public static final String ATS_STRING = "ATS";
-	public static final String NISC_TURTLE_5_DIGIT_STRING = "NISC-Turtle 5Digit kWh";
+	public static final String NISC_TURTLE_NO_LIMIT_KWH_STRING = "NISC-Turtle No Limit kWh";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;

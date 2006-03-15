@@ -50,8 +50,8 @@ public final static FileFormatBase createFileFormat(int type)
 		case FileFormatTypes.NISC_TURTLE:
 			return new NISCFormat();
 			
-		case FileFormatTypes.NISC_TURTLE_5_DIGIT:
-			return new NISC_5Digit_kWh_Format();
+		case FileFormatTypes.NISC_TURTLE_NO_LIMIT_KWH:
+			return new NISC_NoLimt_kWh_Format();
 
 		case FileFormatTypes.NISC_NCDC:
 			return new NISC_NCDCFormat();
