@@ -281,14 +281,10 @@ insert into YukonListEntry values (1128,1010,0,'Hold',1508);
 
 insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
 insert into yukonselectionlist values(1067, 'A', '(none)', 'System category types for Event Logging in STARS', 'EventSystemCategory', 'N');
-insert into ECToGenericMapping values (-1, 1067, 'YukonSelectionList');
 insert into yukonselectionlist values(1068, 'A', '(none)', 'Action types for Customer Account events in STARS', 'EventAccountActions', 'N');
-insert into ECToGenericMapping values (-1, 1068, 'YukonSelectionList');
 /*We think these won't be necessary...we can use the service status and device status lists
 insert into yukonselectionlist values(1069, 'A', '(none)', 'Action types for Inventory events in STARS', 'EventInventoryActions', 'N');
-insert into ECToGenericMapping values (-1, 1069, 'YukonSelectionList');
 insert into yukonselectionlist values(1070, 'A', '(none)', 'Action types for Work Order events in STARS', 'EventWorkOrderActions', 'N');
-insert into ECToGenericMapping values (-1, 1070, 'YukonSelectionList');
 */
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
