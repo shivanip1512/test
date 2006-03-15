@@ -132,33 +132,7 @@ private static void getBuilderData() {
 	D4B7GGD0CB818294G94G88G88G9BEC17AD7E82ECC70A92GGD4B7GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG4492GGGG
 **end of data**/
 }
-/**
- * Return the JComboBox1 property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-//private javax.swing.JComboBox getJComboBox1() {
-//	if (ivjJComboBox1 == null) {
-//		try {
-//			ivjJComboBox1 = new javax.swing.JComboBox();
-//			ivjJComboBox1.setName("JComboBox1");
-//			// user code begin {1}
-//			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-//			synchronized(cache) {
-//				Iterator iter = cache.getAllDevices().iterator();
-//				while(iter.hasNext()) {
-//					ivjJComboBox1.addItem(iter.next());
-//				}
-//			} 
-//			// user code end
-//		} catch (java.lang.Throwable ivjExc) {
-//			// user code begin {2}
-//			// user code end
-//			handleException(ivjExc);
-//		}
-//	}
-//	return ivjJComboBox1;
-//}
+
 
 /**
  * Return the JScrollPaneAlarms property value.
