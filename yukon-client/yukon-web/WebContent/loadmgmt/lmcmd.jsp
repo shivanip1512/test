@@ -48,13 +48,16 @@ function update()
 		alert('The Start date/time must be before the Stop date/time');
 		return false;
 	}
+    else
+	{
+  		document.cmdForm.submit();
+	}
 
+    //tell the parent screen to close this window and refresh in two seconds
+    opener.document.closeConfirmWin(self);
+	opener.setTimeout("window.location.reload(true)", 2000);
 
-    self.close();
-
-    //tell the parent screen to refresh in 2 seconds
-    opener.setTimeout("window.location.reload(true)", 2000)
-    return true;
+    return false;
 }
 
 function setStartAble( radioChk )
@@ -78,7 +81,7 @@ function setStopAble( radioChk )
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
 
-	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet">
+	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="update();">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		
@@ -708,7 +711,7 @@ function setStopAble( radioChk )
 
 
 	  <BR>
-		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "return update();">
+		<input type="submit" name="Submit2" value="Ok" class="defButton">
 <% }  /* Ending of the isPageGood check */ %>
 		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close(); return false;">
 	</form>
