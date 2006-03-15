@@ -363,6 +363,29 @@ public class MeterHardwareBase extends InventoryBase {
         return switchPair;
     }
     
+    public static boolean isSwitchAssignedToAnyMeters(int switchID)
+    {
+        boolean isAssigned = false;
+        
+        SqlStatement stmt = new SqlStatement("SELECT * FROM LMHARDWARETOMETERMAPPING WHERE LMHARDWAREINVENTORYID = " + switchID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+               isAssigned = true;
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return isAssigned;
+    }
+    
     public static boolean deleteAssignedSwitches(int meterID)
     {
         boolean truth = false;
