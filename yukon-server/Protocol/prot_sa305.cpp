@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/03/06 21:44:55 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2006/03/15 18:53:26 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.23  2006/03/15 18:53:26  cplender
+* SA326 LCRs will enable their adaptive algorithm if they are controlled via a truecycle gear.
+*
 * Revision 1.22  2006/03/06 21:44:55  cplender
 * Added syntax and code for the adaptive alg. and for the frequency change putconfig.
 *
@@ -648,7 +651,8 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
 
     if(_strategy <= 0) _strategy = parse.getiValue("sa_strategy", 0);
 
-    if( findStringIgnoreCase(parse.getCommandStr()," adapt") )   // Adaptive algorithm!
+    if( findStringIgnoreCase(parse.getCommandStr()," adapt") ||
+        findStringIgnoreCase(parse.getCommandStr()," truecycle") )   // Adaptive algorithm!
     {
         setStartBits(5);
     }
