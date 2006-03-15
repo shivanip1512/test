@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.131 $
-* DATE         :  $Date: 2006/03/03 18:35:58 $
+* REVISION     :  $Revision: 1.132 $
+* DATE         :  $Date: 2006/03/15 18:53:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2327,7 +2327,7 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManage
         {
             CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
             if(pPC != NULL)
-            { 
+            {
                 if( list_contains(pPC->getManagerList(), (CtiConnectionManager*)&Conn ) )
                 {
                     bStatus = TRUE;
@@ -4817,12 +4817,35 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                 UINT currdvtags = (currtags & (tagmask & MASK_ANY_DEVICE_DISABLE));                     // Device only ablement tags.
                 UINT dvtags   = (setmask & (tagmask & MASK_ANY_DEVICE_DISABLE));
 
+                string addnl;
+                UINT filter = 0x00000001;
+                UINT currtags_cnt = 0;
+                UINT newpttags_cnt = 0;
+                UINT currpttags_cnt = 0;
+                UINT pttags_cnt = 0;
+                UINT currdvtags_cnt = 0;
+                UINT dvtags_cnt = 0;
+
+                for(int pos = 0; pos < 32; pos++)
+                {
+                    filter = filter << 1;
+
+                    if(currtags & filter)   currtags_cnt++;         // This is the number of bite - currently.
+                    if(newpttags & filter)  newpttags_cnt++;        // This is the number of bits - after complete.
+                    if(currpttags & filter) currpttags_cnt++;       // This is the number of POINT tags - currently.
+                    if(pttags & filter)     pttags_cnt++;           // This is the number of POINT tags - after complete.
+                    if(currdvtags & filter) currdvtags_cnt++;       // This is the number of DEVICE tags - currently.
+                    if(dvtags & filter)     dvtags_cnt++;           // This is the number of DEVICE tags - after complete.
+                }
+
                 if( currtags != newpttags )      // Is anything different?
                 {
                     different = true;
 
                     if(currpttags != pttags)    // Is the difference in the point tags?
                     {
+                        addnl += string("Point tags: ") + (pttags_cnt > currpttags_cnt ? " point disable" : " point enable");
+
                         if(updatePointStaticTables(pPoint->getPointID(), pttags, tagmask, user, Multi))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4837,6 +4860,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
 
                     if(currdvtags != dvtags)    // Is the difference in the device tags?
                     {
+                        addnl += string("Point tags: ") + (dvtags_cnt > currdvtags_cnt ? " device disable" : " device enable");
                         devicedifferent = true;
                     }
 
@@ -4844,9 +4868,9 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                     pDyn->getDispatch().setTags(newpttags);
 
                     {
-                        CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update");
-                        pTagSig->setUser(user);
+                        CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update", addnl);
                         pTagSig->setMessagePriority(15);
+                        pTagSig->setUser(user);
                         pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
                         postMessageToClients(pTagSig);
                         delete pTagSig;
