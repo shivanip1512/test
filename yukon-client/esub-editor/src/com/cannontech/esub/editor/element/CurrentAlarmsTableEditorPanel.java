@@ -41,8 +41,7 @@ public class CurrentAlarmsTableEditorPanel extends com.cannontech.common.gui.uti
     private JScrollPane ivjJScrollPaneAlarms = null;
     private CheckNodeSelectionListener deviceNodeListener = null;
     private CheckNodeSelectionListener alarmNodeListener = null;
-    private List alarmCategoryList = null;
-    private java.util.HashMap hashmap = null;
+    
     
     
     
@@ -187,18 +186,6 @@ private javax.swing.JScrollPane getJScrollPaneAlarms() {
     return ivjJScrollPaneAlarms;
 }
 
-private java.awt.List getAlarmCategoryList()
-{
-    //TODO  write this stuff idiot
-    if ( alarmCategoryList == null )
-    {
-        // generate our list of Alarm Categories
-        alarmCategoryList = (List) com.cannontech.database.cache.functions.AlarmCatFuncs.getAlarmCategories();
-        Collections.sort((java.util.List) alarmCategoryList, LiteComparators.liteStringComparator);
-    }
-    
-    return alarmCategoryList;
-}
 
 /**
  * Return the JScrollPaneDevices property value.
