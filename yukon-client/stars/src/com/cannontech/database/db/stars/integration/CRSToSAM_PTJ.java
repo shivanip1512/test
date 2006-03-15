@@ -188,7 +188,7 @@ public static ArrayList getAllCurrentPTJEntries()
             	if (stmt.getRow(i)[18] != null)
             		currentEntry.setCRSLoggedUser( stmt.getRow(i)[18].toString());
             	if (stmt.getRow(i)[19] != null)
-            		currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[18].toString().charAt(0)) );
+            		currentEntry.setPresenceRequired( new Character(stmt.getRow(i)[19].toString().charAt(0)) );
             	if (stmt.getRow(i)[20] != null)
             		currentEntry.setAirConditioner( new Character(stmt.getRow(i)[20].toString().charAt(0)) );
             	if (stmt.getRow(i)[21] != null)
