@@ -1,5 +1,6 @@
 package com.cannontech.database.db.customer;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList;
 import com.cannontech.database.SqlStatement;
@@ -17,7 +18,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	private String curtailmentAgreement = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Double curtailAmount = new Double(0.0);
 	private String companyName = null;
-	private Integer ciCustType = null;	//YukonListEntry value, YukonSelectionList->CICustomerType
+	private Integer ciCustType = new Integer(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);	//YukonListEntry value, YukonSelectionList->CICustomerType
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 

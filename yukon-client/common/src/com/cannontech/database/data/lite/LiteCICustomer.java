@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.db.customer.CICustomerBase;
 
 /**
@@ -11,6 +12,7 @@ public class LiteCICustomer extends LiteCustomer
 	private String companyName = null;
 	private double demandLevel = 0.0;
 	private double curtailAmount = 0.0;
+	private int ciCustType = YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL;
 	
 	
 	public LiteCICustomer() 
@@ -127,7 +129,7 @@ public class LiteCICustomer extends LiteCustomer
 			com.cannontech.database.SqlStatement stat = 
 				new com.cannontech.database.SqlStatement(
 					"SELECT MainAddressID, CompanyName, " +
-					" CustomerDemandLevel, CurtailAmount " +
+					" CustomerDemandLevel, CurtailAmount, CICustType " +
 					" FROM " + CICustomerBase.TABLE_NAME +
 					" WHERE CustomerID = " + getLiteID(),
 					dbalias );
@@ -143,12 +145,21 @@ public class LiteCICustomer extends LiteCustomer
     			setCompanyName( objs[1].toString() );	
     			setDemandLevel( Double.valueOf(objs[2].toString()).doubleValue() );
     			setCurtailAmount( Double.valueOf(objs[3].toString()).doubleValue() );
+    			setCICustType( ((java.math.BigDecimal) objs[4]).intValue() );
             }
 		}
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
+	}
+
+	public int getCICustType() {
+		return ciCustType;
+	}
+
+	public void setCICustType(int ciCustType) {
+		this.ciCustType = ciCustType;
 	}
    
 }

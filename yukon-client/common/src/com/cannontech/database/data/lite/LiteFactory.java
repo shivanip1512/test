@@ -64,6 +64,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((CICustomerBase)returnObject).getCiCustomerBase().setMainAddressID( new Integer(((LiteCICustomer)liteObject).getMainAddressID()) );
 			((CICustomerBase)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCICustomer)liteObject).getPrimaryContactID()) );
 			((CICustomerBase)returnObject).getCustomer().setTimeZone( ((LiteCICustomer)liteObject).getTimeZone() );
+			((CICustomerBase)returnObject).getCiCustomerBase().setCICustType( ((LiteCICustomer)liteObject).getCICustType() );
 			break;
 		case LiteTypes.CUSTOMER:
 			returnObject = new Customer(); 
@@ -266,6 +267,10 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteCICustomer(
 				((CICustomerBase)val).getCustomerID().intValue(),
 				((CICustomerBase)val).getCiCustomerBase().getCompanyName() );
+		((LiteCICustomer)returnLite).setCICustType(((CICustomerBase)val).getCiCustomerBase().getCICustType().intValue());
+		((LiteCICustomer)returnLite).setCurtailAmount(((CICustomerBase)val).getCiCustomerBase().getCurtailAmount().doubleValue());
+		((LiteCICustomer)returnLite).setDemandLevel(((CICustomerBase)val).getCiCustomerBase().getCustDmdLevel().doubleValue());
+		
 	}
 	else if( val instanceof Customer)
 	{

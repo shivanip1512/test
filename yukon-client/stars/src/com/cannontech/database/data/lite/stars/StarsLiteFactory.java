@@ -362,6 +362,7 @@ public class StarsLiteFactory {
 		liteCI.setDemandLevel( ci.getCiCustomerBase().getCustDmdLevel().doubleValue() );
 		liteCI.setCurtailAmount( ci.getCiCustomerBase().getCurtailAmount().doubleValue() );
 		liteCI.setCompanyName( ci.getCiCustomerBase().getCompanyName() );
+		liteCI.setCICustType( ci.getCiCustomerBase().getCICustType() );
 	}
 	
 	public static void setLiteAccountSite(LiteAccountSite liteAcctSite, com.cannontech.database.db.stars.customer.AccountSite acctSite) {
@@ -843,6 +844,7 @@ public class StarsLiteFactory {
 		ci.getCiCustomerBase().setCustDmdLevel( new Double(liteCI.getDemandLevel()) );
 		ci.getCiCustomerBase().setCurtailAmount( new Double(liteCI.getCurtailAmount()) );
 		ci.getCiCustomerBase().setCompanyName( liteCI.getCompanyName() );
+		ci.getCiCustomerBase().setCICustType( new Integer(liteCI.getCICustType()));
 	}
 	
 	public static void setAccountSite(com.cannontech.database.db.stars.customer.AccountSite acctSite, LiteAccountSite liteAcctSite) {
