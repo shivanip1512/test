@@ -15,8 +15,8 @@
     </head>
 <body>
 <div id="Header">
-    <div class="stdhdr_left"><img src="<c:url value="/capcontrol/images/YourLogo.gif"/>" alt="Your Logo Here"></div>
-    <div class="stdhdr_right"><img src="<c:url value="/capcontrol/images/HeaderGraphic.gif"/>" alt="Capacitorcontrol.com powered by Yukon"></div>
+    <div class="stdhdr_left"><div id="TopLeftLogo"></div></div>
+    <div class="stdhdr_right"><div id="TopRightLogo"></div></div>
     <div class="stdhdr_clear">&nbsp;</div>
 </div>
 <cti:outputMenu/>

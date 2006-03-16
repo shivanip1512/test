@@ -5,6 +5,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   }
 
+#TopLeftLogo {
+  background-image: url(/capcontrol/images/YourLogo.gif);
+  background-repeat: no-repeat;
+  width: 190px;
+  height: 53px;
+}
+
+
 #Header img {
   margin: 0 0 1em 0;
   padding: 0;

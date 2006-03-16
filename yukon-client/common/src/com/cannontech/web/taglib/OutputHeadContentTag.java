@@ -2,7 +2,9 @@ package com.cannontech.web.taglib;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,6 +15,9 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.ModuleBase;
 
@@ -71,20 +76,17 @@ public class OutputHeadContentTag extends BodyTagSupport {
         pageContext.getOut().write("\n<!-- Consolidated Script Files -->\n");
         outputScriptFiles(finalScriptList);
     }
-    private void checkPath(String file) {
-        if (!file.startsWith("/")) {
-            CTILogger.warn("Please use absolute paths for CSS and JS files (" + file + ")");
-        }
-    }
     
-    private void outputScriptFiles(Collection cssList) throws IOException {
-        for (Iterator iter = cssList.iterator(); iter.hasNext();) {
+    private void outputScriptFiles(Collection scriptList) throws IOException {
+        if (scriptList.isEmpty()) {
+            pageContext.getOut().write("<!--  (none)  -->\n");
+        }
+        for (Iterator iter = scriptList.iterator(); iter.hasNext();) {
             String scriptFile = (String) iter.next();
-            checkPath(scriptFile);
             scriptFile = ServletUtil.createSafeUrl(pageContext.getRequest(), scriptFile);
             pageContext.getOut()
                        .write("<script type=\"text/javascript\" src=\"");
-            pageContext.getOut().write(scriptFile);
+            pageContext.getOut().write(scriptFile.trim());
             pageContext.getOut().write("\" ></script>\n");
         }
     }
@@ -95,12 +97,21 @@ public class OutputHeadContentTag extends BodyTagSupport {
         
         ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
                                                                       PageContext.REQUEST_SCOPE);
-        pageContext.getOut().write("\n<!-- Module files from XML config -->\n");
+        pageContext.getOut().write("\n<!-- Module CSS files from module_config.xml -->\n");
         outputCssFiles(moduleBase.getCssFiles());
         List cssList = (List) pageContext.getAttribute(StandardPageTag.CTI_CSS_FILES,
                                                        PageContext.REQUEST_SCOPE);
-        pageContext.getOut().write("\n<!-- Individual files from includeCss tag -->\n");
+        pageContext.getOut().write("\n<!-- Individual files from includeCss tag on the request page -->\n");
         outputCssFiles(cssList);
+        
+        pageContext.getOut().write("\n<!-- Energy Company specific style sheets (Web Client Role)-->\n");
+        LiteYukonUser user = 
+            (LiteYukonUser) pageContext.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
+        String cssLocations = EnergyCompanyFuncs.getEnergyCompanyProperty(user, WebClientRole.STD_PAGE_STYLE_SHEET);
+        if (cssLocations != null) {
+            String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
+            outputCssFiles(Arrays.asList(cssLocationArray));
+        }
     }
     
     private void outputCssFiles(List cssList) throws IOException {
@@ -109,14 +120,14 @@ public class OutputHeadContentTag extends BodyTagSupport {
         }
         for (Iterator iter = cssList.iterator(); iter.hasNext();) {
             String cssFile = (String) iter.next();
-            checkPath(cssFile);
             cssFile = ServletUtil.createSafeUrl(pageContext.getRequest(), cssFile);
             pageContext.getOut()
                        .write("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-            pageContext.getOut().write(cssFile);
+            pageContext.getOut().write(cssFile.trim());
             pageContext.getOut().write("\" >\n");
         }
     }
+    
     public void addScriptFile(String link) {
         layoutScriptFiles.add(link);
     }

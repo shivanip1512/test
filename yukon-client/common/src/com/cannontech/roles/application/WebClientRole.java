@@ -20,4 +20,5 @@ public interface WebClientRole {
 	
 	public static final int NAV_CONNECTOR_BOTTOM = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 7;	// BottomConnector.gif
 	public static final int NAV_CONNECTOR_MIDDLE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 8;	// MidConnector.gif
+	public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 9;	// Standard Page CSS
 }
