@@ -147,8 +147,9 @@ public class YukonToCRSFuncs
 			String dataDir = "../log/";
 			String opName = "import" + day;
 			String filename = dataDir + opName  + ".log";
-			java.io.File file = new java.io.File( filename );
-				
+			java.io.File file = new java.io.File( dataDir);
+			boolean created = file.mkdirs();
+			file = new java.io.File( filename);
 			//if this log file hasn't been modified today, assume it is a month old and start over.
 			if(file.exists() && file.lastModified() < (now.getTime() - 86400000))
 			{
