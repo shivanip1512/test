@@ -18,7 +18,9 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	private String curtailmentAgreement = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Double curtailAmount = new Double(0.0);
 	private String companyName = null;
+
 	private Integer ciCustType = new Integer(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);	//YukonListEntry value, YukonSelectionList->CICustomerType
+
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -29,6 +31,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
 
 	public static final String TABLE_NAME = "CICustomerBase";
+    public static final String EC_MAP_TABLE_NAME = "EnergyCompanyCustomerList";
 
 	private static final String GET_CUSTOMER_FROM_CONTACT_SQL =
 			"SELECT ci.CustomerID, ci.MainAddressID, " + 
@@ -70,6 +73,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 	{
 		Integer values[] = { getCustomerID() };
 	
+        delete( EC_MAP_TABLE_NAME, CONSTRAINT_COLUMNS, values  );
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 	}
 	
