@@ -9,7 +9,7 @@ import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.notif.voice.callstates.*;
-import com.cannontech.roles.ivr.OutboundCallingRole;
+import com.cannontech.roles.notifications.IvrRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.roles.yukon.VoiceServerRole;
 import com.cannontech.util.MBeanUtil;
@@ -41,7 +41,7 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
         LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
 
         String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceApp = AuthFuncs.getRolePropertyValueEx(user, OutboundCallingRole.VOICE_APP);
+        String voiceApp = AuthFuncs.getRolePropertyValueEx(user, IvrRole.VOICE_APP);
 
         VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
         dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
@@ -49,7 +49,7 @@ public class CallPool implements PropertyChangeListener, CallPoolMBean {
         _dialer = dialer;
         
         _callTimeoutSeconds = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(AuthFuncs.getRolePropertyValueEx(user, OutboundCallingRole.NUMBER_OF_CHANNELS));
+        int numberOfChannels = Integer.parseInt(AuthFuncs.getRolePropertyValueEx(user, IvrRole.NUMBER_OF_CHANNELS));
 
         _timerTasks = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
         _pendingCalls = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
