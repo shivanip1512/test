@@ -182,7 +182,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	                   			int endIndex = (beginIndex >= 0 ? workOrderBase.getWorkOrderBase().getDescription().indexOf(";", beginIndex + 14) : beginIndex);
 	                   			String meterNumber = "";
 	                   			if( beginIndex > -1 && endIndex > -1)
-	                   				meterNumber = workOrderBase.getWorkOrderBase().getDescription().substring(beginIndex, endIndex);
+	                   				meterNumber = workOrderBase.getWorkOrderBase().getDescription().substring(beginIndex+14, endIndex);
 	                   			
 	                   			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrderBase.getWorkOrderBase().getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyID().intValue());
 	                           	if( meterHardwareBase != null)

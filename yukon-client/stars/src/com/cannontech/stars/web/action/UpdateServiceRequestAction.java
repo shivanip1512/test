@@ -180,7 +180,7 @@ public class UpdateServiceRequestAction implements ActionBase {
                    			int endIndex = (beginIndex >= 0 ? updateOrder.getDescription().indexOf(";", beginIndex + 14) : beginIndex);
                    			String meterNumber = "";
                    			if( beginIndex > -1 && endIndex > -1)
-                   				meterNumber = updateOrder.getDescription().substring(beginIndex, endIndex);
+                   				meterNumber = updateOrder.getDescription().substring(beginIndex+14, endIndex);
 
 		           			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(updateOrder.getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyID().intValue());
 		                   	if( meterHardwareBase != null)
@@ -207,11 +207,11 @@ public class UpdateServiceRequestAction implements ActionBase {
 		    		               			com.cannontech.database.data.stars.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 		    		               			lmHardwareBase.setInventoryID(hardware.getInventoryID());
 		    		               			lmHardwareBase.setLMHardwareBase(hardware);
-		    		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, hardware).execute();
+		    		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
 		    		               			
 		    				       			//Update the lmHardwareBase data object
 		    				       			lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
-		    				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, hardware).execute();
+		    				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
 		    				       			
 		    				       			//Log the inventory (lmHardwarebase) state change.
 		    				       			EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());

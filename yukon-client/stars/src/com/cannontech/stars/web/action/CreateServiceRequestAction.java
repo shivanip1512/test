@@ -285,7 +285,7 @@ public class CreateServiceRequestAction implements ActionBase {
            			int endIndex = (beginIndex >= 0 ? workOrder.getWorkOrderBase().getDescription().indexOf(";", beginIndex + 14) : beginIndex);
            			String meterNumber = "";
            			if( beginIndex > -1 && endIndex > -1)
-           				meterNumber = workOrder.getWorkOrderBase().getDescription().substring(beginIndex, endIndex);
+           				meterNumber = workOrder.getWorkOrderBase().getDescription().substring(beginIndex+14, endIndex);
 
            			MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrder.getWorkOrderBase().getAccountID(), meterNumber, energyCompany.getEnergyCompanyID().intValue());
                    	if( meterHardwareBase != null)

@@ -89,7 +89,8 @@ public class DeleteServiceRequestAction implements ActionBase {
 			
 			//Remove the order if it is in the WorkOrderBean list.
 			WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
-			woBean.getWorkOrderList().remove(liteOrder);
+			if( woBean != null)
+				woBean.getWorkOrderList().remove(liteOrder);
 			
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			boolean fromWorkOrder = false;
