@@ -265,7 +265,15 @@ public final class YukonCRSIntegrator
                                 Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
                             }
 
-                            //TODO DBChangeMsg for meter
+                            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+                                customerAccount.getCustomerAccount().getAccountID(),
+                                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                DBChangeMsg.CHANGE_TYPE_UPDATE
+                            );
+                              
+                            ServerUtils.handleDBChangeMsg(dbChangeMessage);
                         }
                     }
                     catch (TransactionException e) 
@@ -278,8 +286,6 @@ public final class YukonCRSIntegrator
                 {
                     errorMsg.append("No CustomerAccount found for account " + accountNumber + "; ");
                 }
-
-                
             }
             else
             {
