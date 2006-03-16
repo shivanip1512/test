@@ -11,6 +11,7 @@ package com.cannontech.common.constants;
 public interface YukonSelectionListDefs {
 
 	public static final int YUK_LIST_ID_CONTACT_TYPE = 1;
+    public static final int YUK_LIST_ID_CUSTOMER_TYPE = 1071;
 	
 	// List names are now only used in STARS
 	public static final String YUK_LIST_NAME_CONTACT_TYPE = "ContactType";

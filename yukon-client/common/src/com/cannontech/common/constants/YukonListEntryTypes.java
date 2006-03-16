@@ -242,4 +242,7 @@ public interface YukonListEntryTypes
     public static final int EVENT_ACTION_INV_SCRAPPED = 10310;
     public static final int EVENT_ACTION_INV_RETURNED = 10311;
     public static final int EVENT_ACTION_INV_LOST = 10312;
+    
+    //entryIDS for CICustTypes
+    public static final int CUSTOMER_TYPE_COMMERCIAL = 1930;
 }
