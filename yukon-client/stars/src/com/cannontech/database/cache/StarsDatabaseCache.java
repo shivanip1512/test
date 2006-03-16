@@ -55,6 +55,7 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 
 /**
  * @author yao
@@ -527,21 +528,24 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			}
 		}
 		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
-			//TODO Decide if all changes types should simply be retrieved and then updated or if we should loop through the energy companies still
-			if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD || msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE)
-			{
-				LiteWorkOrderBase liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
-				liteWorkOrderBase.retrieve();
-				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany)getEnergyCompany(liteWorkOrderBase.getEnergyCompanyID());
-				handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );;
-			}
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				
 				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
-				if (liteWorkOrderBase != null) {
-					handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-					return;
+				if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
+				{
+					if( liteWorkOrderBase == null)
+					{
+						liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
+						liteWorkOrderBase.retrieve();
+						handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+						return;
+					}
+				}
+				else {
+					if (liteWorkOrderBase != null) {
+						handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+						return;
+					}
 				}
 			}
 		}
@@ -772,6 +776,11 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
 				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
 				liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
+				StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				if (starsAcctInfo != null) {
+					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteWorkOrderBase, liteStarsEnergyCompany);
+					starsAcctInfo.getStarsServiceRequestHistory().addStarsServiceRequest(0, starsOrder);
+				}
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
