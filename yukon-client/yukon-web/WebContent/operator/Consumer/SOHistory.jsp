@@ -186,12 +186,14 @@ function sendWorkOrder() {
 			  <input type="hidden" name="fileName" value="WorkOrder">
 			  <input type="hidden" name="NoCache">
 			  <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
+              <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			</form>
 			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
 			  <input type="hidden" name="action" value="SendWorkOrder">
               <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
+              <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
@@ -208,6 +210,7 @@ function sendWorkOrder() {
 			<form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
 			  <input type="hidden" name="action" value="UpdateWorkOrder">
               <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
+              <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
               <table width="640" border="0" cellspacing="0" cellpadding="10" align="center">
