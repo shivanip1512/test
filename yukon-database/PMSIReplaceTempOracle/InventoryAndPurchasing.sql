@@ -310,6 +310,7 @@ insert into yukonlistentry values (10312, 1069, 0, 'Lost', 0);
 
 insert into yukonlistentry values(1351, 1056, 0, 'Service Status', 3501);
 insert into YukonListEntry values (1354,1056,0,'Zip Code',3504);
+insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
 
 insert into YukonListEntry values (1343,1055,0,'Service Company',3403);
 insert into YukonListEntry values (1344,1055,0,'Service Type',3404);
@@ -323,7 +324,7 @@ insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','f
 alter table WorkOrderBase modify Description varchar(500);
 
 /* Commerical Customer Types */
-insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','Y');
+insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','N');
 insert into ECToGenericMapping values (-1, 1071, 'YukonSelectionList');
 insert into YukonListEntry values (1930,1071,0, 'Commercial', 0);
 insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
@@ -332,7 +333,7 @@ insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 
 alter table ciCustomerBase add CICustType NUMBER;
-update CICustomerBase set CICustType = 0;
+update CICustomerBase set CICustType = 1930;
 alter table CICustomerBase modify CICustType number not null;
 go
 alter table CICustomerBase add constraint FK_CUSTTYPE_ENTRYID foreign key (CICustType) 
