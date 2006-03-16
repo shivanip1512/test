@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.integration.crs.YukonCRSIntegrator;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.web.util.TimerTaskUtil;
 
@@ -38,6 +40,12 @@ public class TimerTaskServlet extends HttpServlet {
 		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData ))
 			StarsDatabaseCache.getInstance().loadData();
+		
+		if( VersionTools.crsPtjIntegrationExists())	//Xcel Integration!
+		{
+			YukonCRSIntegrator integrator = new YukonCRSIntegrator();
+			integrator.start();
+		}
 	}
 
 	/* (non-Javadoc)
