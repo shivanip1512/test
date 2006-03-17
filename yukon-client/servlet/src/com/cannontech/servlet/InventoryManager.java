@@ -24,8 +24,10 @@ import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -1526,6 +1528,8 @@ public class InventoryManager extends HttpServlet {
         NonYukonMeterBean mBean = (NonYukonMeterBean) session.getAttribute("meterBean");
         MeterHardwareBase currentMeter = mBean.getCurrentMeter();
         String accountDestination = new String();
+        boolean success = false;
+        boolean isNew = false;
         
         currentMeter.getMeterHardwareBase().setMeterNumber(req.getParameter("MeterNumber"));
         currentMeter.getMeterHardwareBase().setMeterTypeID(new Integer(req.getParameter("MeterType")));
@@ -1545,12 +1549,15 @@ public class InventoryManager extends HttpServlet {
                 Transaction.createTransaction(Transaction.INSERT, currentMeter).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New meter added to inventory and this account.");
                 accountDestination = req.getContextPath() + "/operator/Consumer/Update.jsp";
+                success = true;
+                isNew = true;
             }
             else
             {
                 Transaction.createTransaction(Transaction.UPDATE, currentMeter).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Meter successfully updated in the database.");
                 accountDestination = req.getContextPath() + "/operator/Consumer/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString();
+                success = true;
             }
             
             /**
@@ -1588,6 +1595,66 @@ public class InventoryManager extends HttpServlet {
             CTILogger.error( e.getMessage(), e );
             e.printStackTrace();
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Meter information could not be saved to the database.  Transaction failed.");
+        }
+        
+        if(success)
+        {
+            /*LINE OF DEATH*/
+            LiteInventoryBase liteInv = (LiteInventoryBase)StarsLiteFactory.createLite(currentMeter);
+           /* if(liteInv.getDeviceLabel().length() < 1)
+                liteInv.setDeviceLabel(current)*/
+            
+            StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
+                    session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+            LiteStarsCustAccountInformation liteAcctInfo = mBean.getEnergyCompany().getCustAccountInformation(
+                    starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
+            
+            if (isNew) 
+            {
+                StarsCreateLMHardware createHw = new StarsCreateLMHardware();
+                StarsLiteFactory.setStarsInv( createHw, liteInv, mBean.getEnergyCompany() );
+                createHw.setRemoveDate( null );
+                createHw.setInstallDate( new Date() );
+                createHw.setInstallationNotes( "" );
+                        
+                try 
+                {
+                    liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, mBean.getEnergyCompany() );
+                }
+                catch (WebClientException e) 
+                {
+                    CTILogger.error( e.getMessage(), e );
+                    session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+                    redirect = req.getContextPath() + "/operator/Consumer/MeterProfile.jsp?MetRef=-1";
+                    return;
+                }
+                        
+                session.removeAttribute( ServletUtils.ATT_REDIRECT );
+                StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, mBean.getEnergyCompany() );
+                starsInv.setMeterNumber(currentMeter.getMeterHardwareBase().getMeterNumber());
+                CreateLMHardwareAction.parseResponse( createHw, starsInv, starsAcctInfo, session );
+                
+                // REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
+                redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+            }
+            else 
+            {
+                session.setAttribute( ServletUtils.ATT_REDIRECT,  req.getContextPath() + "/operator/Hardware/MeterProfile.jsp?MetRef=" + currentMeter.getInventoryBase().getInventoryID().toString() );
+                StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, mBean.getEnergyCompany());
+                starsInv.setMeterNumber(currentMeter.getMeterHardwareBase().getMeterNumber());
+                UpdateLMHardwareAction.parseResponse(currentMeter.getInventoryBase().getInventoryID(), starsInv, starsAcctInfo, session);
+            }
+
+            /*LINE OF DEATH*/
+            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+                  mBean.getCurrentAccountID(),
+                  DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                  DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                  DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                  DBChangeMsg.CHANGE_TYPE_UPDATE
+            );
+            dbChangeMessage.setSource("STARS Self-Message");
+            ServerUtils.handleDBChangeMsg(dbChangeMessage);
         }
         
         if(referer.contains("Consumer"))
