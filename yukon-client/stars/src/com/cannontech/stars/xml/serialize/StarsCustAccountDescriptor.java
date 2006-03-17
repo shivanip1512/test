@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.96 2005/07/11 15:08:59 jdayton Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.97 2006/03/17 04:17:08 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.96 $ $Date: 2005/07/11 15:08:59 $
+ * @version $Revision: 1.97 $ $Date: 2006/03/17 04:17:08 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -262,6 +262,43 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //      -- _custType
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_custType", "custType", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+
+                return new Integer(target.getCICustomerType());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    
+                    target.setCICustomerType( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _custType
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         

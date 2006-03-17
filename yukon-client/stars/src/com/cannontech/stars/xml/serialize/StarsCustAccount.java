@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.96 2005/07/11 15:08:59 jdayton Exp $
+ * $Id: StarsCustAccount.java,v 1.97 2006/03/17 04:17:08 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.96 $ $Date: 2005/07/11 15:08:59 $
+ * @version $Revision: 1.97 $ $Date: 2006/03/17 04:17:08 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -58,6 +58,8 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private boolean _has_isCommercial;
 
     private java.lang.String _company;
+    
+    private int _custType;
 
     private java.lang.String _accountNotes;
 
@@ -234,6 +236,11 @@ public abstract class StarsCustAccount implements java.io.Serializable {
         return this._company;
     } //-- java.lang.String getCompany() 
 
+    public int getCICustomerType()
+    {
+        return this._custType;
+    }
+    
     /**
      * Returns the value of field 'customerID'.
      * 
@@ -478,6 +485,10 @@ public abstract class StarsCustAccount implements java.io.Serializable {
         this._company = company;
     } //-- void setCompany(java.lang.String) 
 
+    public void setCICustomerType(int custType)
+    {
+        this._custType = custType;
+    }
     /**
      * Sets the value of field 'customerID'.
      * 
