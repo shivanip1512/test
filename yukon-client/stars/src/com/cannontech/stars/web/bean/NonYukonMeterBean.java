@@ -135,9 +135,7 @@ public class NonYukonMeterBean
     
     public MeterHardwareBase getCurrentMeter()
     {
-        if(currentMeter != null)
-            return currentMeter;
-        else if(currentMeterID == -1)
+        if(currentMeterID == -1)
         {
             currentMeter = new MeterHardwareBase();
             return currentMeter;
