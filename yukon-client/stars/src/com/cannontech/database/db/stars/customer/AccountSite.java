@@ -23,7 +23,7 @@ public class AccountSite extends DBPersistent {
     private Integer streetAddressID = new Integer( 0 );
     private String propertyNotes = "";
     private String customerStatus = "";
-    private String custAtHome = "";
+    private String custAtHome = "N";
 
     public static final String[] SETTER_COLUMNS = {
         "SiteInformationID", "SiteNumber", "StreetAddressID", "PropertyNotes", 
