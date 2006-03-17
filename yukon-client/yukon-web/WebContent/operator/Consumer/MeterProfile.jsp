@@ -54,10 +54,15 @@
 	                        	<td align="right" width="88" class="SubtitleHeader">*Type:</td>
 	                        	<td width="210"> 
 	                              	<select name="MeterType" onchange="setContentChanged(true)">
+	                                   	<option value="0"> <c:out value="(none)"/> </option>
 	                                   	<c:forEach var="meterType" items="${meterBean.availableMeterTypes.yukonListEntries}">
-											<option value='<c:out value="${meterType.entryID}"/>'> <c:out value="${meterType.entryText}"/> </option>
+											<c:if test="${meterType.entryID == meterBean.currentMeter.meterHardwareBase.meterTypeID}">
+												<option value='<c:out value="${meterType.entryID}"/>' selected> <c:out value="${meterType.entryText}"/> </option>
+											</c:if>	
+											<c:if test="${meterType.entryID != meterBean.currentMeter.meterHardwareBase.meterTypeID}">
+												<option value='<c:out value="${meterType.entryID}"/>'> <c:out value="${meterType.entryText}"/> </option>
+											</c:if>	
 										</c:forEach>
-										<option value="0"> <c:out value="(none)"/> </option>
 	                              	</select>
 	                        	</td>
 	                      	</tr>
@@ -96,11 +101,16 @@
                             	</td>
                             	<td width="210"> 
                               		<select name="Voltage" onChange="setContentChanged(true)">
+                                   		 <option value="0"> <c:out value="(none)"/> </option>
                                    		 <c:forEach var="voltage" items="${meterBean.voltages.yukonListEntries}">
-											<option value='<c:out value="${voltage.entryID}"/>'> <c:out value="${voltage.entryText}"/> </option>
+											<c:if test="${meterType.entryID == meterBean.currentMeter.inventoryBase.voltageID}">
+												<option value='<c:out value="${voltage.entryID}"/>' selected> <c:out value="${voltage.entryText}"/> </option>
+											</c:if>	
+											<c:if test="${meterType.entryID != meterBean.currentMeter.inventoryBase.voltageID}">
+												<option value='<c:out value="${voltage.entryID}"/>'> <c:out value="${voltage.entryText}"/> </option>
+											</c:if>	
 										</c:forEach>
-										<option value="0"> <c:out value="(none)"/> </option>
-                              		</select>
+									</select>
                             	</td>
                           	</tr>
                           	<tr> 
