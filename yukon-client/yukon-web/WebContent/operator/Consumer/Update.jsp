@@ -1,6 +1,9 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.xml.serialize.StarsSelectionListEntry" %>
+<jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -78,7 +81,40 @@ function init() {
 	setSameAsAbove(document.form1);
 <%
 	}
+	
+	if (account.getIsCommercial()) 
+	{%>
+		document.getElementById("CompanyLabel").style.display = "";
+		document.getElementById("CompanyField").style.display = "";
+		document.getElementById("CommercialTypeLabel").style.display = "";
+		document.getElementById("CommercialType").style.display = "";
+	<%}
+	else
+	{%>
+		document.getElementById("CompanyLabel").style.display = "none";
+		document.getElementById("CompanyField").style.display = "none";
+		document.getElementById("CommercialTypeLabel").style.display = "none";
+		document.getElementById("CommercialType").style.display = "none";
+	<%}
 %>
+}
+
+function setCommercial() {
+	if (document.form1.Commercial.checked == true) {
+		document.getElementById("CompanyLabel").style.display = "";
+		document.getElementById("CompanyField").style.display = "";
+		document.getElementById("CommercialTypeLabel").style.display = "";
+		document.getElementById("CommercialType").style.display = "";
+	}
+	else
+	{
+		document.getElementById("CompanyLabel").style.display = "none";
+		document.getElementById("CompanyField").style.display = "none";
+		document.getElementById("CommercialTypeLabel").style.display = "none";
+		document.getElementById("CommercialType").style.display = "none";
+	}
+
+	setContentChanged(true)
 }
 </script>
 </head>
@@ -116,6 +152,8 @@ function init() {
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			<input type="hidden" name="action" value="UpdateCustAccount">
 			<input type="hidden" name="DisableReceivers" value="false">
+			<%pageContext.setAttribute("custType",String.valueOf(account.getCICustomerType()));%>
+			<c:set target="${accountBean}" property="currentCommercialType" value="${custType}" />
             <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="SubtitleHeader">CUSTOMER CONTACT</span> 
@@ -132,23 +170,42 @@ function init() {
                                 <input type="text" name="AcctNo" maxlength="40" size="14" value="<%= account.getAccountNumber() %>" onchange="setContentChanged(true)">
                               </td>
                               <td valign="top" class="TableCell" width="87"> Commercial: 
-                                <input type="checkbox" name="Commercial" value="true" disabled onchange="setContentChanged(true)"
+                                <input type="checkbox" name="Commercial" value="true" onclick="setCommercial()"
                                   <% if (account.getIsCommercial()) { %>checked<% } %>>
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
-<% if (account.getIsCommercial()) { %>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">Company: </div>
+                          <div id="CompanyLabel" align="right">Company: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
+                           <div id="CompanyField">
+                           	<input type="text" id="CompanyField" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
+                        	</div>
                         </td>
                       </tr>
-<% } %>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div id="CommercialTypeLabel" align="right">Commercial Type: </div>
+                        </td>
+                        <td width="210"> 
+		                    <div id="CommercialType">
+		                        <select id="CommercialType" name="CommercialType" onchange="setContentChanged(true)">
+	                               	<c:forEach var="CustType" items="${accountBean.customerTypes.yukonListEntries}">
+										<c:if test="${CustType.entryID == accountBean.currentCommercialType}">
+											<option value='<c:out value="${CustType.entryID}"/>' selected> <c:out value="${CustType.entryText}"/> </option>
+										</c:if>
+										<c:if test="${CustType.entryID != accountBean.currentCommercialType}">
+											<option value='<c:out value="${CustType.entryID}"/>'> <c:out value="${CustType.entryText}"/> </option>
+										</c:if>
+									</c:forEach>
+	                          	</select>  
+	                       	</div>
+                        </td>
+                      </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Customer #: </div>

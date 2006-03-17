@@ -1,4 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
+<jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <%
 	boolean inWizard = request.getParameter("Wizard") != null;
 	StarsNewCustomerAccount newAccount = null;
@@ -117,6 +119,26 @@ function confirmCancel() {
 	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
+
+
+function setCommercial() 
+{
+	if (document.form1.Commercial.checked == true) {
+		document.getElementById("CompanyLabel").style.display = "";
+		document.getElementById("CompanyField").style.display = "";
+		document.getElementById("CommercialTypeLabel").style.display = "";
+		document.getElementById("CommercialType").style.display = "";
+	}
+	else
+	{
+		document.getElementById("CompanyLabel").style.display = "none";
+		document.getElementById("CompanyField").style.display = "none";
+		document.getElementById("CommercialTypeLabel").style.display = "none";
+		document.getElementById("CommercialType").style.display = "none";
+	}
+
+	setContentChanged(true)
+}
 </script>
 </head>
 
@@ -169,7 +191,7 @@ function confirmCancel() {
                                 <input type="text" name="AcctNo" maxlength="40" size="14" value="<%= account.getAccountNumber() %>" onchange="setContentChanged(true)">
                               </td>
                               <td valign="top" class="TableCell" width="95" align="center">&nbsp;&nbsp;Commercial: 
-                                <input type="checkbox" name="Commercial" value="true" <% if (account.getIsCommercial()) { %>checked<% } %> onclick="setContentChanged(true)">
+                                <input type="checkbox" name="Commercial" value="true" <% if (account.getIsCommercial()) { %>checked<% } %> onclick="setCommercial()">
                               </td>
                             </tr>
                           </table>
@@ -177,10 +199,26 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">Company: </div>
+                          <div id="CompanyLabel" align="right" style="display:none">Company: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
+                           <div id="CompanyField" style="display:none">
+                           	<input type="text" id="CompanyField" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
+                        	</div>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div id="CommercialTypeLabel" align="right" style="display:none">Commercial Type: </div>
+                        </td>
+                        <td width="210"> 
+		                    <div id="CommercialType" style="display:none">
+		                        <select id="CommercialType" name="CommercialType" onchange="setContentChanged(true)">
+	                               	<c:forEach var="CustType" items="${accountBean.customerTypes.yukonListEntries}">
+										<option value='<c:out value="${CustType.entryID}"/>'> <c:out value="${CustType.entryText}"/> </option>
+									</c:forEach>
+	                          	</select>  
+	                       	</div>
                         </td>
                       </tr>
                       <tr> 
