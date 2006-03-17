@@ -219,6 +219,7 @@ public class StarsFactory {
 			newAccount.setAccountNumber( account.getAccountNumber() );
 			newAccount.setIsCommercial( account.getIsCommercial() );
 			newAccount.setCompany( account.getCompany() );
+            newAccount.setCICustomerType(account.getCICustomerType());
 			newAccount.setAccountNotes( account.getAccountNotes() );
 			newAccount.setPropertyNumber( account.getPropertyNumber() );
 			newAccount.setPropertyNotes( account.getPropertyNotes() );

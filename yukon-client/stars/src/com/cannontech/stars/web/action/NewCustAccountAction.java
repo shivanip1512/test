@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -19,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -53,6 +55,7 @@ public class NewCustAccountAction implements ActionBase {
 			account.setAccountNumber( req.getParameter("AcctNo") );
 			account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
 			account.setCompany( req.getParameter("Company") );
+            account.setCICustomerType( Integer.parseInt(req.getParameter("CommercialType")));
 			if (req.getParameter("CustomerNumber") != null)
 				account.setCustomerNumber( req.getParameter("CustomerNumber") );
 			if (req.getParameter("RateSchedule") != null)
@@ -145,68 +148,80 @@ public class NewCustAccountAction implements ActionBase {
 					/*very hackish...should not be hitting the DB in the build method...
 					 * this is part of the whole HECO development rush...some day we will pay
 					 */
-					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
-					String firstInitial= "";
-					if(firstName != null)
-						firstInitial = firstName.toLowerCase().substring(0,1);
-					String newUserName = firstInitial + lastName.toLowerCase();
-					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
-						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
-					login.getYukonUser().setUsername(newUserName);
-					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
-					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
-					//login.setEnergyCompany()
-					login = (YukonUser)
-							Transaction.createTransaction(Transaction.INSERT, login).execute();
-					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
-					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		
-					contact.setLoginID(login.getUserID().intValue());
+                    //ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
+					if(AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+                    {
+                        com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
+    					String firstInitial= "";
+    					if(firstName != null)
+    						firstInitial = firstName.toLowerCase().substring(0,1);
+    					String newUserName = firstInitial + lastName.toLowerCase();
+    					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
+    						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+    					login.getYukonUser().setUsername(newUserName);
+    					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+    					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+    					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+    					//login.setEnergyCompany()
+    					login = (YukonUser)
+    							Transaction.createTransaction(Transaction.INSERT, login).execute();
+    					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+    					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		
+    					contact.setLoginID(login.getUserID().intValue());
+                    }
+                    else
+                    {
+                        contact.setLoginID(UserUtils.USER_DEFAULT_ID);
+                    }
 					account.addAdditionalContact( contact );
 				}
 			}
 			
 			newAccount.setStarsCustomerAccount( account );
-			
-			String username = req.getParameter( "Username" );
-			String password = req.getParameter( "Password" );
-			StarsUpdateLogin login = new StarsUpdateLogin();
-			if (username != null && username.trim().length() > 0) {
-				login.setUsername( username );
-				login.setPassword( password );
-				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
-			}
-			else
-			{
-				String lastName = primContact.getLastName();
-				String firstName = primContact.getFirstName();
-				String firstInitial = "";
-
-				if(firstName != null && firstName.length() > 0)
-					firstInitial = firstName.toLowerCase().substring(0,1);
-					
-				if(lastName == null)
-				{
-					lastName = account.getAccountNumber();
-					firstInitial = "#";
-				}
-				if(YukonUserFuncs.getLiteYukonUser( firstInitial + lastName ) != null)
-					login.setUsername(firstName.toLowerCase() + lastName.toLowerCase());	
-				else
-					login.setUsername(firstInitial + lastName.toLowerCase());
-				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
-				/*String groupIDs = EnergyCompanyFuncs.getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
-				Integer defaultGroupID = new Integer(0);
-				if(groupIDs != null)
-					groupIDs.*/
-				login.setGroupID(custGroups[0].getGroupID());
-				//login.setStatus(UserUtils.STATUS_ENABLED);
-				//how do I set energy company id for this type of login?????
-				//login.setStatus(UserUtils.STATUS_ENABLED);
-
-			}
-			
-			newAccount.setStarsUpdateLogin(login);
+			//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
+            if(AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+            {
+                String username = req.getParameter( "Username" );
+    			String password = req.getParameter( "Password" );
+    			StarsUpdateLogin login = new StarsUpdateLogin();
+    			if (username != null && username.trim().length() > 0) {
+    				login.setUsername( username );
+    				login.setPassword( password );
+    				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
+    			}
+    			else
+    			{
+    				String lastName = primContact.getLastName();
+    				String firstName = primContact.getFirstName();
+    				String firstInitial = "";
+    
+    				if(firstName != null && firstName.length() > 0)
+    					firstInitial = firstName.toLowerCase().substring(0,1);
+    					
+    				if(lastName == null)
+    				{
+    					lastName = account.getAccountNumber();
+    					firstInitial = "#";
+    				}
+    				if(YukonUserFuncs.getLiteYukonUser( firstInitial + lastName ) != null)
+    					login.setUsername(firstName.toLowerCase() + lastName.toLowerCase());	
+    				else
+    					login.setUsername(firstInitial + lastName.toLowerCase());
+    				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
+    				/*String groupIDs = EnergyCompanyFuncs.getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
+    				Integer defaultGroupID = new Integer(0);
+    				if(groupIDs != null)
+    					groupIDs.*/
+    				login.setGroupID(custGroups[0].getGroupID());
+    				//login.setStatus(UserUtils.STATUS_ENABLED);
+    				//how do I set energy company id for this type of login?????
+    				//login.setStatus(UserUtils.STATUS_ENABLED);
+    
+    			}
+    			
+    			newAccount.setStarsUpdateLogin(login);
+            }
+            
 			session.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 			
 			// Format the phone number after the information has been saved
@@ -387,11 +402,12 @@ public class NewCustAccountAction implements ActionBase {
 			customerDB.setPrimaryContactID( primContact.getContact().getContactID() );
         	
 			if (starsAccount.getIsCommercial()) {
-				customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_CI) );
+				customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_CI));
 				
 				((com.cannontech.database.data.customer.CICustomerBase)customer).getCiCustomerBase().setCompanyName( starsAccount.getCompany() );
 				
-				com.cannontech.database.db.customer.Address custAddr = ((com.cannontech.database.data.customer.CICustomerBase)customer).getAddress();
+                ((com.cannontech.database.data.customer.CICustomerBase)customer).getCiCustomerBase().setCICustType(newAccount.getStarsCustomerAccount().getCICustomerType() );
+                com.cannontech.database.db.customer.Address custAddr = ((com.cannontech.database.data.customer.CICustomerBase)customer).getAddress();
 				StarsFactory.setCustomerAddress( custAddr, starsAccount.getStreetAddress() );
 				
 				com.cannontech.database.db.company.EnergyCompany engCompany = new com.cannontech.database.db.company.EnergyCompany();

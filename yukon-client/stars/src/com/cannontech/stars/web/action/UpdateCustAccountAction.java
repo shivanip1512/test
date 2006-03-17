@@ -9,6 +9,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -19,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.customer.Address;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -64,10 +66,12 @@ public class UpdateCustAccountAction implements ActionBase {
 					StarsFactory.newStarsCustAccount( starsAcctInfo.getStarsCustomerAccount(), StarsUpdateCustomerAccount.class );
 
 			updateAccount.setAccountNumber( req.getParameter("AcctNo") );
-			updateAccount.setIsCommercial( starsAcctInfo.getStarsCustomerAccount().getIsCommercial() );
-			if (req.getParameter("Company") != null)
+			updateAccount.setIsCommercial( req.getParameter("Commercial") != null );
+			if (req.getParameter("Company") != null && updateAccount.getIsCommercial())
 				updateAccount.setCompany( req.getParameter("Company") );
-			if (req.getParameter("CustomerNumber") != null)
+            if(updateAccount.getIsCommercial())
+                updateAccount.setCICustomerType( Integer.parseInt(req.getParameter("CommercialType")));
+            if (req.getParameter("CustomerNumber") != null)
 				updateAccount.setCustomerNumber( req.getParameter("CustomerNumber") );
 			if (req.getParameter("RateSchedule") != null)
 				updateAccount.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
@@ -355,14 +359,30 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (liteCustomer instanceof LiteCICustomer) {
 				LiteCICustomer liteCICust = (LiteCICustomer) liteCustomer;
 				
-				if (!liteCICust.getCompanyName().equals( updateAccount.getCompany() )) {
-					// Company name of a CI customer is changed
+                /*
+                 * If we are already inside this if statement, then we know the account
+                 * was previously commercial.  Check to see if it is no longer the case.
+                 */
+                if(! updateAccount.getIsCommercial())
+                {
+                    com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
+                    ciDB.setCustomerID( customerDB.getCustomerID() );
+                    ciDB.setDbConnection( conn );
+                    ciDB.delete();
+                    Address companyAddress = new Address();
+                    companyAddress.setAddressID(liteCICust.getMainAddressID());
+                    companyAddress.setDbConnection(conn);
+                    companyAddress.delete();                    
+                }
+                else 
+                {
 					com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
 					ciDB.setCustomerID( customerDB.getCustomerID() );
 					ciDB.setDbConnection( conn );
 					ciDB.retrieve();
         			
 					ciDB.setCompanyName( updateAccount.getCompany() );
+                    ciDB.setCICustType(new Integer(updateAccount.getCICustomerType()));
 					ciDB.setDbConnection( conn );
 					ciDB.update();
 					        			
@@ -370,6 +390,19 @@ public class UpdateCustAccountAction implements ActionBase {
 					ciCustChanged = true;
 				}
 			}
+			//wasn't commercial before, so I guess we better add it now that it is
+            else if( updateAccount.getIsCommercial())
+            {
+                com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
+                ciDB.setCustomerID( customerDB.getCustomerID() );
+                ciDB.setCompanyName( updateAccount.getCompany() );
+                ciDB.setCICustType(new Integer(updateAccount.getCICustomerType()));
+                ciDB.setDbConnection( conn );
+                ciDB.add();
+                                    
+                ciCustChanged = true;
+                liteCustomer.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
+            }
 			
 			if(altCustFieldChanged)
 			{
@@ -424,7 +457,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 		catch (java.sql.SQLException e) {
-			try {
+			System.out.println(e.getMessage());
+            try {
 				if (conn != null) conn.rollback();
 			}
 			catch (java.sql.SQLException e2) {}
