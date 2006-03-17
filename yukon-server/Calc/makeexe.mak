@@ -192,75 +192,80 @@ clean:
 #UPDATE#
 calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h calccomponent.h \
 		ctitime.h dlldefs.h ctidate.h logger.h thread.h mutex.h \
-		guard.h pointstore.h hashkey.h hash_functions.h rtdb.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h pointdefs.h \
-		regression.h utility.h rwutil.h boost_time.h
+		guard.h CtiPCPtrQueue.h pointstore.h hashkey.h \
+		hash_functions.h rtdb.h utility.h dsm2.h cticonnect.h \
+		netports.h sorted_vector.h dllbase.h os2_2w32.h types.h \
+		cticalls.h pointdefs.h regression.h rwutil.h boost_time.h
 calccomponent.obj:	yukon.h precompiled.h ctidbgmem.h calccomponent.h \
 		ctitime.h dlldefs.h ctidate.h logger.h thread.h mutex.h \
-		guard.h pointstore.h hashkey.h hash_functions.h rtdb.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h pointdefs.h \
-		regression.h calc.h utility.h rwutil.h boost_time.h
+		guard.h CtiPCPtrQueue.h pointstore.h hashkey.h \
+		hash_functions.h rtdb.h utility.h dsm2.h cticonnect.h \
+		netports.h sorted_vector.h dllbase.h os2_2w32.h types.h \
+		cticalls.h pointdefs.h regression.h calc.h rwutil.h \
+		boost_time.h
 calclogicsvc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h sema.h ctinexus.h netports.h id_build.h \
-		message.h collectable.h rwutil.h ctitime.h boost_time.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_cmd.h msg_reg.h \
-		msg_signal.h msg_ptreg.h msg_dbchg.h numstr.h pointtypes.h \
-		configparms.h cparms.h logger.h thread.h utility.h \
-		calclogicsvc.h connection.h exchange.h queue.h cservice.h \
-		calcthread.h hashkey.h hash_functions.h calc.h \
-		calccomponent.h ctidate.h pointstore.h rtdb.h regression.h \
-		thread_monitor.h thread_register_data.h
-calcthread.obj:	yukon.h precompiled.h ctidbgmem.h ctibase.h ctinexus.h \
-		dlldefs.h netports.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h pointtypes.h message.h collectable.h \
-		rwutil.h ctitime.h boost_time.h msg_multi.h msg_pdata.h \
-		pointdefs.h logger.h thread.h utility.h calcthread.h \
+		mutex.h guard.h cticonnect.h netports.h sema.h ctinexus.h \
+		id_build.h message.h collectable.h rwutil.h ctitime.h \
+		boost_time.h msg_multi.h msg_pdata.h pointdefs.h msg_cmd.h \
+		msg_reg.h msg_signal.h msg_ptreg.h msg_dbchg.h numstr.h \
+		pointtypes.h configparms.h cparms.h logger.h thread.h \
+		CtiPCPtrQueue.h utility.h sorted_vector.h calclogicsvc.h \
+		connection.h exchange.h queue.h cservice.h calcthread.h \
 		hashkey.h hash_functions.h calc.h calccomponent.h ctidate.h \
-		pointstore.h rtdb.h regression.h thread_monitor.h queue.h \
+		pointstore.h rtdb.h regression.h thread_monitor.h smartmap.h \
 		thread_register_data.h
+calcthread.obj:	yukon.h precompiled.h ctidbgmem.h ctibase.h ctinexus.h \
+		dlldefs.h netports.h cticonnect.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h pointtypes.h \
+		message.h collectable.h rwutil.h ctitime.h boost_time.h \
+		msg_multi.h msg_pdata.h pointdefs.h logger.h thread.h \
+		CtiPCPtrQueue.h utility.h sorted_vector.h calcthread.h \
+		hashkey.h hash_functions.h calc.h calccomponent.h ctidate.h \
+		pointstore.h rtdb.h regression.h thread_monitor.h smartmap.h \
+		queue.h thread_register_data.h
 calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h sema.h CServiceConfig.h rtdb.h hashkey.h \
-		hash_functions.h ctibase.h ctinexus.h netports.h cparms.h \
-		rwutil.h ctitime.h boost_time.h configparms.h calclogicsvc.h \
-		connection.h exchange.h logger.h thread.h message.h \
+		guard.h cticonnect.h netports.h sema.h CServiceConfig.h \
+		rtdb.h hashkey.h hash_functions.h utility.h ctitime.h \
+		sorted_vector.h ctibase.h ctinexus.h cparms.h rwutil.h \
+		boost_time.h configparms.h calclogicsvc.h connection.h \
+		exchange.h logger.h thread.h CtiPCPtrQueue.h message.h \
 		collectable.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
 		msg_reg.h queue.h cservice.h calcthread.h calc.h \
 		calccomponent.h ctidate.h pointstore.h regression.h \
-		thread_monitor.h thread_register_data.h
+		thread_monitor.h smartmap.h thread_register_data.h \
+		msg_dbchg.h
 log.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h logger.h thread.h ctitime.h message.h \
-		collectable.h rwutil.h boost_time.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h ctinexus.h \
-		netports.h msg_cmd.h pointtypes.h
+		mutex.h guard.h cticonnect.h netports.h logger.h thread.h \
+		ctitime.h CtiPCPtrQueue.h message.h collectable.h rwutil.h \
+		boost_time.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
+		msg_reg.h queue.h ctinexus.h msg_cmd.h pointtypes.h
 lurk.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		ctitime.h dlldefs.h boost_time.h message.h collectable.h \
 		connection.h exchange.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h ctinexus.h netports.h msg_cmd.h msg_dbchg.h
+		cticalls.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+		logger.h thread.h CtiPCPtrQueue.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h ctinexus.h \
+		msg_cmd.h msg_dbchg.h
 newval.obj:	yukon.h precompiled.h ctidbgmem.h queue.h dlldefs.h \
-		logger.h thread.h mutex.h guard.h ctitime.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h netports.h \
-		message.h collectable.h rwutil.h boost_time.h msg_cmd.h \
-		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h connection.h pointtypes.h
+		logger.h thread.h mutex.h guard.h ctitime.h CtiPCPtrQueue.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		cticonnect.h netports.h message.h collectable.h rwutil.h \
+		boost_time.h msg_cmd.h msg_reg.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_ptreg.h connection.h pointtypes.h
 newvalrng.obj:	yukon.h precompiled.h ctidbgmem.h queue.h dlldefs.h \
-		logger.h thread.h mutex.h guard.h ctitime.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h netports.h \
-		message.h collectable.h rwutil.h boost_time.h msg_cmd.h \
-		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h connection.h pointtypes.h
+		logger.h thread.h mutex.h guard.h ctitime.h CtiPCPtrQueue.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		cticonnect.h netports.h message.h collectable.h rwutil.h \
+		boost_time.h msg_cmd.h msg_reg.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_ptreg.h connection.h pointtypes.h
 pointstore.obj:	yukon.h precompiled.h ctidbgmem.h pointstore.h \
-		ctitime.h dlldefs.h hashkey.h hash_functions.h rtdb.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h pointdefs.h regression.h
+		hashkey.h hash_functions.h dlldefs.h rtdb.h utility.h \
+		ctitime.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+		sorted_vector.h dllbase.h os2_2w32.h types.h cticalls.h \
+		pointdefs.h regression.h ctidate.h logger.h thread.h \
+		CtiPCPtrQueue.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
-tstest.obj:	yukon.h precompiled.h ctidbgmem.h calc.h calccomponent.h \
-		ctitime.h dlldefs.h ctidate.h logger.h thread.h mutex.h \
-		guard.h pointstore.h hashkey.h hash_functions.h rtdb.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h pointdefs.h \
-		regression.h
 #ENDUPDATE#

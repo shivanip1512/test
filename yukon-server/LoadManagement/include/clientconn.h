@@ -57,7 +57,7 @@ public:
     void write(RWCollectable* msg);
 
 protected:
-    RWPCPtrQueue< RWCollectable > _queue;
+    CtiPCPtrQueue< RWCollectable > _queue;
 
     void _sendthr();
     void _recvthr();

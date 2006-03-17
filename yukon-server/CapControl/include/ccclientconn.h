@@ -43,7 +43,7 @@ public:
     RWSockAddr getPeerName();
 
 protected:
-    RWPCPtrQueue< RWCollectable > _queue;
+    CtiPCPtrQueue< RWCollectable > _queue;
 
     void _sendthr();
     void _recvthr();

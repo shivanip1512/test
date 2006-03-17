@@ -2011,17 +2011,17 @@ void CtiCapController::confirmCapBankControl( CtiRequestMsg* pilRequest )
     }
 }
 
-RWPCPtrQueue< RWCollectable > &CtiCapController::getInClientMsgQueueHandle()
+CtiPCPtrQueue< RWCollectable > &CtiCapController::getInClientMsgQueueHandle()
 {
     return _inClientMsgQueue;
 } 
-RWPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
+CtiPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
 {
     return _outClientMsgQueue;
 } 
 
 
-RWPCPtrQueue< RWCollectable > &CtiCapController::getCCEventMsgQueueHandle()
+CtiPCPtrQueue< RWCollectable > &CtiCapController::getCCEventMsgQueueHandle()
 {
     return _ccEventMsgQueue;
 } 

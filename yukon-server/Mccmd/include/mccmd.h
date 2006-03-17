@@ -185,8 +185,8 @@ struct thr_hash
 };
 
 static RWRecursiveLock<RWMutexLock> _queue_mux;
-static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
-static RWTValHashDictionary<RWThreadId, RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > OutQueueStore;
+static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
+static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > OutQueueStore;
 
 /* This function runs in it's own thread and simple watches the connection to the
    PIL for incoming messages and places them in the appropriate queue */

@@ -41,7 +41,7 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
-
+//#include "CtiPCPtrQueue.h"
                        
 class CtiCapController
 {
@@ -55,9 +55,9 @@ public:
     void sendMessageToDispatch(CtiMessage* message);
     void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg);
     void confirmCapBankControl(CtiRequestMsg* pilRequest);
-    RWPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
-    RWPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
-    RWPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
+    CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
+    CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
+    CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();
 
     void loadControlLoopCParms();
     
@@ -88,10 +88,10 @@ private:
     CtiConnection* _dispatchConnection;
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
-    RWPCPtrQueue< RWCollectable > _inClientMsgQueue;
-    RWPCPtrQueue< RWCollectable > _outClientMsgQueue;
+    CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;
+    CtiPCPtrQueue< RWCollectable > _outClientMsgQueue;
 
-    RWPCPtrQueue< RWCollectable > _ccEventMsgQueue;
+    CtiPCPtrQueue< RWCollectable > _ccEventMsgQueue;
 
     int control_loop_delay;
     int control_loop_inmsg_delay;

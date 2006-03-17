@@ -26,7 +26,8 @@ test_rwutil.obj \
 ctidate.obj \
 ctitime.obj \
 test_ctidate.obj \
-test_ctitime.obj 
+test_ctitime.obj \
+test_CtiPCPtrQueue.obj 
 
                  
 LIBS=\
@@ -38,7 +39,8 @@ cmdparsetestgenerator.exe \
 test_cmdparse.exe \
 test_rwutil.exe \
 test_ctidate.exe \
-test_ctitime.exe
+test_ctitime.exe \
+test_CtiPCPtrQueue.exe
 
 
 ALL:            $(CMTEST)
@@ -111,7 +113,20 @@ test_ctitime.obj -link  /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOS
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 		@echo.
-		
+
+test_CtiPCPtrQueue.exe:    test_CtiPCPtrQueue.obj Makefile
+                @echo.
+		@echo Compiling $@
+		@echo. 
+		@%cd $(OBJ)
+		$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
+test_CtiPCPtrQueue.obj -link  /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS)
+		-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+		@echo.		
 		
 
 deps:

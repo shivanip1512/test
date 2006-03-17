@@ -57,6 +57,7 @@
 #include "thread.h"
 #include "mutex.h"
 #include "ctitime.h"
+#include "CtiPCPtrQueue.h"
 
 using std::string;
 using std::ostream;
@@ -125,7 +126,7 @@ private:
     volatile long _write_interval;
     volatile bool _std_out;
 
-    RWPCPtrQueue<strstream> _queue;
+    CtiPCPtrQueue<strstream> _queue;
     CtiMutex _log_mux;
     CtiMutex _flush_mux;
 

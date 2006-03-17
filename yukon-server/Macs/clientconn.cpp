@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clientconn.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/17 23:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@
     Constructor
 ---------------------------------------------------------------------------*/
 CtiMCConnection::CtiMCConnection()
-: _valid(true), _closed(false), _in(15), _out(100)
+: _valid(true), _closed(false), _in(), _out()//was _in(15) _out(100)   meaning max Capacity 100
 {
 }
 

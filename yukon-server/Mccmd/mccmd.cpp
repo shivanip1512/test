@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/03/17 23:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,13 +90,13 @@ void _MessageThrFunc()
 
             if( in != 0 )
             {
-                RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
+                boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
                 unsigned int msgid = in->UserMessageId();
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-                    if( InQueueStore.findValue( in->UserMessageId(), counted_ptr ) && counted_ptr.isValid() )
+                    if( InQueueStore.findValue( in->UserMessageId(), counted_ptr ) && (counted_ptr.use_count() > 0) )
                         counted_ptr->write(in);
                     else
                     {
@@ -211,11 +211,11 @@ void WriteOutput(const char* output)
         dout << CtiTime() << " [" << thrId << "] " << output << endl;
     }
 
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> >ptr;
+    boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >ptr;//TS
 
     OutQueueStore.findValue( thrId, ptr );
 
-    if( ptr.isValid() )
+    if( ptr.use_count() > 0 )
     {
         RWCollectableString* msg = new RWCollectableString(output);
         ptr->write(msg);
@@ -1426,7 +1426,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     //Be sure to remove it before exiting
     unsigned int msgid = GenMsgID();
 
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr = new CtiCountedPCPtrQueue<RWCollectable>();
+    boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr( new  CtiCountedPCPtrQueue<RWCollectable>() );
 
     if( timeout != 0 ) // don't bother if we don't want responses
     {
@@ -1470,13 +1470,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     PILReturnMap bad_map;
 
     RWCollectable* msg = NULL;
-    RWWaitStatus status;
+    bool status;
 
     do
     {
-        status = queue_ptr->read(msg, 100);
+        status = queue_ptr->read(msg,100);
 
-        if( status != RW_THR_TIMEOUT && msg != NULL )
+       if( status != false && msg != NULL )
       {
             if( msg->isA() == MSG_PCRETURN )
             {

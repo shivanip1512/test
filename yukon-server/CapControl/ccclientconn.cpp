@@ -154,7 +154,7 @@ void CtiCCClientConnection::write(RWCollectable* msg)
 {
     if( _queue.isOpen() )
     {
-        _queue.write( (RWCollectable*) msg );
+        _queue.write( msg );
     }
 }
 

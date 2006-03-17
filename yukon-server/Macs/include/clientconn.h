@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clientconn.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 19:47:42 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/17 23:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,8 +95,8 @@ public:
     }
 
 protected:
-    RWPCPtrQueue< RWCollectable >  _in;
-    RWPCPtrQueue< RWCollectable > _out;
+    CtiPCPtrQueue< RWCollectable >  _in;
+    CtiPCPtrQueue< RWCollectable > _out;
 
     void _sendthr();
     void _recvthr();

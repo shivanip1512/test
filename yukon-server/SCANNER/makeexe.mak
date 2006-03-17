@@ -113,33 +113,36 @@ id_scanner.obj:    id_scanner.cpp include\id_scanner.h id_vinfo.h
 
 #UPDATE#
 id_scanner.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
-		dlldefs.h dsm2.h mutex.h guard.h id_scanner.h id_build.h \
-		id_vinfo.h
+		dlldefs.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+		sorted_vector.h id_scanner.h id_build.h id_vinfo.h
 id_sgdll.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
-		dlldefs.h dsm2.h mutex.h guard.h id_sgdll.h id_build.h \
-		id_vinfo.h
+		dlldefs.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+		sorted_vector.h id_sgdll.h id_build.h id_vinfo.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 scanglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h scanner.h ctitime.h dllbase.h cticalls.h dsm2.h \
-		mutex.h guard.h scanglob.h utility.h
+		mutex.h guard.h cticonnect.h netports.h scanglob.h utility.h \
+		sorted_vector.h
 scanmain.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		scansvc.h cservice.h CServiceConfig.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h ctibase.h \
-		ctinexus.h netports.h logger.h thread.h
+		types.h cticalls.h dsm2.h mutex.h guard.h cticonnect.h \
+		netports.h ctibase.h ctinexus.h logger.h thread.h \
+		CtiPCPtrQueue.h
 scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h sema.h device.h devicetypes.h drp.h elogger.h \
-		dsm2err.h alarmlog.h routes.h queues.h porter.h lm_auto.h \
-		perform.h scanner.h ctitime.h ilex.h master.h scanglob.h \
-		scansup.h rtdb.h hashkey.h hash_functions.h mgr_device.h \
+		guard.h cticonnect.h netports.h sema.h device.h devicetypes.h \
+		drp.h elogger.h dsm2err.h alarmlog.h routes.h queues.h \
+		porter.h lm_auto.h perform.h scanner.h ctitime.h ilex.h \
+		master.h scanglob.h scansup.h rtdb.h hashkey.h \
+		hash_functions.h utility.h sorted_vector.h mgr_device.h \
 		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h counter.h \
 		dev_exclusion.h tbl_paoexclusion.h config_device.h logger.h \
-		thread.h config_base.h config_resolvers.h rte_base.h \
-		dbmemobject.h ctibase.h ctinexus.h netports.h message.h \
+		thread.h CtiPCPtrQueue.h config_base.h config_resolvers.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
 		collectable.h rwutil.h boost_time.h tbl_pao.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h pointdefs.h utility.h slctdev.h smartmap.h \
+		tbl_dyn_paoinfo.h pointdefs.h slctdev.h smartmap.h \
 		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
 		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
@@ -154,7 +157,7 @@ scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		c_port_interface.h group.h cparms.h configparms.h dllyukon.h
 scansup.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		scanglob.h scansup.h
+		cticonnect.h netports.h scanglob.h scansup.h
 scansvc.obj:	yukon.h precompiled.h ctidbgmem.h scanglob.h dlldefs.h \
 		scansvc.h cservice.h
 #ENDUPDATE#

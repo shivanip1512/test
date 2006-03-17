@@ -4,7 +4,7 @@
     Programmer:  Aaron Lauinger
 
     Description: Header file for CtiCountedPDCQueue.
-                 Combines the functionality of RWPCPtrQueue and
+                 Combines the functionality of CtiPCPtrQueue and
                  RWCountingBody to make a queue that can be reference counted
                  and is thread-safe.
 
@@ -21,9 +21,10 @@
 #include <rw/thr/prodcons.h>
 
 #include "dlldefs.h"
+#include "CtiPCPtrQueue.h"
 
 template<class Type>
-class IM_EX_CTIBASE CtiCountedPCPtrQueue : public RWPCPtrQueue<Type>, public RWCountingBody<RWMutexLock>
+class IM_EX_CTIBASE CtiCountedPCPtrQueue : public CtiPCPtrQueue<Type>, public RWCountingBody<RWMutexLock>
 {
 public:
     virtual ~CtiCountedPCPtrQueue()

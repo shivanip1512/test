@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clistener.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/03/17 23:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ private:
 
     // collectables written to this queue will be
     // broadcast to all the connections
-    RWPCPtrQueue< RWCollectable > _broadcast_queue;
+    CtiPCPtrQueue< RWCollectable > _broadcast_queue;
 
     CtiQueue< CtiMessage, less<CtiMessage> >* _conn_in_queue;
 
