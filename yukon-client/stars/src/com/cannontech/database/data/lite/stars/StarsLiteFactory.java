@@ -69,6 +69,10 @@ public class StarsLiteFactory {
 			lite = new LiteStarsLMHardware();
 			setLiteStarsLMHardware( (LiteStarsLMHardware) lite, (com.cannontech.database.data.stars.hardware.LMHardwareBase) db );
 		}
+        else if (db instanceof com.cannontech.database.data.stars.hardware.MeterHardwareBase) {
+            lite = new LiteInventoryBase();
+            setLiteInventoryBase( (LiteInventoryBase) lite, ((com.cannontech.database.data.stars.hardware.MeterHardwareBase)db).getInventoryBase() );
+        }
 		else if (db instanceof com.cannontech.database.data.stars.event.LMHardwareEvent) {
 			lite = new LiteLMHardwareEvent();
 			setLiteLMHardwareEvent( (LiteLMHardwareEvent) lite, (com.cannontech.database.data.stars.event.LMHardwareEvent) db );
