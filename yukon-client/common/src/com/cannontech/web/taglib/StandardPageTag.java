@@ -23,11 +23,13 @@ import com.cannontech.web.template.TemplateReslover;
  * module, layout customization via role property, and the page title.
  */
 public class StandardPageTag extends BodyTagSupport {
+    public static final String CTI_PAGE_TITLE = "ctiPageTitle";
     public static final String CTI_MAIN_CONTENT = "ctiMainContent";
     public static final String CTI_CSS_FILES = "ctiCssFiles";
     public static final String CTI_SCRIPT_FILES = "ctiScriptFiles";
     public static final String CTI_DOCTYPE_LEVEL = "ctiDoctypeLevel";
     public static final String CTI_MODULE_BASE = "ctiMenuModule";
+    public static final String CTI_MODULE_NAME = "ctiModuleName";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
     public static final String CTI_SHOW_MENU = "ctiShowMenu";
     
@@ -62,6 +64,8 @@ public class StandardPageTag extends BodyTagSupport {
             
             ModuleBase moduleBase = menuBuilder.getModuleBase(getModule());
             
+            pageContext.setAttribute(CTI_PAGE_TITLE, getTitle(), PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_MODULE_NAME, getModule(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_CSS_FILES, cssFiles, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_SCRIPT_FILES, scriptFiles, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MAIN_CONTENT, getBodyContent(), PageContext.REQUEST_SCOPE);
@@ -100,7 +104,6 @@ public class StandardPageTag extends BodyTagSupport {
 
     public void setTitle(String title) {
         this.title = title;
-        pageContext.setAttribute("ctiPageTitle", title, PageContext.REQUEST_SCOPE);
     }
     
     public void addCSSFile(String path) {
