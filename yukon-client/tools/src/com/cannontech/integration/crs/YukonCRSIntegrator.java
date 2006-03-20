@@ -15,6 +15,7 @@ import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -383,7 +384,7 @@ public final class YukonCRSIntegrator
         	{
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
         		//Get the energyCompany from the zip code
-        		liteStarsEnergyCompany = new LiteStarsEnergyCompany( ecID_workOrder);
+        		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(ecID_workOrder);
         		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
 	        	if( workTypeEntry == null)
