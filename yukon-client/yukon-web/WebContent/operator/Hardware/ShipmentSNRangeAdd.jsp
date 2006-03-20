@@ -15,8 +15,6 @@
 	<%pageContext.setAttribute("currentUser", lYukonUser);%>
 	<c:set target="${purchaseBean}" property="currentUser" value="${currentUser}" />
  	
- 	<script language="JavaScript" src="../../JavaScript/calendar.js"></script>
- 	
 	<div class="standardpurplesidebox"> 
 	</div>
 
