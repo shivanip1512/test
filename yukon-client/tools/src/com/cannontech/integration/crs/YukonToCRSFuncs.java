@@ -18,7 +18,11 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.appliance.ApplianceBase;
 import com.cannontech.database.data.stars.customer.AccountSite;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
@@ -28,7 +32,6 @@ import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
@@ -40,6 +43,8 @@ import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
 
 
 /**
@@ -489,48 +494,50 @@ public class YukonToCRSFuncs
 		
 		return meterHardwareBase;
     }
-
-	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException {
-		boolean isAdded = false;
-		
+	
+	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
+	{
+		LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+		ApplianceBase applianceBase = new ApplianceBase();
+	    
+		applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
 		if( airCond.charValue() == 'Y')
 		{
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, liteStarsEnergyCompany);
-			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.setAccountID(accountID);
-			applianceBase.setApplianceCategoryID(applCatID);
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
-			ApplianceAirConditioner applianceAirCond = new ApplianceAirConditioner();
-			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
-			applianceAirCond.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceAirCond).execute();
-			isAdded = true;
+			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
+			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			LiteStarsAppliance liteApp = new LiteStarsAppliance();
+			StarsLiteFactory.setLiteStarsAppliance( liteApp, applianceBase);
+			liteStarsCustAcctInfo.getAppliances().add( liteApp );
+
+			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
+			appAC.setApplianceID( applianceBase.getApplianceBase().getApplianceID() );
+			appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
+	        
+			liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
+			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
+
+			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
+			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue()).getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, liteStarsEnergyCompany);
-			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.setAccountID(accountID);
-			applianceBase.setApplianceCategoryID(applCatID);
-			Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
+			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			LiteStarsAppliance liteApp = new LiteStarsAppliance();
+			StarsLiteFactory.setLiteStarsAppliance( liteApp, applianceBase);
+			liteStarsCustAcctInfo.getAppliances().add( liteApp );
+						
+			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
+			appWH.setApplianceID( applianceBase.getApplianceBase().getApplianceID() );
+			appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
+	        
+			liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
+			StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), appWH );
 			
-			ApplianceWaterHeater applianceWaterHeater = new ApplianceWaterHeater();
-			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
-			applianceWaterHeater.setApplianceID(applianceBase.getApplianceID());
-			Transaction.createTransaction(Transaction.INSERT, applianceWaterHeater).execute();
-			isAdded = true;
-		}
-		if( isAdded )
-		{
-	        DBChangeMsg dbChangeMessage = new DBChangeMsg(
-    			accountID.intValue(),
-    			DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-    			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-    			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-    			DBChangeMsg.CHANGE_TYPE_ADD
-    		);
-	        dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-            ServerUtils.handleDBChangeMsg(dbChangeMessage);
+			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
+			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue()).getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 	}
 
