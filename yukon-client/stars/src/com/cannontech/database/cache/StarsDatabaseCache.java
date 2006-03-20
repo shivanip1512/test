@@ -408,11 +408,13 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				
-				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( msg.getId(), false );
-				if (liteAcctInfo != null) {
-					handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
-					return;
+				if( energyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
+				{				
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( msg.getId(), false );
+					if (liteAcctInfo != null) {
+						handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
+						return;
+					}
 				}
 			}
 		}
@@ -530,21 +532,24 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
-				if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
-				{
-					if( liteWorkOrderBase == null)
+				if( liteStarsEnergyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
+				{				
+					LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
+					if( msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD)
 					{
-						liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
-						liteWorkOrderBase.retrieve();
-						handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-						return;
+						if( liteWorkOrderBase == null)
+						{
+							liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
+							liteWorkOrderBase.retrieve();
+							handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+							return;
+						}
 					}
-				}
-				else {
-					if (liteWorkOrderBase != null) {
-						handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-						return;
+					else {
+						if (liteWorkOrderBase != null) {
+							handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
+							return;
+						}
 					}
 				}
 			}
