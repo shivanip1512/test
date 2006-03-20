@@ -2,8 +2,12 @@
 // Thain Spar
 
 
-// pop will return the element. Use pop to keep it threadsafe.
-// Using front() then pop() has a small chance of erroring due to threads.
+/* Ctipcptrqueue is designed to pass pointers to memory between threads. Once 
+ * something is 'written' to the queue it is considered property of the queue.
+ * Altering the memory after inserting it could result in undefined behavior.
+ * Same goes for when you read something off the queue, once you read it off, the 
+ * queue will no longer do anything with the object.
+ */
 
 #ifndef CTIPCPTRQUEUE_H
 #define CTIPCPTRQUEUE_H
@@ -28,32 +32,32 @@ class CtiPCPtrQueue{
         CtiPCPtrQueue(){
             closed = false;
         };
-        ~CtiPCPtrQueue(){//???  check
+        ~CtiPCPtrQueue(){
             T* item;
             while( tryRead(item) )
                 delete item;            
         };
 
         /* read() will return and remove the next element from the queue. 
-         * this is in place for RW compatability.
+         * The element will be considered beloning to whomever read it off.
          */
         T* read(){
 			boost::mutex::scoped_lock scoped_lock(mux);
             if ( q.empty()) 
                 return NULL;
-            T* tmp = q.front();// Check This
+            T* tmp = q.front();
             q.pop();
             return tmp;
         }
 
         bool read(T*& result, long milli){
             boost::mutex::scoped_lock scoped_lock(mux);
-            bool timeout = false;
+            bool success = false;
             struct boost::xtime xt;
             xt.sec = milli;
             if ( q.empty() ) {
-                timeout = wait.timed_wait( scoped_lock, xt );
-                if (timeout) {
+                success = wait.timed_wait( scoped_lock, xt );
+                if (success) {
                     result = q.front();
                     q.pop();
                     return true;
@@ -69,7 +73,7 @@ class CtiPCPtrQueue{
         }
 
         /* Removes and returns the next element in the queue. If the queue is
-         * empty and closed it throws an exception, otherwise just returns false if empty.
+         * empty it will set result to NULL and return false.
          */
         bool tryRead(T*& result){
             boost::mutex::scoped_lock scoped_lock(mux);
@@ -84,7 +88,7 @@ class CtiPCPtrQueue{
             }
         }
         /*  canRead will return true if the queue can be read from.
-         *  conditions where it cannot include, being closed or being empty.
+         *  It will return false if the queue is empty.
          */
         bool canRead(){
             boost::mutex::scoped_lock scoped_lock(mux);
@@ -95,8 +99,9 @@ class CtiPCPtrQueue{
         }
 
         /* write() will add an element to the end of the queue.
-         * It is here in addition to push() for RW compatability.
          * write() will not add an element to the queue of it is closed.
+         * If there is a thread waiting for an element, it will notify that thread
+         * after an element is added.
          */
         bool write( T* elem ){
             boost::mutex::scoped_lock scoped_lock(mux);
@@ -106,24 +111,29 @@ class CtiPCPtrQueue{
 			wait.notify_one();
             return true;
         };
-        /* entries() calls size. This is here to match RW and be backwards compatible.
-         */
+        /* entries() calls size */
         int entries(){
             boost::mutex::scoped_lock scoped_lock(mux);
             return q.size();
         };
+        /* empty() will return true if the queue is empty, false if the queue is full */
         bool empty(){
             boost::mutex::scoped_lock scoped_lock(mux);
             return q.empty();
         };
+        /*  will mark the queue so as to not accept more writes.
+        *   Reads will still work, until the queue is empty.
+        */
         void close (void){
             boost::mutex::scoped_lock scoped_lock(mux);
             closed = true;
         };
+        /* open() will open the queue for more writes */
         void open (void){
             boost::mutex::scoped_lock scoped_lock(mux);
             closed = false;
         };
+        /* isOpen returns a bool true if the queue is open, false if it is closed.*/
         bool isOpen(void){
             boost::mutex::scoped_lock scoped_lock(mux);
             return !closed;

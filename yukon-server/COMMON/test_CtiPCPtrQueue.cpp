@@ -20,17 +20,6 @@ int threadTest = 0;
 CtiPCPtrQueue<int> threadQ;
 boost::mutex mutex;
 
-
-/*   EXAMPLE
-void test_stringCompareIgnoreCase()
-{
-
-    std::string s1 = "My Compare";
-    std::string s2 = "my cOmParE";
-    BOOST_CHECK_EQUAL( stringCompareIgnoreCase(s1, s2), 0 );
-}
-*/
-
 void test_writeread(){
     CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
     int *itemOne, *itemTwo, *temp1, *temp2, *garbage;
@@ -150,8 +139,6 @@ init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
     test->add( BOOST_TEST_CASE( &test_writeread ) );
     test->add( BOOST_TEST_CASE( &test_tryRead ) );
     test->add ( BOOST_TEST_CASE( & test_timeOutMultiThread ) );
-    //Example//test->add( BOOST_TEST_CASE( &test_stringCompareIgnoreCase ) );
-
     
     return test; 
 }
