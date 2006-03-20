@@ -31,6 +31,7 @@ import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -153,15 +154,26 @@ public class WorkOrderManager extends HttpServlet {
         {
     		//A filename for downloading the report to.
         	String ext = "pdf";
+        	String param = req.getParameter("ext");
+        	if(param != null)
+        		ext = param;
     		String fileName = "WorkOrders";
     		fileName += "." + ext;        	
     		resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-    		resp.setContentType("application/pdf");
-			resp.addHeader("Content-Type", "application/pdf");
+
         	JFreeReport report = createReport(user, req, session);
     		final ServletOutputStream out = resp.getOutputStream();
     		try {
-				ReportFuncs.outputYukonReport( report, ext, out );
+    			if( ext.equalsIgnoreCase("pdf"))
+    			{
+    	    		resp.setContentType("application/pdf");
+    				resp.addHeader("Content-Type", "application/pdf");    				
+    				ReportFuncs.outputYukonReport( report, ext, out );
+    			}
+    			else if( ext.equalsIgnoreCase("csv")){
+    				out.write(((ReportModelBase)report.getData()).buildByteStream());
+    				out.flush();
+    			}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
