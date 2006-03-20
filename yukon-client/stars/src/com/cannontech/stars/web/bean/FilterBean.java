@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -30,7 +31,7 @@ public class FilterBean
     private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
     private List<LiteApplianceCategory> availableApplianceCategories;
-    private ArrayList<Integer> availableCustomerTypes;
+    private ArrayList<Pair> availableCustomerTypes;	//Integer(entryID),String(text)
    
     private YukonSelectionList availableServiceTypes;
     private YukonSelectionList availableServiceStatuses;
@@ -181,17 +182,20 @@ public class FilterBean
         this.availableApplianceCategories = availableApplianceCategories;
     }
 
-	public ArrayList<Integer>getAvailableCustomerTypes() {
+	public ArrayList<Pair>getAvailableCustomerTypes() {
         if(availableCustomerTypes == null)
         {
         	YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
-        	availableCustomerTypes = new ArrayList<Integer>(ciCustTypes.getYukonListEntries().size() + 1);
-        	availableCustomerTypes.add(new Integer(-1));	//we'll use -1 as Residential
+        	availableCustomerTypes = new ArrayList<Pair>(ciCustTypes.getYukonListEntries().size() + 1);
+        	availableCustomerTypes.add(new Pair(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
         	for(int i = 0; i < ciCustTypes.getYukonListEntries().size(); i++)
         	{
-        		availableCustomerTypes.add(new Integer(((YukonListEntry)ciCustTypes.getYukonListEntries().get(i)).getEntryID()));
+        		YukonListEntry entry = (YukonListEntry)ciCustTypes.getYukonListEntries().get(i);
+        		availableCustomerTypes.add(new Pair(new Integer(entry.getEntryID()), entry.getEntryText()));
         	}
         }
 		return availableCustomerTypes;
 	}
+    
+    
 }
