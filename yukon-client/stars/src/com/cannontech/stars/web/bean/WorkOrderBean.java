@@ -25,6 +25,8 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -288,6 +290,28 @@ public class WorkOrderBean {
 						String tempCode = filter.getFilterText().substring(filter.getFilterText().lastIndexOf(" ")+1);
 						if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
 							filteredWorkOrders.add( liteOrder );
+					}
+					workOrders = filteredWorkOrders;
+				}
+				else if( filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE)
+				{
+					for (int j = 0; j < workOrders.size(); j++)
+					{
+						LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+						LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteOrder.getAccountID(), true);
+						if( specificFilterID.intValue() == -1)	// RESIDENTIAL CUSTOMER
+						{
+							if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
+								filteredWorkOrders.add(liteOrder);
+								
+						}
+						else{	//Some type of CICustomer Type
+							if( liteCustAcctInfo.getCustomer() instanceof LiteCICustomer)
+							{
+								if( ((LiteCICustomer)liteCustAcctInfo.getCustomer()).getCICustType() == specificFilterID.intValue())
+									filteredWorkOrders.add(liteOrder);
+							}
+						}
 					}
 					workOrders = filteredWorkOrders;
 				}
