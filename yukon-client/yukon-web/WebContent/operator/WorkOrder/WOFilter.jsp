@@ -10,6 +10,7 @@
  	<%pageContext.setAttribute("filterDesignationCodes", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES).toString());%>
  	<%pageContext.setAttribute("filterServiceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE).toString());%>
  	<%pageContext.setAttribute("filterServiceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS).toString());%>
+ 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -85,6 +86,13 @@
 	                    	<select id='<c:out value="${filterServiceStatus}"/>1' name='<c:out value="${filterServiceStatus}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="serviceStatus" items="${filterBean.availableServiceStatuses.yukonListEntries}">
 									<option value='<c:out value="${serviceStatus.entryID}"/>'> <c:out value="${serviceStatus.entryText}"/> </option>
+								</c:forEach>
+							</select>
+	                    </div>
+	                    <div id='<c:out value="${filterCICustomerType}"/>' style="display:none"> 
+	                    	<select id='<c:out value="${filterCICustomerType}"/>1' name='<c:out value="${filterCICustomerType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <c:forEach var="ciCustomerType" items="${filterBean.availableCustomerTypes}">
+									<option value='<c:out value="${ciCustomerType.first}"/>'> <c:out value="${ciCustomerType.second}"/> </option>
 								</c:forEach>
 							</select>
 	                    </div>
@@ -199,6 +207,7 @@
 			document.getElementById('<c:out value="${filterDesignationCodes}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceType}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterServiceStatus}"/>').style.display = "none";
+			document.getElementById('<c:out value="${filterCICustomerType}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
 			filterBy += 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
