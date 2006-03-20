@@ -58,15 +58,15 @@ public class ServiceCompany extends DBPersistent {
 				new String[] {"ItemID", "MappingCategory"},
 				new Object[] {getServiceCompany().getCompanyID(), "ServiceCompany"});
     	
-        getAddress().setAddressID( getServiceCompany().getAddressID() );
-    	getAddress().delete();
+    	ServiceCompanyDesignationCode.deleteDesignationCode(getServiceCompany().getCompanyID().intValue(), getDbConnection()); 
     	
+        getServiceCompany().delete();
+        
     	getPrimaryContact().setContactID( getServiceCompany().getPrimaryContactID() );
     	getPrimaryContact().delete();
 	
-	   	ServiceCompanyDesignationCode.deleteDesignationCode(getServiceCompany().getCompanyID().intValue(), getDbConnection()); 
-    	
-        getServiceCompany().delete();
+        getAddress().setAddressID( getServiceCompany().getAddressID() );
+    	getAddress().delete();        
     }
 
     public void add() throws java.sql.SQLException {
