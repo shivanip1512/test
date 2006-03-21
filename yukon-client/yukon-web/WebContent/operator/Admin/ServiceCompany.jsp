@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.user.UserUtils" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="servComp" scope="page" class="com.cannontech.stars.web.bean.ServiceCompanyBean" />
@@ -178,6 +179,17 @@ function newCode(form) {
                               </td>
                               <td>First Name: 
                                 <input type="text" name="ContactFirstName" value="<%= sc.getPrimaryContact().getFirstName() %>" size=14 onchange="setContentChanged(true)">
+                              </td>
+                              <td>Contact Login: 
+                                <select name="ContactLogin" onchange="setContentChanged(true)">
+                                <%
+                                	int[] availUserids = com.cannontech.database.db.contact.Contact.findAvailableUserIDs( UserUtils.USER_DEFAULT_ID );
+                                	for( int i = 0; i < availUserids.length; i++ ){
+                                		if(availUserids[i] == UserUtils.USER_DEFAULT_ID || availUserids[i] > 0 ){%>
+                                		<option value='<%=availUserids[i]%>' <%=availUserids[i]==sc.getPrimaryContact().getLoginID()?"selected":""%>><%=com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(availUserids[i])%></option>
+                                	<%}}
+                                %>
+                                </select>
                               </td>
                             </tr>
                           </table>
