@@ -1,13 +1,18 @@
 package com.cannontech.stars.web.bean;
 
+import java.util.List;
+
 import com.cannontech.common.constants.*;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.stars.event.EventAccount;
 
 
 public class AccountBean 
 {
     private String currentCommercialType;
     private YukonSelectionList customerTypes;
+    private int currentAccount;
+    private List<EventAccount> currentEvents;
             
     public YukonSelectionList getCustomerTypes()
     {
@@ -27,5 +32,23 @@ public class AccountBean
     public void setCurrentCommercialType(String currentCommercialType) {
         this.currentCommercialType = currentCommercialType;
     }
+
+    public int getCurrentAccount() {
+        return currentAccount;
+    }
+
+    public void setCurrentAccount(int currentAccount) {
+        this.currentAccount = currentAccount;
+    }
+
+    public List<EventAccount> getCurrentEvents() {
+        currentEvents = EventAccount.retrieveEventAccounts(getCurrentAccount());
+        return currentEvents;
+    }
+
+    public void setCurrentEvents(List<EventAccount> currentEvents) {
+        this.currentEvents = currentEvents;
+    }
    
+    
 }

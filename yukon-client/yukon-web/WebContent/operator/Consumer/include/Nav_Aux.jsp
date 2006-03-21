@@ -20,6 +20,7 @@
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
+						  {"AccountLog.jsp", "Account Log"}
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
@@ -466,6 +467,19 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
+	<tr> 
+		<td> 
+	    	<div align="left">
+		    	<span class="NavHeader">Event Logging</span><br>
+	        	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	          		<tr>
+	            		<td width="10"><%= ((String[]) links.get("AccountLog.jsp"))[0] %></td>
+	            		<td style="padding:1"><%= ((String[]) links.get("AccountLog.jsp"))[1] %></td>
+	          		</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
 </table>
 
 <script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/nav_menu_aux.js"></script>

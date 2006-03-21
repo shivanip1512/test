@@ -1,5 +1,13 @@
 package com.cannontech.database.data.stars.event;
 
+import java.util.ArrayList;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.user.YukonUser;
+
 
 /**
  * <p>Title: </p>
@@ -13,7 +21,9 @@ package com.cannontech.database.data.stars.event;
 public class EventAccount extends EventBase {
 
     private com.cannontech.database.db.stars.event.EventAccount eventAccount = null;
-
+    String actionText;
+    String userName;
+    
     public EventAccount() {
         super();
     }
@@ -69,4 +79,57 @@ public class EventAccount extends EventBase {
 		this.eventAccount = eventAccount;
 	}
 
+    public static ArrayList<EventAccount> retrieveEventAccounts(int accountID)
+    {
+        ArrayList<EventAccount> eventAccounts = new ArrayList<EventAccount>();
+        String sql = "SELECT EB.EVENTID, EB.USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP, YLE.ENTRYTEXT, YU.USERNAME " +
+                    " FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
+                    com.cannontech.database.db.stars.event.EventAccount.TABLE_NAME + " EA, " +
+                    YukonListEntry.TABLE_NAME + " YLE, " +
+                    YukonUser.TABLE_NAME + " YU " +
+                    " WHERE EB.EVENTID = EA.EVENTID " +
+                    " AND ACCOUNTID = " + accountID +
+                    " AND YLE.ENTRYID = EB.ACTIONID" +
+                    " AND YU.USERID = EB.USERID" +
+                    " ORDER BY EVENTTIMESTAMP DESC ";
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+            stmt.execute();
+            for (int i = 0; i < stmt.getRowCount(); i++)
+            {
+                EventAccount eventAccount = new EventAccount();
+                eventAccount.setEventID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() ));
+                eventAccount.getEventBase().setUserID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[1]).intValue() ));
+                eventAccount.getEventBase().setSystemCategoryID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[2]).intValue() ));
+                eventAccount.getEventBase().setActionID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() ));
+                eventAccount.getEventBase().setEventTimestamp((java.util.Date) stmt.getRow(i)[4] );
+                eventAccount.getEventAccount().setAccountID(new Integer( accountID));
+                eventAccount.setActionText(stmt.getRow(i)[5].toString());
+                eventAccount.setUserName(stmt.getRow(i)[6].toString());
+                eventAccounts.add(eventAccount);
+            }
+        }
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        
+        return eventAccounts;
+    }
+
+    public String getActionText() {
+        return actionText;
+    }
+
+    public void setActionText(String actionText) {
+        this.actionText = actionText;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }
