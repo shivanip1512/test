@@ -12,6 +12,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.*;
@@ -258,7 +259,7 @@ public class InventoryBean {
         {
             for(int x = 0; x < getFilterByList().size(); x++)
             {
-                ArrayList filteredHardwares = new ArrayList();
+                ArrayList filteredHardware = new ArrayList();
                 Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
                 String specificFilterString = ((FilterWrapper)getFilterByList().get(x)).getFilterID(); 
                 Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
@@ -275,7 +276,7 @@ public class InventoryBean {
         					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
         					|| specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
         				{
-        					filteredHardwares.add( hardwares.get(i) );
+        					filteredHardware.add( hardwares.get(i) );
         				}
         			}
         		}
@@ -287,7 +288,7 @@ public class InventoryBean {
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
         				if (liteInv.getInstallationCompanyID() == specificFilterID.intValue())
-        					filteredHardwares.add( hardwares.get(i) );
+        					filteredHardware.add( hardwares.get(i) );
         			}
         		}
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
@@ -302,7 +303,7 @@ public class InventoryBean {
                         //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
                         String tempCode = specificFilterString.substring(specificFilterString.lastIndexOf(" ")+1);
                         if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
-                            filteredHardwares.add( hardwares.get(j) );
+                            filteredHardware.add( hardwares.get(j) );
                     }
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
@@ -323,7 +324,7 @@ public class InventoryBean {
                         for(int j = 0; j < warehousedInventory.size(); j++)
                         {
                             if(liteInv.compareTo(warehousedInventory.get(j).intValue()) == 0)
-                                filteredHardwares.add( hardwares.get(i) );
+                                filteredHardware.add( hardwares.get(i) );
                         }
                     }
                 }
@@ -339,7 +340,7 @@ public class InventoryBean {
                             String serial = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
     
                             if(InventoryUtils.isSerialWithPossibleCharsGreaterThan(serial, specificFilterString))
-                                filteredHardwares.add( hardwares.get(i) );
+                                filteredHardware.add( hardwares.get(i) );
                         }
                     }
                 }
@@ -355,7 +356,7 @@ public class InventoryBean {
                             String serial = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
         
                             if(InventoryUtils.isSerialWithPossibleCharsLessThan(serial, specificFilterString))
-                                filteredHardwares.add( hardwares.get(i) );
+                                filteredHardware.add( hardwares.get(i) );
                         }
                     }
                 }
@@ -376,13 +377,35 @@ public class InventoryBean {
                             if(appliances.get(j).getApplianceCategoryID() == specificFilterID.intValue() &&
                                     appliances.get(j).getInventoryID() == liteInv.getInventoryID())
                             {
-                                filteredHardwares.add( hardwares.get(j) );
+                                filteredHardware.add( hardwares.get(j) );
                                 break;
                             }
                         }
                     }
         		}
-        		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
+                else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE)
+                {
+                    for (int j = 0; j < hardwares.size(); j++)
+                    {
+                        LiteInventoryBase liteInv = (LiteInventoryBase)
+                                (showEnergyCompany? ((Pair)hardwares.get(j)).getFirst() : hardwares.get(j));
+                            LiteStarsCustAccountInformation liteCustAcctInfo = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true);
+                        if( specificFilterID.intValue() == -1)  // RESIDENTIAL CUSTOMER
+                        {
+                            if( liteCustAcctInfo.getCustomer() instanceof LiteCustomer)
+                                filteredHardware.add(hardwares.get(j));
+                        }
+                        else
+                        {   //Some type of CICustomer Type
+                            if( liteCustAcctInfo.getCustomer() instanceof LiteCICustomer)
+                            {
+                                if( ((LiteCICustomer)liteCustAcctInfo.getCustomer()).getCICustType() == specificFilterID.intValue())
+                                    filteredHardware.add(hardwares.get(j));
+                            }
+                        }
+                    }
+                }
+        		/*else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
         			Hashtable ecHwCfgMap = new Hashtable();
         			
         			for (int i = 0; i < hardwares.size(); i++) {
@@ -404,7 +427,7 @@ public class InventoryBean {
         							if (liteApp.getInventoryID() == liteInv.getInventoryID()
         								&& liteApp.getAddressingGroupID() == specificFilterID.intValue())
         							{
-        								filteredHardwares.add( hardwares.get(i) );
+        								filteredHardware.add( hardwares.get(i) );
         								break;
         							}
         						}
@@ -434,14 +457,14 @@ public class InventoryBean {
         					if (cfgList != null) {
         						for (int j = 0; j < cfgList.size(); j++) {
         							if (((Integer)cfgList.get(j)).intValue() == specificFilterID.intValue()) {
-        								filteredHardwares.add( hardwares.get(i) );
+        								filteredHardware.add( hardwares.get(i) );
         								break;
         							}
         						}
         					}
         				}
         			}
-        		}
+        		}*/
         		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
         			for (int i = 0; i < hardwares.size(); i++) {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
@@ -454,14 +477,14 @@ public class InventoryBean {
                          */
         				if (liteInv.getCurrentStateID() == specificFilterID.intValue() ||
                                 liteInv.getDeviceStatus() == specificFilterID.intValue())
-        					filteredHardwares.add( hardwares.get(i) );
+        					filteredHardware.add( hardwares.get(i) );
         			}
         		}
         		else {
-        			filteredHardwares.addAll( hardwares );
+        			filteredHardware.addAll( hardwares );
         		}
                 
-                hardwares = filteredHardwares;
+                hardwares = filteredHardware;
             }
         }
             

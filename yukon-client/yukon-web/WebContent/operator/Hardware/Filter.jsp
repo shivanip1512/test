@@ -16,6 +16,8 @@
  	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
 	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
+	<%pageContext.setAttribute("filterConsumptionType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
+	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -118,6 +120,13 @@
 	               		<div id='<c:out value="${filterDevicePostalCode}"/>' style="display:none"> 
 		                    <input id='<c:out value="${filterDevicePostalCode}"/>1' type="text" name='<c:out value="${filterDevicePostalCode}"/>1' maxlength="12" size="14" onchange="storeSerial(this.value)">
 	               		</div>
+	               		<div id='<c:out value="${filterCICustomerType}"/>' style="display:none"> 
+	                    	<select id='<c:out value="${filterCICustomerType}"/>1' name='<c:out value="${filterCICustomerType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
+	                            <c:forEach var="ciCustomerType" items="${filterBean.availableCustomerTypes}">
+									<option value='<c:out value="${ciCustomerType.first}"/>'> <c:out value="${ciCustomerType.second}"/> </option>
+								</c:forEach>
+							</select>
+	                    </div>
 	                </td>
 	           	</tr>
 			</table>
@@ -209,6 +218,7 @@
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMin}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMax}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDevicePostalCode}"/>').style.display = "none";
+ 			document.getElementById('<c:out value="${filterCICustomerType}"/>').style.display = "none";
  			document.getElementById(filterBy).style.display = "";
 			var comboID = filterBy + 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
