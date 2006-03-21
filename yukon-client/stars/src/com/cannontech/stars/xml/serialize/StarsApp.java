@@ -114,7 +114,9 @@ public abstract class StarsApp implements java.io.Serializable {
 
     private Irrigation _irrigation;
 
-
+    private Chiller _chiller;
+    
+    private DualStageAC _dualStageAC;
       //----------------/
      //- Constructors -/
     //----------------/
@@ -706,5 +708,25 @@ public abstract class StarsApp implements java.io.Serializable {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
     } //-- void validate() 
+
+
+    public Chiller getChiller() {
+        return _chiller;
+    }
+
+
+    public void setChiller(Chiller chiller) {
+        _chiller = chiller;
+    }
+
+
+    public DualStageAC getDualStageAC() {
+        return _dualStageAC;
+    }
+
+
+    public void setDualStageAC(DualStageAC dualStageAC) {
+        _dualStageAC = dualStageAC;
+    }
 
 }

@@ -14,60 +14,12 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
-import com.cannontech.database.db.stars.appliance.ApplianceGenerator;
-import com.cannontech.database.db.stars.appliance.ApplianceGrainDryer;
-import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
-import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
-import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
-import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.database.db.stars.appliance.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.ACType;
-import com.cannontech.stars.xml.serialize.AirConditioner;
-import com.cannontech.stars.xml.serialize.BinSize;
-import com.cannontech.stars.xml.serialize.BlowerEnergySource;
-import com.cannontech.stars.xml.serialize.BlowerHeatSource;
-import com.cannontech.stars.xml.serialize.BlowerHorsePower;
-import com.cannontech.stars.xml.serialize.DryerType;
-import com.cannontech.stars.xml.serialize.DualFuel;
-import com.cannontech.stars.xml.serialize.EnergySource;
-import com.cannontech.stars.xml.serialize.Generator;
-import com.cannontech.stars.xml.serialize.GrainDryer;
-import com.cannontech.stars.xml.serialize.HeatPump;
-import com.cannontech.stars.xml.serialize.HorsePower;
-import com.cannontech.stars.xml.serialize.Irrigation;
-import com.cannontech.stars.xml.serialize.IrrigationType;
-import com.cannontech.stars.xml.serialize.Location;
-import com.cannontech.stars.xml.serialize.Manufacturer;
-import com.cannontech.stars.xml.serialize.MeterLocation;
-import com.cannontech.stars.xml.serialize.MeterVoltage;
-import com.cannontech.stars.xml.serialize.NumberOfGallons;
-import com.cannontech.stars.xml.serialize.PumpSize;
-import com.cannontech.stars.xml.serialize.PumpType;
-import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
-import com.cannontech.stars.xml.serialize.SoilType;
-import com.cannontech.stars.xml.serialize.StandbySource;
-import com.cannontech.stars.xml.serialize.StarsAppliance;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
-import com.cannontech.stars.xml.serialize.StarsCreateApplianceResponse;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
-import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StorageHeat;
-import com.cannontech.stars.xml.serialize.StorageType;
-import com.cannontech.stars.xml.serialize.SwitchOverType;
-import com.cannontech.stars.xml.serialize.Tonnage;
-import com.cannontech.stars.xml.serialize.TransferSwitchManufacturer;
-import com.cannontech.stars.xml.serialize.TransferSwitchType;
-import com.cannontech.stars.xml.serialize.WaterHeater;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -138,6 +90,31 @@ public class CreateApplianceAction implements ActionBase {
 						ACType.class) );
 				newApp.setAirConditioner( ac );
 			}
+            else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE)
+            {
+                DualStageAC ac = new DualStageAC();
+                ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
+                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                        Tonnage.class) );
+                ac.setStageTwoTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
+                       YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                       Tonnage.class) );
+                ac.setACType( (ACType)StarsFactory.newStarsCustListEntry(
+                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
+                        ACType.class) );
+                newApp.setDualStageAC( ac );
+            }
+            else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER)
+            {
+                Chiller chill = new Chiller();
+                chill.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
+                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
+                        Tonnage.class) );
+                chill.setACType( (ACType)StarsFactory.newStarsCustListEntry(
+                        YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
+                        ACType.class) );
+                newApp.setChiller( chill );
+            }
 			else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
 			{
 				WaterHeater wh = new WaterHeater();
@@ -448,6 +425,27 @@ public class CreateApplianceAction implements ActionBase {
 			liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
 			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
 		}
+        else if (newApp.getDualStageAC() != null) {
+            ApplianceDualStageAirCond appDS = new ApplianceDualStageAirCond();
+            appDS.setApplianceID( app.getApplianceBase().getApplianceID() );
+            appDS.setStageOneTonnageID( new Integer(newApp.getDualStageAC().getTonnage().getEntryID()) );
+            appDS.setStageTwoTonnageID( new Integer(newApp.getDualStageAC().getStageTwoTonnage().getEntryID()));
+            appDS.setTypeID( new Integer(newApp.getDualStageAC().getACType().getEntryID()) );
+            appDS = (ApplianceDualStageAirCond) Transaction.createTransaction(Transaction.INSERT, appDS).execute();
+            
+            liteApp.setDualStageAirCond( new LiteStarsAppliance.DualStageAirCond() );
+            StarsLiteFactory.setLiteAppDualStageAirCond( liteApp.getDualStageAirCond(), appDS );
+        }
+        else if (newApp.getChiller() != null) {
+            ApplianceChiller appChill = new ApplianceChiller();
+            appChill.setApplianceID( app.getApplianceBase().getApplianceID() );
+            appChill.setTonnageID( new Integer(newApp.getChiller().getTonnage().getEntryID()) );
+            appChill.setTypeID( new Integer(newApp.getChiller().getACType().getEntryID()) );
+            appChill = (ApplianceChiller) Transaction.createTransaction(Transaction.INSERT, appChill).execute();
+            
+            liteApp.setChiller( new LiteStarsAppliance.Chiller() );
+            StarsLiteFactory.setLiteAppChiller( liteApp.getChiller(), appChill );
+        }
 		else if (newApp.getWaterHeater() != null) {
 			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
 			appWH.setApplianceID( app.getApplianceBase().getApplianceID() );

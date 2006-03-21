@@ -46,7 +46,81 @@ public class LiteStarsAppliance extends LiteBase {
 			typeID = i;
 		}
 	}
+    
+    public static class DualStageAirCond {
+        private int stageOneTonnageID = CtiUtilities.NONE_ZERO_ID;
+        private int stageTwoTonnageID = CtiUtilities.NONE_ZERO_ID;
+        private int typeID = CtiUtilities.NONE_ZERO_ID;
+        
+        /**
+         * @return
+         */
+        public int getStageOneTonnageID() {
+            return stageOneTonnageID;
+        }
+        
+        public int getStageTwoTonnageID() {
+            return stageTwoTonnageID;
+        }
+
+        /**
+         * @return
+         */
+        public int getTypeID() {
+            return typeID;
+        }
+
+        /**
+         * @param i
+         */
+        public void setStageOneTonnageID(int i) {
+            stageOneTonnageID = i;
+        }
+        
+        public void setStageTwoTonnageID(int i) {
+            stageTwoTonnageID = i;
+        }
+        /**
+         * @param i
+         */
+        public void setTypeID(int i) {
+            typeID = i;
+        }
+    }
 	
+    public static class Chiller {
+        private int tonnageID = CtiUtilities.NONE_ZERO_ID;
+        private int typeID = CtiUtilities.NONE_ZERO_ID;
+        
+        /**
+         * @return
+         */
+        public int getTonnageID() {
+            return tonnageID;
+        }
+
+        /**
+         * @return
+         */
+        public int getTypeID() {
+            return typeID;
+        }
+
+        /**
+         * @param i
+         */
+        public void setTonnageID(int i) {
+            tonnageID = i;
+        }
+
+        /**
+         * @param i
+         */
+        public void setTypeID(int i) {
+            typeID = i;
+        }
+    }
+    
 	public static class WaterHeater {
 		private int numberOfGallonsID = CtiUtilities.NONE_ZERO_ID;
 		private int energySourceID = CtiUtilities.NONE_ZERO_ID;
@@ -519,6 +593,8 @@ public class LiteStarsAppliance extends LiteBase {
 	private int loadNumber = 0;
 	
 	private AirConditioner airConditioner = null;
+    private DualStageAirCond dualStageAirCond = null;
+    private Chiller chiller = null;
 	private WaterHeater waterHeater = null;
 	private Generator generator = null;
 	private DualFuel dualFuel = null;
@@ -759,7 +835,7 @@ public class LiteStarsAppliance extends LiteBase {
 		return airConditioner;
 	}
 
-	/**
+    /**
 	 * @return
 	 */
 	public DualFuel getDualFuel() {
@@ -863,5 +939,21 @@ public class LiteStarsAppliance extends LiteBase {
 	public void setWaterHeater(WaterHeater heater) {
 		waterHeater = heater;
 	}
+
+    public Chiller getChiller() {
+        return chiller;
+    }
+
+    public void setChiller(Chiller chiller) {
+        this.chiller = chiller;
+    }
+
+    public DualStageAirCond getDualStageAirCond() {
+        return dualStageAirCond;
+    }
+
+    public void setDualStageAirCond(DualStageAirCond dualStageAirCond) {
+        this.dualStageAirCond = dualStageAirCond;
+    }
 
 }

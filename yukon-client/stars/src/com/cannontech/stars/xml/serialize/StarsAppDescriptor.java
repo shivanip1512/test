@@ -835,6 +835,70 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _chiller
+        desc = new XMLFieldDescriptorImpl(Chiller.class, "_chiller", "Chiller", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApp target = (StarsApp) object;
+                return target.getChiller();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApp target = (StarsApp) object;
+                    target.setChiller( (Chiller) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new Chiller();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _chiller
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _dualStageAC
+        desc = new XMLFieldDescriptorImpl(DualStageAC.class, "_dualStageAC", "DualStageAC", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApp target = (StarsApp) object;
+                return target.getDualStageAC();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApp target = (StarsApp) object;
+                    target.setDualStageAC( (DualStageAC) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new DualStageAC();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _dualStageAC
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsAppDescriptor()
 
 

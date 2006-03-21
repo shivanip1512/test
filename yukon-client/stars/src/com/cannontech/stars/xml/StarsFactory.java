@@ -129,6 +129,8 @@ public class StarsFactory {
 				starsApp.setEfficiencyRating( app.getEfficiencyRating() );
 			
 			starsApp.setAirConditioner( app.getAirConditioner() );
+            starsApp.setDualStageAC( app.getDualStageAC() );
+            starsApp.setChiller( app.getChiller() );
 			starsApp.setWaterHeater( app.getWaterHeater() );
 			starsApp.setDualFuel( app.getDualFuel() );
 			starsApp.setGenerator( app.getGenerator() );

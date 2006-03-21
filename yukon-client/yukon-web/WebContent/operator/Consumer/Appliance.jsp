@@ -244,6 +244,117 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
+	else if (appliance.getDualStageAC() != null) {
+%>
+                      <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                           	<div align="right">Stage One Tonnage:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="AC_Tonnage" onchange="setContentChanged(true)">
+<%
+		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE );
+		int tonnageID = (appliance.getDualStageAC().getTonnage() != null)? appliance.getDualStageAC().getTonnage().getEntryID() : 0;
+		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == tonnageID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+		                 <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Stage Two Tonnage:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="AC_Tonnage_StageTwo" onchange="setContentChanged(true)">
+<%
+		tonnageID = (appliance.getDualStageAC().getTonnage() != null)? appliance.getDualStageAC().getStageTwoTonnage().getEntryID() : 0;
+		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == tonnageID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Type:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="AC_Type" onchange="setContentChanged(true)">
+<%
+		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
+		int typeID = (appliance.getDualStageAC().getACType() != null)? appliance.getDualStageAC().getACType().getEntryID() : 0;
+		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                      </table>
+<%
+	}
+	else if (appliance.getChiller() != null) {
+%>
+                      <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Tonnage:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="AC_Tonnage" onchange="setContentChanged(true)">
+<%
+		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE );
+		int tonnageID = (appliance.getChiller().getTonnage() != null)? appliance.getChiller().getTonnage().getEntryID() : 0;
+		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == tonnageID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Type:</div>
+                          </td>
+                          <td width="200"> 
+                            <select name="AC_Type" onchange="setContentChanged(true)">
+<%
+		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
+		int typeID = (appliance.getChiller().getACType() != null)? appliance.getChiller().getACType().getEntryID() : 0;
+		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
+			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+		}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                      </table>
+<%
+	}
 	else if (appliance.getWaterHeater() != null) {
 		String numElmt = "";
 		if (appliance.getWaterHeater().hasNumberOfElements())

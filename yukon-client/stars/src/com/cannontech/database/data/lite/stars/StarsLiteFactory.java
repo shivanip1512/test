@@ -33,6 +33,8 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.database.db.stars.appliance.ApplianceChiller;
+import com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond;
 import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.util.InventoryUtils;
@@ -475,6 +477,17 @@ public class StarsLiteFactory {
 		liteAppAC.setTonnageID( appAC.getTonnageID().intValue() );
 		liteAppAC.setTypeID( appAC.getTypeID().intValue() );
 	}
+      
+    public static void setLiteAppDualStageAirCond(LiteStarsAppliance.DualStageAirCond liteAppDS, ApplianceDualStageAirCond appDS) {
+        liteAppDS.setStageOneTonnageID( appDS.getStageOneTonnageID().intValue() );
+        liteAppDS.setStageTwoTonnageID( appDS.getStageTwoTonnageID().intValue() );
+        liteAppDS.setTypeID( appDS.getTypeID().intValue() );
+    }
+    
+    public static void setLiteAppChiller(LiteStarsAppliance.Chiller liteAppChill, ApplianceChiller appChill) {
+        liteAppChill.setTonnageID( appChill.getTonnageID().intValue() );
+        liteAppChill.setTypeID( appChill.getTypeID().intValue() );
+    }
 	
 	public static void setLiteAppWaterHeater(LiteStarsAppliance.WaterHeater liteAppWH, com.cannontech.database.db.stars.appliance.ApplianceWaterHeater appWH) {
 		liteAppWH.setNumberOfGallonsID( appWH.getNumberOfGallonsID().intValue() );
@@ -555,6 +568,22 @@ public class StarsLiteFactory {
 				StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), app );
 			}
 		}
+        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE).getEntryID()) {
+            com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond app =
+                    com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond.getApplianceDualStageAirCond( appliance.getApplianceBase().getApplianceID() );
+            if (app != null) {
+                liteApp.setDualStageAirCond( new LiteStarsAppliance.DualStageAirCond() );
+                StarsLiteFactory.setLiteAppDualStageAirCond( liteApp.getDualStageAirCond(), app );
+            }
+        }
+        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER).getEntryID()) {
+            com.cannontech.database.db.stars.appliance.ApplianceChiller app =
+                    com.cannontech.database.db.stars.appliance.ApplianceChiller.getApplianceChiller( appliance.getApplianceBase().getApplianceID() );
+            if (app != null) {
+                liteApp.setChiller( new LiteStarsAppliance.Chiller() );
+                StarsLiteFactory.setLiteAppChiller( liteApp.getChiller(), app );
+            }
+        }
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
 			com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app =
 					com.cannontech.database.db.stars.appliance.ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
@@ -999,6 +1028,19 @@ public class StarsLiteFactory {
 		app.setTonnageID( new Integer(liteApp.getAirConditioner().getTonnageID()) );
 		app.setTypeID( new Integer(liteApp.getAirConditioner().getTypeID()) );
 	}
+    
+    public static void setApplianceDualStageAirCond(com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond app, LiteStarsAppliance liteApp) {
+        app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        app.setStageOneTonnageID( new Integer(liteApp.getDualStageAirCond().getStageOneTonnageID())) ;
+        app.setStageTwoTonnageID( new Integer(liteApp.getDualStageAirCond().getStageTwoTonnageID())) ;
+        app.setTypeID( new Integer(liteApp.getDualStageAirCond().getTypeID()) );
+    }
+    
+    public static void setApplianceChiller(com.cannontech.database.db.stars.appliance.ApplianceChiller app, LiteStarsAppliance liteApp) {
+        app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        app.setTonnageID( new Integer(liteApp.getChiller().getTonnageID()) );
+        app.setTypeID( new Integer(liteApp.getChiller().getTypeID()) );
+    }
 	
 	public static void setApplianceWaterHeater(com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app, LiteStarsAppliance liteApp) {
 		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
@@ -1694,6 +1736,8 @@ public class StarsLiteFactory {
 			company.setContent( "(none)" );
 		starsInv.setInstallationCompany( company );
 		
+        //TODO: DATEALTER
+        
 		starsInv.setReceiveDate( StarsUtils.translateDate(liteInv.getReceiveDate()) );
 		starsInv.setInstallDate( StarsUtils.translateDate(liteInv.getInstallDate()) );
 		starsInv.setRemoveDate( StarsUtils.translateDate(liteInv.getRemoveDate()) );
@@ -2237,6 +2281,45 @@ public class StarsLiteFactory {
 			);
 			starsApp.setAirConditioner( ac );
 		}
+        else if (liteApp.getDualStageAirCond() != null || appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE) {
+            LiteStarsAppliance.DualStageAirCond liteAC = liteApp.getDualStageAirCond();
+            if (liteAC == null) liteAC = new LiteStarsAppliance.DualStageAirCond();
+            
+            DualStageAC ac = new DualStageAC();
+            ac.setTonnage(
+                (Tonnage) StarsFactory.newStarsCustListEntry(
+                    YukonListFuncs.getYukonListEntry( liteAC.getStageOneTonnageID() ),
+                    Tonnage.class)
+            );
+            ac.setStageTwoTonnage(
+                  (Tonnage) StarsFactory.newStarsCustListEntry(
+                      YukonListFuncs.getYukonListEntry( liteAC.getStageTwoTonnageID() ),
+                      Tonnage.class)
+            );
+            ac.setACType(
+                (ACType) StarsFactory.newStarsCustListEntry(
+                    YukonListFuncs.getYukonListEntry( liteAC.getTypeID() ),
+                    ACType.class)
+            );
+            starsApp.setDualStageAC( ac );
+        }
+        else if (liteApp.getChiller() != null || appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER) {
+            LiteStarsAppliance.Chiller liteChill = liteApp.getChiller();
+            if (liteChill == null) liteChill = new LiteStarsAppliance.Chiller();
+            
+            Chiller chill = new Chiller();
+            chill.setTonnage(
+                (Tonnage) StarsFactory.newStarsCustListEntry(
+                    YukonListFuncs.getYukonListEntry( liteChill.getTonnageID() ),
+                    Tonnage.class)
+            );
+            chill.setACType(
+                (ACType) StarsFactory.newStarsCustListEntry(
+                    YukonListFuncs.getYukonListEntry( liteChill.getTypeID() ),
+                    ACType.class)
+            );
+            starsApp.setChiller( chill );
+        }
 		else if (liteApp.getWaterHeater() != null || appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER) {
 			LiteStarsAppliance.WaterHeater liteWH = liteApp.getWaterHeater();
 			if (liteWH == null) liteWH = new LiteStarsAppliance.WaterHeater();

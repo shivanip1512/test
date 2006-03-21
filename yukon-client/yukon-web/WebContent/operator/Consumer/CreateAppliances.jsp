@@ -166,13 +166,21 @@ function showAdditionalAppInfo(index)
 				<div id="Category<%= category.getEntryID() %>" style="display:none"></div>
 <%
 		}
-		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER
+			|| category.getYukonDefID()== YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER
+ 			|| category.getYukonDefID()== YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE)
+ {		
 %>
 				<div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
-                      <div align="right">Tonnage:</div>
+                      <%if(category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE)
+                      {%>
+                      	<div align="right">Stage One Tonnage:</div>
+                      <%} else {%>	
+                      	<div align="right">Tonnage:</div>
+                      <%}%>	
                     </td>
                     <td width="200"> 
                       <select name="AC_Tonnage" onchange="setContentChanged(true)">
@@ -188,6 +196,26 @@ function showAdditionalAppInfo(index)
                       </select>
                     </td>
                   </tr>
+                  <%if(category.getYukonDefID()== YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE)
+                  {%>
+                  <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right">Stage Two Tonnage:</div>
+                    </td>
+                    <td width="200"> 
+                      <select name="AC_StageTwo_Tonnage" onchange="setContentChanged(true)">
+<%
+		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
+%>
+                        <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+		}
+%>
+                      </select>
+                    </td>
+                  </tr>
+                  <% } %>
                   <tr> 
                     <td width="100" class="TableCell"> 
                       <div align="right">Type:</div>
