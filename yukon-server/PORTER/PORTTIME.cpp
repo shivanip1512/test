@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/03/14 17:46:10 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/03/21 21:41:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -543,11 +543,14 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->SaveNexus   = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
+                OutMessage->Buffer.BSt.Port   = RemoteRecord->getPortID();
+                OutMessage->Buffer.BSt.Remote = RemoteRecord->getAddress();
+
                 OutMessage->Buffer.BSt.DlcRoute.Amp      = amp;
                 OutMessage->Buffer.BSt.DlcRoute.RepFixed = pRoute->getCCUFixBits();
                 OutMessage->Buffer.BSt.DlcRoute.RepVar   = pRoute->getCCUVarBits();
                 OutMessage->Buffer.BSt.DlcRoute.Feeder   = pRoute->getBus();
-                OutMessage->Buffer.BSt.DlcRoute.Stages   = pRoute->getStages();
+                OutMessage->Buffer.BSt.DlcRoute.Stages   = 0;  //  pRoute->getStages();  //  apparently nonzero causes it to timeout on the 710 - ???
 
                 //  this is key - this, and the TSYNC flag, are what get the time loaded into the message
                 OutMessage->Buffer.BSt.Address = CtiDeviceMCT410::UniversalAddress;
@@ -722,7 +725,7 @@ VOID TimeSyncThread (PVOID Arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
-        
+
             CtiThreadRegData *data;
             //This is an odd duck, it can sleep for 1 hour at a time (currently set time), we will wait for 1 hour + 5 minutes
             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, TimeSyncRate + CtiThreadMonitor::StandardMonitorTime );
