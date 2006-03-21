@@ -714,7 +714,7 @@ public final class YukonCRSIntegrator
         	else
         	{
         		//Get the energyCompany from the zip code
-        		liteStarsEnergyCompany = new LiteStarsEnergyCompany( customerAccount.getEnergyCompanyID().intValue());
+        		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(customerAccount.getEnergyCompanyID().intValue());
         		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, woType);
 	        	if( workTypeEntry == null)
