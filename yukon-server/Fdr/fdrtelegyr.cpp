@@ -47,7 +47,7 @@
 #include "fdrtelegyr.h"
 
 /** local definitions **/
-#define FDR_TELEGYR_VERSION   "2.0"
+#define FDR_TELEGYR_VERSION   "2.0-4"
 #define PRIORITY              1         //only 1 is supported at this point
 
 /** global used to start the interface by c functions **/
@@ -596,6 +596,7 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
 
                      // we know the old groups are now gone, build and register the new ones
 
+                     _skipProcessing = false;
                      buildAndRegisterGroups();
                      _reloadTimer = CtiTime::now();
                      _regFlag = true;
@@ -942,7 +943,7 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
       string type = _controlCenter.getTelegyrGroupList()[index].getGroupType();
       std::transform(type.begin(), type.end(), type.begin(), tolower);
-
+      //if there's an interval, we have cyclic data
       if( _controlCenter.getTelegyrGroupList()[index].getInterval() != 0 )
       {
          cycle_time = _controlCenter.getTelegyrGroupList()[index].getInterval();
@@ -1023,11 +1024,11 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
             returnCode = api_create_group( channel_id, group_type, group_number, persistence, PRIORITY, object_count, name_list );
 
+            string create = " Creation of ";
+            string error = " failed on submission.  Error code: ";
+
             if( returnCode != API_NORMAL )
             {
-               string create = " Creation of ";
-               string error = " failed on submission.  Error code: ";
-
                if( ( group_type == API_GET_CYC_IND ) || ( group_type == API_GET_SPO_IND ) )
                {
                   CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -1164,7 +1165,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
    bool           foundGroup        = false;
    int            groupNum          = 1;
    int            analogNum         = 1;
-   int            statusNum         = 101;
+   int            statusNum         = 501;//101;   //maybe 101 is too small?
 
    vector< CtiTelegyrGroup >  groupList;
 
@@ -1183,6 +1184,12 @@ bool CtiFDRTelegyr::loadGroupLists( void )
       // if status is ok, we were able to read the database at least
       if( listStatus.errorCode() == ( RWDBStatus::ok ) )
       {
+         if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << CtiTime::now() << " ***  RWDBStatus::ok" << endl;
+         }
+
          //===================================================================================
          //seeing occasional problems where we get empty data sets back and there should be 
          //info in them,  we're checking this to see if is reasonable if the list may now be 
@@ -1271,7 +1278,8 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                   std::transform(type.begin(), type.end(), type.begin(), tolower);
                   std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
 
-                  if( ( type == pointType ) && ( interval == atoi( groupStr.c_str() ) ) && ( size < 127 ) )
+//                  if(( type == pointType ) && ( interval == atoi( groupStr ) ) && ( size < 127 ))
+                  if(( type == pointType ) && ( size < 127 ))
                   {
                      groupList[i].getPointList().push_back( *translationPoint );
                      foundGroup = true;
@@ -1334,6 +1342,11 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             {
                _skipProcessing = true;
 
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard(dout);
+                  dout << CtiTime() << " Swapping the lists " << endl;
+               }
+
                //delete the old and swap the new list in
                _controlCenter.deleteTelegyrGroupList();
                _controlCenter.getTelegyrGroupList() = groupList;
@@ -1376,7 +1389,6 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
    CtiFDRPoint          *point      = NULL;
    long                 pointid;
    bool                 returnCode;
-   int                  x;
    double               value;
    double               raw;
    USHORT               quality;
@@ -1390,7 +1402,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
 
-      for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+      for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
       {
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
@@ -1567,7 +1579,6 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
    CtiPointDataMsg      *pData = NULL;
    long                 pointid;
    bool                 returnCode;
-   int                  x;
    double               value;
    USHORT               quality;
 
@@ -1578,7 +1589,7 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
       //flip through our groups until the groupid matches the one this point came from
       //then snag the pointid out
 
-      for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+      for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
       {
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
@@ -1619,11 +1630,10 @@ bool CtiFDRTelegyr::processCounter( APICLI_GET_CNT aPoint, int groupid, int grou
 
 bool CtiFDRTelegyr::processBadPoint( int groupid, int index )
 {
-   long     pointid;
-   int      x;
+   long        pointid;
    string   pointName;
 
-   for( x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
+   for( int x = 0; x < _controlCenter.getTelegyrGroupList().size(); x++ )
    {
       if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
       {
