@@ -3,13 +3,14 @@ package com.cannontech.database.db.stars.integration;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 public class SAMToCRS_PTJ extends DBPersistent {
 
-    private Integer ptjID = new Integer(0);	//Need some default value in case this doesn't exist in the WO. 
+    private Integer ptjID = null; 
     private Integer premiseNumber = null;
     private String debtorNumber = "";
     private String workOrderNumber = "";
@@ -43,6 +44,9 @@ public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, S
 
 public void add() throws java.sql.SQLException 
 {
+	if (getPTJID() == null)
+		setPTJID( getNextPTJID() );
+
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getWorkOrderNumber(),
     		getStatusCode(), getDateTime_Completed(), getStarsUserName(), getExtract()};
 
@@ -87,6 +91,38 @@ public void update() throws java.sql.SQLException
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+public final Integer getNextPTJID() {
+    java.sql.PreparedStatement pstmt = null;
+    java.sql.ResultSet rset = null;
+
+    int nextPTJID = -1;
+
+    try {
+        pstmt = getDbConnection().prepareStatement( "SELECT MIN(PTJID) FROM " + TABLE_NAME );
+        rset = pstmt.executeQuery();
+
+        if (rset.next())
+        {
+        	int tempID = rset.getInt(1) - 1;
+        	if( tempID < -1)	//only load a min if it's lower, can't use possitive numbers becuase ptj's come across with possitive numbers
+        		nextPTJID = tempID;
+        }
+    }
+    catch (java.sql.SQLException e) {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally {
+        try {
+            if (rset != null) rset.close();
+            if (pstmt != null) pstmt.close();
+        }
+        catch (java.sql.SQLException e2) {}
+    }
+
+    return new Integer( nextPTJID );
+}
+
 
 public static ArrayList getAllCurrentPTJEntries()
 {
