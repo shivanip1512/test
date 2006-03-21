@@ -40,30 +40,18 @@ import com.cannontech.stars.web.util.WorkOrderManagerUtil;
  */
 public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	
-//	LiteStarsEnergyCompany currentCompany = null;
-//    Integer newEnergyCompanyID = null;
-//	Integer newDevTypeID = null;
 	LiteYukonUser liteYukonUser = null;
     ArrayList selectedWorkOrders = new ArrayList();
     Integer changeServiceCompanyID = null;
     Integer changeServiceStatusID = null;
     Integer changeServiceTypeID = null;
     String statusMsg = null;
-//	Integer newDevStateID = null;
-//	Integer newServiceCompanyID = null;
-//    Integer newWarehouseID = null;
+
 	HttpServletRequest request = null;
-//    String serialFrom = null;
-//    String serialTo = null;
-//    boolean devTypeChanged = false;
 	
 	ArrayList<LiteWorkOrderBase> failedWorkOrders = new ArrayList<LiteWorkOrderBase>();
-//	ArrayList hardwareSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
-//	int numToBeUpdated = 0;
-    
-//    ArrayList failedSerialNumbers = new ArrayList();
-	
+
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, ArrayList<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
 		this.liteYukonUser = liteYukonuser;
 		this.selectedWorkOrders = workOrderList;
@@ -149,9 +137,11 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
             {
 				if( isChanged)
 				{
+					Date eventDate = new Date();
+					workOrderBase.getWorkOrderBase().setDateReported(eventDate);	//set the work order DateReported with the most recent event date.
 					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
-						EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue());
+						EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
 					if ( VersionTools.crsPtjIntegrationExists())
 					{
 						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
@@ -255,8 +245,6 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			catch (TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
 				failedWorkOrders.add(liteWorkOrder);
-//				hardwareSet.add( liteHw );
-//                failedSerialNumbers.add(liteHw.getManufacturerSerialNumber());
 				numFailure++;
 			}
 			
