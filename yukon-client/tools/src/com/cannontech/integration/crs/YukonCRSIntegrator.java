@@ -548,8 +548,8 @@ public final class YukonCRSIntegrator
             workOrder.getWorkOrderBase().setOrderedBy(liteYukonUser.getUsername());
             String descString = "Meter Number: " + meterNumber + ";";
             if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y')
-            	descString += "  ApplianceType(s): " + (airCond.charValue() == 'Y'? "Air Conditioner": "") + (waterHeater.charValue() == 'Y'? " Water Heater": "") + ";";
-            descString += "   Notes: " + notes; 
+            	descString += "  ApplianceType(s): " + (airCond.charValue() == 'Y'? "Air Conditioner;": "") + (waterHeater.charValue() == 'Y'? " Water Heater;": "");
+            descString += (notes.length() > 0 ? ("   Notes: " + notes) : ""); 
             workOrder.getWorkOrderBase().setDescription(descString);
             workOrder.getWorkOrderBase().setAccountID(customerAccount.getCustomerAccount().getAccountID());
             workOrder.getWorkOrderBase().setAdditionalOrderNumber(String.valueOf(ptjID));
@@ -626,6 +626,7 @@ public final class YukonCRSIntegrator
 
         	try
         	{
+        		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
             	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
@@ -763,6 +764,7 @@ public final class YukonCRSIntegrator
 
         	try
         	{
+        		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
             	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
