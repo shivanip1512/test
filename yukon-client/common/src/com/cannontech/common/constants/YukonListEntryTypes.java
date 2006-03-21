@@ -67,6 +67,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_APP_CAT_GENERATOR			= 1406;
 	public static final int YUK_DEF_ID_APP_CAT_GRAIN_DRYER			= 1407;
 	public static final int YUK_DEF_ID_APP_CAT_IRRIGATION			= 1408;
+    public static final int YUK_DEF_ID_APP_CAT_CHILLER              = 1409;
+    public static final int YUK_DEF_ID_APP_CAT_DUALSTAGE            = 1410;
 	public static final int YUK_DEF_ID_SERV_STAT_PENDING			= 1501;
 	public static final int YUK_DEF_ID_SERV_STAT_SCHEDULED			= 1502;
 	public static final int YUK_DEF_ID_SERV_STAT_COMPLETED			= 1503;
