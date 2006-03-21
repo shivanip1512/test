@@ -173,6 +173,9 @@ public class CustomerAccount extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getCustomerAccount().retrieve();
 
+        getCustomer().setCustomerID(getCustomerAccount().getCustomerID());
+        getCustomer().retrieve();
+        
         getBillingAddress().setAddressID( getCustomerAccount().getBillingAddressID() );
         getBillingAddress().retrieve();
 
@@ -185,7 +188,16 @@ public class CustomerAccount extends DBPersistent {
 		setInventoryVector( com.cannontech.database.db.stars.hardware.InventoryBase.getInventoryIDs(
 				getCustomerAccount().getAccountID(), getDbConnection()) );
 
-        setDbConnection(null);
+
+        Object[] results = retrieve( new String[]{"EnergyCompanyID"}, "ECToAccountMapping", new String[]{"AccountID"}, new Object[]{getCustomerAccount().getAccountID()});
+
+        if (results.length == 1)
+            setEnergyCompanyID((Integer) results[0] );
+        else
+            throw new Error(getClass() + " - Incorrect number of results retrieved");
+		
+		
+		setDbConnection(null);
     }
 
     public com.cannontech.database.db.stars.customer.CustomerAccount getCustomerAccount() {
