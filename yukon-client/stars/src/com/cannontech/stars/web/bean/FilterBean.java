@@ -15,6 +15,7 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
@@ -43,7 +44,6 @@ public class FilterBean
     
     /**
      * Need further filters:
-     * --Appliances
      * --General location (need to figure out how to work new Warehouse idea into this)
      * --Addressing groups
      */
@@ -185,14 +185,19 @@ public class FilterBean
 	public ArrayList<Pair>getAvailableCustomerTypes() {
         if(availableCustomerTypes == null)
         {
-        	YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
-        	availableCustomerTypes = new ArrayList<Pair>(ciCustTypes.getYukonListEntries().size() + 1);
+            availableCustomerTypes = new ArrayList<Pair>();
+            YukonSelectionList ciCustTypes = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CUSTOMER_TYPE);
+               
         	availableCustomerTypes.add(new Pair(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
-        	for(int i = 0; i < ciCustTypes.getYukonListEntries().size(); i++)
-        	{
-        		YukonListEntry entry = (YukonListEntry)ciCustTypes.getYukonListEntries().get(i);
-        		availableCustomerTypes.add(new Pair(new Integer(entry.getEntryID()), entry.getEntryText()));
-        	}
+        	
+            if(ciCustTypes != null)
+            {
+                for(int i = 0; i < ciCustTypes.getYukonListEntries().size(); i++)
+            	{
+            		YukonListEntry entry = (YukonListEntry)ciCustTypes.getYukonListEntries().get(i);
+            		availableCustomerTypes.add(new Pair(new Integer(entry.getEntryID()), entry.getEntryText()));
+            	}
+            }
         }
 		return availableCustomerTypes;
 	}
