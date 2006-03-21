@@ -217,7 +217,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account updated successfully" );
             
-            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 10202, updateAccount.getAccountID());
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, updateAccount.getAccountID());
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );
