@@ -700,7 +700,7 @@ public class YukonToCRSFuncs
     	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_OTHER_STRING))
     		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
     	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_MAINTENANCE_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
+    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE;
     	
     	ArrayList listEntries = selectionList.getYukonListEntries();
     	for( int i = 0; i < listEntries.size(); i++)
