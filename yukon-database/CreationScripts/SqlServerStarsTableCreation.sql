@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/16/2006 11:19:08 AM                        */
+/* Created on:     3/21/2006 2:27:25 PM                         */
 /*==============================================================*/
 
 
@@ -128,9 +128,25 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('ApplianceChiller')
+            and   type = 'U')
+   drop table ApplianceChiller
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('ApplianceDualFuel')
             and   type = 'U')
    drop table ApplianceDualFuel
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceDualStageAirCond')
+            and   type = 'U')
+   drop table ApplianceDualStageAirCond
 go
 
 
@@ -216,6 +232,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DeliverySchedule')
+            and   type = 'U')
+   drop table DeliverySchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('ECToAccountMapping')
             and   type = 'U')
    drop table ECToAccountMapping
@@ -264,6 +288,38 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('EventAccount')
+            and   type = 'U')
+   drop table EventAccount
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EventBase')
+            and   type = 'U')
+   drop table EventBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EventInventory')
+            and   type = 'U')
+   drop table EventInventory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EventWorkOrder')
+            and   type = 'U')
+   drop table EventWorkOrder
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('InterviewQuestion')
             and   type = 'U')
    drop table InterviewQuestion
@@ -275,6 +331,30 @@ if exists (select 1
            where  id = object_id('InventoryBase')
             and   type = 'U')
    drop table InventoryBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('InventoryToWarehouseMapping')
+            and   type = 'U')
+   drop table InventoryToWarehouseMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Invoice')
+            and   type = 'U')
+   drop table Invoice
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('InvoiceShipmentMapping')
+            and   type = 'U')
+   drop table InvoiceShipmentMapping
 go
 
 
@@ -360,6 +440,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMHardwareToMeterMapping')
+            and   type = 'U')
+   drop table LMHardwareToMeterMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMProgramEvent')
             and   type = 'U')
    drop table LMProgramEvent
@@ -408,9 +496,57 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('MeterHardwareBase')
+            and   type = 'U')
+   drop table MeterHardwareBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PurchasePlan')
+            and   type = 'U')
+   drop table PurchasePlan
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ScheduleShipmentMapping')
+            and   type = 'U')
+   drop table ScheduleShipmentMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ScheduleTimePeriod')
+            and   type = 'U')
+   drop table ScheduleTimePeriod
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('ServiceCompany')
             and   type = 'U')
    drop table ServiceCompany
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ServiceCompanyDesignationCode')
+            and   type = 'U')
+   drop table ServiceCompanyDesignationCode
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Shipment')
+            and   type = 'U')
+   drop table Shipment
 go
 
 
@@ -432,6 +568,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('Warehouse')
+            and   type = 'U')
+   drop table Warehouse
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('WorkOrderBase')
             and   type = 'U')
    drop table WorkOrderBase
@@ -446,12 +590,14 @@ create table AccountSite (
    SiteInformationID    numeric              null,
    SiteNumber           varchar(40)          not null,
    StreetAddressID      numeric              null,
-   PropertyNotes        varchar(300)         null
+   PropertyNotes        varchar(300)         null,
+   AccountSite          varchar(1)           not null,
+   CustAtHome           varchar(1)           not null
 )
 go
 
 
-INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)');
+INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)',' ','N');
 alter table AccountSite
    add constraint PK_ACCOUNTSITE primary key  (AccountSiteID)
 go
@@ -543,6 +689,22 @@ go
 
 
 /*==============================================================*/
+/* Table: ApplianceChiller                                      */
+/*==============================================================*/
+create table ApplianceChiller (
+   ApplianceID          numeric              not null,
+   TonnageID            numeric              null,
+   TypeID               numeric              null
+)
+go
+
+
+alter table ApplianceChiller
+   add constraint PK_APPLIANCECHILLER primary key  (ApplianceID)
+go
+
+
+/*==============================================================*/
 /* Table: ApplianceDualFuel                                     */
 /*==============================================================*/
 create table ApplianceDualFuel (
@@ -556,6 +718,23 @@ go
 
 alter table ApplianceDualFuel
    add constraint PK_APPLIANCEDUALFUEL primary key  (ApplianceID)
+go
+
+
+/*==============================================================*/
+/* Table: ApplianceDualStageAirCond                             */
+/*==============================================================*/
+create table ApplianceDualStageAirCond (
+   ApplianceID          numeric              not null,
+   StateTwoTonnageID    numeric              null,
+   StageOneTonnageID    numeric              null,
+   TypeID               numeric              null
+)
+go
+
+
+alter table ApplianceDualStageAirCond
+   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key  (ApplianceID)
 go
 
 
@@ -778,6 +957,26 @@ go
 
 
 /*==============================================================*/
+/* Table: DeliverySchedule                                      */
+/*==============================================================*/
+create table DeliverySchedule (
+   ScheduleID           numeric              not null,
+   PurchasePlanID       numeric              not null,
+   ScheduleName         varchar(60)          not null,
+   ModelID              numeric              not null,
+   StyleNumber          varchar(60)          not null,
+   OrderNumber          varchar(60)          not null,
+   QuotedPricePerUnit   float                not null
+)
+go
+
+
+alter table DeliverySchedule
+   add constraint PK_DELIVERYSCHEDULE primary key  (ScheduleID)
+go
+
+
+/*==============================================================*/
 /* Table: ECToAccountMapping                                    */
 /*==============================================================*/
 create table ECToAccountMapping (
@@ -937,6 +1136,69 @@ go
 
 
 /*==============================================================*/
+/* Table: EventAccount                                          */
+/*==============================================================*/
+create table EventAccount (
+   EventID              numeric              not null,
+   AccountID            numeric              not null
+)
+go
+
+
+alter table EventAccount
+   add constraint PK_EVENTACCOUNT primary key  (EventID)
+go
+
+
+/*==============================================================*/
+/* Table: EventBase                                             */
+/*==============================================================*/
+create table EventBase (
+   EventID              numeric              not null,
+   UserID               numeric              not null,
+   SystemCategoryID     numeric              not null,
+   ActionID             numeric              not null,
+   EventTimestamp       datetime             not null
+)
+go
+
+
+alter table EventBase
+   add constraint PK_EVENTBASE primary key  (EventID)
+go
+
+
+/*==============================================================*/
+/* Table: EventInventory                                        */
+/*==============================================================*/
+create table EventInventory (
+   EventID              numeric              not null,
+   InventoryID          numeric              not null
+)
+go
+
+
+alter table EventInventory
+   add constraint PK_EVENTINVENTORY primary key  (EventID)
+go
+
+
+/*==============================================================*/
+/* Table: EventWorkOrder                                        */
+/*==============================================================*/
+create table EventWorkOrder (
+   EventID              numeric              not null,
+   OrderID              numeric              not null
+)
+go
+
+
+alter table EventWorkOrder
+   add constraint PK_EVENTWORKORDER primary key  (EventID)
+go
+
+
+/*==============================================================*/
 /* Table: InterviewQuestion                                     */
 /*==============================================================*/
 create table InterviewQuestion (
@@ -971,12 +1233,13 @@ create table InventoryBase (
    VoltageID            numeric              null,
    Notes                varchar(500)         null,
    DeviceID             numeric              null,
-   DeviceLabel          varchar(60)          null
+   DeviceLabel          varchar(60)          null,
+   CurrentStateID       numeric              not null
 )
 go
 
 
-INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)');
+INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)',0);
 alter table InventoryBase
    add constraint PK_INVENTORYBASE primary key  (InventoryID)
 go
@@ -997,6 +1260,58 @@ go
 create   index HrdInst_CstHrdBs_FK on InventoryBase (
 InstallationCompanyID
 )
+go
+
+
+/*==============================================================*/
+/* Table: InventoryToWarehouseMapping                           */
+/*==============================================================*/
+create table InventoryToWarehouseMapping (
+   WarehouseID          numeric              not null,
+   InventoryID          numeric              not null
+)
+go
+
+
+alter table InventoryToWarehouseMapping
+   add constraint PK_INVENTORYTOWAREHOUSEMAPPING primary key  (WarehouseID, InventoryID)
+go
+
+
+/*==============================================================*/
+/* Table: Invoice                                               */
+/*==============================================================*/
+create table Invoice (
+   InvoiceID            numeric              not null,
+   PurchasePlanID       numeric              not null,
+   InvoiceDesignation   varchar(60)          not null,
+   DateSubmitted        datetime             not null,
+   Authorized           varchar(1)           not null,
+   AuthorizedBy         varchar(30)          not null,
+   HasPaid              varchar(1)           not null,
+   DatePaid             datetime             not null,
+   TotalQuantity        numeric              not null
+)
+go
+
+
+alter table Invoice
+   add constraint PK_INVOICE primary key  (InvoiceID)
+go
+
+
+/*==============================================================*/
+/* Table: InvoiceShipmentMapping                                */
+/*==============================================================*/
+create table InvoiceShipmentMapping (
+   InvoiceID            numeric              not null,
+   ShipmentID           numeric              not null
+)
+go
+
+
+alter table InvoiceShipmentMapping
+   add constraint PK_INVOICESHIPMENTMAPPING primary key  (InvoiceID, ShipmentID)
 go
 
 
@@ -1201,6 +1516,21 @@ go
 
 
 /*==============================================================*/
+/* Table: LMHardwareToMeterMapping                              */
+/*==============================================================*/
+create table LMHardwareToMeterMapping (
+   LMHardwareInventoryID numeric              not null,
+   MeterInventoryID     numeric              not null
+)
+go
+
+
+alter table LMHardwareToMeterMapping
+   add constraint PK_LMHARDWARETOMETERMAPPING primary key  (LMHardwareInventoryID, MeterInventoryID)
+go
+
+
+/*==============================================================*/
 /* Table: LMProgramEvent                                        */
 /*==============================================================*/
 create table LMProgramEvent (
@@ -1337,6 +1667,74 @@ go
 
 
 /*==============================================================*/
+/* Table: MeterHardwareBase                                     */
+/*==============================================================*/
+create table MeterHardwareBase (
+   InventoryID          numeric              not null,
+   MeterNumber          varchar(30)          not null,
+   MeterTypeID          numeric              not null
+)
+go
+
+
+alter table MeterHardwareBase
+   add constraint PK_METERHARDWAREBASE primary key  (InventoryID)
+go
+
+
+/*==============================================================*/
+/* Table: PurchasePlan                                          */
+/*==============================================================*/
+create table PurchasePlan (
+   PurchaseID           numeric              not null,
+   EnergyCompanyID      numeric              not null,
+   PlanName             varchar(60)          not null,
+   PODesignation        varchar(40)          not null,
+   AccountingCode       varchar(30)          not null,
+   TimePeriod           datetime             not null
+)
+go
+
+
+alter table PurchasePlan
+   add constraint PK_PURCHASEPLAN primary key  (PurchaseID)
+go
+
+
+/*==============================================================*/
+/* Table: ScheduleShipmentMapping                               */
+/*==============================================================*/
+create table ScheduleShipmentMapping (
+   ScheduleID           numeric              not null,
+   ShipmentID           numeric              not null
+)
+go
+
+
+alter table ScheduleShipmentMapping
+   add constraint PK_SCHEDULESHIPMENTMAPPING primary key  (ScheduleID, ShipmentID)
+go
+
+
+/*==============================================================*/
+/* Table: ScheduleTimePeriod                                    */
+/*==============================================================*/
+create table ScheduleTimePeriod (
+   TimePeriodID         numeric              not null,
+   ScheduleID           numeric              not null,
+   TimePeriodName       varchar(60)          not null,
+   Quantity             numeric              not null,
+   PredictedShipDate    datetime             not null
+)
+go
+
+
+alter table ScheduleTimePeriod
+   add constraint PK_SCHEDULETIMEPERIOD primary key  (TimePeriodID)
+go
+
+
+/*==============================================================*/
 /* Table: ServiceCompany                                        */
 /*==============================================================*/
 create table ServiceCompany (
@@ -1354,6 +1752,49 @@ go
 INSERT INTO ServiceCompany VALUES (0,'(none)',0,'(none)','(none)',0,'(none)');
 alter table ServiceCompany
    add constraint PK_SERVICECOMPANY primary key  (CompanyID)
+go
+
+
+/*==============================================================*/
+/* Table: ServiceCompanyDesignationCode                         */
+/*==============================================================*/
+create table ServiceCompanyDesignationCode (
+   DesignationCodeID    numeric              not null,
+   DesignationCodeValue varchar(60)          not null,
+   ServiceCompanyID     numeric              not null
+)
+go
+
+
+alter table ServiceCompanyDesignationCode
+   add constraint PK_SERVICECOMPANYDESIGNATIONCO primary key  (DesignationCodeID)
+go
+
+
+/*==============================================================*/
+/* Table: Shipment                                              */
+/*==============================================================*/
+create table Shipment (
+   ShipmentID           numeric              not null,
+   ShipmentNumber       varchar(60)          not null,
+   WarehouseID          numeric              not null,
+   SerialNumberStart    varchar(30)          not null,
+   SerialNumberEnd      varchar(30)          not null,
+   ShipDate             datetime             not null,
+   ActualPricePerUnit   float                not null,
+   SalesTotal           float                not null,
+   SalesTax             float                not null,
+   OtherCharges         float                not null,
+   ShippingCharges      float                not null,
+   AmountPaid           float                not null,
+   OrderedDate          datetime             not null,
+   ReceivedDate         datetime             not null
+)
+go
+
+
+alter table Shipment
+   add constraint PK_SHIPMENT primary key  (ShipmentID)
 go
 
 
@@ -1395,6 +1836,24 @@ go
 
 
 /*==============================================================*/
+/* Table: Warehouse                                             */
+/*==============================================================*/
+create table Warehouse (
+   WarehouseID          numeric              not null,
+   WarehouseName        varchar(60)          not null,
+   AddressID            numeric              not null,
+   Notes                varchar(300)         not null,
+   EnergyCompanyID      numeric              not null
+)
+go
+
+
+alter table Warehouse
+   add constraint PK_WAREHOUSE primary key  (WarehouseID)
+go
+
+
+/*==============================================================*/
 /* Table: WorkOrderBase                                         */
 /*==============================================================*/
 create table WorkOrderBase (
@@ -1405,11 +1864,12 @@ create table WorkOrderBase (
    ServiceCompanyID     numeric              null,
    DateReported         datetime             null,
    OrderedBy            varchar(30)          null,
-   Description          varchar(200)         null,
+   Description          varchar(500)         null,
    DateScheduled        datetime             null,
    DateCompleted        datetime             null,
    ActionTaken          varchar(200)         null,
-   AccountID            numeric              null
+   AccountID            numeric              null,
+   AdditionalOrderNumber varchar(24)          not null
 )
 go
 
@@ -1491,6 +1951,24 @@ alter table ApplianceCategory
 go
 
 
+alter table ApplianceChiller
+   add constraint FK_APPLCHILL_APPLNCBSE foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceChiller
+   add constraint FK_APPLCHILL_TONNTRY foreign key (TonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceChiller
+   add constraint FK_APPLCHILL_TYPENTRY foreign key (TypeID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table ApplianceDualFuel
    add constraint FK_AppDuF_YkLst1 foreign key (SecondaryEnergySourceID)
       references YukonListEntry (EntryID)
@@ -1506,6 +1984,30 @@ go
 alter table ApplianceDualFuel
    add constraint FK_AppDlF_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_APPLNCBSE foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StateTwoTonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STNENTRY foreign key (StageOneTonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_TYPENTRY foreign key (TypeID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1767,6 +2269,18 @@ alter table CustomerResidence
 go
 
 
+alter table DeliverySchedule
+   add constraint FK_DS_REF_PP foreign key (PurchasePlanID)
+      references PurchasePlan (PurchaseID)
+go
+
+
+alter table DeliverySchedule
+   add constraint FK_DS_REF_YKNLSTNTRY foreign key (ModelID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_CstAcc foreign key (AccountID)
       references CustomerAccount (AccountID)
@@ -1833,6 +2347,60 @@ alter table ECToWorkOrderMapping
 go
 
 
+alter table EventAccount
+   add constraint FK_EVENTACCT_CUSTACCT foreign key (AccountID)
+      references CustomerAccount (AccountID)
+go
+
+
+alter table EventAccount
+   add constraint FK_EVENTACCT_EVNTBSE foreign key (EventID)
+      references EventBase (EventID)
+go
+
+
+alter table EventBase
+   add constraint FK_EVNTBSE_ACTNTRY foreign key (ActionID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table EventBase
+   add constraint FK_EVNTBSE_SYSCATNTRY foreign key (SystemCategoryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table EventBase
+   add constraint FK_EVNTBSE_YUKUSR foreign key (UserID)
+      references YukonUser (UserID)
+go
+
+
+alter table EventInventory
+   add constraint FK_EVENTINV_EVNTBSE foreign key (EventID)
+      references EventBase (EventID)
+go
+
+
+alter table EventInventory
+   add constraint FK_EVENTINV_INVENBSE foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table EventWorkOrder
+   add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)
+      references EventBase (EventID)
+go
+
+
+alter table EventWorkOrder
+   add constraint FK_EVENTWO_WOBASE foreign key (OrderID)
+      references WorkOrderBase (OrderID)
+go
+
+
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn foreign key (AnswerType)
       references YukonListEntry (EntryID)
@@ -1878,6 +2446,36 @@ go
 alter table InventoryBase
    add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
       references YukonListEntry (EntryID)
+go
+
+
+alter table InventoryToWarehouseMapping
+   add constraint FK_INVTOWAREMAP_INVENBASE foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table InventoryToWarehouseMapping
+   add constraint FK_INVTOWAREMAP_WAREHOUSE foreign key (WarehouseID)
+      references Warehouse (WarehouseID)
+go
+
+
+alter table Invoice
+   add constraint FK_INVC_REF_PP foreign key (PurchasePlanID)
+      references PurchasePlan (PurchaseID)
+go
+
+
+alter table InvoiceShipmentMapping
+   add constraint FK_INVCSHPMNTMAP_INVC foreign key (InvoiceID)
+      references Invoice (InvoiceID)
+go
+
+
+alter table InvoiceShipmentMapping
+   add constraint FK_INVCSHPMNTMAP_SHPMNT foreign key (ShipmentID)
+      references Shipment (ShipmentID)
 go
 
 
@@ -1936,12 +2534,6 @@ go
 
 
 alter table LMHardwareBase
-   add constraint FK_LMHrdB_Rt foreign key (RouteID)
-      references Route (RouteID)
-go
-
-
-alter table LMHardwareBase
    add constraint FK_LMHARDWA_ISA_CSTHR_INVENTOR foreign key (InventoryID)
       references InventoryBase (InventoryID)
 go
@@ -1974,6 +2566,18 @@ go
 alter table LMHardwareEvent
    add constraint FK_LmHrEv_LmCsEv foreign key (EventID)
       references LMCustomerEventBase (EventID)
+go
+
+
+alter table LMHardwareToMeterMapping
+   add constraint FK_LMMETMAP_LMHARDBASE foreign key (LMHardwareInventoryID)
+      references LMHardwareBase (InventoryID)
+go
+
+
+alter table LMHardwareToMeterMapping
+   add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
+      references MeterHardwareBase (InventoryID)
 go
 
 
@@ -2085,6 +2689,42 @@ alter table LMThermostatSeasonEntry
 go
 
 
+alter table MeterHardwareBase
+   add constraint FK_METERHARD_INVENBSE foreign key (InventoryID)
+      references InventoryBase (InventoryID)
+go
+
+
+alter table MeterHardwareBase
+   add constraint FK_METERHARD_YUKONLSTNTRY foreign key (MeterTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table PurchasePlan
+   add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ScheduleShipmentMapping
+   add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
+      references DeliverySchedule (ScheduleID)
+go
+
+
+alter table ScheduleShipmentMapping
+   add constraint FK_SCHDSHPMNTMAP_SHPMNT foreign key (ShipmentID)
+      references Shipment (ShipmentID)
+go
+
+
+alter table ScheduleTimePeriod
+   add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
+      references DeliverySchedule (ScheduleID)
+go
+
+
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
       references Address (AddressID)
@@ -2097,15 +2737,33 @@ alter table ServiceCompany
 go
 
 
+alter table ServiceCompanyDesignationCode
+   add constraint FK_SRVCODSGNTNCODES_SRVCO foreign key (ServiceCompanyID)
+      references ServiceCompany (CompanyID)
+go
+
+
+alter table Shipment
+   add constraint FK_SHPMNT_WRHSE foreign key (WarehouseID)
+      references Warehouse (WarehouseID)
+go
+
+
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
 go
 
 
-alter table Substation
-   add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route (RouteID)
+alter table Warehouse
+   add constraint FK_WAREHOUSE_ADDRESS foreign key (AddressID)
+      references Address (AddressID)
+go
+
+
+alter table Warehouse
+   add constraint FK_WAREHOUSE_EC foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 

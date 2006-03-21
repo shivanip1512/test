@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/15/2006 3:59:28 PM                         */
+/* Created on:     3/21/2006 2:22:44 PM                         */
 /*==============================================================*/
 
 
@@ -812,7 +812,8 @@ create table CICustomerBase  (
    CustomerDemandLevel  FLOAT                           not null,
    CurtailmentAgreement VARCHAR2(100)                   not null,
    CurtailAmount        FLOAT                           not null,
-   CompanyName          VARCHAR2(80)                    not null
+   CompanyName          VARCHAR2(80)                    not null,
+   CiCustType           NUMBER                          not null
 );
 
 alter table CICustomerBase
@@ -5601,6 +5602,7 @@ insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
 insert into YukonListEntry values( 8, 1, 0, 'Cell Phone', 2 );
 insert into YukonListEntry values( 9, 1, 0, 'Email to Cell', 1);
+insert into YukonListEntry values( 10, 1, 0, 'Call Back Phone', 2);
 
 insert into YukonListEntry values (100, 100, 0, 'Addition', 0);
 insert into YukonListEntry values (101, 100, 0, 'Subtraction', 0);
@@ -5688,12 +5690,24 @@ insert into YukonListEntry values (1088,1007,0,'Grain Dryer',1407);
 insert into YukonListEntry values (1089,1007,0,'Irrigation',1408);
 insert into YukonListEntry values (1101,1008,0,'General',0);
 insert into YukonListEntry values (1102,1008,0,'Credit',0);
-insert into YukonListEntry values (1111,1009,0,'Service Call',0);
-insert into YukonListEntry values (1112,1009,0,'Install',0);
+insert into YukonListEntry values (1111,1009,0,'Service Call',1550);
+insert into YukonListEntry values (1112,1009,0,'Install',1551);
+insert into YukonListEntry values (1113,1009,0,'Activation',1552);
+insert into YukonListEntry values (1114,1009,0,'Deactivation',1553);
+insert into YukonListEntry values (1115,1009,0,'Removal',1554);
+insert into YukonListEntry values (1116,1009,0,'Repair',1555);
+insert into YukonListEntry values (1117,1009,0,'Other',1556);
+insert into YukonListEntry values (1118,1009,0,'Maintenance',1557);
+
 insert into YukonListEntry values (1121,1010,0,'Pending',1501);
 insert into YukonListEntry values (1122,1010,0,'Scheduled',1502);
 insert into YukonListEntry values (1123,1010,0,'Completed',1503);
 insert into YukonListEntry values (1124,1010,0,'Cancelled',1504);
+insert into YukonListEntry values (1125,1010,0,'Assigned',1505);
+insert into YukonListEntry values (1126,1010,0,'Released',1506);
+insert into YukonListEntry values (1127,1010,0,'Processed',1507);
+insert into YukonListEntry values (1128,1010,0,'Hold',1508);
+
 insert into YukonListEntry values (1131,1011,0,'Acct #',1601);
 insert into YukonListEntry values (1132,1011,0,'Phone #',1602);
 insert into YukonListEntry values (1133,1011,0,'Last name',1603);
@@ -5768,9 +5782,15 @@ insert into YukonListEntry values (1311,1052,0,'Serial #',2801);
 insert into YukonListEntry values (1312,1052,0,'Install date',2802);
 insert into YukonListEntry values (1321,1053,0,'Device type',2901);
 insert into YukonListEntry values (1322,1053,0,'Service company',2902);
-insert into YukonListEntry values (1323,1053,0,'Location',2903);
+insert into YukonListEntry values (1323,1053,0,'Appliance Type',2903);
 insert into YukonListEntry values (1324,1053,0,'Configuration',2904);
 insert into YukonListEntry values (1325,1053,0,'Device status',2905);
+insert into YukonListEntry values (1326,1053,0,'Member',2906);
+insert into YukonListEntry values (1327,1053,0,'Warehouse',2907);
+insert into YukonListEntry values (1328,1053,0,'Min Serial Number',2908);
+insert into YukonListEntry values (1329,1053,0,'Max Serial Number',2909);
+insert into YukonListEntry values (1330,1053,0,'Postal Code',2910);
+
 insert into YukonListEntry values (1331,1054,0,'Order #',3301);
 insert into YukonListEntry values (1332,1054,0,'Acct #',3302);
 insert into YukonListEntry values (1333,1054,0,'Phone #',3303);
@@ -5779,8 +5799,15 @@ insert into YukonListEntry values (1335,1054,0,'Serial #',3305);
 insert into YukonListEntry values (1336,1054,0,'Address',3306);
 insert into YukonListEntry values (1341,1055,0,'Order #',3401);
 insert into YukonListEntry values (1342,1055,0,'Date/Time',3402);
+insert into YukonListEntry values (1343,1055,0,'Service Company',3403);
+insert into YukonListEntry values (1344,1055,0,'Service Type',3404);
+insert into YukonListEntry values (1345,1055,0,'Service Status',3405);
+insert into YukonListEntry values (1346,1055,0,'Customer Type',3406);
+
+insert into yukonlistentry values (1351, 1056, 0, 'Service Status', 3501);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
 insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
+insert into YukonListEntry values (1354,1056,0,'Zip Code',3504);
 
 insert into YukonListEntry values (1400,1032,0,' ',0);
 insert into YukonListEntry values (1401,1032,0,'2',0);
@@ -6010,7 +6037,20 @@ insert into YukonListEntry values (1904,1065,3,'Power & Lighting Service',3604);
 insert into YukonListEntry values (1905,1065,4, 'PP', 3605);
 insert into YukonListEntry values (1906,1065,5, 'PT', 3606);
 
+insert into YukonListEntry values (1930,1071,0, 'Commercial', 0);
+insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
+insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
+insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
+
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
+
+insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
+insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
+insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
+insert into yukonlistentry values (10201, 1068, 0, 'Created', 0);
+insert into yukonlistentry values (10202, 1068, 0, 'Updated', 0);
+
+insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 alter table YukonListEntry
    add constraint PK_YUKONLISTENTRY primary key (EntryID);
 
@@ -6347,6 +6387,7 @@ insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','
 insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
 insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
 insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
+insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
@@ -6551,7 +6592,7 @@ insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice s
 insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
 
 /* Notification / Configuration role properties */
-insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonRoleProperty values(-80100,-801,'Template Root','http://localhost:8080/WebConfig/custom/notif_templates/','A URL base where the notification templates will be stored (file: or http: are okay).');
 
 /* Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-90000,-900,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
@@ -6587,7 +6628,7 @@ insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines p
 insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
 insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','Y');
 insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','Y');
-insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','N');
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','Y');
 insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
 insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','Y');
 insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','Y');
@@ -6648,6 +6689,10 @@ insert into YukonSelectionList values (1063,'N','(none)','Water heater location 
 insert into YukonSelectionList values (1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y');
 insert into YukonSelectionList values (1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y');
 insert into YukonSelectionList values (1066,'A','(none)','Energy Company Settlement Types','Settlement','Y');
+insert into yukonselectionlist values (1067, 'A', '(none)', 'System category types for Event Logging in STARS', 'EventSystemCategory', 'N');
+insert into yukonselectionlist values (1068, 'A', '(none)', 'Action types for Customer Account events in STARS', 'EventAccountActions', 'N');
+insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','N');
+
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key (ListID);
@@ -7176,6 +7221,10 @@ alter table CICUSTOMERPOINTDATA
 alter table CICUSTOMERPOINTDATA
    add constraint FK_CICUSTOM_REF_CICST_POINT foreign key (PointID)
       references POINT (POINTID);
+
+alter table CICustomerBase
+   add constraint FK_CUSTTYPE_ENTRYID foreign key (CiCustType)
+      references YukonListEntry (EntryID);
 
 alter table CICustomerBase
    add constraint FK_CICstBas_CstAddrs foreign key (MainAddressID)
