@@ -383,7 +383,7 @@ public class InventoryBean {
                         }
                     }
         		}
-                else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE)
+                else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE)
                 {
                     for (int j = 0; j < hardwares.size(); j++)
                     {
