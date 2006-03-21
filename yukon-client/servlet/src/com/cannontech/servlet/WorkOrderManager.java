@@ -9,6 +9,7 @@ package com.cannontech.servlet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -158,7 +159,8 @@ public class WorkOrderManager extends HttpServlet {
         	if(param != null)
         		ext = param;
     		String fileName = "WorkOrders";
-    		fileName += "." + ext;        	
+    		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+    		fileName += "_"+format.format(new Date()) + "." + ext;        	
     		resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 
         	JFreeReport report = createReport(user, req, session);
@@ -189,6 +191,7 @@ public class WorkOrderManager extends HttpServlet {
 		
 		ReportBean reportBean = new ReportBean();
 		reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
+		reportBean.setUserID(user.getUserID());
 		((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
 
 		reportBean.getModel().setTimeZone(workOrderBean.getEnergyCompany().getDefaultTimeZone());
