@@ -98,6 +98,7 @@ public static ArrayList getAllSwitchReplacements()
             		currentEntry.setDeviceType( stmt.getRow(i)[3].toString());
             	if (stmt.getRow(i)[4] != null)
             		currentEntry.setUserName( stmt.getRow(i)[4].toString());
+            	changes.add(currentEntry);
             }
         }
     }
