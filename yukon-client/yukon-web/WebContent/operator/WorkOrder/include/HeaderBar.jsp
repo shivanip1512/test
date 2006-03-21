@@ -1,3 +1,4 @@
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/change_monitor.js"></script>
 
 <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -13,7 +14,7 @@
 		  <td width="235" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right" nowrap>
 <% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
-            <span class="MainText"><a href="../Operations.jsp" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span> 
+            <span class="MainText"><a href="<%=request.getContextPath()%><%=AuthFuncs.getRolePropertyValue(lYukonUser,WebClientRole.HOME_URL)%>" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span> 
 <% } %>
 		  &nbsp;&nbsp;&nbsp;</td>
 		  <td width="" valign="middle" nowrap> 
