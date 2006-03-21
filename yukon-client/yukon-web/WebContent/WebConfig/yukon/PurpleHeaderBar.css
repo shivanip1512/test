@@ -1,10 +1,9 @@
 .headerbar 
 { 
 	position: relative;
-	width: 758px;
+	width: 766px;
 	background-color: #666699;
 	padding: 1px;
-	border: black 1px solid;
 	float: left;
 	margin: -7px;
 }
