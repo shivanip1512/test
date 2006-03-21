@@ -17,7 +17,7 @@
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
 	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
 	<%pageContext.setAttribute("filterConsumptionType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
-	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());%>
+	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
