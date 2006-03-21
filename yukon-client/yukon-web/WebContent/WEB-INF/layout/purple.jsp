@@ -7,10 +7,13 @@
 <head>
     <title><c:out value="${ctiPageTitle}"/></title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-    <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-    <link rel="stylesheet" href="../../WebConfig/yukon/PurpleHeaderBar.css" type="text/css">
-    <cti:outputHeadContent/>
+        <cti:outputHeadContent>
+          <cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
+          <cti:includeCss link="/WebConfig/yukon/PurpleHeaderBar.css"/>
+          <cti:includeScript link="/JavaScript/prototype.js"/>
+        </cti:outputHeadContent>
+        <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+    
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000" onload="init()">
