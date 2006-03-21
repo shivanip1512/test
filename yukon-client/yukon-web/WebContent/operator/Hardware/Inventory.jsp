@@ -42,6 +42,12 @@ function manipulateAll(form)
 	form.action.value = "ManipulateInventoryResults";
     form.submit();
 }
+
+function applyOrdering(form)
+{
+	form.action.value = "ApplyOrdering";
+    form.submit();
+}
 </script>
 </head>
 
@@ -160,7 +166,7 @@ function manipulateAll(form)
 			     	              			</table>
 			                    		</td>
 			                    		<td width="25%"> 
-			                      			<input type="submit" name="Submit" value="Apply Ordering">
+			                      			<input type="button" name="SortOrderButton" value="Apply Ordering" onclick="applyOrdering(this.form)">
 			                    		</td>
 			                  		</tr>
 		                		</table>

@@ -175,6 +175,8 @@ public class InventoryManager extends HttpServlet {
             applyActions( user, req, session );
         else if (action.equalsIgnoreCase("ViewInventoryResults"))
             viewInventoryResults( user, req, session );
+        else if (action.equalsIgnoreCase("ApplyOrdering"))
+            applyOrderingToInventory( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateInventoryResults"))
             manipulateResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
@@ -1518,6 +1520,16 @@ public class InventoryManager extends HttpServlet {
     {
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
         iBean.setViewResults(!iBean.getViewResults());
+        //session.setAttribute("inventoryBean", iBean);
+        
+        redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
+    }
+    
+    private void applyOrderingToInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        iBean.setSortBy(Integer.parseInt(req.getParameter("SortBy")));
+        iBean.setSortOrder(Integer.parseInt(req.getParameter("SortOrder")));
         //session.setAttribute("inventoryBean", iBean);
         
         redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
