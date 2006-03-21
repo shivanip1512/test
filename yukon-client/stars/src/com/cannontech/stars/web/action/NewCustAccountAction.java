@@ -298,7 +298,8 @@ public class NewCustAccountAction implements ActionBase {
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account created successfully" );
 			respOper.setStarsSuccess( success );
-			
+            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, liteAcctInfo.getAccountID());
+            			
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
@@ -492,7 +493,7 @@ public class NewCustAccountAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
 			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
 			
-			return liteAcctInfo;
+            return liteAcctInfo;
 		}
 		catch (CommandExecutionException e) {
 			CTILogger.error( e.getMessage(), e );
