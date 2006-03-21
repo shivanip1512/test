@@ -221,6 +221,44 @@ public class ServiceCompany extends DBPersistent {
     	
     	return null;
     }
+	
+	/** 
+	 * Returns the ServiceCompany for loginID, where loginID is the ServiceCompany's contact's login.
+	 * @param loginID
+	 * @return
+	 */
+	public static com.cannontech.database.db.stars.report.ServiceCompany retrieveServiceCompanyByContactLoginID(Integer loginID) {
+    	StringBuffer sql = new StringBuffer( "SELECT COMPANYID, COMPANYNAME, SC.ADDRESSID, MAINPHONENUMBER, MAINFAXNUMBER, PRIMARYCONTACTID, HITYPE " +
+    										" FROM " + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + " SC, CONTACT C" +
+    										" WHERE SC.PRIMARYCONTACTID = C.CONTACTID " + 
+    										" AND C.LOGINID = " + loginID.toString());
+    	
+    	SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
+    			
+    	try {
+    		stmt.execute();
+    		com.cannontech.database.db.stars.report.ServiceCompany company = new com.cannontech.database.db.stars.report.ServiceCompany();
+    		
+    		if( stmt.getRowCount() > 0) {
+    			Object[] row = stmt.getRow(0);
+
+    			Integer companyID = new Integer(((java.math.BigDecimal) row[0]).intValue()) ;
+    			company.setCompanyID( companyID);
+    			company.setCompanyName( (String) row[1] );
+    			company.setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    			company.setMainPhoneNumber( (String) row[3] );
+    			company.setMainFaxNumber( (String) row[4] );
+    			company.setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    			company.setHIType( (String) row[6] );
+    		}
+    		return company;
+    	}
+    	catch (Exception e) {
+    		CTILogger.error( e.getMessage(), e );
+    	}
+    	
+    	return null;
+    }
 
 	public ArrayList<ServiceCompanyDesignationCode> getDesignationCodes() {
 		if( designationCodes == null)
