@@ -1018,6 +1018,7 @@ public class StarsAdmin extends HttpServlet {
 			company.getServiceCompany().setHIType( req.getParameter("Type") );
 			contactDB.setContLastName( req.getParameter("ContactLastName") );
 			contactDB.setContFirstName( req.getParameter("ContactFirstName") );
+			contactDB.setLogInID( Integer.valueOf(req.getParameter("ContactLogin") ));
 			
 			ContactNotification emailNotif = null;
 			for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
@@ -1081,6 +1082,7 @@ public class StarsAdmin extends HttpServlet {
 				StarsLiteFactory.setLiteContact( liteContact, contact );
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 				
+				company.setPrimaryContact(contact);
 				company = (com.cannontech.database.data.stars.report.ServiceCompany) Transaction.createTransaction( Transaction.UPDATE, company ).execute();
 				StarsLiteFactory.setLiteServiceCompany( liteCompany, company );
                 
