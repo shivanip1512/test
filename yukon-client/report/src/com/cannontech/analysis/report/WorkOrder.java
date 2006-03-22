@@ -174,7 +174,7 @@ public class WorkOrder extends YukonReportBase
 		header.getStyle().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
 		int colHeight = 14;	//USE 14 because we know that's what will fit?  SN...ick, ick
-		int yLine = colHeight * 6;
+		int yLine = colHeight * 3;
 		header.addElement(ReportFactory.createBasicLine("woGroupLine", 0.5f, yLine));
 		
 		//Use reportFactory's regular elements, not the group ones.
@@ -185,7 +185,8 @@ public class WorkOrder extends YukonReportBase
 		for (int i = WorkOrderModel.HEADER_START_INDEX; i <= WorkOrderModel.HEADER_END_INDEX; i++)
 		{
 			factory = ReportFactory.createLabelElementDefault(getModel(), i);
-			factory.setText(factory.getText() + ":");		header.addElement(factory.createElement());
+			factory.setText(factory.getText() + ":");
+			header.addElement(factory.createElement());
 		
 			tfactory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			tfactory.setNullString("");
