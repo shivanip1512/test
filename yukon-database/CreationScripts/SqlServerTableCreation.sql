@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/22/2006 11:09:10 AM                        */
+/* Created on:     3/22/2006 5:08:32 PM                         */
 /*==============================================================*/
 
 
@@ -8241,6 +8241,7 @@ insert into yukonlistentry values (1351, 1056, 0, 'Service Status', 3501);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
 insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
 insert into YukonListEntry values (1354,1056,0,'Zip Code',3504);
+insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
 
 insert into YukonListEntry values (1400,1032,0,' ',0);
 insert into YukonListEntry values (1401,1032,0,'2',0);

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/22/2006 11:08:36 AM                        */
+/* Created on:     3/22/2006 5:09:04 PM                         */
 /*==============================================================*/
 
 
@@ -592,6 +592,7 @@ create table AccountSite (
    StreetAddressID      numeric              null,
    PropertyNotes        varchar(300)         null,
    AccountSite          varchar(1)           not null,
+   CustomerStatus       varchar(1)           not null,
    CustAtHome           varchar(1)           not null
 )
 go

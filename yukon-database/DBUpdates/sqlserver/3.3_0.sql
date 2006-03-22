@@ -122,6 +122,9 @@ insert into YukonListEntry values (1090, 1007, 0, 'Chiller', 1409);
 insert into YukonListEntry values (1091, 1007, 0, 'Dual Stage', 1410);
 go
 
+insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
