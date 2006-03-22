@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/03/22 17:28:29 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ bool getPackets    ( int wait );
 void generateOutbound( dr_id_map::value_type element );
 void traceOutbound   ( device_record *dr, int socket_status );
 void processInbound  ( dr_id_map::value_type element );
-void traceInbound    ( device_record *dr );
+void traceInbound    ( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, CtiDeviceSPtr device=CtiDeviceSPtr() );
 
 void sendResults     ( dr_id_map::value_type element );
 
@@ -378,8 +378,8 @@ bool getOutMessages( unsigned wait )
                         dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    //  return a "No Config Data" error - this deletes the OM
-                    ReturnResultMessage(NoConfigData, &im, om);
+                    //  return an error - this deletes the OM
+                    ReturnResultMessage(ErrorDeviceIPUnknown, &im, om);
                 }
             }
         }
@@ -534,6 +534,9 @@ bool getPackets( int wait )
 
         if( p )
         {
+            //  this packet was unhandled, so we trace it
+            traceInbound(p->ip, p->port, 0, p->data, p->len);
+
             delete p->data;
             delete p;
         }
@@ -748,9 +751,7 @@ void processInbound( dr_id_map::value_type element )
                         }
                         else
                         {
-
                             dr->work.xfer.setInCountActual(dr->work.xfer.getInCountExpected());
-
                         }
 
                         memcpy(dr->work.xfer.getInBuffer(), p->data + p->used, dr->work.xfer.getInCountActual());
@@ -773,7 +774,7 @@ void processInbound( dr_id_map::value_type element )
 
                 if( status || dr->work.xfer.getInCountActual() )
                 {
-                    traceInbound(dr);
+                    traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), dr->device);
                 }
 
                 if( p && (p->used >= p->len) )
@@ -798,7 +799,7 @@ void processInbound( dr_id_map::value_type element )
 }
 
 
-void traceInbound( device_record *dr )
+void traceInbound( unsigned long ip, unsigned short port, int status, const unsigned char *message, int count, CtiDeviceSPtr device )
 {
     CtiTraceMsg trace;
     string msg;
@@ -812,27 +813,27 @@ void traceInbound( device_record *dr )
     //  set bright cyan for the info message
     trace.setBrightCyan();
     msg  = "  P: " + CtiNumStr(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0)).spad(3) + " / UDP";
-    msg += " (" + CtiNumStr((dr->ip >> 24) & 0xff) + "."
-                + CtiNumStr((dr->ip >> 16) & 0xff) + "."
-                + CtiNumStr((dr->ip >>  8) & 0xff) + "."
-                + CtiNumStr((dr->ip >>  0) & 0xff) + ":" + CtiNumStr(dr->port) + ")";
+    msg += " (" + CtiNumStr((ip >> 24) & 0xff) + "."
+                + CtiNumStr((ip >> 16) & 0xff) + "."
+                + CtiNumStr((ip >>  8) & 0xff) + "."
+                + CtiNumStr((ip >>  0) & 0xff) + ":" + CtiNumStr(port) + ")";
 
     trace.setTrace(msg);
     trace.setEnd(false);
     traceList.push_back(trace.replicateMessage());
 
-    if(dr->device)
+    if(device)
     {
         trace.setBrightCyan();
-        msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + dr->device->getName();
+        msg = "  D: " + CtiNumStr(device->getID()).spad(3) + " / " + device->getName();
         trace.setTrace(msg);
         trace.setEnd(false);
         traceList.push_back(trace.replicateMessage());
     }
 
-    if(dr->work.status)
+    if(status)
     {
-        if( dr->work.status == ErrPortSimulated )
+        if( status == ErrPortSimulated )
         {
             trace.setBrightWhite();
             msg = " IN: (simulated, no bytes returned)";
@@ -840,7 +841,7 @@ void traceInbound( device_record *dr )
         else
         {
             trace.setBrightRed();
-            msg = " IN: " + CtiNumStr(dr->work.status).spad(3);
+            msg = " IN: " + CtiNumStr(status).spad(3);
         }
     }
     else
@@ -854,16 +855,16 @@ void traceInbound( device_record *dr )
 
 
     //  then print the formatted hex trace
-    if(dr->work.xfer.getInCountActual() > 0)
+    if(count > 0)
     {
         trace.setBrightMagenta();
-        CtiPort::traceBytes(dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), trace, traceList);
+        CtiPort::traceBytes(message, count, trace, traceList);
     }
 
-    if(dr->work.status && dr->work.status != ErrPortSimulated)
+    if(status && status != ErrPortSimulated)
     {
         trace.setBrightRed();
-        trace.setTrace( FormatError(dr->work.status) );
+        trace.setTrace( FormatError(status) );
         trace.setEnd(true);
         traceList.push_back(trace.replicateMessage());
         trace.setNormal();
