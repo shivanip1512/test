@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2006/01/16 21:10:15 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2006/03/22 17:23:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -281,6 +281,8 @@ enum YukonError_t
     ErrorWctp600Series,
 
     ErrorQueuePurged,           // Queue purged to clean memory.
+
+    ErrorDeviceIPUnknown,
 
     FinalError
 };
