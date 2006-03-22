@@ -1107,8 +1107,6 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
     bool returnBool = true;
 
     // should be collection but not now
-    vector<long> pointIdList;
-    pointIdList.reserve(2000);
     long CalcCount = 0;
 
     try
@@ -1151,7 +1149,6 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             rdr["UPDATETYPE"] >> updatetype;
             rdr["PERIODICRATE"] >> updateinterval;
             rdr["QUALITYFLAG"] >> qualityflag;
-            pointIdList.push_back(pointid);
             calcThread->appendCalcPoint( pointid );
 
             // put the collection in the correct collection based on type
