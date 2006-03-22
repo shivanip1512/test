@@ -95,13 +95,14 @@ public class OutputHeadContentTag extends BodyTagSupport {
         pageContext.getOut().write("\n<!-- Layout CSS files -->\n");
         outputCssFiles(layoutCssFiles);
         
+        pageContext.getOut().write("\n<!-- Module CSS files from module_config.xml -->\n");
         ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
                                                                       PageContext.REQUEST_SCOPE);
-        pageContext.getOut().write("\n<!-- Module CSS files from module_config.xml -->\n");
         outputCssFiles(moduleBase.getCssFiles());
+        
+        pageContext.getOut().write("\n<!-- Individual files from includeCss tag on the request page -->\n");
         List cssList = (List) pageContext.getAttribute(StandardPageTag.CTI_CSS_FILES,
                                                        PageContext.REQUEST_SCOPE);
-        pageContext.getOut().write("\n<!-- Individual files from includeCss tag on the request page -->\n");
         outputCssFiles(cssList);
         
         pageContext.getOut().write("\n<!-- Energy Company specific style sheets (Web Client Role)-->\n");
