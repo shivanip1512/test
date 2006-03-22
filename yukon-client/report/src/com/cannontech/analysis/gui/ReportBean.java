@@ -243,7 +243,10 @@ public class ReportBean
     {
         this.model = model;
         if( model != null)
+        {
         	model.setEnergyCompanyID(new Integer(getEnergyCompanyID()));
+        	model.setUserID(new Integer(getUserID()));
+        }
     }
 	/**
 	 * Returns the EnergyCompanyID for the reportBean's user
