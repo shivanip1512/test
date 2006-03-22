@@ -183,7 +183,7 @@ function newCode(form) {
                               <td>Contact Login: 
                                 <select name="ContactLogin" onchange="setContentChanged(true)">
                                 <%
-                                	int[] availUserids = com.cannontech.database.db.contact.Contact.findAvailableUserIDs( UserUtils.USER_DEFAULT_ID );
+                                	int[] availUserids = com.cannontech.database.db.contact.Contact.findAvailableUserIDs( sc.getPrimaryContact().getLoginID());
                                 	for( int i = 0; i < availUserids.length; i++ ){
                                 		if(availUserids[i] == UserUtils.USER_DEFAULT_ID || availUserids[i] > 0 ){%>
                                 		<option value='<%=availUserids[i]%>' <%=availUserids[i]==sc.getPrimaryContact().getLoginID()?"selected":""%>><%=com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(availUserids[i])%></option>
