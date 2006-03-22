@@ -1086,7 +1086,7 @@ public class StarsAdmin extends HttpServlet {
 				company = (com.cannontech.database.data.stars.report.ServiceCompany) Transaction.createTransaction( Transaction.UPDATE, company ).execute();
 				StarsLiteFactory.setLiteServiceCompany( liteCompany, company );
                 
-                if (req.getParameter("hasCodes").length() > 0) 
+                if (req.getParameter("hasCodes") != null && req.getParameter("hasCodes").length() > 0) 
                 { 
                     ArrayList oldCodeList = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID);
                                         
