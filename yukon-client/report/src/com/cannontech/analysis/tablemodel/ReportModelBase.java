@@ -85,6 +85,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** Class fields */
 //	private int[] ecIDs = null;
 	private Integer energyCompanyID = null;
+	private Integer userID = null;
 	
 	protected static final String ATT_START_DATE = "startDate";
 	protected static final String ATT_STOP_DATE = "stopDate";
@@ -787,8 +788,12 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			{ 
 				if (c != 0) 
 					outString += getFieldSeparator(); 
-					
-				outString += String.valueOf(getValueAt(r,c));
+				
+				String str = String.valueOf(getValueAt(r,c));
+				//Remove irregular characters to ensure better csv format
+				str = str.replaceAll("\r\n", "");
+				str = str.replaceAll(",", ";");
+				outString += str;
 			} 
 			outString += LINE_SEPARATOR;
 		} 
@@ -808,6 +813,14 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	public void setFieldSeparator(String string)
 	{
 		fieldSeparator = string;
+	}
+
+	public Integer getUserID() {
+		return userID;
+	}
+
+	public void setUserID(Integer userID) {
+		this.userID = userID;
 	}
 
 }
