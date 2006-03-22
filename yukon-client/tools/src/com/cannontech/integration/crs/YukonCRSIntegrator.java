@@ -453,7 +453,7 @@ public final class YukonCRSIntegrator
 		                		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
 		                		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
 			            		if( addtlMeterHardwareBase == null)
-               		       			errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+               		       			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
 		                	}
 	    				}
 	    				//Stop here, too many error to update anything data.
@@ -513,12 +513,12 @@ public final class YukonCRSIntegrator
             		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
             		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
             		if( addtlMeterHardwareBase == null)
-            			errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+            			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
             		else	//check controllable device is attached to meter
             		{
             			boolean switchAssigned = MeterHardwareBase.hasSwitchAssigned(addtlMeterHardwareBase.getInventoryBase().getInventoryID().intValue());
             			if (!switchAssigned)
-            				errorMsg.append("MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
+            				errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
             		}
             	}
             	
