@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/21/2006 2:22:44 PM                         */
+/* Created on:     3/22/2006 11:10:22 AM                        */
 /*==============================================================*/
 
 
@@ -6042,8 +6042,6 @@ insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
 insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
 insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
-insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
-
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
 insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
@@ -6208,6 +6206,7 @@ insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false
 insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
 insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
+insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
 
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
@@ -6377,6 +6376,7 @@ insert into YukonRoleProperty values(-20155,-201,'Order Number Auto Generation',
 insert into YukonRoleProperty values(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
 insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
+insert into YukonRoleProperty values(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -6387,6 +6387,8 @@ insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','
 insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
 insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
 insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
+insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','false','Toggles on or off the regional (usually zip) code option for service companies.');
+insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
 
 /* Operator Commercial Metering Role Properties*/
@@ -6473,6 +6475,8 @@ insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Contr
 insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
 insert into YukonRoleProperty values(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
+insert into YukonRoleProperty values(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
+insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');

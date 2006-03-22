@@ -443,6 +443,8 @@ create table EventWorkOrderBaseTemp (
    OrderID   Numeric   not null
 );
 
+insert into eventbase values (-1, -9999, 0, 0, '01-JAN-1970');
+
 /*Insert all event workorder data into a temp table*/
 INSERT INTO eventworkorderbaseTemp
    (eventid, userid, systemcategoryid, actionid, eventtimestamp, orderid)
@@ -477,5 +479,7 @@ go
 drop table eventworkorderbasetemp;
 go
 
+insert into ECToGenericMapping values (-1, 1067, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1068, 'YukonSelectionList');
 Insert into ECToGenericMapping values(-1, 1071, 'YukonSelectionList');
 go

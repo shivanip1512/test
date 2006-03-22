@@ -116,9 +116,11 @@ alter table dynamicCCSubstationBus add altSubControlValue NUMBER;
 update dynamicCCSubstationBus set altSubControlValue = 0;
 alter table dynamicCCSubstationBus modify altSubControlValue not null;
 
+/* @error ignore-begin */
 insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
 insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
 insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
+/* @error ignore-end */
 
 alter table CALCBASE add QualityFlag CHAR(1);
 update CALCBASE set QualityFlag = 'N';

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/21/2006 2:27:25 PM                         */
+/* Created on:     3/22/2006 11:08:36 AM                        */
 /*==============================================================*/
 
 
@@ -1163,6 +1163,7 @@ create table EventBase (
 go
 
 
+insert into eventbase values (-1, -9999, 0, 0, '01-JAN-1970');
 alter table EventBase
    add constraint PK_EVENTBASE primary key  (EventID)
 go

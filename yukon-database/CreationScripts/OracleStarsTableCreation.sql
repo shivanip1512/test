@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/21/2006 2:25:35 PM                         */
+/* Created on:     3/22/2006 11:09:57 AM                        */
 /*==============================================================*/
 
 
@@ -616,6 +616,7 @@ create table EventBase  (
    EventTimestamp       DATE                            not null
 );
 
+insert into eventbase values (-1, -9999, 0, 0, '01-JAN-1970');
 alter table EventBase
    add constraint PK_EVENTBASE primary key (EventID);
 

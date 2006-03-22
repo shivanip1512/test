@@ -3,6 +3,11 @@
 /******************************************/
 set scan off;
 
+/* @error ignore */
+alter table command modify command VARCHAR2(256);
+/* @error ignore */
+alter table command modify label VARCHAR2(256);
+
 delete from yukonuserrole where rolepropertyid = -10105 or rolepropertyid = -10106 or rolepropertyid = -10106 or rolepropertyid = -10112;
 
 insert into YukonRoleProperty values(-70005,-700,'Mapping Interface','amfm','Optional interface to the AMFM mapping system');

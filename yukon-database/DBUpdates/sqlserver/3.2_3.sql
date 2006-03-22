@@ -149,10 +149,12 @@ go
 alter table dynamicCCSubstationBus alter column altSubControlValue numeric not null;
 go
 
+/* @error ignore-begin */
 insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0); 
 insert into YukonListEntry values (135, 100, 0, 'Regression', 0); 
 insert into YukonListEntry values (136, 100, 0, 'Binary Encode', 0);
 go
+/* @error ignore-end */
 
 alter table CALCBASE add QualityFlag char(1);
 go

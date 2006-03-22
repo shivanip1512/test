@@ -2,6 +2,11 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+/* @error ignore */
+alter table command alter column command varchar(256);
+/* @error ignore */
+alter table command alter column label varchar(256);
+
 delete from yukonuserrole where rolepropertyid = -10105 or rolepropertyid = -10106 or rolepropertyid = -10106 or rolepropertyid = -10112;
 go
 insert into YukonRoleProperty values(-70005,-700,'Mapping Interface','amfm','Optional interface to the AMFM mapping system');
