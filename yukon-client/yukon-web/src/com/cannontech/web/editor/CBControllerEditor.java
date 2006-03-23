@@ -166,7 +166,7 @@ public class CBControllerEditor {
         TreeNode status = new TreeNodeBase("pointtype", "status", false);
         TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
         
-        LitePoint[] tempArray = PAOFuncs.getLitePointsForPAObject(deviceCBC.getPAObjectID());
+        LitePoint[] tempArray = PAOFuncs.getLitePointsForPAObject(deviceCBC.getPAObjectID().intValue());
 
         TreeSet statusSet = new TreeSet();
         TreeSet analogSet = new TreeSet();
@@ -174,11 +174,12 @@ public class CBControllerEditor {
         
         for (int i = 0; i < tempArray.length; i++) {
             LitePoint litePoint = tempArray[i];
-            if (litePoint.getPointType() == PointTypes.ANALOG_POINT) {
+            int pointType = litePoint.getPointType();
+			if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
                 analogSet.add(litePoint);
-            } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+            } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
                 statusSet.add(litePoint);
-            } else if (litePoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT){
+            } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
                 accumSet.add(litePoint);
             }
         }
@@ -239,13 +240,13 @@ public class CBControllerEditor {
 
             List devicesWithSameAddress = DeviceFuncs.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
                                                                                 currentDeviceAddress.getSlaveAddress());
-            List devicesByPort = DeviceFuncs.getDevicesByPort(commPortId.intValue());
+            List devicesByPort = DeviceFuncs.getDevicesByPort(commPortId.intValue());         
             //remove the current device from the list 
             devicesByPort.remove(getPaoCBC().getPAObjectID());
             devicesWithSameAddress.remove(getPaoCBC().getPAObjectID());
             
             
-            if (!(!devicesByPort.isEmpty())) {
+            if (commPortId.intValue() <= 0) {
                 throw new PortDoesntExistException();
             }
             
@@ -262,7 +263,7 @@ public class CBControllerEditor {
 
 
                 }
-                LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO((Integer)devicesWithSameAddress.get(0));
+                LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(((Integer)devicesWithSameAddress.get(0)).intValue());
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
         }
@@ -320,7 +321,10 @@ public class CBControllerEditor {
         FacesMessage fm = new FacesMessage();
         try {
             String val = JSFParamUtil.getJSFReqParam("parentId");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("pointWizBase.jsf?parentId=" + val);
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            String location = "pointWizBase.jsf?parentId=" + val;
+            CBCNavigationUtil.bookmarkLocation(location,session);            
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
         catch (IOException e) {
