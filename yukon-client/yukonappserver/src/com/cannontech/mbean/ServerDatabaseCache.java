@@ -1971,10 +1971,11 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
 	}	
-	else  //let it all go!!
+	else  //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
 	{
-		CTILogger.error(" ***** Releasing all Cache!  Unhandled Category:" + dbCategory + ")!");
-		releaseAllCache();
+		CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
+//		CTILogger.error(" ***** Releasing all Cache!  Unhandled Category:" + dbCategory + ")!");
+//		releaseAllCache();
 	}
 
 	return retLBase;
