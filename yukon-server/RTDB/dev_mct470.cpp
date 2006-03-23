@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2006/03/23 21:23:11 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2006/03/23 21:25:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2548,7 +2548,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(volts, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(volts, pi, point_string));
             }
             //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
             //    both happen (until we have the configs to tell us which one to use)
@@ -2568,7 +2568,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(km, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
             }
             //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
             //    both happen (until we have the configs to tell us which one to use)
@@ -2588,7 +2588,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 point_string = getName() + " / " + volts->getName() + " = " + CtiNumStr(pi.value, boost::static_pointer_cast<CtiPointNumeric>(volts)->getPointUnits().getDecimalPlaces());
 
-                ReturnMsg->PointData().insert(makePointDataMsg(km, pi, point_string));
+                ReturnMsg->PointData().push_back(makePointDataMsg(km, pi, point_string));
             }
             //  don't send the point if it's not defined - this is a hack to allow the S4 and Alpha decodes to
             //    both happen (until we have the configs to tell us which one to use)
