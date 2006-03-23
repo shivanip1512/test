@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
@@ -366,14 +367,14 @@ public class PointForm extends DBEditorForm
     public String create() {
         String edType = "pointEditor";
         FacesMessage fcsMessage = new FacesMessage();
-        int pointType = getWizData().getPointType();
+        int pointType = getWizData().getPointType().intValue();
         String name = getWizData().getName();
         Integer paoId = getWizData().getParentId();
         
         try {
             fcsMessage.setDetail("Database add was SUCCESSFUL");
             PointBase point = PointUtil.createPoint(pointType, name, paoId);    
-            initItem( point.getPoint().getPointID() );
+            initItem( point.getPoint().getPointID().intValue() );
              
         }catch (TransactionException e){
             fcsMessage.setDetail("ERROR creating point -- PointForm.create" + e.getMessage());
@@ -744,10 +745,13 @@ public class PointForm extends DBEditorForm
     }
 
     protected void checkForErrors() throws InvalidPointOffsetException {
-        int offset = getPointBase().getPoint().getPointOffset();
+        int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
         Integer paoId = getWizData().getParentId();
-        
+        //make sure we are not erroring out because of the same offset
+        LitePoint litePoint = PointFuncs.getLitePoint(getPointBase().getPoint().getPointID().intValue());
+        if (litePoint.getPointOffset() == offset)
+        	return;
         if (!PointOffsetUtils.isValidPointOffset(offset,paoId ,type)) {
             throw new InvalidPointOffsetException("The point offset if invalid for " + getPointBase().getPoint().getPointType() +  " point type. Consider increasing offset");
         }

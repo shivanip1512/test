@@ -18,14 +18,14 @@
     //****
 
 
-     Integer paoId = ParamUtil.getInteger(request, "parentId", PAOGroups.INVALID);
+     int paoId = ParamUtil.getInteger(request, "parentId", PAOGroups.INVALID);
 
     if( paoId != PAOGroups.INVALID ) {
   
         PointForm ptEditorForm =
             (PointForm)JSFParamUtil.getJSFVar( "ptEditorForm" );
 
-        ptEditorForm.initWizard( paoId );
+        ptEditorForm.initWizard( new Integer ( paoId ) );
     }
 
       
