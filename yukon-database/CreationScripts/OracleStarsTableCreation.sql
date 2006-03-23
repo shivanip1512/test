@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/22/2006 5:07:38 PM                         */
+/* Created on:     3/23/2006 10:03:42 AM                        */
 /*==============================================================*/
 
 
@@ -156,7 +156,6 @@ create table AccountSite  (
    SiteNumber           VARCHAR2(40)                    not null,
    StreetAddressID      NUMBER,
    PropertyNotes        VARCHAR2(300),
-   AccountSite          VARCHAR2(1)                     not null,
    CustomerStatus       VARCHAR2(1)                     not null,
    CustAtHome           VARCHAR2(1)                     not null
 );
