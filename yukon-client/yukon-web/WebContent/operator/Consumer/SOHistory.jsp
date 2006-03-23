@@ -175,10 +175,10 @@ function sendWorkOrder() {
                 <td width="5">&nbsp;</td>
                 <td><a href="" onclick="getPrintableVersion(); return false;" class="Link2">Printable Version</a></td>
               </tr>
-              <tr>
+<%--              <tr>
                 <td width="5">&nbsp;</td>
                 <td><a href="" onclick="sendWorkOrder(); return false;" class="Link2">Send To Service Company</a></td>
-              </tr>
+              </tr>--%>
             </table>
 			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
 			  <input type="hidden" name="ACTION" value="DownloadReport">
