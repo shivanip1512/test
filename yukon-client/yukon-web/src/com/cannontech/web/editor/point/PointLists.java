@@ -110,10 +110,7 @@ public class PointLists {
 
     public static Set getAllTwoStateStatusPoints() {
         DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
-        // ensures uniqueness and ordering by name
-        TreeSet pointSet = new TreeSet(LiteComparators.liteStringComparator);
-
+        TreeSet pointSet = new TreeSet();
         synchronized (cache) {
             java.util.List allPoints = cache.getAllPoints();
             LitePoint litePoint = null;
@@ -123,7 +120,6 @@ public class PointLists {
                 litePoint = (LitePoint) allPoints.get(i);
 
                 int pointType = litePoint.getPointType();
-           
                 if ((pointType == PointTypes.STATUS_POINT)
                     || pointType == PointTypes.CALCULATED_STATUS_POINT )
                     {
