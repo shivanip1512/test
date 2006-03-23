@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/03/23 21:25:09 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2006/03/23 23:38:21 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,7 +235,8 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = Emetcon::PutValue_IEDReset;
     cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair(0, 0);
+    cs._funcLen = make_pair((int)MCT470_FuncWrite_IEDCommand,
+                            (int)MCT470_FuncWrite_IEDCommandLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutStatus_FreezeOne;
@@ -2677,9 +2678,17 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 resultString += getName() + " / KWH rate " + (char)('A' + rate) + " total = " + CtiNumStr(pi.value) + "\n";
             }
 
+            //  this is CRAZY WIN32 SPECIFIC
+            _TIME_ZONE_INFORMATION tzinfo;
+            int timezone_offset = 0;
+            if( GetTimeZoneInformation(&tzinfo) != TIME_ZONE_ID_INVALID )
+            {
+                timezone_offset = tzinfo.Bias;
+            }
+
             pi        = getData(DSt->Message + 5, 3, ValueType_Raw);
             time_info = getData(DSt->Message + 8, 4, ValueType_Raw);
-            peak_time = CtiTime((unsigned long)time_info.value);
+            peak_time = CtiTime((unsigned long)time_info.value + timezone_offset);
 
             if(kw = getDevicePointOffsetTypeEqual(offset + rate, AnalogPointType))
             {
