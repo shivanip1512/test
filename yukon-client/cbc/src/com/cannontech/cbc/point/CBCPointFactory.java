@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.AccumPointParams;
@@ -19,6 +18,7 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.StatusPointParams;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -28,7 +28,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 public class CBCPointFactory{
     
     private static final PointParams[] POINT_PROTOTYPES = {
-       new StatusPointParams(1,"Capacitor bank state"),
+       new StatusPointParams(1,"Capacitor bank state", PointTypes.CONTROLTYPE_NORMAL),
        new StatusPointParams(2,"Re-close Blocked"),
        new StatusPointParams(3,"Control Mode"),
        new StatusPointParams(4,"Auto Volt Control"), 
@@ -102,18 +102,20 @@ public class CBCPointFactory{
         for (int i = 0; i < POINT_PROTOTYPES.length; i++) {
             PointParams array_element = POINT_PROTOTYPES[i];
             PointBase point = PointFactory.createPoint(array_element.getType());
-            switch (array_element.getType()) {
-            case PointTypes.STATUS_POINT:
-                point = (StatusPoint) PointFactory.createNewPoint(point.getPoint()
+			switch (array_element.getType()) {
+            case PointTypes.STATUS_POINT:            	
+            	point = (StatusPoint) PointFactory.createNewPoint(point.getPoint()
                                                                        .getPointID(),
                                                                   PointTypes.STATUS_POINT,
                                                                   array_element.getName(),
                                                                   paoId,
-                                                                  array_element.getOffset());
-
+           
+                                                                  new Integer (array_element.getOffset()));
                 point.getPoint()
                      .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
+                PointStatus pointStatus = ((PointStatus)((StatusPoint)point).getPointStatus());
+                int controlType = ((StatusPointParams)array_element).getControlType();
+                pointStatus.setControlType(PointTypes.getType(controlType));                
                 break;
             case PointTypes.ANALOG_POINT:
                 point = (AnalogPoint) PointFactory.createPoint(PointTypes.ANALOG_POINT);
