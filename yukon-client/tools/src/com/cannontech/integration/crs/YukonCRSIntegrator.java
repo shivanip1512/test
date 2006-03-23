@@ -234,8 +234,6 @@ public final class YukonCRSIntegrator
                 String cityName = currentEntry.getCityName();
                 String state = currentEntry.getStateCode();
                 String zipCode = currentEntry.getZipCode();
-                if( zipCode.length() > 5)
-                	zipCode = zipCode.substring(0, 5);
                 String customerNumber = currentEntry.getNewDebtorNumber();
                 String alternateTrackingNumber = currentEntry.getTransID();
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
@@ -340,8 +338,9 @@ public final class YukonCRSIntegrator
             String cityName = currentEntry.getCityName( );      
             String stateCode = currentEntry.getStateCode( );
             String zipCode = currentEntry.getZipCode();
-            if( zipCode.length() > 5)
-            	zipCode = zipCode.substring(0, 5);
+            String servCompZipCode = zipCode.toString();
+            if( servCompZipCode.length() > 5)
+            	servCompZipCode = servCompZipCode.substring(0, 5);
             String firstName = currentEntry.getFirstName( );  
             String lastName = currentEntry.getLastName( );
             String homePhone = currentEntry.getHomePhone( );
@@ -377,9 +376,9 @@ public final class YukonCRSIntegrator
         	LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         	LiteYukonUser liteYukonUser = null;
         	YukonListEntry workTypeEntry = null;
-        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(zipCode);
+        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(servCompZipCode);
         	if( serviceCompany == null)
-        		errorMsg.append("No serviceCompany found for zipcode " + zipCode + "; ");
+        		errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
         	else
         	{
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
@@ -703,14 +702,18 @@ public final class YukonCRSIntegrator
 			}
         	
         	String zipCode = customerAccount.getAccountSite().getStreetAddress().getZipCode();
+            String servCompZipCode = zipCode.toString();
+            if( servCompZipCode.length() > 5)
+            	servCompZipCode = servCompZipCode.substring(0, 5);
+        	
         	
         	//Get the serviceCompany from the zipcode
         	LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         	LiteYukonUser liteYukonUser = null;
         	YukonListEntry workTypeEntry = null;
-        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(zipCode);
+        	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(servCompZipCode);
         	if( serviceCompany == null)
-        		errorMsg.append("No serviceCompany found for zipcode " + zipCode + "; ");
+        		errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
         	else
         	{
         		//Get the energyCompany from the zip code
