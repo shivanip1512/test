@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,6 +86,12 @@ public:
    virtual void         setDataOffset(DOUBLE d)       { _pointAnalog.setDataOffset(d); }
 
 };
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiPointAnalog * CtiPointAnalogSPtr;
+#else
+typedef shared_ptr< CtiPointAnalog > CtiPointAnalogSPtr;
+#endif
 
 #endif // #ifndef __PT_ANALOG_H__
 

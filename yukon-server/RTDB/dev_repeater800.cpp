@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,13 +166,13 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &Time
          double value;
 
          LockGuard guard(monitor());               // Lock the MCT device!
-         CtiPointBase *pPoint;
+         CtiPointSPtr pPoint;
 
          if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
          {
-             value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pfCount);
+             value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
-             pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+             pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
              if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
              {

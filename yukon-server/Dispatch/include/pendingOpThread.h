@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/01/05 21:05:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.10  2006/03/23 15:29:19  jotteson
+* Mass update of point* to smart pointers. Point manager now uses smart pointers.
+*
 * Revision 1.9  2006/01/05 21:05:14  cplender
 * Changed a CtiQueue (sorted) to CtiFIFOQueue for speed.
 *
@@ -145,7 +148,7 @@ public:
     void removePointData(CtiPendable *&pendable);
     void removeControl(CtiPendable *&pendable);
 
-    static CtiPointNumeric* getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
+    static CtiPointNumericSPtr getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
 
 };
 #endif // #ifndef __PENDINGOPTHREAD_H__

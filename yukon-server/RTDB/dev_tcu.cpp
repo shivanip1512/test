@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,7 +169,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, list< CtiMess
 
    BOOL  bNoPointsFound = TRUE;
    /* Define the various records */
-   CtiPoint *PointRecord;
+   CtiPointSPtr PointRecord;
 
    /* Variables for decoding TCU Messages */
    USHORT TCUStatus;
@@ -489,7 +489,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
    char        temp[80];
 
    /* Define the various records */
-   CtiPoint          *PointRecord;
+   CtiPointSPtr          PointRecord;
 
    /* Variables for decoding TCU Messages */
    USHORT            TCUStatus;
@@ -516,7 +516,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
    /* Now loop through and update remote processes as needed */
    for(i = 1; i <= 16; i++)
    {
-      if((PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType)) != NULL)
+      if((PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType)))
       {
          PValue = ((TCUStatus >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
 

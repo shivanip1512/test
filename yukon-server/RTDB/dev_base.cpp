@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/03/09 22:28:10 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -222,9 +222,9 @@ bool CtiDeviceBase::orphanDevicePoint(LONG pid)
     return status;
 }
 
-CtiPointBase* CtiDeviceBase::getDevicePointEqual(INT id)
+CtiPointSPtr CtiDeviceBase::getDevicePointEqual(INT id)
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     LockGuard guard(monitor());
 
@@ -241,9 +241,9 @@ CtiPointBase* CtiDeviceBase::getDevicePointEqual(INT id)
     return pPoint;
 }
 
-CtiPointBase* CtiDeviceBase::getDevicePointEqualByName(string pname)
+CtiPointSPtr CtiDeviceBase::getDevicePointEqualByName(string pname)
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     LockGuard guard(monitor());
 
@@ -260,9 +260,9 @@ CtiPointBase* CtiDeviceBase::getDevicePointEqualByName(string pname)
     return pPoint;
 }
 
-CtiPointBase* CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
+CtiPointSPtr CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     LockGuard guard(monitor());
 
@@ -279,9 +279,9 @@ CtiPointBase* CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
     return pPoint;
 }
 
-CtiPointBase* CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, INT type)
+CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, INT type)
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     LockGuard guard(monitor());
 

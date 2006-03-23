@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/22 18:05:52 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/03/23 15:29:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,9 +37,9 @@
 
 using namespace std;
 
-static void verifyDynamicData(CtiPoint *&pTempPoint);
+static void verifyDynamicData(CtiPointSPtr &pTempPoint);
 
-bool findNonUpdatedDynamicData(CtiPoint *pTempPoint, void* d)
+bool findNonUpdatedDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     bool bRet = false;
 
@@ -53,7 +53,7 @@ bool findNonUpdatedDynamicData(CtiPoint *pTempPoint, void* d)
     return bRet;
 }
 
-bool findDirtyDynamicData(CtiPoint *pTempPoint, void* d)
+bool findDirtyDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     bool bRet = false;
 
@@ -70,7 +70,7 @@ bool findDirtyDynamicData(CtiPoint *pTempPoint, void* d)
 /*
  *  This method attempts an insert on all non-valid tbl_ptdispatch objects to make sure they are in there..
  */
-void ApplyInsertNonUpdatedDynamicData(const CtiHashKey *key, CtiPoint *&pTempPoint, void* d)
+void ApplyInsertNonUpdatedDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
 
@@ -89,7 +89,7 @@ void ApplyInsertNonUpdatedDynamicData(const CtiHashKey *key, CtiPoint *&pTempPoi
     return;
 }
 
-void verifyInitialDynamicData(CtiPoint *&pTempPoint)
+void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
 {
     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
 
@@ -127,7 +127,7 @@ void verifyInitialDynamicData(CtiPoint *&pTempPoint)
 /*
  *  This method initializes each point's dynamic data to it's default/initial values.
  */
-void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint, void* d)
+void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     LONG id = 0;
     verifyInitialDynamicData(pTempPoint);
@@ -135,20 +135,20 @@ void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint,
 }
 
 
-void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint*,void*), void *arg, LONG pntID, LONG paoID)
+void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void *arg, LONG pntID, LONG paoID)
 {
-    CtiPoint *pTempPoint = NULL;
+    CtiPointSPtr pTempPoint;
 
-    LockGuard  guard(monitor());
+    Inherited::LockGuard  guard(Inherited::getMux());
 
     Inherited::refreshList(testFunc, arg, pntID, paoID);                // Load all points in the system
-    Inherited::getMap().apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
-    if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL)) != NULL) // If there is at least one nonupdated dynamic entry.
+    Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
+    if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
     {
         RefreshDynamicData();
-        Inherited::getMap().apply(ApplyInsertNonUpdatedDynamicData, NULL);
+        Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
     }
-    if((pTempPoint = Inherited::find(findDirtyDynamicData, NULL)) != NULL)      // If there is at least one dynamic entry which needs writing to the database.
+    if((pTempPoint = Inherited::find(findDirtyDynamicData, NULL)))      // If there is at least one dynamic entry which needs writing to the database.
     {
         storeDirtyRecords();
     }
@@ -158,16 +158,17 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint*,void*), void 
 
 void CtiPointClientManager::DumpList(void)
 {
-    CtiPoint *p = NULL;
+    CtiPointSPtr p;
     try
     {
-        LockGuard  guard(monitor());
+        LockGuard  guard(getMux());
 
-        CtiRTDBIterator itr(Map);
+        spiterator itr = Inherited::begin();
+        spiterator end = Inherited::end();
 
-        for(;itr();)
+        for( ;itr != end; itr++)
         {
-            p = itr.value();
+            p = itr->second;
 
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)p->getDynamic();
@@ -193,9 +194,9 @@ void CtiPointClientManager::DumpList(void)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        cout << "Attempting to clear device list..." << endl;
+        cout << "Attempting to clear point list..." << endl;
 
-        Map.clearAndDestroy();
+        DeleteList();
 
         cout << "DumpMemoryPoints:  " << e.why() << endl;
         RWTHROW(e);
@@ -232,8 +233,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiConnectionManager* CM, con
          */
 
         {
-            CtiPoint* temp = Map.findValue(&CtiHashKey(aReg[i]));
-            if(temp != 0)
+            CtiPointSPtr temp = getEqual(aReg[i]);
+            if(temp)
             {
                 if(!((CtiVanGoghConnectionManager*)CM)->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
                 {
@@ -268,12 +269,13 @@ int CtiPointClientManager::RemoveConnectionManager(CtiConnectionManager* CM)
 
     // OK, now I walk the list of points looking at each one's list to remove the CM
     {
-        LockGuard  guard(monitor());
-        CtiRTDBIterator itr(Map);
+        LockGuard  guard(getMux());
+        spiterator itr = Inherited::begin();
+        spiterator end = Inherited::end();
 
-        for(; ++itr ;)
+        for( ;itr != end; itr++)
         {
-            CtiPoint* temp = itr.value();
+            CtiPointSPtr temp = itr->second;
 
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
@@ -297,12 +299,13 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     CtiTime   closeTime(YUKONEOT);
 
     {
-        LockGuard  guard(monitor());
-        CtiRTDBIterator itr(Map);
+        LockGuard  guard(getMux());
+        spiterator itr = Inherited::begin();
+        spiterator end = Inherited::end();
 
-        for(; ++itr ;)
-        {
-            CtiPoint* pPt = itr.value();
+        for( ;itr != end; itr++)
+        {            
+            CtiPointSPtr pPt = itr->second;
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
 
@@ -323,12 +326,13 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
 {
     {
-        LockGuard  guard(monitor());
-        CtiRTDBIterator itr(Map);
+        LockGuard  guard(getMux());
+        spiterator itr = Inherited::begin();
+        spiterator end = Inherited::end();
 
-        for(; ++itr ;)
+        for( ;itr != end; itr++)
         {
-            CtiPoint* pPt = itr.value();
+            CtiPointSPtr pPt = itr->second;
 
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
@@ -385,9 +389,6 @@ void CtiPointClientManager::storeDirtyRecords()
     int count = 0;
 
     {
-        LockGuard  guard(monitor());
-        CtiRTDBIterator itr(Map);
-
         {
             string dyndisp("dyndisp");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -395,9 +396,13 @@ void CtiPointClientManager::storeDirtyRecords()
 
             conn.beginTransaction(dyndisp.c_str());
 
-            for(; ++itr ;)
+            LockGuard  guard(getMux());
+            spiterator itr = Inherited::begin();
+            spiterator end = Inherited::end();
+        
+            for( ;itr != end; itr++)
             {
-                CtiPoint* pPt = itr.value();
+                CtiPointSPtr pPt = itr->second;
 
                 try
                 {
@@ -449,12 +454,13 @@ CtiPointClientManager::~CtiPointClientManager()
 
 void CtiPointClientManager::DeleteList(void)
 {
-    LockGuard  guard(monitor());
+    LockGuard  guard(getMux());
+    spiterator itr = Inherited::begin();
+    spiterator end = Inherited::end();
 
-    CtiRTDBIterator itr(Map);
-    for(; ++itr ;)
+    for( ;itr != end; itr++)
     {
-        CtiPoint* temp = itr.value();
+        CtiPointSPtr temp = itr->second;
 
         CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
 
@@ -463,11 +469,8 @@ void CtiPointClientManager::DeleteList(void)
             delete ((CtiPointConnection*)(pDyn->getAttachment()));
         }
     }
+    Inherited::DeleteList();
 
-    if(Map.entries())
-    {
-        Map.clearAndDestroy();
-    }
 }
 
 /*
@@ -476,10 +479,10 @@ void CtiPointClientManager::DeleteList(void)
  */
 void CtiPointClientManager::RefreshDynamicData(LONG id)
 {
-    LockGuard  guard(monitor());
+    LockGuard  guard(getMux());
 
     LONG lTemp = 0;
-    CtiPoint* pTempPoint = NULL;
+    CtiPointSPtr pTempPoint;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();

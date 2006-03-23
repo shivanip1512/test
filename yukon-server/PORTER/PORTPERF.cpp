@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/02/21 15:27:00 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -585,7 +585,7 @@ Current Month:
 
 void statisticsReport( CtiDeviceSPtr pDevice )
 {
-    CtiPoint *pPoint;
+    CtiPointSPtr pPoint;
 
     CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
     CtiStatisticsIterator_t dStatItr = statisticsPaoFind( pDevice->getID() );

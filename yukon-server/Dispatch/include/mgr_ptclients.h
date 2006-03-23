@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ public:
    CtiPointClientManager();
 
    virtual ~CtiPointClientManager();
-   virtual void refreshList(BOOL (*fn)(CtiPoint*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
+   virtual void refreshList(BOOL (*fn)(CtiPoint *,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
 
    void DumpList(void);
    void DeleteList(void);

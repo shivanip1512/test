@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -202,8 +202,8 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
         case ControlRequest:
         {
-            CtiPointBase   *point   = NULL;
-            CtiPointStatus *control = NULL;
+            CtiPointSPtr   point;
+            CtiPointStatusSPtr control;
 
             Protocol::DNP::BinaryOutputControl::ControlCode controltype;
             Protocol::DNP::BinaryOutputControl::TripClose   trip_close = Protocol::DNP::BinaryOutputControl::NUL;
@@ -215,11 +215,11 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             if( parse.getiValue("point") > 0 )
             {
                 //  select by raw pointid
-                if( (point = getDevicePointEqual(parse.getiValue("point"))) != NULL )
+                if( point = getDevicePointEqual(parse.getiValue("point")) )
                 {
                     if( point->isStatus() )
                     {
-                        control = (CtiPointStatus *)point;
+                        control = boost::static_pointer_cast<CtiPointStatus>(point);
                     }
                 }
             }
@@ -228,10 +228,10 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                 //  select by a control point on the device
                 offset = parse.getiValue("offset");
 
-                control = (CtiPointStatus*)getDeviceControlPointOffsetEqual(offset);
+                control = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual(offset));
             }
 
-            if( control != NULL )
+            if( control )
             {
                 if( control->getPointStatus().getControlType() > NoneControlType &&
                     control->getPointStatus().getControlType() < InvalidControlType )
@@ -691,7 +691,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
     CtiPointDataMsg             *pt_msg;
-    CtiPointBase                *point;
+    CtiPointSPtr                point;
     CtiPointNumeric             *pNumeric;
     string                    resultString;
     CtiTime                       Now;
@@ -755,7 +755,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 {
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
-    CtiPoint *point;
+    CtiPointSPtr point;
     string resultString;
 
     Protocol::Interface::pointlist_t demand_points;
@@ -770,10 +770,10 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
             //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
             if( point->getType() == PulseAccumulatorPointType )
             {
-                CtiPointAccumulator *demandPoint;
+                CtiPointAccumulatorSPtr demandPoint;
 
                 //  is there an accompanying demand accumulator for this pulse accumulator?
-                if( (demandPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) != NULL )
+                if( demandPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) )
                 {
                     dnp_accumulator_pointdata_map::iterator pd_itr;
                     dnp_accumulator_pointdata previous, current;
@@ -825,7 +825,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
                             demandValue = demandPoint->computeValueForUOM(demandValue);
 
                             resultString = getName() + " / " + demandPoint->getName();
-                            resultString += ": " + CtiNumStr(demandValue, ((CtiPointNumeric *)demandPoint)->getPointUnits().getDecimalPlaces());
+                            resultString += ": " + CtiNumStr(demandValue, (demandPoint)->getPointUnits().getDecimalPlaces());
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
 
@@ -867,17 +867,18 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 
             if( point->isNumeric() )
             {
-                CtiPointNumeric *pNumeric = (CtiPointNumeric *)point;
+                CtiPointNumericSPtr pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
 
                 msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
 
                 resultString  = getName() + " / " + point->getName();
-                resultString += ": " + CtiNumStr(msg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString += ": " + CtiNumStr(msg->getValue(), (pNumeric)->getPointUnits().getDecimalPlaces());
                 resultString += " @ " + msg->getTime().asString();
             }
             else if( point->isStatus() )
             {
-                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), msg->getValue());
+                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(pStatus->getStateGroupID(), msg->getValue());
                 resultString += " @ " + msg->getTime().asString();
             }
             else
@@ -995,7 +996,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
                                               InMessage->Return.TrxID,
                                               InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
-    CtiPointBase     *commPoint;
+    CtiPointSPtr     commPoint;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

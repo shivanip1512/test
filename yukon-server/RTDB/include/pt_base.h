@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,8 @@
 
 
 #include <rw/db/reader.h>
+#include "boost/shared_ptr.hpp"
+using boost::shared_ptr;
 
 #include "dbmemobject.h"
 #include "dlldefs.h"
@@ -143,5 +145,12 @@ public:
 };
 
 typedef CtiPointBase CtiPoint;
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiPointBase * CtiPointSPtr;
+#else
+typedef shared_ptr< CtiPointBase > CtiPointSPtr;
+#endif
+
 
 #endif // #ifndef __PT_BASE_H__

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/01/19 20:18:36 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/03/23 15:29:15 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.27  2006/03/23 15:29:15  jotteson
+* Mass update of point* to smart pointers. Point manager now uses smart pointers.
+*
 * Revision 1.26  2006/01/19 20:18:36  cplender
 * Added CPARM function isTrue() cause I'm sick of doing the same thing everywhere.
 *
@@ -1006,7 +1009,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
     CtiTime now;
     int poff;
 
-    CtiPointNumeric *pPoint = 0;
+    CtiPointNumericSPtr pPoint;
 
     if( 0 && (doit || ppc.getControl().getPreviousStopReportTime() <= now) )
     {
@@ -1020,7 +1023,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
                 remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
             }
 
-            if((0 != (pPoint = getPointOffset(ppc, ppc.getControl().getPAOID(), CONTROLSTOPCOUNTDOWNOFFSET))))
+            if(pPoint = boost::static_pointer_cast<CtiPointNumeric>(getPointOffset(ppc, ppc.getControl().getPAOID(), CONTROLSTOPCOUNTDOWNOFFSET)))
             {
                 double ai = pPoint->computeValueForUOM((double)remainingseconds);
                 if(_multi) _multi->insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
@@ -1054,14 +1057,14 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
 
     if( (doit || ppc.getLastHistoryPost() <= now) )
     {
-        CtiPointNumeric *pPoint = 0;
+        CtiPointNumericSPtr pPoint;
         double ctltime;
 
         for(poff = DAILYCONTROLHISTOFFSET; poff <= ANNUALCONTROLHISTOFFSET; poff++ )
         {
-            pPoint = getPointOffset(ppc, ppc.getControl().getPAOID(), poff);    //(CtiPointNumeric *)PointMgr.getOffsetTypeEqual( ppc.getControl().getPAOID(), poff, AnalogPointType );
+            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getPointOffset(ppc, ppc.getControl().getPAOID(), poff));    //(CtiPointNumeric *)PointMgr.getOffsetTypeEqual( ppc.getControl().getPAOID(), poff, AnalogPointType );
 
-            if(pPoint != 0)
+            if(pPoint)
             {
                 if(poff == DAILYCONTROLHISTOFFSET)
                 {
@@ -1418,7 +1421,7 @@ bool CtiPendingOpThread::loadICControlMap()
                     dynC.UpdateDynamic();                          // Update the dynamiclmcontrolhistory;
                     dynC.setPreviousLogTime(now);
 
-                    CtiPoint *pPt = PointMgr.getControlOffsetEqual(dynC.getPAOID(),  1);
+                    CtiPointSPtr pPt = PointMgr.getControlOffsetEqual(dynC.getPAOID(),  1);
                     if(pPt)
                     {
                         // This control is active and should be added to the pendingControlList!
@@ -1455,7 +1458,7 @@ bool CtiPendingOpThread::loadICControlMap()
                     dynC.UpdateDynamic();                          // Update the dynamiclmcontrolhistory;
                     dynC.setPreviousLogTime(now);
 
-                    CtiPoint *pPt = PointMgr.getControlOffsetEqual(dynC.getPAOID(),  1);
+                    CtiPointSPtr pPt = PointMgr.getControlOffsetEqual(dynC.getPAOID(),  1);
                     if(pPt)
                     {
                         // This control is active and should be added to the pendingControlList!
@@ -1918,21 +1921,21 @@ void CtiPendingOpThread::dbWriterThread()
 }
 
 
-CtiPointNumeric* CtiPendingOpThread::getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff)
+CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff)
 {
-    CtiPointNumeric *pPoint = 0;
+    CtiPointNumericSPtr pPoint;
 
     long fpid = ppc.getOffsetsPointID(poff);
 
     if(fpid)
     {
-        pPoint = (CtiPointNumeric *)PointMgr.getEqual(fpid);
-        if(pPoint->getPointOffset() != poff) pPoint = 0;
+        pPoint = boost::static_pointer_cast<CtiPointNumeric>(PointMgr.getEqual(fpid));
+        if(pPoint->getPointOffset() != poff) pPoint.reset();
     }
 
     if(!pPoint)
     {
-        pPoint = (CtiPointNumeric *)PointMgr.getOffsetTypeEqual(pao, poff, AnalogPointType );
+        pPoint = boost::static_pointer_cast<CtiPointNumeric>(PointMgr.getOffsetTypeEqual(pao, poff, AnalogPointType ));
         if(pPoint) ppc.addOffset(poff, pPoint->getPointID());
     }
 

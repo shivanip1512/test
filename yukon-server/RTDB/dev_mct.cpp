@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1291,12 +1291,12 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
 int CtiDeviceMCT::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int scanType, int pOffset, CtiPointType_t pType )
 {
     int failed = FALSE;
-    CtiPointBase *pPoint;
+    CtiPointSPtr pPoint;
 
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     pPoint = getDevicePointOffsetTypeEqual( pOffset, pType);
 
-    if( pMsg != NULL && pPoint != NULL )
+    if( pMsg != NULL && pPoint )
     {
         pMsg->insert( -1 );          // This is the dispatch token and is unimplemented at this time
         pMsg->insert( OP_POINTID );  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -1704,11 +1704,11 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 dial = parse.getdValue("dial");
             }
 
-            CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("offset"), PulseAccumulatorPointType);
+            CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("offset"), PulseAccumulatorPointType);
 
             if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
             {
-                rawPulses = (int)(dial / (((CtiPointAccumulator *)tmpPoint)->getMultiplier()));
+                rawPulses = (int)(dial / boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier());
             }
             else
             {
@@ -3244,7 +3244,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
-    CtiPointBase         *pPoint;
+    CtiPointSPtr         pPoint;
 
     double Value;
     string resultStr;
@@ -3279,9 +3279,9 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
 
-                if( (pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) != NULL )
+                if( (pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
                 {
-                    Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pfCount);
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType);
                     if(pData != NULL)
@@ -3527,7 +3527,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
-    CtiPointBase    *pPoint;
+    CtiPointSPtr    pPoint;
 
     double    Value;
     string resultStr, defaultStateName;
@@ -3612,7 +3612,7 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
         pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-        if(pPoint != NULL)
+        if(pPoint)
         {
             //  This isn't useful when the status to be returned is anything but "connected" or "disconnected" - we need "Connect armed" instead, so this
             //    will not work too well.

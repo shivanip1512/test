@@ -30,7 +30,6 @@
 
 using boost::shared_ptr;
 
-
 #include "dllbase.h"
 #include "dlldefs.h"
 #include "hashkey.h"
@@ -155,6 +154,24 @@ public:
     }
 
     ptr_type find(bool (*testFun)(T&, void*),void* d)
+    {
+        CtiLockGuard< CtiMutex > gaurd(_mux);
+        ptr_type retRef;
+        spiterator itr;
+
+        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        {
+            if(testFun(itr->second, d))
+            {
+                retRef = itr->second;
+                break;
+            }
+        }
+
+        return retRef;
+    }
+
+    ptr_type find(bool (*testFun)(ptr_type&, void*),void* d)
     {
         CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;

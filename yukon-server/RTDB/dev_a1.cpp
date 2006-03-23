@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.18  2006/03/23 15:29:16  jotteson
+      Mass update of point* to smart pointers. Point manager now uses smart pointers.
+
       Revision 1.17  2006/02/27 23:58:29  tspar
       Phase two of RWTPtrSlist replacement.
 
@@ -1793,8 +1796,8 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
 
     DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg    *pData    = NULL;
+    CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -1851,7 +1854,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
                 i ++)
             {
                 // grab the point based on device and offset
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast< CtiPointNumeric >(getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, ptr))
@@ -1884,7 +1887,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
         }
 
         // grab the point based on device and offset
-        if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(10, StatusPointType)) != NULL)
+        if (pNumericPoint = boost::static_pointer_cast< CtiPointNumeric >(getDevicePointOffsetTypeEqual(10, StatusPointType)))
         {
             // set pvalue
             PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? CLOSED : OPENED);
@@ -2826,7 +2829,7 @@ INT CtiDeviceAlphaA1::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalByte
 LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMapping, AlphaA1Class14Real_t &class14)
 {
     LONG retCode = NORMAL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointNumericSPtr   pNumericPoint;
 
     // always set the metric
     point.mapping = aMapping;
@@ -2836,7 +2839,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
         case A1_KW_DELIVERED:
             {
                 // looking for demand point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2853,7 +2856,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             }
         case A1_REACTIVE_DELIVERED:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2870,7 +2873,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             }
         case A1_KVA_DELIVERED:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2887,7 +2890,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             }
         case A1_REACTIVE_QUADRANT1:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT1_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT1_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2904,7 +2907,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             }
         case A1_REACTIVE_QUADRANT2:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT2_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT2_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2922,7 +2925,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
 
         case A1_REACTIVE_QUADRANT3:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT3_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT3_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2939,7 +2942,7 @@ LONG CtiDeviceAlphaA1::findLPDataPoint (AlphaLPPointInfo_t &point, USHORT aMappi
             }
         case A1_REACTIVE_QUADRANT4:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT4_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_QUADRANT4_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();

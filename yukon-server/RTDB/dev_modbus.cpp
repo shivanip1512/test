@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/02 23:03:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -300,7 +300,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
         _modbus.clearPoints();
         _modbus.setCommand(_porter_info.protocol_command);
 
-        CtiPoint *PointRecord;
+        CtiPointSPtr PointRecord;
 
         switch(_porter_info.protocol_command)
         {
@@ -315,34 +315,31 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
                 
                         if(_pointMgr != NULL)
                         {
-                            LockGuard guard(monitor());
-                
+                            CtiPointManager::LockGuard guard(_pointMgr->getMux());
                             /* Walk the point in memory db to see what the point range is */
-                            CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
+                            CtiPointManager::spiterator iter = _pointMgr->begin();
 
-                            while(++itr_pt)
+                            CtiPointManager::spiterator end = _pointMgr->end();
+
+                            for( ; iter != end; iter++ )
                             {
-                                PointRecord = itr_pt.value();
+                                PointRecord = iter->second;
                 
                                 switch(PointRecord->getType())
                                 {
                                 case StatusPointType:
                                     {
-                                        CtiPointStatus *StatusPoint = (CtiPointStatus *)PointRecord;
-                
-                                        if(StatusPoint->getPointOffset()>0)
+                                        if(PointRecord->getPointOffset()>0)
                                         {
-                                            _modbus.addStatusPoint(StatusPoint->getPointOffset());
+                                            _modbus.addStatusPoint(PointRecord->getPointOffset());
                                         }
                                         break;
                                     }
                                 case AnalogPointType:
                                     {
-                                        CtiPointStatus *StatusPoint = (CtiPointStatus *)PointRecord;
-                
-                                        if(StatusPoint->getPointOffset()>0)
+                                        if(PointRecord->getPointOffset()>0)
                                         {
-                                            _modbus.addAnalogPoint(StatusPoint->getPointOffset());
+                                            _modbus.addAnalogPoint(PointRecord->getPointOffset());
                                         }
                                         break;
                                     }
@@ -467,8 +464,8 @@ void Modbus::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
     CtiPointDataMsg             *pt_msg;
-    CtiPointBase                *point;
-    CtiPointNumeric             *pNumeric;
+    CtiPointSPtr                point;
+    CtiPointNumericSPtr         pNumeric;
     string                    resultString;
     CtiTime                       Now;
 
@@ -531,7 +528,7 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 {
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
-    CtiPoint *point;
+    CtiPointSPtr point;
     string resultString;
 
 
@@ -547,16 +544,16 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 
             if( point->isNumeric() )
             {
-                CtiPointNumeric *pNumeric = (CtiPointNumeric *)point;
+                CtiPointNumericSPtr pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
 
                 msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
 
-                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(msg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(msg->getValue(), boost::static_pointer_cast<CtiPointNumeric>(point)->getPointUnits().getDecimalPlaces());
                 resultString += " @ " + msg->getTime().asString();
             }
             else if( point->isStatus() )
             {
-                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), msg->getValue());
+                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(point)->getStateGroupID(), msg->getValue());
                 resultString += " @ " + msg->getTime().asString();
             }
             else
@@ -653,7 +650,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >
                                               InMessage->Return.TrxID,
                                               InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
-    CtiPointBase     *commPoint;
+    CtiPointSPtr     commPoint;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

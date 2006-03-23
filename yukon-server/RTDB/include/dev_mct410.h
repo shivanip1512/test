@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,7 +337,7 @@ protected:
     point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
     static const QualityMap _errorQualities;
 
-    CtiPointDataMsg *makePointDataMsg(CtiPoint *p, const point_info_t &pi, const string &pointString);
+    CtiPointDataMsg *makePointDataMsg(CtiPointSPtr p, const point_info_t &pi, const string &pointString);
 
     bool _intervalsSent;
 

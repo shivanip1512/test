@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -723,7 +723,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
     bool  bLastFail = false;
 
     CtiPointDataMsg *commStatus;
-    CtiPointBase    *commPoint;
+    CtiPointSPtr    commPoint;
 
     if( !nRet )
     {
@@ -1706,14 +1706,17 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
     {
         CtiTablePointDispatch ptdefault(0);
         CtiTablePointDispatch pd;
-        CtiPointBase *pPoint;
-        CtiPointManager::CtiRTDBIterator itr( _pointMgr->getMap() );
+        CtiPointSPtr pPoint;
 
-        for(;itr();)
+        CtiPointManager::LockGuard guard(_pointMgr->getMux());
+        CtiPointManager::spiterator iter = _pointMgr->begin();
+        CtiPointManager::spiterator end = _pointMgr->end();
+
+        for( ; iter != end; iter++ )
         {
-            pPoint = itr.value();
+            pPoint = iter->second;
 
-            if(pPoint != NULL)
+            if(pPoint)
             {
                 pd.setPointID( pPoint->getPointID() );
                 RWDBStatus dbstat = pd.Restore();

@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/12/20 17:20:22 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4542,9 +4542,9 @@ void CtiDeviceGatewayStat::postAnalogOutputPoint(UINT Type, UINT pointoffset, do
 {
     if(verifyGatewayDid())     // Is my paoid determined???
     {
-        CtiPointNumeric *pNumericPoint = NULL;
+        CtiPointNumericSPtr pNumericPoint;
 
-        if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(pointoffset, AnalogPointType)) != NULL)
+        if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(pointoffset, AnalogPointType)))
         {
             string valReport = printListAsString(Type);
 

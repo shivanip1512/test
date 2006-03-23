@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2006/03/09 18:33:36 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2347,7 +2347,7 @@ void commFail(CtiDeviceSPtr &Device)
 {
     extern CtiConnection VanGoghConnection;
 
-    CtiPoint * pPoint = NULL;
+    CtiPointSPtr  pPoint;
     char temp[80];
     LONG pointid;
     bool state = Device->isCommFailed();        // Ask the device if it has accumulated enough errors to be failed!

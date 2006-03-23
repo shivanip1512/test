@@ -1639,7 +1639,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 
 
     CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -1693,7 +1693,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                 i ++)
             {
                 // grab the point based on device and offset
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, scanData))
@@ -1903,14 +1903,14 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
 LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
 {
     LONG retCode = NORMAL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointNumericSPtr   pNumericPoint;
 
     switch (aChannel)
     {
         case 0 :
             {
                 // looking for channel one point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_1, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_1, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -1927,7 +1927,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
         case 1 :
             {
                 // looking for channel one point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_2, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_2, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -1944,7 +1944,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
         case 2 :
             {
                 // looking for channel one point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_3, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_3, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -1962,7 +1962,7 @@ LONG CtiDeviceDR87::findLPDataPoint (DR87LPPointInfo_t &point, USHORT aChannel)
         case 3 :
             {
                 // looking for channel one point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_4, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_CHANNEL_4, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();

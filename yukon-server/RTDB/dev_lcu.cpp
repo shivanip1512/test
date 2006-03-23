@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -589,7 +589,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             int ptOffset;
             if( 0 != (ptOffset = parse.getiValue("point", 0)) )
             {
-                CtiPoint *pPt = getDevicePointEqual(ptOffset);
+                CtiPointSPtr pPt = getDevicePointEqual(ptOffset);
 
                 if(pPt && pPt->isStatus() && pPt->getControlOffset() == 9)
                 {
@@ -819,7 +819,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     string  resultString;
 
     /* Define the various records */
-    CtiPoint  *PointRecord;
+    CtiPointSPtr  PointRecord;
 
     /* Variables for decoding LCU Messages */
     FLOAT      PValue;
@@ -840,7 +840,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
 
             int offset = 4;
 
-            if((getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
+            if((getDevicePointOffsetTypeEqual(1, AnalogPointType)))
             {
                 // Analog offset one is defined.. We will assume DI's come from the second pair (6,7) of bytes
                 offset = 6;
@@ -850,7 +850,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
 
             for(i = 1; i <= 16; i++)
             {
-                if((PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType)) != NULL)
+                if(PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType))
                 {
                     PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
 
@@ -916,7 +916,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
         /* Now loop through and update remote processes as needed */
         for(i = 1; i <= 16; i++)
         {
-            if((PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType)) != NULL)
+            if(PointRecord = getDevicePointOffsetTypeEqual(i, StatusPointType))
             {
                 PValue = ((lcuDigital >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
 
@@ -969,7 +969,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
     string  resultString;
 
     //  Define the various records
-    CtiPoint  *PointRecord;
+    CtiPointSPtr  PointRecord;
 
     //  Variables for decoding LCU Messages
     FLOAT      PValue;
@@ -999,7 +999,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
             //  Now loop through and update remote processes as needed
             for(i = 1; i <= 16; i++)
             {
-                if((PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType)) != NULL)
+                if(PointRecord = getDevicePointOffsetTypeEqual(i + 16, StatusPointType))
                 {
                     PValue = ((_lcuStatus >> (i - 1)) & 0x0001) ? CLOSED : OPENED;
 
@@ -1059,7 +1059,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
     string  resultString;
 
     /* Define the various records */
-    CtiPoint  *PointRecord;
+    CtiPointSPtr  PointRecord;
 
     /* Variables for decoding LCU Messages */
     DOUBLE     PValue;
@@ -1067,11 +1067,11 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
     CtiPointDataMsg *pData = NULL;
     CtiReturnMsg    *pPIL = 0;
 
-    CtiPointAccumulator *pAccumPoint;
+    CtiPointAccumulatorSPtr pAccumPoint;
 
     if(isScanFlagSet(ScanFreezePending))
     {
-        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)) != NULL)
+        if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)))
         {
             // Freeze Failed to dispatch message
             {
@@ -1079,7 +1079,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
-        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)) != NULL)
+        if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)))
         {
             // Freeze Failed to dispatch message
             {
@@ -1115,7 +1115,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
 
         USHORT Value = MAKEUSHORT(InMessage->Buffer.InMessage[7], InMessage->Buffer.InMessage[8]);
 
-        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)) != NULL)
+        if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)))
         {
             if( getPrevFreezeTime() != getLastFreezeTime() )
             {
@@ -1155,7 +1155,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
         }
 
         /* Check if there is a pulse point */
-        if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)) != NULL)
+        if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)))
         {
             /* Calculate in units/hour */
             PValue = (FLOAT) Value * pAccumPoint->getMultiplier();
@@ -1196,7 +1196,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
     string  resultString;
 
     /* Define the various records */
-    CtiPoint  *PointRecord;
+    CtiPointSPtr  PointRecord;
 
     /* Variables for decoding LCU Messages */
     DOUBLE     PValue;
@@ -1218,9 +1218,9 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                  *  Be careful not to decode stati as analogs por favor.
                  */
 
-                if((PointRecord = getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if(PointRecord = getDevicePointOffsetTypeEqual(i, AnalogPointType))
                 {
-                    CtiPointNumeric *pNum = (CtiPointNumeric*)PointRecord;
+                    CtiPointNumericSPtr pNum = boost::static_pointer_cast<CtiPointNumeric>(PointRecord);
 
                     // A bit of BCD conversion here!
                     INT itemp = 0;
@@ -1280,9 +1280,9 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
             /* Now loop through and update remote processes as needed */
             for(i = 1; i <= 8; i++)
             {
-                if((PointRecord = getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if((PointRecord = getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
-                    CtiPointNumeric *pNum = (CtiPointNumeric*)PointRecord;
+                    CtiPointNumericSPtr pNum = boost::static_pointer_cast<CtiPointNumeric>(PointRecord);
 
 
                     Value = MAKEUSHORT(InMessage->Buffer.InMessage[i + 8], 0);
@@ -2353,7 +2353,7 @@ INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool set)
 //ecs 12/10/2004
 CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
 {
-    CtiPointBase    *pPoint = NULL;
+    CtiPointSPtr     pPoint;
     CtiPointDataMsg *pData = NULL;
 
     //put some stuff here
@@ -2379,7 +2379,7 @@ CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
 
 CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
 {
-    CtiPointBase    *pPoint = NULL;
+    CtiPointSPtr pPoint;
     CtiPointDataMsg *pData = NULL;
 
     //put some stuff here

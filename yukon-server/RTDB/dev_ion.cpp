@@ -204,15 +204,15 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             bool has_offset = false;
             unsigned int offset;
-            CtiPointBase *point;
+            CtiPointSPtr point;
 
             if( parse.getiValue("point") > 0 )
             {
-                if( (point = getDevicePointEqual(parse.getiValue("point"))) != NULL && point->isStatus() )
+                if( (point = getDevicePointEqual(parse.getiValue("point"))) && point->isStatus() )
                 {
-                    if( ((CtiPointStatus *)point)->getPointStatus().getControlType() == NormalControlType )
+                    if( boost::static_pointer_cast<CtiPointStatus>(point)->getPointStatus().getControlType() == NormalControlType )
                     {
-                        offset = ((CtiPointStatus *)point)->getPointStatus().getControlOffset();
+                        offset = boost::static_pointer_cast<CtiPointStatus>(point)->getPointStatus().getControlOffset();
                         has_offset = true;
                     }
                 }
@@ -359,10 +359,10 @@ void CtiDeviceION::initEventLogPosition( void )
 {
     if( _ion.getEventLogLastPosition() == 0 )
     {
-        CtiPointAnalog *tmpPoint;
+        CtiPointAnalogSPtr tmpPoint;
         unsigned long   lastRecordPosition;
 
-        if( tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(CtiProtocolION::EventLogPointOffset, AnalogPointType) )
+        if( tmpPoint = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(CtiProtocolION::EventLogPointOffset, AnalogPointType) ))
         {
             CtiTablePointDispatch pd(tmpPoint->getPointID());
 
@@ -738,27 +738,27 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
     {
         CtiPointDataMsg *tmpMsg = points.front();points.pop_front();
 
-        CtiPointBase    *point;
+        CtiPointSPtr     point;
         double           value;
         string        resultString;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) )
         {
             tmpMsg->setId(point->getID());
 
             //  generate the point update string, if applicable
             if( point->isNumeric() )
             {
-                value = ((CtiPointNumeric *)point)->computeValueForUOM(tmpMsg->getValue());
+                value = boost::static_pointer_cast<CtiPointNumeric>(point)->computeValueForUOM(tmpMsg->getValue());
                 tmpMsg->setValue(value);
 
                 //tmpMsg->getString()
-                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), boost::static_pointer_cast<CtiPointNumeric>(point)->getPointUnits().getDecimalPlaces());
             }
             else if( point->isStatus() )
             {
-                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(point)->getStateGroupID(), tmpMsg->getValue());
             }
             else
             {
@@ -785,9 +785,9 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
     while( !events.empty() )
     {
         CtiSignalMsg *tmpSignal = events.front();events.pop_front();
-        CtiPointBase *point;
+        CtiPointSPtr point;
 
-        if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) != NULL )
+        if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) )
         {
             tmpSignal->setId(point->getID());
 

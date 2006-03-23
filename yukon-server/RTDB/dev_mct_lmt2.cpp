@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -393,7 +393,7 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointNumeric *point      = 0;
+    CtiPointNumericSPtr point;
     CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *point_data = 0;
 
@@ -440,9 +440,9 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
-            if( point != NULL )
+            if( point )
             {
                 //  figure out current seconds from midnight
                 midnight_offset  = TimeNow.hour() * 3600;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -275,7 +275,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                       vector<CtiTransdataData *> transVector)
 {
    CtiPointDataMsg   *pData = NULL;
-   CtiPointBase      *pPoint = NULL;
+   CtiPointSPtr      pPoint;
    int               index;
    int               offset;
    int               time_id;
@@ -690,10 +690,10 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 
          pPoint = getDevicePointOffsetTypeEqual( offset, AnalogPointType );
 
-         if( pPoint != NULL )
+         if( pPoint )
          {
             pData = fillPDMsg( transVector, pPoint, index, time_id, date_id );
-            pPoint = NULL;
+            pPoint.reset();
 
             if( pData != NULL )
             {
@@ -722,19 +722,19 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 //=====================================================================================================================
 
 CtiPointDataMsg* CtiDeviceMarkV::fillPDMsg( vector<CtiTransdataData *> transVector,
-                                            CtiPointBase *point,
+                                            CtiPointSPtr point,
                                             int index,
                                             int timeID,
                                             int dateID )
 {
    CtiPointDataMsg   *pData = NULL;
-   CtiPointNumeric   *pNumericPoint = NULL;
+   CtiPointNumericSPtr   pNumericPoint;
 
    if( point->isNumeric() )
    {
-      pNumericPoint = ( CtiPointNumeric *)point;
+      pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(point);
 
-      if( pNumericPoint != NULL )
+      if( pNumericPoint )
       {
          pData = CTIDBG_new CtiPointDataMsg();
          pData->setId( pNumericPoint->getPointID() );
@@ -747,7 +747,7 @@ CtiPointDataMsg* CtiDeviceMarkV::fillPDMsg( vector<CtiTransdataData *> transVect
             pData->setTime( getMsgTime( timeID, dateID, transVector ));
          }
 
-         pNumericPoint = NULL;
+         pNumericPoint.reset();
       }
    }
 
@@ -798,7 +798,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    CtiTransdataTracker::mark_v_lp   *lp = NULL;
    CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg;
    CtiPointDataMsg                  *pData = NULL;
-   CtiPointBase                     *pPoint = NULL;
+   CtiPointSPtr                     pPoint;
    BYTE                             *storage = NULL;
    int                              index;
    int                              numEnabledChannels = 0;
@@ -829,7 +829,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
             {
                pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
 
-               if( pPoint != NULL )
+               if( pPoint )
                {
                   pData = CTIDBG_new CtiPointDataMsg();
                   val = 0;
@@ -839,8 +839,8 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                   correctValue( lp->lpData[index], lp->lpFormat[1], val, qual );
 
-                  CtiPointNumeric *pTemp;
-                  pTemp = ( CtiPointNumeric *)pPoint;
+                  CtiPointNumericSPtr pTemp;
+                  pTemp = boost::static_pointer_cast<CtiPointNumeric>(pPoint);
 
                   pData->setValue( pTemp->computeValueForUOM( val ) );
                   pData->setQuality( qual );
@@ -856,9 +856,9 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                   msgMulti->getData().push_back( pData );
 
-                  pTemp = NULL;
+                  pTemp.reset();
                   pData = NULL;
-                  pPoint = NULL;
+                  pPoint.reset();
                }
 
                index++;

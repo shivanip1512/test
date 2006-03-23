@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/03/09 22:28:10 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1638,11 +1638,11 @@ CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setAllowPrefix(bool val)
 
 void CtiDeviceTapPagingTerminal::updatePageCountData(UINT addition)
 {
-    CtiPointAccumulator *pAccumPoint = 0;
+    CtiPointAccumulatorSPtr pAccumPoint;
     ULONG curPulseValue;
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)))
     {
         /* Copy the pulses */
         curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + 1;
@@ -1651,7 +1651,7 @@ void CtiDeviceTapPagingTerminal::updatePageCountData(UINT addition)
     }
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)))
     {
         /* Copy the pulses */
         curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + addition;
@@ -1664,7 +1664,7 @@ void CtiDeviceTapPagingTerminal::updatePageCountData(UINT addition)
 
 CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
 {
-    CtiPointAccumulator *pAccumPoint = 0;
+    CtiPointAccumulatorSPtr pAccumPoint;
     FLOAT PValue;
     char tStr[128];
 
@@ -1672,7 +1672,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
     CtiReturnMsg *returnMsg = 0;    // Message sent to VanGogh, inherits from Multi
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)))
     {
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
@@ -1691,7 +1691,7 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
     }
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)))
     {
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         /* Apply offset */

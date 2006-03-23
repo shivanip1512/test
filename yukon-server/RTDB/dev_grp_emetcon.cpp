@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,8 +118,8 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
 
                         _lastCommand = generateCommandString(OutMessage);
 
-                        CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                        LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
+                        CtiPointStatusSPtr pControlStatus = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS ));
+                        LONG pid = ( pControlStatus ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, _lastCommand, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }

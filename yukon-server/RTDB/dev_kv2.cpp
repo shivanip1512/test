@@ -870,8 +870,8 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
 
     CtiReturnMsg *msgPtr;
     CtiPointDataMsg                  *pData = NULL;
-    CtiPointAnalog *pPoint = NULL;
-    CtiPointStatus *pStatusPoint = NULL;
+    CtiPointAnalogSPtr pPoint;
+    CtiPointStatusSPtr pStatusPoint;
     double value = 0;
     double time = 0;
     double lpValue = 0;
@@ -905,8 +905,8 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
         x =  OFFSET_TOTAL_KWH;
         while (x <= OFFSET_METER_TIME_STATUS)
         {
-            pPoint = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(x, AnalogPointType);
-            if (pPoint != NULL)
+            pPoint = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(x, AnalogPointType));
+            if (pPoint)
             {
 
                 {
@@ -1044,7 +1044,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                         }
                     }
 
-                    resultString = getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                    resultString = getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     pData->setValue( value );
                     qual = NormalQuality;
@@ -1152,12 +1152,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                         pData = NULL;
                     }
                 }
-                pPoint = NULL;
+                pPoint.reset();
             }
             else //try pPoint as a StatusPoint
             {
-                pStatusPoint = (CtiPointStatus*)getDevicePointOffsetTypeEqual(x, StatusPointType);
-                if (pStatusPoint != NULL)
+                pStatusPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(x, StatusPointType));
+                if (pStatusPoint)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1192,12 +1192,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " gotValue! "<< endl;
                             }
-                            resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(((CtiPointStatus *)pStatusPoint)->getStateGroupID(), value);
+                            resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(pStatusPoint->getStateGroupID(), value);
                             pData = NULL;
                             msgPtr = NULL;
                         }
                     }
-                    pStatusPoint = NULL;
+                    pStatusPoint.reset();
                 }
             }
             if (resultString != "")

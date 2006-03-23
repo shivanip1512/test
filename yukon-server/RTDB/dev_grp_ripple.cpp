@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,8 +132,8 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
                 string actn = parse.getActionItems()[i];
                 string desc = getDescription(parse);
 
-                CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
+                CtiPointStatusSPtr pControlStatus = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS ));
+                LONG pid = ( (pControlStatus) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
                 vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
@@ -195,7 +195,7 @@ void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
 INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
 {
     INT count = getResponsesOnTrxID();
-    CtiPoint *pPoint;
+    CtiPointSPtr pPoint;
 
     bool erdb = !stringCompareIgnoreCase(gConfigParms.getValueAsString("EASTRIVER_DEBUG"), "true");
 
@@ -206,14 +206,14 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
         /*
          *  This is the GOOD TRANSMISSON counter for the group.
          */
-        if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
+        if ((pPoint = getDevicePointOffsetTypeEqual(1, AnalogPointType)))
         {
             // We have a point match here...
             DOUBLE val = 0.0;
 
             if (pPoint->isNumeric())
             {
-                val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)count );
+                val = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( (DOUBLE)count );
             }
 
             //create a CTIDBG_new data message
@@ -261,7 +261,7 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, list< CtiMessage* >  &vgList )
 
 INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList )
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     setResponsesOnTrxID(0);
     setTrxID(trx);
@@ -272,14 +272,14 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, list< Cti
         _lastCommand = parse.getActionItems()[0];    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
     }
 
-    if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
+    if (pPoint = getDevicePointOffsetTypeEqual(1, AnalogPointType))
     {
         // We have a point match here...
         DOUBLE val = 0.0;
 
         if (pPoint->isNumeric())
         {
-            val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)0.0 );
+            val = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( (DOUBLE)0.0 );
         }
 
         string resString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) );

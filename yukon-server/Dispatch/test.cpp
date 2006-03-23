@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2006/02/20 22:26:43 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2006/03/23 15:29:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -864,26 +864,27 @@ void defaultExecute(int argc, char **argv)
             CtiCommErrorHistoryMsg *pCEHMsg = 0;
             CtiLMControlHistoryMsg *pLMCMsg = 0;
 
-            CtiPointManager::CtiRTDBIterator itr(PointMgr.getMap());
+            CtiPointManager::spiterator itr = PointMgr.begin();
+            CtiPointManager::spiterator end = PointMgr.end();
 
             for(k = 0; !bQuit && PointMgr.entries() > 0 && k < atoi(argv[3]); k++)
             {
-                if( !itr() )
+                itr++;
+                if(  itr == end )
                 {
-                    itr.reset();    // We just want a sequential walk up the point id list!
-                    itr();
+                    itr = PointMgr.begin();    // We just want a sequential walk up the point id list!
                 }
 
-                CtiPoint *pPoint = itr.value();
+                CtiPointSPtr pPoint = itr->second;
 
                 while(pPoint->getID() <= 0)
                 {
-                    if( !itr() )
+                    itr++;
+                    if(  itr == end )
                     {
-                        itr.reset();    // We just want a sequential walk up the point id list!
-                        itr();
+                        itr = PointMgr.begin();    // We just want a sequential walk up the point id list!
                     }
-                    pPoint = itr.value();
+                    pPoint = itr->second;
                 }
 
                 pt = k;
@@ -1226,7 +1227,7 @@ void lmExecute(int argc, char **argv)
             CtiPointDataMsg  *pData = NULL;
             CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
 
-            CtiPoint *pPoint = PointMgr.getEqual( pt );
+            CtiPointSPtr pPoint = PointMgr.getEqual( pt );
 
 
             for(i = 1; i <= steps && !bQuit; i++ )

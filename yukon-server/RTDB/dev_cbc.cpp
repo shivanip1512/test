@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/10 21:43:26 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,7 +127,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
     int   address;
 
     CtiRouteSPtr Route;
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
@@ -179,7 +179,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
         {
             pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-            if(pPoint != NULL)
+            if(pPoint)
             {
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
@@ -268,7 +268,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
     string resultString;
 
     CtiRouteSPtr Route;
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
@@ -295,7 +295,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
         {
             pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-            if(pPoint != NULL)
+            if(pPoint)
             {
                 string resultString;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
@@ -464,7 +464,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
     string resultString;
 
     CtiRouteSPtr Route;
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
@@ -484,7 +484,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
          * be added into the list upon completion of the Execute!
          */
 
-        if((pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType)) != NULL)
+        if((pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType)))
         {
             if( parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE) )
             {

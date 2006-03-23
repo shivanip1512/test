@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,8 +106,8 @@ public:
                 // Check if this is a repeat of a previous control.  We should suppress repeats.
                 if( !reducelogs || now.seconds() > _lastCommandExpiration || !prevLastAction.find(actn) )
                 {
-                    CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
-                    LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
+                    CtiPointSPtr pControlStatus = getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
+                    LONG pid = ( (pControlStatus) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
                     vgList.push_back(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
@@ -122,10 +122,10 @@ public:
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
          */
-        CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
+        CtiPointSPtr pControlStatus = getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
         CtiMultiMsg *pMulti = new CtiMultiMsg;
 
-        if(pControlStatus != 0)
+        if(pControlStatus)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, CtiTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), (isshed == CONTROLLED ? reductionratio : 0));
 
@@ -155,7 +155,8 @@ public:
             }
         }
 
-        CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );
+        CtiPointSPtr point = getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );
+        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
         if(pAnalog)
         {
             CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));

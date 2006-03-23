@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,20 +181,21 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
         if(_pointMgr != NULL)
         {
-            LockGuard guard(monitor());
-
+            CtiPointManager::LockGuard guard(_pointMgr->getMux());
             /* Walk the point in memory db to see what the point range is */
-            CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
+            CtiPointManager::spiterator iter = _pointMgr->begin();
 
-            for(; ++itr_pt ;)
+            CtiPointManager::spiterator end = _pointMgr->end();
+
+            for( ; iter != end; iter++ )
             {
-                CtiPoint *PointRecord = itr_pt.value();
+                CtiPointSPtr PointRecord = iter->second;
 
                 switch(PointRecord->getType())
                 {
                 case StatusPointType:
                     {
-                        CtiPointStatus *StatusPoint = (CtiPointStatus *)PointRecord;
+                        CtiPointStatusSPtr StatusPoint = boost::static_pointer_cast<CtiPointStatus>(PointRecord);
 
                         if(!StatusPoint->isPseudoPoint() && StatusPoint->getPointOffset() < 2000)
                         {
@@ -212,7 +213,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                     }
                 case AnalogPointType:
                     {
-                        CtiPointAnalog *AnalogPoint = (CtiPointAnalog *)PointRecord;
+                        CtiPointAnalogSPtr AnalogPoint = boost::static_pointer_cast<CtiPointAnalog>(PointRecord);
 
                         if(!AnalogPoint->isPseudoPoint())
                         {
@@ -232,7 +233,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
                 case PulseAccumulatorPointType:
                 case DemandAccumulatorPointType:
                     {
-                        CtiPointAccumulator *AccumPoint = (CtiPointAccumulator *)PointRecord;
+                        CtiPointAccumulatorSPtr AccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                         if(!AccumPoint->isPseudoPoint())
                         {
@@ -365,8 +366,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     PBYTE MyInMessage, SaveInMessage;
 
     /* Define the various records */
-    CtiPoint          *PointRecord;
-    CtiPointNumeric   *NumericPoint;
+    CtiPointSPtr          PointRecord;
+    CtiPointNumericSPtr   NumericPoint;
 
     /* Variables for decoding Messages */
     SHORT Value;
@@ -560,7 +561,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 resetScanFlag(ScanRateIntegrity);
                 accums_spill_frame = continue_required && last_sectn;
 
-                CtiPointAccumulator *pAccumPoint;
+                CtiPointAccumulatorSPtr pAccumPoint;
 
                 StartPoint = MyInMessage[2] + 1;
                 FinishPoint = MyInMessage[2] + ((MyInMessage[1] - 1) / 4);
@@ -575,9 +576,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                     for(PointOffset = (USHORT)StartPoint; PointOffset <= (USHORT)FinishPoint; PointOffset++)
                     {
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             // Freeze Failed to dispatch message
                             {
@@ -587,9 +588,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         }
 
 
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             // Freeze Failed to dispatch message
                             {
@@ -634,9 +635,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     {
                         curPulseValue = MAKEULONG( MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]), MAKEUSHORT (MyInMessage[Pointer + 2], MyInMessage[Pointer + 3]) );
 
-                        if(useScanFlags() && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if(useScanFlags() && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             /* Copy the pulses */
                             pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
@@ -680,9 +681,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         }
 
                         /* Check if there is a pulse point */
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             /* Copy the pulses */
                             pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
@@ -720,7 +721,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 resetScanFlag(ScanRateIntegrity);
                 accums_spill_frame = continue_required && last_sectn;
 
-                CtiPointAccumulator *pAccumPoint;
+                CtiPointAccumulatorSPtr pAccumPoint;
 
                 StartPoint = MyInMessage[2] + 1;
                 FinishPoint = StartPoint + (MyInMessage[1] - 1 / 2) - 1;
@@ -732,9 +733,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                     for(PointOffset = (USHORT)StartPoint; PointOffset <= (USHORT)FinishPoint; PointOffset++)
                     {
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             // Freeze Failed to dispatch message
                             {
@@ -744,9 +745,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         }
 
 
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             // Freeze Failed to dispatch message
                             {
@@ -791,9 +792,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     {
                         Pointer += 2;
 
-                        if( useScanFlags() && PartHour != 0.0 && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if( useScanFlags() && PartHour != 0.0 && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             ULONG  prevpulses = pAccumPoint->getPointHistory().getPresentPulseCount();
                             ULONG  prespulses = MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]);
@@ -856,9 +857,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                         }
 
                         /* Check if there is a pulse point */
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)) != NULL)
+                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
                         {
-                            pAccumPoint = (CtiPointAccumulator *)PointRecord;
+                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
 
                             /* Copy the pulses */
                             pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
@@ -900,7 +901,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 for(PointOffset = StartPoint; PointOffset <= FinishPoint; PointOffset++)
                 {
                     /* PointOffset is the offset is this RTU... */
-                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)) != NULL)
+                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)))
                     {
                         /* Apply offset */
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8)] >> ((PointOffset - StartPoint) % 8)) & 0x01)
@@ -983,7 +984,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     PointOffset = MAKEUSHORT (MyInMessage[(StartPoint * 2) + 2],
                                               MyInMessage[(StartPoint * 2) + 3] & 0x0f) + 1;
 
-                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)) != NULL)
+                    if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, StatusPointType)))
                     {
                         /* get the present value */
                         if(MyInMessage[(StartPoint * 2) + 3]  & 0x80)
@@ -1069,7 +1070,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 for(PointOffset = (USHORT)StartPoint; PointOffset <= FinishPoint; PointOffset++)
                 {
-                    if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)) != NULL)
+                    if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)))
                     {
                         /* update the point data */
                         if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
@@ -1159,7 +1160,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     }
 
                     /* Now Update the Record if it exists */
-                    if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)) != NULL)
+                    if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(PointOffset, AnalogPointType)))
                     {
                         if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
                         {
@@ -1490,7 +1491,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
     USHORT   AnalogFirst = 0xffff;
     USHORT   AnalogLast = 0;
 
-    CtiPoint *PointRecord;
+    CtiPointSPtr PointRecord;
 
     INT   status = NORMAL;
 
@@ -1505,27 +1506,28 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
         if(_pointMgr != NULL)
         {
-            LockGuard guard(monitor());
-            /* Walk the point database to see what the analog point range is */
-            CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
+            CtiPointManager::LockGuard guard(_pointMgr->getMux());
+            /* Walk the point in memory db to see what the point range is */
+            CtiPointManager::spiterator iter = _pointMgr->begin();
 
-            for(; ++itr_pt ;)
+            CtiPointManager::spiterator end = _pointMgr->end();
+
+            for( ; iter != end; iter++ )
             {
-                PointRecord = itr_pt.value();
+                PointRecord = iter->second;
 
                 switch(PointRecord->getType())
                 {
                 case AnalogPointType:
                     {
-                        CtiPointAnalog *Point = (CtiPointAnalog *)PointRecord;
-                        if(Point->getPointOffset() - 1 > AnalogLast)
+                        if(PointRecord->getPointOffset() - 1 > AnalogLast)
                         {
-                            AnalogLast = Point->getPointOffset() - 1;
+                            AnalogLast = PointRecord->getPointOffset() - 1;
                         }
 
-                        if(Point->getPointOffset() - 1 < AnalogFirst)
+                        if(PointRecord->getPointOffset() - 1 < AnalogFirst)
                         {
-                            AnalogFirst = Point->getPointOffset() - 1;
+                            AnalogFirst = PointRecord->getPointOffset() - 1;
                         }
 
                         break;
@@ -1553,10 +1555,10 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
                 for(Position = AnalogFirst + 1; Position <= AnalogLast + 1 && status == NORMAL; Position++)
                 {
-                    CtiPointAnalog *Point = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(Position, AnalogPointType);
+                    CtiPointAnalogSPtr Point = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(Position, AnalogPointType));
 
                     /* Check for this one in the database and load the deadband */
-                    if(Point != NULL && !Point->isPseudoPoint())
+                    if(Point && !Point->isPseudoPoint())
                     {
                         if(Point->getDeadband() == -1.0)
                         {
@@ -1872,7 +1874,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
     if(!isInhibited())
     {
-        CtiPointStatus *ctlPoint = 0;
+        CtiPointStatusSPtr ctlPoint;
         INT ctlpt = parse.getiValue("point");
         INT controlState;
 
@@ -1880,11 +1882,11 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
         {
             // Must have provided only a name... Find it the hard way.
             string pname = parse.getsValue("point");
-            ctlPoint = (CtiPointStatus*)getDevicePointEqualByName(pname);
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqualByName(pname));
         }
         else
         {
-            ctlPoint = (CtiPointStatus*)getDevicePointEqual(ctlpt);
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqual(ctlpt));
         }
 
 

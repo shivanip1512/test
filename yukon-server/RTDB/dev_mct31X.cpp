@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -292,7 +292,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 
         for( int i = 0; i < MCT31X_ChannelCount; i++ )
         {
-            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  safe default
             _nextLPTime[i] = YUKONEOT;
@@ -635,7 +635,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
     DOUBLE Value;
 
-    CtiPointBase    *pPoint;
+    CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
@@ -669,7 +669,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
         //  the only status points we really care about - comm status is handled higher up by porter
         for( int i = 1; i <= 16; i++ )
         {
-            if( (pPoint = getDevicePointOffsetTypeEqual(i, StatusPointType)) != NULL )
+            if( (pPoint = getDevicePointOffsetTypeEqual(i, StatusPointType)) )
             {
                 Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), StatusData);
 
@@ -717,8 +717,8 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, lis
     DOUBLE demandValue, Value;
     CtiTime timestamp;
     CtiDate datestamp;
-    CtiPointBase    *pPoint       = NULL;
-    CtiPointBase    *pDemandPoint = NULL;
+    CtiPointSPtr    pPoint;
+    CtiPointSPtr    pDemandPoint;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData        = NULL;
 
@@ -996,8 +996,8 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
     DOUBLE demandValue, Value;
     CtiTime timestamp;
     CtiDate datestamp;
-    CtiPointBase    *pPoint       = NULL;
-    CtiPointBase    *pDemandPoint = NULL;
+    CtiPointSPtr    pPoint;
+    CtiPointSPtr    pDemandPoint;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData        = NULL;
 
@@ -1268,7 +1268,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
     CtiTime timestamp;
     CtiDate datestamp;
 
-    CtiPointBase    *pPoint       = NULL;
+    CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData        = NULL;
 
@@ -1404,12 +1404,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                 }
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                        CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
@@ -1462,12 +1462,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                     }
                 }
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                        CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
@@ -1479,12 +1479,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 {
                     pPoint = getDevicePointOffsetTypeEqual( pid + 20, AnalogPointType );
 
-                    if( pPoint != NULL )
+                    if( pPoint )
                     {
-                        Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                        Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                         pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                            CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                         if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                         {
@@ -1528,12 +1528,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1554,12 +1554,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1580,12 +1580,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                            CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1606,12 +1606,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsNeutralCurrent_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1639,12 +1639,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         Value = voltsA * kvVoltageMultiplier;
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1660,12 +1660,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         Value = voltsB * kvVoltageMultiplier;
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1681,12 +1681,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         Value = voltsC * kvVoltageMultiplier;
                         pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType);
 
-                        if( pPoint != NULL )
+                        if( pPoint )
                         {
-                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                            CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                             if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
@@ -1824,12 +1824,12 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 }
 
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                        CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
@@ -1902,19 +1902,19 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                             dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
+                        pPoint.reset();  //  we can't do a point update - we don't know how to interpret the data
                         Value  = 0.0;
 
                         break;
                     }
                 }
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                        CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
@@ -2009,19 +2009,19 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                             dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
+                        pPoint.reset();  //  we can't do a point update - we don't know how to interpret the data
                         Value  = 0.0;
 
                         break;
                     }
                 }
 
-                if( pPoint != NULL )
+                if( pPoint )
                 {
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
-                                        CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                        CtiNumStr(Value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                     if( datestamp.isValid() && timestamp.isValid() )
                     {
@@ -2105,7 +2105,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
-    CtiPointBase    *pPoint    = NULL;
+    CtiPointSPtr    pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
@@ -2145,12 +2145,12 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
             pPoint = getDevicePointOffsetTypeEqual( pid, PulseAccumulatorPointType );
 
             //  if we can find the point, send a named/UOM'd resultString
-            if( pPoint != NULL)
+            if( pPoint)
             {
-                Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+                Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM( Value );
 
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                                                         boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString);
                 if(pData != NULL)
                 {
@@ -2198,7 +2198,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
     PointQuality_t quality;
 
     DOUBLE Value;
-    CtiPointNumeric      *pPoint = NULL;
+    CtiPointNumericSPtr   pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
@@ -2239,7 +2239,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             pulses = MAKEUSHORT(DSt->Message[byte_offset + 1], DSt->Message[byte_offset]);
 
             //  look for the demand accumulator point for this offset
-            pPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( pnt_offset, DemandAccumulatorPointType );
+            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( pnt_offset, DemandAccumulatorPointType ));
 
             if( checkDemandQuality(pulses, quality, bad_data) )
             {
@@ -2254,15 +2254,15 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
                 if( pPoint )
                 {
                     //    and the UOM
-                    Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(Value);
+                    Value = pPoint->computeValueForUOM(Value);
                 }
             }
 
             // handle demand data here
-            if( pPoint != NULL)
+            if( pPoint)
             {
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                                                         pPoint->getPointUnits().getDecimalPlaces());
 
                 if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString))
                 {
@@ -2319,7 +2319,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    CtiPointBase         *pPoint = NULL;
+    CtiPointSPtr         pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
@@ -2357,14 +2357,14 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
             // look for the appropriate point
             pPoint = getDevicePointOffsetTypeEqual( 10 + i, DemandAccumulatorPointType );
 
-            if( pPoint != NULL)
+            if( pPoint )
             {
                 CtiTime pointTime;
 
-                Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+                Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(Value);
 
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                                                         boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
                 if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
                 {
@@ -2414,7 +2414,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointNumeric *point      = 0;
+    CtiPointNumericSPtr point;
     CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *point_data = 0;
 
@@ -2462,9 +2462,9 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
-            if( point != NULL )
+            if( point )
             {
                 //  figure out current seconds from midnight
                 midnight_offset  = TimeNow.hour() * 3600;

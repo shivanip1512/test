@@ -1969,7 +1969,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
 
 
     CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -2023,7 +2023,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
                 i ++)
             {
                 // grab the point based on device and offset
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, scanData))
@@ -2750,7 +2750,7 @@ INT CtiDeviceLandisGyrS4::ResultDisplay (INMESS *InMessage)
 LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMetric)
 {
     LONG retCode = NORMAL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointNumericSPtr   pNumericPoint;
 
     // always set the metric
     point.metric = aMetric;
@@ -2760,7 +2760,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
         case LGS4_METRIC_KWH:
             {
                 // looking for demand point
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2777,7 +2777,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
             }
         case LGS4_METRIC_KVARH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2794,7 +2794,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
             }
         case LGS4_METRIC_RMSKVAH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2812,7 +2812,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_VASQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_A_VOLTAGE, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_A_VOLTAGE, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2830,7 +2830,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_VBSQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_B_VOLTAGE, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_B_VOLTAGE, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2848,7 +2848,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_VCSQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_C_VOLTAGE, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_C_VOLTAGE, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2866,7 +2866,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_IASQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_A_CURRENT, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_A_CURRENT, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2884,7 +2884,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_IBSQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_B_CURRENT, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_B_CURRENT, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2902,7 +2902,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
 
         case LGS4_METRIC_ICSQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_C_CURRENT, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_PHASE_C_CURRENT, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();
@@ -2919,7 +2919,7 @@ LONG CtiDeviceLandisGyrS4::findLPDataPoint (LGS4LPPointInfo_t &point, USHORT aMe
             }
         case LGS4_METRIC_INSQRH:
             {
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_NEUTRAL_CURRENT, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_NEUTRAL_CURRENT, AnalogPointType)))
                 {
                     point.pointId = pNumericPoint->getPointID();
                     point.multiplier = pNumericPoint->getMultiplier();

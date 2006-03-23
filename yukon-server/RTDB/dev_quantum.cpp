@@ -1864,8 +1864,8 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     DIALUPREQUEST   *DupReq = &InMessage->Buffer.DUPSt.DUPRep.ReqSt;
     DIALUPREPLY     *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
-    CtiPointDataMsg *pData         = NULL;
-    CtiPointNumeric *pNumericPoint = NULL;
+    CtiPointDataMsg    *pData         = NULL;
+    CtiPointNumericSPtr pNumericPoint;
 
     CtiReturnMsg    *pPIL          = CTIDBG_new CtiReturnMsg( getID( ),
                                                        string( InMessage->Return.CommandStr ),
@@ -1946,7 +1946,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                 (regMap[j].loadProfile == 0) )
                             {
                                 //  then check to see if we know about it
-                                pNumericPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( regMap[j].CTIOffset, AnalogPointType );
+                                pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( regMap[j].CTIOffset, AnalogPointType ));
                                 peakTime = CtiTime( CtiDate( processedScanData->configData.realTime.dayOfMonth,
                                                            processedScanData->configData.realTime.month,
                                                            processedScanData->configData.realTime.year + 2000 ),
@@ -1954,12 +1954,12 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                                    processedScanData->configData.realTime.minute,
                                                    0 );
 
-                                if( pNumericPoint != NULL )
+                                if( pNumericPoint )
                                 {
                                     double Value;
                                     string resultString;
 
-                                    Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)processedScanData->programmedRegisters[i]);
+                                    Value = pNumericPoint->computeValueForUOM((DOUBLE)processedScanData->programmedRegisters[i]);
 
                                     resultString = getName() + " / " + pNumericPoint->getName() + " = " + CtiNumStr((int)Value);
 
@@ -2030,7 +2030,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                                 recordNibbleSize;
     INT                         tmpPulseData[16];
     ULONG                       lpTimestamp;
-    CtiPointNumeric             **pNumericPoint;
+    CtiPointNumericSPtr         *pNumericPoint;
     CtiTime                      peakTime;
     CtiReturnMsg                *pPIL = CTIDBG_new CtiReturnMsg( getID( ),
                                                           string( InMessage->Return.CommandStr ),
@@ -2055,11 +2055,11 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
 
 
     //  allocate an array of pointers for the points
-    pNumericPoint = CTIDBG_new CtiPointNumeric *[lpCfg.numChannels];
+    pNumericPoint = CTIDBG_new CtiPointNumericSPtr [lpCfg.numChannels];
 
     for( i = 0; i < lpCfg.numChannels; i++ )
     {
-        pNumericPoint[i] = NULL;
+        pNumericPoint[i].reset();
         //  loop through the Quantum->CTI register mapping table
         for( j = 0; regMap[j].regNum > 0; j++ )
         {
@@ -2071,7 +2071,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                 (regMap[j].loadProfile == 1) )
             {
                 //  then check to see if we know about it
-                pNumericPoint[i] = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( regMap[j].CTIOffset, AnalogPointType );
+                pNumericPoint[i] = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( regMap[j].CTIOffset, AnalogPointType ));
             }
         }
     }
@@ -2148,11 +2148,11 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
             {
                 peakTime = CtiTime( lpTimestamp );
 
-                if( pNumericPoint[i] != NULL )
+                if( pNumericPoint[i] )
                 {
                     double Value;
 
-                    Value = ((CtiPointNumeric*)pNumericPoint[i])->computeValueForUOM((DOUBLE)tmpPulseData[i] * (DOUBLE)(60 / lpCfg.intervalLength));
+                    Value = boost::static_pointer_cast<CtiPointNumeric>(pNumericPoint[i])->computeValueForUOM((DOUBLE)tmpPulseData[i] * (DOUBLE)(60 / lpCfg.intervalLength));
 
                     verifyAndAddPointToReturnMsg( pNumericPoint[i]->getPointID( ),
                                                   Value,

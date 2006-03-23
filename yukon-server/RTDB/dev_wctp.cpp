@@ -70,11 +70,11 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
 
 void CtiDeviceWctpTerminal::updatePageCountData(UINT addition)
 {
-    CtiPointAccumulator *pAccumPoint = 0;
+    CtiPointAccumulatorSPtr pAccumPoint;
     ULONG curPulseValue;
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)))
     {
         /* Copy the pulses */
         curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + 1;  // One page per call!
@@ -83,7 +83,7 @@ void CtiDeviceWctpTerminal::updatePageCountData(UINT addition)
     }
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)))
     {
         /* Copy the pulses */
         curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + addition;
@@ -1695,7 +1695,7 @@ void  SAXWctpHandler::warning (const SAXParseException &exception)
 
 CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
 {
-    CtiPointAccumulator *pAccumPoint = 0;
+    CtiPointAccumulatorSPtr pAccumPoint;
     FLOAT PValue;
     char tStr[128];
 
@@ -1703,7 +1703,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
     CtiReturnMsg *returnMsg = 0;    // Message sent to VanGogh, inherits from Multi
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)))
     {
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         PValue += pAccumPoint->getDataOffset();
@@ -1722,7 +1722,7 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
     }
 
     /* Check if there is a pulse point */
-    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)))
     {
         PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
         /* Apply offset */

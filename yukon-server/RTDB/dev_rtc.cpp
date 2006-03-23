@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.42  2006/03/23 15:29:18  jotteson
+* Mass update of point* to smart pointers. Point manager now uses smart pointers.
+*
 * Revision 1.41  2006/02/27 23:58:31  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -413,7 +416,7 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                                                      InMessage->Return.TrxID,
                                                      InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
-    CtiPointBase     *commPoint;
+    CtiPointSPtr     commPoint;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

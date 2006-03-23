@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,7 @@ using boost::shared_ptr;
 #include "tbl_pao.h"
 #include "tbl_paoexclusion.h"
 #include "tbl_dyn_paoinfo.h"
+#include "pt_base.h"
 #include "queues.h"
 #include "utility.h"
 
@@ -205,10 +206,10 @@ public:
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
 
 
-    virtual CtiPointBase* getDevicePointEqual(INT id);
-    virtual CtiPointBase* getDevicePointEqualByName(string pname);
-    virtual CtiPointBase* getDevicePointOffsetTypeEqual(INT offset, INT type);
-    virtual CtiPointBase* getDeviceControlPointOffsetEqual(INT offset);
+    virtual CtiPointSPtr getDevicePointEqual(INT id);
+    virtual CtiPointSPtr getDevicePointEqualByName(string pname);
+    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, INT type);
+    virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);
 
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!
     virtual bool hasTrxInfo() const;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1866,8 +1866,8 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg     *pData    = NULL;
+    CtiPointNumericSPtr  pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -1922,7 +1922,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                 i ++)
             {
                 // grab the point based on device and offset
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, Fsd))
@@ -1999,8 +1999,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     CHAR           buffer[60];
 
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg      *pData    = NULL;
+    CtiPointNumericSPtr   pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -2042,7 +2042,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
         {
             case 0:  // Wh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;
@@ -2050,7 +2050,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                 }
             case 1:  // Lagging VARh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;
@@ -2058,7 +2058,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                 }
             case 2:  // VAh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;

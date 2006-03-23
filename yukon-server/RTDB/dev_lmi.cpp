@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/03/10 00:46:53 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,8 +65,8 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
     CtiPointDataMsg             *pt_msg;
-    CtiPointBase                *point;
-    CtiPointNumeric             *pNumeric;
+    CtiPointSPtr                point;
+    CtiPointNumericSPtr         pNumeric;
     string                      resultString;
     CtiTime                       Now;
 
@@ -337,8 +337,8 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list<
     CtiReturnMsg    *retMsg,
                     *vgMsg;
     CtiPointDataMsg *tmpMsg;
-    CtiPointBase    *point;
-    CtiPointNumeric *pNumeric;
+    CtiPointSPtr    point;
+    CtiPointNumericSPtr pNumeric;
     string        resultString;
     CtiTime           Now;
 
@@ -355,23 +355,23 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list<
         tmpMsg = points.front();points.pop_front();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId()+1, tmpMsg->getType())) != NULL )
+        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId()+1, tmpMsg->getType())) )
         {
             tmpMsg->setId(point->getID());
 
             if( point->isNumeric() )
             {
-                pNumeric = (CtiPointNumeric *)point;
+                pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
 
                 tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
 
                 tmpMsg->setValue(tmpValue);
 
-                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), pNumeric->getPointUnits().getDecimalPlaces());
             }
             else if( point->isStatus() )
             {
-                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
+                resultString = getName() + " / " + point->getName() + ": " + ResolveStateName(boost::static_pointer_cast<CtiPointNumeric>(point)->getStateGroupID(), tmpMsg->getValue());
             }
             else
             {

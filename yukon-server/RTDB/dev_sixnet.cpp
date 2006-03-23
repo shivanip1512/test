@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1848,7 +1848,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
     bpcurr += sizeof(int);  // get past the count.
 
-    CtiPointBase *pPoint = NULL;
+    CtiPointSPtr pPoint ;
     ULONG lastLPTime = getLastLPTime().seconds();  // OK I think, this IS a scanner side value..
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
@@ -1882,7 +1882,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
                 dout << "  Time " << logTime << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
             }
 
-            if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(pSxnt->offset, pSxnt->type)) != NULL)
+            if ((pPoint = getDevicePointOffsetTypeEqual(pSxnt->offset, pSxnt->type)))
             {
                 // We have a point match here...
 
@@ -1891,7 +1891,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
 
                 if (pPoint->isNumeric())
                 {
-                    val = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pSxnt->val);
+                    val = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pSxnt->val);
                 }
                 else
                 {

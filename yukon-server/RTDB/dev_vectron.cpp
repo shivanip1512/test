@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/03/23 15:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1715,8 +1715,8 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
     DIALUPREPLY        *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
 
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg     *pData    = NULL;
+    CtiPointNumericSPtr  pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -1771,7 +1771,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                 i ++)
             {
                 // grab the point based on device and offset
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+                if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(i, AnalogPointType)))
                 {
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, vsd))
@@ -1779,7 +1779,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                         double Value;
                         string valReport;
 
-                        Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)PValue);
+                        Value = pNumericPoint->computeValueForUOM((DOUBLE)PValue);
                         valReport = getName() + " / " + pNumericPoint->getName() + " = " + CtiNumStr((int)Value);
 
                         verifyAndAddPointToReturnMsg( pNumericPoint->getPointID( ),
@@ -1857,8 +1857,8 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
     CHAR           buffer[60];
 
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg      *pData    = NULL;
+    CtiPointNumericSPtr   pNumericPoint;
 
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage->Return.CommandStr),
@@ -1899,7 +1899,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
         {
             case 1:  // Wh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KW, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;
@@ -1908,7 +1908,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
 
             case 2:  // Lagging VARh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVAR, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;
@@ -1917,7 +1917,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
 /*    case 3:  // Leading VARh
              {
                 offset = 20;
-                if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(20, AnalogPointType)) != NULL)
+                if ((pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(20, AnalogPointType)) != NULL)
                    goodPoint = NORMAL;
 
                 regTypeSupported = TRUE;
@@ -1926,7 +1926,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
 */
             case 4:  // VAh
                 {
-                    if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)) != NULL)
+                    if (pNumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(OFFSET_LOADPROFILE_KVA, AnalogPointType)))
                         goodPoint = NORMAL;
 
                     regTypeSupported = TRUE;

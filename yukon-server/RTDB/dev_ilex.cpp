@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,10 +181,10 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT             status = NORMAL;
-    CtiPoint        *PointRecord;
-    CtiPointNumeric *NumericPoint;
+    CtiPointSPtr    PointRecord;
+    CtiPointNumericSPtr NumericPoint;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointAccumulator *pAccumPoint = NULL;
+    CtiPointAccumulatorSPtr pAccumPoint;
 
     CHAR  tStr[128];
     INT AIPointOffset;
@@ -393,10 +393,10 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     if(_pointMgr != NULL)
                     {
-                        LockGuard guard(monitor());
+                       // LockGuard guard(monitor());
 
                         /* Walk the point in memory db to see what the point range is */
-                        CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
+                       /* CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
 
                         for(; ++itr_pt ;)
                         {
@@ -413,7 +413,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                     break;
                                 }
                             }
-                        }
+                        }*/
                     }
 
                     resetScanFlag(ScanFrozen);
@@ -447,7 +447,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                         for(j = 1; j <= 16; j++)
                         {
                             /* Get the Status Record */
-                            if( (PointRecord = getDevicePointOffsetTypeEqual( StartStatus + j, StatusPointType )) != NULL)
+                            if( PointRecord = getDevicePointOffsetTypeEqual( StartStatus + j, StatusPointType ))
                             {
                                 /****** NOTE 3-state's are ignored...
                                  * a status is a 2 state at this point, period.  Work needs to be done here if that changes.
@@ -573,7 +573,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                         }
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
-                            if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)) != NULL)
+                            if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)))
                             {
                                 curPulseValue = MAKEUSHORT(InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
 
@@ -644,7 +644,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                 }
                             }
 
-                            if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(AIPointOffset, PulseAccumulatorPointType)) != NULL)
+                            if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(AIPointOffset, PulseAccumulatorPointType)))
                             {
                                 /* Copy the pulses */
                                 pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
@@ -733,7 +733,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                             dout << CtiTime() << " AI offset " << AIPointOffset << " = " << Value << endl;
                         }
 
-                        if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(AIPointOffset, AnalogPointType)) != NULL)
+                        if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(AIPointOffset, AnalogPointType)))
                         {
                             PValue = NumericPoint->computeValueForUOM( Value );
 
@@ -950,7 +950,7 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     if(!isInhibited())
     {
-        CtiPointStatus *ctlPoint = 0;
+        CtiPointStatusSPtr ctlPoint;
         INT ctlpt = parse.getiValue("point");
         INT controlState;
 
@@ -958,11 +958,11 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             // Must have provided only a name... Find it the hard way.
             string pname = parse.getsValue("point");
-            ctlPoint = (CtiPointStatus*)getDevicePointEqualByName(pname);
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqualByName(pname));
         }
         else
         {
-            ctlPoint = (CtiPointStatus*)getDevicePointEqual(ctlpt);
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqual(ctlpt));
         }
 
 

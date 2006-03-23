@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,6 +15,8 @@
 #define __PT_NUMERIC_H__
 #pragma warning( disable : 4786)
 
+#include "boost/shared_ptr.hpp"
+using boost::shared_ptr;
 
 #include <rw/db/reader.h>
 #include <rw/db/nullind.h>
@@ -107,6 +109,11 @@ public:
 typedef CtiPointNumeric    CtiPointPseudoAnalog;
 typedef CtiPointNumeric    CtiPointCalculated;
 
+#if VSLICK_TAG_WORKAROUND
+typedef CtiPointNumeric * CtiPointNumericSPtr;
+#else
+typedef shared_ptr< CtiPointNumeric > CtiPointNumericSPtr;
+#endif
 
 #endif // #ifndef __PT_NUMERIC_H__
 

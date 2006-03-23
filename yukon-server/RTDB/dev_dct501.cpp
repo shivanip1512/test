@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 
         for( int i = 0; i < DCT_LPChannels; i++ )
         {
-            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  safe default
             _nextLPTime[i] = YUKONEOT;
@@ -435,7 +435,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
-    CtiPointNumeric      *pPoint = NULL;
+    CtiPointNumericSPtr   pPoint;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
@@ -475,10 +475,10 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             Value /= 16000.0;
 
             /* look for analog points */
-            pPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( pnt_offset, AnalogPointType );
+            pPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( pnt_offset, AnalogPointType ));
 
             // handle demand data here
-            if( pPoint != NULL)
+            if( pPoint)
             {
                 // Adjust for the unit of measure!
                 Value = pPoint->computeValueForUOM(Value);
@@ -486,7 +486,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
                 if(Error == 0)
                 {
                     resultString = getName() + " / " + pPoint->getName();
-                    resultString += " = " + CtiNumStr(Value,((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                    resultString += " = " + CtiNumStr(Value,pPoint->getPointUnits().getDecimalPlaces());
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                 }
                 else
@@ -565,9 +565,9 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointNumeric *point      = 0;
-    CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *point_data = 0;
+    CtiPointNumericSPtr point;
+    CtiReturnMsg        *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg     *point_data = 0;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -612,9 +612,10 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
-            if( point != NULL )
+            point = boost::static_pointer_cast< CtiPointNumeric >(getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+
+            if( point )
             {
                 //  figure out current seconds from midnight
                 midnight_offset  = TimeNow.hour() * 3600;

@@ -5,8 +5,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2006/03/23 15:29:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,7 +227,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     for (i = 1; i <= 8; i++)
     {
         /* Check if this point exists */
-        CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(i, AnalogPointType);
+        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(i, AnalogPointType));
 
         if(pAnalog)
         {
@@ -305,7 +305,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     for (i = 100; i <= 111; i++)
     {
         /* Check if this point exists */
-        CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(i, AnalogPointType);
+        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(i, AnalogPointType));
 
         if(pAnalog)
         {

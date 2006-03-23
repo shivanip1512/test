@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -142,7 +142,7 @@ public:
    CtiTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
 
    CtiPointDataMsg* fillPDMsg( vector<CtiTransdataData *> transVector,
-                               CtiPointBase *point,
+                               CtiPointSPtr point,
                                int index,
                                int timeID,
                                int dateID );

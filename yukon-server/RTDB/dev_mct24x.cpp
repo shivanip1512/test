@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,7 +211,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+    CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -494,7 +494,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    CtiPointNumeric *point      = 0;
+    CtiPointNumericSPtr point;
     CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *point_data = 0;
 
@@ -541,9 +541,9 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
 
-            if( point != NULL )
+            if( point )
             {
                 //  figure out current seconds from midnight
                 midnight_offset  = TimeNow.hour() * 3600;
@@ -681,7 +681,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
     double Value;
     string valReport;
 
-    CtiPointNumeric *pPoint    = NULL;
+    CtiPointNumericSPtr pPoint;
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
@@ -697,7 +697,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
     {
         // No error occured, we must do a real decode!
 
-        CtiPointBase    *pPoint;
+        CtiPointSPtr    pPoint;
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
 
@@ -741,7 +741,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
                 }
 
                 //  Send this value to requestor via retList.
-                if(pPoint != NULL)
+                if(pPoint)
                 {
                     rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
 
@@ -803,7 +803,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
 
 
             //  Send this value to requestor via retList.
-            if(pPoint != NULL)
+            if(pPoint)
             {
                 rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,9 +168,9 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
 
         newvglistsize = vgList.size();
 
-        CtiPoint *pPoint = 0;
+        CtiPointSPtr pPoint;
 
-        if ((pPoint = (CtiPoint*)getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS)) != 0)
+        if (pPoint = getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS))
         {
             if(parse.getCommand() == ControlRequest)
                 reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr().c_str() );
@@ -301,12 +301,12 @@ bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LO
 
 INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList)
 {
-    CtiPoint *pPoint = NULL;
+    CtiPointSPtr pPoint;
 
     setResponsesOnTrxID(0);
     setTrxID(trx);
 
-    if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
+    if (pPoint = getDevicePointOffsetTypeEqual(1, AnalogPointType))
     {
         // We have a point match here...
         DOUBLE val = 0.0;
@@ -314,7 +314,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessag
 
         if (pPoint->isNumeric())
         {
-            val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)0.0 );
+            val = boost::static_pointer_cast< CtiPointNumeric >(pPoint)->computeValueForUOM( (DOUBLE)0.0 );
         }
 
         resString = getName() + " / " + pPoint->getName();
@@ -333,7 +333,7 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, list< CtiMessag
 
 INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
 {
-    CtiPoint *pPoint;
+    CtiPointSPtr pPoint;
     INT cnt = getResponsesOnTrxID();
 
     if( trx == getCurrentTrxID() )                          // Only process it if we are still on this trx id.  We have not sent another!
@@ -355,13 +355,13 @@ INT CtiDeviceMacro::processTrxID( int trx,  list< CtiMessage* >  &vgList)
 
         // If we as a macro group have a TRX ID, It too will be incremented for this one!
         setResponsesOnTrxID(++cnt);
-        if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
+        if (pPoint = getDevicePointOffsetTypeEqual(1, AnalogPointType))
         {
             // We have a point match here...
             DOUBLE val = 0.0;
             if (pPoint->isNumeric())
             {
-                val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)cnt );
+                val = boost::static_pointer_cast< CtiPointNumeric >(pPoint)->computeValueForUOM( (DOUBLE)cnt );
             }
 
             //create a CTIDBG_new data message

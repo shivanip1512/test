@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2006/03/23 15:29:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,8 @@
 #define __PT_ACCUM_H__
 #pragma warning( disable : 4786)
 
-
+#include "boost/shared_ptr.hpp"
+using boost::shared_ptr;
 
 #include "dlldefs.h"
 #include "logger.h"
@@ -151,5 +152,11 @@ public:
    }
 
 };
+
+#if VSLICK_TAG_WORKAROUND
+typedef CtiPointAccumulator * CtiPointAccumulatorSPtr;
+#else
+typedef shared_ptr< CtiPointAccumulator > CtiPointAccumulatorSPtr;
+#endif
 
 #endif // #ifndef __PT_ACCUM_H__

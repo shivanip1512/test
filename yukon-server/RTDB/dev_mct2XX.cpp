@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/03/23 15:29:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,7 +251,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
-        CtiPointBase    *pPoint;
+        CtiPointSPtr    pPoint;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -270,14 +270,14 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType);
 
-        if(pPoint != NULL)
+        if(pPoint)
         {
             CtiTime pointTime;
 
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM((DOUBLE)mread);
+            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM((DOUBLE)mread);
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                                                     boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString);
             if(pData != NULL)
@@ -329,7 +329,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg *pData     = NULL;
-        CtiPointBase    *pPoint;
+        CtiPointSPtr    pPoint;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -361,16 +361,16 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
             if( pPoint )
             {
                 //    and the UOM
-                Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(Value);
+                Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(Value);
             }
         }
 
-        if(pPoint != NULL)
+        if(pPoint)
         {
             CtiTime pointTime;
 
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                                                                                     boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
             //  correct to beginning of interval
