@@ -40,26 +40,28 @@ public abstract class DeleteForm extends DBEditorForm
 	 */
 	public void update() {
 	
-		for( int i = 0; i < deletables.length; i++ ) {
-			
-			//this message will be filled in by the super class
-			FacesMessage facesMsg = new FacesMessage();
-			try {				
-				//be sure we can attempt to delete this item
-				if( deletables[i].isDeleteAllowed() ) {
-					deleteDBObject( deletables[i].getDbPersistent(), facesMsg );
-					deletables[i].setWasDeleted( true );
-					facesMsg.setDetail( "...deleted" );
+		if (deletables != null) {
+			for( int i = 0; i < deletables.length; i++ ) {
+				
+				//this message will be filled in by the super class
+				FacesMessage facesMsg = new FacesMessage();
+				try {				
+					//be sure we can attempt to delete this item
+					if( deletables[i].isDeleteAllowed() ) {
+						deleteDBObject( deletables[i].getDbPersistent(), facesMsg );
+						deletables[i].setWasDeleted( true );
+						facesMsg.setDetail( "...deleted" );
+					}
+					else
+						facesMsg.setDetail( "Item not deleted" );
 				}
-				else
-					facesMsg.setDetail( "Item not deleted" );
-			}
-			catch( TransactionException te ) {
-				//do nothing since the appropriate actions was taken in the super
-			}
-			finally {
-				deletables[i].setWarningMsg( facesMsg.getDetail() );
-				deletables[i].setDeleteError( facesMsg.getSeverity() == FacesMessage.SEVERITY_ERROR );
+				catch( TransactionException te ) {
+					//do nothing since the appropriate actions was taken in the super
+				}
+				finally {
+					deletables[i].setWarningMsg( facesMsg.getDetail() );
+					deletables[i].setDeleteError( facesMsg.getSeverity() == FacesMessage.SEVERITY_ERROR );
+				}
 			}
 		}
 
