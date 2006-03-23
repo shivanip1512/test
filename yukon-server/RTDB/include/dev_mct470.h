@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/03/23 21:23:11 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -286,12 +286,16 @@ private:
 
     enum IED_PointOffsets
     {
-        MCT470_PointOffset_TotalKWH   =  1,
-        MCT470_PointOffset_TOU_KWBase =  2,
-        MCT470_PointOffset_TotalKW    = 10,
-        MCT470_PointOffset_TotalKMH   = 11,
-        MCT470_PointOffset_TOU_KMBase = 12,
-        MCT470_PointOffset_TotalKM    = 20
+        MCT470_PointOffset_TotalKWH    =  1,
+        MCT470_PointOffset_TOU_KWBase  =  2,
+        MCT470_PointOffset_TotalKW     = 10,
+        MCT470_PointOffset_TotalKMH    = 11,
+        MCT470_PointOffset_TOU_KMBase  = 12,
+        MCT470_PointOffset_TotalKM     = 20,
+
+        MCT470_PointOffset_VoltsPhaseA = 41,
+        MCT470_PointOffset_VoltsPhaseB = 42,
+        MCT470_PointOffset_VoltsPhaseC = 43,
     };
 
     long getLoadProfileInterval( unsigned channel );
