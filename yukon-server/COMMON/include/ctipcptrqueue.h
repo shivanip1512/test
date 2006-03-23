@@ -96,7 +96,7 @@ class CtiPCPtrQueue{
                 return false;
             else
                 return true;
-        }
+        };
 
         /* write() will add an element to the end of the queue.
          * write() will not add an element to the queue of it is closed.

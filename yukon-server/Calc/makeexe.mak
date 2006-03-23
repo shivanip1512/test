@@ -213,8 +213,8 @@ calclogicsvc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		CtiPCPtrQueue.h utility.h sorted_vector.h calclogicsvc.h \
 		connection.h exchange.h queue.h cservice.h calcthread.h \
 		hashkey.h hash_functions.h calc.h calccomponent.h ctidate.h \
-		pointstore.h rtdb.h regression.h thread_monitor.h smartmap.h \
-		thread_register_data.h
+		pointstore.h rtdb.h regression.h ctiqueues.h thread_monitor.h \
+		smartmap.h thread_register_data.h
 calcthread.obj:	yukon.h precompiled.h ctidbgmem.h ctibase.h ctinexus.h \
 		dlldefs.h netports.h cticonnect.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h pointtypes.h \
@@ -222,8 +222,8 @@ calcthread.obj:	yukon.h precompiled.h ctidbgmem.h ctibase.h ctinexus.h \
 		msg_multi.h msg_pdata.h pointdefs.h logger.h thread.h \
 		CtiPCPtrQueue.h utility.h sorted_vector.h calcthread.h \
 		hashkey.h hash_functions.h calc.h calccomponent.h ctidate.h \
-		pointstore.h rtdb.h regression.h thread_monitor.h smartmap.h \
-		queue.h thread_register_data.h
+		pointstore.h rtdb.h regression.h ctiqueues.h thread_monitor.h \
+		smartmap.h queue.h thread_register_data.h
 calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h cticonnect.h netports.h sema.h CServiceConfig.h \
@@ -234,8 +234,8 @@ calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		collectable.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
 		msg_reg.h queue.h cservice.h calcthread.h calc.h \
 		calccomponent.h ctidate.h pointstore.h regression.h \
-		thread_monitor.h smartmap.h thread_register_data.h \
-		msg_dbchg.h
+		ctiqueues.h thread_monitor.h smartmap.h \
+		thread_register_data.h msg_dbchg.h
 log.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h cticonnect.h netports.h logger.h thread.h \

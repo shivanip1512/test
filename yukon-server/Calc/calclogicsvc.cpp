@@ -659,7 +659,7 @@ void CtiCalcLogicService::Run( )
 void CtiCalcLogicService::_outputThread( void )
 {
     RWRunnableSelf _pSelf = rwRunnable( );
-    RWTPtrDeque<CtiMultiMsg>::size_type entries = 0;
+    int entries = 0;
     BOOL interrupted = FALSE;
     CtiMultiMsg *toSend;
     CtiTime rwnow, announceTime, tickleTime;

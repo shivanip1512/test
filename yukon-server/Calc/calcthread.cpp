@@ -613,10 +613,7 @@ void CtiCalculateThread::resumeThreads(  )
 
 void CtiCalculateThread::appendCalcPoint( long pointID )
 {
-    CtiHashKey pointHashKey(pointID);
-    CtiPointStoreElement *tmpElementPtr = NULL;
-
-    tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
+    CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
 }
 
 bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval, string &qualityFlag )
