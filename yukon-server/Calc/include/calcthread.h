@@ -15,6 +15,7 @@
 
 #include "calc.h"
 #include "pointstore.h"
+#include "ctiqueues.h"
 
 //ecs 1/5/2005
 #include "thread_monitor.h"
@@ -45,8 +46,8 @@ public:
 
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
-    RWTValDeque<long> _auAffectedPoints;
-    RWTPtrDeque<CtiMultiMsg> _outbox;
+    CtiValDeque<long> _auAffectedPoints;
+    CtiPtrDeque<CtiMultiMsg> _outbox;
     RWMutexLock _pointDataMutex;
 
     void periodicThread( void );
@@ -91,7 +92,7 @@ public:
     BOOL isAConstantCalcPointID(const long aPointID);
     long numberOfLoadedCalcPoints() { return (_periodicPoints.entries() + _onUpdatePoints.entries() + _constantPoints.entries()); };
 
-    RWTPtrDeque<CtiMultiMsg>::size_type outboxEntries( void )   {   return _outbox.entries( ); };
+    int outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
     RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
     *getPointDependencyIterator( void )                         {   return CTIDBG_new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
