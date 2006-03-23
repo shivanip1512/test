@@ -7,6 +7,9 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -179,7 +182,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
             pointID,
             new Double(-1.0),
             com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-            multiplier,
+            new Double (multiplier),
             new Double(0.0)));
 
     
@@ -382,13 +385,15 @@ public static PointBase createCalcStatusPoint (Integer paoId, String name){
                                         PointTypes.CALCULATED_STATUS_POINT,
                                         name,
                                         paoId,
-                                        TypeBase.POINT_OFFSET );
+                                        new Integer (TypeBase.POINT_OFFSET) );
     
     
-    newPoint.getPoint().setStateGroupID( StateGroupUtils.STATEGROUP_CALCULATED );
+    newPoint.getPoint().setStateGroupID( new Integer (StateGroupUtils.STATEGROUP_CALCULATED));
     
     //defaults pointStatus
     ((CalcStatusPoint) newPoint).setPointStatus( new PointStatus(newPoint.getPoint().getPointID()) );
+    ((CalcStatusPoint) newPoint).getCalcBase().setPeriodicRate(new Integer (1));
+    ((CalcStatusPoint) newPoint).getCalcBase().setUpdateType("On All Change");
     
     return newPoint;
     
@@ -402,10 +407,10 @@ public static PointBase createCalculatedPoint(Integer paoId, String name){
                                         PointTypes.CALCULATED_POINT,
                                         name,
                                         paoId,
-                                        TypeBase.POINT_OFFSET
+                                        new Integer (TypeBase.POINT_OFFSET)
                                          );
     
-    point.getPoint().setStateGroupID(StateGroupUtils.STATEGROUP_CALCULATED);
+    point.getPoint().setStateGroupID(new Integer (StateGroupUtils.STATEGROUP_CALCULATED));
     PointUnit punit = new PointUnit  (point.getPoint().getPointID(),
                                       new Integer (PointUnits.UOMID_UNDEF),
                                       new Integer(PointUnit.DEFAULT_DECIMAL_PLACES),
