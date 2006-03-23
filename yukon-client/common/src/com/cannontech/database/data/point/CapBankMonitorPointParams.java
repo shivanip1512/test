@@ -1,0 +1,118 @@
+package com.cannontech.database.data.point;
+
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+/**
+ * POJO for monitor point that wraps around LitePoint instance
+ * @author ekhazon
+ *
+ */
+
+public class CapBankMonitorPointParams {
+
+private LitePoint monitorPoint = null;
+
+private int capBankId = 0;
+private int displayOrder = 0;
+private char scannable = 'N';
+private long NINAvg = 0;
+private float upperBandwidth = (float) 0.0;
+private float lowerBandwidth = (float) 0.0;
+private String pointName = "";
+private boolean overrideFdrLimits = false;
+
+
+	public CapBankMonitorPointParams(){
+		super();
+	}
+
+	public CapBankMonitorPointParams(LitePoint litePoint) {
+		super();
+		monitorPoint = litePoint;
+	}
+
+	public int getCapBankId() {
+		return capBankId;
+	}
+
+	public void setCapBankId(int _capBankId_) {
+		capBankId = _capBankId_;
+	}
+
+	public int getDisplayOrder() {
+		return displayOrder;
+	}
+
+	public void setDisplayOrder(int displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
+	public float getLowerBandwidth() {
+		return lowerBandwidth;
+	}
+
+	public void setLowerBandwidth(float lowerBandwidth) {
+		this.lowerBandwidth = lowerBandwidth;
+	}
+
+	public long getNINAvg() {
+		return NINAvg;
+	}
+
+	public void setNINAvg(long avg) {
+		NINAvg = avg;
+	}
+
+	public int getPointId() {
+		if (monitorPoint != null)
+			return monitorPoint.getPointID();
+		else
+			return 0;
+	}
+
+	public void setPointId(int pointId) {
+		if (monitorPoint != null)
+			monitorPoint.setPointID( pointId );
+		else
+			monitorPoint.setPointID( 0 );
+	}
+
+	public char getScannable() {
+		return scannable;
+	}
+
+	public void setScannable(char scannable) {
+		this.scannable = scannable;
+	}
+
+	public float getUpperBandwidth() {
+		return upperBandwidth;
+	}
+
+	public void setUpperBandwidth(float upperBandwidth) {
+		this.upperBandwidth = upperBandwidth;
+	}
+
+	public String getPointName() {
+		if (monitorPoint != null)
+			return monitorPoint.getPointName();
+		return "";
+	}
+
+	public void setPointName(String pointName) {
+		if (monitorPoint != null)
+			monitorPoint.setPointName( pointName );
+		else
+			monitorPoint.setPointName("");
+	}
+
+	public boolean isOverrideFdrLimits() {
+		return overrideFdrLimits;
+	}
+
+	public void setOverrideFdrLimits(boolean overrideFdrLimits) {
+		this.overrideFdrLimits = overrideFdrLimits;
+	}
+	
+
+}
