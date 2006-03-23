@@ -288,7 +288,7 @@ public class WorkOrderBean {
 						
 						//The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
 						String tempCode = filter.getFilterText().substring(filter.getFilterText().lastIndexOf(" ")+1);
-						if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
+						if( liteAddr.getZipCode().startsWith(tempCode))
 							filteredWorkOrders.add( liteOrder );
 					}
 					workOrders = filteredWorkOrders;

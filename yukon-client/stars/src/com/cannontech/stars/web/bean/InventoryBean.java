@@ -302,7 +302,7 @@ public class InventoryBean {
                         
                         //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
                         String tempCode = specificFilterString.substring(specificFilterString.lastIndexOf(" ")+1);
-                        if( liteAddr.getZipCode().equalsIgnoreCase(tempCode))
+                        if( liteAddr.getZipCode().startsWith(tempCode))
                             filteredHardware.add( hardwares.get(j) );
                     }
                 }
