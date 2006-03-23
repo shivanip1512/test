@@ -498,12 +498,13 @@ public class YukonToCRSFuncs
 	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
 	{
 		LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
-		ApplianceBase applianceBase = new ApplianceBase();
-	    
-		applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
+
 		if( airCond.charValue() == 'Y')
 		{
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, liteStarsEnergyCompany);
+
+			ApplianceBase applianceBase = new ApplianceBase();
+			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
 			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
@@ -518,11 +519,14 @@ public class YukonToCRSFuncs
 			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
 
 			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
-			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue()).getStarsAppliances().addStarsAppliance(starsAppliance);
+			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, liteStarsEnergyCompany);
+
+			ApplianceBase applianceBase = new ApplianceBase();
+			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
 			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
@@ -537,7 +541,7 @@ public class YukonToCRSFuncs
 			StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), appWH );
 			
 			StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteApp, liteStarsEnergyCompany);
-			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue()).getStarsAppliances().addStarsAppliance(starsAppliance);
+			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsAppliances().addStarsAppliance(starsAppliance);
 		}
 	}
 
