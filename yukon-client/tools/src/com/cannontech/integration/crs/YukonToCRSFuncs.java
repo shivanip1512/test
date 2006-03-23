@@ -18,6 +18,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -45,6 +46,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 
 
 /**
@@ -430,18 +432,18 @@ public class YukonToCRSFuncs
         return isChanged;
     }
     
-    public static void createMeterHardwares(Integer accountID, Integer energyCompanyID, String meterNumber, ArrayList additionalMeters) throws TransactionException
+    public static void createMeterHardwares(Integer accountID, LiteStarsEnergyCompany liteStarsEnergyCompany, String meterNumber, ArrayList additionalMeters) throws TransactionException
     {
     	if( meterNumber != null && meterNumber.length() > 0)
     	{
-    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), meterNumber, energyCompanyID.intValue());
-    		updateMeterHardware(meterHardwareBase, accountID, energyCompanyID, meterNumber);
+    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), meterNumber, liteStarsEnergyCompany.getEnergyCompanyID().intValue());
+    		updateMeterHardware(meterHardwareBase, accountID, liteStarsEnergyCompany, meterNumber);
     	}
     	for (int i = 0; i < additionalMeters.size(); i++)
     	{
     		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)additionalMeters.get(i);
-    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), energyCompanyID.intValue());
-    		updateMeterHardware(meterHardwareBase, accountID, energyCompanyID, additionalMeter.getMeterNumber());
+    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), liteStarsEnergyCompany.getEnergyCompanyID().intValue());
+    		updateMeterHardware(meterHardwareBase, accountID, liteStarsEnergyCompany, additionalMeter.getMeterNumber());
     	}
 	}
     /**
@@ -452,7 +454,7 @@ public class YukonToCRSFuncs
      * @return
      * @throws TransactionException
      */
-    private static MeterHardwareBase updateMeterHardware( MeterHardwareBase meterHardwareBase, Integer accountID, Integer energyCompanyID, String meterNumber) throws TransactionException
+    private static MeterHardwareBase updateMeterHardware( MeterHardwareBase meterHardwareBase, Integer accountID, LiteStarsEnergyCompany liteStarsEnergyCompany, String meterNumber) throws TransactionException
     {
     	if(meterHardwareBase == null)
 		{	//MeterNumber inventory does not exist yet, add it.
@@ -462,9 +464,16 @@ public class YukonToCRSFuncs
 //			meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
 			meterHardwareBase.getInventoryBase().setCategoryID(new Integer(CtiUtilities.NONE_ZERO_ID));	//TODO ? correct type
 			meterHardwareBase.getInventoryBase().setDeviceLabel(meterNumber);
-			meterHardwareBase.setEnergyCompanyID(energyCompanyID);
+			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyID());
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
-			//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205
+			
+			LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
+			LiteInventoryBase liteInvBase = new LiteInventoryBase();
+			StarsLiteFactory.setLiteInventoryBase(liteInvBase, meterHardwareBase.getInventoryBase());
+			liteStarsCustAcctInfo.getInventories().add(meterHardwareBase.getInventoryBase().getInventoryID()); 
+
+			StarsInventory starsInventory = StarsLiteFactory.createStarsInventory(liteInvBase, liteStarsEnergyCompany);
+			liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true).getStarsInventories().addStarsInventory(starsInventory);
 		}
 		else
         {
@@ -491,7 +500,7 @@ public class YukonToCRSFuncs
 				//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205 
 			}
 		}
-		
+	
 		return meterHardwareBase;
     }
 	
@@ -504,7 +513,7 @@ public class YukonToCRSFuncs
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, liteStarsEnergyCompany);
 
 			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
+			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
 			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
@@ -526,7 +535,7 @@ public class YukonToCRSFuncs
 			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, liteStarsEnergyCompany);
 
 			ApplianceBase applianceBase = new ApplianceBase();
-			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getCustomerAccount().getAccountID()) );
+			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
 			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
