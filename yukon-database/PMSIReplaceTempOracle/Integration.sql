@@ -2,7 +2,7 @@
 /* Table CRSToSAM_PTJ	                                        */
 /*==============================================================*/
 create table CRSToSAM_PTJ  (
-  PTJID             NUMBER,
+  PTJID             NUMBER	NOT NULL, 
   PREMISENUMBER     NUMBER,
   DEBTORNUMBER      VARCHAR2(10 BYTE),
   PTJTYPE           VARCHAR2(5 BYTE),
@@ -35,7 +35,7 @@ alter table CRSToSAM_PTJ
 /* Table: FailureCRSToSAM_PTJ	                                */
 /*==============================================================*/
 create table FailureCRSToSAM_PTJ  (
-  PTJID             NUMBER,
+  PTJID             NUMBER	NOT NULL,
   PREMISENUMBER     NUMBER,
   DEBTORNUMBER      VARCHAR2(10 BYTE),
   PTJTYPE           VARCHAR2(5 BYTE),
@@ -71,13 +71,13 @@ alter table FailureCRSToSAM_PTJ
 /* Table: SAMToCRS_PTJ	                                        */
 /*==============================================================*/
 create table SAMToCRS_PTJ  (
-   PTJID		NUMBER				null,
+   PTJID		NUMBER				NOT NULL,
    PremiseNumber	NUMBER		                null,
    DebtorNumber		VARCHAR2(10)	                null,
    WorkOrderNumber	VARCHAR2(30)			null,
    StatusCode		VARCHAR2(2)			null,
    Timestamp		VARCHAR2(16)			null,
-   STARSUserName	VARCHAR2(10)			null,
+   STARSUserName	VARCHAR2(10)			null
 );
 
 alter table SAMToCRS_PTJ
@@ -87,7 +87,7 @@ alter table SAMToCRS_PTJ
 /* Table: CRSToSAM_PremiseMeterChange                           */
 /*==============================================================*/
 create table CRSToSAM_PremiseMeterChange  (   
-  CHANGEID         NUMBER,
+  CHANGEID         NUMBER		NOT NULL,
   PREMISENUMBER    NUMBER,
   NEWDEBTORNUMBER  VARCHAR2(10 BYTE),
   TRANSID          VARCHAR2(4 BYTE),
@@ -112,7 +112,7 @@ alter table CRSToSAM_PremiseMeterChange
 /*==============================================================*/ 
   CREATE TABLE FAILURECRSTOSAM_PREMMETERCHG
 (
-  CHANGEID         NUMBER,
+  CHANGEID         NUMBER		NOT NULL,
   PREMISENUMBER    NUMBER,
   NEWDEBTORNUMBER  VARCHAR2(10 BYTE),
   TRANSID          VARCHAR2(4 BYTE),
@@ -139,7 +139,7 @@ alter table FailureCRSToSAM_PremMeterChg
 /* Table: CRSToSAM_PTJAdditionalMeters                           */
 /*==============================================================*/
 create table CRSToSAM_PTJAdditionalMeters    ( 
-   PTJID		NUMBER				null,
+   PTJID		NUMBER				NOT NULL,
    MeterNumber	        VARCHAR2(14)			null
 );	
 
@@ -179,7 +179,8 @@ create table Failure_SwitchReplacement(
 
 alter table Failure_SwitchReplacement 
    add constraint PK_Fail_SwitchReplace primary key (ReplacementID);
-   
+
+/*No longer used since we moved it out of JMX
 insert into YukonServices values( -7, 'CRS_Integration', 'com.cannontech.jmx.services.DynamicCRSIntegrator', '(none)', '(none)' );
 
-update YukonServices set ServiceID = 7 where ServiceID = -7;   
+update YukonServices set ServiceID = 7 where ServiceID = -7;   */
