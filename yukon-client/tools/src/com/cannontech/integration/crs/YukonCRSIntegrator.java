@@ -425,7 +425,7 @@ public final class YukonCRSIntegrator
 	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, liteStarsEnergyCompany);
 	        			
 	        			//Create New Inventory for meterNumbers
-	        			YukonToCRSFuncs.createMeterHardwares(customerAccount.getCustomerAccount().getAccountID(), customerAccount.getEnergyCompanyID(), meterNumber, currentEntry.getAdditionalMeters());
+	        			YukonToCRSFuncs.createMeterHardwares(customerAccount.getCustomerAccount().getAccountID(), liteStarsEnergyCompany, meterNumber, currentEntry.getAdditionalMeters());
 	            		
 					} catch (TransactionException e) {
 						// TODO Auto-generated catch block
