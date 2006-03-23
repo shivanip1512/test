@@ -38,6 +38,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -47,6 +48,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
@@ -375,22 +377,25 @@ public class WorkOrderManager extends HttpServlet {
 		// Remember the last search option
 		session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy) );
 		
+		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
+								(energyCompany.getChildren().size() > 0);
+
 		int[] orderIDs = null; 
 		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-			ArrayList orderList = energyCompany.searchWorkOrderByOrderNo( searchValue, false );
+			ArrayList orderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
 			orderIDs = new int[ orderList.size() ];
 			for (int i = 0; i < orderList.size(); i++)
 				orderIDs[i] = ((LiteWorkOrderBase)orderList.get(i)).getOrderID();
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, false );
+			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
 			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
 			try {
 				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
-				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, false );
+				ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
 				orderIDs = getOrderIDsByAccounts( accounts );
 			}
 			catch (WebClientException e) {
@@ -399,15 +404,15 @@ public class WorkOrderManager extends HttpServlet {
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, false );
+			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers );
 			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-			ArrayList accounts = energyCompany.searchAccountBySerialNo( searchValue, false );
+			ArrayList accounts = energyCompany.searchAccountBySerialNo( searchValue, searchMembers );
 			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, false );
+			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers );
 			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		
