@@ -136,6 +136,8 @@ public class CapControlForm extends DBEditorForm {
     private int selectedPanelIndex;
     
     private String paoName = "";
+    
+    private boolean switchPointEnabled = true;
 
 	/**
 	 * default constructor
@@ -262,13 +264,13 @@ public class CapControlForm extends DBEditorForm {
 
 			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i]
 					.getYukonID(), PointUnits.CAP_CONTROL_VAR_UOMIDS);
-			for (int j = 0; j < lPoints.length; j++) {
-				paos[i].getChildren().add(
-						new TreeNodeBase("points", lPoints[j].getPointName(),
-								String.valueOf(lPoints[j].getPointID()), true));
-			}
-
-			rootData.getChildren().add(paos[i]);
+				for (int j = 0; j < lPoints.length; j++) {
+					paos[i].getChildren().add(
+							new TreeNodeBase("points", lPoints[j].getPointName(),
+									String.valueOf(lPoints[j].getPointID()), true));
+				}						
+			if (lPoints.length > 0)
+				rootData.getChildren().add(paos[i]);
 		}
 
 		return rootData;
@@ -300,8 +302,9 @@ public class CapControlForm extends DBEditorForm {
 						new TreeNodeBase("points", lPoints[j].getPointName(),
 								String.valueOf(lPoints[j].getPointID()), true));
 			}
+			if (lPoints.length > 0)
+				rootData.getChildren().add(paos[i]);
 
-			rootData.getChildren().add(paos[i]);
 		}
 
 		return rootData;
@@ -333,8 +336,8 @@ public class CapControlForm extends DBEditorForm {
 						new TreeNodeBase("points", lPoints[j].getPointName(),
 								String.valueOf(lPoints[j].getPointID()), true));
 			}
-
-			rootData.getChildren().add(paos[i]);
+			if (lPoints.length > 0)
+				rootData.getChildren().add(paos[i]);		
 		}
 
 		return rootData;
@@ -456,9 +459,14 @@ public class CapControlForm extends DBEditorForm {
 				.getExternalContext().getRequestParameterMap().get("ptID");
 		if (val == null)
 			return;
-		if (getDbPersistent() instanceof CapControlSubBus)
+		if (getDbPersistent() instanceof CapControlSubBus) {
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
 					.setSwitchPointID(Integer.valueOf(val));
+			if (Integer.valueOf(val).intValue() == 0) 
+				setSwitchPointEnabled(false);
+			else
+				setSwitchPointEnabled(true);				
+		}
 
 		setDualSubBusEdited(true);
 	}
@@ -501,14 +509,6 @@ public class CapControlForm extends DBEditorForm {
         //The user fiddled around ...
         setDualSubBusEdited(true);
     }
-    
-    public void dualBusEnabledClick(ValueChangeEvent vce){
-        
-        setDualSubBusEdited(true);
-        updateDualBusEnabled();
-    }
-
-
 
 	/**
 	 * Event fired when the Watt Point selection has changed
@@ -548,7 +548,7 @@ public class CapControlForm extends DBEditorForm {
             Integer ctlPointid = new Integer(paoId);
             
             capBank.setControlDeviceID(ctlPointid);
-			cbControllerEditor = new CBControllerEditor(ctlPointid);
+			cbControllerEditor = new CBControllerEditor(ctlPointid.intValue());
             //getCBControllerEditor();
             
 		}
@@ -897,7 +897,7 @@ public class CapControlForm extends DBEditorForm {
 
                 if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
                     // inform the user they need to have a point picked
-
+                	facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
                     facesMsg.setDetail("ERROR: alternative sub bus needs to have a switch point");
 
                     // save the old value
@@ -909,7 +909,7 @@ public class CapControlForm extends DBEditorForm {
                     }
 
                 }
-                updateDBObject(((CapControlSubBus) getDbPersistent()), facesMsg);
+                //updateDBObject(((CapControlSubBus) getDbPersistent()), facesMsg);
             }
             
             updateDBObject(getDbPersistent(), facesMsg);
@@ -931,16 +931,8 @@ public class CapControlForm extends DBEditorForm {
         if (getDbPersistent() instanceof CapControlSubBus) {
             switchPointId = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus()
                                                                   .getSwitchPointID();
-
-            LitePoint litePoint = PointFuncs.getLitePoint(switchPointId);
-            if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
-                int stateGrpId = litePoint.getStateGroupID();
-                LiteStateGroup liteStateGroup = StateFuncs.getLiteStateGroup(stateGrpId);
-                if (liteStateGroup.getStatesList().size() == 2) {
-                    return true;
-                }
-            }
-
+            if (switchPointId.intValue() > 0)
+            	return true;
         }
         return false;
     }
@@ -1602,7 +1594,7 @@ public class CapControlForm extends DBEditorForm {
         //support for the TwoWay devices
         else if (getDbPersistent() instanceof YukonPAObject){
             
-            int paoID = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+            int paoID = ((YukonPAObject)getDbPersistent()).getPAObjectID().intValue();
             return DeviceTypesFuncs.isCapBankController(PAOFuncs.getLiteYukonPAO(paoID));
             
             }
@@ -1809,8 +1801,10 @@ public class CapControlForm extends DBEditorForm {
     }
 
     public void setEnableDualBus(Boolean enableDualBus) {
-
         this.enableDualBus = enableDualBus;
+        updateDualBusEnabled();         
+        setDualSubBusEdited(true);
+        
     }
 
     
@@ -1867,6 +1861,10 @@ public class CapControlForm extends DBEditorForm {
         }       
         else if (getDbPersistent() instanceof CapBank)
             return CBCSelectionLists.CapBankSetup;    
+        else if (getDbPersistent() instanceof CapControlSubBus)
+        	return CBCSelectionLists.CapControlSubBusSetup;
+        else if (getDbPersistent() instanceof CapControlFeeder)
+        	return CBCSelectionLists.CapControlFeederCapBank;
         return CBCSelectionLists.General;   
      }
 
@@ -1876,17 +1874,23 @@ public class CapControlForm extends DBEditorForm {
     }
     
     public String getPaoName() {
-        if ((YukonPAObject)getDbPersistent() != null) {
-            return ((YukonPAObject)getDbPersistent()).getPAOName();
+    	String retStr = "";
+        if (getDbPersistent() instanceof YukonPAObject) {
+    	  if (getDbPersistent() != null) {
+        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
+	      }
         }
-        else {
-            return "";
-        }
+        else if (getDbPersistent() instanceof PAOSchedule) {
+        	if (getDbPersistent() != null) {
+            	retStr = ((PAOSchedule)getDbPersistent()).getScheduleName();
+    	      }
+        }	
+        return retStr;
     }
     
     public LitePoint[] getCapBankPointList() {
         
-        return PAOFuncs.getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID());        
+        return PAOFuncs.getLitePointsForPAObject(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());        
     }
     
     public void capBankPointClick (ActionEvent ae){
@@ -1914,6 +1918,16 @@ public class CapControlForm extends DBEditorForm {
             }
         }
     }
+
+
+	public boolean isSwitchPointEnabled() {
+		return switchPointEnabled;
+	}
+
+
+	public void setSwitchPointEnabled(boolean switchPointEnabled) {
+		this.switchPointEnabled = switchPointEnabled;
+	}
   
     
     
