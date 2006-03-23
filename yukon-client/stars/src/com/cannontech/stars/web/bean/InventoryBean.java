@@ -272,9 +272,14 @@ public class InventoryBean {
         				LiteInventoryBase liteInv = (LiteInventoryBase)
         						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
         				
-        				if (liteInv instanceof LiteStarsLMHardware &&
-        					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
-        					|| specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
+                        /*
+                         * Was comparing the yukon def ids.  we don't want that.  we want it to instead compare entry IDs 
+                         * (ie. the customized type that the customer has given)
+                         *
+                           YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), specificFilterID.intValue() )
+                         */
+                        if (liteInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == specificFilterID.intValue() 
+                                || specificFilterID.intValue() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
         				{
         					filteredHardware.add( hardwares.get(i) );
         				}
