@@ -3,6 +3,7 @@
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
+
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
@@ -21,6 +22,7 @@
 <input type="hidden" name="cmdID">
 <input type="hidden" name="opt">
 
+<%if (capBankId > 0) {%>
 <% if( "field".equalsIgnoreCase(cmdType) ) {%>
 <div class="cmdPopupMenu">
   <cti:titledContainer title="<%=capBank.getCcName()%>">
@@ -32,6 +34,7 @@
 				>Confirm</a>
 		  </td></tr>
           <tr><td>
+
           	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
 				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.OPEN_CAPBANK%>); top.document.getElementById('tempIFrame').style.display='none';"
@@ -58,7 +61,6 @@
 				>Disable OV/UV</a>
 		  </td></tr>
 		</cti:checkProperty>
-
 
         </table>
      </cti:titledContainer>
@@ -113,12 +115,24 @@
 <% } %>
 
 
-
         </table>
    </cti:titledContainer>
 </div>
 <% } %>
+<% } else {%>
+<div class="cmdPopupMenu">
+        <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr><td>
+	<span class="optDeselect">No Cap Bank selected</span>
+</td></tr>
+<tr><td>
 
+	<a href="feeders.jsp" class="optDeselect" 
+	>Home</a>
+</td></tr>
+</table>
+</div>
+<%}%>
 </form>
 
 </cti:standardPage>

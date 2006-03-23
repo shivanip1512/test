@@ -19,6 +19,7 @@
 <input type="hidden" name="paoID">
 <input type="hidden" name="cmdID">
 
+<%if (feederId > 0) {%>
 <div class="cmdPopupMenu">
   <cti:titledContainer title="<%=feeder.getCcName()%>">
         <table id="fdrTable" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -64,6 +65,17 @@
         </table>
   </cti:titledContainer>
 </div>
+<%} else {%>
+<tr><td>
+<span class="optDeselect">No Feeder selected</span>
+</td></tr>
+<tr><td>
+
+<a href="feeders.jsp" class="optDeselect" 
+>Home</a>
+</td></tr>
+<%}%>
+
 </form>
 
 </cti:standardPage>
