@@ -1,5 +1,6 @@
 package com.cannontech.web.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class JSFTreeUtils {
 
         for (Iterator iter = points.iterator(); iter.hasNext();) {
             LitePoint litePoint = (LitePoint) iter.next();
-            LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(litePoint.getPaobjectID());
+			LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(litePoint.getPaobjectID());            
 
             TreeNodeBase newParent = null;
             TreeNodeBase leaf = new TreeNodeBase("points",
@@ -47,13 +48,13 @@ public class JSFTreeUtils {
             newParent.getChildren().add(leaf);
 
         }
-
+        Collections.sort(rootData.getChildren(), JSFComparators.treeNodeDescriptionComparator);
         return rootData;
     }
     
     
-    //function that will create a tree from the node and the list - basically attach points to the node
-    public static TreeNode createTreeFromPointList(Set points, TreeNode root){
+	//function that will create a tree from the node and the list - basically attach points to the node
+	public static TreeNode createTreeFromPointList(Set points, TreeNode root){
         for (Iterator iter = points.iterator(); iter.hasNext();) {
             LitePoint litePoint = (LitePoint) iter.next();
             
