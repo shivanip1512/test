@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.133 $
-* DATE         :  $Date: 2006/03/23 15:29:15 $
+* REVISION     :  $Revision: 1.134 $
+* DATE         :  $Date: 2006/03/24 15:58:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5463,6 +5463,7 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     if(pReq = CTIDBG_new CtiRequestMsg( deviceid, cmdstr ))
     {
         pReq->setUser( Cmd->getUser() );
+        pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
         writeMessageToClient((CtiMessage*&)pReq, string(PIL_REGISTRATION_NAME));
     }
 
