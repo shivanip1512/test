@@ -158,7 +158,7 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		liteOrder.setDateScheduled( rset.getTimestamp("DateScheduled").getTime() );
 		liteOrder.setDateCompleted( rset.getTimestamp("DateCompleted").getTime() );
 		liteOrder.setActionTaken( rset.getString("ActionTaken") );
-		liteOrder.setActionTaken( rset.getString("AdditionalOrderNumber") );
+		liteOrder.setAdditionalOrderNumber( rset.getString("AdditionalOrderNumber") );
 		liteOrder.setAccountID( rset.getInt("AccountID") );
 		liteOrder.setEnergyCompanyID( rset.getInt("EnergyCompanyID") );
 		
