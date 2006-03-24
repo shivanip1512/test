@@ -65,12 +65,18 @@ public class LoadInventoryTask extends TimeConsumingTask {
 		String sql2 = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID," +
 			" ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID," +
 			" Notes, DeviceID, DeviceLabel, CurrentStateID, ManufacturerSerialNumber, LMHardwareTypeID," +
-			" RouteID, ConfigurationID" +
-			" FROM InventoryBase inv LEFT OUTER JOIN LMHardwareBase hw ON inv.InventoryID = hw.InventoryID," +
+			" RouteID, ConfigurationID, MeterNumber, MeterTypeID " +
+			" FROM InventoryBase inv LEFT OUTER JOIN LMHardwareBase hw ON inv.InventoryID = hw.InventoryID " +
+			" LEFT OUTER JOIN MeterHardwareBase mhb ON inv.InventoryID = mhb.InventoryID, " + 
 			" ECToInventoryMapping map" +
 			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
 			" AND map.InventoryID >= 0 AND map.InventoryID = inv.InventoryID";
-		
+
+		String sql_meterHardware = "SELECT mhb.InventoryID, MeterNumber, MeterTypeID " +
+		" FROM MeterHardwareBase mhb, ECToInventoryMapping map " +
+		" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+		" AND map.InventoryID >= 0 AND map.InventoryID = mhb.InventoryID";
+
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		
@@ -153,6 +159,7 @@ public class LoadInventoryTask extends TimeConsumingTask {
 		LiteInventoryBase liteInv = null;
 		
 		String serialNo = rset.getString( "ManufacturerSerialNumber" );
+		String meterNumber = rset.getString( "MeterNumber" );
 		if (serialNo != null) {
 			// This is a LM hardware
 			liteInv = new LiteStarsLMHardware();
@@ -160,6 +167,13 @@ public class LoadInventoryTask extends TimeConsumingTask {
 			((LiteStarsLMHardware)liteInv).setLmHardwareTypeID( rset.getInt("LMHardwareTypeID") );
 			((LiteStarsLMHardware)liteInv).setRouteID( rset.getInt("RouteID") );
 			((LiteStarsLMHardware)liteInv).setConfigurationID( rset.getInt("ConfigurationID") );
+		}
+		else if( meterNumber != null)
+		{
+			//This is a MeterHardwareBase Inventory object
+			liteInv = new LiteMeterHardwareBase();
+			((LiteMeterHardwareBase)liteInv).setMeterNumber( meterNumber );
+			((LiteMeterHardwareBase)liteInv).setMeterTypeID( rset.getInt("MeterTypeID"));
 		}
 		else {
 			// This is a MCT or other kinds of devices
