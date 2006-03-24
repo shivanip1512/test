@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.175 $
-* DATE         :  $Date: 2006/03/14 22:34:49 $
+* REVISION     :  $Revision: 1.176 $
+* DATE         :  $Date: 2006/03/24 15:58:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3888,7 +3888,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
                 // There is an exclusion conflict for this device.  It cannot execute this OM.
                 DeviceManager.removeInfiniteExclusion(Device);  // Remove any infinite time exclusions caused by Device from any other device in the list.
 
-                if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << Device->getName() << " may not execute this request.  Requeue and scan for another." << endl;
