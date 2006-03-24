@@ -68,6 +68,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 
 /**
@@ -1576,6 +1577,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					
 					liteInv = new LiteStarsLMHardware();
 					StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hardware );
+				}
+				else if (InventoryUtils.isNonYukonMeter( invDB.getCategoryID().intValue()))
+				{
+					MeterHardwareBase mhbDB = new MeterHardwareBase();
+					mhbDB.setInventoryID( invDB.getInventoryID() );
+					
+					mhbDB = (MeterHardwareBase) Transaction.createTransaction( Transaction.RETRIEVE, mhbDB ).execute();
+					
+					com.cannontech.database.data.stars.hardware.MeterHardwareBase hardware =
+							new com.cannontech.database.data.stars.hardware.MeterHardwareBase();
+					hardware.setInventoryBase( invDB );
+					hardware.setMeterHardwareBase( mhbDB );
+					
+					liteInv = new LiteMeterHardwareBase();
+					StarsLiteFactory.setLiteMeterHardwareBase( (LiteMeterHardwareBase)liteInv, hardware );
 				}
 				else {
 					liteInv = new LiteInventoryBase();
