@@ -178,11 +178,12 @@ function confirmCancel() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<%if (AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
+<%String meterBase = AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION);
+if (account != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
 {%>
 				create a new Meter (Create New Meter),<br>
 <%}
-else if (devTypeMCT != null) { %>
+else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.MCT_BASE_DESIGNATION) == 0) { %>
                 select a meter from the list of all MCTs (Select Meter),<br>
 <% } %>
                 or check the inventory for a specific device type and serial number 
@@ -202,7 +203,7 @@ else if (devTypeMCT != null) { %>
                       </table>
                     </td>
                   </tr>
-<%if (AuthFuncs.getRolePropertyValue( lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
+<%if (account != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)
 {%>
 				<tr> 
                     <td> 
@@ -223,7 +224,7 @@ else if (devTypeMCT != null) { %>
                     </td>
                   </tr>
 <%}
-else if (devTypeMCT != null) { %>
+else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cannontech.stars.util.StarsUtils.MCT_BASE_DESIGNATION) == 0) { %>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
