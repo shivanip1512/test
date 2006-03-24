@@ -6,13 +6,13 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 
 /**
@@ -58,7 +58,8 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		String sql = "SELECT OrderID, OrderNumber, WorkTypeID, CurrentStateID, ServiceCompanyID," +
-			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AccountID, EnergyCompanyID" +
+			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AdditionalOrderNumber, " +
+			" AccountID, EnergyCompanyID " +
 			" FROM WorkOrderBase wo, ECToWorkOrderMapping map" +
 			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
 			" AND map.WorkOrderID = wo.OrderID";
@@ -157,10 +158,10 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 		liteOrder.setDateScheduled( rset.getTimestamp("DateScheduled").getTime() );
 		liteOrder.setDateCompleted( rset.getTimestamp("DateCompleted").getTime() );
 		liteOrder.setActionTaken( rset.getString("ActionTaken") );
+		liteOrder.setActionTaken( rset.getString("AdditionalOrderNumber") );
 		liteOrder.setAccountID( rset.getInt("AccountID") );
 		liteOrder.setEnergyCompanyID( rset.getInt("EnergyCompanyID") );
 		
 		energyCompany.addWorkOrderBase( liteOrder );
 	}
-
 }
