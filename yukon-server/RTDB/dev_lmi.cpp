@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -782,7 +782,7 @@ bool CtiDeviceLMI::isExecuting() const
     return _lmi_exclusion.isExecuting();
 }
 
-void CtiDeviceLMI::setExecuting(bool set)
+void CtiDeviceLMI::setExecuting(bool set, CtiTime when)
 {
     _lmi_exclusion.setExecuting(set);
     return;

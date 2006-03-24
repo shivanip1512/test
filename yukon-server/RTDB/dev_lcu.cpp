@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1346,14 +1346,26 @@ ULONG CtiDeviceLCU::lcuTime(OUTMESS *&OutMessage, UINT lcuType)
     ULONG Count;
     ULONG SubCount;
 
-    /* first see how many bytes are involved */
-    Count = OutMessage->Buffer.OutMessage[PREIDLEN + 3];
-
-    /* now see how many bits are involved in last byte */
-    for(SubCount = 0; SubCount <= 7; SubCount++)
+    if(OutMessage)
     {
-        if(((OutMessage->Buffer.OutMessage[PREIDLEN + MASTERLENGTH + Count - 1] >> SubCount) & 0x0001))
-            break;
+        /* first see how many bytes are involved */
+        Count = OutMessage->Buffer.OutMessage[PREIDLEN + 3];
+
+        /* now see how many bits are involved in last byte */
+        for(SubCount = 0; SubCount <= 7; SubCount++)
+        {
+            if(((OutMessage->Buffer.OutMessage[PREIDLEN + MASTERLENGTH + Count - 1] >> SubCount) & 0x0001))
+                break;
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        Count = 8;
+        Subcount = 0;
     }
 
     /* Calculate the number of bits involved */
@@ -1563,17 +1575,6 @@ void CtiDeviceLCU::deleteLastControlMessage()
     return;
 }
 
-CtiTime CtiDeviceLCU::getStageTime() const
-{
-    return _stageTime;
-}
-
-CtiDeviceLCU& CtiDeviceLCU::setStageTime(const CtiTime& aTime)
-{
-    _stageTime = aTime;
-    return *this;
-}
-
 CtiTime CtiDeviceLCU::getNextCommandTime() const
 {
     return _nextCommandTime;
@@ -1582,6 +1583,17 @@ CtiTime CtiDeviceLCU::getNextCommandTime() const
 CtiDeviceLCU& CtiDeviceLCU::setNextCommandTime(const CtiTime& aTime)
 {
     _nextCommandTime = aTime;
+    return *this;
+}
+
+CtiTime CtiDeviceLCU::getStageTime() const
+{
+    return _stageTime;
+}
+
+CtiDeviceLCU& CtiDeviceLCU::setStageTime(const CtiTime& aTime)
+{
+    _stageTime = aTime;
     return *this;
 }
 
@@ -1709,20 +1721,6 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
 }
 
 
-BOOL CtiDeviceLCU::isBusyByCommand(const CtiTime &aTime) const
-{
-    BOOL busy = FALSE;
-
-    assert( CtiTime() + 1800 > getNextCommandTime() );
-
-    if( getNextCommandTime() > aTime)   // This LCU is busy according to it's next command time...
-    {
-        busy = TRUE;
-    }
-
-    return busy;
-}
-
 ULONG CtiDeviceLCU::lcuRetries()
 {
     return _landgRetries;
@@ -1826,31 +1824,29 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
     INT status = NORMAL;
 
     // Pretend for the simulated ports!
-    if(InMessage->EventCode & 0x3ffff == ErrPortSimulated)
+    if((InMessage->EventCode & 0x3ffff) == ErrPortSimulated)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiTime now;
 
-        if(getNextCommandTime() > CtiTime())
+        if(getNextCommandTime() > now)
         {
-            Sleep(1000);
-            setFlags( LCUWASTRANSMITTING );
-            resultCode = eLCUFastScan;
+            if(!(now.seconds() % 5))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " \"BUSY\" scanning for \"NOT-BUSY\"  SIMULATE!!!" << endl;
+                dout << now << " ** SIMULATED ** " << getName() << " \"BUSY\" scanning for \"NOT-BUSY\"" << endl;
             }
+            setFlags( LCUWASTRANSMITTING );
+            resultCode = eLCUFastScan;
+            Sleep(250);
         }
         else
         {
-            resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
-            resultCode = eLCUDeviceControlComplete;
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " HAS COMPLETED AND GONE IDLE! SIMULATE!!!" << endl;
+                dout << now << " ** SIMULATED ** " << getName() << " HAS COMPLETED AND GONE IDLE!" << endl;
             }
+            resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
+            resultCode = eLCUDeviceControlComplete;
         }
     }
 
@@ -1951,7 +1947,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                             {
                                 if(getLCUType() == LCU_STANDARD || getLCUType() == LCU_T3026)
                                 {
-                                    if(getNextCommandTime() < CtiTime())
+                                    if( !isExecutionProhibited() )
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2039,16 +2035,22 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
     return (_lockedOut || getControlInhibit());
 }
 
+CtiTime CtiDeviceLCU::selectCompletionTime() const
+{
+    OUTMESS *pOM = 0;
+    // CtiTime rwt = CtiTime::now() + lcuTime(pOM, getLCUType()); // Inherited::selectCompletionTime();
+    CtiTime rwt = Inherited::selectCompletionTime();
+
+    return rwt;
+}
+
 void CtiDeviceLCU::lcuResetFlagsAndTags()
 {
     resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
     deleteLastControlMessage();
-    setNextCommandTime( PASTDATE );
     setNumberStarted( 0 );
     releaseToken();
-
-    removeInfiniteProhibit(getID());
-    setExecuting(false);
+    removeInfiniteProhibit(getID());        // Do not block yourself Mr. LCU.
 }
 
 
@@ -2275,19 +2277,6 @@ bool CtiDeviceLCU::watchBusyBit() const
     }
 
     return ret;
-}
-
-bool CtiDeviceLCU::isExecutionProhibitedByInternalLogic() const
-{
-    bool prohibited = false;
-    CtiTime now;
-
-    if(now < getNextCommandTime())
-    {
-        prohibited = true;
-    }
-
-    return prohibited;
 }
 
 INT CtiDeviceLCU::getProtocolWrap() const

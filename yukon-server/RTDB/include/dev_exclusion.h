@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.9  2006/03/24 15:58:19  cplender
+* Work on exclusion logic to unify the ripple work and make EREPC work right.  90% there.
+*
 * Revision 1.8  2005/12/20 17:20:29  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -119,13 +122,14 @@ public:
 
     size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     bool removeInfiniteProhibit(unsigned long id);
+    bool removeProhibit(unsigned long id);
+    void dumpProhibits(unsigned long id = 0);
     bool hasTimeExclusion() const;
 
 
     bool   isExecuting() const;
-    void   setExecuting(bool set = true);
+    void   setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
     CtiTime getExecutingUntil() const;
-    void   setExecutingUntil(CtiTime set = CtiTime(YUKONEOT));
 
     void Dump(void) const;
 

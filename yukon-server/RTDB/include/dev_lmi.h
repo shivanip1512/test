@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/03/02 23:03:20 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ public:
     CtiTime selectCompletionTime() const;
     bool isDeviceExcluded(long id) const;
     bool isExecuting() const;
-    void setExecuting(bool set = true);
+    void setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
     bool isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
     size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     bool removeInfiniteProhibit(unsigned long id);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1046,9 +1046,9 @@ bool CtiDeviceBase::isExecuting() const
     return _exclusion.isExecuting();
 }
 
-void CtiDeviceBase::setExecuting(bool set)
+void CtiDeviceBase::setExecuting(bool set, CtiTime when)
 {
-    _exclusion.setExecuting(set);
+    _exclusion.setExecuting(set, when);
     return;
 }
 
@@ -1064,7 +1064,37 @@ size_t CtiDeviceBase::setExecutionProhibited(unsigned long id, CtiTime& releaseT
 
 bool CtiDeviceBase::removeInfiniteProhibit(unsigned long id)
 {
-    return _exclusion.removeInfiniteProhibit(id);
+    bool r = _exclusion.removeInfiniteProhibit(id);
+
+    if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << getName() << " " << id << " removed. **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return r;
+}
+
+bool CtiDeviceBase::removeProhibit(unsigned long id)
+{
+    if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << getName() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return _exclusion.removeProhibit(id);
+}
+
+void CtiDeviceBase::dumpProhibits(unsigned long id)
+{
+    if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << " / " << getID() << " prohibited by: " << endl;
+        }
+        _exclusion.dumpProhibits(id);
+    }
+    return;
 }
 
 bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)

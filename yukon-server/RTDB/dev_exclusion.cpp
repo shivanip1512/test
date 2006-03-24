@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.14  2006/03/24 15:58:19  cplender
+* Work on exclusion logic to unify the ripple work and make EREPC work right.  90% there.
+*
 * Revision 1.13  2006/03/03 18:35:31  cplender
 * Altered exclusion logic for Ripple groups and LCU processing
 *
@@ -250,15 +253,15 @@ bool CtiDeviceExclusion::isExecuting() const
     return(_executingUntil > _executingUntil.now());
 }
 
-void CtiDeviceExclusion::setExecuting(bool set)
+void CtiDeviceExclusion::setExecuting(bool set, CtiTime when)
 {
     if(set)
-        _executingUntil = CtiTime(YUKONEOT);
+        _executingUntil = when;
     else
     {
         if(_executingUntil == CtiTime(YUKONEOT))
         {
-            _executingUntil = CtiTime(PASTDATE);
+            _executingUntil = CtiTime(rwEpoch);
         }
     }
 
@@ -268,20 +271,6 @@ void CtiDeviceExclusion::setExecuting(bool set)
 CtiTime CtiDeviceExclusion::getExecutingUntil() const
 {
     return _executingUntil;
-}
-
-void CtiDeviceExclusion::setExecutingUntil(CtiTime set)
-{
-    #if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " Executing until " << set << endl;
-    }
-    #endif
-
-    _executingUntil = set;
-    return;
 }
 
 /*
@@ -427,6 +416,103 @@ bool CtiDeviceExclusion::removeInfiniteProhibit(unsigned long id)
     return(removed && !pass);
 }
 
+/*
+ *  This method removes all exclusions against this device from device "id".
+ *  A time based exclusion will not be removed.
+ */
+bool CtiDeviceExclusion::removeProhibit(unsigned long id)
+{
+    bool pass = false;          // If this is set to true it means a non-infinite and valid time exclusion exists for id.
+    bool removed = false;
+    RWTime eot(YUKONEOT);
+    CtiDeviceExclusion::prohibitions::iterator itr;
+
+    try
+    {
+        if( _executionProhibited.size() > 0 )
+        {
+            CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+            if(guard.isAcquired())
+            {
+                for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+                {
+                    if((*itr).first == id)      // Remove the non infinite times
+                    {
+                        itr = _executionProhibited.erase(itr);
+                        removed = true;
+                    }
+                    else
+                    {
+                        pass = true;        // There _still_ exists an exclusion against this device.
+                        itr++;
+                    }
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return(removed && !pass);
+}
+
+/*
+ *  This method displays all exclusions against this device from device "id".  If not id is specified, all are displayed.
+ */
+void CtiDeviceExclusion::dumpProhibits(unsigned long id)
+{
+    CtiDeviceExclusion::prohibitions::iterator itr;
+
+    try
+    {
+        if( _executionProhibited.size() > 0 )
+        {
+            CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+            if(guard.isAcquired())
+            {
+                for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+                {
+                    if(!id || (*itr).first == id)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "   id " << (*itr).first << " blocks until " << (*itr).second << endl;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return;
+}
+
 bool CtiDeviceExclusion::hasTimeExclusion() const
 {
     bool b = false;
@@ -486,7 +572,6 @@ CtiTime CtiDeviceExclusion::getExecutionGrant() const
 }
 void CtiDeviceExclusion::setExecutionGrant(CtiTime set)
 {
-
     _executionGrant = set;
     return;
 }
@@ -498,6 +583,8 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 
     if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
     {
+        if(_cycleTimeExclusion.getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
+        {
             CtiTime now;
             CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
 
@@ -505,6 +592,7 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
             CtiTime close = open + _cycleTimeExclusion.getTransmitTime() - getMinTimeInSec();
 
             bstatus = (open <= now && now < close);
+        }
     }
 
     return bstatus;

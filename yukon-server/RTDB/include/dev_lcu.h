@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,11 +187,10 @@ public:
     virtual INT    ResultDecode(INMESS*,CtiTime&, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT    ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT    ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual CtiTime selectCompletionTime() const;
 
     bool           exceedsDutyCycle(BYTE *bptr);
     bool           watchBusyBit() const;
-
-    virtual bool isExecutionProhibitedByInternalLogic() const;
 
     virtual INT getProtocolWrap() const;
     INT lcuLockout(OUTMESS *&OutMessage, bool set);

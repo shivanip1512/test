@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2006/03/23 15:29:19 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -300,10 +300,12 @@ public:
     virtual CtiTime selectCompletionTime() const;
     virtual bool isDeviceExcluded(long id) const;
     virtual bool isExecuting() const;
-    virtual void setExecuting(bool set = true);
+    virtual void setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
     virtual bool isExecutionProhibited(const CtiTime &now = CtiTime(), LONG did = 0);
     virtual size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     virtual bool removeInfiniteProhibit(unsigned long id);
+    virtual bool removeProhibit(unsigned long id);
+    virtual void dumpProhibits(unsigned long id = 0);
 
     virtual bool hasQueuedWork() const;
     virtual bool hasPreloadWork() const;

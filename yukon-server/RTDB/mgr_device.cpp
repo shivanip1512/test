@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2006/03/03 18:35:31 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2006/03/24 15:58:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1857,7 +1857,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                         anxiousDeviceBlocksThisVector.clear();             // Cannot use the list to block other devices.
                                         busted = true;              // 20060228 CGP.  // Prevent additional loops.
                                         break;                      // we cannot go
-                                    }
+                                    }/*
                                     else if( device->isExecutionProhibited(now, anxiousDevice->getID()) )  // This asks if anxiousDevice is already blocking "device".  We don't add it a second time.
                                     {
                                         if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
@@ -1865,7 +1865,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Device " << device->getName() << " is already blocked by " << anxiousDevice->getName() << endl;
                                         }
-                                    }
+                                    }*/
                                     else
                                     {
                                         anxiousDeviceBlocksThisVector.push_back(device);    // Throw a copy of the shptr onto this vector to be marked out if we succeed.
@@ -1907,6 +1907,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                     //
                     if(!anxiousDeviceBlocksThisVector.empty())     // This tells me that I have no conflicting devices!
                     {
+                        int procnt = 0;
                         vector< CtiDeviceSPtr >::iterator xitr;
                         for(xitr = anxiousDeviceBlocksThisVector.begin(); xitr != anxiousDeviceBlocksThisVector.end(); xitr++)
                         {
@@ -1915,8 +1916,15 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " Device " << device->getName() << " prohibited because " << anxiousDevice->getName() << " is executing" << endl;
                             }
+                            procnt++;
                             device = *xitr;
                             device->setExecutionProhibited(anxiousDevice->getID());
+                        }
+
+                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << anxiousDevice->getName() << " caused  " << procnt << " devices to be blocked because it is executing" << endl;
                         }
                         bstatus = true;
                     }
@@ -1934,8 +1942,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
                 }
-                anxiousDevice->getExclusion().setExecutingUntil(anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
-                anxiousDevice->setExecuting(true);
+                anxiousDevice->setExecuting(true, anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
             }
         }
     }
@@ -2903,7 +2910,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
     {
         devS->getExclusion().setExecutionGrant(now);
         devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
-        devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
+        devS->getExclusion().setExecuting( true, devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
         _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
     }
     else       // We did not find any time excluded transmitters willing to take the ball.
@@ -2938,7 +2945,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
         {
             devS->getExclusion().setExecutionGrant(now);
             devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
-            devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
+            devS->getExclusion().setExecuting( true, devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
             _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
         }
     }
