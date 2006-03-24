@@ -22,19 +22,13 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.purchasing.*;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.*;
-import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.ProgressChecker;
-import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.SwitchCommandQueue;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -737,6 +731,9 @@ public class InventoryManager extends HttpServlet {
 			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation( req, energyCompany );
 			UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
 			
+            //TODO
+            //Warehouse.moveInventoryToAnotherWarehouse(invID, invID)
+            
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 				InventoryManagerUtil.setStarsLMConfiguration( starsCfg, req );
@@ -2168,7 +2165,7 @@ public class InventoryManager extends HttpServlet {
         Shipment shipment = pBean.getCurrentShipment();
         
         TimeConsumingTask task = new AddShipmentSNRangeTask( pBean.getSerialNumberMember(), shipment.getSerialNumberStart(), shipment.getSerialNumberEnd(), 
-                                                             new Integer(pBean.getSerialNumberDeviceState().getEntryID()), pBean.getCurrentSchedule().getModelID(), 
+                                                             pBean.getCurrentSchedule().getModelID(), new Integer(pBean.getSerialNumberDeviceState().getEntryID()), 
                                                              shipment.getWarehouseID(), req );
         long id = ProgressChecker.addTask( task );
         
