@@ -45,6 +45,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_CAT_ONEWAYREC			= 1201;
 	public static final int YUK_DEF_ID_INV_CAT_TWOWAYREC			= 1202;
 	public static final int YUK_DEF_ID_INV_CAT_MCT					= 1203;
+	public static final int YUK_DEF_ID_INV_CAT_NON_YUKON_METER		= 1204;
 	public static final int YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT			= 1301;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM		= 1302;
 	public static final int YUK_DEF_ID_DEV_TYPE_MCT					= 1303;
