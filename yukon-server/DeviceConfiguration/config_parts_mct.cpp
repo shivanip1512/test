@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/01/03 20:23:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/24 15:11:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(string key)
     }
 }
 
-MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)
+MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)//DO NOT USE ME
 {
     CtiToLower(key);
     if(key == "day table")
@@ -77,7 +77,7 @@ MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(string key)
     }
 }
 
-MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(string key)//DO NOT USE ME
+MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(string key)
 {
     CtiToLower(key);
     if(key == "dst begin")
@@ -146,7 +146,6 @@ MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(str
 
 MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(string key)
 {
-
     CtiToLower(key);
     
     if(key == "time adjust tolerance")
@@ -341,6 +340,19 @@ MCTPrecannedTable ConfigurationPart<MCTPrecannedTable>::getResolvedKey(string ke
     }
 }
 
+MCTSystemOptions ConfigurationPart<MCTSystemOptions>::getResolvedKey(string key)
+{
+    CtiToLower(key);
+    if(key == "demand meters to scan")
+    {
+        return DemandMetersToScan;
+    }
+    else
+    {
+        return MCTSystemOptionsInvalid;
+    }
+}
+
 //******************************************************************************
 //getType() begins here
 CtiConfig_type ConfigurationPart<MCTAddressing>::getType()
@@ -403,6 +415,10 @@ CtiConfig_type ConfigurationPart<MCTPrecannedTable>::getType()
     return ConfigTypeMCTPrecannedTable;
 }
 
+CtiConfig_type ConfigurationPart<MCTSystemOptions>::getType()
+{
+    return ConfigTypeMCTSystemOptions;
+}
 
 }//Config
 }//Cti

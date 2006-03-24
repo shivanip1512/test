@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/01/03 20:23:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/03/24 15:11:52 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -78,6 +78,10 @@ CtiConfig_type resolveConfigType(string rwsTemp)
         else if(rwsTemp == "mct long load profile")
         {
             Ret = ConfigTypeMCTLongLoadProfile;
+        }
+        else if(rwsTemp == "mct system options")
+        {
+            Ret = ConfigTypeMCTSystemOptions;
         }
         else
         {

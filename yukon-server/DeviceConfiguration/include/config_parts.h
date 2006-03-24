@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2006/03/24 15:11:53 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,12 @@ enum MCTPrecannedTable
     TableType,
 };
 
+enum MCTSystemOptions
+{
+    MCTSystemOptionsInvalid,
+    DemandMetersToScan,
+};
+
 template <class T>
 class IM_EX_CONFIG ConfigurationPart : public Base
 {
@@ -169,6 +175,7 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTHoliday>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTLoadProfileChannels>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTRelays>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTPrecannedTable>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTSystemOptions>;
 
 template <class T>
 bool ConfigurationPart<T>::setValueWithKey(const string &value, T enumKey)
@@ -255,6 +262,7 @@ typedef ConfigurationPart<MCTHoliday> *             MCTHolidaySPtr;
 typedef ConfigurationPart<MCTLoadProfileChannels> * MCTLoadProfileChannelsSPtr;
 typedef ConfigurationPart<MCTRelays> *              MCTRelaysSPtr;
 typedef ConfigurationPart<MCTPrecannedTable> *      MCTPrecannedTableSPtr;
+typedef ConfigurationPart<MCTSystemOptions> *       MCTSystemOptionsSPtr;
 #else
 typedef shared_ptr< ConfigurationPart<MCTAddressing> >          MCTAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<MCT_TOU> >                MCT_TOU_SPtr;
@@ -268,6 +276,7 @@ typedef shared_ptr< ConfigurationPart<MCTHoliday> >             MCTHolidaySPtr;
 typedef shared_ptr< ConfigurationPart<MCTLoadProfileChannels> > MCTLoadProfileChannelsSPtr;
 typedef shared_ptr< ConfigurationPart<MCTRelays> >              MCTRelaysSPtr;
 typedef shared_ptr< ConfigurationPart<MCTPrecannedTable> >      MCTPrecannedTableSPtr;
+typedef shared_ptr< ConfigurationPart<MCTSystemOptions> >       MCTSystemOptionsSPtr;
 #endif
 
 }//Config
