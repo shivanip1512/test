@@ -277,9 +277,18 @@ long CtiCCSubstationBusStore::findFeederIDbyCapBankID(long capBankId)
     return (iter == _capbank_feeder_map.end() ? NULL : iter->second);
 }
 
-long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId)
+long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 { 
     multimap< long, long >::iterator iter = _altsub_sub_idmap.find(altSubId);
+    if (iter == _altsub_sub_idmap.end())
+    {
+        return NULL;
+    }
+    while (index > 1)
+    {
+        iter++;
+        index--;
+    }
     return (iter == _altsub_sub_idmap.end() ? NULL : iter->second);
 
 }
@@ -2504,7 +2513,6 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     {
         INT logId = CCEventLogIdGen();
-        INT seqId;
         
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
@@ -2537,7 +2545,6 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
             }
 
             return inserter.status().isValid();
-        
     }
 }
 
@@ -4282,16 +4289,40 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 }
                 deleteFeeder(feederToDelete->getPAOId());
             }
-            
-            list <LONG> *pointIds  = subToDelete->getPointIds();
-            while (!pointIds->empty())
-            {
-                LONG pointid = pointIds->front();
-                pointIds->pop_front();
-                _pointid_subbus_map.erase(pointid);
-            }
-            subToDelete->getPointIds()->clear();
 
+           try
+           {
+
+               //Delete pointids on this sub
+               list <LONG> *pointIds  = subToDelete->getPointIds();
+               while (!pointIds->empty())
+               {
+                   LONG pointid = pointIds->front();
+                   pointIds->pop_front();
+                   int ptCount = getNbrOfSubBusesWithPointID(pointid);
+                   if (ptCount > 1)
+                   {
+                       multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
+                       while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
+                       {
+                           if (((CtiCCSubstationBusPtr)iter1->second)->getPAOId() == subToDelete->getPAOId())
+                           {
+                               _pointid_subbus_map.erase(iter1);
+                               break;
+                           }
+                           iter1++;
+                       }   
+                   } 
+                   else
+                       _pointid_subbus_map.erase(pointid);
+               }
+               subToDelete->getPointIds()->clear();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
             //DUAL BUS Alt Sub deletion...
             try
             {
@@ -4328,7 +4359,8 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                             _altsub_sub_idmap.erase(iter);
                             iter = _altsub_sub_idmap.end();
                         }
-                        iter++;
+                        else
+                            iter++;
                     }
                
                 }
@@ -4617,7 +4649,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     default:
                         break;
                 }
-
+                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " DBChange " << endl;

@@ -129,6 +129,7 @@ public:
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
     BOOL updateVerificationState(void);
+    CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 
     //int getAssumedOrigVerificationState();
     CtiCCCapBank& initVerificationControlStatus();

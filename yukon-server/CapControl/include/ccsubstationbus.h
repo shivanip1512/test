@@ -38,6 +38,18 @@ using std::list;
 
 typedef std::vector<CtiCCFeeder*> CtiFeeder_vec;
 
+enum CtiCCMultiBusState 
+{
+    IDLE = 0,
+    NEW_MULTI_POINT_DATA_RECEIVED,
+    PRE_OP_SCAN_PENDING,
+    EVALUATE_SUB,
+    SELECT_BANK,
+    OPERATION_SENT_WAIT,
+    POST_OP_SCAN_PENDING,
+    RECORD_ADAPTIVE_VOLTAGE,
+};
+              
 class CtiCCSubstationBus : public RWCollectable
 {
 
@@ -119,11 +131,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getPostOperationMonitorPointScanFlag() const;
     LONG getAltDualSubId() const;
     DOUBLE getAltSubControlValue() const;
+    void getAllAltSubValues(DOUBLE &volt, DOUBLE &var, DOUBLE &watt);
     LONG getSwitchOverPointId() const;        
     BOOL getSwitchOverStatus() const;          
     BOOL getDualBusEnable() const;
     LONG getEventSequence() const;
+    BOOL getReEnableBusFlag() const;
     BOOL getMultiMonitorFlag() const;
+    int getMultiBusCurrentState() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -194,12 +209,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setSwitchOverStatus(BOOL status);
     CtiCCSubstationBus& setDualBusEnable(BOOL flag);
     CtiCCSubstationBus& setEventSequence(LONG eventSeq);
+    CtiCCSubstationBus& setReEnableBusFlag(BOOL flag);
     CtiCCSubstationBus& setMultiMonitorFlag(BOOL flag);
+    CtiCCSubstationBus& setMultiBusCurrentState(int state);
+    CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
-    BOOL analyzeBus(const CtiTime& currentDateTime);
-    BOOL analyzeMultiPointBus(const CtiTime& currentDateTime);
+    void analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL performActionMultiPointBus(const CtiTime& currentDateTime);
     BOOL isVarCheckNeeded(const CtiTime& currentDateTime);
     BOOL isConfirmCheckNeeded();
@@ -220,7 +237,18 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static DOUBLE calculateKVARSolution(const string& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
 
     BOOL checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    void analyzeVoltDataAndRefreshIfNeeded();
+    void voltControlProcess();
+    void updatePointResponsePreOpValues();
+    void updatePointResponseDeltas();
+    BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
+    BOOL isScanFlagSet();
+    ULONG getMonitorPointScanTime();
+    void scanAllMonitorPoints();
+    BOOL isBusAnalysisNeeded(const CtiTime& currentDateTime);
+    BOOL isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
+    BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
+    void voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
+    BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
 
     BOOL isBusPerformingVerification();
     BOOL isBusReadyToStartVerification();
@@ -285,6 +313,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     static const string KVARControlUnits;
     static const string VoltControlUnits;
+    static const string MultiVoltControlUnits;
+    static const string MultiVoltVarControlUnits;
     static const string PF_BY_KVARControlUnits;
     static const string PF_BY_KQControlUnits;
     //static int PeakState;
@@ -371,10 +401,17 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _preOperationMonitorPointScanFlag;
     BOOL _operationSentWaitFlag;
     BOOL _postOperationMonitorPointScanFlag;
+    BOOL _reEnableBusFlag;
 
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;
+
+
+    int _currentMultiBusState;
+    DOUBLE _altSubVoltVal;
+    DOUBLE _altSubVarVal;
+    DOUBLE _altSubWattVal;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
@@ -385,7 +422,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     string doubleToString(DOUBLE doubleVal);
     std::list <long> _pointIds;
     //vector <long> _multipleMonitorPoints;
-    std::vector <CtiCCMonitorPoint> _multipleMonitorPoints;
+    std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
+
+
+    std::map <long, CtiCCMonitorPointPtr> _mpid_mp_map;
+    std::map <long, CtiCCPointResponsePtr> _cbid_prmap_map;
+
 
 };
 

@@ -117,7 +117,7 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
 
-    long findSubIDbyAltSubID(long altSubId);
+    long findSubIDbyAltSubID(long altSubId, int index);
 
     void insertItemsIntoMap(int mapType, long* first, long* second);
     void removeItemsFromMap(int mapType, long first);

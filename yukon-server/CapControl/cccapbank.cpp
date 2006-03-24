@@ -979,6 +979,24 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
    return *this;
 }
 
+CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
+{
+    for (LONG j=0; j<getPointResponse().size(); j++)
+    {
+        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)getPointResponse()[j];
+
+        if (point->getPointId() == pResponse->getPointId())
+        {
+            pResponse->setDelta( ( (pResponse->getDelta()*(point->getNInAvg() -1)) + 
+                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) / 
+                                  point->getNInAvg());
+            break;
+        }
+    }
+    return *this;
+}
+
+
 /*---------------------------------------------------------------------------
     setControlStatus
 

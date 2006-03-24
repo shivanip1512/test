@@ -151,7 +151,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
         if( subID == currentSubstationBus->getPAOId() )
         {
-            //if (!currentSubstationBus->getDisableFlag())
+            if (!currentSubstationBus->getDisableFlag())
             {    
                 if (!currentSubstationBus->getVerificationFlag())
                 {
@@ -162,7 +162,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                    //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
                     //string text("Substation Bus Verification Enabled");
                     string text = currentSubstationBus->getVerificationString();
-                    text += " Enabled";
+                    text += " Starting";
                     string additional("Bus: ");
                     additional += currentSubstationBus->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
@@ -199,9 +199,10 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                         currentSubstationBus->setEventSequence(seqId);
                         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
-                        CtiCCExecutorFactory f;
+                        /*CtiCCExecutorFactory f;
                         CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
                         executor->Execute();
+                        */
                     }
                 }
             }
@@ -258,7 +259,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
             //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
             //string text("Substation Bus Verification Disabled");
             string text = currentSubstationBus->getVerificationString();
-            text += " Disabled";
+            text += " Stopping";
             string additional("Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
@@ -288,6 +289,7 @@ void CtiCCCommandExecutor::EnableSubstationBus()
         if( subID == currentSubstationBus->getPAOId() )
         {
             currentSubstationBus->setDisableFlag(FALSE);
+            currentSubstationBus->setReEnableBusFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             store->UpdateBusDisableFlagInDB(currentSubstationBus);
             string text = string("Substation Bus Enabled");
@@ -324,6 +326,7 @@ void CtiCCCommandExecutor::DisableSubstationBus()
         if( subID == currentSubstationBus->getPAOId() )
         {
             currentSubstationBus->setDisableFlag(TRUE);
+            currentSubstationBus->setReEnableBusFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             store->UpdateBusDisableFlagInDB(currentSubstationBus);
             string text = string("Substation Bus Disabled");

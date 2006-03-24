@@ -26,6 +26,8 @@ ULONG _CC_DEBUG;
 BOOL _IGNORE_NOT_NORMAL_FLAG;
 ULONG _SEND_TRIES;
 BOOL _USE_FLIP_FLAG;
+ULONG _POINT_AGE;
+ULONG _SCAN_WAIT_EXPIRE;
 
 CtiDate gInvalidCtiDate = CtiTime(1990,1,1);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -214,6 +216,45 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+
+
+    _POINT_AGE = 3;  //3 minute
+
+    strcpy(var, "CAP_CONTROL_POINT_AGE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _POINT_AGE = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _SCAN_WAIT_EXPIRE = 1;  //1 minute
+
+    strcpy(var, "CAP_CONTROL_POINT_AGE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _SCAN_WAIT_EXPIRE = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+
 
     _quit = false;
 }

@@ -154,7 +154,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPostOperationMonitorPointScanFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
-    
+    int getMultiBusCurrentState() const;
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
 
@@ -230,6 +230,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
+    CtiCCFeeder& setMultiBusCurrentState(int state);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
 
@@ -246,6 +247,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
     BOOL checkMaxDailyOpCountExceeded();
+    void voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
+    void updatePointResponsePreOpValues();
+    void updatePointResponseDeltas();
+    BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
+    BOOL isScanFlagSet();
+    ULONG getMonitorPointScanTime();
+    BOOL scanAllMonitorPoints();
+    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
+    BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
 
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
 
@@ -367,7 +378,7 @@ private:
     LONG _currentVerificationCapBankId;
     LONG _currentCapBankToVerifyAssumedOrigState;
     
-
+    int _currentMultiBusState;
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
@@ -376,6 +387,8 @@ private:
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
     std::list <long> _pointIds;
+    vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
+
 };
 
 
