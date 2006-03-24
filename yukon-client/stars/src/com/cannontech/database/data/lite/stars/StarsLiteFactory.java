@@ -71,6 +71,10 @@ public class StarsLiteFactory {
 			lite = new LiteStarsLMHardware();
 			setLiteStarsLMHardware( (LiteStarsLMHardware) lite, (com.cannontech.database.data.stars.hardware.LMHardwareBase) db );
 		}
+		else if (db instanceof com.cannontech.database.data.stars.hardware.MeterHardwareBase) {
+			lite = new LiteMeterHardwareBase();
+			setLiteMeterHardwareBase( (LiteMeterHardwareBase) lite, (com.cannontech.database.data.stars.hardware.MeterHardwareBase) db );
+		}
         else if (db instanceof com.cannontech.database.data.stars.hardware.MeterHardwareBase) {
             lite = new LiteInventoryBase();
             setLiteInventoryBase( (LiteInventoryBase) lite, ((com.cannontech.database.data.stars.hardware.MeterHardwareBase)db).getInventoryBase() );
@@ -228,6 +232,13 @@ public class StarsLiteFactory {
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
 		liteHw.setConfigurationID( hw.getLMHardwareBase().getConfigurationID().intValue() );
+	}
+	
+	public static void setLiteMeterHardwareBase(LiteMeterHardwareBase liteHw, com.cannontech.database.data.stars.hardware.MeterHardwareBase hw) {
+		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
+		
+		liteHw.setMeterNumber( hw.getMeterHardwareBase().getMeterNumber() );
+		liteHw.setMeterTypeID( hw.getMeterHardwareBase().getMeterTypeID().intValue() );
 	}
 	
 	public static void setLiteLMConfiguration(LiteLMConfiguration liteCfg, com.cannontech.database.data.stars.hardware.LMConfigurationBase cfg) {
@@ -765,6 +776,10 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				setLMHardwareBase( (com.cannontech.database.data.stars.hardware.LMHardwareBase) db, (LiteStarsLMHardware) lite );
 				break;
+			case LiteTypes.STARS_METERHARDWAREBASE:
+				db = new com.cannontech.database.data.stars.hardware.MeterHardwareBase();
+				setMeterHardwareBase( (com.cannontech.database.data.stars.hardware.MeterHardwareBase) db, (LiteMeterHardwareBase) lite );
+				break;				
 			case LiteTypes.YUKON_USER:
 				db = new com.cannontech.database.db.user.YukonUser();
 				setYukonUser( (com.cannontech.database.db.user.YukonUser) db, (com.cannontech.database.data.lite.LiteYukonUser) lite );
@@ -930,7 +945,15 @@ public class StarsLiteFactory {
 		hw.getLMHardwareBase().setRouteID( new Integer(liteHw.getRouteID()) );
 		hw.getLMHardwareBase().setConfigurationID( new Integer(liteHw.getConfigurationID()) );
 	}
-	
+
+	public static void setMeterHardwareBase(com.cannontech.database.data.stars.hardware.MeterHardwareBase hw, LiteMeterHardwareBase liteHw) {
+		setInventoryBase( hw.getInventoryBase(), liteHw );
+		
+		hw.setInventoryID( hw.getInventoryBase().getInventoryID() );
+		hw.getMeterHardwareBase().setMeterNumber( liteHw.getMeterNumber() );
+		hw.getMeterHardwareBase().setMeterTypeID( new Integer(liteHw.getMeterTypeID()) );
+	}
+
 	public static void setYukonUser(com.cannontech.database.db.user.YukonUser user, com.cannontech.database.data.lite.LiteYukonUser liteUser) {
 		user.setUserID( new Integer(liteUser.getUserID()) );
 		user.setUsername( liteUser.getUsername() );
@@ -1792,6 +1815,19 @@ public class StarsLiteFactory {
 			
 			starsInv.setLMHardware( hw );
 		}
+/*		else if (liteInv instanceof LiteMeterHardwareBase ) {	//TODO - Not sure how to handle this in Stars XML objects!  SN 03/24/2006
+			LiteMeterHardwareBase liteHw = (LiteMeterHardwareBase) liteInv;
+//			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
+//					YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()),
+//					DeviceType.class) );
+			
+			LMHardware hw = new LMHardware();
+			hw.setRouteID( liteHw.getRouteID() );
+			hw.setManufacturerSerialNumber( StarsUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
+			
+			starsInv.setLMHardware( hw );
+		}
+		*/		
 		else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT),
