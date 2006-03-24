@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
@@ -141,7 +142,10 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 					workOrderBase.getWorkOrderBase().setDateReported(eventDate);	//set the work order DateReported with the most recent event date.
 					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
-						EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
+					{
+		           		EventWorkOrder eventWorkOrder  = (EventWorkOrder)EventUtils.logSTARSEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
+		           		workOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
+					}
 					if ( VersionTools.crsPtjIntegrationExists())
 					{
 						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
