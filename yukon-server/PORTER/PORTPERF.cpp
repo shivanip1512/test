@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2006/03/24 15:58:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,7 +154,7 @@ VOID PerfUpdateThread (PVOID Arg)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
                     }
-    
+
                     CtiThreadRegData *data;
                     data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
                     ThreadMonitor.tickle( data );
@@ -193,24 +193,12 @@ VOID PerfUpdateThread (PVOID Arg)
         }
 
 
-#if 1
         statisticsRecord();
 
         {
             CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
             gDeviceStatMap.clear();
         }
-#else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        {
-            CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
-            gDeviceStatMap.clear();
-        }
-
-#endif
     }
     catch(...)
     {
