@@ -37,6 +37,7 @@ import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
@@ -386,7 +387,10 @@ public class WorkOrderManager extends HttpServlet {
 			ArrayList orderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
 			orderIDs = new int[ orderList.size() ];
 			for (int i = 0; i < orderList.size(); i++)
-				orderIDs[i] = ((LiteWorkOrderBase)orderList.get(i)).getOrderID();
+				if (searchMembers)
+					orderIDs[i] = ((LiteWorkOrderBase)((Pair)orderList.get(i)).getFirst()).getOrderID();
+				else
+					orderIDs[i] = ((LiteWorkOrderBase)orderList.get(i)).getOrderID();
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
 			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
