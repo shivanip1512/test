@@ -66,6 +66,11 @@ public class InventoryUtils {
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ||
 				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC);
 	}
+
+	public static boolean isNonYukonMeter(int categoryID) {
+		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
+		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
+	}
 	
 	public static boolean isMCT(int categoryID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
