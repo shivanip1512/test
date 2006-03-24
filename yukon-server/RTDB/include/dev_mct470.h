@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/03/23 21:23:11 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2006/03/24 15:21:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ public:
         MCT470_Sspec        = 1030,
         MCT470_SspecRevMin  =    5,  //  rev e
         MCT470_SspecRevMax  =   15,  //  rev o is max for now
+        MCT470_SspecRev_IED_Zero_Write_Min    =   13,
 
         MCT470_Memory_ChannelOffset = 0x1a,
 
@@ -283,6 +284,7 @@ private:
     static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
 
     CtiTableDeviceMCTIEDPort _iedPort;
+    CtiTime                  _iedTime;
 
     enum IED_PointOffsets
     {
@@ -296,6 +298,19 @@ private:
         MCT470_PointOffset_VoltsPhaseA = 41,
         MCT470_PointOffset_VoltsPhaseB = 42,
         MCT470_PointOffset_VoltsPhaseC = 43,
+    };
+
+    enum IED_Types
+    {
+        NoIEDType          = 0x00,
+        LandisGyrS4        = 0x10,
+        AlphaA1            = 0x20,
+        AlphaPowerPlus     = 0x30,
+        GeneralElectricKV  = 0x40,
+        GeneralElectricKV2 = 0x50,
+        Sentinel           = 0x60,
+
+        IED_Mask           = 0xF0
     };
 
     long getLoadProfileInterval( unsigned channel );
@@ -341,6 +356,7 @@ public:
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
+    virtual INT executeScan (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
     int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList);
