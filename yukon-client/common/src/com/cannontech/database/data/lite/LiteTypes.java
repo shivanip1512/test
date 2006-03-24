@@ -75,4 +75,5 @@ public final class LiteTypes
 	public final static int STARS_THERMOSTAT_SCHEDULE = 126;
 	public final static int STARS_LMCONFIGURATION = 127;
 	public final static int STARS_SERVICE_COMPANY_DESIGNATION_CODE = 128;
+	public final static int STARS_METERHARDWAREBASE = 129;
 }
