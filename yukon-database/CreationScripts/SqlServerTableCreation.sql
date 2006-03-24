@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/22/2006 5:08:32 PM                         */
+/* Created on:     3/23/2006 3:28:10 PM                         */
 /*==============================================================*/
 
 
@@ -2251,6 +2251,7 @@ insert into billingfileformats values( 15, 'NCDC-Handheld');
 insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
 insert into billingfileformats values( -18, 'ATS');
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key  (FormatID)
 go
