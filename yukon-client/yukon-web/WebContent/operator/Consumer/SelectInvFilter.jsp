@@ -9,13 +9,15 @@
  	<%pageContext.setAttribute("filterDeviceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE).toString());%>
  	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY).toString());%>
  	<%pageContext.setAttribute("filterDeviceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS).toString());%>
+ 	<%pageContext.setAttribute("filterApplianceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE).toString());%>
  	<%pageContext.setAttribute("filterDeviceConfig", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG).toString());%>
  	<%pageContext.setAttribute("filterDeviceMember", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER).toString());%>
  	<%pageContext.setAttribute("filterDeviceWarehouse", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
+	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
+	<%pageContext.setAttribute("filterConsumptionType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
-
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
 	<div class="headerbar">
@@ -161,7 +163,7 @@
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   	</td>
                   	<td width="75" align="right"> 
-                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='Inventory.jsp'">
+                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='SerialNumber.jsp?action=New'">
                   	</td>
               	</tr>
         	</table>
