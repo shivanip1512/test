@@ -19,9 +19,11 @@ import allaire.taglib.TransactionBeginException;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -38,9 +40,13 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
@@ -54,6 +60,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class WorkOrderBean {
 	
+	private boolean manageMembers = false;
 	public static final int SORT_ORDER_ASCENDING = 0;
 	public static final int SORT_ORDER_DESCENDING = 1;
 	
@@ -246,6 +253,34 @@ public class WorkOrderBean {
 		ArrayList<LiteWorkOrderBase> workOrders = null;
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
 			workOrders = searchResults;
+		/*else if (isManageMembers()) {
+			if (getMember() >= 0) {
+				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
+				ArrayList inventory = null;
+				if (getSearchBy() == 0)
+					inventory = member.loadAllInventory( true );
+				else
+					inventory = InventoryManagerUtil.searchInventory( member, getSearchBy(), getSearchValue(), false );
+				
+				hardwares = new ArrayList();
+				for (int i = 0; i < inventory.size(); i++)
+					hardwares.add( new Pair(inventory.get(i), member) );
+			}
+			else if (getSearchBy() == 0) {
+				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
+				hardwares = new ArrayList();
+				
+				for (int i = 0; i < members.size(); i++) {
+					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
+					ArrayList inventory = member.loadAllInventory( true );
+					for (int j = 0; j < inventory.size(); j++)
+						hardwares.add( new Pair(inventory.get(j), member) );
+				}
+			}
+			else {
+				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), true );
+			}
+		}*/
 		else
 			workOrders = getEnergyCompany().loadAllWorkOrders( true );
 		
@@ -410,6 +445,14 @@ public class WorkOrderBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
+		/*StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		
+		setManageMembers(false);
+        if(AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
+        		(getEnergyCompany().getChildren().size() > 0)){
+                setManageMembers(true);
+		}*/		
+		
 		ArrayList soList = getWorkOrderList();
 		if (soList == null || soList.size() == 0)
 			return "<p class='ErrorMsg'>No service order found.</p>";
@@ -459,14 +502,14 @@ public class WorkOrderBean {
     		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
             htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.iterateForm.checkWorkOrder;").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
             htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
             htmlBuf.append("}").append(LINE_SEPARATOR);
             
             htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray = document.iterateForm.checkWorkOrder;").append(LINE_SEPARATOR);
+            htmlBuf.append("checkBoxArray = document.MForm.checkWorkOrder;").append(LINE_SEPARATOR);
             htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
             htmlBuf.append("}").append(LINE_SEPARATOR);
@@ -809,5 +852,13 @@ public class WorkOrderBean {
 
 	public void setServiceType(int serviceType) {
 		this.serviceType = serviceType;
+	}
+
+	public boolean isManageMembers() {
+		return manageMembers;
+	}
+
+	public void setManageMembers(boolean manageMembers) {
+		this.manageMembers = manageMembers;
 	}
 }
