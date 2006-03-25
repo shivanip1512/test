@@ -1546,6 +1546,9 @@ public class InventoryManager extends HttpServlet {
         currentMeter.getInventoryBase().setDeviceLabel(req.getParameter("DeviceLabel"));
         currentMeter.getInventoryBase().setVoltageID(new Integer(req.getParameter("Voltage")));
         currentMeter.getInventoryBase().setNotes(req.getParameter("Notes"));
+        YukonListEntry categoryEntry = mBean.getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
+        if( categoryEntry != null)
+        	currentMeter.getInventoryBase().setCategoryID(categoryEntry.getEntryID());
         
         try
         {

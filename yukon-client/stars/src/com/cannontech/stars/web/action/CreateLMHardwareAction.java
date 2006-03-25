@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -318,6 +319,12 @@ public class CreateLMHardwareAction implements ActionBase {
 			StarsFactory.setInventoryBase( invDB, createHw );
 			
 			int categoryID = InventoryUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
+			if( categoryID == 0 && createHw.getCategory().equalsIgnoreCase("Non Yukon Meter"))
+			{
+				 YukonListEntry categoryEntry = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
+			     if( categoryEntry != null)
+			    	 categoryID = categoryEntry.getEntryID();
+			}
 			invDB.setCategoryID( new Integer(categoryID) );
 			
 			if (liteAcctInfo != null)
