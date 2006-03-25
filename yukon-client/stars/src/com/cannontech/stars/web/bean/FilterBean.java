@@ -1,23 +1,25 @@
 package com.cannontech.stars.web.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.stars.util.ECUtils;
 
 
 public class FilterBean 
@@ -41,7 +43,18 @@ public class FilterBean
     private ArrayList assignedFilters = new ArrayList();
     private YukonListEntry defaultFilterSelection;
     private String filterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
-    
+
+	private class CodeComparator implements Comparator, Serializable
+	{
+		public int compare(Object o1, Object o2){
+	        ServiceCompanyDesignationCode code1 = (ServiceCompanyDesignationCode)o1;
+	        ServiceCompanyDesignationCode code2 = (ServiceCompanyDesignationCode)o1;
+		    String thisVal = code1.getDesignationCodeValue();
+		    String anotherVal = code2.getDesignationCodeValue();
+			return (thisVal.compareToIgnoreCase(anotherVal));
+		}
+	};
+	private CodeComparator codeComparator = new CodeComparator();
     /**
      * Need further filters:
      * --General location (need to figure out how to work new Warehouse idea into this)
@@ -108,6 +121,9 @@ public class FilterBean
         	availableDesignationCodes = new ArrayList<ServiceCompanyDesignationCode>();
         	for(int i = 0; i < getAvailableServiceCompanies().size(); i++)
         		availableDesignationCodes.addAll(getAvailableServiceCompanies().get(i).getDesignationCodes());
+        	
+        	
+        	Collections.sort(availableDesignationCodes, codeComparator);
         }
         return availableDesignationCodes;
     }
