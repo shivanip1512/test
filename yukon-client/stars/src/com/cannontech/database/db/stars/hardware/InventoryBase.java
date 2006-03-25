@@ -432,7 +432,9 @@ public class InventoryBase extends DBPersistent {
 	 * @return String
 	 */
 	public String getDeviceLabel() {
-		return deviceLabel;
+		if(deviceLabel == null)
+		    deviceLabel = "";
+        return deviceLabel;
 	}
 
 	/**
