@@ -1685,21 +1685,25 @@ public class InventoryManager extends HttpServlet {
             selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
         
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        ArrayList<Pair> inventoryPairList = new ArrayList<Pair>(); 
+        ArrayList inventoryList = new ArrayList(); 
         for ( int i = 0; i < iBean.getInventoryList().size(); i ++)
         {
-            Pair inventoryPair = (Pair)iBean.getInventoryList().get(i);
-            for (int j = 0; j < selectionIDs.length; j++)
-            {
-                if( ((LiteInventoryBase)inventoryPair.getFirst()).getInventoryID() == selectionIDs[j])
-                {
-                    inventoryPairList.add(inventoryPair);
-                    break;
-                }
-            }
+              LiteInventoryBase liteInvBase = null;
+              if (iBean.getInventoryList().get(i) instanceof Pair)
+                    liteInvBase = (LiteInventoryBase)((Pair)iBean.getInventoryList().get(i)).getFirst();
+              else if( iBean.getInventoryList().get(i) instanceof LiteInventoryBase)
+                    liteInvBase = (LiteInventoryBase)iBean.getInventoryList().get(i);
+        for (int j = 0; j < selectionIDs.length; j++)
+              {
+                    if( liteInvBase.getInventoryID() == selectionIDs[j])
+                    {
+                          inventoryList.add(iBean.getInventoryList().get(i));
+                          break;
+                    }
+              }
         }
-        
-        iBean.setInventoryList(inventoryPairList);
+                
+        iBean.setInventoryList(inventoryList);
         iBean.setNumberOfRecords(String.valueOf((iBean.getInventoryList().size())));
         //session.setAttribute("inventoryBean", iBean);
         

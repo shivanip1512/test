@@ -131,9 +131,19 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 		
 		for (int i = 0; i < hwList.size(); i++) 
         {
-			Pair pair = (Pair)hwList.get(i);
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware)pair.getFirst();
-			LiteStarsEnergyCompany oldMember = (LiteStarsEnergyCompany)pair.getSecond();
+            LiteStarsLMHardware liteHw = null;
+            LiteStarsEnergyCompany oldMember = null;
+            if( hwList.get(i) instanceof Pair )
+            {
+                  liteHw = (LiteStarsLMHardware)((Pair)hwList.get(i)).getFirst();
+                  oldMember = (LiteStarsEnergyCompany)((Pair)hwList.get(i)).getSecond();
+            }
+            else if (hwList.get(i) instanceof LiteStarsLMHardware)
+            {
+                  liteHw = (LiteStarsLMHardware)hwList.get(i);
+                  oldMember = currentCompany;
+            }
+            
             LiteStarsEnergyCompany newMember = null;
             if(newEnergyCompanyID == null || newEnergyCompanyID.intValue() == oldMember.getLiteID())
                 newMember = oldMember;
@@ -164,7 +174,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                     hasChanged = true;
 				}
                 
-                /**
+                /**TODO
                  * We might have a problem here if the selected are not all in the same energy company.
                  * Service company IDs would then not be valid for all of them.
                  */
