@@ -16,6 +16,7 @@ public final class VersionTools
 	public static final String COMMON_JAR = "common.jar";
 	
 	private static Boolean crsPtjIntegration = null;
+    private static Boolean staticLoadGroupMapping = false;
 	public static String yukonVersion = null;
 	private static CTIDatabase db_obj = null;
 	
@@ -146,6 +147,20 @@ public static boolean crsPtjIntegrationExists()
 	return crsPtjIntegration;
 }
 
+/**
+ * Check to see if a static mapping table for STARS load group assignment exists
+ * This is current only used in the Xcel SAM deployment of STARS
+ * @return boolean
+ */
+public static boolean staticLoadGroupMappingExists()
+{
+    if( staticLoadGroupMapping == null)
+    //case sensitive in Oracle (very important)
+    /*I don't think that is still true today*/
+        staticLoadGroupMapping = new Boolean(VersionTools.tableExists("STATICLOADGROUPMAPPING"));
+    return staticLoadGroupMapping;
+}
+
 public static void main ( String[] args )
 {
 	starsExists();
@@ -221,6 +236,14 @@ public synchronized final static java.lang.String getYUKON_VERSION()
 	}
 	
 	return yukonVersion;
+}
+
+public static Boolean getStaticLoadGroupMapping() {
+    return staticLoadGroupMapping;
+}
+
+public static void setStaticLoadGroupMapping(Boolean staticLoadGroupMapping) {
+    VersionTools.staticLoadGroupMapping = staticLoadGroupMapping;
 }
 
 }
