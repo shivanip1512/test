@@ -6,6 +6,11 @@
  */
 package com.cannontech.analysis.data.stars;
 
+import java.util.ArrayList;
+
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
+
 /**
  * @author yao
  *
@@ -14,59 +19,45 @@ package com.cannontech.analysis.data.stars;
  */
 public class WorkOrder {
 	
-	private int energyCompanyID = -1;
-	private int orderID = 0;
-	private int inventoryID = 0;
+	private LiteWorkOrderBase liteWorkOrderBase = null;
+//	private ArrayList<LiteInventoryBase> liteInventories = null;
+	private LiteInventoryBase liteInventoryBase = null;
 	
 	public WorkOrder() {
 	}
-	
-	public WorkOrder(int energyCompanyID, int orderID, int inventoryID) {
-		this.energyCompanyID = energyCompanyID;
-		this.orderID = orderID;
-		this.inventoryID = inventoryID;
+
+	public WorkOrder(LiteWorkOrderBase liteWorkOrderBase_) {
+		this.liteWorkOrderBase = liteWorkOrderBase_;
 	}
 
-	/**
-	 * @return
-	 */
-	public int getEnergyCompanyID() {
-		return energyCompanyID;
+	public WorkOrder(LiteWorkOrderBase liteWorkOrderBase_, LiteInventoryBase liteInventoryBase_) {
+		this.liteWorkOrderBase = liteWorkOrderBase_;
+		this.liteInventoryBase = liteInventoryBase_;
 	}
 
-	/**
-	 * @return
-	 */
-	public int getInventoryID() {
-		return inventoryID;
+	public LiteWorkOrderBase getLiteWorkOrderBase() {
+		return liteWorkOrderBase;
 	}
 
-	/**
-	 * @return
-	 */
-	public int getOrderID() {
-		return orderID;
+	public void setLiteWorkOrderBase(LiteWorkOrderBase liteWorkOrderBase) {
+		this.liteWorkOrderBase = liteWorkOrderBase;
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setEnergyCompanyID(int i) {
-		energyCompanyID = i;
+	public LiteInventoryBase getLiteInventoryBase() {
+		return liteInventoryBase;
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setInventoryID(int i) {
-		inventoryID = i;
+	public void setLiteInventoryBase(LiteInventoryBase liteInventoryBase) {
+		this.liteInventoryBase = liteInventoryBase;
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setOrderID(int i) {
-		orderID = i;
+	/*public ArrayList<LiteInventoryBase> getLiteInventories() {
+		if( liteInventories == null)
+			liteInventories = new ArrayList<LiteInventoryBase>();
+		return liteInventories;
 	}
 
+	public void setLiteInventories(ArrayList<LiteInventoryBase> liteInventories) {
+		this.liteInventories = liteInventories;
+	}*/
 }
