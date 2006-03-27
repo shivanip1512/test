@@ -16,7 +16,7 @@ public final class VersionTools
 	public static final String COMMON_JAR = "common.jar";
 	
 	private static Boolean crsPtjIntegration = null;
-    private static Boolean staticLoadGroupMapping = false;
+    private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
 	private static CTIDatabase db_obj = null;
 	
