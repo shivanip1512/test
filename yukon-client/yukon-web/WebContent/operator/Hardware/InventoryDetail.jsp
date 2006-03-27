@@ -1,9 +1,13 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<%@ page import="com.cannontech.database.db.stars.hardware.Warehouse" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
+ 
 <%
 	int invID = Integer.parseInt(request.getParameter("InvId"));
 	LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
@@ -128,6 +132,7 @@ function validate(form) {
                 <td><a href="<%= referer %>" class="Link2" onclick="return warnUnsavedChanges()">[Back 
                   to List]</a></td>
               </tr>
+              
 <%  } %>
             </table>
 <% } %>
@@ -335,6 +340,24 @@ function validate(form) {
                                   </select>
                                 </td>
                               </tr>
+                              <!-- <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Warehouse:</div>
+                                </td>
+                                <td width="210"> 
+                                  <select name="Warehouse" onchange="setContentChanged(true)">
+                                    <%
+	List<Warehouse> warehouses = Warehouse.getAllWarehousesForEnergyCompany(liteEC.getEnergyCompanyID().intValue());
+	for (int i = 0; i < warehouses.size(); i++) {
+		String selected = (Warehouse.getWarehouseFromInventoryID(inventory.getInventoryID()) > 0) ? "selected" : "";
+%>
+                                    <option value="<%= warehouses.get(i).getWarehouseID() %>" <%= selected %>><%= warehouses.get(i).getWarehouseName() %></option>
+                                    <%
+	}
+%>
+                                  </select>
+                                </td>
+                              </tr>-->
                               <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Notes:</div>
@@ -355,9 +378,19 @@ function validate(form) {
                             <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
                               <tr> 
                                 <td class="MainText">Location: 
-<% if (liteInv.getAccountID() == 0) { %>
-                                  Warehouse
-<% } else { %>
+<% if (liteInv.getAccountID() == 0) 
+{ 
+   	 String warehouseName = com.cannontech.database.db.stars.hardware.Warehouse.getWarehouseNameFromInventoryID(liteInv.getInventoryID());
+  	 if(warehouseName.length() > 0) 
+  	 {
+     	warehouseName.toString();
+     }
+     else 
+     {%>
+        General Inventory
+<%   }
+} else 
+{ %>
                                   <a href="" onclick="if (warnUnsavedChanges()) {document.cusForm.submit();return false;}">Customer</a>
 <% } %>
                                 </td>
@@ -492,7 +525,11 @@ function validate(form) {
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
+                      <%
+					  	if(!configBean.getHasStaticLoadGroupMapping()) 
+					  	{%> 
                       <input type="submit" name="Config" value="Config">
+                        <% } %>
                       <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
                     </td>
                   </tr>

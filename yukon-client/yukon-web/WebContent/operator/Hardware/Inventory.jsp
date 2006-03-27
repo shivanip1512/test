@@ -43,6 +43,13 @@ function manipulateAll(form)
     form.submit();
 }
 
+function configureAll(form)
+{
+	form.action.value = "ConfigureInventoryResults";
+    form.submit();
+}
+
+
 function applyOrdering(form)
 {
 	form.action.value = "ApplyOrdering";
@@ -127,8 +134,15 @@ function applyOrdering(form)
 					                   		<input type="button" name="ViewSet" value="View All Results" onclick="viewAll(this.form)">
 					               		</c:if>
 					               	</td>
-					               	<td width="500"> 
+					               	<td width="200"> 
 					                   	<input type="button" name="Manipulate" value="Manipulate Results" onclick="manipulateAll(this.form)">
+					               	</td>
+					               	<td width="100"> 
+					               	</td>
+					               	<td width="200"> 
+					                   	<div align="right">
+					                   		<input type="button" name="LMConfigure" value="LM Configure" onclick="configureAll(this.form)">
+					               		</div>
 					               	</td>
 				                </tr>
 							</table>

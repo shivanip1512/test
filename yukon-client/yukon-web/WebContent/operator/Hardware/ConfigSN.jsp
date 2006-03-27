@@ -1,6 +1,9 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
+ 
 <%
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
@@ -123,12 +126,6 @@ function addConfigRange(form) {
 	form.submit();
 }
 
-function selectFromInventory(form) {
-	form.attributes["action"].value = "SelectInv.jsp";
-	form.REDIRECT.value = "<%= request.getRequestURI() %>?Add";
-	form.submit();
-}
-
 function removeConfig(form, idx) {
 	if (!confirm("Are you sure you want to remove this configuration entry?"))
 		return;
@@ -178,8 +175,7 @@ function removeAllConfig(form) {
                 <tr> 
                   <td align="center">Add serial numbers to be configured by range 
                     (Add Range),<br>
-                    or by selecting individual devices from the current inventory 
-                    (Select From Inventory).</td>
+                  </td>
                 </tr>
               </table>
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
@@ -235,20 +231,7 @@ function removeAllConfig(form) {
                       </table>
                     </td>
                   </tr>
-                  <tr>
-                    <td align="center" height="20">or</td>
-                  </tr>
-                  <tr>
-                    <td align="center">
-                      <table width="100%" border="1" cellspacing="0" cellpadding="3" bgcolor="CCCCCC">
-                        <tr>
-                          <td align="center"> 
-                            <input type="button" name="AddFromInventory" value="Select From Inventory" onClick="selectFromInventory(this.form)">
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+                  
                 </table>
                 <p> 
                 <table width="64%" border="1" cellspacing="0" cellpadding="5">
@@ -379,6 +362,22 @@ function removeAllConfig(form) {
                         </table>
 <%
 		}
+		else if(configBean.getHasStaticLoadGroupMapping()) 
+		{%>
+			            Group: 
+                        <select id="Group" name="Group" onchange="setContentChanged(true)">
+		                  <option value="0" selected> <c:out value="(none)"/> </option>
+	                      <c:forEach var="group" items="${configBean.allStaticGroups}">
+								<c:if test="${group.loadGroupID == groupID}">
+									<option value='<c:out value="${group.loadGroupID}"/>' selected> <c:out value="${group.loadGroupName}"/> </option>
+								</c:if>	 
+								<c:if test="${group.loadGroupID != groupID}">
+									<option value='<c:out value="${group.loadGroupID}"/>'> <c:out value="${group.loadGroupName}"/> </option>
+								</c:if>	
+					  	  </c:forEach>
+                       </select>
+<%
+		}
 		else {
 			TreeMap map = new TreeMap();
 			for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -413,16 +412,28 @@ function removeAllConfig(form) {
 <p>
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td> 
-                      <div align="right"> 
-                        <input type="submit" name="ConfigNow" value="Configure Now">
-                      </div>
-                    </td>
-                    <td> 
-                      <div align="left"> 
-                        <input type="submit" name="ScheduleConfig" value="Save To Batch">
-                      </div>
-                    </td>
+						<%
+					  	if(configBean.getHasStaticLoadGroupMapping()) 
+					  	{%> 
+		                    <td> 
+		                      <div align="center"> 
+		                        <input type="submit" name="ScheduleConfig" value="Save To Batch">
+		                      </div>
+		                    </td>
+                    	<%} 
+                    	else 
+                    	{%>
+		                    <td> 
+		                      <div align="right"> 
+		                        <input type="submit" name="ConfigNow" value="Configure Now">
+		                      </div>
+		                    </td>
+		                    <td> 
+		                      <div align="left"> 
+		                        <input type="submit" name="ScheduleConfig" value="Save To Batch">
+		                      </div>
+		                    </td>
+		             <% } %>
                   </tr>
                 </table>
 <%

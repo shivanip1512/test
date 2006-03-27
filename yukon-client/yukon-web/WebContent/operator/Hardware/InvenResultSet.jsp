@@ -27,7 +27,7 @@
     		<br clear="all">
     	</div>
     	
-		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="prepareSubmit(this)">
+		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager">
 	    	<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>">
 	    	<table width="80%" border="1" align="center" cellspacing="1" cellpadding="3" class="TableCell">
     			<tr> 
