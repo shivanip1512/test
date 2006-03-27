@@ -1,6 +1,8 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
 	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
@@ -51,6 +53,14 @@ function removeCommands(form) {
 	form.submit();
 }
 
+function fileWriteCommands(form) {
+	if (!validate(form) ||
+		!confirm("Are you sure you want to write the selected switch commands?"))
+		return;
+	form.action.value = "FileWriteSwitchCommands";
+	form.submit();
+}
+
 function validate(form) {
 	var checkboxes = document.getElementsByName("InvID");
 	for (i = 0; i < checkboxes.length; i++) {
@@ -88,10 +98,17 @@ function validate(form) {
               <span class="TitleHeader">ADMINISTRATION - SWITCH COMMANDS</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+              <br>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td align="center" class="MainText">All switch commands will 
-                    be sent out automatically at midnight.</td>
+                  <c:choose>
+						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
+						</c:when>
+	                    <c:otherwise>
+	             			<td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">auto</div>will 
+		                    be sent out automatically at midnight.</td>
+		               	</c:otherwise>
+	             </c:choose> 	
                 </tr>
               </table>
             </div>
@@ -120,16 +137,17 @@ function validate(form) {
               </table>
               <br>
 <% } %>
-              <table width="400" border="1" cellspacing="0" cellpadding="1" align="center">
+              <table width="500" border="1" cellspacing="0" cellpadding="1" align="center">
                 <tr> 
-                  <td class="HeaderCell" width="4%"> 
+                  <td class="HeaderCell" width="5%"> 
                     <input type="checkbox" name="All" value="<%= memberID %>" onclick="selectAll(this.checked)">
                   </td>
-                  <td class="HeaderCell" width="24%">Serial #</td>
-                  <td class="HeaderCell" width="24%">Account #</td>
-                  <td class="HeaderCell" width="24%">Command Type</td>
+                  <td class="HeaderCell" width="19%">Serial #</td>
+                  <td class="HeaderCell" width="19%">Account #</td>
+                  <td class="HeaderCell" width="19%">Command Type</td>
 <% if (showEnergyCompany) { %>
-                  <td class="HeaderCell" width="24%">Member</td>
+                  <td class="HeaderCell" width="19%">Member</td>
+                  <td class="HeaderCell" width="19%">Process</td>
 <% } %>
                 </tr>
 <%
@@ -161,14 +179,15 @@ function validate(form) {
 				accountNo = company.getBriefCustAccountInfo(cmd.getAccountID(), true).getCustomerAccount().getAccountNumber();
 %>
                 <tr> 
-                  <td width="4%" class="TableCell"> 
+                  <td width="5%" class="TableCell"> 
                     <input type="checkbox" name="InvID" value="<%= cmd.getInventoryID() %>" onclick="selectSingle(this.form)">
                   </td>
-                  <td width="24%" class="TableCell"><%= serialNo.toString() %></td>
-                  <td width="24%" class="TableCell"><%= accountNo %></td>
-                  <td width="24%" class="TableCell"><%= cmd.getCommandType() %></td>
+                  <td width="19%" class="TableCell"><%= serialNo.toString() %></td>
+                  <td width="19%" class="TableCell"><%= accountNo %></td>
+                  <td width="19%" class="TableCell"><%= cmd.getCommandType() %></td>
 <% if (showEnergyCompany) { %>
-                  <td width="24%" class="TableCell"><%= company.getName() %></td>
+                  <td width="19%" class="TableCell"><%= company.getName() %></td>
+                  <td width="19%" class="TableCell"><div class="ErrorMsg">Manual<div></td>
 <% } %>
                 </tr>
                 <%
@@ -179,12 +198,21 @@ function validate(form) {
               <br>
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
-                  <td align="right" width="47%"> 
-                    <input type="submit" name="Submit" value="Send">
-                  </td>
-                  <td width="53%"> 
-                    <input type="button" name="Remove" value="Remove" onclick="removeCommands(this.form)">
-                  </td>
+                	<c:choose>
+						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
+							<td align="right" width="50%"> 
+                    			<input type="button" name="fileWrite" value="Write to File" onclick="fileWriteCommands(this.form)">
+                    		</td>
+						</c:when>
+	                    <c:otherwise>
+	             			<td align="right" width="50%"> 
+                    			<input type="submit" name="Submit" value="Send">
+                  			</td>
+		               	</c:otherwise>
+	             	</c:choose> 
+                 	<td width="50%"> 
+                    	<input type="button" name="Remove" value="Remove" onclick="removeCommands(this.form)">
+                  	</td>
                 </tr>
               </table>
               </form>
