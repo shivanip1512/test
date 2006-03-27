@@ -558,7 +558,7 @@ public class YukonToCRSFuncs
 
 	private static int getApplianceCategoryID(int appDefID, LiteStarsEnergyCompany liteStarsEnergyCompany) {
 		int applCatID = 0;
-		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY, true, true);
 		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
 		if( appCatEntry != null)
 		{

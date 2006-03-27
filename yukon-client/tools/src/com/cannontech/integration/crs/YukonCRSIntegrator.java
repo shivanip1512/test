@@ -384,7 +384,7 @@ public final class YukonCRSIntegrator
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(ecID_workOrder);
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, true, true);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
@@ -414,7 +414,7 @@ public final class YukonCRSIntegrator
 	        			com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 	        			contact = YukonToCRSFuncs.createNewContact(contact, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	        			
-	        			YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
+	        			YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
 	        			YukonListEntry ciCustTypeEntry = YukonToCRSFuncs.getCICustTypeEntry(ciCustTypeList, consumType);
 
 	        			//Create a new CustomerAccount data object
@@ -530,7 +530,7 @@ public final class YukonCRSIntegrator
     		}
         	
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, true, true);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
@@ -578,7 +578,7 @@ public final class YukonCRSIntegrator
 	               	if( lmHardwares.size() > 0)
 	               	{
 	               		YukonListEntry devStateEntry = null;
-	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
 		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
@@ -718,7 +718,7 @@ public final class YukonCRSIntegrator
         	{
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(customerAccount.getEnergyCompanyID().intValue());
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, true, true);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, woType);
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
@@ -736,7 +736,7 @@ public final class YukonCRSIntegrator
         	}
 			
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, true, true);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
