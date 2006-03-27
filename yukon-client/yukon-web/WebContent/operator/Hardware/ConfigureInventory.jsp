@@ -42,7 +42,7 @@
 			  	<tr>
 					<c:choose>
 						<c:when test="${configBean.hasStaticLoadGroupMapping}"> 
-						 	<td width> 
+						 	<td> 
 			                	<div align="center"> 
 			                    	<input type="button" name="ScheduleConfig" value="Save To Batch" onclick="scheduleBatch(this.form)">
 			                    </div>
