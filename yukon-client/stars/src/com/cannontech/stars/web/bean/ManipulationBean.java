@@ -32,8 +32,8 @@ public class ManipulationBean
     
     private String actionFilterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
     private int failures = 0;
-    private ArrayList<LiteWorkOrderBase> failedWorkOrders = null;
-    private ArrayList failedSerialNumbers = null;
+//    private ArrayList<LiteWorkOrderBase> failedWorkOrders = null;
+    private ArrayList<String> failedManipulateResults = null;
     private int successes = 0;
     private List<String> actionsApplied = null;
     
@@ -140,12 +140,12 @@ public class ManipulationBean
         this.actionsApplied = actionsApplied;
     }
 
-    public List<String> getFailedSerialNumbers() {
-        return failedSerialNumbers;
+    public List<String> getFailedManipulateResults() {
+        return failedManipulateResults;
     }
 
-    public void setFailedSerialNumbers(ArrayList failedSerialNumbers) {
-        this.failedSerialNumbers = failedSerialNumbers;
+    public void setFailedManipulateResults(ArrayList<String> failedResults) {
+        this.failedManipulateResults = failedResults;
     }
 
     public int getFailures() {
@@ -163,12 +163,4 @@ public class ManipulationBean
     public void setSuccesses(int successes) {
         this.successes = successes;
     }
-
-	public ArrayList<LiteWorkOrderBase> getFailedWorkOrders() {
-		return failedWorkOrders;
-	}
-
-	public void setFailedWorkOrders(ArrayList<LiteWorkOrderBase> failedWorkOrders) {
-		this.failedWorkOrders = failedWorkOrders;
-	}
 }

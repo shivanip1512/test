@@ -47,7 +47,7 @@
 	    			<tr> 
 	        			<td class="HeaderCell" width="100%"><c:out value="${manipBean.failures}"/> failures detected.</td>
 	      			</tr>
-	      			<c:forEach var="serial" items="${manipBean.failedSerialNumbers}">
+	      			<c:forEach var="serial" items="${manipBean.failedManipulateResults}">
 						<tr>		
 							<td>
 								<div align="left"><c:out value="${serial}"/></div>

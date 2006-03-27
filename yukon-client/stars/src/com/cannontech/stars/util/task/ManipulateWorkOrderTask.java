@@ -50,7 +50,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 
 	HttpServletRequest request = null;
 	
-	ArrayList<LiteWorkOrderBase> failedWorkOrders = new ArrayList<LiteWorkOrderBase>();
+	ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, ArrayList<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
@@ -167,7 +167,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		                	Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
 						}
 	                	
-	                	/* Handle config for Release Activation PTJ*/
+	                	// Handle config for Release Activation PTJ
 	                   	if( listEntry != null && listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_RELEASED)
 	                   	{
 	                   		if( workTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION)
@@ -248,7 +248,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			}
 			catch (TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
-				failedWorkOrders.add(liteWorkOrder);
+				failedWorkOrderMessages.add("Work Order#: " + liteWorkOrder.getOrderNumber() + " - " + e.getMessage());
 				numFailure++;
 			}
 			
@@ -263,7 +263,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		status = STATUS_FINISHED;
         mBean.setFailures(numFailure);
         mBean.setSuccesses(numSuccess);
-        mBean.setFailedWorkOrders(failedWorkOrders);
+        mBean.setFailedManipulateResults(failedWorkOrderMessages);
 
         woBean.setWorkOrderList(null);	//force the list to be reloaded!
         

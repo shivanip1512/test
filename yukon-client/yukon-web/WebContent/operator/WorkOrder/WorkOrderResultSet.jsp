@@ -27,30 +27,26 @@
     	
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager" onsubmit="prepareSubmit(this)">
 	    	<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>">
-	    	<table width="80%" border="1" align="center" cellspacing="1" cellpadding="3" class="TableCell">
+	    	<table width="80%" border="1" align="center" cellspacing="0" cellpadding="3" class="TableCell">
     			<tr> 
         			<td class="HeaderCell" width="100%">The following actions were applied to <c:out value="${woManipulationBean.successes}"/> Work Orders.</td>
       			</tr>
       			<c:forEach var="actionEntry" items="${woManipulationBean.actionsApplied}">
 					<tr>		
-						<td>
-							<div align="left"><c:out value="${actionEntry}"/></div>
-						<td>
+						<td align="left" width="100%"><c:out value="${actionEntry}"/><td>
 					</tr>
 				</c:forEach>
     		</table>
         	<br>
 	        <c:if test="${woManipulationBean.failures > 0}"> 
-	        	<table width="80%" border="1" align="center" cellspacing="0" cellpadding="0" class="TableCell">
+	        	<table width="80%" border="1" align="center" cellspacing="0" cellpadding="3" class="TableCell">
 	    			<tr> 
 	        			<td class="HeaderCell" width="100%"><c:out value="${woManipulationBean.failures}"/> failures detected.</td>
 	      			</tr>
-	      			<c:forEach var="serial" items="${woManipulationBean.failedSerialNumbers}">
-						<tr>		
-							<td>
-								<div align="left"><c:out value="${serial}"/></div>
-							<td>
-						</tr>
+	      			<c:forEach var="failedMsg" items="${woManipulationBean.failedManipulateResults}">
+					<tr>		
+					  <td align="left" width="100%"><c:out value="${failedMsg}"/><td>
+					</tr>
 					</c:forEach>
 	    		</table>
 	    	</c:if>

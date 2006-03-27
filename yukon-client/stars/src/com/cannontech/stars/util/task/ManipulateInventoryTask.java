@@ -262,7 +262,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
             {
                 CTILogger.error( e.getMessage(), e );
                 hardwareSet.add( liteHw );
-                failedSerialNumbers.add(liteHw.getManufacturerSerialNumber());
+                failedSerialNumbers.add("Serial #: " + liteHw.getManufacturerSerialNumber() + " - " + e.getMessage());
                 numFailure++;
             }
                 
@@ -281,7 +281,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
         mBean.setFailures(numFailure);
         mBean.setSuccesses(numSuccess);
-        mBean.setFailedSerialNumbers(failedSerialNumbers);
+        mBean.setFailedManipulateResults(failedSerialNumbers);
         session.setAttribute("manipBean", mBean);
 		
         /**
