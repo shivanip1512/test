@@ -2,6 +2,7 @@ package com.cannontech.database.data.stars.customer;
 
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.db.DBPersistent;
 
@@ -194,7 +195,7 @@ public class CustomerAccount extends DBPersistent {
         if (results.length == 1)
             setEnergyCompanyID((Integer) results[0] );
         else
-            throw new Error(getClass() + " - Incorrect number of results retrieved");
+            CTILogger.error("No Energy Company Loaded for AccountNumber: " + getCustomerAccount().getAccountNumber() + " (ID:" + getCustomerAccount().getAccountID().toString() + ")");
 		
 		
 		setDbConnection(null);
