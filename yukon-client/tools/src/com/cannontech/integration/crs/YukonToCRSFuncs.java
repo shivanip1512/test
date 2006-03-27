@@ -562,9 +562,9 @@ public class YukonToCRSFuncs
 		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
 		if( appCatEntry != null)
 		{
-			for (int i = 0; i < liteStarsEnergyCompany.getApplianceCategories().size(); i++)
+			for (int i = 0; i < liteStarsEnergyCompany.getAllApplianceCategories().size(); i++)
 			{
-				LiteApplianceCategory liteAppCat = (LiteApplianceCategory)liteStarsEnergyCompany.getApplianceCategories().get(i);
+				LiteApplianceCategory liteAppCat = (LiteApplianceCategory)liteStarsEnergyCompany.getAllApplianceCategories().get(i);
 				if(liteAppCat.getCategoryID() == appCatEntry.getEntryID())
 				{
 					applCatID = liteAppCat.getApplianceCategoryID();
