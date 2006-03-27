@@ -1,4 +1,7 @@
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="include/StarsHeader.jsp" %>
+<jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
+ 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
@@ -106,7 +109,7 @@ function changeProgSelection(chkBox) {
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
                     <td width="35%" class="HeaderCell">Program</td>
-<% if (!useHardwareAddressing) { %>
+<% if (!useHardwareAddressing || configBean.getHasStaticLoadGroupMapping()) { %>
                     <td width="35%" class="HeaderCell">Assigned Group</td>
 <% } %>
                     <td width="25%" class="HeaderCell">Relay</td>
@@ -118,6 +121,7 @@ function changeProgSelection(chkBox) {
 			boolean assigned = false;
 			int groupID = 0;
 			int loadNo = 0;
+			int applianceCatID = 0;
 			
 			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
 				if (programs.getStarsLMProgram(k).getProgramID() == program.getProgramID()) {
@@ -136,6 +140,7 @@ function changeProgSelection(chkBox) {
 					//if there is more than one receiver connected to this account
 					assigned = true;
 					loadNo = app.getLoadNumber();
+					applianceCatID = app.getApplianceCategoryID();
 					break;
 				}
 			}
@@ -146,7 +151,29 @@ function changeProgSelection(chkBox) {
                       <% if (assigned) out.print("checked"); %>>
                     </td>
                     <td width="35%" class="TableCell" height="2"><%= ServletUtils.getProgramDisplayNames(program)[0] %></td>
-<% if (!useHardwareAddressing) { %>
+				<% if (configBean.getHasStaticLoadGroupMapping()) 
+					{ 	
+					pageContext.setAttribute("groupID", groupID);
+					pageContext.setAttribute("appCategoryID",program.getProgramID());
+				%>
+
+					<c:set target="${configBean}" property="currentApplianceCategoryID" value="${appCategoryID}" />
+					<td width="35%" height="2"> 
+                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)">
+		                  <option value="0" selected> <c:out value="(none)"/> </option>
+	                      <c:forEach var="group" items="${configBean.currentStaticGroups}">
+								<c:if test="${group.loadGroupID == groupID}">
+									<option value='<c:out value="${group.loadGroupID}"/>' selected> <c:out value="${group.loadGroupName}"/> </option>
+								</c:if>	 
+								<c:if test="${group.loadGroupID != groupID}">
+									<option value='<c:out value="${group.loadGroupID}"/>'> <c:out value="${group.loadGroupName}"/> </option>
+								</c:if>	
+					  	  </c:forEach>
+                       </select>
+                    </td>
+
+<%} else if (!useHardwareAddressing) 
+{ %>
                     <td width="35%" height="2"> 
                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" onchange="setContentChanged(true)"
                       <% if (!assigned) out.print("disabled"); %>>
@@ -203,7 +230,11 @@ function changeProgSelection(chkBox) {
                   <tr>
                     <td align="center"> 
 <% if (configurable) { %>
+                      <%
+					  	if(!configBean.getHasStaticLoadGroupMapping()) 
+					  	{%> 
                       <input type="submit" name="Config" value="Config">
+                      <% } %>
                       <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
 <% } %>
 					  <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
