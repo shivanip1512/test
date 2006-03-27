@@ -1471,6 +1471,7 @@ public class InventoryManager extends HttpServlet {
             
             InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
             ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean");
+            mBean.setActionsApplied(appliedActions);
             ArrayList theWares = iBean.getInventoryList();
             if(theWares.size() < 1)
             {
@@ -1509,8 +1510,6 @@ public class InventoryManager extends HttpServlet {
                 }
             }
             
-            mBean.setActionsApplied(appliedActions);
-            //session.setAttribute("manipBean", mBean);
             session.setAttribute(ServletUtils.ATT_REDIRECT, redir);
             session.setAttribute(ServletUtils.ATT_REFERRER, redir);
             redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;

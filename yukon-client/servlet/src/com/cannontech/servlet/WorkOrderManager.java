@@ -257,12 +257,11 @@ public class WorkOrderManager extends HttpServlet {
         String[] selectionIDs = req.getParameterValues("SelectionIDs");
         String[] actionTexts = req.getParameterValues("ActionTexts");
         String[] actionTypeIDs = req.getParameterValues("ActionTypeIDs");
-        List<String> appliedActions = new ArrayList();
+        List<String> appliedActions = new ArrayList<String>();
         
         Integer changeServiceCompanyID = null;
         Integer changeServiceStatusID = null;
         Integer changeServiceTypeID = null;        
-//        Integer newEnergyCompanyID = null;
         
         if(selectionIDs != null && selectionIDs.length > 0 && selectionIDs.length == actionTypeIDs.length)
         {
@@ -278,10 +277,9 @@ public class WorkOrderManager extends HttpServlet {
                 appliedActions.add(actionTexts[j]);
             }
             
-//            InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
             WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
             ManipulationBean mBean = (ManipulationBean) session.getAttribute("woManipulationBean");
-//            ArrayList theWares = iBean.getInventoryList();
+            mBean.setActionsApplied(appliedActions);
             if(workOrderBean.getNumberOfRecords() < 1)
             {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no Work Orders selected to update.");
@@ -320,9 +318,6 @@ public class WorkOrderManager extends HttpServlet {
                     return;
                 }
             }
-            
-            mBean.setActionsApplied(appliedActions);
-//            session.setAttribute("woManipulationBean", mBean);
             session.setAttribute(ServletUtils.ATT_REDIRECT, redir);
             session.setAttribute(ServletUtils.ATT_REFERRER, redir);
             redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
