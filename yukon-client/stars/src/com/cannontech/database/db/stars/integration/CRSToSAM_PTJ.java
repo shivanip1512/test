@@ -74,9 +74,8 @@ public void setDbConnection(Connection newValue) {
 }
 public void delete() throws java.sql.SQLException 
 {
-	for (int i = 0; i < getAdditionalMeters().size(); i++)
-		getAdditionalMeters().get(i).delete();
-
+	delete( CRSToSAM_PTJAdditionalMeters.TABLE_NAME, "PTJID", getPTJID());
+	
     Object constraintValues[] = { getPTJID() };
 
     delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
