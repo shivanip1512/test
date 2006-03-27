@@ -5757,6 +5757,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _currentvoltloadpointid
     << tempVolt
     << _verificationFlag
+    << _switchOverStatus
     << _ccfeeders;
 }
 
