@@ -175,6 +175,10 @@ public class InventoryManager extends HttpServlet {
             manipulateResults( user, req, session );
         else if (action.equalsIgnoreCase("ManipulateSelectedResults"))
             manipulateSelectedResults( user, req, session );
+        else if (action.equalsIgnoreCase("ConfigureInventoryResults"))
+            configureRedirect( user, req, session );
+        else if (action.equalsIgnoreCase("ConfigureResultSet"))
+            configureResults( user, req, session );
         /**
          * Purchasing...this should go in its own servlet sometime soon.
          */
@@ -1713,6 +1717,32 @@ public class InventoryManager extends HttpServlet {
     private void manipulateResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
     {
         redirect = req.getContextPath() + "/operator/Hardware/ChangeInventory.jsp";
+    }
+    
+    private void configureRedirect(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        redirect = req.getContextPath() + "/operator/Hardware/ConfigureInventory.jsp";
+    }
+    
+    private void configureResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+    {
+        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        if(iBean.getInventoryList() != null && iBean.getInventoryList().size() > 0)
+        {
+            session.setAttribute(InventoryManagerUtil.SN_RANGE_TO_CONFIG, iBean.getInventoryList());
+            /*
+             * Might as well piggyback on some old code.
+             */
+            configSNRange(user, req, session);
+            session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Hardware/Inventory.jsp");
+        }
+        else
+        {
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "No inventory results are available to configure.");
+            redirect = req.getContextPath() + "/operator/Hardware/Inventory.jsp";
+        }
+            
+            
     }
     
     private void handlePurchasePlanChange(StarsYukonUser user, HttpServletRequest req, HttpSession session) 
