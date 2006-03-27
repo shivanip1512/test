@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2006/03/27 21:05:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3263,48 +3263,63 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 status = NOTNORMAL;
             }
 
-            if( kw_time.seconds() > (getDynamicInfo(key_peak_timestamp) ) )
+            if( kw_time.seconds() >= (getDynamicInfo(key_peak_timestamp) ) )
             {
-                if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
+                if( kw_time.seconds() <= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) )
                 {
-                    //  success - allow normal processing
-
-                    kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
-
-                    kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
-
-                    setDynamicInfo(key_peak_timestamp, kw_time.seconds() );
-
-                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                    if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
                     {
-                        kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) );
-                        kwh_time -= kwh_time.seconds() % 300;
+                        //  success - allow normal processing
+
+                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
+
+                        kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
+
+                        setDynamicInfo(key_peak_timestamp, kw_time.seconds());
+
+                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                        {
+                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
+                            kwh_time -= kwh_time.seconds() % 300;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        freeze_info_string  = " @ " + kwh_time.asString();
+
+                        _freeze_counter = pi_freezecount.value;
+
+                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
                     }
                     else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
+                                                ") does not match expected freeze bit (" << _expected_freeze <<
+                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
+
+                        valid_data = false;
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
+                        status = NOTNORMAL;
                     }
-
-                    freeze_info_string  = " @ " + kwh_time.asString();
-
-                    _freeze_counter = pi_freezecount.value;
-
-                    setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
                 }
                 else
                 {
+                    valid_data = false;
+
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
-                                            ") does not match expected freeze bit (" << _expected_freeze <<
-                                            ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    valid_data = false;
-                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) ).asString());
+                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
                     status = NOTNORMAL;
                 }
             }
@@ -3314,10 +3329,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp) ) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("Peak time check failed (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp) ).asString() + ")");
+                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
                 status = NOTNORMAL;
             }
         }
@@ -4421,7 +4436,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                    InMessage->Buffer.DSt.Message[8] <<  8 |
                    InMessage->Buffer.DSt.Message[9];
 
-            resultString += "Current time: " + CtiTime(time + rwEpoch).asString();
+            resultString += "Current time: " + CtiTime(time).asString();
 
             int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
 
@@ -4433,7 +4448,7 @@ INT CtiDeviceMCT410::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
                InMessage->Buffer.DSt.Message[2] <<  8 |
                InMessage->Buffer.DSt.Message[3];
 
-        tmpTime = CtiTime(time + rwEpoch);
+        tmpTime = CtiTime(time);
 
         if( InMessage->Sequence == Emetcon::GetConfig_Time )
         {
