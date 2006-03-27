@@ -54,7 +54,7 @@
 	                        	<td align="right" width="88" class="SubtitleHeader">*Type:</td>
 	                        	<td width="210"> 
 	                              	<select name="MeterType" onchange="setContentChanged(true)">
-	                                   	<option value="0"> <c:out value="(none)"/> </option>
+	                                   	<option value="0" selected> <c:out value="(none)"/> </option>
 	                                   	<c:forEach var="meterType" items="${meterBean.availableMeterTypes.yukonListEntries}">
 											<c:if test="${meterType.entryID == meterBean.currentMeter.meterHardwareBase.meterTypeID}">
 												<option value='<c:out value="${meterType.entryID}"/>' selected> <c:out value="${meterType.entryText}"/> </option>
