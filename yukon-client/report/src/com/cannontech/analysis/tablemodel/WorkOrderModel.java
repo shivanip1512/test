@@ -150,7 +150,7 @@ public class WorkOrderModel extends ReportModelBase {
 	private final String ATT_SEARCH_COL = "SearchColumn";
 	
 	private HashMap accountIDToMeterNumberMap = null;
-	private HashMap liteInvBaseToMeterNumberMap = new HashMap();
+	private HashMap<LiteInventoryBase, String> liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 		
 	public static final Comparator workOrderCmptor = new Comparator() {
@@ -426,20 +426,22 @@ public class WorkOrderModel extends ReportModelBase {
 	 * Build a mapping of LiteInvBase:String).
 	 * @return String an Sqlstatement
 	 */
-	public HashMap getLiteInvToMeterNumberMap()
+	public HashMap<LiteInventoryBase, String> getLiteInvToMeterNumberMap()
 	{
 		if( liteInvBaseToMeterNumberMap == null)
-			liteInvBaseToMeterNumberMap = new HashMap();
+			liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
 		return liteInvBaseToMeterNumberMap;
 	}
 
 	/**
-	 * Build a mapping of AccountID(Integer):String).
+	 * Returns the MeterNumber string for liteInvBase.  Retrieves the meterNumber and updates
+	 *  the map if it is not already in the map. 
+	 * (Integer):String).
 	 * @return String an Sqlstatement
 	 */
 	public String getInventoryMeterNumber(LiteInventoryBase liteInvBase)
 	{
-		String meterNumber = (String)getLiteInvToMeterNumberMap().get(liteInvBase);
+		String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
 		if( meterNumber == null)
 		{
 			String sql = "";
@@ -474,12 +476,11 @@ public class WorkOrderModel extends ReportModelBase {
 				
 				pstmt = conn.prepareStatement( sql );
 				rset = pstmt.executeQuery();
-				accountIDToMeterNumberMap = new HashMap();
 				while (rset.next()) {
 					meterNumber = rset.getString(1);
-					liteInvBaseToMeterNumberMap.put(liteInvBase, meterNumber);
 					break;
 				}
+				getLiteInvToMeterNumberMap().put(liteInvBase, meterNumber);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
