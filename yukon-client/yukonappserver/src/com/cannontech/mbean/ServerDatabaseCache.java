@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -1719,7 +1720,9 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 
-				LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );                
+				LiteContact lc = (LiteContact)allContactsMap.get( new Integer(id) );
+				if (lc == null)
+					lc = getAContactByContactID(id);
 				lc.retrieve( databaseAlias );                
 				lBase = lc;
 
