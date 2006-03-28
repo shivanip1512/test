@@ -664,8 +664,8 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
                                                string &operationType, double constantValue, string &functionName )
 {
     CtiHashKey pointHashKey(pointID);
-    CtiCalc *targetCalcPoint;
-    CtiCalcComponent *newComponent;
+    CtiCalc *targetCalcPoint = NULL;
+    CtiCalcComponent *newComponent = NULL;
     CtiPointStoreElement *tmpElementPtr = NULL;
     PointUpdateType updateType;
 
@@ -698,10 +698,13 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     //  CtiCalculateThread is going to be doing the cleanup, anyway, so the garbage will all be
     //    collected in one place.
 
-    //  insert parameters are (point, dependent, updatetype)
-    tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( componentPointID, pointID, updateType );
-    newComponent = CTIDBG_new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
-    targetCalcPoint->appendComponent( newComponent );
+    if( targetCalcPoint != NULL )
+    {
+        //  insert parameters are (point, dependent, updatetype)
+        tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( componentPointID, pointID, updateType );
+        newComponent = CTIDBG_new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
+        targetCalcPoint->appendComponent( newComponent );
+    }
 }
 
 
