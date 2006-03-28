@@ -47,7 +47,7 @@ public final class YukonUserFuncs
          
 			for( int j = 0; j < users.size(); j++ )
 			{
-				if( userName_.equalsIgnoreCase( ((LiteYukonUser)users.get(j)).getUsername() ) )
+				if( userName_.equals( ((LiteYukonUser)users.get(j)).getUsername() ) )
 					return (LiteYukonUser)users.get(j);
 			}
    

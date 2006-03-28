@@ -54,7 +54,7 @@ public class AuthFuncs {
 			while(i.hasNext()) {
 				LiteYukonUser u = (LiteYukonUser) i.next();
 				if( !CtiUtilities.isDisabled(u.getStatus()) &&
-					u.getUsername().equalsIgnoreCase(username) &&
+					u.getUsername().equals(username) &&
 					u.getPassword().equals(password) ) {
 					return u;  //success!
 				   }
