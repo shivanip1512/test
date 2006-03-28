@@ -506,13 +506,13 @@ public class YukonToCRSFuncs
 		return meterHardwareBase;
     }
 	
-	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
+	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, YukonListEntry ciCustTypeEntry,  LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
 	{
 		LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(accountID.intValue(), true);
 
 		if( airCond.charValue() == 'Y')
 		{
-			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, liteStarsEnergyCompany);
+			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER, ciCustTypeEntry, liteStarsEnergyCompany);
 
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
@@ -534,7 +534,7 @@ public class YukonToCRSFuncs
 		}
 		if (waterHeater.charValue() == 'Y')
 		{
-			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, liteStarsEnergyCompany);
+			int applCatID = getApplianceCategoryID(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER, ciCustTypeEntry, liteStarsEnergyCompany);
 
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
@@ -556,9 +556,9 @@ public class YukonToCRSFuncs
 		}
 	}
 
-	private static int getApplianceCategoryID(int appDefID, LiteStarsEnergyCompany liteStarsEnergyCompany) {
+	private static int getApplianceCategoryID(int appDefID, YukonListEntry ciCustTypeEntry, LiteStarsEnergyCompany liteStarsEnergyCompany) {
 		int applCatID = 0;
-		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY, true, true);
+		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
 		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
 		if( appCatEntry != null)
 		{
@@ -567,8 +567,17 @@ public class YukonToCRSFuncs
 				LiteApplianceCategory liteAppCat = (LiteApplianceCategory)liteStarsEnergyCompany.getAllApplianceCategories().get(i);
 				if(liteAppCat.getCategoryID() == appCatEntry.getEntryID())
 				{
-					applCatID = liteAppCat.getApplianceCategoryID();
-					break;
+					applCatID = liteAppCat.getApplianceCategoryID();   //Set this here so if we don't find the correct text, we still get a valid applCatID
+                    //This is a hack to attempt to better match the appliance category for the consumption type
+                    if (ciCustTypeEntry != null){    //Commercial consumption type of some sort
+                        if( appCatEntry.getEntryText().toLowerCase().indexOf("commercial") > -1)
+                            break;
+                    }
+                    else    //Residential consumption type
+                    {
+                        if( appCatEntry.getEntryText().toLowerCase().indexOf("residential") > -1)
+                            break;
+                    }
 				}
 			}
 		}

@@ -17,12 +17,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
@@ -384,7 +381,7 @@ public final class YukonCRSIntegrator
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(ecID_workOrder);
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, true, true);
+        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
@@ -414,7 +411,7 @@ public final class YukonCRSIntegrator
 	        			com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 	        			contact = YukonToCRSFuncs.createNewContact(contact, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	        			
-	        			YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
+	        			YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
 	        			YukonListEntry ciCustTypeEntry = YukonToCRSFuncs.getCICustTypeEntry(ciCustTypeList, consumType);
 
 	        			//Create a new CustomerAccount data object
@@ -422,7 +419,7 @@ public final class YukonCRSIntegrator
 	        			customerAccount = YukonToCRSFuncs.createNewCustomerAccount(customerAccount, accountNumber, contact.getContact().getContactID(), debtorNumber, 
 	        														presenceReq, streetAddress1, streetAddress2, cityName, stateCode, zipCode, ecID_workOrder, lastName, ciCustTypeEntry);
 	        			//Create new ApplianceBase (and extension of) objects
-	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, liteStarsEnergyCompany);
+	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, ciCustTypeEntry, liteStarsEnergyCompany);
 	        			
 	        			//Create New Inventory for meterNumbers
 	        			YukonToCRSFuncs.createMeterHardwares(customerAccount.getCustomerAccount().getAccountID(), liteStarsEnergyCompany, meterNumber, currentEntry.getAdditionalMeters());
@@ -465,7 +462,9 @@ public final class YukonCRSIntegrator
 	    				if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) )
   						{
 		        			//Create new ApplianceBase (and extension of) objects, Per David.
-		        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, liteStarsEnergyCompany);
+                            YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
+                            YukonListEntry ciCustTypeEntry = YukonToCRSFuncs.getCICustTypeEntry(ciCustTypeList, consumType);
+		        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, ciCustTypeEntry, liteStarsEnergyCompany);
   						}
 
 	    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
@@ -530,7 +529,7 @@ public final class YukonCRSIntegrator
     		}
         	
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, true, true);
+        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
@@ -578,7 +577,7 @@ public final class YukonCRSIntegrator
 	               	if( lmHardwares.size() > 0)
 	               	{
 	               		YukonListEntry devStateEntry = null;
-	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true);
+	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
 		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
@@ -718,7 +717,7 @@ public final class YukonCRSIntegrator
         	{
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(customerAccount.getEnergyCompanyID().intValue());
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, true, true);
+        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, woType);
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
@@ -736,7 +735,7 @@ public final class YukonCRSIntegrator
         	}
 			
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, true, true);
+        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
