@@ -91,6 +91,18 @@ public void retrieve() throws java.sql.SQLException
 		((DBPersistent)getDBPersistentVector().elementAt(i)).retrieve();
 	
 }
+
+/**
+ * update method comment.
+ */
+public void update() throws java.sql.SQLException 
+{
+	for(int i = 0; i < getDBPersistentVector().size(); i++)
+	{			
+		((DBPersistent)getDBPersistentVector().elementAt(i)).update();
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/27/2001 1:07:21 PM)

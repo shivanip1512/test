@@ -327,6 +327,7 @@ public void setPAOName( String name )
 {
 	getYukonPAObject().setPaoName( name );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)
@@ -363,9 +364,6 @@ public void update() throws java.sql.SQLException
 	
 	//grab all the previous PAOExclusion entries for this object
 	java.util.Vector oldPAOExclusion = PAOExclusion.getAllPAOExclusions(getPAObjectID().intValue(), getDbConnection());
-	
-	//also grab all exclusion entries that reference this PAObject as an excluded device
-	oldPAOExclusion = PAOExclusion.getAdditionalExcludedPAOs(getPAObjectID().intValue(), getDbConnection(), oldPAOExclusion);
 	
 	//unleash the power of the NestedDBPersistent
 	Vector exclusionVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldPAOExclusion, getPAOExclusionVector(), NestedDBPersistentComparators.paoExclusionComparator);

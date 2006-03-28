@@ -2,12 +2,16 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
+import com.cannontech.common.util.MessageEvent;
+import com.cannontech.database.DatabaseTypes;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -35,8 +39,9 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 
 			if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
 			{
-				((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonID()) );
-				((com.cannontech.database.data.device.DeviceBase)returnObject).setPAOName( ((LiteYukonPAObject)liteObject).getPaoName());
+				((DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonID()) );
+				((DeviceBase)returnObject).setPAOName( ((LiteYukonPAObject)liteObject).getPaoName());
+
 			}
 			else if( returnObject instanceof com.cannontech.database.data.port.DirectPort )
 			{	
@@ -501,5 +506,30 @@ public static DBPersistent convertLiteToDBPers( LiteBase lBase )
 	return userObject;
 }
 
+public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
+	
+	com.cannontech.database.db.DBPersistent userObject = null;
+
+	if( lBase instanceof LiteDeviceMeterNumber )
+	{					
+		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+			PAOFuncs.getLiteYukonPAO( lBase.getLiteID() ) );
+	}
+	else
+ 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
+	
+	try
+    {
+       Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
+       userObject = t.execute();	
+    }
+    catch (Exception e)
+    {
+       com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    }
+
+	return userObject;
+	
+}
 
 }

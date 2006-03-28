@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.pao.PAODefines;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.common.util.CtiUtilities;
@@ -533,9 +534,13 @@ private javax.swing.JLabel getTransmitDurationJLabel() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
+@SuppressWarnings("unchecked")
 public Object getValue(Object o)
 {	
-	YukonPAObject pao = (YukonPAObject)o;
+	SmartMultiDBPersistent multi = (SmartMultiDBPersistent) o;
+	
+	//YukonPAObject pao = (YukonPAObject)o;
+	YukonPAObject pao = (YukonPAObject)multi.getOwnerDBPersistent();
 
 	if(getJCheckBoxEnable().isSelected())
 	{
@@ -572,7 +577,10 @@ public Object getValue(Object o)
 		pao.getPAOExclusionVector().add( paoExcl );
 		
 	}
-	return pao;
+	
+	multi.setOwnerDBPersistent(pao);
+	//return pao;
+	return multi;
 }
 /**
  * Called whenever the part throws an exception.

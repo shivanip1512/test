@@ -1,6 +1,7 @@
 package com.cannontech.database.db.pao;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.point.PointTypes;
 import java.util.Vector;
 import com.cannontech.database.db.NestedDBPersistent;
@@ -149,9 +150,10 @@ public class PAOExclusion extends NestedDBPersistent
 	 */
 	public void delete() throws java.sql.SQLException 
 	{
-		Object values[] = { getExclusionID() };
-	
-		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
+	    Object values[] = { getExclusionID() };
+
+	    delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
+
 	}
 	
 
@@ -300,6 +302,38 @@ public class PAOExclusion extends NestedDBPersistent
 			
 			if( stat != null )
 				stat.close();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+	
+	
+		return true;
+	}
+	
+	public  synchronized boolean fullDelete(int paoID, int excID,  java.sql.Connection conn )
+	{
+		try
+		{
+			if( conn == null )
+				throw new IllegalStateException("Database connection should not be null.");
+	
+			Integer id = getExclusionID();
+			                                     
+             SqlStatement stmt = new SqlStatement("DELETE FROM " + TABLE_NAME 
+ 			                                     +  " WHERE ExclusionID=" + id.intValue() , CtiUtilities.getDatabaseAlias());
+	        
+	        try
+	        {
+	            stmt.execute();
+	        }
+	        catch( Exception e )
+	        {
+	            e.printStackTrace();
+	        }
+			
 		}
 		catch(Exception e)
 		{
@@ -551,37 +585,6 @@ public class PAOExclusion extends NestedDBPersistent
 	{
 		value = integer;
 	}
-	
-	/*public final static boolean isMasterProgram(Integer anID)
-	{	
-		try
-		{
-			return isMasterProgram(anID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-		}
-		catch (java.sql.SQLException e) 
-		{
-			 e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public final static boolean isMasterProgram(Integer anID, String databaseAlias) throws java.sql.SQLException 
-	{
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-			"SELECT ExclusionID from " + TABLE_NAME + " WHERE PaoID = " + anID, databaseAlias);
-			
-		try
-		{
-			stmt.execute();
-			return (stmt.getRowCount() > 0 );
-		}
-		catch( Exception e )
-		{
-			return false;
-		}
-	
-	}
-	*/
-	
+
 
 }
