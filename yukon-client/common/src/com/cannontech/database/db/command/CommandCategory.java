@@ -78,27 +78,27 @@ public class CommandCategory
 	};
 
 
-	private static ArrayList CAT_ALPHA_BASE_DEVTYPES = null;
-	private static ArrayList CAT_CBC_BASE_DEVTYPES = null;
-	private static ArrayList CAT_CCU_BASE_DEVTYPES = null;
-	private static ArrayList CAT_DISCONNECT_BASE_DEVTYPES = null;
-	private static ArrayList CAT_IED_BASE_DEVTYPES = null;
-	private static ArrayList CAT_ION_BASE_DEVTYPES = null;
-	private static ArrayList CAT_LCU_BASE_DEVTYPES = null;
-	private static ArrayList CAT_LOAD_GROUP_BASE_DEVTYPES = null;
-	private static ArrayList CAT_LP_BASE_DEVTYPES = null;
-	private static ArrayList CAT_MCT_BASE_DEVTYPES = null;
-	private static ArrayList CAT_RTU_BASE_DEVTYPES = null;
-	private static ArrayList CAT_REPEATER_BASE_DEVTYPES = null;
-	private static ArrayList CAT_TCU_BASE_DEVTYPES = null;
-	private static ArrayList CAT_STATUSINPUT_BASE_DEVTYPES = null;
-	private static ArrayList CAT_PING_BASE_DEVTYPES = null;
-	private static ArrayList CAT_LCR_BASE_DEVTYPES = null;
-	private static ArrayList CAT_MCT_4XX_SERIES_DEVTYPES = null;
+	private static ArrayList<String> CAT_ALPHA_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_CBC_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_CCU_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_DISCONNECT_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_IED_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_ION_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_LCU_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_LOAD_GROUP_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_LP_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_MCT_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_RTU_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_REPEATER_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_TCU_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_STATUSINPUT_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_PING_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_LCR_BASE_DEVTYPES = null;
+	private static ArrayList<String> CAT_MCT_4XX_SERIES_DEVTYPES = null;
 	
-//	private static ArrayList CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
-//	private static ArrayList CAT_SERIALNUMBER_BASE_DEVTYPES = null;
-//	private static ArrayList CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
+//	private static ArrayList<String> CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
+//	private static ArrayList<String> CAT_SERIALNUMBER_BASE_DEVTYPES = null;
+//	private static ArrayList<String> CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
 		
 	/**
 	 * Returns String [] of all Categories  
@@ -130,7 +130,7 @@ public class CommandCategory
 	 * @param category
 	 * @return
 	 */
-	public static ArrayList getAllTypesForCategory(String category)
+	public static ArrayList<String> getAllTypesForCategory(String category)
 	{
 		if( category.equalsIgnoreCase(STRING_CMD_ALPHA_BASE))
 		{
@@ -219,12 +219,12 @@ public class CommandCategory
     /**
 	 * @return
 	 */
-	private static ArrayList getAllStatusInputDevTypes()
+	private static ArrayList<String> getAllStatusInputDevTypes()
 	{
 		if( CAT_STATUSINPUT_BASE_DEVTYPES == null)
 		{
-			CAT_STATUSINPUT_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_STATUSINPUT_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.hasStatusInput(i) )
 					CAT_STATUSINPUT_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -235,12 +235,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllPingableDevTypes()
+	private static ArrayList<String> getAllPingableDevTypes()
 	{
 		if( CAT_PING_BASE_DEVTYPES == null)
 		{
-			CAT_PING_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_PING_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isLoopable(i) )
 					CAT_PING_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -252,11 +252,11 @@ public class CommandCategory
 	/**
      * @return
      */
-    private static ArrayList getAllLCRDevTypes()
+    private static ArrayList<String> getAllLCRDevTypes()
     {
         if (CAT_LCR_BASE_DEVTYPES == null)
         {
-            CAT_LCR_BASE_DEVTYPES = new ArrayList();
+            CAT_LCR_BASE_DEVTYPES = new ArrayList<String>();
             CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
             CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
             CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
@@ -266,11 +266,11 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-//	private static ArrayList getAllSerialNumberDevTypes()
+//	private static ArrayList<String> getAllSerialNumberDevTypes()
 //	{
 //		if( CAT_SERIALNUMBER_BASE_DEVTYPES == null)
 //		{
-//			CAT_SERIALNUMBER_BASE_DEVTYPES = new ArrayList();
+//			CAT_SERIALNUMBER_BASE_DEVTYPES = new ArrayList<String>();
 //			CAT_SERIALNUMBER_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
 //		}
 //		return CAT_SERIALNUMBER_BASE_DEVTYPES;
@@ -279,11 +279,11 @@ public class CommandCategory
 //	/**
 //	 * @return
 //	 */
-//	private static ArrayList getAllExpresscomSerialDevTypes()
+//	private static ArrayList<String> getAllExpresscomSerialDevTypes()
 //	{
 //		if( CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES == null)
 //		{
-//			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = new ArrayList();
+//			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = new ArrayList<String>();
 //			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
 //		}
 //		return CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES;
@@ -292,11 +292,11 @@ public class CommandCategory
 //	/**
 //	 * @return
 //	 */
-//	private static ArrayList getAllVersacomSerialDevTypes()
+//	private static ArrayList<String> getAllVersacomSerialDevTypes()
 //	{
 //		if( CAT_VERSACOMSERIAL_BASE_DEVTYPES == null)
 //		{
-//			CAT_VERSACOMSERIAL_BASE_DEVTYPES = new ArrayList();
+//			CAT_VERSACOMSERIAL_BASE_DEVTYPES = new ArrayList<String>();
 //			CAT_VERSACOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
 //		}
 //		return CAT_VERSACOMSERIAL_BASE_DEVTYPES;
@@ -305,12 +305,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllTCUDevTypes()
+	private static ArrayList<String> getAllTCUDevTypes()
 	{
 		if( CAT_TCU_BASE_DEVTYPES == null)
 		{
-			CAT_TCU_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_TCU_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isTCU(i) )
 					CAT_TCU_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -321,12 +321,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllRepeaterDevTypes()
+	private static ArrayList<String> getAllRepeaterDevTypes()
 	{
 		if( CAT_REPEATER_BASE_DEVTYPES == null)
 		{
-			CAT_REPEATER_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_REPEATER_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isRepeater(i) )
 					CAT_REPEATER_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -337,12 +337,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllRTUDevTypes()
+	private static ArrayList<String> getAllRTUDevTypes()
 	{
 		if( CAT_RTU_BASE_DEVTYPES == null)
 		{
-			CAT_RTU_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_RTU_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isRTU(i) )
 					CAT_RTU_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -354,12 +354,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getALLMCTDevTypes()
+	private static ArrayList<String> getALLMCTDevTypes()
 	{
 		if( CAT_MCT_BASE_DEVTYPES == null)
 		{
-			CAT_MCT_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_MCT_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isMCT(i) )
 					CAT_MCT_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -371,12 +371,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllLPDevTypes()
+	private static ArrayList<String> getAllLPDevTypes()
 	{
 		if( CAT_LP_BASE_DEVTYPES == null)
 		{
-			CAT_LP_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_LP_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isLoadProfile1Channel(i) ||
 					DeviceTypesFuncs.isLoadProfile3Channel(i) ||
@@ -390,12 +390,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllLoadGroupDevTypes()
+	private static ArrayList<String> getAllLoadGroupDevTypes()
 	{
 		if( CAT_LOAD_GROUP_BASE_DEVTYPES == null)
 		{
-			CAT_LOAD_GROUP_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_LOAD_GROUP_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isLmGroup(i) )
 					CAT_LOAD_GROUP_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -407,12 +407,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllLCUDevTypes()
+	private static ArrayList<String> getAllLCUDevTypes()
 	{
 		if( CAT_LCU_BASE_DEVTYPES == null)
 		{
-			CAT_LCU_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_LCU_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isLCU(i) )
 					CAT_LCU_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -424,12 +424,12 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllIEDDevTypes()
+	private static ArrayList<String> getAllIEDDevTypes()
 	{
 		if( CAT_IED_BASE_DEVTYPES == null)
 		{
-			CAT_IED_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_IED_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isIED(i) )
 					CAT_IED_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -438,12 +438,12 @@ public class CommandCategory
 		return CAT_IED_BASE_DEVTYPES;
 	}
 
-	public final static ArrayList getAllAlphaBaseDevTypes() 
+	public final static ArrayList<String> getAllAlphaBaseDevTypes() 
 	{
 		if(CAT_ALPHA_BASE_DEVTYPES == null)
 		{
-			CAT_ALPHA_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_ALPHA_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isAlpha(i) )
 					CAT_ALPHA_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -452,12 +452,12 @@ public class CommandCategory
 		return CAT_ALPHA_BASE_DEVTYPES;
 	}		
 
-	public final static ArrayList getAllCBCDevTypes()
+	public final static ArrayList<String> getAllCBCDevTypes()
 	{
 		if( CAT_CBC_BASE_DEVTYPES == null)
 		{
-			CAT_CBC_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_CBC_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isCapBankController(i) )
 					CAT_CBC_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -467,12 +467,12 @@ public class CommandCategory
 		return CAT_CBC_BASE_DEVTYPES;
 	}
 
-	public final static ArrayList getAllCCUDevTypes() 
+	public final static ArrayList<String> getAllCCUDevTypes() 
 	{
 		if( CAT_CCU_BASE_DEVTYPES == null)
 		{
-			CAT_CCU_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_CCU_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isCCU(i) )
 					CAT_CCU_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -481,12 +481,12 @@ public class CommandCategory
 		return CAT_CCU_BASE_DEVTYPES;
 	}
 
-	public final static ArrayList getAllDisconnectDevTypes() 
+	public final static ArrayList<String> getAllDisconnectDevTypes() 
 	{
 		if( CAT_DISCONNECT_BASE_DEVTYPES == null)
 		{
-			CAT_DISCONNECT_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_DISCONNECT_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isDisconnectMCT(i) )
 					CAT_DISCONNECT_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -495,12 +495,12 @@ public class CommandCategory
 		return CAT_DISCONNECT_BASE_DEVTYPES;
 	}
 
-	public final static ArrayList getAllMCT4XXSeriesDevTypes() 
+	public final static ArrayList<String> getAllMCT4XXSeriesDevTypes() 
 	{
 		if( CAT_MCT_4XX_SERIES_DEVTYPES == null)
 		{
-			CAT_MCT_4XX_SERIES_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_MCT_4XX_SERIES_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isMCT4XX(i) )
 					CAT_MCT_4XX_SERIES_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
@@ -509,12 +509,12 @@ public class CommandCategory
 		return CAT_MCT_4XX_SERIES_DEVTYPES;
 	}
 
-	public final static ArrayList getAllIONDevTypes() 
+	public final static ArrayList<String> getAllIONDevTypes() 
 	{
 		if( CAT_ION_BASE_DEVTYPES == null)
 		{
-			CAT_ION_BASE_DEVTYPES = new ArrayList();
-			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			CAT_ION_BASE_DEVTYPES = new ArrayList<String>();
+			for (int i = DeviceTypes.DEVICE_OFFSET; i <= DeviceTypes.DEVICE_OFFSET + DeviceTypes.DEVICE_TYPES_COUNT; i++)
 			{
 				if( DeviceTypesFuncs.isIon(i) )
 					CAT_ION_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
