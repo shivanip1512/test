@@ -48,7 +48,7 @@ public class FilterBean
 	{
 		public int compare(Object o1, Object o2){
 	        ServiceCompanyDesignationCode code1 = (ServiceCompanyDesignationCode)o1;
-	        ServiceCompanyDesignationCode code2 = (ServiceCompanyDesignationCode)o1;
+	        ServiceCompanyDesignationCode code2 = (ServiceCompanyDesignationCode)o2;
 		    String thisVal = code1.getDesignationCodeValue();
 		    String anotherVal = code2.getDesignationCodeValue();
 			return (thisVal.compareToIgnoreCase(anotherVal));
