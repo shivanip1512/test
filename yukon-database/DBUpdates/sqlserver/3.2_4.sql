@@ -29,6 +29,33 @@ go
 insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 go
 
+drop table dynamiclmprogramdirect;
+
+create table DynamicLMProgramDirect (
+   DeviceID             numeric              not null,
+   CurrentGearNumber    numeric              not null,
+   LastGroupControlled  numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   TimeStamp            datetime             not null,
+   NotifyActiveTime     datetime             not null,
+   StartedRampingOut    datetime             not null,
+   NotifyInactiveTime   datetime             not null,
+   ConstraintOverride   char(1)              not null
+);
+go
+
+
+alter table DynamicLMProgramDirect
+   add constraint PK_DYNAMICLMPROGRAMDIRECT primary key  (DeviceID);
+go
+
+
+alter table DynamicLMProgramDirect
+   add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
+      references LMProgramDirect (DeviceID);
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -19,6 +19,29 @@ update YukonUserRole set RoleId = -801, RolePropertyId = -80100 where RoleProper
 delete from YukonRoleProperty where RolePropertyId = -80002;
 
 insert into YukonRoleProperty values(-10809,-108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+
+drop table dynamiclmprogramdirect;
+
+create table DynamicLMProgramDirect (
+   DeviceID             numeric              not null,
+   CurrentGearNumber    numeric              not null,
+   LastGroupControlled  numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   TimeStamp            datetime             not null,
+   NotifyActiveTime     datetime             not null,
+   StartedRampingOut    datetime             not null,
+   NotifyInactiveTime   datetime             not null,
+   ConstraintOverride   char(1)              not null
+);
+
+alter table DynamicLMProgramDirect
+   add constraint PK_DYNAMICLMPROGRAMDIRECT primary key  (DeviceID);
+
+
+alter table DynamicLMProgramDirect
+   add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
+      references LMProgramDirect (DeviceID);
  
 /******************************************************************************/
 /* Run the Stars Update if needed here */
