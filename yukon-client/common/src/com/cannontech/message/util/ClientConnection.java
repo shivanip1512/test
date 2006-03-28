@@ -122,7 +122,7 @@ public void connect() throws java.io.IOException
 /**
  * This method was created in VisualAge.
  */
-public void connect( long millis ) throws java.io.IOException 
+public void connect( long millis )
 {
 	connectWithoutWait();
 
