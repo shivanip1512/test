@@ -333,7 +333,7 @@ public class PointUtil {
        case PointTypes.STATUS_POINT:
            point = (StatusPoint)PointFactory.createBankStatusPt(paoId);
            point.getPoint().setPointName(name);
-           point.getPoint().setPointOffset( PointOffsetUtils.getValidPointOffset(paoId, type));
+           point.getPoint().setPointOffset( new Integer (PointOffsetUtils.getValidPointOffset(paoId, type)));
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
            
