@@ -1,3 +1,7 @@
+<%@ page import="com.cannontech.database.data.point.SystemLogData" %>
+<%@ page import="com.cannontech.yukon.cbc.StreamableCapObject" %>
+<%@ page import="com.cannontech.yukon.cbc.Feeder" %>
+<%@ page import="com.cannontech.yukon.cbc.SubBus" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Results" module="capcontrol">
 <cti:standardMenu/>
@@ -33,7 +37,7 @@
 		for( int i = 0; i < strPaoids.length; i++ )
 		{
 			int id = Integer.parseInt( strPaoids[i] );
-			StreamableCapObject cbcPAO = capControlCache.getCapControlPAO(new Integer(id));
+			StreamableCapObject cbcPAO = (StreamableCapObject)capControlCache.getCapControlPAO(new Integer(id));
 
 			if( cbcPAO != null )
 			{
@@ -103,8 +107,16 @@ if( titles[i] != null ) {
 %>
 	        <tr class="<%=css%>">
 				<td><%=Formatters.DATETIME.format(systLog.getDateTime())%></td>
+				<% if (systLog.getAction() == null) {%>
+				<td> ---- </td>
+				<%}else {%>		
 				<td><%=systLog.getAction()%></td>
+				<%}%>
+				<% if (systLog.getDescription() == null) {%>
+				<td>----</td>
+				<%}else{%>
 				<td><%=systLog.getDescription()%></td>
+				<%}%>
 			</tr>
 <%	} %>
 
