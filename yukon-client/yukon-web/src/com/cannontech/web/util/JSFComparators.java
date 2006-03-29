@@ -12,6 +12,7 @@ public class JSFComparators {
 	{
 		public int compare(Object o1, Object o2)
 		{
+			
 			String thisVal = ((CapBankMonitorPointParams)o1).getPointName();
 			String anotherVal = ((CapBankMonitorPointParams)o2).getPointName();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
@@ -28,6 +29,19 @@ public class JSFComparators {
 			String thisVal = ((TreeNodeBase)o1).getDescription();
 			String anotherVal = ((TreeNodeBase)o2).getDescription();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+	public static Comparator monitorPointDisplayOrderComparator = new Comparator() 
+	{
+		public int compare(Object o1, Object o2)
+		{
+			int thisVal = ((CapBankMonitorPointParams)o1).getDisplayOrder();
+			int anotherVal = ((CapBankMonitorPointParams)o2).getDisplayOrder();
+			return ( thisVal  - anotherVal );
 		}
 		public boolean equals(Object obj)
 		{
