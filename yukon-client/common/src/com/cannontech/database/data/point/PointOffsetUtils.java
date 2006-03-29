@@ -11,10 +11,17 @@ public class PointOffsetUtils {
     }
 
     public static boolean isValidPointOffset(int offset, Integer paoId, int type){
-        if (getMaxPointOffsetForDevice(paoId, type) > offset){
-            return false;
-        }
-        return true;
+    	LitePoint[] points = PAOFuncs.getLitePointsForPAObject(paoId.intValue());
+		for (int i = 0; i < points.length; i++) {
+		    LitePoint point = points[i];
+		    if (point.getPointType() == type ) {
+		        if (offset == point.getPointOffset()) {
+		        	return false;
+		        }
+		    }
+		}
+		return true;
+    
     }
     
     public static int getValidPointOffset(Integer paoId, int type) {
@@ -22,7 +29,7 @@ public class PointOffsetUtils {
     }
     
     public static int getMaxPointOffsetForDevice(Integer paoId, int pointType) {
-        LitePoint[] points = PAOFuncs.getLitePointsForPAObject(paoId);
+        LitePoint[] points = PAOFuncs.getLitePointsForPAObject(paoId.intValue());
         int maxOffset = 0;
         for (int i = 0; i < points.length; i++) {
             LitePoint point = points[i];
@@ -34,6 +41,7 @@ public class PointOffsetUtils {
         }
         return maxOffset;
     }
+
 
 }
 
