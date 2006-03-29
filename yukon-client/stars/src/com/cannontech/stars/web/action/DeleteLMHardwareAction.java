@@ -180,7 +180,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			LiteInventoryBase liteInv = energyCompany.getInventory( deleteHw.getInventoryID(), true );
         	
 			if (deleteHw.getDeleteFromInventory()) {
-				InventoryManagerUtil.deleteInventory( deleteHw.getInventoryID(), energyCompany, deleteHw.getDeleteFromYukon() );
+				InventoryManagerUtil.deleteInventory( liteInv, energyCompany, deleteHw.getDeleteFromYukon() );
 			}
 			else {
 				java.util.Date removeDate = deleteHw.getRemoveDate();
