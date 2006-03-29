@@ -36,6 +36,12 @@
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>capBankEditor</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.editor.CapBankEditorForm</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
 
     <managed-bean>
         <managed-bean-name>paoDeleteForm</managed-bean-name>
