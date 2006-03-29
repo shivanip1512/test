@@ -10,26 +10,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
-
-import allaire.taglib.TransactionBeginException;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -38,17 +28,9 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
-import com.cannontech.database.model.ModelFactory;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.util.InventoryManagerUtil;
-import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -172,16 +154,16 @@ public class WorkOrderBean {
 		}
 	};
 	
-	/*private final Comparator ORDER_DATE_CMPTOR = new Comparator() {
+	private static final Comparator ORDER_DATE_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
 			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			int rslt = new Date(getRelevantDate(so1)).compareTo( new Date(getRelevantDate(so2)) );
+			int rslt = (new Date(so1.getDateReported()).compareTo(new Date(so2.getDateReported())));
 			if (rslt == 0)
 				rslt = so1.getOrderID() - so2.getOrderID();
 			return rslt;
 		}
-	};*/
+	};
 	
 	private String start = null;
 	private String stop = null;
@@ -433,8 +415,8 @@ public class WorkOrderBean {
 			Collections.sort(workOrderList, SERVICE_TYPE_CMPTOR );
 //		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_CUST_TYPE)
 //			sortedOrders = new java.util.TreeSet( TODO);
-//		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
-//			sortedOrders = new java.util.TreeSet( ORDER_DATE_CMPTOR );
+		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
+			Collections.sort(workOrderList, ORDER_DATE_CMPTOR );
 		else
 			Collections.sort(workOrderList, ORDER_NO_CMPTOR );		
 	
