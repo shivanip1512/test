@@ -20,6 +20,7 @@ private float upperBandwidth = (float) 0.0;
 private float lowerBandwidth = (float) 0.0;
 private String pointName = "";
 private boolean overrideFdrLimits = false;
+private boolean initScan = false;
 
 
 	public CapBankMonitorPointParams(){
@@ -71,19 +72,19 @@ private boolean overrideFdrLimits = false;
 	}
 
 	public void setPointId(int pointId) {
-		if (monitorPoint != null)
-			monitorPoint.setPointID( pointId );
+		if (monitorPoint == null)
+			monitorPoint = new LitePoint ( pointId );
 		else
-			monitorPoint.setPointID( 0 );
+			monitorPoint.setPointID(pointId);
 	}
 
-	public char getScannable() {
+/*	public char getScannable() {
 		return scannable;
 	}
 
 	public void setScannable(char scannable) {
 		this.scannable = scannable;
-	}
+	}*/
 
 	public float getUpperBandwidth() {
 		return upperBandwidth;
@@ -112,6 +113,19 @@ private boolean overrideFdrLimits = false;
 
 	public void setOverrideFdrLimits(boolean overrideFdrLimits) {
 		this.overrideFdrLimits = overrideFdrLimits;
+	}
+
+	public boolean isInitScan() {
+		return initScan;
+	}
+
+	public void setInitScan(boolean initScan) {
+		this.initScan = initScan;
+	}
+
+
+	public void setMonitorPoint(LitePoint monitorPoint) {
+		this.monitorPoint = monitorPoint;
 	}
 	
 
