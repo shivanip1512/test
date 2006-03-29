@@ -51,7 +51,11 @@ public static LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache ) {
 		Map m = cache.getAllUserEnergyCompanies();
-		return (LiteEnergyCompany) m.get(user);
+		LiteEnergyCompany liteEnergyCompany = (LiteEnergyCompany) m.get(user);
+        if (liteEnergyCompany == null) {
+            return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
+        }
+        return liteEnergyCompany;
 	}	
 }
 
