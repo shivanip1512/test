@@ -57,7 +57,7 @@ public class WorkOrderModel extends ReportModelBase {
 	private static String title = "Work Order";
 	
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 29;
+	protected final int NUMBER_COLUMNS = 30;
 	
 	/** Enum values for column representation */
 	public final static int EC_NAME_COLUMN = 0;
@@ -75,24 +75,25 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static int PHONE_HOME_COLUMN = 11;
 	public final static int PHONE_WORK_COLUMN = 12;
 	public final static int PHONE_CONTACT_COLUMN = 13;
-	public final static int ADDRESS1_COLUMN = 14;
-	public final static int ADDRESS2_COLUMN = 15;
-	public final static int CITY_STATE_ZIP_COLUMN = 16;
+    public final static int PRESENCE_REQUIRED_COLUMN = 14;
+	public final static int ADDRESS1_COLUMN = 15;
+	public final static int ADDRESS2_COLUMN = 16;
+	public final static int CITY_STATE_ZIP_COLUMN = 17;
 	
-	public final static int COMPANY_NAME_COLUMN = 17;
-	public final static int ADDTL_ORDER_NO_COLUMN = 18;
-	public final static int MAP_NO_COLUMN = 19;
-	public final static int METER_NO_COLUMN = 20;
-	public final static int ACCOUNT_NOTES_COLUMN = 21;
+	public final static int COMPANY_NAME_COLUMN = 18;
+	public final static int ADDTL_ORDER_NO_COLUMN = 19;
+	public final static int MAP_NO_COLUMN = 20;
+	public final static int METER_NO_COLUMN = 21;
+	public final static int ACCOUNT_NOTES_COLUMN = 22;
 	
-	public final static int SERIAL_NO_COLUMN = 22;
-	public final static int METER_NO_TO_SERIAL_COLUMN = 23;
-	public final static int DEVICE_TYPE_COLUMN = 24;
-	public final static int INSTALL_DATE_COLUMN = 25;
-	public final static int INSTALL_COMPANY_COLUMN = 26;
+	public final static int SERIAL_NO_COLUMN = 23;
+	public final static int METER_NO_TO_SERIAL_COLUMN = 24;
+	public final static int DEVICE_TYPE_COLUMN = 25;
+	public final static int INSTALL_DATE_COLUMN = 26;
+	public final static int INSTALL_COMPANY_COLUMN = 27;
 
-	public final static int WORK_DESC_COLUMN = 27;
-	public final static int ACTION_TAKEN_COLUMN = 28;
+	public final static int WORK_DESC_COLUMN = 28;
+	public final static int ACTION_TAKEN_COLUMN = 29;
 
 	public final static int HEADER_START_INDEX = ORDER_NO_COLUMN;
 	public final static int HEADER_END_INDEX = ACCOUNT_NOTES_COLUMN; 
@@ -119,6 +120,7 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static String PHONE_HOME_STRING = "Home Phone";
 	public final static String PHONE_WORK_STRING = "Work Phone";
 	public final static String PHONE_CONTACT_STRING = "Contact Phone";
+    public final static String PRESENCE_REQUIRED_STRING = "";
 	public final static String ADDRESS1_STRING = "Address";
 	public final static String ADDRESS2_STRING = "Address ";
 	public final static String CITY_STATE_ZIP_STRING = "City State Zip";
@@ -324,60 +326,30 @@ public class WorkOrderModel extends ReportModelBase {
 		{
 			String sql = "";
 			if (getOrderID() != null) {
-				if( getUserID().intValue() != UserUtils.USER_YUKON_ID && AuthFuncs.getRolePropertyValue( getUserID(), EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)				
-				{
-					sql = " SELECT inv.AccountID, mhb.MeterNumber " +
-					" FROM WorkOrderbase wo, InventoryBase inv, MeterHardwareBase mhb, lmhardwaretometermapping map " + 
-					" WHERE wo.orderid = " + getOrderID().toString() + 
-					" and wo.accountid = inv.accountid " +
-					" and inv.inventoryid = map.lmhardwareinventoryid " +
-					" and mhb.inventoryid = map.meterinventoryid ";				
-				}
-				else {
-					sql = "SELECT inv.AccountID, dmg.MeterNumber" +
-						" FROM WorkOrderBase wo, InventoryBase inv, DeviceMeterGroup dmg" +
-						" WHERE wo.OrderID = " + getOrderID() + 
-						" AND wo.AccountID = inv.AccountID" +
-						" AND inv.DeviceID > 0 " + 
-						" AND inv.DeviceID = dmg.DeviceID" +
-						" ORDER BY inv.InventoryID";
-				}
+				sql = "SELECT inv.AccountID, dmg.MeterNumber" +
+					" FROM WorkOrderBase wo, InventoryBase inv, DeviceMeterGroup dmg" +
+					" WHERE wo.OrderID = " + getOrderID() + 
+					" AND wo.AccountID = inv.AccountID" +
+					" AND inv.DeviceID > 0 " + 
+					" AND inv.DeviceID = dmg.DeviceID" +
+					" ORDER BY inv.InventoryID";
 			}
 			else if (getAccountID() != null) {
-				if( getUserID().intValue() != UserUtils.USER_YUKON_ID && AuthFuncs.getRolePropertyValue( getUserID(), EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)				
-				{
-					sql = " SELECT inv.AccountID, mhb.MeterNumber " +
-					" FROM InventoryBase inv, MeterHardwareBase mhb, lmhardwaretometermapping map " + 
-					" WHERE inv.accountid " + getAccountID().toString() +
-					" inv.inventoryid = map.lmhardwareinventoryid " +
-					" and mhb.inventoryid = map.meterinventoryid ";				
-				}
-				else {
-					sql =  "SELECT inv.AccountID, dmg.MeterNumber" +
-						" FROM InventoryBase inv, DeviceMeterGroup dmg" +
-						" WHERE inv.AccountID = " + getAccountID() + 
-						" AND inv.DeviceID > 0 " + 
-						" AND inv.DeviceID = dmg.DeviceID" +
-						" ORDER BY inv.InventoryID";
-				}
+				sql =  "SELECT inv.AccountID, dmg.MeterNumber" +
+					" FROM InventoryBase inv, DeviceMeterGroup dmg" +
+					" WHERE inv.AccountID = " + getAccountID() + 
+					" AND inv.DeviceID > 0 " + 
+					" AND inv.DeviceID = dmg.DeviceID" +
+					" ORDER BY inv.InventoryID";
 			}
 			else {
-				if( getUserID().intValue() != UserUtils.USER_YUKON_ID && AuthFuncs.getRolePropertyValue( getUserID(), EnergyCompanyRole.METER_MCT_BASE_DESIGNATION).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) == 0)				
-				{
-					sql = " SELECT inv.AccountID, mhb.MeterNumber " +
-					" FROM InventoryBase inv, MeterHardwareBase mhb, lmhardwaretometermapping map " + 
-					" WHERE inv.inventoryid = map.lmhardwareinventoryid " +
-					" and mhb.inventoryid = map.meterinventoryid ";				
-				}
-				else {
-					sql = "SELECT inv.AccountID, dmg.MeterNumber" +
-						" FROM InventoryBase inv, DeviceMeterGroup dmg, ECToInventoryMapping map" +
-						" WHERE inv.DeviceID > 0 " +
-						" AND inv.DeviceID = dmg.DeviceID " +
-						" AND inv.InventoryID = map.InventoryID";
-					if (getEnergyCompanyID() != null) 
-						sql += " AND map.EnergyCompanyID = " + getEnergyCompanyID().intValue() + " ";
-				}
+				sql = "SELECT inv.AccountID, dmg.MeterNumber" +
+					" FROM InventoryBase inv, DeviceMeterGroup dmg, ECToInventoryMapping map" +
+					" WHERE inv.DeviceID > 0 " +
+					" AND inv.DeviceID = dmg.DeviceID " +
+					" AND inv.InventoryID = map.InventoryID";
+				if (getEnergyCompanyID() != null) 
+					sql += " AND map.EnergyCompanyID = " + getEnergyCompanyID().intValue() + " ";
 
 				sql += " ORDER BY inv.InventoryID";
 			}		
@@ -699,14 +671,18 @@ public class WorkOrderModel extends ReportModelBase {
 						return ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE);
 					else
 						return null;
+                case PRESENCE_REQUIRED_COLUMN:
+                    if( lAcctInfo.getAccountSite().getCustAtHome().equalsIgnoreCase("Y"))
+                        return "* Appointment Required";
+                    return null;
 				case ADDRESS1_COLUMN:
 					if (liteAddress != null)
-						return liteAddress.getLocationAddress1();
+						return (liteAddress.getLocationAddress1().equals("(none)") ? null : liteAddress.getLocationAddress1());
 					else
 						return null;
 				case ADDRESS2_COLUMN:
 					if (liteAddress != null)
-						return liteAddress.getLocationAddress2();
+                        return (liteAddress.getLocationAddress2().equals("(none)") ? null : liteAddress.getLocationAddress2());
 					else
 						return null;					
 				case CITY_STATE_ZIP_COLUMN:
@@ -821,6 +797,7 @@ public class WorkOrderModel extends ReportModelBase {
 				PHONE_HOME_STRING,
 				PHONE_WORK_STRING,
 				PHONE_CONTACT_STRING,
+                PRESENCE_REQUIRED_STRING,
 				ADDRESS1_STRING,
 				ADDRESS2_STRING,
 				CITY_STATE_ZIP_STRING,
@@ -892,6 +869,7 @@ public class WorkOrderModel extends ReportModelBase {
 				new ColumnProperties(_1half, (colHeight*6), _halfWidth,  null),		//PHONE_HOME_STRING,
 				new ColumnProperties(_1half, (colHeight*7), _halfWidth, null),		//PHONE_WORK_STRING,
 				new ColumnProperties(_1half, (colHeight*8), _halfWidth, null),		//PHONE_CONTACT_STRING,
+                new ColumnProperties(_1half, (colHeight*9), _halfWidth, null),      //PRESENCE_REQUIRED,
 				new ColumnProperties(_home, (colHeight*9), _halfWidth, null),		//ADDRESS1_STRING,				
 				new ColumnProperties(_home, (colHeight*10), _halfWidth, null),		//ADDRESS2_STRING,
 				new ColumnProperties(_home, (colHeight*11), _thirdWidth, null),		//CITY_STATE_ZIP_STRING,

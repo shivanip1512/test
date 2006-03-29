@@ -185,12 +185,17 @@ public class WorkOrder extends YukonReportBase
 		for (int i = WorkOrderModel.HEADER_START_INDEX; i <= WorkOrderModel.HEADER_END_INDEX; i++)
 		{
 			factory = ReportFactory.createLabelElementDefault(getModel(), i);
-			factory.setText(factory.getText() + ":");
+            if( i != WorkOrderModel.PRESENCE_REQUIRED_COLUMN)
+                factory.setText(factory.getText() + ":");
 			header.addElement(factory.createElement());
 		
 			tfactory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			tfactory.setNullString("");
+            tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 			tfactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX()+90, getModel().getColumnProperties(i).getPositionY()));
+            if( i == WorkOrderModel.PRESENCE_REQUIRED_COLUMN)
+                tfactory.setItalic(Boolean.TRUE);
+            
 			header.addElement(tfactory.createElement());
 		}
 
