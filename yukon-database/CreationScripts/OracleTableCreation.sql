@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/23/2006 3:27:26 PM                         */
+/* Created on:     3/29/2006 11:07:41 AM                        */
 /*==============================================================*/
 
 
@@ -1088,7 +1088,7 @@ insert into command values(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 
 insert into command values(-71, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'VersacomSerial');
 insert into command values(-72, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'VersacomSerial');
 insert into command values(-73, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'VersacomSerial');
-insert into command values(-74, 'putconfig raw 35 0', 'Set LCR 3000 to Emetcon Mode', 'VersacomSerial');
+insert into command values(-74, 'putconfig raw 36 0', 'Set LCR 3000 to Emetcon Mode', 'VersacomSerial');
 insert into command values(-75, 'putconfig raw 36 1', 'Set LCR 3000 to Versacom Mode', 'VersacomSerial');
 
 /* MCT410IL */
@@ -5660,6 +5660,8 @@ insert into YukonListEntry values (1021,1002,0,'Uninstall',1111);
 insert into YukonListEntry values (1031,1003,0,'OneWayReceiver',1201);
 insert into YukonListEntry values (1032,1003,0,'TwoWayReceiver',1202);
 insert into YukonListEntry values (1033,1003,0,'MCT',1203);
+insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
+
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
 

@@ -397,3 +397,4 @@ insert into ECToGenericMapping values (-1, 1067, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1068, 'YukonSelectionList');
 Insert into ECToGenericMapping values(-1, 1071, 'YukonSelectionList');
 
+update inventorybase set categoryid = 1034 where inventoryid in (select distinct inventoryid from meterhardwarebase);

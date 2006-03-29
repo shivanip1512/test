@@ -1,7 +1,8 @@
 /******************************************/
-/**** SQLServer 2000 DBupdates         ****/
+/**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+update command set command='putconfig raw 36 0' where commandid=-74;
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -14,4 +15,4 @@
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.1', 'DBAdmin', '29-MARCH-2006', 'Manual version insert done', 21);
+/* __YUKON_VERSION__ */
