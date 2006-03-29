@@ -61,21 +61,6 @@
 				>Reset Op Counts</a>
 		  </td></tr>
 
-<% if( subBus.getWaiveControlFlag().booleanValue() ) { %>
-          <tr><td>
-          	<a href="javascript:void(0);" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.UNWAIVE_SUB%>); top.document.getElementById('tempIFrame').style.display='none';"
-				>Unwaive Sub</a>
-		  </td></tr>
-<% } else { %>
-          <tr><td>
-          	<a href="javascript:void(0);" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.WAIVE_SUB%>); top.document.getElementById('tempIFrame').style.display='none';"
-				>Waive Sub</a>
-		  </td></tr>
-<% } %>
 
 <% } %>
 
