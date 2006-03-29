@@ -1,5 +1,11 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+
 /**
  * This type was created in VisualAge.
  */
@@ -30,6 +36,8 @@ public class CapBank extends CapControlDeviceBase
    public final static String SWITCHTYPE_VACUUM = "Vacuum";
 	
 	private com.cannontech.database.db.capcontrol.CapBank capBank = null;
+	private List ccMonitorBankList = new ArrayList();
+	
 /**
  */
 public CapBank() {
@@ -41,6 +49,11 @@ public CapBank() {
 public void add() throws java.sql.SQLException {
 	super.add();
 	getCapBank().add();
+	CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());	
+	for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+		CCMonitorBankList item = (CCMonitorBankList) iter.next();
+		item.add();
+	}
 }
 /**
  * This method was created in VisualAge.
@@ -80,8 +93,10 @@ public String getLocation()
  * This method was created in VisualAge.
  */
 public void retrieve() throws java.sql.SQLException{
-	super.retrieve();
+	super.retrieve();	
 	getCapBank().retrieve();
+	//init the cap bank points  list
+	ccMonitorBankList = CCMonitorBankList.getMonitorPointsOnCapBankList(getCapBank().getDeviceID());
 }
 /**
  * This method was created in VisualAge.
@@ -97,6 +112,11 @@ public void setCapBank(com.cannontech.database.db.capcontrol.CapBank newValue) {
 public void setDbConnection(java.sql.Connection conn) {
 	super.setDbConnection(conn);
 	getCapBank().setDbConnection(conn);
+	
+	for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+		CCMonitorBankList item = (CCMonitorBankList) iter.next();
+		item.setDbConnection(conn);
+	}
 }
 /**
  * This method was created in VisualAge.
@@ -119,5 +139,18 @@ public void setLocation( String loc )
 public void update() throws java.sql.SQLException{
 	super.update();
 	getCapBank().update();
+	CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());	
+	for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+		CCMonitorBankList item = (CCMonitorBankList) iter.next();
+		item.add();
+	}
 }
+
+public List getCcMonitorBankList() {
+	return ccMonitorBankList;
+}
+public void setCcMonitorBankList(List ccMonitorBankList) {
+	this.ccMonitorBankList = ccMonitorBankList;
+}
+
 }
