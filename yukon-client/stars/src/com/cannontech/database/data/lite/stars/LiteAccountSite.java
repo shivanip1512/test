@@ -19,6 +19,7 @@ public class LiteAccountSite extends LiteBase {
 	private String siteNumber = null;
 	private int streetAddressID = 0;
 	private String propertyNotes = null;
+    private String custAtHome = null;
 	
 	public LiteAccountSite() {
 		super();
@@ -114,5 +115,15 @@ public class LiteAccountSite extends LiteBase {
 	public void setStreetAddressID(int streetAddressID) {
 		this.streetAddressID = streetAddressID;
 	}
+
+    public String getCustAtHome()
+    {
+        return custAtHome;
+    }
+
+    public void setCustAtHome(String custAtHome)
+    {
+        this.custAtHome = custAtHome;
+    }
 
 }

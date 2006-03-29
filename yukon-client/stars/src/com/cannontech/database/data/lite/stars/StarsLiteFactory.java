@@ -388,6 +388,7 @@ public class StarsLiteFactory {
 		liteAcctSite.setSiteNumber( acctSite.getSiteNumber() );
 		liteAcctSite.setStreetAddressID( acctSite.getStreetAddressID().intValue() );
 		liteAcctSite.setPropertyNotes( acctSite.getPropertyNotes() );
+        liteAcctSite.setCustAtHome(acctSite.getCustAtHome());
 	}
 	
 	public static void setLiteLMControlHistory(LiteLMControlHistory liteCtrlHist, com.cannontech.database.db.pao.LMControlHistory ctrlHist) {
@@ -901,6 +902,7 @@ public class StarsLiteFactory {
 		acctSite.setSiteNumber( liteAcctSite.getSiteNumber() );
 		acctSite.setStreetAddressID( new Integer(liteAcctSite.getStreetAddressID()) );
 		acctSite.setPropertyNotes( liteAcctSite.getPropertyNotes() );
+        acctSite.setCustAtHome(liteAcctSite.getCustAtHome());
 	}
 	
 	public static void setSiteInformation(com.cannontech.database.db.stars.customer.SiteInformation siteInfo, LiteSiteInformation liteSiteInfo) {

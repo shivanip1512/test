@@ -61,7 +61,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 		
 		String sql = "SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber,ac.CustomerID, ac.BillingAddressID, ac.AccountNotes," +
 			" ba.LocationAddress1 as BAddr1, ba.LocationAddress2 as BAddr2, ba.CityName as BCity, ba.StateCode as BState, ba.ZipCode as BZip, ba.County as BCounty," +
-			" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes," +
+			" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, " +
 			" sa.LocationAddress1 as SAddr1, sa.LocationAddress2 as SAddr2, sa.CityName as SCity, sa.StateCode as SState, sa.ZipCode as SZip, sa.County as SCounty," +
 			" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, sub.SubstationName, sub.RouteID" +
 			" FROM CustomerAccount ac, Address ba, AccountSite acs, Address sa, SiteInformation si, Substation sub, ECToAccountMapping map" +
@@ -181,6 +181,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 		liteAcctSite.setSiteNumber( rset.getString("SiteNumber") );
 		liteAcctSite.setStreetAddressID( rset.getInt("StreetAddressID") );
 		liteAcctSite.setPropertyNotes( rset.getString("PropertyNotes") );
+        liteAcctSite.setCustAtHome(rset.getString("CustAtHome"));
 		liteAcctInfo.setAccountSite( liteAcctSite );
 		
 		LiteSiteInformation liteSiteInfo = new LiteSiteInformation();
