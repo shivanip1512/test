@@ -48,7 +48,8 @@ public class SubBus extends StreamableCapObject
 
 
 	//should only contain objects of type Feeder
-	private java.util.Vector ccFeeders = null;	
+	private java.util.Vector ccFeeders = null;
+	private Boolean switchOverStatus = null;	
 	
 	
 /**
@@ -578,6 +579,14 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	 */
 	public void setPowerFactorPointId(Integer integer) {
 		powerFactorPointId = integer;
+	}
+	
+	public void setSwitchOverStatus(Boolean b) {
+		switchOverStatus  = b;
+		
+	}
+	public Boolean getSwitchOverStatus() {
+		return switchOverStatus;
 	}
 
 }
