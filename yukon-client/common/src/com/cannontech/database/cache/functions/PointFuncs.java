@@ -4,17 +4,22 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.point.RawPointHistory;
 
 /**
@@ -237,6 +242,29 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 			}
 		}
 		return data;
+	}
+	public static List getCapBankMonitorPoints(CapBank capBank) {
+		List monitorPointList = new ArrayList();
+		for (Iterator iter = capBank.getCcMonitorBankList().iterator(); iter.hasNext();) {
+			CCMonitorBankList point = (CCMonitorBankList) iter.next();			
+			
+			CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
+			monitorPoint.setCapBankId(point.getCapBankId().intValue());
+			monitorPoint.setPointId(point.getPointId().intValue());
+			monitorPoint.setDisplayOrder(point.getDisplayOrder().intValue());
+			if (point.getScannable().charValue() == 'Y') 
+				monitorPoint.setInitScan(true);
+			else
+				monitorPoint.setInitScan(false);
+			monitorPoint.setNINAvg(point.getNINAvg().longValue());
+			monitorPoint.setLowerBandwidth(point.getLowerBandwidth().floatValue());
+			monitorPoint.setUpperBandwidth(point.getUpperBandwidth().floatValue());			
+			LitePoint p = PointFuncs.getLitePoint(point.getPointId().intValue());
+			monitorPoint.setPointName(p.getPointName());
+			monitorPoint.setOverrideFdrLimits(false);
+			monitorPointList.add(monitorPoint);
+		}
+			return monitorPointList;
 	}
 	
 }
