@@ -130,6 +130,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setVerificationFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
+		
+	subBus.setSwitchOverStatus( 
+			((int)vstr.extractUnsignedInt() == 1)
+			? new Boolean(true) : new Boolean(false) );
 
 	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
@@ -217,8 +221,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 		(subBus.getVerificationFlag().booleanValue() == true)
 		? 1 : 0 );
+	vstr.insertUnsignedInt( 
+			(subBus.getSwitchOverStatus().booleanValue() == true)
+			? 1 : 0 );
+	
 
 	VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
-	//vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }
 }
