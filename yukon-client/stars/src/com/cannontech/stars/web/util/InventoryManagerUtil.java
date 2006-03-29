@@ -37,6 +37,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.data.stars.hardware.InventoryBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -410,13 +411,10 @@ public class InventoryManagerUtil {
 		return device.getDevice().getDeviceID().intValue();
 	}
 	
-	public static void deleteInventory(int invID, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception
+	public static void deleteInventory(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception
 	{
-		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
-		
-		com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-				new com.cannontech.database.data.stars.hardware.InventoryBase();
-		inventory.setInventoryID( new Integer(invID) );
+		int invID = liteInv.getInventoryID();
+		InventoryBase inventory = (InventoryBase)StarsLiteFactory.createDBPersistent(liteInv);
 		
 		Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
 		energyCompany.deleteInventory( invID );
