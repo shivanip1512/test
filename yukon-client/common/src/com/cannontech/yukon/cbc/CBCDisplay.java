@@ -1,6 +1,8 @@
 package com.cannontech.yukon.cbc;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -8,12 +10,17 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ColorUtil;
@@ -209,6 +216,10 @@ public class CBCDisplay
                     }
                     
                 }
+                else if (subBus.getSwitchOverStatus().booleanValue() && isDualBusEnabled(subBus)) {
+                		state = "ENABLED - ALT BUS";                	
+                }
+                
                 else
                     state = "ENABLED";
 
@@ -334,6 +345,36 @@ public class CBCDisplay
 
         
     }
+
+	/**
+	 * @param subBus
+	 * @return
+	 */
+	private boolean isDualBusEnabled(SubBus subBus) {
+		DBPersistent pao =	PAOFactory.createPAObject(subBus.getCcId().intValue());
+		Connection conn = null;		
+		
+		try {
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			pao.setDbConnection( conn );
+			pao.retrieve();
+		}
+		catch( SQLException sql ) {
+			CTILogger.error("Unable to retrieve DB Object", sql );
+		}
+		finally {
+			pao.setDbConnection( null );
+			
+			try {
+			if( conn != null ) conn.close();
+			} catch( java.sql.SQLException e2 ) { }			
+		}
+		CapControlSubBus capControlSubBus1 = ((CapControlSubBus)pao);
+		CapControlSubBus capControlSubBus = capControlSubBus1;
+		String dualBusEnabled = capControlSubBus.getCapControlSubstationBus().getDualBusEnabled();
+		return  (dualBusEnabled.equalsIgnoreCase("Y")) ? true : false;
+	
+	}
     
     
     
