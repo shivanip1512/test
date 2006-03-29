@@ -4,9 +4,25 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.stars.hardware.LMHardwareBase;
+import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.SwitchCommandQueue;
+import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 
 public class SAMToCRS_PTJ extends DBPersistent {
 
@@ -124,9 +140,9 @@ public final Integer getNextPTJID() {
 }
 
 
-public static ArrayList getAllCurrentPTJEntries()
+public static ArrayList<SAMToCRS_PTJ> getAllCurrentPTJEntries()
 {
-    ArrayList changes = new ArrayList();
+    ArrayList<SAMToCRS_PTJ> changes = new ArrayList<SAMToCRS_PTJ>();
     
     //Join the additional meter number table to load all additional meter numbers too.
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
@@ -227,4 +243,121 @@ public Character getExtract() {
 public void setExtract(Character extract) {
 	this.extract = extract;
 }
+
+/**
+ * @param stateYukDefID
+ * @param workOrderBase
+ * @param liteStarsCustAcctInfo
+ * @param liteStarsEC
+ * @param userID
+ * @param meterNumber The meterNumber for SerialNumber lookup, when null the workOrderBase.Description field is parsed for it.  
+ * @throws TransactionException
+ */
+public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteStarsCustAccountInformation liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
+{
+    YukonListEntry workTypeEntry = YukonListFuncs.getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
+    
+//  Only run through the SAMToCRS process if workOrder came from CRS Integration.  The CRS PJT number is stored in the AdditionalOrderNumber field
+    if(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber() != null && 
+       workOrderBase.getWorkOrderBase().getAdditionalOrderNumber().length() > 0)
+    {
+        String samToCrsStatus = null;
+        if( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+            samToCrsStatus = "P";
+        else if ( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+            samToCrsStatus = "X";
+//      else if ( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
+//          samToCrsStatus = "C";
+        
+        if (samToCrsStatus != null && workTypeEntry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE)
+        {
+            SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ();
+            samToCrs_ptj.setDebtorNumber(liteStarsCustAcctInfo.getCustomer().getAltTrackingNumber());
+            samToCrs_ptj.setPremiseNumber(Integer.valueOf(liteStarsCustAcctInfo.getCustomerAccount().getAccountNumber()));
+            try{
+                samToCrs_ptj.setPTJID(Integer.valueOf(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber()));
+            }catch(NumberFormatException nfe){}
+            samToCrs_ptj.setStarsUserName(YukonUserFuncs.getLiteYukonUser(userID).getUsername());
+            samToCrs_ptj.setStatusCode(samToCrsStatus);
+            samToCrs_ptj.setDateTime_Completed(new Date());
+            samToCrs_ptj.setWorkOrderNumber(workOrderBase.getWorkOrderBase().getOrderNumber());
+            Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
+        }
+    }
+    
+    /* Handle config for Release Activation PTJ*/
+    if( (stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_RELEASED && 
+         workTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION ) ||
+        (stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED && 
+         workTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_DEACTIVATION) )            
+    {
+        int devStatYukDefID = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;    //ACTIVATION
+        String switchCommandStr = SwitchCommandQueue.SWITCH_COMMAND_ENABLE;     //ACTIVATION
+        if( workTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_DEACTIVATION )
+        {
+            devStatYukDefID = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+            switchCommandStr = SwitchCommandQueue.SWITCH_COMMAND_DISABLE;
+        }
+        
+        if( meterNumber == null || meterNumber.length() <= 0)
+        {
+            int beginIndex = workOrderBase.getWorkOrderBase().getDescription().indexOf("Meter Number: ");    //"Meter Number: " is hardcoded in the creation of the PTJ using CRSIntegrator
+            int endIndex = (beginIndex >= 0 ? workOrderBase.getWorkOrderBase().getDescription().indexOf(";", beginIndex + 14) : beginIndex);
+            if( beginIndex > -1 && endIndex > -1)
+                meterNumber = workOrderBase.getWorkOrderBase().getDescription().substring(beginIndex+14, endIndex);
+        }
+        
+        MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrderBase.getWorkOrderBase().getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyID().intValue());
+        if( meterHardwareBase != null)
+        {
+            ArrayList<LMHardwareBase> lmHardwares = MeterHardwareBase.retrieveAssignedSwitches(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
+            if( lmHardwares.size() > 0)
+            {
+                YukonListEntry devStateEntry = null;
+                YukonSelectionList invDevStateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+                for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
+                {
+                    if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == devStatYukDefID)
+                    {
+                        devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
+                        break;
+                    }
+                    
+                }
+                for (int i = 0; i < lmHardwares.size(); i++)
+                {
+                    try{
+                        //Retrieve the lmhardwarebase data object
+                        LMHardwareBase hardware = lmHardwares.get(i);
+                        com.cannontech.database.data.stars.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+                        lmHardwareBase.setInventoryID(hardware.getInventoryID());
+                        lmHardwareBase.setLMHardwareBase(hardware);
+                        lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
+                        
+                        //Update the lmHardwareBase data object
+                        lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
+                        lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
+                        
+                        //Log the inventory (lmHardwarebase) state change.
+                        EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+
+                        //Add a config to the queue to deactivate the switch
+                        SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();
+                        switchCommand.setAccountID(workOrderBase.getWorkOrderBase().getAccountID());
+                        switchCommand.setCommandType(switchCommandStr);
+                        switchCommand.setEnergyCompanyID(liteStarsEC.getEnergyCompanyID().intValue());
+                        switchCommand.setInfoString("Released " + workTypeEntry.getEntryText() + " Work Order");
+                        switchCommand.setInventoryID(lmHardwareBase.getInventoryBase().getInventoryID().intValue());
+                        SwitchCommandQueue.getInstance().addCommand(switchCommand, true);
+                        
+                    }catch(TransactionException te)
+                    {
+                        te.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+}
+
 }
