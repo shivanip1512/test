@@ -101,6 +101,10 @@ addLockButtonForButtonGroup("buttons");
                     <x:panelTab id="tabDualBus" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
                     <jsp:include page="/WEB-INF/pages/cbc/cbcDualBus.jsp"/>
                     </x:panelTab>		
+		
+		    		<x:panelTab id="tabAdvCapBank" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
+                    <jsp:include page="/WEB-INF/pages/cbc/cbcCapBankAdvanced.jsp"/>                   
+                    </x:panelTab>
 
 
                 </x:panelTabbedPane>
@@ -109,8 +113,11 @@ addLockButtonForButtonGroup("buttons");
                 <f:facet name="footer">
                     <x:panelGroup id="buttons" forceId="true">
                         <f:verbatim><br/></f:verbatim>
-                        <x:commandButton id="submit_button" value="Submit" action="#{capControlForm.update}" styleClass="stdButton" title="Writes this item to the database" />
-                        <x:commandButton id="reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
+                        <x:commandButton id="submit_button1" value="Submit" action="#{capControlForm.update}" 
+                        styleClass="stdButton" title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank']}"/>
+                        <x:commandButton id="submit_button2" value="Submit" action="#{capBankEditor.update}" 
+                        styleClass="stdButton" title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank']}"/>
+                        <x:commandButton  id="reset_button"  value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
                         <x:commandButton id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
                             <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                         </x:commandButton>
@@ -122,6 +129,7 @@ addLockButtonForButtonGroup("buttons");
             </h:form>
         </f:facet>
     </x:panelLayout>
+
 
 
 </cti:standardPage>
