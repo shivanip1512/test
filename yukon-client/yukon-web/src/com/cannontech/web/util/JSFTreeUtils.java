@@ -38,13 +38,12 @@ public class JSFTreeUtils {
                 deviceMap.put(device, newParent);
                 rootData.getChildren().add(newParent);
 
-            } else
+            } else {
                 // don't create a device
                 // just attach a point in the root data for this device
-
                 // get the old tree node
                 newParent = (TreeNodeBase) deviceMap.get(device);
-
+            }
             newParent.getChildren().add(leaf);
 
         }
