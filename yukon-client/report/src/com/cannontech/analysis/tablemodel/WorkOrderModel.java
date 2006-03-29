@@ -28,6 +28,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -40,6 +41,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
+import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -781,6 +783,9 @@ public class WorkOrderModel extends ReportModelBase {
 	 */
 	public String[] getColumnNames() {
 		if (columnNames == null) {
+            String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
+            if( getUserID() != null)
+                addtlOrderNumberStr = AuthFuncs.getRolePropertyValue(getUserID().intValue(), WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL);
 			columnNames = new String[] {
 				//HEADER
 				EC_NAME_STRING,
@@ -802,7 +807,7 @@ public class WorkOrderModel extends ReportModelBase {
 				ADDRESS2_STRING,
 				CITY_STATE_ZIP_STRING,
 				COMPANY_NAME_STRING,
-				ADDTL_ORDER_NO_STRING,
+				addtlOrderNumberStr,
 				MAP_NO_STRING,
 				METER_NO_STRING,
 				ACCOUNT_NOTES_STRING,
