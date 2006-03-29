@@ -8,7 +8,6 @@
 
 addSmartScrolling('currentAltSubDivOffset', 'AltSubBusScrollableDiv', 'selectedSubBus', 'AltSubBusList');
 addSmartScrolling('currentTwoWayPointDivOffset', 'TwoWayPointScrollableDiv', 'selectedSwitchPoint','editorForm:altDualBusSetup:altDualBus:TwoWayPointsPaoListTree');
-Event.observe(window, 'load', toggleDivs);
 </script>
 </f:verbatim>
 <f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
@@ -21,7 +20,7 @@ Event.observe(window, 'load', toggleDivs);
 				</legend>
 		</f:verbatim>
 	
-		<x:selectBooleanCheckbox forceId="true"  valueChangeListener="#{capControlForm.dualBusEnabledClick}" styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
+		<x:selectBooleanCheckbox forceId="true"  styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
 		value="#{capControlForm.enableDualBus}" onclick="submit();">
 			<h:outputText value="Enable Dual Bus" />
 		</x:selectBooleanCheckbox>
@@ -36,7 +35,7 @@ Event.observe(window, 'load', toggleDivs);
 					<br />
 					<fieldset>
 						<legend>
-							Alternative Substation Bus
+							Alternate Substation Bus
 						</legend>
 				</f:verbatim>
 				<x:div forceId="true" id = "AltSubBusScrollableDiv" styleClass="scrollSmallWidthSet" rendered="#{capControlForm.enableDualBus}">
@@ -54,9 +53,10 @@ Event.observe(window, 'load', toggleDivs);
 			</x:panelGroup>
 			<x:panelGroup>
 				<h:outputText styleClass="tableHeader" value="Selected Disable or Switch Point:" />
-				<x:commandLink actionListener="#{capControlForm.selectedTwoWayPointClick}">
-				<h:outputText value="#{capControlForm.selectedTwoWayPointsFormatString}" />
+				<x:commandLink actionListener="#{capControlForm.selectedTwoWayPointClick}" rendered="#{capControlForm.switchPointEnabled}">
+				<h:outputText value="#{capControlForm.selectedTwoWayPointsFormatString}" rendered="#{capControlForm.switchPointEnabled}"/>
 				</x:commandLink>
+				<h:outputText styleClass="medLabel" value="(none)" rendered="#{!capControlForm.switchPointEnabled}"/>
 				<f:verbatim>
 					<br />
 					<fieldset>
@@ -89,6 +89,10 @@ Event.observe(window, 'load', toggleDivs);
 						</f:facet>
 					</x:tree2>
 				</x:div>
+				
+				<x:commandLink id="switchPoint_set_none" title="Do not use a switch point" value="No Switch Point" actionListener="#{capControlForm.twoWayPtsTeeClick}" styleClass="medStaticLabel">
+					<f:param name="ptID" value="0" />
+				</x:commandLink>
 				<f:verbatim>
 					</fieldset>
 				</f:verbatim>
