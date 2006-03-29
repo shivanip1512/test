@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/29 22:49:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,10 +168,6 @@ public:
     static void    initLCUGlobals();
     void           dumpStatus(BYTE Byte4, BYTE Byte5);
 
-    static void assignToken(ULONG id);
-    static void releaseToken();
-    static ULONG whoHasToken();
-    static bool tokenIsAvailable(ULONG id_whosasking);
     static bool excludeALL();
     static ULONG getSlowScanDelay();
 

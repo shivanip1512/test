@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2006/03/29 22:49:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1082,9 +1082,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             DeviceManager.writeDynamicPaoInfo();
         }
 
-        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds() - WorkReportFrequencyInSeconds) )
+        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds()) )
         {
-            lastWorkReportTime = lastWorkReportTime.now();
+            lastWorkReportTime = nextScheduledTimeAlignedOnRate(lastWorkReportTime.now(), WorkReportFrequencyInSeconds);
             reportOnWorkObjects();
         }
 
@@ -2223,7 +2223,8 @@ bool processInputFunction(CHAR Char)
         }
     case 0x77:              // alt-w
         {
-            PortManager.apply( applyPortWorkReport, NULL );
+            reportOnWorkObjects();
+            // PortManager.apply( applyPortWorkReport, NULL );
             break;
         }
     case 0x79:              // alt-y

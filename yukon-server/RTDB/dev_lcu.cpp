@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2006/03/29 22:49:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2049,7 +2049,6 @@ void CtiDeviceLCU::lcuResetFlagsAndTags()
     resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
     deleteLastControlMessage();
     setNumberStarted( 0 );
-    releaseToken();
     removeInfiniteProhibit(getID());        // Do not block yourself Mr. LCU.
 }
 
@@ -2215,42 +2214,6 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
     }
 
     return bStatus;
-}
-
-void CtiDeviceLCU::assignToken(ULONG id)
-{
-    CtiLockGuard<CtiMutex> guard(_staticMux);
-
-    if( CtiDeviceLCU::excludeALL() )
-    {
-        _lcuWithToken = id;
-    }
-}
-
-void CtiDeviceLCU::releaseToken()
-{
-    CtiLockGuard<CtiMutex> guard(_staticMux);
-    _lcuWithToken = 0;
-}
-
-ULONG CtiDeviceLCU::whoHasToken()
-{
-    CtiLockGuard<CtiMutex> guard(_staticMux);
-    return _lcuWithToken;
-}
-
-bool CtiDeviceLCU::tokenIsAvailable(ULONG id_whosasking)
-{
-    bool ret = false;
-
-    CtiLockGuard<CtiMutex> guard(_staticMux);
-
-    if( !CtiDeviceLCU::excludeALL() || _lcuWithToken == 0 || _lcuWithToken == id_whosasking)
-    {
-        ret = true;
-    }
-
-    return ret;
 }
 
 bool CtiDeviceLCU::excludeALL()
