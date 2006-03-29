@@ -45,22 +45,6 @@
 				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Reset Op Counts</a>
 		  </td></tr>
-
-<% if( feeder.getWaiveControlFlag().booleanValue() ) { %>
-          <tr><td>
-          	<a href="javascript:void(0);" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.UNWAIVE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
-				>Unwaive Feeder</a>
-		  </td></tr>
-<% } else { %>
-          <tr><td>
-          	<a href="javascript:void(0);" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.WAIVE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
-				>Waive Feeder</a>
-		  </td></tr>
-<% } %>
 		  
         </table>
   </cti:titledContainer>
