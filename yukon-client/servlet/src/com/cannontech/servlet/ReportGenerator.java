@@ -123,6 +123,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			reportBean.getModel().setTimeZone(tz);
 			reportBean.getModel().setParameters(req);
 			reportBean.getModel().setEnergyCompanyID(energyCompanyID);
+            reportBean.getModel().setUserID(liteYukonUser.getUserID());
 
 			//Add ECId to the reportkey.
 			reportKey += String.valueOf(energyCompanyID);
