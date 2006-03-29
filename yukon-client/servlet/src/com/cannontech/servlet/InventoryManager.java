@@ -127,9 +127,15 @@ public class InventoryManager extends HttpServlet {
 		else if (action.equalsIgnoreCase("UpdateInventory"))
 			updateInventory( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteInventory")) {
+            String att_redir = req.getParameter(ServletUtils.ATT_REDIRECT);
+            String refer = req.getParameter(ServletUtils.ATT_REFERRER);
+            if( att_redir == null)
+                att_redir = req.getContextPath() + "/operator/Consumer/Update.jsp";
+            if( refer == null)
+                refer = req.getContextPath() + "/operator/Consumer/Update.jsp";
 			String redir = req.getContextPath() + "/servlet/SOAPClient?action=DeleteLMHardware" +
-					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
-					"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
+					"&REDIRECT=" + att_redir +
+					"&REFERRER=" + refer;
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
 			deleteInventory( user, req, session );
 		}
@@ -778,7 +784,7 @@ public class InventoryManager extends HttpServlet {
 					&& req.getParameter("DeleteAction").equalsIgnoreCase("DeleteFromYukon");
 			
 			try {
-				InventoryManagerUtil.deleteInventory( invID, energyCompany, deleteFromYukon );
+				InventoryManagerUtil.deleteInventory( liteInv, energyCompany, deleteFromYukon );
 			}
 			catch (Exception e) {
 				CTILogger.error( e.getMessage(), e );
