@@ -96,7 +96,7 @@ public final class AlarmFuncs {
 		List acSignals = new ArrayList();
 		PointChangeCache pcCache = PointChangeCache.getPointChangeCache();
 		for (int i = 0; i < acIds.length; i++) {
-			List signals = pcCache.getSignals(acIds[i]);
+			List signals = pcCache.getSignalsForCategory(acIds[i]);
 			acSignals.addAll(signals);
 		}
 		return acSignals;
