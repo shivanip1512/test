@@ -229,6 +229,12 @@ public class WorkOrderManager extends HttpServlet {
 	private void manipulateSelectedResults(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		
 		String[] selections = req.getParameterValues("checkWorkOrder");
+        if( selections == null)//none selected
+        {
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There are no individual Work Orders checked to manipulate.");
+            redirect = referer;
+            return;
+        }
 		int [] selectionIDs = new int[selections.length];
 		for ( int i = 0; i < selections.length; i++)
 			selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
