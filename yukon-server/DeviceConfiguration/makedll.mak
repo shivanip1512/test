@@ -43,6 +43,7 @@ config_base.obj \
 config_device.obj \
 config_resolvers.obj \
 config_parts_mct.obj \
+config_parts_cbc.obj \
 
 CTIPROGS=\
 cticonfig.dll
@@ -120,6 +121,10 @@ config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h rwutil.h \
 		thread.h mutex.h guard.h CtiPCPtrQueue.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h cticonnect.h netports.h utility.h \
 		sorted_vector.h
+config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h \
+		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		ctitime.h CtiPCPtrQueue.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		ctitime.h dlldefs.h dsm2.h mutex.h guard.h cticonnect.h \
 		netports.h sorted_vector.h id_build.h id_vinfo.h

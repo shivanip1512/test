@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/24 15:11:52 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/03/30 16:04:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,9 +15,11 @@
 #include "config_parts.h"
 #include "rwutil.h"
 #include "utility.h"
+#pragma warning( disable : 4661)//This lets us split the config_parts_xxx.cpp files up without getting warnings
 
 namespace Cti    {
 namespace Config {
+using namespace MCT;
 
 MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(string key)
 {

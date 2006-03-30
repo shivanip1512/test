@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/03/24 15:11:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/30 16:04:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -87,7 +87,57 @@ CtiConfig_type resolveConfigType(string rwsTemp)
         {
             Ret = ConfigTypeInvalid;
         }
-
+    }
+    else if(rwsTemp.find("cbc ")!= string::npos)//note, if even a word ends in "...cbc " it will go into this path. use caution
+    {
+        if(rwsTemp == "cbc voltage")
+        {
+            Ret = ConfigTypeCBCVoltage;
+        }
+        else if(rwsTemp == "cbc comms lost")
+        {
+            Ret = ConfigTypeCBCCommsLost;
+        }
+        else if(rwsTemp == "cbc neutral current")
+        {
+            Ret = ConfigTypeCBCNeutralCurrent;
+        }
+        else if(rwsTemp == "cbc fault detection")
+        {
+            Ret = ConfigTypeCBCFaultDetection;
+        }
+        else if(rwsTemp == "cbc season 1 time and temp")
+        {
+            Ret = ConfigTypeCBCSeason1TimeAndTemp;
+        }
+        else if(rwsTemp == "cbc season 2 time and temp")
+        {
+            Ret = ConfigTypeCBCSeason2TimeAndTemp;
+        }
+        else if(rwsTemp == "cbc control times")
+        {
+            Ret = ConfigTypeCBCControlTimes;
+        }
+        else if(rwsTemp == "cbc data logging")
+        {
+            Ret = ConfigTypeCBCDataLogging;
+        }
+        else if(rwsTemp == "cbc addressing")
+        {
+            Ret = ConfigTypeCBCAddressing;
+        }
+        else if(rwsTemp == "cbc dnp")
+        {
+            Ret = ConfigTypeCBC_DNP;
+        }
+        else if(rwsTemp == "cbc udp")
+        {
+            Ret = ConfigTypeCBC_UDP;
+        }
+        else
+        {
+            Ret = ConfigTypeInvalid;
+        }
     }
 
     return Ret;

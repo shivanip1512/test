@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/24 15:11:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2006/03/30 16:04:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,6 +248,7 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
     {
         switch(type)
         {
+            using namespace MCT;
             case ConfigTypeMCTTOU:
             {
                 BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_TOU>());
@@ -311,6 +312,62 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
             case ConfigTypeMCTSystemOptions:
             {
                 BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTSystemOptions>());
+                return tempBasePtr;
+            }
+            using namespace CBC;
+            case ConfigTypeCBCVoltage:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCVoltage>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCCommsLost:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCCommsLost>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCNeutralCurrent:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCNeutralCurrent>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCFaultDetection:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCFaultDetection>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCSeason1TimeAndTemp:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCSeason1TimeAndTemp>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCSeason2TimeAndTemp:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCSeason2TimeAndTemp>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCControlTimes:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCControlTimes>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCDataLogging:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCDataLogging>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBCAddressing:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBCAddressing>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBC_DNP:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBC_DNP>());
+                return tempBasePtr;
+            }
+            case ConfigTypeCBC_UDP:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<CBC_UDP>());
                 return tempBasePtr;
             }
             default:

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/03/24 15:11:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2006/03/30 16:04:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@ class CtiConfigManager;
 namespace Cti    {
 namespace Config {
 
+namespace MCT {
 enum MCTAddressing
 {
     MCTAddressingInvalid,
@@ -142,6 +143,141 @@ enum MCTSystemOptions
     DemandMetersToScan,
 };
 
+}//namespace mct
+
+namespace CBC{
+enum CBCVoltage
+{
+    ActiveSettings,
+    UVClosePoint,
+    OVTripPoint,
+    OVUVControlTriggerTime,
+    AdaptiveVoltageHysteresis,
+    AdaptiveVoltageFlag,
+    EmergencyUVPoint,
+    EmergencyOVPoint,
+    EmergencyVoltageTime,
+    CBCVoltageInvalid,
+};
+
+enum CBCCommsLost
+{
+    CommsLostUVClosePoint,
+    CommsLostOVTripPoint,
+    CommsLostTime,
+    CommsLostAction,
+    CBCCommsLostInvalid,
+};
+
+enum CBCNeutralCurrent
+{
+    FaultCurrentSetPoint,
+    StateChangeSetPoint,
+    NeutralCurrentRetryCount,
+    CBCNeutralCurrentInvalid,
+};
+
+enum CBCFaultDetection
+{
+    FaultDetectionActive,
+    AI1AverageTime,
+    AI2AverageTime,
+    AI3AverageTime,
+    AI1PeakSamples,
+    AI2PeakSamples,
+    AI3PeakSamples,
+    AI1RatioThreshold,
+    AI2RatioThreshold,
+    AI3RatioThreshold,
+    BatteryOnTime,
+    CBCFaultDetectionInvalid,
+};
+
+enum CBCSeason1TimeAndTemp
+{
+    Season1Start,
+    WeekdayTimedControlClose1,
+    WeekendTimedControlClose1,
+    WeekdayTimedControlTrip1,
+    WeekendTimedControlTrip1,
+    OffTimeState1,
+    TempMinThreshold1,
+    TempMinThresholdAction1,
+    TempMinHysterisis1,
+    TempMinThresholdTrigTime1,
+    TempMaxThreshold1,
+    TempMaxThresholdAction1,
+    TempMaxHysterisis1,
+    TempMaxThresholdTrigTime1,
+    CBCSeason1TimeAndTempInvalid,
+};
+
+enum CBCSeason2TimeAndTemp
+{
+    Season2Start,
+    WeekdayTimedControlClose2,
+    WeekendTimedControlClose2,
+    WeekdayTimedControlTrip2,
+    WeekendTimedControlTrip2,
+    OffTimeState2,
+    TempMinThreshold2,
+    TempMinThresholdAction2,
+    TempMinHysterisis2,
+    TempMinThresholdTrigTime2,
+    TempMaxThreshold2,
+    TempMaxThresholdAction2,
+    TempMaxHysterisis2,
+    TempMaxThresholdTrigTime2,
+    CBCSeason2TimeAndTempInvalid,
+};
+
+enum CBCControlTimes
+{
+    ContactClosureTime,
+    ManualControlDelayTrip,
+    ManualControlDelayClose,
+    RecloseDelayTime,
+    CBCControlTimesInvalid,
+};
+
+enum CBCDataLogging
+{
+    DataLogFlags,
+    LogTimeInterval,
+    CBCDataLoggingInvalid,
+};
+
+enum CBCAddressing
+{
+    Geo,
+    Substation,
+    Feeder,
+    Zip,
+    UserDefined,
+    Program,
+    Splinter,
+    RequiredAddressLevel,
+    MCTAddressingInvalid,
+};
+
+enum CBC_DNP
+{
+    LineVoltageDeadBand,
+    DeltaVoltageDeadBand,
+    AnalogDeadBand,
+    CBC_DNPInvalid,
+};
+
+enum CBC_UDP
+{
+    RetryDelay,
+    PollTimeout,
+    CBC_UDPInvalid,
+};
+
+}//namespace CBC
+
+
 template <class T>
 class IM_EX_CONFIG ConfigurationPart : public Base
 {
@@ -163,19 +299,30 @@ protected:
     virtual bool setProtectedValueWithKey(const string &value, const int key);
 };
 
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTAddressing>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT_TOU>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT_DST>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTVThreshold>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTOptions>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTDemandLoadProfile>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTDisconnect>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTLongLoadProfile>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTHoliday>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTLoadProfileChannels>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTRelays>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTPrecannedTable>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTSystemOptions>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTAddressing>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_TOU>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCT_DST>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTVThreshold>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTOptions>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTDemandLoadProfile>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTDisconnect>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTLongLoadProfile>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTHoliday>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTLoadProfileChannels>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTRelays>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTPrecannedTable>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT::MCTSystemOptions>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCVoltage>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCCommsLost>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCNeutralCurrent>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCFaultDetection>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCSeason1TimeAndTemp>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCSeason2TimeAndTemp>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCControlTimes>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCDataLogging>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBCAddressing>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_DNP>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<CBC::CBC_UDP>;
 
 template <class T>
 bool ConfigurationPart<T>::setValueWithKey(const string &value, T enumKey)
@@ -250,33 +397,57 @@ bool ConfigurationPart<T>::setProtectedValueWithKey(const string &value, int key
 
 
 #ifdef VSLICK_TAG_WORKAROUND
-typedef ConfigurationPart<MCTAddressing> *          MCTAddressingSPtr;
-typedef ConfigurationPart<MCT_TOU> *                MCT_TOU_SPtr;
-typedef ConfigurationPart<MCT_DST> *                MCT_DST_SPtr;
-typedef ConfigurationPart<MCTVThreshold> *          MCTVThresholdSPtr;
-typedef ConfigurationPart<MCTOptions> *             MCTOptionsSPtr;
-typedef ConfigurationPart<MCTDemandLoadProfile> *   MCTDemandLoadProfileSPtr;
-typedef ConfigurationPart<MCTDisconnect> *          MCTDisconnectSPtr;
-typedef ConfigurationPart<MCTLongLoadProfile> *     MCTLongLoadProfileSPtr;
-typedef ConfigurationPart<MCTHoliday> *             MCTHolidaySPtr;
-typedef ConfigurationPart<MCTLoadProfileChannels> * MCTLoadProfileChannelsSPtr;
-typedef ConfigurationPart<MCTRelays> *              MCTRelaysSPtr;
-typedef ConfigurationPart<MCTPrecannedTable> *      MCTPrecannedTableSPtr;
-typedef ConfigurationPart<MCTSystemOptions> *       MCTSystemOptionsSPtr;
+typedef ConfigurationPart<MCT::MCTAddressing> *          MCTAddressingSPtr;
+typedef ConfigurationPart<MCT::MCT_TOU> *                MCT_TOU_SPtr;
+typedef ConfigurationPart<MCT::MCT_DST> *                MCT_DST_SPtr;
+typedef ConfigurationPart<MCT::MCTVThreshold> *          MCTVThresholdSPtr;
+typedef ConfigurationPart<MCT::MCTOptions> *             MCTOptionsSPtr;
+typedef ConfigurationPart<MCT::MCTDemandLoadProfile> *   MCTDemandLoadProfileSPtr;
+typedef ConfigurationPart<MCT::MCTDisconnect> *          MCTDisconnectSPtr;
+typedef ConfigurationPart<MCT::MCTLongLoadProfile> *     MCTLongLoadProfileSPtr;
+typedef ConfigurationPart<MCT::MCTHoliday> *             MCTHolidaySPtr;
+typedef ConfigurationPart<MCT::MCTLoadProfileChannels> * MCTLoadProfileChannelsSPtr;
+typedef ConfigurationPart<MCT::MCTRelays> *              MCTRelaysSPtr;
+typedef ConfigurationPart<MCT::MCTPrecannedTable> *      MCTPrecannedTableSPtr;
+typedef ConfigurationPart<MCT::MCTSystemOptions> *       MCTSystemOptionsSPtr;
+
+typedef ConfigurationPart<CBC::CBCVoltage> *             CBCVoltageSPtr;
+typedef ConfigurationPart<CBC::CBCCommsLost> *           CBCCommsLostSPtr;
+typedef ConfigurationPart<CBC::CBCNeutralCurrent> *      CBCNeutralCurrentSPtr;
+typedef ConfigurationPart<CBC::CBCFaultDetection> *      CBCFaultDetectionSPtr;
+typedef ConfigurationPart<CBC::CBCSeason1TimeAndTemp> *  CBCSeason1TimeAndTempSPtr;
+typedef ConfigurationPart<CBC::CBCSeason2TimeAndTemp> *  CBCSeason2TimeAndTempSPtr;
+typedef ConfigurationPart<CBC::CBCControlTimes> *        CBCControlTimesSPtr;
+typedef ConfigurationPart<CBC::CBCDataLogging> *         CBCDataLoggingSPtr;
+typedef ConfigurationPart<CBC::CBCAddressing> *          CBCAddressingSPtr;
+typedef ConfigurationPart<CBC::CBC_DNP> *                CBC_DNPSPtr;
+typedef ConfigurationPart<CBC::CBC_UDP> *                CBC_UDPSPtr;
 #else
-typedef shared_ptr< ConfigurationPart<MCTAddressing> >          MCTAddressingSPtr;
-typedef shared_ptr< ConfigurationPart<MCT_TOU> >                MCT_TOU_SPtr;
-typedef shared_ptr< ConfigurationPart<MCT_DST> >                MCT_DST_SPtr;
-typedef shared_ptr< ConfigurationPart<MCTVThreshold> >          MCTVThresholdSPtr;
-typedef shared_ptr< ConfigurationPart<MCTOptions> >             MCTOptionsSPtr;
-typedef shared_ptr< ConfigurationPart<MCTDemandLoadProfile> >   MCTDemandLoadProfileSPtr;
-typedef shared_ptr< ConfigurationPart<MCTDisconnect> >          MCTDisconnectSPtr;
-typedef shared_ptr< ConfigurationPart<MCTLongLoadProfile> >     MCTLongLoadProfileSPtr;
-typedef shared_ptr< ConfigurationPart<MCTHoliday> >             MCTHolidaySPtr;
-typedef shared_ptr< ConfigurationPart<MCTLoadProfileChannels> > MCTLoadProfileChannelsSPtr;
-typedef shared_ptr< ConfigurationPart<MCTRelays> >              MCTRelaysSPtr;
-typedef shared_ptr< ConfigurationPart<MCTPrecannedTable> >      MCTPrecannedTableSPtr;
-typedef shared_ptr< ConfigurationPart<MCTSystemOptions> >       MCTSystemOptionsSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTAddressing> >          MCTAddressingSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCT_TOU> >                MCT_TOU_SPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCT_DST> >                MCT_DST_SPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTVThreshold> >          MCTVThresholdSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTOptions> >             MCTOptionsSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTDemandLoadProfile> >   MCTDemandLoadProfileSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTDisconnect> >          MCTDisconnectSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTLongLoadProfile> >     MCTLongLoadProfileSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTHoliday> >             MCTHolidaySPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTLoadProfileChannels> > MCTLoadProfileChannelsSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTRelays> >              MCTRelaysSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTPrecannedTable> >      MCTPrecannedTableSPtr;
+typedef shared_ptr< ConfigurationPart<MCT::MCTSystemOptions> >       MCTSystemOptionsSPtr;
+
+typedef shared_ptr< ConfigurationPart<CBC::CBCVoltage> >             CBCVoltageSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCCommsLost> >           CBCCommsLostSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCNeutralCurrent> >      CBCNeutralCurrentSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCFaultDetection> >      CBCFaultDetectionSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCSeason1TimeAndTemp> >  CBCSeason1TimeAndTempSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCSeason2TimeAndTemp> >  CBCSeason2TimeAndTempSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCControlTimes> >        CBCControlTimesSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCDataLogging> >         CBCDataLoggingSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBCAddressing> >          CBCAddressingSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBC_DNP> >                CBC_DNPSPtr;
+typedef shared_ptr< ConfigurationPart<CBC::CBC_UDP> >                CBC_UDPSPtr;
 #endif
 
 }//Config

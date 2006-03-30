@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_resolvers.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/03/24 15:11:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2006/03/30 16:04:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,19 @@ enum CtiConfig_type
     ConfigTypeMCTPrecannedTable,
     ConfigTypeMCTRelays,
     ConfigTypeMCTLoadProfileChannels,
+
+    //CBC Config types
+    ConfigTypeCBCVoltage,
+    ConfigTypeCBCCommsLost,
+    ConfigTypeCBCNeutralCurrent,
+    ConfigTypeCBCFaultDetection,
+    ConfigTypeCBCSeason1TimeAndTemp,
+    ConfigTypeCBCSeason2TimeAndTemp,
+    ConfigTypeCBCControlTimes,
+    ConfigTypeCBCDataLogging,
+    ConfigTypeCBCAddressing,
+    ConfigTypeCBC_DNP,
+    ConfigTypeCBC_UDP,
     
 
     ConfigTypeMax
