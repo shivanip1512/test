@@ -8,6 +8,8 @@
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%
 	Object obj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
 	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
@@ -20,8 +22,34 @@
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}
-	
+	boolean createNew = AuthFuncs.checkRoleProperty(user.getUserID(), ConsumerInfoRole.INVENTORY_CHECKING_CREATE);
 	String referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+    
+    String buttonHTML = "";
+    if( createNew )
+    {
+        buttonHTML = "Would you like to add it now?</p>" + 
+                     "  <table width='200' border='0' cellspacing='0' cellpadding='3' bgcolor='#FFFFFF'>" + 
+                     "    <tr> " + 
+                     "      <td width='100' align='right'>" + 
+                     "        <input type='submit' name='NewHardware' value='Yes'>" +
+                     "      </td>" + 
+                     "      <td width='100'>" + 
+                     "        <input type='button' name='No' value='No' onclick='location.href=\"" + referer + "\"'>" + 
+                     "      </td>" + 
+                     "    </tr>" + 
+                     "  </table>";
+    } else {
+        buttonHTML = "</p>" + 
+                 "  <table width='200' border='0' cellspacing='0' cellpadding='3' bgcolor='#FFFFFF'>" + 
+                 "    <tr> " + 
+                 "      <td width='100%' align='center'>" + 
+                 "        <input type='button' name='Back' value='Back' onclick='location.href=\"" + referer + "\"'>" + 
+                 "      </td>" + 
+                 "    </tr>" + 
+                 "  </table>";
+    }
+    
 %>
 
 <html>
@@ -81,34 +109,12 @@
 	else if (liteInv == null) {
 		if (starsInv.getLMHardware() != null) {
 %>
-                <p class="MainText">The serial number was not found in the inventory. 
-                  Would you like to add it now?</p>
-                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td width="100" align="right">
-                      <input type="submit" name="NewHardware" value="Yes">
-                    </td>
-                    <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
-                    </td>
-                  </tr>
-                </table>
+                <p class="MainText">The serial number was not found in the inventory.<%=buttonHTML%>
 <%
 		}
 		else {
 %>
-                <p class="MainText">The device name was not found in Yukon. Would 
-                  you like to create a new device?</p>
-                <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
-                  <tr> 
-                    <td width="100" align="right">
-                      <input type="submit" name="NewHardware" value="Yes">
-                    </td>
-                    <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
-                    </td>
-                  </tr>
-                </table>
+                <p class="MainText">The device name was not found in Yukon.<%=buttonHTML%>
 <%
 		}
 	}
