@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import com.loox.jloox.LxSaveUtils;
 
 /**
@@ -38,4 +43,32 @@ public class PersistUtils {
 		LxSaveUtils.writeInt(out, color.getGreen());
 		LxSaveUtils.writeInt(out, color.getBlue());		
 	}
+	
+	public static Map readIntIntMap(InputStream in) throws IOException {
+		int numEntries = LxSaveUtils.readInt(in);
+		Map m = new HashMap();
+		for(int i = 0; i < numEntries; i++) {
+			int rawState = LxSaveUtils.readInt(in);
+			int imageId = LxSaveUtils.readInt(in);
+			
+			m.put(new Integer(rawState), new Integer(imageId));
+		}
+		return m;
+	}
+	
+	public static void writeIntIntMap(OutputStream out, Map m) throws IOException {
+		Set s = m.keySet();
+
+		LxSaveUtils.writeInt(out, s.size());
+		
+		Iterator iter = s.iterator();
+		while (iter.hasNext()) {
+			Integer rawState = (Integer) iter.next();			
+			Integer imageId = (Integer) m.get(rawState);
+			
+			LxSaveUtils.writeInt(out, rawState.intValue());
+			LxSaveUtils.writeInt(out, imageId.intValue());
+		}
+	}
+	
 }

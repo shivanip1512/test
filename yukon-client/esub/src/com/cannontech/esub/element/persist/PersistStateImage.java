@@ -3,6 +3,7 @@ package com.cannontech.esub.element.persist;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.DrawingElement;
@@ -38,6 +39,13 @@ public class PersistStateImage extends BasePersistElement {
         			elem.setPointID(pointID);
                     elem.setLinkTo(LxSaveUtils.readString(in));   
 				}
+				case 2: {
+					int pointID = LxSaveUtils.readInt(in);
+					Map customImageMap = PersistUtils.readIntIntMap(in);
+        			elem.setPointID(pointID);
+        			elem.setCustomImageMap(customImageMap);
+                    elem.setLinkTo(LxSaveUtils.readString(in));					
+				}
 				break;
 				
 				default: {
@@ -58,8 +66,9 @@ public class PersistStateImage extends BasePersistElement {
    			if( lp != null ) {
               		pointID = lp.getPointID();
    			}        
-
+   			
    			LxSaveUtils.writeInt(out, pointID);
+   			PersistUtils.writeIntIntMap(out, elem.getCustomImageMap());
            	LxSaveUtils.writeString(out, elem.getLinkTo());
 	}
 

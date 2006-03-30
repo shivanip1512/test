@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
@@ -24,9 +26,15 @@ import com.loox.jloox.LxAbstractImage;
 public class StateImage extends LxAbstractImage implements DrawingElement, YukonImageElement  {
 		
 	private static final String ELEMENT_ID = "stateImage";
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 	
 	private int pointID = PointTypes.SYSTEM_POINT;
+	
+	// Map<Integer - rawstate, Integer - image id>
+	// There may or may not be an entry for all of the points stategroups
+	// Look here first to find the current image
+	private Map customImageMap = new HashMap(13);
+	
 	private LiteState currentState;
 		
 	private Drawing drawing;
@@ -114,8 +122,12 @@ public void setPointID(int pointID) {
 	public LiteYukonImage getYukonImage() {
 		LiteState state = getCurrentState();
 		if(state != null) {
-			int imageID = state.getImageID();
-			return YukonImageFuncs.getLiteYukonImage(imageID);
+			int imageId = state.getImageID();
+			Integer customImageId = (Integer) customImageMap.get(new Integer(pointID));
+			if(customImageId != null) {
+				imageId = customImageId.intValue();
+			}
+			return YukonImageFuncs.getLiteYukonImage(imageId);
 		}
 		return null;
 	}
@@ -126,16 +138,13 @@ public void setPointID(int pointID) {
 	 * image
 	 */
 	public void updateImage() {
-		LiteState state = getCurrentState();
 		byte[] imgBuf = Util.DEFAULT_IMAGE_BYTES;
 		
-		if( state != null ) {
-			int imageID = getCurrentState().getImageID();
-			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(imageID);		
-			if( lyi != null ) {
-				imgBuf = lyi.getImageValue();
-			}		
+		LiteYukonImage lyi = getYukonImage();
+		if( lyi != null ) {
+			imgBuf = lyi.getImageValue();
 		}		
+
 		Image img = Util.prepareImage(imgBuf);		
 		setImage(img);
 	}
@@ -223,5 +232,17 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 
 	public String getElementID() {
 		return ELEMENT_ID;
+	}
+	
+	/**
+	 * This exists only for persistence, do not use it for other purposes
+	 * @return
+	 */
+	public Map getCustomImageMap() {
+		return customImageMap;
+	}
+	
+	public void setCustomImageMap(Map m) {
+		customImageMap = m;
 	}
 }
