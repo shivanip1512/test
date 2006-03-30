@@ -93,4 +93,5 @@ public interface ConsumerInfoRole {
 	public static final int ADDRESS_STATE_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 90;
 	public static final int ADDRESS_COUNTY_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 91;
 	public static final int ADDRESS_POSTALCODE_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 92;
+    public static final int INVENTORY_CHECKING_CREATE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 93;
 }
