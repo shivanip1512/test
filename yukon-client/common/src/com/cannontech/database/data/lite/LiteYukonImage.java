@@ -14,6 +14,12 @@ public class LiteYukonImage extends LiteBase
                com.cannontech.common.util.CtiUtilities.STRING_NONE,
                null);
    
+   public static final LiteYukonImage FUNCTION_IMAGE = new LiteYukonImage(
+           com.cannontech.database.db.state.YukonImage.FUNCTION_IMAGE_ID,
+           "FUNCTION",
+           "FUNCTION",
+           null);
+   
    private String imageCategory = null;
    private String imageName = null;
    private byte[] imageValue = null;
