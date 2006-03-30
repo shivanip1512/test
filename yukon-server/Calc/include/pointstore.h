@@ -155,9 +155,12 @@ protected:
 
     void appendDependent( long dependentID, PointUpdateType updateType )
     {
-        struct depStore newDependent;
-        newDependent.dependentID = dependentID;
-        _dependents.insert( newDependent );
+        if( dependentID != _pointNum ) //You are not allowed to be dependent on yourself!!
+        {
+            struct depStore newDependent;
+            newDependent.dependentID = dependentID;
+            _dependents.insert( newDependent );
+        }
     };
 };
 
