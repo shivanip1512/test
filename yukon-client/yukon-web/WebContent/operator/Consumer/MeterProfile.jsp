@@ -1,7 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="meterBean" class="com.cannontech.stars.web.bean.NonYukonMeterBean" scope="session"/>
-
+<% 
+    int invID = Integer.valueOf(request.getParameter("MetRef")).intValue();
+%>
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
 	
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
@@ -38,6 +40,7 @@
     	
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
 	    	<input type="hidden" name="action" value="MeterProfileSave">
+            <input type="hidden" name="InvID" value='<%=invID%>'>;
  	    	<table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
             	<tr> 
                 	<td valign="top" bgcolor="#FFFFFF"> </td>
@@ -165,6 +168,10 @@
 						<input type="submit" name="Submit" value="Save Meter">
 					</td>
 	            	<td width="40%">
+<%                    if( invID >= 0){%>
+                        <input type="hidden" name="DeleteAction" value="DeleteFromInventory">
+                        <input type="button" name="Delete" value="Delete" onclick="deleteMeter(this.form);">
+                      <%}%>
 	                	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
 	                  	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='Update.jsp'">
 	              	</td>
@@ -232,6 +239,13 @@
 				setContentChanged(true);
 			}
 		}
+
+        function deleteMeter(form) {
+            if (confirm("Are you sure you want to delete this meter?")) {
+                form.action.value='DeleteInventory';
+                form.submit();
+            }
+        }
 		
 		function prepareSubmit(form) 
 		{
