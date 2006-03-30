@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2006/03/27 21:05:25 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2006/03/30 16:05:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,7 @@ using namespace std;
 
 using namespace Cti;
 using namespace Config;
+using namespace MCT;
 
 using Protocol::Emetcon;
 
