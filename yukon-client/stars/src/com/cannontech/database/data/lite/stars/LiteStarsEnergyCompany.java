@@ -1,6 +1,14 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -21,16 +29,18 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
+import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
+import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -40,9 +50,9 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ProgressChecker;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.task.LoadCustAccountsTask;
 import com.cannontech.stars.util.task.LoadInventoryTask;
 import com.cannontech.stars.util.task.LoadWorkOrdersTask;
@@ -57,10 +67,10 @@ import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
 import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
@@ -68,8 +78,6 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
-import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
-import com.cannontech.database.db.stars.hardware.Warehouse;
 
 /**
  * @author yao
@@ -1643,7 +1651,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	/**
 	 * @return Pair(LiteStarsLMHardware, LiteStarsEnergyCompany)
 	 */
-	private Pair searchForLMHardware(int devTypeDefID, String serialNo, LiteStarsEnergyCompany referer)
+	private Pair searchForLMHardware(int devTypeEntryID, String serialNo, LiteStarsEnergyCompany referer)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
@@ -1653,7 +1661,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (!(liteInv instanceof LiteStarsLMHardware)) continue;
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-			if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID
+            if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getEntryID() == devTypeEntryID
 				&& liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
 			{
 				return new Pair(liteHw, this);
@@ -1667,7 +1675,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				if (hardwares == null) return null;
 				
 				for (int i = 0; i < hardwares.length; i++) {
-					if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getYukonDefID() == devTypeDefID) {
+                    if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getEntryID() == devTypeEntryID) {
 						com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 								new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 						hw.setInventoryID( hardwares[i].getInventoryID() );
@@ -1695,7 +1703,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < children.size(); i++) {
 				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
 				if (!liteCompany.equals( referer )) {
-					Pair p = liteCompany.searchForLMHardware( devTypeDefID, serialNo, this );
+                    Pair p = liteCompany.searchForLMHardware( devTypeEntryID, serialNo, this );
 					if (p != null)
 						throw new ObjectInOtherEnergyCompanyException( (LiteStarsLMHardware)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 				}
@@ -1704,7 +1712,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		// Search the LM hardware in the parent energy company
 		if (getParent() != null && !getParent().equals( referer )) {
-			Pair p = getParent().searchForLMHardware( devTypeDefID, serialNo, this );
+            Pair p = getParent().searchForLMHardware( devTypeEntryID, serialNo, this );
 			if (p != null)
 				throw new ObjectInOtherEnergyCompanyException( (LiteStarsLMHardware)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 		}
@@ -1721,8 +1729,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteStarsLMHardware searchForLMHardware(int deviceType, String serialNo)
 		throws ObjectInOtherEnergyCompanyException
 	{
-		int devTypeDefID = YukonListFuncs.getYukonListEntry( deviceType ).getYukonDefID();
-		Pair p = searchForLMHardware( devTypeDefID, serialNo, this );
+        int devTypeEntryID = YukonListFuncs.getYukonListEntry( deviceType ).getEntryID();
+		Pair p = searchForLMHardware( devTypeEntryID, serialNo, this );
 		if (p != null) return (LiteStarsLMHardware)p.getFirst();
 		return null;
 	}
