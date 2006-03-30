@@ -857,7 +857,7 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void addSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		ServletUtils.saveRequest( req, session,
-				new String[] {"Member", "From", "To", "DeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
+				new String[] {"Member", "From", "To", "DeviceType", "DeviceState", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
 		
 		LiteStarsEnergyCompany member = null;
 		if (req.getParameter("Member") != null)
@@ -886,6 +886,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+        Integer devStateID = Integer.valueOf( req.getParameter("DeviceState") );
 		Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
 		Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
 		Integer routeID = Integer.valueOf( req.getParameter("Route") );
@@ -905,7 +906,7 @@ public class InventoryManager extends HttpServlet {
 		// (the REDIRECT parameter is set within the AddSNRangeTask.run() method)
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
+		TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, devStateID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page

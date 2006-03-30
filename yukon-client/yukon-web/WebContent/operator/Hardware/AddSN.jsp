@@ -89,7 +89,9 @@ function changeMember(form) {
                             </select>
                           </td>
                         </tr>
-<% } %>
+<% } else {%>
+                <input type="hidden" name="Member" value="<%=liteEC.getLiteID()%>">
+<%}%>
                         <tr> 
                           <td width="25%"> 
                             <div align="right">Range:</div>
@@ -120,6 +122,28 @@ function changeMember(form) {
                               <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
                               <%
 	}
+%>
+                            </select>
+                          </td>
+                          <tr>
+                          <td width="25%"> 
+                            <div align="right">State: </div>
+                          </td>
+                          <td width="75%"> 
+                            <select name="DeviceState">
+                              <%
+    int savedDeviceState = 0;
+    if (savedReq.getProperty("DeviceState") != null)
+        savedDeviceState = Integer.parseInt(savedReq.getProperty("DeviceState"));
+    
+    YukonSelectionList devStateList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
+    for (int i = 0; i < devStateList.getYukonListEntries().size(); i++) {
+        YukonListEntry entry = (YukonListEntry) devStateList.getYukonListEntries().get(i);
+        String selected = (entry.getEntryID() == savedDeviceState)? "selected" : "";
+%>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                              <%
+    }
 %>
                             </select>
                           </td>

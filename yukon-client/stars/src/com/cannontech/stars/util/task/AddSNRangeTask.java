@@ -38,6 +38,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	LiteStarsEnergyCompany energyCompany = null;
 	int snFrom = 0, snTo = 0;
 	Integer devTypeID = null;
+    Integer devStateID = null;
 	Date recvDate = null;
 	Integer voltageID = null;
 	Integer companyID = null;
@@ -48,13 +49,14 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	ArrayList serialNoSet = new ArrayList();
 	int numSuccess = 0, numFailure = 0;
 	
-	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID,
+	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID, Integer devStateID,
 		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
 	{
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
 		this.snTo = snTo;
 		this.devTypeID = devTypeID;
+        this.devStateID = devStateID;
 		this.recvDate = recvDate;
 		this.voltageID = voltageID;
 		this.companyID = companyID;
@@ -115,6 +117,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				
 				invDB.setInstallationCompanyID( companyID );
 				invDB.setCategoryID( categoryID );
+                invDB.setCurrentStateID( devStateID );
 				if (recvDate != null)
 					invDB.setReceiveDate( recvDate );
 				invDB.setVoltageID( voltageID );
