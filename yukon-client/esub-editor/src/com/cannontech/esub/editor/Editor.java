@@ -256,6 +256,8 @@ public class Editor extends JPanel {
 		editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
+		EditorKeys editorKeys = new EditorKeys(editorActions);
+		
 		final JMenuBar menuBar = editorMenus.getMenuBar();
 		final JPopupMenu popupMenu = editorMenus.getPopupMenu();
 		JToolBar toolBar = editorToolBar.getToolBar();
