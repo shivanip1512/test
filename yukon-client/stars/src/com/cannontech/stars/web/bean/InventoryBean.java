@@ -908,16 +908,22 @@ public class InventoryBean {
             htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray = document.chooseForm.checkMultiInven;").append(LINE_SEPARATOR);
-            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
-            htmlBuf.append("}").append(LINE_SEPARATOR);
+            htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
+            htmlBuf.append("  document.chooseForm.checkMultiInven.checked = true ;").append(LINE_SEPARATOR);
+            htmlBuf.append("} else {").append(LINE_SEPARATOR);
+            htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("    checkBoxArray[i].checked = true ;").append(LINE_SEPARATOR);
+            htmlBuf.append("  }  }").append(LINE_SEPARATOR);
             
             htmlBuf.append("function uncheckAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
             htmlBuf.append("checkBoxArray = document.chooseForm.checkMultiInven;").append(LINE_SEPARATOR);
-            htmlBuf.append("for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
-            htmlBuf.append("checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
-            htmlBuf.append("}").append(LINE_SEPARATOR);
+            htmlBuf.append("if ( checkBoxArray.length == undefined) {").append(LINE_SEPARATOR);
+            htmlBuf.append("  document.chooseForm.checkMultiInven.checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("} else {").append(LINE_SEPARATOR);
+            htmlBuf.append("  for (i = 0; i < checkBoxArray.length; i++)").append(LINE_SEPARATOR);
+            htmlBuf.append("    checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
+            htmlBuf.append("  }  }").append(LINE_SEPARATOR);
             
             htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
             htmlBuf.append("    document.chooseForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
