@@ -107,7 +107,7 @@ function changeStatus(form) {
                         </tr>
                         <tr> 
                           <td width="100" class="TableCell"> 
-                            <div align="right">Addtl Order #:</div>
+                            <div align="right"><cti:getProperty propertyid="<%= WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
                           </td>
                           <td width="248"> 
                             <input type="text" name="AddtlOrderNumber" size="14" onchange="setContentChanged(true)">

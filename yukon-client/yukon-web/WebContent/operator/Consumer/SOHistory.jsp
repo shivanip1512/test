@@ -254,7 +254,7 @@ function sendWorkOrder() {
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right">Addtl Order #:</div>
+                                  <div align="right"><cti:getProperty propertyid="<%= WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
                                 </td>
                                 <td width="70%"> 
                                   <input type="text" name="AddtlOrderNumber" size="14" value="<%= liteOrder.getAdditionalOrderNumber() %>" onchange="setContentChanged(true)">
