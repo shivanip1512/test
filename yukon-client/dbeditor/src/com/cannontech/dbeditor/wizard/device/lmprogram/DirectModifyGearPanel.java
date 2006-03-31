@@ -457,6 +457,7 @@ private javax.swing.JScrollPane getJScrollPane1() {
 			ivjJScrollPane1.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJScrollPane1.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
+            getJScrollPane1().getVerticalScrollBar().setUnitIncrement(10);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
