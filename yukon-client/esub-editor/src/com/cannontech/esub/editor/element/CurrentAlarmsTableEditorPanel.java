@@ -515,8 +515,8 @@ public Object getValue(Object o) {
             while( categories.hasMoreElements() )
             {
                 CheckNode category = (CheckNode)categories.nextElement();
-                if(category.isSelected())
-                {
+//                if(category.isSelected())
+//                {
                     Enumeration points = category.children();
                     while(points.hasMoreElements())
                     {
@@ -529,7 +529,7 @@ public Object getValue(Object o) {
                             
                         }
                     }
-                }
+                //}
             }
         }
     }
@@ -659,6 +659,7 @@ public void setValue(Object o) {
         if(currentPointNode != null)
         {
             currentPointNode.setSelected(true);
+            getJTreeDevices().expandPath(new TreePath(((CheckNode)currentPointNode.getParent()).getPath()));
         }
         
     }
@@ -669,6 +670,7 @@ public void setValue(Object o) {
         if( currentDeviceNode != null)
         {
             currentDeviceNode.setSelected(true);
+            getJTreeDevices().expandPath(new TreePath(((CheckNode)currentDeviceNode.getFirstChild()).getPath()));
         }
         
     }

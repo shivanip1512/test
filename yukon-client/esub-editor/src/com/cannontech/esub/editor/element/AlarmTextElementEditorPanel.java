@@ -605,8 +605,8 @@ public Object getValue(Object o) {
             while( categories.hasMoreElements() )
             {
                 CheckNode category = (CheckNode)categories.nextElement();
-                if(category.isSelected())
-                {
+//                if(category.isSelected())
+//                {
                     Enumeration points = category.children();
                     while(points.hasMoreElements())
                     {
@@ -619,7 +619,7 @@ public Object getValue(Object o) {
                             
                         }
                     }
-                }
+//                }
             }
         }
     }
@@ -688,8 +688,7 @@ private void initConnections() throws java.lang.Exception {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
+
 		setName("AlarmTextElementEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(467, 611);
@@ -730,7 +729,7 @@ private void initialize() {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
+
 
 	Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 	for( int i = 0; i < fonts.length; i++ ) {
@@ -768,6 +767,7 @@ public void jButton1_ActionEvents() {
  * @param o java.lang.Object
  */
 public void setValue(Object o) {
+    
 	AlarmTextElement elem = (AlarmTextElement) o;
 	
 	getLinkToPanel().setLinkTo(elem.getLinkTo());
@@ -814,6 +814,7 @@ public void setValue(Object o) {
         if(currentPointNode != null)
         {
             currentPointNode.setSelected(true);
+            getJTreeDevices().expandPath(new TreePath(((CheckNode)currentPointNode.getParent()).getPath()));
         }
         
     }
@@ -824,10 +825,11 @@ public void setValue(Object o) {
         if( currentDeviceNode != null)
         {
             currentDeviceNode.setSelected(true);
+            getJTreeDevices().expandPath(new TreePath(((CheckNode)currentDeviceNode.getFirstChild()).getPath()));
         }
         
     }
-	
+    	
 	alarmTextElement = elem;
 }
 
