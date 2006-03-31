@@ -93,7 +93,7 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
         synchronized (cache)
         {
             List alarmCats = getCacheList(cache);
-            Collections.sort(alarmCats, LiteComparators.liteStringComparator);
+            Collections.sort(alarmCats, LiteComparators.liteBaseIDComparator);
             ListIterator alarmCatsIter = alarmCats.listIterator();
             
             alarmCategoryMap = new HashMap();
