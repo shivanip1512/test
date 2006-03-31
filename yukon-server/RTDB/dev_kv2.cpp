@@ -1096,7 +1096,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     {
                         if (getKV2Protocol().getLPTime(y) > lastLoadProfileTime.seconds())
                         {
-                            qual = NormalQuality;
+                            qual = getKV2Protocol().getLPQuality(y);
 
                             lpValue = getKV2Protocol().getLPValue(y);
                             if (ptMultiplier != NULL)

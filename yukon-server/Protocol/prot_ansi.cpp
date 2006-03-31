@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/01/05 23:42:00 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2006/03/31 16:16:01 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.19  2006/03/31 16:16:01  jrichter
+      BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
+
       Revision 1.18  2006/01/05 23:42:00  jrichter
       BUG FIX:  Corrected LastLPTime update situation where there are 0 complete LP blocks so it didn't insert a bogus 2036 date for lastLPTime.
 
@@ -149,6 +152,7 @@ CtiProtocolANSI::CtiProtocolANSI()
 
    _lpValues = NULL;
    _lpTimes = NULL;
+    _lpQuality = NULL;
 
    _currentTableNotAvailableFlag = false;
    _requestingBatteryLifeFlag = false;
@@ -344,6 +348,11 @@ void CtiProtocolANSI::destroyMe( void )
    {
       delete []_lpTimes;
       _lpTimes = NULL;
+   }
+   if ( _lpQuality != NULL )
+   {
+       delete []_lpQuality;
+       _lpQuality = NULL;
    }
 
    {
@@ -2514,7 +2523,7 @@ bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
 bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
 {
     bool success = false;
-    UINT8* lpDemandSelect;
+    UINT8* lpDemandSelect = NULL;
     int ansiOffset;
 
     /* Watts = 0, Vars = 1, VA = 2, etc */
@@ -2556,8 +2565,24 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                     int blkIndex = 0;
                                                     int totalIntvls = intvlsPerBlk * _lpNbrFullBlocks + _lpNbrIntvlsLastBlock;
                                                     _nbrLPDataBlkIntvlsWanted = totalIntvls;
+                                                    if (_lpValues != NULL)
+                                                    {
+                                                        delete []_lpValues;
+                                                        _lpValues = NULL;
+                                                    }
                                                     _lpValues = new double[totalIntvls + 1];
+                                                    if (_lpTimes != NULL)
+                                                    {
+                                                        delete []_lpTimes;
+                                                        _lpTimes = NULL;
+                                                    }
                                                     _lpTimes = new ULONG[totalIntvls +1];
+                                                    if (_lpQuality != NULL)
+                                                    {
+                                                        delete []_lpQuality;
+                                                        _lpQuality = NULL;
+                                                    }
+                                                    _lpQuality = new UINT8[totalIntvls +1];
                                                     int intvlIndex = 0;
                                                     for (int y = 0; y < totalIntvls; y++) 
                                                     {
@@ -2575,10 +2600,15 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                                     _lpTimes[y] -= 3600;
                                                                 }
                                                             }
+                                                            if (_tableSixFour->getPowerFailFlag(blkIndex, intvlIndex))
+                                                                _lpQuality[y] = PowerfailQuality; //powerFailQuality
+                                                            else
+                                                                _lpQuality[y] = translateAnsiQualityToYukon(_tableSixFour->getExtendedIntervalStatus(x, blkIndex, intvlIndex));
+
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<_lpQuality[y]<<endl;
                                                             }
                                                         }
                                                         else
@@ -2594,10 +2624,16 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                                     _lpTimes[y] -= 3600;
                                                                 }
                                                             }
+                                                            if (_tableSixFour->getPowerFailFlag(blkIndex, intvlIndex))
+                                                                _lpQuality[y] = PowerfailQuality; //powerFailQuality
+                                                            else
+                                                                _lpQuality[y] = translateAnsiQualityToYukon(_tableSixFour->getExtendedIntervalStatus(x, blkIndex, intvlIndex));
+
+
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<_lpQuality[y]<<endl;
                                                             }
                                                         }
 
@@ -2646,7 +2682,11 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    lpDemandSelect = NULL;
+    if (lpDemandSelect != NULL)
+    {
+        delete []lpDemandSelect;
+        lpDemandSelect = NULL;
+    }
     return success;
 }
 ////////////////////////////////////////////////////////////////////////////////////
@@ -2677,6 +2717,24 @@ ULONG CtiProtocolANSI::getLPTime( int index )
         return 0;
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+// LP Qualities
+////////////////////////////////////////////////////////////////////////////////////
+UINT8 CtiProtocolANSI::getLPQuality( int index )
+{
+    if (_lpQuality[index] != NULL) 
+    {
+        return _lpQuality[index];
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+
 
 
 int CtiProtocolANSI::getUnitsOffsetMapping(int offset)
@@ -2928,6 +2986,43 @@ int CtiProtocolANSI::getRateOffsetMapping(int offset)
             break;
     }
     return retVal;
+}
+
+int CtiProtocolANSI::translateAnsiQualityToYukon(int ansiQuality )
+{
+    int retVal = NormalQuality;
+    switch (ansiQuality)
+    {
+        case 0:
+        case 5:
+        {
+            retVal = NormalQuality;
+            break;
+        }
+        case 1:
+        {
+            retVal = OverflowQuality;
+            break;
+        }
+        case 2:
+        {
+            retVal = PartialIntervalQuality;
+            break;
+        }
+        case 3: //long interval
+        case 4:  //skipped
+        {
+            retVal = UnknownQuality;
+            break;
+        }
+        default:
+        {
+            retVal = NormalQuality;
+            break;
+        }
+    }
+    return retVal;
+
 }
 
         
@@ -3368,7 +3463,12 @@ void CtiProtocolANSI::setLastLoadProfileTime(LONG lastLPTime)
 
 bool CtiProtocolANSI::forceProcessDispatchMsg()
 {
-    return _forceProcessDispatchMsg;
+    if (_tableSixFour != NULL)
+        return _forceProcessDispatchMsg;
+    else if (_tableTwoThree != NULL || _tableFiveTwo != NULL)
+        return true;
+    else             
+        return false;
 }
 
 bool CtiProtocolANSI::isTimeUninitialized(double time)

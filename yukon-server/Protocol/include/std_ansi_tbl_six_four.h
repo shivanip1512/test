@@ -15,10 +15,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_four.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:20:00 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2006/03/31 16:18:32 $
 *    History: 
       $Log: std_ansi_tbl_six_four.h,v $
+      Revision 1.5  2006/03/31 16:18:32  jrichter
+      BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
+
       Revision 1.4  2005/12/20 17:20:00  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -97,6 +100,11 @@ struct INT_FMT1_RCD
 struct INT_SET1_RCD
 {
     UINT8 *extended_int_status;
+    bool dayLightSavingsFlag;
+    bool powerFailFlag;
+    bool clockResetForwardFlag;
+    bool clockResetBackwardsFlag;
+    int *extendedStatus;
     INT_FMT1_RCD *int_data;
 };
 struct CLOSURE_STATUS_BFLD
@@ -148,6 +156,7 @@ private:
     int   _niFmt2;
     int   _timeFmt;
 
+
 public:
 
    CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSet, 
@@ -177,6 +186,12 @@ public:
 
    double getLPDemandValue ( int channel, int blkSet, int blkIntvl );
    ULONG getLPDemandTime (int blkSet, int blkIntvl);
+
+   int getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl);
+   bool getDayLightSavingsFlag(int blkSet, int blkIntvl) const;
+   bool getPowerFailFlag(int blkSet, int blkIntvl) const;
+   bool getClockResetForwardFlag(int blkSet, int blkIntvl) const;
+   bool getClockResetBackwardsFlag(int blkSet, int blkIntvl) const;
 
 };
 #endif // #ifndef __STD_ANSI_TBL_SIX_FOUR_H__

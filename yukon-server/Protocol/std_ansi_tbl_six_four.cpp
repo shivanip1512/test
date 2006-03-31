@@ -36,7 +36,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSe
     _timeFmt = timeFmt;
     _niFmt1 = niFmt1;
     _niFmt2 = niFmt2;
-    
+
 }
 
 
@@ -66,7 +66,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
     _niFmt1 = niFmt1;
     _niFmt2 = niFmt2;
 
-    
+   
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
     for (index = 0; index < _nbrBlksSet1; index++) 
@@ -123,6 +123,35 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
                     memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j], dataBlob, sizeof (UINT8));
                     dataBlob += sizeof (UINT8); 
                 }
+
+                if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x10)
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].dayLightSavingsFlag = true;
+                else
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].dayLightSavingsFlag = false;
+                if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x20)
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].powerFailFlag = true;
+                else
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].powerFailFlag = false;
+                if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x40)
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetForwardFlag = true;           
+                else
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetForwardFlag = false;
+                if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x80)
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetBackwardsFlag = true;           
+                else
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetBackwardsFlag = false;
+                                          
+                _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extendedStatus = new int[_nbrChnsSet1];
+                int mask = 0x0F;
+                for (j = 0; j < _nbrChnsSet1; j++)
+                {
+                    if (j%2 == 0)
+                        mask = 0x0F;
+                    else
+                        mask = 0xF0;
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extendedStatus[j] = _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[(j/2) + 1] & mask;
+                }
+
             }
             _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data = new INT_FMT1_RCD[_nbrChnsSet1];
             for (j = 0; j < _nbrChnsSet1; j++ ) 
@@ -176,6 +205,12 @@ CtiAnsiTableSixFour::~CtiAnsiTableSixFour()
                             delete []_lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extended_int_status;
                             _lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extended_int_status = NULL;
                        }
+                       if (_lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extendedStatus != NULL)
+                       {
+                           delete _lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extendedStatus;
+                           _lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extendedStatus = NULL;
+                       }
+
                    }
                    if (_lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].int_data != NULL)
                    {
@@ -650,7 +685,45 @@ double CtiAnsiTableSixFour::getLPDemandValue ( int channel, int blkSet, int blkI
     return retVal;
 }
 
+int CtiAnsiTableSixFour::getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl)
+{
+    if (_extendedIntStatusFlag) 
+    {
+        return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].extendedStatus[channel];
+    }
+    else 
+        return 0;
+}
 
+bool CtiAnsiTableSixFour::getDayLightSavingsFlag(int blkSet, int blkIntvl) const
+{
+    if (_extendedIntStatusFlag) 
+        return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].dayLightSavingsFlag;
+    else
+        return false;
+}
+bool CtiAnsiTableSixFour::getPowerFailFlag(int blkSet, int blkIntvl) const
+{
+    if (_extendedIntStatusFlag)
+        return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].powerFailFlag;
+    else
+        return false;
+}
 
+bool CtiAnsiTableSixFour::getClockResetForwardFlag(int blkSet, int blkIntvl) const
+{
+    if (_extendedIntStatusFlag)
+        return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].clockResetForwardFlag;
+    else
+        return false;
+}
+
+bool CtiAnsiTableSixFour::getClockResetBackwardsFlag(int blkSet, int blkIntvl) const
+{
+    if (_extendedIntStatusFlag)
+        return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].clockResetBackwardsFlag;
+    else
+        return false;
+}
 
 

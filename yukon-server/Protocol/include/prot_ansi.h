@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/03/31 16:18:32 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.15  2006/03/31 16:18:32  jrichter
+      BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
+
       Revision 1.14  2005/12/20 17:19:58  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -359,10 +362,12 @@ class IM_EX_PROT CtiProtocolANSI
     bool retreiveMeterTimeDiffStatus( int offset, double *status );
     double getLPValue( int index );
     ULONG getLPTime( int index );
+    UINT8 getLPQuality( int index );
 
     int getUnitsOffsetMapping(int offset);
     int getRateOffsetMapping(int offset);
     int getSegmentationOffsetMapping(int offset);
+    int translateAnsiQualityToYukon(int ansiQuality );
 
 
     int getSizeOfLPDataBlock(int dataSetNbr);
@@ -468,6 +473,7 @@ class IM_EX_PROT CtiProtocolANSI
 
        double *_lpValues;
        ULONG *_lpTimes;
+       UINT8 *_lpQuality;
 
        string _ansiDevName;
 

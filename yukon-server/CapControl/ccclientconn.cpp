@@ -170,7 +170,7 @@ void CtiCCClientConnection::_sendthr()
 
     try
     {   
-        /*{
+        {
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
@@ -187,7 +187,7 @@ void CtiCCClientConnection::_sendthr()
             executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())) );
             executor->Execute();
             delete executor;
-        }*/
+        }
 
 
         do

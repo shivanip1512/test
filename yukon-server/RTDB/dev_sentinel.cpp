@@ -945,7 +945,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         }
                         pData->setType( pPoint->getType() );
 
-                        msgPtr = new CtiReturnMsg;
+                        msgPtr = CTIDBG_new CtiReturnMsg;
 
                         msgPtr->insert(pData);
                         retList.push_back(msgPtr);
@@ -972,13 +972,13 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         qual = NormalQuality;
 
                         int msgCntr = 0;
-                        msgPtr = new CtiReturnMsg;
+                        msgPtr = CTIDBG_new CtiReturnMsg;
 
                         for (y = getSentinelProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
                         {
                             if (getSentinelProtocol().getLPTime(y) > lastLoadProfileTime.seconds())
                             {
-                                qual = NormalQuality;
+                                qual = getSentinelProtocol().getLPQuality(y);
 
                                 lpValue = getSentinelProtocol().getLPValue(y);
                                 if (ptMultiplier != NULL)
@@ -989,7 +989,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                         lpValue += ptOffset;
                                     }
                                 }
-                                pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
+                                pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
                                 pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                                 pData->setTime( CtiTime(getSentinelProtocol().getLPTime(y)) );
 
@@ -1001,7 +1001,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                     retList.push_back(msgPtr);
                                     msgPtr = NULL;
                                     if (y > 0)
-                                        msgPtr = new CtiReturnMsg;
+                                        msgPtr = CTIDBG_new CtiReturnMsg;
                                 }
                                 else
                                     msgCntr++;
@@ -1015,6 +1015,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                 if (msgPtr->getCount() > 0)
                                 {
                                     retList.push_back(msgPtr);
+                                    msgPtr = NULL;
                                 }
                             }
 
@@ -1032,6 +1033,12 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         {
                             delete []pData;
                             pData = NULL;
+                        }  
+                         
+                        if (msgPtr != NULL)
+                        {
+                            //delete msgPtr;
+                            msgPtr = NULL;
                         }
                     }
                     pPoint;
@@ -1064,7 +1071,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                                 pData->setTime( CtiTime() );
                                 pData->setType( pStatusPoint->getType() );
 
-                                msgPtr = new CtiReturnMsg;
+                                msgPtr = CTIDBG_new CtiReturnMsg;
                                 msgPtr->insert(pData);
 
                                 retList.push_back(msgPtr);

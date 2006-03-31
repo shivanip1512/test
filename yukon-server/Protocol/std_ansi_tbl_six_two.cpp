@@ -233,17 +233,17 @@ CtiAnsiTableSixTwo::~CtiAnsiTableSixTwo()
 {
     if (_lp_ctrl_tbl.lp_sel_set1 != NULL)
     {
-        delete[]  _lp_ctrl_tbl.lp_sel_set1;
+        delete []_lp_ctrl_tbl.lp_sel_set1;
         _lp_ctrl_tbl.lp_sel_set1 = NULL;
     }
     if (_lp_ctrl_tbl.scalars_set1 != NULL)
     {
-        delete[] _lp_ctrl_tbl.scalars_set1;
+        delete []_lp_ctrl_tbl.scalars_set1;
         _lp_ctrl_tbl.scalars_set1 = NULL;
     }
     if (_lp_ctrl_tbl.divisor_set1 != NULL)
     {
-        delete[] _lp_ctrl_tbl.divisor_set1;
+        delete []_lp_ctrl_tbl.divisor_set1;
         _lp_ctrl_tbl.divisor_set1 = NULL;
     }
 
@@ -281,7 +281,7 @@ CtiAnsiTableSixTwo::~CtiAnsiTableSixTwo()
 
     if (_lp_ctrl_tbl.lp_sel_set4 != NULL)
     {
-        delete [] _lp_ctrl_tbl.lp_sel_set4;
+        delete []_lp_ctrl_tbl.lp_sel_set4;
         _lp_ctrl_tbl.lp_sel_set4 = NULL;
     }
     if (_lp_ctrl_tbl.scalars_set4 != NULL)
