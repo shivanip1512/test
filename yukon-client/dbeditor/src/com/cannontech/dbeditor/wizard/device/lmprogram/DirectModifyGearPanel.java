@@ -30,7 +30,6 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
 /**
  * Constructor
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public DirectModifyGearPanel() {
 	super();
 	initialize();
@@ -41,45 +40,28 @@ public DirectModifyGearPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getJComboBoxGearType()) 
 		connEtoC2(e);
-	// user code begin {2}
-	// user code end
 }
 
 /**
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void caretUpdate(javax.swing.event.CaretEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getJTextFieldGearName()) 
 		connEtoC3(e);
-	// user code begin {2}
-	// user code end
 }
 
 /**
  * connEtoC10:  (JComboBoxHowToStop.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC10(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -89,17 +71,10 @@ private void connEtoC10(java.awt.event.ActionEvent arg1) {
  * connEtoC11:  (JComboBoxCycleCountSndType.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC11(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -109,17 +84,10 @@ private void connEtoC11(java.awt.event.ActionEvent arg1) {
  * connEtoC12:  (JComboBoxCycleCountSndType1.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC12(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -129,17 +97,10 @@ private void connEtoC12(java.awt.event.ActionEvent arg1) {
  * connEtoC13:  (JTextFieldChangeTriggerOffset.caret.caretUpdate(javax.swing.event.CaretEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC13(javax.swing.event.CaretEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -149,17 +110,10 @@ private void connEtoC13(javax.swing.event.CaretEvent arg1) {
  * connEtoC2:  (JComboBoxGearType.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.jComboBoxGearType_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.jComboBoxGearType_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -169,17 +123,10 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
  * connEtoC3:  (JTextFieldGearName.caret.caretUpdate(javax.swing.event.CaretEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC3(javax.swing.event.CaretEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -189,17 +136,10 @@ private void connEtoC3(javax.swing.event.CaretEvent arg1) {
  * connEtoC4:  (JComboBoxShedTime.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC4(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -209,17 +149,10 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
  * connEtoC5:  (JComboBoxNumGroups.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC5(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -229,17 +162,10 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
  * connEtoC6:  (JComboBoxPeriodCount.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC6(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -249,17 +175,10 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
  * connEtoC7:  (JComboBoxSendRate.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC7(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -269,17 +188,10 @@ private void connEtoC7(java.awt.event.ActionEvent arg1) {
  * connEtoC8:  (JComboBoxGroupSelection.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC8(java.awt.event.ActionEvent arg1) {
 	try {
-		// user code begin {1}
-		// user code end
 		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
 	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
 		handleException(ivjExc);
 	}
 }
@@ -288,7 +200,6 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 /**
  * 
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private static void getBuilderData() {
 /*V1.1
 **start of data**
@@ -338,18 +249,13 @@ public java.lang.String getGearType() {
  * Return the GenericGearPanel1 property value.
  * @return com.cannontech.dbeditor.wizard.device.lmprogram.GenericGearPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private GenericGearPanel getGenericGearPanel1() {
 	if (ivjGenericGearPanel1 == null) {
 		try {
 			ivjGenericGearPanel1 = new com.cannontech.dbeditor.wizard.device.lmprogram.GenericGearPanel();
 			ivjGenericGearPanel1.setName("GenericGearPanel1");
 			ivjGenericGearPanel1.setLocation(0, 0);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -361,7 +267,6 @@ private GenericGearPanel getGenericGearPanel1() {
  * Return the JComboBoxGearType property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getJComboBoxGearType() {
 	if (ivjJComboBoxGearType == null) {
 		try {
@@ -369,7 +274,6 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.setName("JComboBoxGearType");
 			ivjJComboBoxGearType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxGearType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			// user code begin {1}
 
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TIME_REFRESH ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_ROTATION ) );
@@ -380,10 +284,7 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
 
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -395,7 +296,6 @@ private javax.swing.JComboBox getJComboBoxGearType() {
  * Return the JLabelGearName property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelGearName() {
 	if (ivjJLabelGearName == null) {
 		try {
@@ -405,11 +305,7 @@ private javax.swing.JLabel getJLabelGearName() {
 			ivjJLabelGearName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJLabelGearName.setText("Gear Name:");
 			ivjJLabelGearName.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -421,7 +317,6 @@ private javax.swing.JLabel getJLabelGearName() {
  * Return the JLabelGearType property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelGearType() {
 	if (ivjJLabelGearType == null) {
 		try {
@@ -431,11 +326,7 @@ private javax.swing.JLabel getJLabelGearType() {
 			ivjJLabelGearType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJLabelGearType.setText("Gear Type:");
 			ivjJLabelGearType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -447,7 +338,6 @@ private javax.swing.JLabel getJLabelGearType() {
  * Return the JScrollPane1 property value.
  * @return javax.swing.JScrollPane
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JScrollPane getJScrollPane1() {
 	if (ivjJScrollPane1 == null) {
 		try {
@@ -458,11 +348,7 @@ private javax.swing.JScrollPane getJScrollPane1() {
 			ivjJScrollPane1.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			getJScrollPane1().setViewportView(getIvjTimeGearPanel1());
             getJScrollPane1().getVerticalScrollBar().setUnitIncrement(10);
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -473,7 +359,6 @@ private javax.swing.JScrollPane getJScrollPane1() {
  * Return the JTextFieldGearName property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getJTextFieldGearName() {
 	if (ivjJTextFieldGearName == null) {
 		try {
@@ -481,15 +366,12 @@ private javax.swing.JTextField getJTextFieldGearName() {
 			ivjJTextFieldGearName.setName("JTextFieldGearName");
 			ivjJTextFieldGearName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJTextFieldGearName.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			// user code begin {1}
 			ivjJTextFieldGearName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
 						TextFieldDocument.INVALID_CHARS_PAO) );
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+
 			handleException(ivjExc);
 		}
 	}
@@ -584,10 +466,7 @@ private void handleException(Throwable exception) {
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
 	getJComboBoxGearType().addActionListener(this);
 	getJTextFieldGearName().addCaretListener(this);
 	
@@ -606,11 +485,8 @@ private void initConnections() throws java.lang.Exception {
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("DirectGearPanel");
 		setToolTipText("");
 		setLayout(new java.awt.GridBagLayout());
@@ -662,10 +538,8 @@ private void initialize() {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
 
 	getJComboBoxGearType().setSelectedItem( LMProgramDirectGear.CONTROL_TIME_REFRESH );
-	// user code end
 }
 
 /**
