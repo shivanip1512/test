@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2006/03/31 18:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,10 +146,16 @@ static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Devi
 
         bool found = Device->removeInfiniteProhibit( did );
 
-        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        if(found && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << CtiTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            }
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << CtiTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            }
         }
     }
     catch(...)
@@ -1851,7 +1857,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Device " << anxiousDevice->getName() << " cannot execute because " << device->getName() << " is executing" << endl;
+                                            dout << CtiTime() << " Device: " << anxiousDevice->getName() << " Port: " << anxiousDevice->getPortID() << " cannot execute because device " << device->getName() << " port: " << device->getPortID() << " is executing.  TID: " << GetCurrentThreadId() << endl;
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
                                         anxiousDeviceBlocksThisVector.clear();             // Cannot use the list to block other devices.

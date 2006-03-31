@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2006/03/31 18:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -986,6 +986,7 @@ CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 }
 void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
 {
+    _exclusion.setId(getID());
     try
     {
         _exclusion.addExclusion(paox);

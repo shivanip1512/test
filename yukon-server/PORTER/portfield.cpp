@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.176 $
-* DATE         :  $Date: 2006/03/24 15:58:59 $
+* REVISION     :  $Revision: 1.177 $
+* DATE         :  $Date: 2006/03/31 18:24:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4185,7 +4185,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
             }
             else
             {
-                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                if((getDebugLevel() & DEBUGLEVEL_LUDICROUS) && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
@@ -4202,7 +4202,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
                 }
 
                 OutMessage = 0;
-                Sleep(100L);
+                Sleep(500L);
             }
 
             status = RETRY_SUBMITTED;

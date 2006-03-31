@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2006/03/29 22:49:46 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2006/03/31 18:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -840,6 +840,14 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
 {
     bool WasTrx = false;
 
+    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << splcu->getName() << " Releasing all exclusions. "  << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
     CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
 
     /* Scan through all of them looking for one still transmitting */
@@ -1042,8 +1050,6 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
                         MPCPointSet ( MISSED, lcu, true );
                     }
                 }
-
-                ResetLCUsForControl(splcu);
             }
             else
             {
@@ -1061,16 +1067,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
                 lcu->lcuResetFlagsAndTags();
             }
 
-
-            if(PorterDebugLevel & PORTER_DEBUG_RIPPLE)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Pausing " << 2.5 << " seconds. based on PORTER_DEBUGLEVEL & " << PORTER_DEBUG_RIPPLE << endl;
-                }
-
-                Sleep(2500);
-            }
+            ResetLCUsForControl(splcu);
 
             break;
         }
@@ -1191,14 +1188,14 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
                         }
                     }
                 }
-
-                /* Everybody is done... */
-                ResetLCUsForControl( splcu );
             }
             else
             {
                 lcu->lcuResetFlagsAndTags();
             }
+
+            /* Everybody is done... */
+            ResetLCUsForControl( splcu );
 
             break;
         }

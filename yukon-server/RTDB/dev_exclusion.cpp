@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/03/24 15:58:19 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2006/03/31 18:24:43 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.15  2006/03/31 18:24:43  cplender
+* Additional (take 2) exclusion logic tweaks to accomodate East River.
+*
 * Revision 1.14  2006/03/24 15:58:19  cplender
 * Work on exclusion logic to unify the ripple work and make EREPC work right.  90% there.
 *
@@ -258,12 +261,7 @@ void CtiDeviceExclusion::setExecuting(bool set, CtiTime when)
     if(set)
         _executingUntil = when;
     else
-    {
-        if(_executingUntil == CtiTime(YUKONEOT))
-        {
-            _executingUntil = CtiTime(rwEpoch);
-        }
-    }
+        _executingUntil = CtiTime(PASTDATE);
 
     return;
 }

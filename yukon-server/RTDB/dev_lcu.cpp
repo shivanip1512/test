@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2006/03/29 22:49:48 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2006/03/31 18:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2050,6 +2050,7 @@ void CtiDeviceLCU::lcuResetFlagsAndTags()
     deleteLastControlMessage();
     setNumberStarted( 0 );
     removeInfiniteProhibit(getID());        // Do not block yourself Mr. LCU.
+    setExecuting(false);
 }
 
 
