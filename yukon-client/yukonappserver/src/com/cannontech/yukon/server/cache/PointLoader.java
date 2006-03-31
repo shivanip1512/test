@@ -203,7 +203,7 @@ private synchronized void loadPointTags()
 	if( allPoints == null )
 		return;
 	
-	String sqlString = "SELECT PU.POINTID, UM.FORMULA, UM.UOMID" +
+	String sqlString = "SELECT PU.POINTID, UM.FORMULA, UM.UOMID " +
 		"FROM POINTUNIT PU , UNITMEASURE UM WHERE PU.UOMID = UM.UOMID";
 	
 	java.sql.Connection conn = null;
