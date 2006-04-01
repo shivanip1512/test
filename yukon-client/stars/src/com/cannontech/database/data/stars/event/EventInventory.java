@@ -1,5 +1,13 @@
 package com.cannontech.database.data.stars.event;
 
+import java.util.ArrayList;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.user.YukonUser;
+
 
 /**
  * <p>Title: </p>
@@ -68,5 +76,47 @@ public class EventInventory extends EventBase {
 		com.cannontech.database.db.stars.event.EventInventory eventInventory) {
 		this.eventInventory = eventInventory;
 	}
+    
+    public static ArrayList<EventInventory> retrieveEventInventories(int inventoryID)
+    {
+        ArrayList<EventInventory> eventInventories = new ArrayList<EventInventory>();
+        
+        String sql = "SELECT EB.EVENTID, EB.USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP, YLE.ENTRYTEXT, YU.USERNAME, YLE.YUKONDEFINITIONID " +
+                    " FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
+                    com.cannontech.database.db.stars.event.EventInventory.TABLE_NAME + " EI, " +
+                    YukonListEntry.TABLE_NAME + " YLE, " +
+                    YukonUser.TABLE_NAME + " YU " +
+                    " WHERE EB.EVENTID = EI.EVENTID " +
+                    " AND INVENTORYID = " + inventoryID +
+                    " AND YLE.ENTRYID = EB.ACTIONID" +
+                    " AND YU.USERID = EB.USERID" +
+                    " ORDER BY EVENTTIMESTAMP DESC ";
+        
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+            stmt.execute();
+            for (int i = 0; i < stmt.getRowCount(); i++)
+            {
+                EventInventory eventInventory = new EventInventory();
+                eventInventory.setEventID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() ));
+                eventInventory.getEventBase().setUserID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[1]).intValue() ));
+                eventInventory.getEventBase().setSystemCategoryID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[2]).intValue() ));
+                eventInventory.getEventBase().setActionID(new Integer( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() ));
+                eventInventory.getEventBase().setEventTimestamp((java.util.Date) stmt.getRow(i)[4] );
+                eventInventory.getEventInventory().setInventoryID(new Integer( inventoryID));
+                eventInventory.setActionText(stmt.getRow(i)[5].toString());
+                eventInventory.setUserName(stmt.getRow(i)[6].toString());
+                eventInventory.setActionYukDefID( ((java.math.BigDecimal)stmt.getRow(i)[3]).intValue() );
+                eventInventories.add(eventInventory);
+            }
+        }
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        
+        return eventInventories;
+    }
 
+    
 }
