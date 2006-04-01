@@ -1762,8 +1762,7 @@ public class StarsLiteFactory {
 		starsInv.setInstallationCompany( company );
 		
         //TODO: DATEALTER
-        
-		starsInv.setReceiveDate( StarsUtils.translateDate(liteInv.getReceiveDate()) );
+        starsInv.setReceiveDate( StarsUtils.translateDate(liteInv.getReceiveDate()) );
 		starsInv.setInstallDate( StarsUtils.translateDate(liteInv.getInstallDate()) );
 		starsInv.setRemoveDate( StarsUtils.translateDate(liteInv.getRemoveDate()) );
 		starsInv.setAltTrackingNumber( StarsUtils.forceNotNull(liteInv.getAlternateTrackingNumber()) );
@@ -1794,7 +1793,7 @@ public class StarsLiteFactory {
 		}
 		
 		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
-				energyCompany.getYukonListEntry( liteInv.getDeviceStatus() ), DeviceStatus.class) );
+				energyCompany.getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
 		
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
